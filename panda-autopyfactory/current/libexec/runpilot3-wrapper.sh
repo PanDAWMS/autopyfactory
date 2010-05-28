@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: runpilot3-wrapper.sh 182 2010-04-11 19:31:40Z graemes $
+# $Id$
 #
 function lfc_test() {
     echo -n "Testing LFC module for $1: "
@@ -23,37 +23,59 @@ function find_lfc_compatible_python() {
     ## Try to figure out what python to run
 
     # We first look for a 32bit python in the ATLAS software area
-    # This is usually more up to date than the OS version
-    pybin=$(ls -r $VO_ATLAS_SW_DIR/prod/releases/*/sw/lcg/external/Python/*/slc*_ia32_gcc*/bin/python | head -1)
-    pylib=$(ls -rd $VO_ATLAS_SW_DIR/prod/releases/*/sw/lcg/external/Python/*/slc*_ia32_gcc*/lib/python* | head -1)
+    # which is usually more up to date than the OS version.
+    # This python snippet defines the correct comparison of the rel_X-Y 
+    pybin=$(ls $VO_ATLAS_SW_DIR/prod/releases/rel_[0-9]*-[0-9]*/sw/lcg/external/Python/*/*/bin/python | python -c'
+import sys, re
+
+def compareVersion(path):
+    m = re.search("rel_(\d+)-(\d+)", path)
+    if m:
+        # Return [X, Y] for rel_X-Y
+        return [int(x) for x in m.groups()]
+    else:
+        # Failed path
+        return [0, 0]
+
+paths=[]
+for path in sys.stdin:
+    path = path.strip()
+    paths.append(path)
+
+paths.sort(key=compareVersion)
+print paths[-1]')
+
     if [ -z "$pybin" ]; then
 	    echo "ERROR: No python found in ATLAS SW release - site is probably very broken"
     else
-	pydir=${pybin%/bin/python}
-	ORIG_PATH=$PATH
-	ORIG_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-	ORIG_PYTHONPATH=$PYTHONPATH
-	# Mangle the PYTHONPATH to try and sneak the 32 bit path back in,
-	# i.e., make lib64/python -> lib/python
-	PYTHONPATH=$(echo $PYTHONPATH | sed 's/lib64/lib/g')
-	PATH=$pydir/bin:$PATH
-	LD_LIBRARY_PATH=$pydir/lib:$LD_LIBRARY_PATH
-	lfc_test $pybin
-	if [ $? = "0" ]; then
-	    echo ATLAS python looks good. Set:
-	    echo PYTHONPATH=$PYTHONPATH
-	    echo PATH=$PATH
-	    echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-	    return 0
-	fi
-	# Else reset paths
-	PATH=$ORIG_PATH
-	LD_LIBRARY_PATH=$ORIG_LD_LIBRARY_PATH
-	PYTHONPATH=$ORIG_PYTHONPATH
+        pydir=${pybin%/bin/python}
+        echo Highest versioned ATLAS python is in $pydir
+	    ORIG_PATH=$PATH
+	    ORIG_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+	    ORIG_PYTHONPATH=$PYTHONPATH
+	    # Mangle the PYTHONPATH to try and sneak the 32 bit path back in,
+	    # i.e., make lib64/python -> lib/python
+	    if file $pybin | grep "32-bit" > /dev/null; then
+	    	PYTHONPATH=$(echo $PYTHONPATH | sed 's/lib64/lib/g')
+	    fi
+	    PATH=$pydir/bin:$PATH
+	    LD_LIBRARY_PATH=$pydir/lib:$LD_LIBRARY_PATH
+	    lfc_test $pybin
+	    if [ $? = "0" ]; then
+	        echo ATLAS python looks good. Set:
+	        echo PYTHONPATH=$PYTHONPATH
+	        echo PATH=$PATH
+	        echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+	        return 0
+	    fi
+	    # Else reset paths
+	    PATH=$ORIG_PATH
+	    LD_LIBRARY_PATH=$ORIG_LD_LIBRARY_PATH
+	    PYTHONPATH=$ORIG_PYTHONPATH
     fi
 
-    # Some 64bit sites put a 32bit python in our path, so we have to test
-    # this explicitly
+    # On many sites python now works just fine (m/w also now
+    # distributes the LFC plugin in 64 bit)
     pybin=python
     lfc_test $pybin
     if [ $? = "0" ]; then
@@ -172,7 +194,7 @@ function set_limits() {
 
 ## main ##
 
-echo "This is pilot wrapper $Id: runpilot3-wrapper.sh 182 2010-04-11 19:31:40Z graemes $"
+echo "This is pilot wrapper $Id$"
 
 # Check what was delivered
 echo "Scanning landing zone..."
