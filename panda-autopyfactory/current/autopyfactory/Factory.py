@@ -215,7 +215,7 @@ class factory:
         print >>JDL, "notification=Error"
         print >>JDL, "notify_user=%s" % self.config.config.get('Factory', 'factoryOwner')
         print >>JDL, "universe=globus"
-        print >>JDL, "x509userproxy=%s" % self.config.queues[queue]['proxy']
+        print >>JDL, "x509userproxy=%s" % self.config.queues[queue]['gridProxy']
         print >>JDL, "globusscheduler=%s" % self.config.queues[queue]['jdl']
         print >>JDL, "globusrsl=(queue=%s)(jobtype=single)" % self.config.queues[queue]['localqueue']
         # Probably not so helpful to set these in the JDL

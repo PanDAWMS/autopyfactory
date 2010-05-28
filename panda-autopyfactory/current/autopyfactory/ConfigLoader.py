@@ -92,9 +92,13 @@ class factoryConfigLoader:
                                        'localqueue' : 'None',
                                        'port' : '25443',
                                        'environ' : '',
-                                       'proxy' : '/tmp/x509up_u%d' % os.geteuid(),
-                                       'override' : 'False'
+                                       'override' : 'False',
                                        }
+        if 'X509_USER_PROXY' in os.environ:
+            defaults['QueueDefaults']['gridProxy'] = os.environ['X509_USER_PROXY']
+        else:
+            defaults['QueueDefaults']['gridProxy'] = '/tmp/x509up_u%d' % (os.getuid())
+        
         return defaults
 
 
