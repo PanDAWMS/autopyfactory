@@ -91,7 +91,7 @@ baseLogDirUrl = http://svr017.gla.scotgrid.ac.uk/factory/logs
 
 ## For a simple factory you don't need to set this - the globus default is used
 ## but for complex factory setups is is useful
-# proxy = /tmp/x509_uMYUID
+# gridProxy = /tmp/x509_uMYUID
 
 ## Individual queue configurations
 # It is recommended now only to have a nickname and let everything else
@@ -109,7 +109,7 @@ nickname = UKI-SCOTGRID-GLASGOW-svr021-atlprd-lcgpbs
 # Pilots to an analysis site using a different proxy
 [ANALY_GLASGOW]
 nickname = ANALY_GLASGOW
-proxy = /tmp/myPilotRoleProxy
+gridProxy = /tmp/myPilotRoleProxy
 
 
 # If any values are set in the factory then these will be overwritten
