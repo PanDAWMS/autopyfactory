@@ -25,6 +25,7 @@ import os, os.path, sys, logging, commands, time, string, re
 
 from autopyfactory.Exceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.ConfigLoader import factoryConfigLoader
+from autopyfactory.Monitor import Monitor
 import userinterface.Client as Client
 
 
@@ -36,6 +37,9 @@ class factory:
         self.dryRun = dryRun
         if configFiles != None:
             self.config = factoryConfigLoader(self.factoryMessages, configFiles)
+        url = self.config.config.get('Factory', 'monitorURL')
+        if url:
+            self.mon = Monitor(monurl=url)
 
 
     def getCondorStatus(self):
@@ -182,11 +186,16 @@ class factory:
             self.factoryMessages.error('Cannot submit pilots for %s', gatekeeper)
             return
         if not self.dryRun:
-            (exitStatus, output) = commands.getstatusoutput('condor_submit ' + jdlFile)
+            (exitStatus, output) = commands.getstatusoutput('condor_submit -verbose ' + jdlFile)
             if exitStatus != 0:
                 self.factoryMessages.error('condor_submit command for %s failed (status %d): %s', queue, exitStatus, output)
             else:
                 self.factoryMessages.debug('condor_submit command for %s succeeded', queue)
+                nick = self.config.queues[queue]['nickname']
+                fid = self.config.config.get('Factory', 'factoryId')
+                if isinstance(self.mon, Monitor):
+                    self.mon.notify(nick, fid, output)
+
         else:
             self.factoryMessages.debug('Dry run mode - pilot submission supressed.')
             
@@ -229,7 +238,11 @@ class factory:
         print >>JDL, 'periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)'
         print >>JDL, 'periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)'
         # In job environment correct GTAG to URL for logs, JSID should be factoryId
-        print >>JDL, 'environment = "GTAG=%s/$(Cluster).$(Process).out PANDA_JSID=%s' % (logUrl, self.config.config.get('Factory', 'factoryId')),
+        print >>JDL, 'environment = "PANDA_JSID=%s' % self.config.config.get('Factory', 'factoryId'),
+        print >>JDL, 'GTAG=%s/$(Cluster).$(Process).out' % logUrl,
+        print >>JDL, 'APFCID=$(Cluster).$(Process)',
+        print >>JDL, 'APFFID=%s' % self.config.config.get('Factory', 'factoryId'),
+        print >>JDL, 'APFMON=%s' % self.config.config.get('Factory', 'monitorURL'),
         print >>JDL, 'FACTORYQUEUE=%s' % queue,
         if self.config.queues[queue]['user'] != None:
             print >>JDL, 'FACTORYUSER=%s' % self.config.queues[queue]['user'],

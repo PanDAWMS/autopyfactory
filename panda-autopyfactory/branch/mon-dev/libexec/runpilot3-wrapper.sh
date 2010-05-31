@@ -191,10 +191,24 @@ function set_limits() {
     fi
 }
 
+function monping() {
+  echo Monitor URL: $APFMON
+  echo -n 'Monitor ping: '
+  curl -fksS --connect-timeout 10 --max-time 30 ${APFMON}$1/$APFFID/$APFCID/$2
+  if [ $? = "0" ]; then
+    echo
+  else
+    echo $?
+  fi
+}
+
 
 ## main ##
 
 echo "This is pilot wrapper $Id$"
+
+# notify monitoring, job running
+monping rn
 
 # Check what was delivered
 echo "Scanning landing zone..."
@@ -350,6 +364,18 @@ $cmd
 
 echo
 echo "Pilot exit status was $?"
+
+# notify monitoring, job exiting, capture the pilot exit status
+if [ -f STATUSCODE ]; then
+echo
+  scode=`cat STATUSCODE`
+else
+  scode=$pexitcode
+fi
+echo -n STATUSCODE:
+echo $scode
+monping ex $scode
+
 
 # Now wipe out our temp run directory, so as not to leave rubbish lying around
 echo "Now clearing run directory of all files."
