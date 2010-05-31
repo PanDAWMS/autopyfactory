@@ -5,8 +5,8 @@ function lfc_test() {
     echo -n "Testing LFC module for $1: "
     which $1 &> /dev/null
     if [ $? != "0" ]; then
-	echo "No $1 found in path."
-	return 1
+        echo "No $1 found in path."
+        return 1
     fi
     $1 <<EOF
 import sys
@@ -46,32 +46,32 @@ paths.sort(key=compareVersion)
 print paths[-1]')
 
     if [ -z "$pybin" ]; then
-	    echo "ERROR: No python found in ATLAS SW release - site is probably very broken"
+        echo "ERROR: No python found in ATLAS SW release - site is probably very broken"
     else
         pydir=${pybin%/bin/python}
         echo Highest versioned ATLAS python is in $pydir
-	    ORIG_PATH=$PATH
-	    ORIG_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-	    ORIG_PYTHONPATH=$PYTHONPATH
-	    # Mangle the PYTHONPATH to try and sneak the 32 bit path back in,
-	    # i.e., make lib64/python -> lib/python
-	    if file $pybin | grep "32-bit" > /dev/null; then
-	    	PYTHONPATH=$(echo $PYTHONPATH | sed 's/lib64/lib/g')
-	    fi
-	    PATH=$pydir/bin:$PATH
-	    LD_LIBRARY_PATH=$pydir/lib:$LD_LIBRARY_PATH
-	    lfc_test $pybin
-	    if [ $? = "0" ]; then
-	        echo ATLAS python looks good. Set:
-	        echo PYTHONPATH=$PYTHONPATH
-	        echo PATH=$PATH
-	        echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-	        return 0
-	    fi
-	    # Else reset paths
-	    PATH=$ORIG_PATH
-	    LD_LIBRARY_PATH=$ORIG_LD_LIBRARY_PATH
-	    PYTHONPATH=$ORIG_PYTHONPATH
+        ORIG_PATH=$PATH
+        ORIG_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+        ORIG_PYTHONPATH=$PYTHONPATH
+        # Mangle the PYTHONPATH to try and sneak the 32 bit path back in,
+        # i.e., make lib64/python -> lib/python
+        if file $pybin | grep "32-bit" > /dev/null; then
+            PYTHONPATH=$(echo $PYTHONPATH | sed 's/lib64/lib/g')
+        fi
+        PATH=$pydir/bin:$PATH
+        LD_LIBRARY_PATH=$pydir/lib:$LD_LIBRARY_PATH
+        lfc_test $pybin
+        if [ $? = "0" ]; then
+            echo ATLAS python looks good. Set:
+            echo PYTHONPATH=$PYTHONPATH
+            echo PATH=$PATH
+            echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+            return 0
+        fi
+        # Else reset paths
+        PATH=$ORIG_PATH
+        LD_LIBRARY_PATH=$ORIG_LD_LIBRARY_PATH
+        PYTHONPATH=$ORIG_PYTHONPATH
     fi
 
     # On many sites python now works just fine (m/w also now
@@ -79,14 +79,14 @@ print paths[-1]')
     pybin=python
     lfc_test $pybin
     if [ $? = "0" ]; then
-	return 0
+        return 0
     fi
 
     # Now see if python32 exists
     pybin=python32
     lfc_test $pybin
     if [ $? == "0" ]; then
-	return 0
+        return 0
     fi
 
     # Oh dear, we're doomed...
@@ -106,12 +106,12 @@ function get_pilot() {
 
     extract_uupilot $1
     if [ $? = "0" ]; then
-	return 0
+        return 0
     fi
 
     get_pilot_http
     if [ $? = "0" ]; then
-	return 0
+        return 0
     fi
 
     echo "Could not get pilot code from any source. Self desctruct in 5..4..3..2..1.."
@@ -128,8 +128,8 @@ uu.decode(sys.argv[1])
 EOF
 
     if [ ! -f pilot3.tgz ]; then
-	echo "Error uudecoding pilot"
-	return 1
+        echo "Error uudecoding pilot"
+        return 1
     fi
 
     echo "Pilot extracted successfully"
@@ -144,51 +144,51 @@ function get_pilot_http() {
     # loop over those servers. Otherwise use CERN, with Glasgow as a fallback.
     # N.B. an RC pilot is chosen once every 100 downloads for production.
     if [ -z "$PILOT_HTTP_SOURCES" ]; then
-	if [ $(($RANDOM%100)) = "0" -a $USER_PILOT = "0" ]; then
-	    echo "WARNING: Release canditate pilot will be used."
-	    PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode-rc.tar.gz"
-	else
-	    PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
-	fi
+    if [ $(($RANDOM%100)) = "0" -a $USER_PILOT = "0" ]; then
+        echo "WARNING: Release canditate pilot will be used."
+        PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode-rc.tar.gz"
+    else
+        PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
+    fi
     fi
     for source in $PILOT_HTTP_SOURCES; do
-	echo "Trying to download pilot from $source..."
-	curl --connect-timeout 30 --max-time 180 -sS $source | tar -xzf -
-	if [ -f pilot.py ]; then
-	    echo "Downloaded pilot from $source"
-	    return 0
-	fi
-	echo "Download from $source failed."
+        echo "Trying to download pilot from $source..."
+        curl --connect-timeout 30 --max-time 180 -sS $source | tar -xzf -
+        if [ -f pilot.py ]; then
+            echo "Downloaded pilot from $source"
+            return 0
+        fi
+        echo "Download from $source failed."
     done
     return 1
 }
 
 function set_limits() {
-	# Set some limits to catch jobs which go crazy from killing nodes
-	
-	# 20GB limit for output size (block = 1K in bash)
-	fsizelimit=$((20*1024*1024))
-	echo Setting filesize limit to $fsizelimit
-	ulimit -f $fsizelimit
-	
-	# Apply memory limit?
-	memLimit=0
-	while [ $# -gt 0 ]; do
-    	if [ $1 == "-k" ]; then
-			memLimit=$2
-			shift $#
-    	else
-			shift
-    	fi
-	done
-	if [ $memLimit == "0" ]; then
-		echo No VMEM limit set
-	else
-		# Convert to kB
-		memLimit=$(($memLimit*1000))
-		echo Setting VMEM limit to ${memLimit}kB
-		ulimit -v $memLimit
-	fi
+    # Set some limits to catch jobs which go crazy from killing nodes
+    
+    # 20GB limit for output size (block = 1K in bash)
+    fsizelimit=$((20*1024*1024))
+    echo Setting filesize limit to $fsizelimit
+    ulimit -f $fsizelimit
+    
+    # Apply memory limit?
+    memLimit=0
+    while [ $# -gt 0 ]; do
+        if [ $1 == "-k" ]; then
+            memLimit=$2
+            shift $#
+        else
+            shift
+        fi
+    done
+    if [ $memLimit == "0" ]; then
+        echo No VMEM limit set
+    else
+        # Convert to kB
+        memLimit=$(($memLimit*1000))
+        echo Setting VMEM limit to ${memLimit}kB
+        ulimit -v $memLimit
+    fi
 }
 
 
