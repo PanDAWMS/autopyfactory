@@ -180,12 +180,12 @@ class factoryConfigLoader:
                         del self.queues[queue][key]
                 else:
                     # For analysis sites set analysisGridProxy instead of gridProxy
-                    if self.queues[queue][key] == 'gridProxy' and self.queues[queue]['nickname'].startswith('ANALY'):
+                    if key == 'gridProxy' and self.queues[queue]['nickname'].startswith('ANALY'):
                         self.queues[queue][key] = self.config.get('QueueDefaults', 'analysisGridProxy')
-                    elif not self.queues[queue][key] == 'analysisGridProxy':
+                    elif not key == 'analysisGridProxy':
                         self.queues[queue][key] = self.config.get('QueueDefaults', key)
                     # Set user=user as the default for ANALY sites
-                    if self.queues[queue][key] == 'user' and self.queues[queue]['nickname'].startswith('ANALY'):
+                    if key == 'user' and self.queues[queue]['nickname'].startswith('ANALY'):
                         self.queues[queue]['user'] = 'user'
             self._pythonify(self.queues[queue])
             # Add extra information
@@ -208,9 +208,9 @@ class factoryConfigLoader:
                 self.queues[queue][key] = value
                 
             # If the queue is suppressed in the monitor then we will not use it
-            if self.queues['siteid'] == None:
+            if self.queues[queue]['siteid'] == None:
                 self.configMessages.error('Queue %s has siteid=NULL and will be ignored. Update the queue if you really want to use it.' % queue)
-                self.queues['status'] = 'error'
+                self.queues[queue]['status'] = 'error'
 
             self.configMessages.debug("Configured queue %s as %s." % (queue, self.queues[queue]))
 
