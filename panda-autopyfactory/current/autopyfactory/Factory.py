@@ -85,13 +85,17 @@ class factory:
         for queue in self.config.queueKeys:
             queueParameters = self.config.queues[queue]
  
-            # Check to see if a site or cloud is offline
+            # Check to see if a site or cloud is offline or in an error state
             if queueParameters['cloud'] in self.pandaCloudStatus and self.pandaCloudStatus[queueParameters['cloud']]['status'] == 'offline':
                 self.factoryMessages.info('Cloud %s containing queue %s: is offline - will not submit pilots.' % (queue, queueParameters['cloud']))
                 continue
                 
             if queueParameters['status'] == 'offline':
                 self.factoryMessages.info('Site %s containing queue %s: is offline - will not submit pilots.' % (queue, queueParameters['site']))
+                continue
+                
+            if queueParameters['status'] == 'error':
+                self.factoryMessages.info('Site %s containing queue %s: is in an error state - will not submit pilots.' % (queue, queueParameters['site']))
                 continue
                 
             # Check to see if the cloud is in test mode
@@ -236,7 +240,7 @@ class factory:
         if self.config.queues[queue]['environ'] != None and self.config.queues[queue]['environ'] != '':
             print >>JDL, self.config.queues[queue]['environ'],
         print >>JDL, '"'
-        print >>JDL, "arguments = -s %s -h %s" % (self.config.queues[queue]['site'], self.config.queues[queue]['nickname']),
+        print >>JDL, "arguments = -s %s -h %s" % (self.config.queues[queue]['siteid'], self.config.queues[queue]['nickname']),
         print >>JDL, "-p %d -w %s" % (self.config.queues[queue]['port'], self.config.queues[queue]['server']),
         if self.config.queues[queue]['jobRecovery'] == False:
             print >>JDL, " -j false",
