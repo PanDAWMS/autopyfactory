@@ -93,11 +93,15 @@ class factoryConfigLoader:
                                        'port' : '25443',
                                        'environ' : '',
                                        'override' : 'False',
+                                       'site' : 'None',
+                                       'siteid' : 'None',
                                        }
         if 'X509_USER_PROXY' in os.environ:
             defaults['QueueDefaults']['gridProxy'] = os.environ['X509_USER_PROXY']
         else:
             defaults['QueueDefaults']['gridProxy'] = '/tmp/x509up_u%d' % (os.getuid())
+        # analysisGridProxy is the default for any ANALY site
+        defaults['QueueDefaults']['analysisGridProxy'] = defaults['QueueDefaults']['gridProxy']
         
         return defaults
 
@@ -175,7 +179,14 @@ class factoryConfigLoader:
                         self.queues[queue][deprecatedKeys[key]] = self.config.get(queue, key)
                         del self.queues[queue][key]
                 else:
-                    self.queues[queue][key] = self.config.get('QueueDefaults', key)
+                    # For analysis sites set analysisGridProxy instead of gridProxy
+                    if self.queues[queue][key] == 'gridProxy' and self.queues[queue]['nickname'].startswith('ANALY'):
+                        self.queues[queue][key] = self.config.get('QueueDefaults', 'analysisGridProxy')
+                    elif not self.queues[queue][key] == 'analysisGridProxy':
+                        self.queues[queue][key] = self.config.get('QueueDefaults', key)
+                    # Set user=user as the default for ANALY sites
+                    if self.queues[queue][key] == 'user' and self.queues[queue]['nickname'].startswith('ANALY'):
+                        self.queues[queue]['user'] = 'user'
             self._pythonify(self.queues[queue])
             # Add extra information
             self.queues[queue]['pilotQueue'] = {'active' : 0, 'inactive' : 0, 'total' : 0,}
@@ -195,6 +206,11 @@ class factoryConfigLoader:
                                                 (queue, key, self.queues[queue][key], value))
                     continue
                 self.queues[queue][key] = value
+                
+            # If the queue is suppressed in the monitor then we will not use it
+            if self.queues['siteid'] == None:
+                self.configMessages.error('Queue %s has siteid=NULL and will be ignored. Update the queue if you really want to use it.' % queue)
+                self.queues['status'] = 'error'
 
             self.configMessages.debug("Configured queue %s as %s." % (queue, self.queues[queue]))
 
