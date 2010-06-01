@@ -90,15 +90,17 @@ baseLogDirUrl = http://svr017.gla.scotgrid.ac.uk/factory/logs
 #port = 25443
 
 ## For a simple factory you don't need to set this - the globus default is used
-## but for complex factory setups is is useful
+## (X509_USER_PROXY) but for complex factory setups is is useful.
+## Note that the analysisGridProxy is the default set for ANALY_ queues - very
+## useful for mixed mode factories.
 # gridProxy = /tmp/x509_uMYUID
+# analysisGridProxy = /tmp/pilotRoleProxy
 
 ## Individual queue configurations
 # It is recommended now only to have a nickname and let everything else
 # be detected from schedconfig
-# Note every queue must have site and nickname
 
-# An example of the simplest and recommended configuration for sites
+# Two examples of the simplest and recommended configuration for sites
 [UKI-NORTHGRID-LANCS-HEP]
 nickname = UKI-NORTHGRID-LANCS-HEP-fal-pygrid-18-atlas-lcgpbs
 
@@ -106,10 +108,11 @@ nickname = UKI-NORTHGRID-LANCS-HEP-fal-pygrid-18-atlas-lcgpbs
 nickname = UKI-SCOTGRID-GLASGOW-svr021-atlprd-lcgpbs
 
 
-# Pilots to an analysis site using a different proxy
+# Pilots going to an analysis site usually use a different proxy.
+# *** Please now see the setting analysisGridProxy in the QueueDefaults section
 [ANALY_GLASGOW]
 nickname = ANALY_GLASGOW
-gridProxy = /tmp/myPilotRoleProxy
+#gridProxy = /tmp/myPilotRoleProxy  <--- No longer needed
 
 
 # If any values are set in the factory then these will be overwritten
@@ -121,5 +124,13 @@ jdl = svr021.gla.scotgrid.ac.uk/jobmanager-lcgpbs
 localqueue = atlprd
 status = test
 nqueue = 1
+override = True
+
+# Another override example is used here to submit pilots to an additional
+# resource supporting an ANALY queue
+[ANALY_GLASGOW-svr026]
+nickname = ANALY_GLASGOW
+jdl = svr026.gla.scotgrid.ac.uk/jobmanager-lcgpbs
+localqueue = atlanaly
 override = True
 
