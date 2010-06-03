@@ -119,6 +119,14 @@ class factoryConfigLoader:
                     raise FactoryConfigurationFailure, 'Configuration files %s have no option %s in section %s (mandatory).' % (self.configFiles, option, section)
 
 
+    def _validateQueue(self, queue):
+        '''Perform final validation of queue configuration'''
+        # If the queue has siteid=None it should be suppressed
+        if self.queues[queue]['siteid'] == None:
+            self.configMessages.error('Queue %s has siteid=None and will be ignored. Update the queue if you really want to use it.' % queue)
+            self.queues[queue]['status'] = 'error'
+
+
     def loadConfig(self):
         self.config = SafeConfigParser()
         # Maintain case sensitivity in keys
@@ -206,11 +214,9 @@ class factoryConfigLoader:
                                                 (queue, key, self.queues[queue][key], value))
                     continue
                 self.queues[queue][key] = value
-                
-            # If the queue is suppressed in the monitor then we will not use it
-            if self.queues[queue]['siteid'] == None:
-                self.configMessages.error('Queue %s has siteid=NULL and will be ignored. Update the queue if you really want to use it.' % queue)
-                self.queues[queue]['status'] = 'error'
+            
+            # Sanity check queue
+            self._validateQueue(queue)
 
             self.configMessages.debug("Configured queue %s as %s." % (queue, self.queues[queue]))
 
@@ -279,10 +285,7 @@ class factoryConfigLoader:
                     queueParameters[key] = value
                 else:
                     self.configMessages.debug('schedConfig value for %s on %s unchanged (%s)' % (key, queue, value))
-            # Force siteid=None queues into error status
-            if self.queues[queue]['siteid'] == None:
-                self.configMessages.error('Queue %s has siteid=NULL and will be ignored. Update the queue if you really want to use it.' % queue)
-                self.queues[queue]['status'] = 'error'
+            # Sanity check queue
+            self._validateQueue(queue)
 
-                    
 
