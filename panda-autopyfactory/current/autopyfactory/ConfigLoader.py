@@ -279,6 +279,10 @@ class factoryConfigLoader:
                     queueParameters[key] = value
                 else:
                     self.configMessages.debug('schedConfig value for %s on %s unchanged (%s)' % (key, queue, value))
+            # Force siteid=None queues into error status
+            if self.queues[queue]['siteid'] == None:
+                self.configMessages.error('Queue %s has siteid=NULL and will be ignored. Update the queue if you really want to use it.' % queue)
+                self.queues[queue]['status'] = 'error'
 
                     
 
