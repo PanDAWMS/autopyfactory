@@ -37,6 +37,7 @@ setup(
                                                       ]
                  ),
                 ('/opt/panda/autopyfactory/etc', ['etc/factory.conf-example',
-                                                  ]),    
+                                                  ]),
+                ('/opt/panda/autopyfactory/var', []),
                 ]
 )
