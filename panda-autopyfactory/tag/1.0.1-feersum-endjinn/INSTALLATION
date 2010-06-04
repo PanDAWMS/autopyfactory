@@ -23,18 +23,21 @@ Installation
 
 2. Checkout the panda client code from SVN:
    $ mkdir ~/panda
-   $ svn co http://svn.usatlas.bnl.gov/svn/panda/panda-server/current/pandaserver/userinterface
+   $ svn co http://svnweb.cern.ch/guest/panda/panda-server/current/pandaserver/userinterface
    $ export PYTHONPATH=~/panda:$PYTHONPATH
    Make sure the PYTHONPATH is defined for the factory's environment.
    
 3. If you are using python < 2.6 then install the simplejson module
    (you do not need the C speedups, so the python module files are
-   sufficient). Make sure simplejson is in your PYTHONPATH.
+   sufficient). Make sure simplejson is also in your PYTHONPATH.
+   
+   http://pypi.python.org/pypi/simplejson/
 
-4. Install the autopyfactory RPM.
+4. Install the autopyfactory RPM or tarball.
 
 5. Create a factory.conf for your sites. Usually this should live in 
-   /opt/panda/autopyfactory/etc.
+   /opt/panda/autopyfactory/etc. (You will want to chown it to the
+   autopyfactory user, it's installed as root from the RPM.)
 
    In the configuration you need to:
 
@@ -43,7 +46,7 @@ Installation
 
    Change factoryId to be a unique identifier for this factory
    instance - try to make it meaningful for someone else looking at
-   the monitoring, e.g., "factoryId = graeme-UK".
+   the monitoring, e.g., "factoryId = graeme-UK-apf".
 
    Change baseLogDir to somewhere with a lot of space - pilot outputs
    can fill up a lot of disk once you are running well. The factory
