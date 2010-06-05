@@ -93,11 +93,15 @@ class factoryConfigLoader:
                                        'port' : '25443',
                                        'environ' : '',
                                        'override' : 'False',
+                                       'site' : 'None',
+                                       'siteid' : 'None',
                                        }
         if 'X509_USER_PROXY' in os.environ:
             defaults['QueueDefaults']['gridProxy'] = os.environ['X509_USER_PROXY']
         else:
             defaults['QueueDefaults']['gridProxy'] = '/tmp/x509up_u%d' % (os.getuid())
+        # analysisGridProxy is the default for any ANALY site
+        defaults['QueueDefaults']['analysisGridProxy'] = defaults['QueueDefaults']['gridProxy']
         
         return defaults
 
@@ -113,6 +117,14 @@ class factoryConfigLoader:
             for option in mustHave[section]:
                 if not self.config.has_option(section, option):
                     raise FactoryConfigurationFailure, 'Configuration files %s have no option %s in section %s (mandatory).' % (self.configFiles, option, section)
+
+
+    def _validateQueue(self, queue):
+        '''Perform final validation of queue configuration'''
+        # If the queue has siteid=None it should be suppressed
+        if self.queues[queue]['siteid'] == None:
+            self.configMessages.error('Queue %s has siteid=None and will be ignored. Update the queue if you really want to use it.' % queue)
+            self.queues[queue]['status'] = 'error'
 
 
     def loadConfig(self):
@@ -175,7 +187,14 @@ class factoryConfigLoader:
                         self.queues[queue][deprecatedKeys[key]] = self.config.get(queue, key)
                         del self.queues[queue][key]
                 else:
-                    self.queues[queue][key] = self.config.get('QueueDefaults', key)
+                    # For analysis sites set analysisGridProxy instead of gridProxy
+                    if key == 'gridProxy' and self.queues[queue]['nickname'].startswith('ANALY'):
+                        self.queues[queue][key] = self.config.get('QueueDefaults', 'analysisGridProxy')
+                    elif not key == 'analysisGridProxy':
+                        self.queues[queue][key] = self.config.get('QueueDefaults', key)
+                    # Set user=user as the default for ANALY sites
+                    if key == 'user' and self.queues[queue]['nickname'].startswith('ANALY'):
+                        self.queues[queue]['user'] = 'user'
             self._pythonify(self.queues[queue])
             # Add extra information
             self.queues[queue]['pilotQueue'] = {'active' : 0, 'inactive' : 0, 'total' : 0,}
@@ -195,6 +214,9 @@ class factoryConfigLoader:
                                                 (queue, key, self.queues[queue][key], value))
                     continue
                 self.queues[queue][key] = value
+            
+            # Sanity check queue
+            self._validateQueue(queue)
 
             self.configMessages.debug("Configured queue %s as %s." % (queue, self.queues[queue]))
 
@@ -263,6 +285,7 @@ class factoryConfigLoader:
                     queueParameters[key] = value
                 else:
                     self.configMessages.debug('schedConfig value for %s on %s unchanged (%s)' % (key, queue, value))
+            # Sanity check queue
+            self._validateQueue(queue)
 
-                    
 

@@ -73,7 +73,7 @@ def main():
     elif options.logfile == 'syslog':
         logStream = logging.handlers.SysLogHandler('/dev/log')
     else:
-        logStream = logging.handlers.RotatingFileHandler(filename=options.logfile, maxBytes=1000000, backupCount=3)    
+        logStream = logging.handlers.RotatingFileHandler(filename=options.logfile, maxBytes=10000000, backupCount=5)    
 
     formatter = logging.Formatter('%(asctime)s - %(name)s: %(levelname)s %(message)s')
     logStream.setFormatter(formatter)

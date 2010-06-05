@@ -3,6 +3,28 @@ ChangeLog
 
 $Id: CHANGELOG 181 2010-04-10 21:59:00Z graemes $
 
+2010-06-01
+
+* Changed argument passed to pilot from 'site' to 'siteid', which is correct
+  and necessary for ANALY_ sites.
+  
+* Added new internal status of 'error' where queue has siteid=None. This 
+  suppresses pilot submission to that queue.
+  
+* Added new configuration option for the [QueueDefaults] section 
+  'analysisGridProxy' which is the default proxy used for ANALY_ sites.
+
+* Default setting for 'user' of ANALY queues is now 'user' (can still be
+  overwritten). 
+  
+* ATLAS software release areas are now ordered correctly by a python code
+  snippet in the wrapper which correctly compares 'rel_M-N'. 
+  
+* Updated release number to 1.0.1.
+
+* This is the "Feersum Endjinn" release:
+  http://en.wikipedia.org/wiki/Feersum_Endjinn
+
 2010-04-09
 
 * Added protection in submission logic against None value for 
