@@ -99,9 +99,9 @@ class factoryConfigLoader:
         if 'X509_USER_PROXY' in os.environ:
             defaults['QueueDefaults']['gridProxy'] = os.environ['X509_USER_PROXY']
         else:
-            defaults['QueueDefaults']['gridProxy'] = '/tmp/x509up_u%d' % (os.getuid())
+            defaults['QueueDefaults']['gridProxy'] = '/tmp/prodRoleProxy'
         # analysisGridProxy is the default for any ANALY site
-        defaults['QueueDefaults']['analysisGridProxy'] = defaults['QueueDefaults']['gridProxy']
+        defaults['QueueDefaults']['analysisGridProxy'] = '/tmp/pilotRoleProxy'
         
         return defaults
 

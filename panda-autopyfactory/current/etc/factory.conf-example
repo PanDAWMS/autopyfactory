@@ -28,7 +28,7 @@ factoryId = graeme-UK
 #  "emacs runpilot3-wrapper.sh"
 #  "ln -s runpilot3-wrapper.sh runpilot3-wrapper-1.sh"
 #  "executable = runpilot3-wrapper-1.sh"
-executable = runpilot3-wrapper.sh
+executable = /opt/panda/autopyfactory/libexec/runpilot3-wrapper.sh
 # Where outputs from pilots are stored
 baseLogDir = /disk/panda/factory/logs
 # Where outputs from pilots are available via http
@@ -40,8 +40,7 @@ baseLogDirUrl = http://svr017.gla.scotgrid.ac.uk/factory/logs
 #
 # Most important values can now be detected from schedconfig, so there is no need to set them
 # at all. These values are marked with a *. N.B. Even if you do set these values in the factory
-# they will be overwritten unless the "override = True" setting is used, which means that
-# schedconfig values are not loaded.
+# they will be overwritten unless the "override = True" setting is used.
 #
 #  *status can be "test", "offline" or "online"
 #  *nqueue is the number of pilots submitted when the queue falls below nqueue
@@ -50,24 +49,25 @@ baseLogDirUrl = http://svr017.gla.scotgrid.ac.uk/factory/logs
 #  *idlepilotsupression makes the single pilot submission to sites with no jobs (the 'hello, panda!' 
 #    pilots) only happen every N cycles (Default 1 - i.e., idling pilot every cycle)
 #  wallClock and *memory are in minutes and MB - 'None' means nothing is added to JDL
-#   any setting for memory is now used as a flag to the pilot warpper which will set this 
+#   Any setting for memory is now used as a flag to the pilot wrapper which will set this 
 #   as a ulimit before starting the pilot.
 #  jobRecovery switches flag on pilot to enable/disable job recovery.
-#     This is generally useless as it is overridden in schedconfig.
+#     This is generally useless as it is overridden in schedconfig and job recovery
+#     is being redeveloped.
 #  *pilotlimit sets a hard limit on the total number of pilots at a site, active + queued
 #  *transferringlimit sets a limit on the number of jobs in transferring status allowed at a site -
 #    when this limit is reached no pilots will be submitted to allow backlogs to clear
-#  *cloud is the cloud this queue is in. You should set this to supress pilot submission when the cloud
+#  *cloud is the cloud this queue is in. You should set this to suppress pilot submission when the cloud
 #    goes offline
 #    N.B. Panda clouds are UPPER CASE, e.g., UK
 #  user is the parameter passed to the pilot as the "-u USER" parameter allowing special pilot types
-#    to be sent. (Default None)
+#    to be sent. (Default None for production queues, but "user" for ANALY queues)
 #  country is used to pickup jobs only from a particlar VOMS group, e.g., for /atlas/ca users use
 #    country = ca. This should only be used when submitting to special analysis resources. On
 #    ATLAS pledged resources it should be unset (Default None)
 #  group is used to pickup jobs only from a particlar VOMS group, e.g., poweruser0 
 #    (Default None)
-#  override, if True, supresses loading of schedconfig for this queue.
+#  override, if True then schedconfig does not clobber configuration file values.
 [QueueDefaults]
 #status = test
 #nqueue = 10
@@ -89,11 +89,10 @@ baseLogDirUrl = http://svr017.gla.scotgrid.ac.uk/factory/logs
 #server = https://pandaserver.cern.ch
 #port = 25443
 
-## For a simple factory you don't need to set this - the globus default is used
-## (X509_USER_PROXY) but for complex factory setups is is useful.
+## By default we assume pilots go with production role - note default location.
 ## Note that the analysisGridProxy is the default set for ANALY_ queues - very
 ## useful for mixed mode factories.
-# gridProxy = /tmp/x509_uMYUID
+# gridProxy = /tmp/prodRoleProxy
 # analysisGridProxy = /tmp/pilotRoleProxy
 
 ## Individual queue configurations
@@ -119,15 +118,16 @@ nickname = ANALY_GLASGOW
 # by schedconfig, unless you set override = True. e.g., testing a new
 # gatekeeper
 [UKI-SCOTGRID-GLASGOW-testCE]
-nickname = UKI-SCOTGRID-GLASGOW-svr021-atlprd-lcgpbs
-jdl = svr021.gla.scotgrid.ac.uk/jobmanager-lcgpbs
+nickname = UKI-SCOTGRID-GLASGOW-svr029-atlprd-lcgpbs
+jdl = svr029.gla.scotgrid.ac.uk/jobmanager-lcgpbs
 localqueue = atlprd
 status = test
 nqueue = 1
 override = True
 
 # Another override example is used here to submit pilots to an additional
-# resource supporting an ANALY queue
+# resource supporting an ANALY queue. Note the old "gatekeeper" now breaks
+# into two parts: jdl and queue.
 [ANALY_GLASGOW-svr026]
 nickname = ANALY_GLASGOW
 jdl = svr026.gla.scotgrid.ac.uk/jobmanager-lcgpbs
