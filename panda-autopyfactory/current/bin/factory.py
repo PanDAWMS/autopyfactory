@@ -88,6 +88,7 @@ def main():
         while True:
             factoryLogger.info('\nStarting factory cycle %d at %s', cyclesDone, time.asctime(time.localtime()))
             f.factorySubmitCycle(cyclesDone)
+            factoryLogger.info('Factory cycle %d done' % cyclesDone)
             cyclesDone += 1
             if cyclesDone == options.cyclesToDo:
                 break
