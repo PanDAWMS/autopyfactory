@@ -132,8 +132,13 @@ class factoryConfigLoader:
         # Maintain case sensitivity in keys
         self.config.optionxform = str
         self.configMessages.debug('Reading configuration files %s' % self.configFiles)
-        self.config.read(self.configFiles)
-
+        readConfigFiles = self.config.read(self.configFiles)
+        if (len(readConfigFiles) != len(self.configFiles)):
+            unreadConfigs = []
+            for file in self.configFiles:
+                if not file in readConfigFiles:
+                    unreadConfigs.append(file)
+            raise FactoryConfigurationFailure, 'Failed to open the following configuration files: %s' % unreadConfigs
         self._checkMandatoryValues()
         configDefaults = self._configurationDefaults()
 
