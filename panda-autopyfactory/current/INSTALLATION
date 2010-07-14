@@ -79,7 +79,7 @@ Installation
 7. To check that the syntax is ok and that the factory can get status
    for sites run it in test/oneshot mode:
 
-	$ /opt/panda/autopyfactory/bin/factory.py --verbose --test --oneshot --output=stdout
+	$ /opt/panda/autopyfactory/bin/factory.py --verbose --test --oneshot --log=stdout
 
     This will define the jdls in the log area, but not actually call
     condor_submit.
