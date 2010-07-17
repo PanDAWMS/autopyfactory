@@ -205,9 +205,6 @@ class factory:
             self.factoryMessages.error('Failed to open file %s (error %d): %s', jdlFile, errno, errMsg)
             return 1
 
-        # If we have multiple gatekeepers, use a round robin approach
-        #gkIndex = cycleNumber % len(self.config.queues[queue]['jdl'])
-
         print >>JDL, "# Condor-G glidein pilot for panda"
         print >>JDL, "executable=%s" % self.config.config.get('Pilots', 'executable')
         print >>JDL, "Dir=%s/" % logDir
@@ -218,18 +215,26 @@ class factory:
         print >>JDL, "stream_error=False"
         print >>JDL, "notification=Error"
         print >>JDL, "notify_user=%s" % self.config.config.get('Factory', 'factoryOwner')
-        print >>JDL, "universe=globus"
-        print >>JDL, "x509userproxy=%s" % self.config.queues[queue]['gridProxy']
-        print >>JDL, "globusscheduler=%s" % self.config.queues[queue]['jdl']
-        print >>JDL, "globusrsl=(queue=%s)(jobtype=single)" % self.config.queues[queue]['localqueue']
+        print >>JDL, "universe=grid"
+        # Here we insert the switch for CREAM CEs. This is rather a hack for now, but will
+        # improve once multiple backends are supported properly
+        if self.config.queues[queue]['_isCream']:
+            print >>JDL, "grid_resource=cream %s:%d/ce-cream/services/CREAM2 %s %s" % (
+                 self.config.queues[queue]['_creamHost'], self.config.queues[queue]['_creamPort'], 
+                 self.config.queues[queue]['_creamBatchSys'], self.config.queues[queue]['localqueue'])
+        else:
+            # GRAM resource
+            print >>JDL, "grid_resource=gt2 %s" % self.config.queues[queue]['jdl']
+            print >>JDL, "globusrsl=(queue=%s)(jobtype=single)" % self.config.queues[queue]['localqueue']
         # Probably not so helpful to set these in the JDL
         #if self.config.queues[queue]['memory'] != None:
         #    print >>JDL, "(maxMemory=%d)" % self.config.queues[queue]['memory'],
         #if self.config.queues[queue]['wallClock'] != None:
         #    print >>JDL, "(maxWallTime=%d)" % self.config.queues[queue]['wallClock'],
         #print >>JDL
-        print >>JDL, '+MATCH_gatekeeper_url="%s"' % self.config.queues[queue]['jdl']
-        print >>JDL, '+MATCH_queue="%s"' % self.config.queues[queue]['localqueue']
+        #print >>JDL, '+MATCH_gatekeeper_url="%s"' % self.config.queues[queue]['jdl']
+        #print >>JDL, '+MATCH_queue="%s"' % self.config.queues[queue]['localqueue']
+        print >>JDL, "x509userproxy=%s" % self.config.queues[queue]['gridProxy']
         print >>JDL, 'periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)'
         print >>JDL, 'periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)'
         # In job environment correct GTAG to URL for logs, JSID should be factoryId
