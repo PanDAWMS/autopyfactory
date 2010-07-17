@@ -3,6 +3,27 @@ ChangeLog
 
 $Id: CHANGELOG 181 2010-04-10 21:59:00Z graemes $
 
+2010-07-16
+
+* Reintroduced support for CREAM CEs - factory now detects CREAM CEs and
+  provides the correct JDL to condor (recommended only for use with 
+  condor >= 7.5.3). See configuration example for how to support this.
+  
+* Changed JDL for gt2 GRAM sumbission from anachronistic "universe = globus"
+  to "universe = grid; grid_resource = gt2 GATEKEEPER_URL".
+
+* Changed from jdl field in schedconfig to queue, which is a better name and
+  more accurate for condor sites. (REMOVED FOR NOW, pending schedconfig 
+  dump upadate.)
+
+* Changed default proxy location to /tmp/prodRoleProxy and pilotRoleProxy.
+  This can still be inherited from X509_USER_PROXY.
+  
+* Changed the default source proxy to /tmp/plainProxy.
+
+* This is the "Crème Fraîche" release. (AKA "I can't believe you're still making
+  schoolboy puns about CREAM".)
+
 2010-06-01
 
 * Changed argument passed to pilot from 'site' to 'siteid', which is correct

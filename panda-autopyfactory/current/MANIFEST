@@ -1,0 +1,15 @@
+CHANGELOG
+INSTALLATION
+LICENSE
+README
+setup.cfg
+setup.py
+autopyfactory/ConfigLoader.py
+autopyfactory/Exceptions.py
+autopyfactory/Factory.py
+autopyfactory/__init__.py
+bin/cleanLogs.py
+bin/factory.py
+bin/vomsrenew.sh
+etc/factory.conf-example
+libexec/runpilot3-wrapper.sh

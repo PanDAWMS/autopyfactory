@@ -134,3 +134,12 @@ jdl = svr026.gla.scotgrid.ac.uk/jobmanager-lcgpbs
 localqueue = atlanaly
 override = True
 
+# CREAM CE example
+# Currently CREAM CEs have incorrect parameters in schedconfig, so they
+# must have jdl (and probably localqueue) overrides.
+# If you don't specify the port then 8443 is assumed.
+[UKI-SCOTGRID-GLASGOW-cream14]
+nickname = UKI-SCOTGRID-GLASGOW-svr014-atlprd-pbs
+jdl = svr014.gla.scotgrid.ac.uk:8443/cream-pbs
+localqueue = atlprd
+override = True
