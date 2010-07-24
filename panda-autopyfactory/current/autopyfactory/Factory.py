@@ -224,7 +224,7 @@ class factory:
                  self.config.queues[queue]['_creamBatchSys'], self.config.queues[queue]['localqueue'])
         else:
             # GRAM resource
-            print >>JDL, "grid_resource=gt2 %s" % self.config.queues[queue]['jdl']
+            print >>JDL, "grid_resource=gt2 %s" % self.config.queues[queue]['queue']
             print >>JDL, "globusrsl=(queue=%s)(jobtype=single)" % self.config.queues[queue]['localqueue']
         # Probably not so helpful to set these in the JDL
         #if self.config.queues[queue]['memory'] != None:
@@ -232,7 +232,7 @@ class factory:
         #if self.config.queues[queue]['wallClock'] != None:
         #    print >>JDL, "(maxWallTime=%d)" % self.config.queues[queue]['wallClock'],
         #print >>JDL
-        #print >>JDL, '+MATCH_gatekeeper_url="%s"' % self.config.queues[queue]['jdl']
+        #print >>JDL, '+MATCH_gatekeeper_url="%s"' % self.config.queues[queue]['queue']
         #print >>JDL, '+MATCH_queue="%s"' % self.config.queues[queue]['localqueue']
         print >>JDL, "x509userproxy=%s" % self.config.queues[queue]['gridProxy']
         print >>JDL, 'periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)'
@@ -272,16 +272,16 @@ class factory:
                 if error != 0:
                     raise PandaStatusFailure, 'Client.getJobStatisticsPerSite(countryGroup=%s,workingGroup=%s) error: %s' % (country, group, error)
 
-                for site, queues in self.config.sites[country][group].iteritems():
-                    if site == 'siteStatus':
+                for siteid, queues in self.config.sites[country][group].iteritems():
+                    if siteid == 'siteStatus':
                         continue
-                    if site in self.config.sites[country][group]['siteStatus']:
-                        self.factoryMessages.debug('Panda status: %s (country=%s, group=%s) %s' % (site, country, group, self.config.sites[country][group]['siteStatus'][site]))
+                    if siteid in self.config.sites[country][group]['siteStatus']:
+                        self.factoryMessages.debug('Panda status: %s (country=%s, group=%s) %s' % (siteid, country, group, self.config.sites[country][group]['siteStatus'][siteid]))
                         for queue in queues:
-                            self.config.queues[queue]['pandaStatus'] = self.config.sites[country][group]['siteStatus'][site]
+                            self.config.queues[queue]['pandaStatus'] = self.config.sites[country][group]['siteStatus'][siteid]
                     else:
                         # If panda knows nothing, then we assume all zeros (site may be inactive)
-                        self.factoryMessages.debug('Panda status for site %s (country=%s, group=%s) not found - setting zeros in status to allow bootstraping of site.' % (site, country, group))
+                        self.factoryMessages.debug('Panda status for siteid %s (country=%s, group=%s) not found - setting zeros in status to allow bootstraping of site.' % (siteid, country, group))
                         for queue in queues:
                             self.config.queues[queue]['pandaStatus'] = {'transferring': 0, 'activated': 0, 'running': 0, 'assigned': 0, 'failed': 0, 'finished': 0}
 
