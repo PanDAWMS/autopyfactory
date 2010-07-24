@@ -3,7 +3,11 @@ ChangeLog
 
 $Id: CHANGELOG 181 2010-04-10 21:59:00Z graemes $
 
-2010-07-16
+2010-07-24
+
+* Corrected bug where "site" parameter was used instead of "siteid" to get
+  panda job states (broke ANALY sites for which these are different). 
+  Reported by Xavi, diagnosed by Graeme, fixed by Peter.
 
 * Reintroduced support for CREAM CEs - factory now detects CREAM CEs and
   provides the correct JDL to condor (recommended only for use with 
@@ -12,14 +16,20 @@ $Id: CHANGELOG 181 2010-04-10 21:59:00Z graemes $
 * Changed JDL for gt2 GRAM sumbission from anachronistic "universe = globus"
   to "universe = grid; grid_resource = gt2 GATEKEEPER_URL".
 
-* Changed from jdl field in schedconfig to queue, which is a better name and
-  more accurate for condor sites. (REMOVED FOR NOW, pending schedconfig 
-  dump upadate.)
+* Changed from 'jdl' field in schedconfig to 'queue', which is a better name 
+  and has the correct value for condor sites ('jdl' supported but 
+  deprecated).
 
 * Changed default proxy location to /tmp/prodRoleProxy and pilotRoleProxy.
   This can still be inherited from X509_USER_PROXY.
   
 * Changed the default source proxy to /tmp/plainProxy.
+
+* Changed handling of deprecated keys to rewrite the configration objects
+  themselves, which gives more robust and consistent handling. Unknown
+  keys are deleted and a warning printed.
+  
+* Schedconfig download failures are now errors (not warnings).
 
 * This is the "Crème Fraîche" release. (AKA "I can't believe you're still making
   schoolboy puns about CREAM".)
