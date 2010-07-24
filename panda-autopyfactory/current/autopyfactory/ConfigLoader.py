@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 #
+# $Id$
 #
 
 import os, sys, logging, re
@@ -55,10 +56,10 @@ class factoryConfigLoader:
                 factoryData[k] = v
             self.configMessages.debug('Converted to: %s' % factoryData)
         except ValueError, err:
-            self.configMessages.warning('%s for queue %s, downloading from %s' % (err, queue, queueDataUrl))
+            self.configMessages.error('%s for queue %s, downloading from %s' % (err, queue, queueDataUrl))
             return None
         except IOError, (errno, errmsg):
-            self.configMessages.warning('%s for queue %s, downloading from %s' % (errmsg, queue, queueDataUrl))
+            self.configMessages.error('%s for queue %s, downloading from %s' % (errmsg, queue, queueDataUrl))
             return None
 
         return factoryData
@@ -88,13 +89,14 @@ class factoryConfigLoader:
                                        'country' : 'None',
                                        'cloud' : 'None',
                                        'server' : 'https://pandaserver.cern.ch',
-                                       'jdl' : 'None',
+                                       'queue' : 'Unset',
                                        'localqueue' : 'None',
                                        'port' : '25443',
                                        'environ' : '',
                                        'override' : 'False',
                                        'site' : 'None',
                                        'siteid' : 'None',
+                                       'nickname' : 'None',
                                        }
         if 'X509_USER_PROXY' in os.environ:
             defaults['QueueDefaults']['gridProxy'] = os.environ['X509_USER_PROXY']
@@ -160,7 +162,7 @@ class factoryConfigLoader:
                           'pilotLimit' : 'pilotlimit',
                           'transferringLimit' : 'transferringlimit',
                           'env': 'environ',
-                          #'jdl' : 'queue',
+                          'jdl' : 'queue',
                           }
 
         # Construct the structured siteData dictionary from the configuration stanzas
@@ -176,6 +178,19 @@ class factoryConfigLoader:
             # Build up basic queue information from configuration data
             self.queues[queue] = {}
             self.queues[queue]['nickname'] = self.config.get(queue, 'nickname')
+            # Preprocess configuration options
+            for key in self.config.options(queue):
+                if key in deprecatedKeys.keys():
+                    self.configMessages.warning('Queue %s: "%s" is deprecated, use "%s" instead.' % (queue, key, deprecatedKeys[key]))
+                    # Get rid of the deprecated value and rewrite the old key to the new (as long as the new key is absent!)
+                    if not self.config.has_option(queue, deprecatedKeys[key]):
+                        self.config.set(queue, deprecatedKeys[key], self.config.get(queue, key))
+                    self.config.remove_option(queue, key)
+                else:
+                    if key not in self.config.options('QueueDefaults'):
+                        self.configMessages.warning('Queue %s: "%s" is an unknown option and is ignored.' % (queue, key))
+                        self.config.remove_option(queue, key)
+            # Now load queue configuration
             for key, value in self.config.items('QueueDefaults'):
                 if self.config.has_option(queue, key):
                     self.queues[queue][key] = self.config.get(queue, key)
@@ -187,11 +202,6 @@ class factoryConfigLoader:
                         if self.queues[queue][key] == 'disabled':
                             self.configMessages.warning('Queue %s: Status "disabled" is deprecated, use "offline" instead.' % queue)
                             self.queues[queue][key] = 'offline'
-                    # Update any deprecated keys to their new names
-                    if key in deprecatedKeys.keys():
-                        self.configMessages.warning('Queue %s: "%s" is deprecated, use "%s" instead.' % (queue, key, deprecatedKeys[key]))
-                        self.queues[queue][deprecatedKeys[key]] = self.config.get(queue, key)
-                        del self.queues[queue][key]
                 else:
                     # For analysis sites set analysisGridProxy instead of gridProxy
                     if key == 'gridProxy' and self.queues[queue]['nickname'].startswith('ANALY'):
@@ -212,20 +222,20 @@ class factoryConfigLoader:
                     continue
                 else:
                     self.configMessages.warning('Failed to get schedconfig data for %s - maintaining queue because override is true.' % queue)
-                        
-            # Map schedConfig fields for pyfactory
-            for key, value in schedConfig.iteritems():
-                if self.queues[queue]['override'] and self.config.has_option(queue, key):
-                    self.configMessages.warning('Queue %s has override enabled for %s, statically set to %s ignoring schedconfig value (%s).' % 
-                                                (queue, key, self.queues[queue][key], value))
-                    continue
-                self.queues[queue][key] = value
+            else:            
+                # Map schedConfig fields for autopyfactory
+                for key, value in schedConfig.iteritems():
+                    if self.queues[queue]['override'] and self.config.has_option(queue, key):
+                        self.configMessages.warning('Queue %s has override enabled for %s, statically set to %s ignoring schedconfig value (%s).' % 
+                                                    (queue, key, self.queues[queue][key], value))
+                        continue
+                    self.queues[queue][key] = value
                 
             # Hack for CREAM CEs - would like to use the 'system' field in schedconfig for this
-            if self.queues[queue]['jdl'].find('/cream') > 0:
+            if self.queues[queue]['queue'].find('/cream') > 0:
                 self.configMessages.debug('Detected CREAM CE for queue %s' % (queue))
                 self.queues[queue]['_isCream'] = True
-                match1 = re.match(r'([^/]+)/cream-(\w+)', self.queues[queue]['jdl'])
+                match1 = re.match(r'([^/]+)/cream-(\w+)', self.queues[queue]['queue'])
                 if match1 != None:
                     # See if the port is explicitly given - if not assume 8443
                     # Currently condor needs this specified in the JDL
@@ -261,14 +271,14 @@ class factoryConfigLoader:
             if not queueParameters['group'] in self.sites[queueParameters['country']]:
                 self.sites[queueParameters['country']][queueParameters['group']] = {}
                 self.configMessages.debug("Created new site stack group=%s, country=%s" % (queueParameters['country'], queueParameters['group']))
-            if queueParameters['site'] in self.sites[queueParameters['country']][queueParameters['group']]:
-                self.sites[queueParameters['country']][queueParameters['group']][queueParameters['site']].append(queue)
-                self.configMessages.debug("Added queue %s from existing site %s to stack group=%s, country=%s" % \
-                                               (queue, queueParameters['site'], queueParameters['country'], queueParameters['group']))
+            if queueParameters['siteid'] in self.sites[queueParameters['country']][queueParameters['group']]:
+                self.sites[queueParameters['country']][queueParameters['group']][queueParameters['siteid']].append(queue)
+                self.configMessages.debug("Added queue %s from existing siteid %s to stack group=%s, country=%s" % \
+                                               (queue, queueParameters['siteid'], queueParameters['country'], queueParameters['group']))
             else:
-                self.sites[queueParameters['country']][queueParameters['group']][queueParameters['site']] = [queue,]
-                self.configMessages.debug("Added first queue %s from site %s to new site stack group=%s, country=%s" % \
-                                               (queue, queueParameters['site'], queueParameters['country'], queueParameters['group']))
+                self.sites[queueParameters['country']][queueParameters['group']][queueParameters['siteid']] = [queue,]
+                self.configMessages.debug("Added first queue %s from siteid %s to new site stack group=%s, country=%s" % \
+                                               (queue, queueParameters['siteid'], queueParameters['country'], queueParameters['group']))
 
         # For puny humans we have a sorted list of the queue keys so their tiny brains can find
         # the information they require ("Kill all humans!")
