@@ -192,9 +192,10 @@ function set_limits() {
 }
 
 function monping() {
-  echo Monitor URL: $APFMON
+  echo -n Monitor ID:
+  echo $APFMON | tr A-Za-z N-ZA-Mn-za-m
   echo -n 'Monitor ping: '
-  curl -fksS --connect-timeout 10 --max-time 30 ${APFMON}$1/$APFFID/$APFCID/$2
+  curl -fksS --connect-timeout 10 --max-time 20 ${APFMON}$1/$APFFID/$APFCID/$2
   if [ $? = "0" ]; then
     echo
   else
@@ -202,6 +203,19 @@ function monping() {
   fi
 }
 
+function monpost() {
+  echo Monitor info:
+  pwd
+  ls -l
+  cat pandaJobData.out
+  echo -n 'Monitor post: '
+  curl -fksS -d @pandaJobData.out --connect-timeout 10 --max-time 20 ${APFMON}i/$APFFID/$APFCID/
+  if [ $? = "0" ]; then
+    echo
+  else
+    echo $?
+  fi
+}
 
 ## main ##
 
@@ -375,11 +389,15 @@ fi
 echo -n STATUSCODE:
 echo $scode
 monping ex $scode
+monpost
 
 
 # Now wipe out our temp run directory, so as not to leave rubbish lying around
 echo "Now clearing run directory of all files."
 cd $startdir
+echo PAL
+pwd
+ls -l
 rm -fr $temp
 
 # The end
