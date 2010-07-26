@@ -17,6 +17,7 @@ import StringIO
 from optparse import OptionParser
 _THISFID = 'peter-UK-devel'
 _BASEURL = 'http://py-dev.lancs.ac.uk:8000/mon/'
+#_BASEURL = 'http://py-dev.lancs.ac.uk/mon/'
 _STURL = _BASEURL + 'st/'
 _AWOLURL = _BASEURL + 'awol/'
 _CIDURL = _BASEURL + 'cid/' + _THISFID
@@ -123,7 +124,7 @@ def main():
             else:
                 # cid not found by condor_q or condor_history
                 awolcids.append(cid)
-                logging.warn("AWOL: %sjob/%s/%s" % (_MONURL, _THISFID, cid))
+                logging.warn("AWOL: %sjob/%s/%s" % (_BASEURL, _THISFID, cid))
 
     logging.debug("Current number of found jobs: %d" % len(outputs))
     logging.debug("Current number of AWOL jobs: %d" % len(awolcids))
