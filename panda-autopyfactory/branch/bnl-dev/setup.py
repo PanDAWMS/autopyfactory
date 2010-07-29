@@ -28,15 +28,15 @@ setup(
     packages=['autopyfactory'],
     data_files=[
                 # Utilitys and main script
-                ('/opt/panda/autopyfactory/bin', ['bin/factory.py',
+                ('bin', ['bin/factory.py',
                                                   'bin/cleanLogs.py',
                                                   'bin/vomsrenew.sh',
                                                   ]
                  ),
-                ('/opt/panda/autopyfactory/libexec', ['libexec/runpilot3-wrapper.sh',
+                ('libexec', ['libexec/runpilot3-wrapper.sh',
                                                       ]
                  ),
-                ('/opt/panda/autopyfactory/etc', ['etc/factory.conf-example',
+                ('etc', ['etc/factory.conf-example',
                                                   ]),
                 ]
 )
