@@ -25,9 +25,11 @@ from optparse import OptionParser
 import logging
 import logging.handlers
 import time
+from ConfigParser import SafeConfigParser, NoSectionError
 
 from autopyfactory.Factory import factory
 from autopyfactory.Exceptions import FactoryConfigurationFailure
+
 
 def main():
     parser = OptionParser(usage='''%prog [OPTIONS]
@@ -79,22 +81,17 @@ def main():
     logStream.setFormatter(formatter)
     factoryLogger.addHandler(logStream)
     factoryLogger.setLevel(options.logLevel)
-
     factoryLogger.debug('logging initialised')
 
+    # Create config
+    if options.confFiles != None:
+        config = safeConfigParser(options.confFiles)
+       
+        
+    # Create and run Factory object...
     try:
-        f = factory(factoryLogger, options.dryRun, options.confFiles)
-        cyclesDone = 0
-        while True:
-            factoryLogger.info('\nStarting factory cycle %d at %s', cyclesDone, time.asctime(time.localtime()))
-            f.factorySubmitCycle(cyclesDone)
-            factoryLogger.info('Factory cycle %d done' % cyclesDone)
-            cyclesDone += 1
-            if cyclesDone == options.cyclesToDo:
-                break
-            factoryLogger.info('Sleeping %ds' % options.sleepTime)
-            time.sleep(options.sleepTime)
-            f.updateConfig(cyclesDone)
+        f = Factory(config)
+        f.mainLoop()     
     except KeyboardInterrupt:
         factoryLogger.info('Caught keyboard interrupt - exiting')
     except FactoryConfigurationFailure, errMsg:

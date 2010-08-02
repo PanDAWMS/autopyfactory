@@ -3,11 +3,11 @@
 # $Id$
 #
 
-import os, sys, logging, re
+import os
+import sys
+import logging
+import re
 from ConfigParser import SafeConfigParser, NoSectionError
-
-from autopyfactory.Exceptions import FactoryConfigurationFailure
-
 from urllib import urlopen
 
 try:
@@ -16,15 +16,16 @@ except ImportError, err:
     # Not critical (yet) - try simplejson
     import simplejson as json
 
+from autopyfactory.exceptions import FactoryConfigurationFailure
 
-class factoryConfigLoader:
-    def __init__(self, factoryLogger, configFiles = ('factory.conf',), loglevel=logging.DEBUG):
+
+class FactoryConfigLoader:
+    def __init__(self, configFiles = ('factory.conf',), loglevel=logging.DEBUG):
         self.configMessages = logging.getLogger('main.factory.conf')
         self.configMessages.debug('Factory configLoader class initialised.')
 
         self.configFiles = configFiles
         self.loadConfig()
-
 
     def _pythonify(self, myDict):
         '''Set special string values to appropriate python objects in a configuration dictionary'''

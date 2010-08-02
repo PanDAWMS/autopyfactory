@@ -91,7 +91,7 @@ Installation
    Take note of which option you use for output - syslog is now the 
    default. 
 
-Maintinance
+Maintenance
 -----------
 
 1. If you change something in any of the configuration files then the

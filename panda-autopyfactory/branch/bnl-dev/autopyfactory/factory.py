@@ -23,19 +23,35 @@
 
 import os, os.path, sys, logging, commands, time, string, re
 
-from autopyfactory.Exceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
-from autopyfactory.ConfigLoader import factoryConfigLoader
+from autopyfactory.exceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
+from autopyfactory.configloader import FactoryConfigLoader
+
 import userinterface.Client as Client
 
 
-class factory:
+class Factory(object):
+    
     def __init__(self, mainLogger, dryRun=False, configFiles=('factory.conf',)):
         self.factoryMessages = logging.getLogger('main.factory')
         self.factoryMessages.debug('Factory class initialised.')
-
         self.dryRun = dryRun
-        if configFiles != None:
-            self.config = factoryConfigLoader(self.factoryMessages, configFiles)
+        
+
+    def mainLoop(self):
+        self.pm = ProxyManager()
+        
+               
+        cyclesDone = 0
+        while True:
+            self.factoryMessages.info('\nStarting factory cycle %d at %s', cyclesDone, time.asctime(time.localtime()))
+            self.factorySubmitCycle(cyclesDone)
+            self.factoryMessages.info('Factory cycle %d done' % cyclesDone)
+            cyclesDone += 1
+            if cyclesDone == options.cyclesToDo:
+                break
+            self.factoryMessages.info('Sleeping %ds' % options.sleepTime)
+            time.sleep(options.sleepTime)
+            f.updateConfig(cyclesDone)
 
 
     def getCondorStatus(self):
@@ -167,32 +183,7 @@ class factory:
                                           queue, queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
 
 
-    def condorPilotSubmit(self, queue, cycleNumber=0, pilotNumber=1):
-        now = time.localtime()
-        logPath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2]) + queue.translate(string.maketrans('/:','__'))
-        logDir = self.config.config.get('Pilots', 'baseLogDir') + logPath
-        logUrl = self.config.config.get('Pilots', 'baseLogDirUrl') + logPath
-        if not os.access(logDir, os.F_OK):
-            try:
-                os.makedirs(logDir)
-                self.factoryMessages.debug('Created directory %s', logDir)
-            except OSError, (errno, errMsg):
-                self.factoryMessages.error('Failed to create directory %s (error %d): %s', logDir, errno, errMsg)
-                self.factoryMessages.error('Cannot submit pilots for %s', queue)
-                return
-        jdlFile = logDir + '/submitMe.jdl'
-        error = self.writeJDL(queue, jdlFile, pilotNumber, logDir, logUrl, cycleNumber)
-        if error != 0:
-            self.factoryMessages.error('Cannot submit pilots for %s', gatekeeper)
-            return
-        if not self.dryRun:
-            (exitStatus, output) = commands.getstatusoutput('condor_submit ' + jdlFile)
-            if exitStatus != 0:
-                self.factoryMessages.error('condor_submit command for %s failed (status %d): %s', queue, exitStatus, output)
-            else:
-                self.factoryMessages.debug('condor_submit command for %s succeeded', queue)
-        else:
-            self.factoryMessages.debug('Dry run mode - pilot submission supressed.')
+  
             
 
     def writeJDL(self, queue, jdlFile, pilotNumber, logDir, logUrl, cycleNumber=0):
@@ -281,7 +272,7 @@ class factory:
                             self.config.queues[queue]['pandaStatus'] = self.config.sites[country][group]['siteStatus'][siteid]
                     else:
                         # If panda knows nothing, then we assume all zeros (site may be inactive)
-                        self.factoryMessages.debug('Panda status for siteid %s (country=%s, group=%s) not found - setting zeros in status to allow bootstraping of site.' % (siteid, country, group))
+                        self.factoryMessages.debug('Panda status for siteid %s (country=%s, group=%s) not found - setting zeros in status to allow bootstrapping of site.' % (siteid, country, group))
                         for queue in queues:
                             self.config.queues[queue]['pandaStatus'] = {'transferring': 0, 'activated': 0, 'running': 0, 'assigned': 0, 'failed': 0, 'finished': 0}
 
@@ -306,14 +297,84 @@ class factory:
 
     def factorySubmitCycle(self, cycleNumber=0):
         '''Go through one status/submission cycle'''
-        try:
-            self.getCondorStatus()
-            self.getPandaStatus()
-            self.submitPilots(cycleNumber)
-        except CondorStatusFailure, errMsg:
-            self.factoryMessages.error('Condor status polling failure: %s', errMsg)
-            self.factoryMessages.error('Will sleep and carry on.')
-        except PandaStatusFailure, errMsg:
-            self.factoryMessages.error('Panda status polling failure: %s', errMsg)
-            self.factoryMessages.error('Will sleep and carry on.')
+        for queue in self.queues:
+            try:
+                self.getCondorStatus()
+                self.getPandaStatus()
+                self.submitPilots(cycleNumber)
+            except CondorStatusFailure, errMsg:
+                self.factoryMessages.error('Condor status polling failure: %s', errMsg)
+                self.factoryMessages.error('Will sleep and carry on.')
+            except PandaStatusFailure, errMsg:
+                self.factoryMessages.error('Panda status polling failure: %s', errMsg)
+                self.factoryMessages.error('Will sleep and carry on.')
+
+    def _convertURItoReader(self, uri):
+        '''
+        Takes a URI string, opens it, and returns a filelike object of its contents.
         
+        '''
+        self.log.debug("Converting %s ..." % uri)        
+        try:
+            uri = uri.strip()
+            opener = urllib2.build_opener()
+            urllib2.install_opener( opener )
+            uridata = urllib2.urlopen( uri )
+            firstLine = uridata.readline().strip()
+            if firstLine[0] == "<":
+                raise Exception("First character was '<'. Probably a Proxy error.")
+            reader = urllib2.urlopen( hostsURI )
+        
+        except Exception:  
+            errMsg = "Couldn't find URI %s (use file://... or http://... format)" % uri
+            self.log.error(errMsg)
+            sys.exit(0)
+        self.log.debug("Success. Returning reader." )
+        return reader
+        
+
+class PandaQueue(object):
+    
+    def __init__(self, ):
+        pass
+
+    def condorPilotSubmit(self, queue, cycleNumber=0, pilotNumber=1):
+        now = time.localtime()
+        logPath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2]) + queue.translate(string.maketrans('/:','__'))
+        logDir = self.config.config.get('Pilots', 'baseLogDir') + logPath
+        logUrl = self.config.config.get('Pilots', 'baseLogDirUrl') + logPath
+        if not os.access(logDir, os.F_OK):
+            try:
+                os.makedirs(logDir)
+                self.factoryMessages.debug('Created directory %s', logDir)
+            except OSError, (errno, errMsg):
+                self.factoryMessages.error('Failed to create directory %s (error %d): %s', logDir, errno, errMsg)
+                self.factoryMessages.error('Cannot submit pilots for %s', queue)
+                return
+        jdlFile = logDir + '/submitMe.jdl'
+        error = self.writeJDL(queue, jdlFile, pilotNumber, logDir, logUrl, cycleNumber)
+        if error != 0:
+            self.factoryMessages.error('Cannot submit pilots for %s', gatekeeper)
+            return
+        if not self.dryRun:
+            (exitStatus, output) = commands.getstatusoutput('condor_submit ' + jdlFile)
+            if exitStatus != 0:
+                self.factoryMessages.error('condor_submit command for %s failed (status %d): %s', queue, exitStatus, output)
+            else:
+                self.factoryMessages.debug('condor_submit command for %s succeeded', queue)
+        else:
+            self.factoryMessages.debug('Dry run mode - pilot submission supressed.')
+
+
+
+class CondorStatus(object):
+    
+    def __init__(self):
+        pass
+
+class ProxyManager(object):
+    def __init__(self, certpath, keypath, proxypath, interval):
+        pass
+        
+        
+            
