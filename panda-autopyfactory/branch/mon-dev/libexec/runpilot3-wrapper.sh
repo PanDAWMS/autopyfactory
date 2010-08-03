@@ -204,17 +204,34 @@ function monping() {
 }
 
 function monpost() {
-  echo Monitor info:
+  echo Monitor debug begin 14:
   pwd
   ls -l
-  cat pandaJobData.out
-  echo -n 'Monitor post: '
-  curl -fksS -d @pandaJobData.out --connect-timeout 10 --max-time 20 ${APFMON}i/$APFFID/$APFCID/
-  if [ $? = "0" ]; then
-    echo
-  else
-    echo $?
-  fi
+  find -name pandaJobData.out
+#  if [ -f pandaJobData.out ]; then
+#    echo -n 'POST: '
+#    curl -fksS -d @pandaJobData.out --connect-timeout 10 --max-time 20 ${APFMON}i/$APFFID/$APFCID/
+#    if [ $? = "0" ]; then
+#      echo
+#    else
+#      echo $?
+#    fi
+#  fi
+
+  # scrape PandaIDs from pilot log
+  echo 'SCRAPE: '
+  find -name pilotlog.* -exec egrep ^PandaID= {} \; 
+#  for i in ii; do
+#    echo data: $i
+#    curl -fksS -F "$i" --connect-timeout 10 --max-time 20 ${APFMON}i/$APFFID/$APFCID/
+#    if [ $? = "0" ]; then
+#      echo
+#    else
+#      echo $?
+#    fi
+#  done
+
+  echo Monitor debug end:
 }
 
 ## main ##
@@ -395,9 +412,6 @@ monpost
 # Now wipe out our temp run directory, so as not to leave rubbish lying around
 echo "Now clearing run directory of all files."
 cd $startdir
-echo PAL
-pwd
-ls -l
 rm -fr $temp
 
 # The end
