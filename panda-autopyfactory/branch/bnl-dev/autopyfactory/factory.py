@@ -31,16 +31,25 @@ import userinterface.Client as Client
 
 class Factory(object):
     
-    def __init__(self, mainLogger, dryRun=False, configFiles=('factory.conf',)):
+    def __init__(self, config, mainLogger, dryRun=False, ):
         self.factoryMessages = logging.getLogger('main.factory')
         self.factoryMessages.debug('Factory class initialised.')
         self.dryRun = dryRun
+        self.config = config
         
+        self.qconfig = QueueConfigLoader(config.get('Factory', 'queueConf'))
+        self.queues = []
+        for queuename in self.qconfig.sections():
+            q = PandaQueue(self.qconfig, queuename)
+            self.queues.append(q)
+           
 
+    
+    
+    
     def mainLoop(self):
-        self.pm = ProxyManager()
+        self.pm = ProxyManager()  
         
-               
         cyclesDone = 0
         while True:
             self.factoryMessages.info('\nStarting factory cycle %d at %s', cyclesDone, time.asctime(time.localtime()))

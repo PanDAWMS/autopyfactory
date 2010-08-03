@@ -84,12 +84,10 @@ def main():
     factoryLogger.setLevel(options.logLevel)
     factoryLogger.debug('logging initialised')
 
-    # Create config
+    # Create configs
     if options.confFiles != None:
-        config = SafeConfigParser()
-        readfiles = config.read(options.confFiles)
-       
-        
+        config = FactoryConfigLoader(options.confFiles)
+           
     # Create and run Factory object...
     try:
         f = Factory(config)
