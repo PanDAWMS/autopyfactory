@@ -8,7 +8,7 @@ $Id: CHANGELOG 181 2010-04-10 21:59:00Z graemes $
 * Refined distutils usage to allow deployment as non-root in a home directory, or
   as root in system paths. Added functionality to drop privs even when run as root. 
 
-* Split config system into main source (factory.conf) and individual queue configuration 
+* Split config system into main source for APF instance (factory.conf) and individual queue configuration 
   (queue.conf). The latter can be accessed as URI. 
 
 * Adjusted module, file, and class names to follow Python idiom. 

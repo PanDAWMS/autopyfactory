@@ -335,8 +335,10 @@ class Factory(object):
 
 class PandaQueue(object):
     
-    def __init__(self, ):
-        pass
+    def __init__(self, config, section ):
+        self.config = config
+        
+        
 
     def condorPilotSubmit(self, queue, cycleNumber=0, pilotNumber=1):
         now = time.localtime()

@@ -19,11 +19,11 @@ except ImportError, err:
 from autopyfactory.exceptions import FactoryConfigurationFailure
 
 
-class FactoryConfigLoader:
-    def __init__(self, configFiles = ('factory.conf',), loglevel=logging.DEBUG):
+class ConfigLoader(object):
+    
+    def __init__(self, configFiles, loglevel):
         self.configMessages = logging.getLogger('main.factory.conf')
         self.configMessages.debug('Factory configLoader class initialised.')
-
         self.configFiles = configFiles
         self.loadConfig()
 
@@ -38,75 +38,6 @@ class FactoryConfigLoader:
                 myDict[k] = True
             elif isinstance(v, str) and v.isdigit():
                 myDict[k] = int(v)
-
-
-    def _loadQueueData(self, queue):
-        queueDataUrl = 'http://pandaserver.cern.ch:25080/cache/schedconfig/%s.factory.json' % queue
-        try:
-            handle = urlopen(queueDataUrl)
-            jsonData = json.load(handle, 'utf-8')
-            handle.close()
-            self.configMessages.debug('JSON returned: %s' % jsonData)
-            factoryData = {}
-            # json always gives back unicode strings (eh?) - convert unicode to utf-8
-            for k, v in jsonData.iteritems():
-                if isinstance(k, unicode):
-                    k = k.encode('utf-8')
-                if isinstance(v, unicode):
-                    v = v.encode('utf-8')
-                factoryData[k] = v
-            self.configMessages.debug('Converted to: %s' % factoryData)
-        except ValueError, err:
-            self.configMessages.error('%s for queue %s, downloading from %s' % (err, queue, queueDataUrl))
-            return None
-        except IOError, (errno, errmsg):
-            self.configMessages.error('%s for queue %s, downloading from %s' % (errmsg, queue, queueDataUrl))
-            return None
-
-        return factoryData
-
-
-    def _configurationDefaults(self):
-        '''Define default configuration parameters for autopyfactory instances'''
-        defaults = {}
-        try:
-            defaults = { 'Factory' : { 'condorUser' : os.environ['USER'], }}
-        except KeyError:
-            # Non-login shell - you'd better set it yourself
-            defaults = { 'Factory' : { 'condorUser' : 'unknown', }}
-        defaults['Factory']['schedConfigPoll'] = '5'
-
-        defaults['QueueDefaults'] =  { 'status' : 'test',
-                                       'nqueue' : '20',
-                                       'idlepilotsuppression' : '1',
-                                       'depthboost' : '2',
-                                       'wallClock' : 'None',
-                                       'memory' : 'None',
-                                       'jobRecovery' : 'False',
-                                       'pilotlimit' : 'None',
-                                       'transferringlimit' : 'None',
-                                       'user' : 'None',
-                                       'group' : 'None',
-                                       'country' : 'None',
-                                       'cloud' : 'None',
-                                       'server' : 'https://pandaserver.cern.ch',
-                                       'queue' : 'Unset',
-                                       'localqueue' : 'None',
-                                       'port' : '25443',
-                                       'environ' : '',
-                                       'override' : 'False',
-                                       'site' : 'None',
-                                       'siteid' : 'None',
-                                       'nickname' : 'None',
-                                       }
-        if 'X509_USER_PROXY' in os.environ:
-            defaults['QueueDefaults']['gridProxy'] = os.environ['X509_USER_PROXY']
-        else:
-            defaults['QueueDefaults']['gridProxy'] = '/tmp/prodRoleProxy'
-        # analysisGridProxy is the default for any ANALY site
-        defaults['QueueDefaults']['analysisGridProxy'] = '/tmp/pilotRoleProxy'
-        
-        return defaults
 
 
     def _checkMandatoryValues(self):
@@ -151,10 +82,81 @@ class FactoryConfigLoader:
                     self.config.set(section, k, v)
                     self.configMessages.debug('Set default value for %s in section %s to "%s".' % (k, section, v))
 
+     
+
+
+        # Finally, stat the conf file(s) so we can tell if they changed
+        try:
+            self.configFileMtime = dict()
+            for confFile in self.configFiles:
+                self.configFileMtime[confFile] = os.stat(confFile).st_mtime
+        except OSError, (errno, errMsg):
+            # This should never happen - we've just read the file after all,
+            # but belt 'n' braces...
+            raise FactoryConfigurationFailure, "Failed to stat configuration file %s to get modifictaion time: %s\nDid you try to configure from a non-existent or unreadable file?" % (self.configFile, errMsg)
+
+    def reloadConfigFilesIfChanged(self):
+        try:
+            for confFile in self.configFiles:
+                if os.stat(confFile).st_mtime > self.configFileMtime[confFile]:
+                    self.configMessages.info('Detected configuration file update for %s - reloading configuration' % confFile)
+                    self.loadConfig()
+                    break
+        except OSError, (errno, errMsg):
+                self.configMessages.error('Failed to stat my configuration file %s, where did you hide it? %s' % (confFile, errMsg))
+
+
+  
+
+class FactoryConfigLoader(ConfigLoader):
+
+    def loadConfig(self):
         # Little bit of sanity...
         if not os.path.isfile(self.config.get('Pilots', 'executable')):
             raise FactoryConfigurationFailure, 'Pilot executable %s does not seem to be a readable file.' % self.config.get('Pilots', 'executable')
 
+
+    
+class QueueConfigLoader(ConfigLoader):
+
+
+    def _configurationDefaults(self):
+        '''Define default configuration parameters for autopyfactory instances'''
+        defaults = {}
+        try:
+            defaults = { 'Factory' : { 'condorUser' : os.environ['USER'], }}
+        except KeyError:
+            # Non-login shell - you'd better set it yourself
+            defaults = { 'Factory' : { 'condorUser' : 'unknown', }}
+        defaults['Factory']['schedConfigPoll'] = '5'
+        return defaults
+
+
+    def reloadSchedConfig(self):
+        '''Reload queue data from schedconfig'''
+        self.configMessages.debug('Reloading schedconfig values for my queues.')
+        for queue, queueParameters in self.queues.iteritems():
+            schedConfig = self._loadQueueData(queueParameters['nickname'])
+            if schedConfig == None:
+                self.configMessages.warning('Failed to get schedconfig data for %s - leaving queue unchanged.' % queue)
+                continue
+            self._pythonify(schedConfig)
+            for key, value in schedConfig.iteritems():
+                if self.queues[queue]['override'] and self.config.has_option(queue, key):
+                    self.configMessages.warning('Queue %s has override enabled for %s, statically set to %s ignoring schedconfig value (%s).' % 
+                        (queue, key, self.queues[queue][key], value))
+                    continue                
+                if key in queueParameters and queueParameters[key] != value:
+                    self.configMessages.info('New schedConfig value for %s on %s (%s)' % (key, queue, value))
+                    queueParameters[key] = value
+                else:
+                    self.configMessages.debug('schedConfig value for %s on %s unchanged (%s)' % (key, queue, value))
+            # Sanity check queue
+            self._validateQueue(queue)
+
+
+    def loadConfig(self):
+        
         # List of field names to update to their new schedconfig values (Oracle column names 
         # are case insensitive, so used lowercase here)
         deprecatedKeys = {'pilotDepth' : 'nqueue',
@@ -286,47 +288,62 @@ class FactoryConfigLoader:
         self.queueKeys = self.queues.keys()
         self.queueKeys.sort()
 
-        # Finally, stat the conf file(s) so we can tell if they changed
+        
+
+    def _configurationDefaults():
+        defaults = {}
+        defaults['QueueDefaults'] =  { 'status' : 'test',
+                                       'nqueue' : '20',
+                                       'idlepilotsuppression' : '1',
+                                       'depthboost' : '2',
+                                       'wallClock' : 'None',
+                                       'memory' : 'None',
+                                       'jobRecovery' : 'False',
+                                       'pilotlimit' : 'None',
+                                       'transferringlimit' : 'None',
+                                       'user' : 'None',
+                                       'group' : 'None',
+                                       'country' : 'None',
+                                       'cloud' : 'None',
+                                       'server' : 'https://pandaserver.cern.ch',
+                                       'queue' : 'Unset',
+                                       'localqueue' : 'None',
+                                       'port' : '25443',
+                                       'environ' : '',
+                                       'override' : 'False',
+                                       'site' : 'None',
+                                       'siteid' : 'None',
+                                       'nickname' : 'None',
+                                       }
+        if 'X509_USER_PROXY' in os.environ:
+            defaults['QueueDefaults']['gridProxy'] = os.environ['X509_USER_PROXY']
+        else:
+            defaults['QueueDefaults']['gridProxy'] = '/tmp/prodRoleProxy'
+        # analysisGridProxy is the default for any ANALY site
+        defaults['QueueDefaults']['analysisGridProxy'] = '/tmp/pilotRoleProxy'
+        return defaults
+        
+    def _loadQueueData(self, queue):
+        queueDataUrl = 'http://pandaserver.cern.ch:25080/cache/schedconfig/%s.factory.json' % queue
         try:
-            self.configFileMtime = dict()
-            for confFile in self.configFiles:
-                self.configFileMtime[confFile] = os.stat(confFile).st_mtime
-        except OSError, (errno, errMsg):
-            # This should never happen - we've just read the file after all,
-            # but belt 'n' braces...
-            raise FactoryConfigurationFailure, "Failed to stat configuration file %s to get modifictaion time: %s\nDid you try to configure from a non-existent or unreadable file?" % (self.configFile, errMsg)
+            handle = urlopen(queueDataUrl)
+            jsonData = json.load(handle, 'utf-8')
+            handle.close()
+            self.configMessages.debug('JSON returned: %s' % jsonData)
+            factoryData = {}
+            # json always gives back unicode strings (eh?) - convert unicode to utf-8
+            for k, v in jsonData.iteritems():
+                if isinstance(k, unicode):
+                    k = k.encode('utf-8')
+                if isinstance(v, unicode):
+                    v = v.encode('utf-8')
+                factoryData[k] = v
+            self.configMessages.debug('Converted to: %s' % factoryData)
+        except ValueError, err:
+            self.configMessages.error('%s for queue %s, downloading from %s' % (err, queue, queueDataUrl))
+            return None
+        except IOError, (errno, errmsg):
+            self.configMessages.error('%s for queue %s, downloading from %s' % (errmsg, queue, queueDataUrl))
+            return None
 
-    def reloadConfigFilesIfChanged(self):
-        try:
-            for confFile in self.configFiles:
-                if os.stat(confFile).st_mtime > self.configFileMtime[confFile]:
-                    self.configMessages.info('Detected configuration file update for %s - reloading configuration' % confFile)
-                    self.loadConfig()
-                    break
-        except OSError, (errno, errMsg):
-                self.configMessages.error('Failed to stat my configuration file %s, where did you hide it? %s' % (confFile, errMsg))
-
-
-    def reloadSchedConfig(self):
-        '''Reload queue data from schedconfig'''
-        self.configMessages.debug('Reloading schedconfig values for my queues.')
-        for queue, queueParameters in self.queues.iteritems():
-            schedConfig = self._loadQueueData(queueParameters['nickname'])
-            if schedConfig == None:
-                self.configMessages.warning('Failed to get schedconfig data for %s - leaving queue unchanged.' % queue)
-                continue
-            self._pythonify(schedConfig)
-            for key, value in schedConfig.iteritems():
-                if self.queues[queue]['override'] and self.config.has_option(queue, key):
-                    self.configMessages.warning('Queue %s has override enabled for %s, statically set to %s ignoring schedconfig value (%s).' % 
-                        (queue, key, self.queues[queue][key], value))
-                    continue                
-                if key in queueParameters and queueParameters[key] != value:
-                    self.configMessages.info('New schedConfig value for %s on %s (%s)' % (key, queue, value))
-                    queueParameters[key] = value
-                else:
-                    self.configMessages.debug('schedConfig value for %s on %s unchanged (%s)' % (key, queue, value))
-            # Sanity check queue
-            self._validateQueue(queue)
-
-
+        return factoryData        

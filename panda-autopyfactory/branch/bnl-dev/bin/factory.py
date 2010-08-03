@@ -27,8 +27,9 @@ import logging.handlers
 import time
 from ConfigParser import SafeConfigParser, NoSectionError
 
-from autopyfactory.Factory import factory
-from autopyfactory.Exceptions import FactoryConfigurationFailure
+from autopyfactory.factory import Factory
+from autopyfactory.configloader import FactoryConfigLoader
+from autopyfactory.exceptions import FactoryConfigurationFailure
 
 
 def main():
@@ -45,7 +46,7 @@ def main():
   This program is licenced under the GPL, as set out in LICENSE file.
 
   Author(s):
-    Graeme A Stewart <g.stewart@physics.gla.ac.uk>, Peter Love <p.love@lancaster.ac.uk>
+    Graeme A Stewart <g.stewart@physics.gla.ac.uk>, Peter Love <p.love@lancaster.ac.uk>, John Hover <jhover@bnl.gov>
  ''', version="%prog $Id: factory.py 174 2010-04-10 20:17:11Z graemes $")
 
     parser.add_option("--verbose", "--debug", dest="logLevel", default=logging.INFO,
@@ -85,7 +86,8 @@ def main():
 
     # Create config
     if options.confFiles != None:
-        config = safeConfigParser(options.confFiles)
+        config = SafeConfigParser()
+        readfiles = config.read(options.confFiles)
        
         
     # Create and run Factory object...
