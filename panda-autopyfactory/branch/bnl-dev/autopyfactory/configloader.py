@@ -21,9 +21,8 @@ from autopyfactory.exceptions import FactoryConfigurationFailure
 
 class ConfigLoader(object):
     
-    def __init__(self, configFiles, loglevel):
-        self.configMessages = logging.getLogger('main.factory.conf')
-        self.configMessages.debug('Factory configLoader class initialised.')
+    def __init__(self, configFiles, loglevel=logging.DEBUG):
+        self.log = logging.getLogger('main.configloader')
         self.configFiles = configFiles
         self.loadConfig()
 
@@ -38,19 +37,6 @@ class ConfigLoader(object):
                 myDict[k] = True
             elif isinstance(v, str) and v.isdigit():
                 myDict[k] = int(v)
-
-
-    def _checkMandatoryValues(self):
-        '''Check we have a sane configuration'''
-        mustHave = {'Factory' : ('factoryOwner', 'factoryId'),
-                    'Pilots' : ('executable', 'baseLogDir', 'baseLogDirUrl',),
-                    'QueueDefaults' : () }
-        for section in mustHave.keys():
-            if not self.config.has_section(section):
-                raise FactoryConfigurationFailure, 'Configuration files %s have no section %s (mandatory).' % (self.configFiles, section)
-            for option in mustHave[section]:
-                if not self.config.has_option(section, option):
-                    raise FactoryConfigurationFailure, 'Configuration files %s have no option %s in section %s (mandatory).' % (self.configFiles, option, section)
 
 
     def _validateQueue(self, queue):
@@ -82,9 +68,18 @@ class ConfigLoader(object):
                     self.config.set(section, k, v)
                     self.configMessages.debug('Set default value for %s in section %s to "%s".' % (k, section, v))
 
-     
+
+  
+
+class FactoryConfigLoader(ConfigLoader):
+
+    def loadConfig(self):
+        # Little bit of sanity...
+        if not os.path.isfile(self.config.get('Pilots', 'executable')):
+            raise FactoryConfigurationFailure, 'Pilot executable %s does not seem to be a readable file.' % self.config.get('Pilots', 'executable')
 
 
+    def _statConfigs(self):
         # Finally, stat the conf file(s) so we can tell if they changed
         try:
             self.configFileMtime = dict()
@@ -106,18 +101,23 @@ class ConfigLoader(object):
                 self.configMessages.error('Failed to stat my configuration file %s, where did you hide it? %s' % (confFile, errMsg))
 
 
-  
-
-class FactoryConfigLoader(ConfigLoader):
-
-    def loadConfig(self):
-        # Little bit of sanity...
-        if not os.path.isfile(self.config.get('Pilots', 'executable')):
-            raise FactoryConfigurationFailure, 'Pilot executable %s does not seem to be a readable file.' % self.config.get('Pilots', 'executable')
-
 
     
 class QueueConfigLoader(ConfigLoader):
+
+
+    def _checkMandatoryValues(self):
+        '''Check we have a sane configuration'''
+        mustHave = {'Factory' : ('factoryOwner', 'factoryId'),
+                    'Pilots' : ('executable', 'baseLogDir', 'baseLogDirUrl',)
+                    }
+        for section in mustHave.keys():
+            if not self.config.has_section(section):
+                raise FactoryConfigurationFailure, 'Configuration files %s have no section %s (mandatory).' % (self.configFiles, section)
+            for option in mustHave[section]:
+                if not self.config.has_option(section, option):
+                    raise FactoryConfigurationFailure, 'Configuration files %s have no option %s in section %s (mandatory).' % (self.configFiles, option, section)
+
 
 
     def _configurationDefaults(self):
