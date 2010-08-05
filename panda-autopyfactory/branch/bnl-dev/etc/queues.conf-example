@@ -44,8 +44,8 @@
 #pilotlimit = None
 #transferringlimit = 3000
 #user = None
-3cloud = UK
-#country = None
+cloud = US
+country = US
 #group = None
 
 ## Set the server and port to contact for jobs

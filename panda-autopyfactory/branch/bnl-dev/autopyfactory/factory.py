@@ -21,7 +21,13 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import os, os.path, sys, logging, commands, time, string, re
+import os
+import sys
+import logging
+import commands
+import time
+import string
+import re
 
 from autopyfactory.exceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.configloader import FactoryConfigLoader
@@ -318,28 +324,7 @@ class Factory(object):
                 self.factoryMessages.error('Panda status polling failure: %s', errMsg)
                 self.factoryMessages.error('Will sleep and carry on.')
 
-    def _convertURItoReader(self, uri):
-        '''
-        Takes a URI string, opens it, and returns a filelike object of its contents.
-        
-        '''
-        self.log.debug("Converting %s ..." % uri)        
-        try:
-            uri = uri.strip()
-            opener = urllib2.build_opener()
-            urllib2.install_opener( opener )
-            uridata = urllib2.urlopen( uri )
-            firstLine = uridata.readline().strip()
-            if firstLine[0] == "<":
-                raise Exception("First character was '<'. Probably a Proxy error.")
-            reader = urllib2.urlopen( hostsURI )
-        
-        except Exception:  
-            errMsg = "Couldn't find URI %s (use file://... or http://... format)" % uri
-            self.log.error(errMsg)
-            sys.exit(0)
-        self.log.debug("Success. Returning reader." )
-        return reader
+
         
 
 class PandaQueue(object):

@@ -20,6 +20,10 @@ from autopyfactory.exceptions import FactoryConfigurationFailure
 
 
 class ConfigLoader(object):
+    '''
+    Base class of configloader. Handles file/URI storage
+        
+    '''
     
     def __init__(self, configFiles, loglevel=logging.DEBUG):
         self.log = logging.getLogger('main.configloader')
@@ -52,13 +56,23 @@ class ConfigLoader(object):
         # Maintain case sensitivity in keys
         self.config.optionxform = str
         self.configMessages.debug('Reading configuration files %s' % self.configFiles)
-        readConfigFiles = self.config.read(self.configFiles)
-        if (len(readConfigFiles) != len(self.configFiles)):
-            unreadConfigs = []
-            for file in self.configFiles:
-                if not file in readConfigFiles:
-                    unreadConfigs.append(file)
-            raise FactoryConfigurationFailure, 'Failed to open the following configuration files: %s' % unreadConfigs
+        readConfigFiles = []
+        unreadConfigFiles = []
+        for f in self.configFiles:
+            try:
+                if _isURI(f):
+                    fp = _convertURItoReader(f)
+                    self.config.readfp(fp)
+                else:
+                    fp = open(f)
+                    self.config.readfp(fp)
+                readConfigFiles.append(f)
+            except:
+                unreadConfigFiles.append(f)
+        self.configMessages.debug('Successfully read config files %s' % readConfigFiles)    
+        if len(unreadConfigFiles > 0):
+            self.configMessages.warn('Failed to read config files %s' % unreadConfigFiles)
+
         self._checkMandatoryValues()
         configDefaults = self._configurationDefaults()
 
@@ -69,11 +83,54 @@ class ConfigLoader(object):
                     self.configMessages.debug('Set default value for %s in section %s to "%s".' % (k, section, v))
 
 
+    def _isURI(self, itempath):
+        '''
+        Tests to see if given path is a URI or filename. file:// http:// 
+        (No https:// yet). 
+        
+        '''
+        isuri = False
+        itempath = itempath.strip()
+        head = itempath[:7].lower()
+        if head == "file://" or head == "http://":
+            isuri = True
+        return isuri
+        
+        
+
+    def _convertURItoReader(self, uri):
+        '''
+        Takes a URI string, opens it, and returns a filelike object of its contents.
+        
+        '''
+        self.log.debug("Converting %s ..." % uri)        
+        try:
+            uri = uri.strip()
+            opener = urllib2.build_opener()
+            urllib2.install_opener( opener )
+            uridata = urllib2.urlopen( uri )
+            firstLine = uridata.readline().strip()
+            if firstLine[0] == "<":
+                raise Exception("First character was '<'. Probably a Proxy error.")
+            reader = urllib2.urlopen( hostsURI )
+        
+        except Exception:  
+            errMsg = "Couldn't find URI %s (use file://... or http://... format)" % uri
+            self.log.error(errMsg)
+            sys.exit(0)
+        self.log.debug("Success. Returning reader." )
+        return reader
   
 
 class FactoryConfigLoader(ConfigLoader):
+    '''
+    ConfigLoader for factory instance parameters
+    
+    
+    '''
 
     def loadConfig(self):
+        super(FactoryConfigLoader, self).loadConfig()
         # Little bit of sanity...
         if not os.path.isfile(self.config.get('Pilots', 'executable')):
             raise FactoryConfigurationFailure, 'Pilot executable %s does not seem to be a readable file.' % self.config.get('Pilots', 'executable')
@@ -104,59 +161,14 @@ class FactoryConfigLoader(ConfigLoader):
 
     
 class QueueConfigLoader(ConfigLoader):
-
-
-    def _checkMandatoryValues(self):
-        '''Check we have a sane configuration'''
-        mustHave = {'Factory' : ('factoryOwner', 'factoryId'),
-                    'Pilots' : ('executable', 'baseLogDir', 'baseLogDirUrl',)
-                    }
-        for section in mustHave.keys():
-            if not self.config.has_section(section):
-                raise FactoryConfigurationFailure, 'Configuration files %s have no section %s (mandatory).' % (self.configFiles, section)
-            for option in mustHave[section]:
-                if not self.config.has_option(section, option):
-                    raise FactoryConfigurationFailure, 'Configuration files %s have no option %s in section %s (mandatory).' % (self.configFiles, option, section)
-
-
-
-    def _configurationDefaults(self):
-        '''Define default configuration parameters for autopyfactory instances'''
-        defaults = {}
-        try:
-            defaults = { 'Factory' : { 'condorUser' : os.environ['USER'], }}
-        except KeyError:
-            # Non-login shell - you'd better set it yourself
-            defaults = { 'Factory' : { 'condorUser' : 'unknown', }}
-        defaults['Factory']['schedConfigPoll'] = '5'
-        return defaults
-
-
-    def reloadSchedConfig(self):
-        '''Reload queue data from schedconfig'''
-        self.configMessages.debug('Reloading schedconfig values for my queues.')
-        for queue, queueParameters in self.queues.iteritems():
-            schedConfig = self._loadQueueData(queueParameters['nickname'])
-            if schedConfig == None:
-                self.configMessages.warning('Failed to get schedconfig data for %s - leaving queue unchanged.' % queue)
-                continue
-            self._pythonify(schedConfig)
-            for key, value in schedConfig.iteritems():
-                if self.queues[queue]['override'] and self.config.has_option(queue, key):
-                    self.configMessages.warning('Queue %s has override enabled for %s, statically set to %s ignoring schedconfig value (%s).' % 
-                        (queue, key, self.queues[queue][key], value))
-                    continue                
-                if key in queueParameters and queueParameters[key] != value:
-                    self.configMessages.info('New schedConfig value for %s on %s (%s)' % (key, queue, value))
-                    queueParameters[key] = value
-                else:
-                    self.configMessages.debug('schedConfig value for %s on %s unchanged (%s)' % (key, queue, value))
-            # Sanity check queue
-            self._validateQueue(queue)
-
+    '''
+    ConfigLoader for queue-related parameters. Since queue config sources can be URI, we have \
+    to check whether they are 'stat'-able or not. 
+        
+    '''
 
     def loadConfig(self):
-        
+        super(QueueConfigLoader, self).loadConfig()
         # List of field names to update to their new schedconfig values (Oracle column names 
         # are case insensitive, so used lowercase here)
         deprecatedKeys = {'pilotDepth' : 'nqueue',
@@ -287,6 +299,60 @@ class QueueConfigLoader(ConfigLoader):
         # the information they require ("Kill all humans!")
         self.queueKeys = self.queues.keys()
         self.queueKeys.sort()
+
+
+
+
+    def _checkMandatoryValues(self):
+        '''Check we have a sane configuration'''
+        mustHave = {'Factory' : ('factoryOwner', 'factoryId'),
+                    'Pilots' : ('executable', 'baseLogDir', 'baseLogDirUrl',)
+                    }
+        for section in mustHave.keys():
+            if not self.config.has_section(section):
+                raise FactoryConfigurationFailure, 'Configuration files %s have no section %s (mandatory).' % (self.configFiles, section)
+            for option in mustHave[section]:
+                if not self.config.has_option(section, option):
+                    raise FactoryConfigurationFailure, 'Configuration files %s have no option %s in section %s (mandatory).' % (self.configFiles, option, section)
+
+
+
+    def _configurationDefaults(self):
+        '''Define default configuration parameters for autopyfactory instances'''
+        defaults = {}
+        try:
+            defaults = { 'Factory' : { 'condorUser' : os.environ['USER'], }}
+        except KeyError:
+            # Non-login shell - you'd better set it yourself
+            defaults = { 'Factory' : { 'condorUser' : 'unknown', }}
+        defaults['Factory']['schedConfigPoll'] = '5'
+        return defaults
+
+
+    def reloadSchedConfig(self):
+        '''Reload queue data from schedconfig'''
+        self.configMessages.debug('Reloading schedconfig values for my queues.')
+        for queue, queueParameters in self.queues.iteritems():
+            schedConfig = self._loadQueueData(queueParameters['nickname'])
+            if schedConfig == None:
+                self.configMessages.warning('Failed to get schedconfig data for %s - leaving queue unchanged.' % queue)
+                continue
+            self._pythonify(schedConfig)
+            for key, value in schedConfig.iteritems():
+                if self.queues[queue]['override'] and self.config.has_option(queue, key):
+                    self.configMessages.warning('Queue %s has override enabled for %s, statically set to %s ignoring schedconfig value (%s).' % 
+                        (queue, key, self.queues[queue][key], value))
+                    continue                
+                if key in queueParameters and queueParameters[key] != value:
+                    self.configMessages.info('New schedConfig value for %s on %s (%s)' % (key, queue, value))
+                    queueParameters[key] = value
+                else:
+                    self.configMessages.debug('schedConfig value for %s on %s unchanged (%s)' % (key, queue, value))
+            # Sanity check queue
+            self._validateQueue(queue)
+
+
+
 
         
 
