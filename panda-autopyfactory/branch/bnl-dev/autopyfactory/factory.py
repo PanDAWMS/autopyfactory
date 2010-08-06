@@ -28,6 +28,7 @@ import commands
 import time
 import string
 import re
+import threading
 
 from autopyfactory.exceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.configloader import FactoryConfigLoader
@@ -331,6 +332,7 @@ class PandaQueue(object):
     
     def __init__(self, config, section ):
         self.config = config
+        self.proxymgr = ProxyManager()
         
         
 
@@ -368,9 +370,31 @@ class CondorStatus(object):
     def __init__(self):
         pass
 
-class ProxyManager(object):
-    def __init__(self, certpath, keypath, proxypath, interval):
-        pass
+class ProxyManager(threading.Thread):
+    '''
+    Checks, creates, and renews the VOMS proxy used by a queue. 
+    
+    '''
+    
+    def __init__(self, config, section):
+        self.gridproxy = config.get(section,'gridProxy' ) 
+        self.vomsproxy = config.get(section,'vomsProxy')
+        self.vorole = config.get(section, 'vorole' ) 
+        self.lifetime = config.get(section, 'vomsLifetime')
+        self.interval = config.get(section, 'vomsCheck')
         
+        
+    def run(self):
+        '''
+        Main thread loop. 
+        '''
+
+class LogCleaner(object):
+    '''
+    Cleans Condor-G logs created by a queue. 
+    
+    '''
+    
+    def __init__(self, config, section ):        
         
             

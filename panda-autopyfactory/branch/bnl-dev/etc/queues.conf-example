@@ -54,10 +54,25 @@ country = US
 server = https://pandaserver.cern.ch
 port = 25443
 
-## By default we assume pilots go with production role - note default location.
 ## Note that the analysisGridProxy is the default set for ANALY_ queues - very
 ## useful for mixed mode factories.
-# gridProxy = /tmp/prodRoleProxy
+
+# Comma-separated list of vo+group+role attributes to request
+# vorole=/atlas/usatlas/Role=production,/atlas/Role=production
+vorole=/atlas/usatlas/Role=production
+
+# Long-lived grid proxy to create VOMS proxy from. 
+gridProxy = /tmp/x509up_u500
+
+# Output file for VOMS proxy
+vomsProxy = /tmp/prodProxy
+
+# How long a VOMS proxy to request
+vomsLifetime=96:00
+
+# Interval to check proxy at, in minutes
+vomsheck = 180 
+
 # analysisGridProxy = /tmp/pilotRoleProxy
 
 ## Individual queue configurations

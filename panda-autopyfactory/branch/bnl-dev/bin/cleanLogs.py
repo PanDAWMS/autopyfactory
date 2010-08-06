@@ -5,7 +5,14 @@
 # $Id: cleanLogs.py 154 2010-03-19 13:02:16Z graemes $
 #
 
-import os, os.path, sys, getopt, logging, commands, datetime, re, ConfigParser
+import os
+import sys
+import getopt
+import logging
+import commands
+import datetime
+import re
+import ConfigParser
 
 # Global logging to console
 global console
