@@ -176,7 +176,7 @@ class FactoryConfigLoader(ConfigLoader):
     
 class QueueConfigLoader(ConfigLoader):
     '''
-    ConfigLoader for queue-related parameters. Since queue config sources can be URI, we have \
+    ConfigLoader for queue-related parameters. Since queue config sources can be URI, we have 
     to check whether they are 'stat'-able or not. 
         
     '''
