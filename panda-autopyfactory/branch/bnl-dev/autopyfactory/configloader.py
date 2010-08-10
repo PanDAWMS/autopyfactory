@@ -178,7 +178,6 @@ class QueueConfigLoader(ConfigLoader):
     '''
     ConfigLoader for queue-related parameters. Since queue config sources can be URI, we have 
     to check whether they are 'stat'-able or not. 
-        
     '''
 
     def loadConfig(self):
@@ -193,6 +192,7 @@ class QueueConfigLoader(ConfigLoader):
                           'env': 'environ',
                           'jdl' : 'queue',
                           }
+
 
         # Construct the structured siteData dictionary from the configuration stanzas
         self.queues = {}

@@ -71,7 +71,7 @@ vomsProxy = /tmp/prodProxy
 vomsLifetime=96:00
 
 # Interval to check proxy at, in minutes
-vomsheck = 180 
+vomsCheck = 180 
 
 # analysisGridProxy = /tmp/pilotRoleProxy
 
