@@ -197,8 +197,6 @@ class QueueConfigLoader(ConfigLoader):
         # Construct the structured siteData dictionary from the configuration stanzas
         self.queues = {}
         for queue in self.config.sections():
-            if queue in ('Factory', 'Pilots', 'QueueDefaults'):
-                continue
 
             if not self.config.has_option(queue, 'nickname'):
                 self.configMessages.warning('Configuration section %s has no nickname parameter - ignored.' % queue)

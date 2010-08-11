@@ -15,6 +15,11 @@ factoryId = graeme-UK
 queueConf = file:///home/apf/etc/queue.conf
 #queueconf = file:///etc/apf/queue.conf
 
+# How often to update panda status, in seconds
+pandaCheckInterval = 120   
+
+# How often to update local batch status, in seconds
+batchCheckInterval = 45
 
 [Pilots]
 # Executable is the script which will be run by condor. This can contain
