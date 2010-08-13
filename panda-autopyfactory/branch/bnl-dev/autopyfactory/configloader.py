@@ -35,7 +35,7 @@ from autopyfactory.exceptions import FactoryConfigurationFailure
 
 class ConfigLoader(object):
     '''
-    Base class of configloader. Handles file/URI storage
+    Base class of configloader. Handles file/URI storage.
         
     '''
     
@@ -108,6 +108,8 @@ class ConfigLoader(object):
         head = itempath[:7].lower()
         if head == "file://" or head == "http://":
             isuri = True
+        if head == "https:/":
+            raise FactoryConfigurationFailure, "https:// URI's are not supported yet. Please fix."
         return isuri
         
         
@@ -176,9 +178,12 @@ class FactoryConfigLoader(ConfigLoader):
     
 class QueueConfigLoader(ConfigLoader):
     '''
-    ConfigLoader for queue-related parameters. Since queue config sources can be URI, we have 
-    to check whether they are 'stat'-able or not. 
+    ConfigLoader for queue-related parameters with one QueueConfigLoader per queue. 
+    Since queue config sources can be URI, we have to check whether they are 'stat'-able or not. 
+    Since we have an override=True concept, we have to keep track of which properties came from queconfigs vs. 
+    schedconfig.  
     '''
+
 
     def loadConfig(self):
         super(QueueConfigLoader, self).loadConfig()
@@ -192,7 +197,6 @@ class QueueConfigLoader(ConfigLoader):
                           'env': 'environ',
                           'jdl' : 'queue',
                           }
-
 
         # Construct the structured siteData dictionary from the configuration stanzas
         self.queues = {}

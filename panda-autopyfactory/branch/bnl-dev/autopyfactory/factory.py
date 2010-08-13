@@ -32,6 +32,7 @@ import threading
 
 from autopyfactory.exceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.configloader import FactoryConfigLoader
+from autopyfactory.plugins import * 
 
 import userinterface.Client as Client
 
@@ -51,7 +52,8 @@ class Factory(object):
         self.condorstatus = CondorStatus()
         self.pandastatus = PandaStatus()
         self.factoryMessages.debug('Factory class initialised.')        
-       
+
+ 
        
     def mainLoop(self):
         self.condorstatus.start()
@@ -67,12 +69,6 @@ class Factory(object):
             self.factoryMessages.info('Sleeping %ds' % options.sleepTime)
             time.sleep(options.sleepTime)
             f.updateConfig(cyclesDone)
-
-
-            
-
- 
-
    
 
 
@@ -300,13 +296,23 @@ class PandaQueue(object):
 
 
 
-
-
-
-
-
-
 class CondorStatus(threading.Thread):
+    ''' 
+    
+
+
+
+    '''
+#
+#  Query command used:
+#  condor_q
+#  -constr '(owner=="XXXX") && stringListMember("PANDA_JSID=YYYYY", Environment, " ")'
+#       where XXXX is condorUser
+#
+#
+#
+#
+
     
     def __init__(self, config):
         self.interval = int(config.get('Factory','batchCheckInterval'))
