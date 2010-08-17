@@ -204,7 +204,7 @@ function monping() {
 }
 
 function monpost() {
-  echo Monitor debug begin 14:
+  echo Monitor debug begin 15:
   pwd
   ls -l
   find -name pandaJobData.out
@@ -220,6 +220,8 @@ function monpost() {
 
   # scrape PandaIDs from pilot log
   echo 'SCRAPE: '
+  find -name pilotlog.*
+  cat pilotlog.*
   find -name pilotlog.* -exec egrep ^PandaID= {} \; 
 #  for i in ii; do
 #    echo data: $i

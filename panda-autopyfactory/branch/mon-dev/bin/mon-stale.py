@@ -153,11 +153,9 @@ def main():
 
     # update AWOL jobs via webservice
     s = Signal(_AWOLURL)
-    # simply tell webservice about awol jobs
+    # tell webservice about awol jobs
     for cid in awolcids:
         postdata = "fid=%s&cid=%s" % (_THISFID, cid)
-        msg = "postdata: %s" % postdata
-        logging.debug(msg)
         s.post(postdata)
 
     # update state via webservice
@@ -169,8 +167,6 @@ def main():
         gs = state['globusstate']
 
         postdata = "fid=%s&cid=%s&js=%s&gs=%s" % (_THISFID, cid, js, gs)
-        msg = "postdata: %s" % postdata
-        logging.debug(msg)
     
         s.post(postdata)
 

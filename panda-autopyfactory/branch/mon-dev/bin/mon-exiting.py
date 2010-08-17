@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
 """
-Cronjob on condor host
+Cronjob on condor host to move job state from EXITING to 
+and end-state (either DONE or FAULT)
 1. get list of CID in state EXITING (this factory only)
 2. check jobs with condor_q and condor_history
 3. update states
@@ -14,13 +15,14 @@ import logging
 import pycurl
 import sys
 import StringIO
+import time
 from optparse import OptionParser
 _THISFID = 'peter-UK-devel'
 _BASEURL = 'http://py-dev.lancs.ac.uk:8000/mon/'
 #_BASEURL = 'http://py-dev.lancs.ac.uk/mon/'
 _STURL = _BASEURL + 'st/'
-_AWOLURL = _BASEURL + 'awol/'
 _CIDURL = _BASEURL + 'cid/' + _THISFID
+_AWOLURL = _BASEURL + 'awol/'
 
 class Signal:
     """
@@ -107,8 +109,10 @@ def main():
     form += ' -format "jobstate=%d " JobStatus -format "globusstate=%d " GlobusStatus'
     form += ' -format "gk=%s" MATCH_gatekeeper_url -format "-%s\\n" MATCH_queue' 
     
+    # outputs is a list of condor_q info for each EXITING job
     outputs = []
     awolcids = []
+    tstart = time.time()
     for cid in pending:
         cmd = "condor_q %s %s" % (form, cid)
         (exitcode, output) = commands.getstatusoutput(cmd)
@@ -126,8 +130,7 @@ def main():
                 awolcids.append(cid)
                 logging.warn("AWOL: %sjob/%s/%s" % (_BASEURL, _THISFID, cid))
 
-    logging.debug("Current number of found jobs: %d" % len(outputs))
-    logging.debug("Current number of AWOL jobs: %d" % len(awolcids))
+    tend = time.time()
 
     # build list of current job states
     # states is a dict with keys: gk, jobstate, globusstate, cid
@@ -150,8 +153,6 @@ def main():
     # simply tell webservice about awol jobs
     for cid in awolcids:
         postdata = "fid=%s&cid=%s" % (_THISFID, cid)
-        msg = "postdata: %s" % postdata
-        logging.debug(msg)
         s.post(postdata)
 
     # update state via webservice
@@ -162,15 +163,16 @@ def main():
         js = state['jobstate']
         gs = state['globusstate']
 
+        # js=1 (idle) js=2 (running)
         if js not in ['1','2']:
             postdata = "fid=%s&cid=%s&js=%s&gs=%s" % (_THISFID, cid, js, gs)
-            msg = "postdata: %s" % postdata
-            logging.debug(msg)
             s.post(postdata)
         else:
             msg='EXITING, condor running, slow middleware: %s_%s js=%s, gs=%s' % (_THISFID, cid, js, gs)
             logging.debug(msg)
+    
+    logging.debug("Current number of found jobs: %d" % len(outputs))
+    logging.debug("Current number of AWOL jobs: %d" % len(awolcids))
 
 if __name__ == "__main__":
     sys.exit(main())
-
