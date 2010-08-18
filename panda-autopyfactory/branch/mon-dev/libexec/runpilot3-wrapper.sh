@@ -22,11 +22,19 @@ EOF
 function find_lfc_compatible_python() {
     ## Try to figure out what python to run
 
-    # We first look for a 32bit python in the ATLAS software area
-    # which is usually more up to date than the OS version.
-    # This python snippet defines the correct comparison of the rel_X-Y 
-    pybin=$(ls $VO_ATLAS_SW_DIR/prod/releases/rel_[0-9]*-[0-9]*/sw/lcg/external/Python/*/*/bin/python | python -c'
-import sys, re
+    # We _do_not_ now try to use python from the ATLAS release
+    # as at this point we do not know what version of python to
+    # use or what architecture. Therefore the strategy now is to
+    # use the site environment in which to run the pilot and
+    # let the pilot setup the correct ATLAS environment for the
+    # job.
+    
+    # First try python2.6 (available from EPEL for SL5)
+    pybin=python2.6
+    lfc_test $pybin
+    if [ $? = "0" ]; then
+        return 0
+    fi    
 
 def compareVersion(path):
     m = re.search("rel_(\d+)-(\d+)", path)
@@ -266,12 +274,10 @@ else
     echo This is not a user pilot
 fi
 
-# Updated 2009-07 to prefer TMPDIR over EDG_WL_SCRATCH, which is
-# really now an anachronism from the lcg-RB
+# If we have TMPDIR defined, then move into this directory
+# If it's not defined, then stay where we are
 if [ -n "$TMPDIR" ]; then
     cd $TMPDIR
-elif [ -n "$EDG_WL_SCRATCH" ]; then
-    cd $EDG_WL_SCRATCH
 fi
 templ=$(pwd)/condorg_XXXXXXXX
 temp=$(mktemp -d $templ)
@@ -389,8 +395,15 @@ scratch=`pwd`
 echo "---- Ready to run pilot ----"
 echo "My Arguments: $@"
 
+# If we know the pilot type then set this
+if [ -n "$PILOT_TYPE" ]; then
+    pilot_args="-d $scratch $@ -i $PILOT_TYPE"
+else
+    pilot_args="-d $scratch $@"
+fi
+
 # Prd server and pass arguments
-cmd="$pybin pilot.py -d $scratch $@"
+cmd="$pybin pilot.py $pilot_args"
 
 echo cmd: $cmd
 $cmd
