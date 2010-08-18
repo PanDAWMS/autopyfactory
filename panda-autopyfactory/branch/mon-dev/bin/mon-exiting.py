@@ -20,7 +20,9 @@ from optparse import OptionParser
 _THISFID = 'peter-UK-devel'
 _BASEURL = 'http://py-dev.lancs.ac.uk:8000/mon/'
 #_BASEURL = 'http://py-dev.lancs.ac.uk/mon/'
+# url to update condor state
 _STURL = _BASEURL + 'st/'
+# url to get list of condorid in EXITING state
 _CIDURL = _BASEURL + 'cid/' + _THISFID
 _AWOLURL = _BASEURL + 'awol/'
 
@@ -58,6 +60,46 @@ class Signal:
         self.buffer.seek(0)
         msg = self.buffer.read()
         logging.debug(msg)
+
+def states(line):
+    # build list of current job states
+    # states is a dict with keys: gk, jobstate, globusstate, cid
+    states = []
+    items = line.split()
+    values = {}
+    for item in items:
+        try:
+            (key, value) = item.split('=', 1)
+            values[key] = value
+        except ValueError:
+            logging.warn('Bad condor_q output: %s' % line)
+            continue
+
+    return values
+
+def updatestate(state):
+    # update state via webservice
+    s = Signal(_STURL)
+#    gk = state['gk']
+    cid = state['cid']
+    js = state['jobstate']
+    gs = state['globusstate']
+
+    # js=1 (idle) js=2 (running)
+    if js not in ['1','2']:
+        postdata = "fid=%s&cid=%s&js=%s&gs=%s" % (_THISFID, cid, js, gs)
+        s.post(postdata)
+    else:
+        msg='EXITING, condor running, slow middleware: %s_%s js=%s, gs=%s' % (_THISFID, cid, js, gs)
+        logging.debug(msg)
+
+def updateawol(cid):     
+    # update AWOL jobs via webservice
+    logging.warn("AWOL: %sjob/%s/%s" % (_BASEURL, _THISFID, cid))
+    s = Signal(_AWOLURL)
+    # simply tell webservice about awol jobs
+    postdata = "fid=%s&cid=%s" % (_THISFID, cid)
+    s.post(postdata)
 
 def main():
     usage = "usage: %prog [options]"
@@ -125,51 +167,15 @@ def main():
             logging.debug("condor_history %s: %s" % (cid, output))
             if output:
                 outputs.append(output)
+                state = states(output)
+                updatestate(state)
             else:
                 # cid not found by condor_q or condor_history
                 awolcids.append(cid)
-                logging.warn("AWOL: %sjob/%s/%s" % (_BASEURL, _THISFID, cid))
+                updateawol(cid)
 
     tend = time.time()
 
-    # build list of current job states
-    # states is a dict with keys: gk, jobstate, globusstate, cid
-    states = []
-    for line in outputs:
-        items = line.split()
-        values = {}
-        for item in items:
-            try:
-                (key, value) = item.split('=', 1)
-                values[key] = value
-            except ValueError:
-                logging.warn('Bad condor_q output: %s' % line)
-                continue
-        states.append(values)
-     
-
-    # update AWOL jobs via webservice
-    s = Signal(_AWOLURL)
-    # simply tell webservice about awol jobs
-    for cid in awolcids:
-        postdata = "fid=%s&cid=%s" % (_THISFID, cid)
-        s.post(postdata)
-
-    # update state via webservice
-    s = Signal(_STURL)
-    for state in states:
-        gk = state['gk']
-        cid = state['cid']
-        js = state['jobstate']
-        gs = state['globusstate']
-
-        # js=1 (idle) js=2 (running)
-        if js not in ['1','2']:
-            postdata = "fid=%s&cid=%s&js=%s&gs=%s" % (_THISFID, cid, js, gs)
-            s.post(postdata)
-        else:
-            msg='EXITING, condor running, slow middleware: %s_%s js=%s, gs=%s' % (_THISFID, cid, js, gs)
-            logging.debug(msg)
     
     logging.debug("Current number of found jobs: %d" % len(outputs))
     logging.debug("Current number of AWOL jobs: %d" % len(awolcids))

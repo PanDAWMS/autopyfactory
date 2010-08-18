@@ -161,10 +161,17 @@ def main():
     # update state via webservice
     s = Signal(_FLAGURL)
     for state in states:
-        gk = state['gk']
-        cid = state['cid']
-        js = state['jobstate']
-        gs = state['globusstate']
+        try:
+#            gk = state['gk']
+            cid = state['cid']
+            js = state['jobstate']
+            gs = state['globusstate']
+        except KeyError:
+            msg = "gk not present? Benign."
+            logging.debug(msg)
+            msg = str(state.items())
+            logging.debug(msg)
+
 
         postdata = "fid=%s&cid=%s&js=%s&gs=%s" % (_THISFID, cid, js, gs)
     
