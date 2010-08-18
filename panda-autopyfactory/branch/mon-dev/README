@@ -23,15 +23,14 @@ on the site. If the site has no activated jobs the factory idles the
 site by sending one pilot.
 
 
-How the pilot wapper works:
+How the pilot wrapper works:
 
 The default wrapper is called runpilot3-wrapper.sh. Essentially
 it changes to a proper working directory, fetches the pilot tarball
-(delivered as a uuencoded appenage to the script or downloaded via
-curl), prints out some useful debug environment information, finds a
-working python for the LFC plugin, then fires off the pilot
-code. Recently added features include sourcing the DDM setup code
-and the ATLAS local site setup scripts.
+(downloaded via curl), prints out some useful debug environment 
+information, finds a working python for the LFC plugin, then fires 
+off the pilot code. Recently added features include sourcing the DDM 
+setup code and the ATLAS local site setup scripts.
 
 
 Building
