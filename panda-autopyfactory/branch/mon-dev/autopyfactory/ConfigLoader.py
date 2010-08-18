@@ -3,7 +3,7 @@
 # $Id$
 #
 
-import os, sys, logging
+import os, sys, logging, re
 from ConfigParser import SafeConfigParser, NoSectionError
 
 from autopyfactory.Exceptions import FactoryConfigurationFailure
@@ -101,9 +101,9 @@ class factoryConfigLoader:
         if 'X509_USER_PROXY' in os.environ:
             defaults['QueueDefaults']['gridProxy'] = os.environ['X509_USER_PROXY']
         else:
-            defaults['QueueDefaults']['gridProxy'] = '/tmp/x509up_u%d' % (os.getuid())
+            defaults['QueueDefaults']['gridProxy'] = '/tmp/prodRoleProxy'
         # analysisGridProxy is the default for any ANALY site
-        defaults['QueueDefaults']['analysisGridProxy'] = defaults['QueueDefaults']['gridProxy']
+        defaults['QueueDefaults']['analysisGridProxy'] = '/tmp/pilotRoleProxy'
         
         return defaults
 
@@ -134,8 +134,13 @@ class factoryConfigLoader:
         # Maintain case sensitivity in keys
         self.config.optionxform = str
         self.configMessages.debug('Reading configuration files %s' % self.configFiles)
-        self.config.read(self.configFiles)
-
+        readConfigFiles = self.config.read(self.configFiles)
+        if (len(readConfigFiles) != len(self.configFiles)):
+            unreadConfigs = []
+            for file in self.configFiles:
+                if not file in readConfigFiles:
+                    unreadConfigs.append(file)
+            raise FactoryConfigurationFailure, 'Failed to open the following configuration files: %s' % unreadConfigs
         self._checkMandatoryValues()
         configDefaults = self._configurationDefaults()
 
@@ -157,6 +162,7 @@ class factoryConfigLoader:
                           'pilotLimit' : 'pilotlimit',
                           'transferringLimit' : 'transferringlimit',
                           'env': 'environ',
+                          #'jdl' : 'queue',
                           }
 
         # Construct the structured siteData dictionary from the configuration stanzas
@@ -224,6 +230,30 @@ class factoryConfigLoader:
                                                     (queue, key, self.queues[queue][key], value))
                         continue
                     self.queues[queue][key] = value
+                
+            # Hack for CREAM CEs - would like to use the 'system' field in schedconfig for this
+            if self.queues[queue]['jdl'].find('/cream') > 0:
+                self.configMessages.debug('Detected CREAM CE for queue %s' % (queue))
+                self.queues[queue]['_isCream'] = True
+                match1 = re.match(r'([^/]+)/cream-(\w+)', self.queues[queue]['jdl'])
+                if match1 != None:
+                    # See if the port is explicitly given - if not assume 8443
+                    # Currently condor needs this specified in the JDL
+                    match2 = re.match(r'^([^:]+):(\d+)$', match1.group(1))
+                    if match2:
+                        self.queues[queue]['_creamHost'] = match2.group(1)
+                        self.queues[queue]['_creamPort'] = int(match2.group(2))
+                    else:
+                        self.queues[queue]['_creamHost'] = match1.group(1)
+                        self.queues[queue]['_creamPort'] = 8443
+                    self.queues[queue]['_creamBatchSys'] = match1.group(2)
+                else:
+                    self.configMessages.error('Queue %s was detected as CREAM, but failed re match.' % (queue))
+                    del self.queues[queue]
+                    continue
+            else:
+                self.queues[queue]['_isCream'] = False
+
             
             # Sanity check queue
             self._validateQueue(queue)
