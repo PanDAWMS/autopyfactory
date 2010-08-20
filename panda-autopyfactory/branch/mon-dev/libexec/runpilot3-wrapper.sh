@@ -36,52 +36,6 @@ function find_lfc_compatible_python() {
         return 0
     fi    
 
-def compareVersion(path):
-    m = re.search("rel_(\d+)-(\d+)", path)
-    if m:
-        # Return [X, Y] for rel_X-Y
-        return [int(x) for x in m.groups()]
-    else:
-        # Failed path
-        return [0, 0]
-
-paths=[]
-for path in sys.stdin:
-    path = path.strip()
-    paths.append(path)
-
-paths.sort(key=compareVersion)
-print paths[-1]')
-
-    if [ -z "$pybin" ]; then
-        echo "ERROR: No python found in ATLAS SW release - site is probably very broken"
-    else
-        pydir=${pybin%/bin/python}
-        echo Highest versioned ATLAS python is in $pydir
-        ORIG_PATH=$PATH
-        ORIG_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-        ORIG_PYTHONPATH=$PYTHONPATH
-        # Mangle the PYTHONPATH to try and sneak the 32 bit path back in,
-        # i.e., make lib64/python -> lib/python
-        if file $pybin | grep "32-bit" > /dev/null; then
-            PYTHONPATH=$(echo $PYTHONPATH | sed 's/lib64/lib/g')
-        fi
-        PATH=$pydir/bin:$PATH
-        LD_LIBRARY_PATH=$pydir/lib:$LD_LIBRARY_PATH
-        lfc_test $pybin
-        if [ $? = "0" ]; then
-            echo ATLAS python looks good. Set:
-            echo PYTHONPATH=$PYTHONPATH
-            echo PATH=$PATH
-            echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-            return 0
-        fi
-        # Else reset paths
-        PATH=$ORIG_PATH
-        LD_LIBRARY_PATH=$ORIG_LD_LIBRARY_PATH
-        PYTHONPATH=$ORIG_PYTHONPATH
-    fi
-
     # On many sites python now works just fine (m/w also now
     # distributes the LFC plugin in 64 bit)
     pybin=python
@@ -146,27 +100,28 @@ EOF
     return 0
 }
 
-
 function get_pilot_http() {
     # If you define the environment variable PILOT_HTTP_SOURCES then
     # loop over those servers. Otherwise use CERN, with Glasgow as a fallback.
     # N.B. an RC pilot is chosen once every 100 downloads for production.
     if [ -z "$PILOT_HTTP_SOURCES" ]; then
     if [ $(($RANDOM%100)) = "0" -a $USER_PILOT = "0" ]; then
-        echo "WARNING: Release canditate pilot will be used."
+        echo "DEBUG: Release candidate pilot will be used."
         PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode-rc.tar.gz"
+        PILOT_TYPE=RC
     else
         PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
+        PILOT_TYPE=PR
     fi
     fi
     for source in $PILOT_HTTP_SOURCES; do
-        echo "Trying to download pilot from $source..."
-        curl --connect-timeout 30 --max-time 180 -sS $source | tar -xzf -
-        if [ -f pilot.py ]; then
-            echo "Downloaded pilot from $source"
-            return 0
-        fi
-        echo "Download from $source failed."
+    echo "Trying to download pilot from $source..."
+    curl --connect-timeout 30 --max-time 180 -sS $source | tar -xzf -
+    if [ -f pilot.py ]; then
+        echo "Downloaded pilot from $source"
+        return 0
+    fi
+    echo "Download from $source failed."
     done
     return 1
 }
