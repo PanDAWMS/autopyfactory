@@ -3,6 +3,11 @@ ChangeLog
 
 $Id: CHANGELOG 181 2010-04-10 21:59:00Z graemes $
 
+2010-07-16
+
+* Changed from jdl field in schedconfig to queue, which is a better name and
+  more accurate for condor sites.
+
 2010-06-01
 
 * Changed argument passed to pilot from 'site' to 'siteid', which is correct
