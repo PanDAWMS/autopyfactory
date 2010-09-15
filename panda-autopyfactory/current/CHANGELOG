@@ -3,6 +3,15 @@ ChangeLog
 
 $Id: CHANGELOG 181 2010-04-10 21:59:00Z graemes $
 
+2010-09-15
+
+* Removed deprecated code from runpilot3-wrapper.sh (uudecode and broken
+  site hacks).
+
+* This is the "Time Out of Joint" release. This pilot factory does not 
+  exist. It is a small text file on your computer containing the words
+  "Pilot Factory".
+
 2010-07-24
 
 * Corrected bug where "site" parameter was used instead of "siteid" to get
@@ -25,14 +34,11 @@ $Id: CHANGELOG 181 2010-04-10 21:59:00Z graemes $
   
 * Changed the default source proxy to /tmp/plainProxy.
 
-* Changed handling of deprecated keys to rewrite the configration objects
+* Changed handling of deprecated keys to rewrite the configuration objects
   themselves, which gives more robust and consistent handling. Unknown
   keys are deleted and a warning printed.
   
 * Schedconfig download failures are now errors (not warnings).
-
-* This is the "Crème Fraîche" release. (AKA "I can't believe you're still making
-  schoolboy puns about CREAM".)
 
 2010-06-01
 
