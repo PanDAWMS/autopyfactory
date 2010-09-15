@@ -119,7 +119,7 @@ nickname = ANALY_GLASGOW
 # gatekeeper
 [UKI-SCOTGRID-GLASGOW-testCE]
 nickname = UKI-SCOTGRID-GLASGOW-svr029-atlprd-lcgpbs
-jdl = svr029.gla.scotgrid.ac.uk/jobmanager-lcgpbs
+queue = svr029.gla.scotgrid.ac.uk/jobmanager-lcgpbs
 localqueue = atlprd
 status = test
 nqueue = 1
@@ -130,7 +130,7 @@ override = True
 # into two parts: jdl and queue.
 [ANALY_GLASGOW-svr026]
 nickname = ANALY_GLASGOW
-jdl = svr026.gla.scotgrid.ac.uk/jobmanager-lcgpbs
+queue = svr026.gla.scotgrid.ac.uk/jobmanager-lcgpbs
 localqueue = atlanaly
 override = True
 
@@ -140,6 +140,6 @@ override = True
 # If you don't specify the port then 8443 is assumed.
 [UKI-SCOTGRID-GLASGOW-cream14]
 nickname = UKI-SCOTGRID-GLASGOW-svr014-atlprd-pbs
-jdl = svr014.gla.scotgrid.ac.uk:8443/cream-pbs
+queue = svr014.gla.scotgrid.ac.uk:8443/cream-pbs
 localqueue = atlprd
 override = True
