@@ -79,8 +79,8 @@ class factory:
                         self.config.queues[statusDict['FACTORYQUEUE']]['pilotQueue']['active'] += 1
                     else:
                         self.config.queues[statusDict['FACTORYQUEUE']]['pilotQueue']['inactive'] += 1
-                except KeyError:
-                    self.factoryMessages.debug('Key error from unusual condor status line: %s' % line)
+                except KeyError,e:
+                    self.factoryMessages.debug('Key error from unusual condor status line: %s %s' % (e, line))
             for queue, queueParameters in self.config.queues.iteritems():
                 self.factoryMessages.debug('Condor: %s, %s: pilot status: %s',  queueParameters['siteid'], 
                                            queue, queueParameters['pilotQueue'])

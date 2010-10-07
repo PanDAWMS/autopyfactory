@@ -15,10 +15,12 @@ import sys
 import StringIO
 from optparse import OptionParser
 _THISFID = 'peter-UK-devel'
-_BASEURL = 'http://py-dev.lancs.ac.uk:8000/mon/'
-_FLAGURL = _BASEURL + 'flag/'
+_BASEURL = 'http://py-dev.lancs.ac.uk/mon/'
 _AWOLURL = _BASEURL + 'awol/'
+# url to retrieve old stale jobs
 _CIDURL = _BASEURL + 'old/' + _THISFID
+# url to report stale jobs but only after status update
+_STALEURL = _BASEURL + 'stale/'
 
 class Signal:
     """
@@ -159,19 +161,15 @@ def main():
         s.post(postdata)
 
     # update state via webservice
-    s = Signal(_FLAGURL)
+    s = Signal(_STALEURL)
     for state in states:
         try:
-#            gk = state['gk']
             cid = state['cid']
             js = state['jobstate']
-            gs = state['globusstate']
+            gs = state.get('globusstate',0)
         except KeyError:
-            msg = "gk not present? Benign."
-            logging.debug(msg)
             msg = str(state.items())
             logging.debug(msg)
-
 
         postdata = "fid=%s&cid=%s&js=%s&gs=%s" % (_THISFID, cid, js, gs)
     

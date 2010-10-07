@@ -155,8 +155,6 @@ function set_limits() {
 }
 
 function monping() {
-  echo -n Monitor ID:
-  echo $APFMON | tr A-Za-z N-ZA-Mn-za-m
   echo -n 'Monitor ping: '
   curl -fksS --connect-timeout 10 --max-time 20 ${APFMON}$1/$APFFID/$APFCID/$2
   if [ $? = "0" ]; then
@@ -167,9 +165,10 @@ function monping() {
 }
 
 function monpost() {
-  echo Monitor debug begin 15:
+  echo Monitor debug begin 16:
   pwd
   ls -l
+  echo Finding pandaJobData.out...
   find -name pandaJobData.out
 #  if [ -f pandaJobData.out ]; then
 #    echo -n 'POST: '

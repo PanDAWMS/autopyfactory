@@ -18,8 +18,7 @@ import StringIO
 import time
 from optparse import OptionParser
 _THISFID = 'peter-UK-devel'
-_BASEURL = 'http://py-dev.lancs.ac.uk:8000/mon/'
-#_BASEURL = 'http://py-dev.lancs.ac.uk/mon/'
+_BASEURL = 'http://py-dev.lancs.ac.uk/mon/'
 # url to update condor state
 _STURL = _BASEURL + 'st/'
 # url to get list of condorid in EXITING state
