@@ -80,14 +80,14 @@ function get_pilot_http() {
     # loop over those servers. Otherwise use CERN, with Glasgow as a fallback.
     # N.B. an RC pilot is chosen once every 100 downloads for production.
     if [ -z "$PILOT_HTTP_SOURCES" ]; then
-		if [ $(($RANDOM%100)) = "0" -a $USER_PILOT = "0" ]; then
-	    	echo "DEBUG: Release candidate pilot will be used."
-	    	PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode-rc.tar.gz"
-	    	PILOT_TYPE=RC
-		else
-	    	PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
-	    	PILOT_TYPE=PR
-		fi
+		    if [ $(($RANDOM%100)) = "0" ]; then
+	    	    echo "DEBUG: Release candidate pilot will be used."
+	    	    PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode-rc.tar.gz"
+	    	    PILOT_TYPE=RC
+		    else
+	    	    PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
+	    	    PILOT_TYPE=PR
+		    fi
     fi
     for source in $PILOT_HTTP_SOURCES; do
 		echo "Trying to download pilot from $source..."
@@ -146,16 +146,6 @@ if [ ! -f $me ]; then
     echo "Trouble ahead - cannot find myself. Should I try psychoanalysis?"
 fi
 echo
-
-# Detect user pilots here - necessary for some pilot RC downloads
-echo $@ | grep "user" &> /dev/null
-if [ $? = "0" ]; then
-    USER_PILOT=1
-    echo User pilot detected
-else
-    USER_PILOT=0
-    echo This is not a user pilot
-fi
 
 # If we have TMPDIR defined, then move into this directory
 # If it's not defined, then stay where we are
