@@ -58,11 +58,9 @@ function find_lfc_compatible_python() {
 }
 
 function get_pilot() {
-    # Try different methods of extracting the pilot
-    #  1. uuencoded attachment of this script
-    #  2. http from BNL, then svr017 (or a server of your own choice)
-
-    # BNL tarballs have no pilot3/ directory stub, so we conform to that...
+    # Extract the pilot via http from CERN (N.B. uudecode now deprecated)
+    # You can get custom pilots by having PILOT_HTTP_SOURCES defined
+    # Pilot tarballs have no pilot3/ directory stub, so we conform to that...
     mkdir pilot3
     cd pilot3
 
@@ -76,18 +74,11 @@ function get_pilot() {
         return 0
     fi
 
-    echo "Could not get pilot code from any source. Self desctruct in 5..4..3..2..1.."
+    echo "Could not get pilot code from any source. Self destruct in 5..4..3..2..1.."
     return 1
 }
 
 
-function extract_uupilot() {
-    # Try pilot extraction from this script
-    echo Attempting to extract pilot from $1
-    python - $1 <<EOF
-import uu, sys
-uu.decode(sys.argv[1])
-EOF
 
     if [ ! -f pilot3.tgz ]; then
         echo "Error uudecoding pilot"
@@ -275,16 +266,7 @@ echo
 # the panda servers
 unset https_proxy HTTPS_PROXY
 
-# Example work around code for sites which are broken in weird
-# ways (dates from old broken LFC plugins way back when...)
-hostname -f | egrep "this is turned off right now" &> /dev/null
-if [ $? -eq 0 ]; then
-    echo "Employing LFC workaround"
-    wget http://trshare.triumf.ca/~rodwalker/lfc.tgz
-    tar -zxf lfc.tgz
-    export PYTHONPATH=`pwd`/lib/python:$PYTHONPATH
-fi
-# Set lfc api timeouts
+# Set LFC api timeouts
 export LFC_CONNTIMEOUT=60
 export LFC_CONRETRY=2
 export LFC_CONRETRYINT=60
