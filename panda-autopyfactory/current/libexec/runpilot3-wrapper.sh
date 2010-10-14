@@ -5,8 +5,8 @@ function lfc_test() {
     echo -n "Testing LFC module for $1: "
     which $1 &> /dev/null
     if [ $? != "0" ]; then
-	echo "No $1 found in path."
-	return 1
+        echo "No $1 found in path."
+        return 1
     fi
     $1 <<EOF
 import sys
@@ -66,7 +66,7 @@ function get_pilot() {
 
     get_pilot_http
     if [ $? = "0" ]; then
-	return 0
+        return 0
     fi
 
     echo "Could not get pilot code from any source. Self destruct in 5..4..3..2..1.."
@@ -89,6 +89,7 @@ function get_pilot_http() {
 	    	    PILOT_TYPE=PR
 		    fi
     fi
+    fi
     for source in $PILOT_HTTP_SOURCES; do
 		echo "Trying to download pilot from $source..."
 		curl --connect-timeout 30 --max-time 180 -sS $source | tar -xzf -
@@ -102,37 +103,83 @@ function get_pilot_http() {
 }
 
 function set_limits() {
-	# Set some limits to catch jobs which go crazy from killing nodes
-	
-	# 20GB limit for output size (block = 1K in bash)
-	fsizelimit=$((20*1024*1024))
-	echo Setting filesize limit to $fsizelimit
-	ulimit -f $fsizelimit
-	
-	# Apply memory limit?
-	memLimit=0
-	while [ $# -gt 0 ]; do
-    	if [ $1 == "-k" ]; then
-			memLimit=$2
-			shift $#
-    	else
-			shift
-    	fi
-	done
-	if [ $memLimit == "0" ]; then
-		echo No VMEM limit set
-	else
-		# Convert to kB
-		memLimit=$(($memLimit*1000))
-		echo Setting VMEM limit to ${memLimit}kB
-		ulimit -v $memLimit
-	fi
+    # Set some limits to catch jobs which go crazy from killing nodes
+    
+    # 20GB limit for output size (block = 1K in bash)
+    fsizelimit=$((20*1024*1024))
+    echo Setting filesize limit to $fsizelimit
+    ulimit -f $fsizelimit
+    
+    # Apply memory limit?
+    memLimit=0
+    while [ $# -gt 0 ]; do
+        if [ $1 == "-k" ]; then
+            memLimit=$2
+            shift $#
+        else
+            shift
+        fi
+    done
+    if [ $memLimit == "0" ]; then
+        echo No VMEM limit set
+    else
+        # Convert to kB
+        memLimit=$(($memLimit*1000))
+        echo Setting VMEM limit to ${memLimit}kB
+        ulimit -v $memLimit
+    fi
 }
 
+function monping() {
+  echo -n 'Monitor ping: '
+  curl -fksS --connect-timeout 10 --max-time 20 ${APFMON}$1/$APFFID/$APFCID/$2
+  if [ $? = "0" ]; then
+    echo
+  else
+    echo $?
+  fi
+}
+
+function monpost() {
+  echo Monitor debug begin 16:
+  pwd
+  ls -l
+  echo Finding pandaJobData.out...
+  find -name pandaJobData.out
+#  if [ -f pandaJobData.out ]; then
+#    echo -n 'POST: '
+#    curl -fksS -d @pandaJobData.out --connect-timeout 10 --max-time 20 ${APFMON}i/$APFFID/$APFCID/
+#    if [ $? = "0" ]; then
+#      echo
+#    else
+#      echo $?
+#    fi
+#  fi
+
+  # scrape PandaIDs from pilot log
+  echo 'SCRAPE: '
+  find -name pilotlog.*
+  cat pilotlog.*
+  find -name pilotlog.* -exec egrep ^PandaID= {} \; 
+#  for i in ii; do
+#    echo data: $i
+#    curl -fksS -F "$i" --connect-timeout 10 --max-time 20 ${APFMON}i/$APFFID/$APFCID/
+#    if [ $? = "0" ]; then
+#      echo
+#    else
+#      echo $?
+#    fi
+#  done
+
+  echo Monitor debug end:
+}
 
 ## main ##
 
 echo "This is pilot wrapper $Id$"
+
+# notify monitoring, job running
+monping rn
 
 # Check what was delivered
 echo "Scanning landing zone..."
@@ -274,6 +321,19 @@ $cmd
 
 echo
 echo "Pilot exit status was $?"
+
+# notify monitoring, job exiting, capture the pilot exit status
+if [ -f STATUSCODE ]; then
+echo
+  scode=`cat STATUSCODE`
+else
+  scode=$pexitcode
+fi
+echo -n STATUSCODE:
+echo $scode
+monping ex $scode
+monpost
+
 
 # Now wipe out our temp run directory, so as not to leave rubbish lying around
 echo "Now clearing run directory of all files."

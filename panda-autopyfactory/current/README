@@ -49,3 +49,26 @@ which prevents rpmbuild from failing because of the .pyo files which
 get built automatically.
 
 The easiest way to do this is to add that line to ~/.rpmmacros.
+
+Monitoring
+----------
+
+With monitoring enabled autopyfactory will send HTTP_GET and HTTP_POST
+requests to a remote webservice. The following requests are made:
+
+1. HTTP_POST for each condor job CREATED  (Factory.py)
+2. HTTP_GET when pilot job is RUNNING on WorkerNode (runpilot3-wrapper.sh)
+3. HTTP_GET when pilot job is EXITING on WorkerNode (runpilot3-wrapper.sh)
+
+Two cron jobs are required to run on the factory machine, these update the 
+monitoring webservice about the state of each job:
+
+1. mon-exiting.sh refreshes jobs in state EXITING.
+2. mon-stale.sh notifies webservice about jobs which are stuck in particular
+states based on pre-defined timeouts.
+
+Enable monitoring by including this line in the factory.conf:
+monitorURL = https://py-dev.lancs.ac.uk/
+
+By default monitoring is disabled. Please email p.love@lancaster.ac.uk for
+any monitoring questions.
