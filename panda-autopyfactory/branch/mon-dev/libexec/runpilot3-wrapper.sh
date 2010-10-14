@@ -22,18 +22,18 @@ EOF
 function find_lfc_compatible_python() {
     ## Try to figure out what python to run
 
-    # We _do_not_ now try to use python from the ATLAS release
-    # as at this point we do not know what version of python to
-    # use or what architecture. Therefore the strategy now is to
-    # use the site environment in which to run the pilot and
-    # let the pilot setup the correct ATLAS environment for the
-    # job.
+	# We _do_not_ now try to use python from the ATLAS release
+	# as at this point we do not know what version of python to
+	# use or what architecture. Therefore the strategy now is to
+	# use the site environment in which to run the pilot and
+	# let the pilot setup the correct ATLAS environment for the
+	# job.
     
     # First try python2.6 (available from EPEL for SL5)
     pybin=python2.6
     lfc_test $pybin
     if [ $? = "0" ]; then
-        return 0
+		return 0
     fi    
 
     # On many sites python now works just fine (m/w also now
@@ -41,14 +41,14 @@ function find_lfc_compatible_python() {
     pybin=python
     lfc_test $pybin
     if [ $? = "0" ]; then
-        return 0
+		return 0
     fi
 
     # Now see if python32 exists
     pybin=python32
     lfc_test $pybin
     if [ $? == "0" ]; then
-        return 0
+		return 0
     fi
 
     # Oh dear, we're doomed...
@@ -64,11 +64,6 @@ function get_pilot() {
     mkdir pilot3
     cd pilot3
 
-    extract_uupilot $1
-    if [ $? = "0" ]; then
-        return 0
-    fi
-
     get_pilot_http
     if [ $? = "0" ]; then
         return 0
@@ -80,39 +75,29 @@ function get_pilot() {
 
 
 
-    if [ ! -f pilot3.tgz ]; then
-        echo "Error uudecoding pilot"
-        return 1
-    fi
-
-    echo "Pilot extracted successfully"
-    tar -xzf pilot3.tgz
-    rm -f pilot3.tgz
-    return 0
-}
-
 function get_pilot_http() {
     # If you define the environment variable PILOT_HTTP_SOURCES then
     # loop over those servers. Otherwise use CERN, with Glasgow as a fallback.
     # N.B. an RC pilot is chosen once every 100 downloads for production.
     if [ -z "$PILOT_HTTP_SOURCES" ]; then
-    if [ $(($RANDOM%100)) = "0" -a $USER_PILOT = "0" ]; then
-        echo "DEBUG: Release candidate pilot will be used."
-        PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode-rc.tar.gz"
-        PILOT_TYPE=RC
-    else
-        PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
-        PILOT_TYPE=PR
+		    if [ $(($RANDOM%100)) = "0" ]; then
+	    	    echo "DEBUG: Release candidate pilot will be used."
+	    	    PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode-rc.tar.gz"
+	    	    PILOT_TYPE=RC
+		    else
+	    	    PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
+	    	    PILOT_TYPE=PR
+		    fi
     fi
     fi
     for source in $PILOT_HTTP_SOURCES; do
-    echo "Trying to download pilot from $source..."
-    curl --connect-timeout 30 --max-time 180 -sS $source | tar -xzf -
-    if [ -f pilot.py ]; then
-        echo "Downloaded pilot from $source"
-        return 0
-    fi
-    echo "Download from $source failed."
+		echo "Trying to download pilot from $source..."
+		curl --connect-timeout 30 --max-time 180 -sS $source | tar -xzf -
+		if [ -f pilot.py ]; then
+	    	echo "Downloaded pilot from $source"
+	    	return 0
+		fi
+		echo "Download from $source failed."
     done
     return 1
 }
@@ -208,16 +193,6 @@ if [ ! -f $me ]; then
     echo "Trouble ahead - cannot find myself. Should I try psychoanalysis?"
 fi
 echo
-
-# Detect user pilots here - necessary for some pilot RC downloads
-echo $@ | grep "user" &> /dev/null
-if [ $? = "0" ]; then
-    USER_PILOT=1
-    echo User pilot detected
-else
-    USER_PILOT=0
-    echo This is not a user pilot
-fi
 
 # If we have TMPDIR defined, then move into this directory
 # If it's not defined, then stay where we are
@@ -333,9 +308,9 @@ echo "My Arguments: $@"
 
 # If we know the pilot type then set this
 if [ -n "$PILOT_TYPE" ]; then
-    pilot_args="-d $scratch $@ -i $PILOT_TYPE"
+	pilot_args="-d $scratch $@ -i $PILOT_TYPE"
 else
-    pilot_args="-d $scratch $@"
+	pilot_args="-d $scratch $@"
 fi
 
 # Prd server and pass arguments

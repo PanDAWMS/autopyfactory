@@ -162,7 +162,7 @@ class factoryConfigLoader:
                           'pilotLimit' : 'pilotlimit',
                           'transferringLimit' : 'transferringlimit',
                           'env': 'environ',
-                          #'jdl' : 'queue',
+                          'jdl' : 'queue',
                           }
 
         # Construct the structured siteData dictionary from the configuration stanzas
@@ -232,10 +232,10 @@ class factoryConfigLoader:
                     self.queues[queue][key] = value
                 
             # Hack for CREAM CEs - would like to use the 'system' field in schedconfig for this
-            if self.queues[queue]['jdl'].find('/cream') > 0:
+            if self.queues[queue]['queue'].find('/cream') > 0:
                 self.configMessages.debug('Detected CREAM CE for queue %s' % (queue))
                 self.queues[queue]['_isCream'] = True
-                match1 = re.match(r'([^/]+)/cream-(\w+)', self.queues[queue]['jdl'])
+                match1 = re.match(r'([^/]+)/cream-(\w+)', self.queues[queue]['queue'])
                 if match1 != None:
                     # See if the port is explicitly given - if not assume 8443
                     # Currently condor needs this specified in the JDL
