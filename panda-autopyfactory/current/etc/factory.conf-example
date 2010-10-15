@@ -9,7 +9,7 @@ factoryOwner = g.stewart@physics.gla.ac.uk
 factoryId = graeme-UK
 # condorUser = unixUserName
 # schedConfigPollTime = 5
-# monitorURL = https://py-dev.lancs.ac.uk/
+# monitorURL = https://py-dev.lancs.ac.uk/mon/
 
 ## Configure the pilots which are sent
 # Executable, baseLogDir and baseLogDirUrl are mandatory

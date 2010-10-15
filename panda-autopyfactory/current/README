@@ -69,7 +69,7 @@ states based on pre-defined timeouts.
 
 Enable monitoring by including this line in the factory.conf, then visit 
 the URL for the web interface:
-monitorURL = https://py-dev.lancs.ac.uk/
+monitorURL = https://py-dev.lancs.ac.uk/mon/
 
 By default monitoring is disabled. Please email p.love@lancaster.ac.uk for
 any monitoring questions.
