@@ -67,7 +67,8 @@ monitoring webservice about the state of each job:
 2. mon-stale.sh notifies webservice about jobs which are stuck in particular
 states based on pre-defined timeouts.
 
-Enable monitoring by including this line in the factory.conf:
+Enable monitoring by including this line in the factory.conf, then visit 
+the URL for the web interface:
 monitorURL = https://py-dev.lancs.ac.uk/
 
 By default monitoring is disabled. Please email p.love@lancaster.ac.uk for
