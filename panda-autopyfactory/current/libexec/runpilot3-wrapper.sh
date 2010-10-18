@@ -89,7 +89,6 @@ function get_pilot_http() {
 	    	    PILOT_TYPE=PR
 		    fi
     fi
-    fi
     for source in $PILOT_HTTP_SOURCES; do
 		echo "Trying to download pilot from $source..."
 		curl --connect-timeout 30 --max-time 180 -sS $source | tar -xzf -
