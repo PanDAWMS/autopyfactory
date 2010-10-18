@@ -44,6 +44,14 @@ class factory:
             if url:
                 fid = self.config.config.get('Factory', 'factoryId')
                 self.mon = Monitor(fid=fid, monurl=url)
+        else:
+            self.factoryMessages.warn('Monitoring not configured')
+
+    def note(self, queue, msg):
+        self.factoryMessages.info('%s: %s' % (queue,msg))
+        if isinstance(self.mon, Monitor):
+            nick = self.config.queues[queue]['nickname']
+            self.mon.msg(nick, queue, msg)
 
     def getCondorStatus(self):
         # We query condor for jobs running as us (owner) and this factoryId so that multiple 
@@ -94,20 +102,24 @@ class factory:
  
             # Check to see if a site or cloud is offline or in an error state
             if queueParameters['cloud'] in self.pandaCloudStatus and self.pandaCloudStatus[queueParameters['cloud']]['status'] == 'offline':
-                self.factoryMessages.info('Cloud %s containing queue %s: is offline - will not submit pilots.' % (queue, queueParameters['cloud']))
+                msg = 'Cloud %s is offline - will not submit pilots.' % queueParameters['cloud']
+                self.note(queue, msg)
                 continue
                 
             if queueParameters['status'] == 'offline':
-                self.factoryMessages.info('Site %s containing queue %s: is offline - will not submit pilots.' % (queue, queueParameters['siteid']))
+                msg = 'Site %s is offline - will not submit pilots.' % queueParameters['siteid']
+                self.note(queue, msg)
                 continue
                 
             if queueParameters['status'] == 'error':
-                self.factoryMessages.info('Site %s containing queue %s: is in an error state - will not submit pilots.' % (queue, queueParameters['siteid']))
+                msg = 'Site %s is in an error state - will not submit pilots.' % queueParameters['siteid']
+                self.note(queue, msg)
                 continue
                 
             # Check to see if the cloud is in test mode
             if queueParameters['cloud'] in self.pandaCloudStatus and self.pandaCloudStatus[queueParameters['cloud']]['status'] == 'test':
-                self.factoryMessages.info('Cloud %s containing queue %s: is in test mode.' % (queue, queueParameters['cloud']))
+                msg = 'Cloud %s in test mode.' % queueParameters['cloud']
+                self.note(queue, msg)
                 cloudTestStatus = True
             else:
                 cloudTestStatus = False
@@ -115,24 +127,24 @@ class factory:
                 
             # Now normal queue submission algorithm begins
             if queueParameters['pilotlimit'] != None and queueParameters['pilotQueue']['total'] >= queueParameters['pilotlimit']:
-                self.factoryMessages.info('%s: reached pilot limit %d (%s) - will not submit more pilots.', 
-                                          queue, queueParameters['pilotlimit'], queueParameters['pilotQueue'])
+                msg = 'reached pilot limit %d (%s) - will not submit more pilots.' % (queueParameters['pilotlimit'], queueParameters['pilotQueue'])
+                self.note(queue, msg)
                 continue
 
             if queueParameters['transferringlimit'] != None and 'transferring' in queueParameters['pandaStatus'] and \
                     queueParameters['pandaStatus']['transferring'] >= queueParameters['transferringlimit']:
-                self.factoryMessages.info('%s: too many transferring jobs (%d > limit %d) - will not submit more pilots.', 
-                                          queue, queueParameters['pandaStatus']['transferring'], queueParameters['transferringlimit'])
+                msg = 'too many transferring jobs (%d > limit %d) - will not submit more pilots.' % (queueParameters['pandaStatus']['transferring'], queueParameters['transferringlimit'])
+                self.note(queue, msg)
                 continue
 
             if queueParameters['status'] == 'test' or cloudTestStatus == True:
                 # For test sites only ever have one pilot queued, but allow up to nqueue to run
                 if queueParameters['pilotQueue']['inactive'] > 0 or queueParameters['pilotQueue']['total'] > queueParameters['nqueue']:
-                    self.factoryMessages.info('%s: test site has %d pilots, %d queued. Doing nothing.',
-                                              queue, queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
+                    msg = 'test site has %d pilots, %d queued. Doing nothing.' % (queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
+                    self.note(queue, msg)
                 else:
-                    self.factoryMessages.info('%s: test site has %d pilots, %d queued. Will submit 1 testing pilot.',
-                                              queue, queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
+                    msg = 'test site has %d pilots, %d queued. Will submit 1 testing pilot.' % (queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
+                    self.note(queue, msg)
                     self.condorPilotSubmit(queue, cycleNumber, 1)
                 continue
 
@@ -148,60 +160,27 @@ class factory:
                 if queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue'] or \
                         (queueParameters['pandaStatus']['activated'] > queueParameters['pilotQueue']['inactive'] and \
                          queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue'] * depthboost):
-#                    self.factoryMessages.info('%s: %d activated jobs, %d inactive pilots queued (< queue depth %d * depth boost %d). Will submit full pilot load.',
-#                                              queue, queueParameters['pandaStatus']['activated'], 
-#                                              queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
-                    msg = '%s: %d activated jobs, %d inactive pilots queued (< queue depth %d * depth boost %d). Will submit full pilot load.' % (queue, queueParameters['pandaStatus']['activated'], queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
-                    self.factoryMessages.info(msg)
-                    if isinstance(self.mon, Monitor):
-                        nick = self.config.queues[queue]['nickname']
-                        label = queue
-                        self.mon.msg(nick, label, msg)
+                    msg = '%d activated jobs, %d inactive pilots queued (< queue depth %d * depth boost %d). Will submit full pilot load.' % (queueParameters['pandaStatus']['activated'], queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
+                    self.note(queue, msg)
                     self.condorPilotSubmit(queue, cycleNumber, queueParameters['nqueue'])
                 else:
-#                    self.factoryMessages.info('%s: %d activated jobs, %d inactive pilots queued (>= queue depth %d * depth boost %d). No extra pilots needed.',
-#                                              queue, queueParameters['pandaStatus']['activated'],
-#                                              queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
-                    msg = '%s: %d activated jobs, %d inactive pilots queued (>= queue depth %d * depth boost %d). No extra pilots needed.' % (queue, queueParameters['pandaStatus']['activated'],queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
-                    self.factoryMessages.info(msg)
-                    if isinstance(self.mon, Monitor):
-                        nick = self.config.queues[queue]['nickname']
-                        label = queue
-                        self.mon.msg(nick, label, msg)
+                    msg = '%d activated jobs, %d inactive pilots queued (>= queue depth %d * depth boost %d). No extra pilots needed.' % (queueParameters['pandaStatus']['activated'],queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
+                    self.note(queue, msg)
                 continue
 
             # No activated jobs - send an idling pilot if there are less than queue depth pilots
             # and we are not in a suppressed cycle for this queue (so avoid racking up too many idleing jobs)
             if queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue']:
                 if queueParameters['idlepilotsuppression'] > 1 and cycleNumber % queueParameters['idlepilotsuppression'] != 0:
-#                    self.factoryMessages.info('%s: No activated jobs, %d inactive pilots queued (queue depth %d). This factory cycle supressed (%d mod %d != 0).',
-#                                              queue, queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'],
-#                                              cycleNumber, queueParameters['idlepilotsuppression'])
-                    msg = '%s: No activated jobs, %d inactive pilots queued (queue depth %d). This factory cycle supressed (%d m od %d != 0).' % (queue, queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'],cycleNumber, queueParameters['idlepilotsuppression'])
-                    self.factoryMessages.info(msg)
-                    if isinstance(self.mon, Monitor):
-                        nick = self.config.queues[queue]['nickname']
-                        label = queue
-                        self.mon.msg(nick, label, msg)
+                    msg = 'No activated jobs, %d inactive pilots queued (queue depth %d). This factory cycle supressed (%d m od %d != 0).' % (queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'],cycleNumber, queueParameters['idlepilotsuppression'])
+                    self.note(queue, msg)
                 else:
-#                    self.factoryMessages.info('%s: No activated jobs, %d inactive pilots queued (queue depth %d). Will submit 1 idling pilot.',
-#                                              queue, queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
-                    msg = '%s: No activated jobs, %d inactive pilots queued (queue depth %d). Will submit 1 idling pilot.' % (queue, queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
-                    self.factoryMessages.info(msg)
-                    if isinstance(self.mon, Monitor):
-                        nick = self.config.queues[queue]['nickname']
-                        label = queue
-                        self.mon.msg(nick, label, msg)
-                        self.condorPilotSubmit(queue, cycleNumber, 1)
+                    msg = 'No activated jobs, %d inactive pilots queued (queue depth %d). Will submit 1 idling pilot.' % (queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
+                    self.note(queue, msg)
+                    self.condorPilotSubmit(queue, cycleNumber, 1)
             else:
-#                self.factoryMessages.info('%s: No activated jobs, %d inactive pilots queued (queue depth %d). No extra pilots needed.',
-#                                          queue, queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
-                msg = '%s: No activated jobs, %d inactive pilots queued (queue depth %d). No extra pilots needed.' % (queue, queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
-                self.factoryMessages.info(msg)
-                if isinstance(self.mon, Monitor):
-                    nick = self.config.queues[queue]['nickname']
-                    label = queue
-                    self.mon.msg(nick, label, msg)
+                msg = 'No activated jobs, %d inactive pilots queued (queue depth %d). No extra pilots needed.' % (queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
+                self.note(queue, msg)
 
 
     def condorPilotSubmit(self, queue, cycleNumber=0, pilotNumber=1):
