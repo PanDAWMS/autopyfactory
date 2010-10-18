@@ -22,18 +22,18 @@ EOF
 function find_lfc_compatible_python() {
     ## Try to figure out what python to run
 
-	# We _do_not_ now try to use python from the ATLAS release
-	# as at this point we do not know what version of python to
-	# use or what architecture. Therefore the strategy now is to
-	# use the site environment in which to run the pilot and
-	# let the pilot setup the correct ATLAS environment for the
-	# job.
+    # We _do_not_ now try to use python from the ATLAS release
+    # as at this point we do not know what version of python to
+    # use or what architecture. Therefore the strategy now is to
+    # use the site environment in which to run the pilot and
+    # let the pilot setup the correct ATLAS environment for the
+    # job.
     
     # First try python2.6 (available from EPEL for SL5)
     pybin=python2.6
     lfc_test $pybin
     if [ $? = "0" ]; then
-		return 0
+        return 0
     fi    
 
     # On many sites python now works just fine (m/w also now
@@ -41,14 +41,14 @@ function find_lfc_compatible_python() {
     pybin=python
     lfc_test $pybin
     if [ $? = "0" ]; then
-		return 0
+        return 0
     fi
 
     # Now see if python32 exists
     pybin=python32
     lfc_test $pybin
     if [ $? == "0" ]; then
-		return 0
+        return 0
     fi
 
     # Oh dear, we're doomed...
@@ -80,23 +80,23 @@ function get_pilot_http() {
     # loop over those servers. Otherwise use CERN, with Glasgow as a fallback.
     # N.B. an RC pilot is chosen once every 100 downloads for production.
     if [ -z "$PILOT_HTTP_SOURCES" ]; then
-		    if [ $(($RANDOM%100)) = "0" ]; then
-	    	    echo "DEBUG: Release candidate pilot will be used."
-	    	    PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode-rc.tar.gz"
-	    	    PILOT_TYPE=RC
-		    else
-	    	    PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
-	    	    PILOT_TYPE=PR
-		    fi
+            if [ $(($RANDOM%100)) = "0" ]; then
+                echo "DEBUG: Release candidate pilot will be used."
+                PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode-rc.tar.gz"
+                PILOT_TYPE=RC
+            else
+                PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
+                PILOT_TYPE=PR
+            fi
     fi
     for source in $PILOT_HTTP_SOURCES; do
-		echo "Trying to download pilot from $source..."
-		curl --connect-timeout 30 --max-time 180 -sS $source | tar -xzf -
-		if [ -f pilot.py ]; then
-	    	echo "Downloaded pilot from $source"
-	    	return 0
-		fi
-		echo "Download from $source failed."
+        echo "Trying to download pilot from $source..."
+        curl --connect-timeout 30 --max-time 180 -sS $source | tar -xzf -
+        if [ -f pilot.py ]; then
+            echo "Downloaded pilot from $source"
+            return 0
+        fi
+        echo "Download from $source failed."
     done
     return 1
 }
@@ -130,47 +130,29 @@ function set_limits() {
 }
 
 function monping() {
-  echo -n 'Monitor ping: '
-  curl -fksS --connect-timeout 10 --max-time 20 ${APFMON}$1/$APFFID/$APFCID/$2
-  if [ $? = "0" ]; then
-    echo
-  else
-    echo $?
-  fi
+    echo -n 'Monitor ping: '
+    curl -fksS --connect-timeout 10 --max-time 20 ${APFMON}$1/$APFFID/$APFCID/$2
+    if [ $? = "0" ]; then
+      echo
+    else
+      echo $?
+    fi
 }
 
 function monpost() {
-  echo Monitor debug begin 16:
-  pwd
-  ls -l
-  echo Finding pandaJobData.out...
-  find -name pandaJobData.out
-#  if [ -f pandaJobData.out ]; then
-#    echo -n 'POST: '
-#    curl -fksS -d @pandaJobData.out --connect-timeout 10 --max-time 20 ${APFMON}i/$APFFID/$APFCID/
-#    if [ $? = "0" ]; then
-#      echo
-#    else
-#      echo $?
-#    fi
-#  fi
+    echo Monitor debug begin:
+    pwd
+    ls -l
+    echo Finding pandaJobData.out...
+    find -name pandaJobData.out
 
-  # scrape PandaIDs from pilot log
-  echo 'SCRAPE: '
-  find -name pilotlog.*
-  cat pilotlog.*
-  find -name pilotlog.* -exec egrep ^PandaID= {} \; 
-#  for i in ii; do
-#    echo data: $i
-#    curl -fksS -F "$i" --connect-timeout 10 --max-time 20 ${APFMON}i/$APFFID/$APFCID/
-#    if [ $? = "0" ]; then
-#      echo
-#    else
-#      echo $?
-#    fi
-#  done
+    # scrape PandaIDs from pilot log
+    echo 'SCRAPE: '
+    find -name pilotlog.*
+    cat pilotlog.*
+    find -name pilotlog.* -exec egrep ^PandaID= {} \; 
 
-  echo Monitor debug end:
+    echo Monitor debug end:
 }
 
 ## main ##
@@ -307,9 +289,9 @@ echo "My Arguments: $@"
 
 # If we know the pilot type then set this
 if [ -n "$PILOT_TYPE" ]; then
-	pilot_args="-d $scratch $@ -i $PILOT_TYPE"
+    pilot_args="-d $scratch $@ -i $PILOT_TYPE"
 else
-	pilot_args="-d $scratch $@"
+    pilot_args="-d $scratch $@"
 fi
 
 # Prd server and pass arguments
