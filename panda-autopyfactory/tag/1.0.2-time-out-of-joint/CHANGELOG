@@ -3,6 +3,13 @@ ChangeLog
 
 $Id: CHANGELOG 181 2010-04-10 21:59:00Z graemes $
 
+2010-10-19
+
+* Removed wrapper code which exempted user pilots from getting release candidate 
+  pilot code tarballs.
+
+* "Time Out of Joint" Patch release.
+
 2010-09-15
 
 * Removed deprecated code from runpilot3-wrapper.sh (uudecode and broken
