@@ -79,7 +79,6 @@ def states(line):
 def updatestate(state):
     # update state via webservice
     s = Signal(_STURL)
-#    gk = state['gk']
     cid = state['cid']
     js = state['jobstate']
     gs = state['globusstate']
@@ -174,7 +173,6 @@ def main():
                 updateawol(cid)
 
     tend = time.time()
-
     
     logging.debug("Current number of found jobs: %d" % len(outputs))
     logging.debug("Current number of AWOL jobs: %d" % len(awolcids))

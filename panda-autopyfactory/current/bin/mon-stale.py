@@ -13,12 +13,13 @@ import logging
 import pycurl
 import sys
 import StringIO
+import time
 from optparse import OptionParser
 _THISFID = 'peter-UK-devel'
 _BASEURL = 'http://py-dev.lancs.ac.uk/mon/'
 _AWOLURL = _BASEURL + 'awol/'
 # url to retrieve old stale jobs
-_CIDURL = _BASEURL + 'old/' + _THISFID
+_OLDURL = _BASEURL + 'old/' + _THISFID
 # url to report stale jobs but only after status update
 _STALEURL = _BASEURL + 'stale/'
 
@@ -39,7 +40,11 @@ class Signal:
         self.curl.setopt(pycurl.POSTFIELDS, postdata)
         # write at start of buffer
         self.buffer.seek(0)
-        self.curl.perform()
+        try:
+            self.curl.perform()
+        except pycurl.error,e:
+            msg = "Curl error: %s" % e
+            logging.debug(msg)
         # truncate at current position
         self.buffer.truncate()
         if self.curl.getinfo(pycurl.HTTP_CODE) != 200:
@@ -56,6 +61,42 @@ class Signal:
         self.buffer.seek(0)
         msg = self.buffer.read()
         logging.debug(msg)
+
+def states(line):
+    # build list of current job states
+    # states is a dict with keys: gk, jobstate, globusstate, cid
+    states = []
+    items = line.split()
+    values = {}
+    for item in items:
+        try:
+            (key, value) = item.split('=', 1)
+            values[key] = value
+        except ValueError:
+            logging.warn('Bad condor_q output: %s' % line)
+            continue
+
+    return values
+
+def updatestate(state):
+    # update stale jobs via webservice
+    s = Signal(_STALEURL)
+    cid = state['cid']
+    js = state['jobstate']
+    gs = state.get('globusstate',0)
+
+    postdata = "fid=%s&cid=%s&js=%s&gs=%s" % (_THISFID, cid, js, gs)
+    s.post(postdata)
+
+def updateawol(cid):
+    # update AWOL jobs via webservice
+    logging.warn("AWOL: %sjob/%s/%s" % (_BASEURL, _THISFID, cid))
+    s = Signal(_AWOLURL)
+    # simply tell webservice about awol jobs
+    postdata = "fid=%s&cid=%s" % (_THISFID, cid)
+    s.post(postdata)
+
+
 
 def main():
     usage = "usage: %prog [options]"
@@ -82,22 +123,22 @@ def main():
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
-    # get list of jobs from DB in state EXITING
+    # get list of stale jobs from DB
     pending = []
     buffer = StringIO.StringIO()
     curl = pycurl.Curl()
     curl.setopt(pycurl.WRITEFUNCTION, buffer.write)
     curl.setopt(pycurl.SSL_VERIFYPEER, 0)
-    curl.setopt(pycurl.URL, _CIDURL)
+    curl.setopt(pycurl.URL, _OLDURL)
     try:
         curl.perform()
     except pycurl.error:
-        msg = "Problem contacting server: %s" % _CIDURL
+        msg = "Problem contacting server: %s" % _OLDURL
         logging.error(msg)
         return
     buffer.seek(0)
     if curl.getinfo(pycurl.HTTP_CODE) != 200:
-        msg = "failed: %s" % _CIDURL
+        msg = "failed: %s" % _OLDURL
         logging.debug(msg)
         # read from start of buffer
         buffer.seek(0)
@@ -117,6 +158,7 @@ def main():
     
     outputs = []
     awolcids = []
+    tstart = time.time()
     for cid in pending:
         cmd = "condor_q %s %s" % (form, cid)
         (exitcode, output) = commands.getstatusoutput(cmd)
@@ -129,52 +171,15 @@ def main():
             logging.debug("condor_history %s: %s" % (cid, output))
             if output:
                 outputs.append(output)
+                state = states(output)
+                updatestate(state)
             else:
                 # cid not found by condor_q or condor_history
                 awolcids.append(cid)
-                logging.debug("AWOL: %s" % cid)
+                updateawol(cid)
 
     logging.info("Current number of found jobs: %d" % len(outputs))
     logging.info("Current number of AWOL jobs: %d" % len(awolcids))
 
-    # build list of current job states
-    # states is a dict with keys: gk, jobstate, globusstate, cid
-    states = []
-    for line in outputs:
-        items = line.split()
-        values = {}
-        for item in items:
-            try:
-                (key, value) = item.split('=', 1)
-                values[key] = value
-            except ValueError:
-                logging.warn('Bad condor_q output: %s' % line)
-                continue
-        states.append(values)
-     
-
-    # update AWOL jobs via webservice
-    s = Signal(_AWOLURL)
-    # tell webservice about awol jobs
-    for cid in awolcids:
-        postdata = "fid=%s&cid=%s" % (_THISFID, cid)
-        s.post(postdata)
-
-    # update state via webservice
-    s = Signal(_STALEURL)
-    for state in states:
-        try:
-            cid = state['cid']
-            js = state['jobstate']
-            gs = state.get('globusstate',0)
-        except KeyError:
-            msg = str(state.items())
-            logging.debug(msg)
-
-        postdata = "fid=%s&cid=%s&js=%s&gs=%s" % (_THISFID, cid, js, gs)
-    
-        s.post(postdata)
-
 if __name__ == "__main__":
     sys.exit(main())
-
