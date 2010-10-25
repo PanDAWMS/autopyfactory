@@ -44,7 +44,7 @@ class Signal:
             self.curl.perform()
         except pycurl.error,e:
             msg = "Curl error: %s" % e
-            logging.debug(msg)
+            logging.error(msg)
         # truncate at current position
         self.buffer.truncate()
         if self.curl.getinfo(pycurl.HTTP_CODE) != 200:

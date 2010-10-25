@@ -42,7 +42,11 @@ class Signal:
         self.curl.setopt(pycurl.POSTFIELDS, postdata)
         # write at start of buffer
         self.buffer.seek(0)
-        self.curl.perform()
+        try:
+            self.curl.perform()
+        except pycurl.error,e:
+            msg = "Curl error: %s" % e
+            logging.error(msg)
         # truncate at current position
         self.buffer.truncate()
         if self.curl.getinfo(pycurl.HTTP_CODE) != 200:
@@ -143,7 +147,7 @@ def main():
         pending.append(cid)
     
     msg = "PENDING: %d" % len(pending)
-    logging.debug(msg)
+    logging.info(msg)
 
     form = '-format "cid=%s." ClusterId -format "%s " ProcId'
     form += ' -format "jobstate=%d " JobStatus -format "globusstate=%d " GlobusStatus'
@@ -174,8 +178,8 @@ def main():
 
     tend = time.time()
     
-    logging.debug("Current number of found jobs: %d" % len(outputs))
-    logging.debug("Current number of AWOL jobs: %d" % len(awolcids))
+    logging.info("Current number of found jobs: %d" % len(outputs))
+    logging.info("Current number of AWOL jobs: %d" % len(awolcids))
 
 if __name__ == "__main__":
     sys.exit(main())
