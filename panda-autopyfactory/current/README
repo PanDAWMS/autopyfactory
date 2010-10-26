@@ -60,16 +60,16 @@ requests to a remote webservice. The following requests are made:
 2. HTTP_GET when pilot job is RUNNING on WorkerNode (runpilot3-wrapper.sh)
 3. HTTP_GET when pilot job is EXITING on WorkerNode (runpilot3-wrapper.sh)
 
-
 Enable monitoring by including this line in the factory.conf, then visit 
 the URL for the web interface:
-monitorURL = https://py-dev.lancs.ac.uk/mon/
+monitorURL = http://py-dev.lancs.ac.uk/mon/
 
 By default monitoring is disabled. Please email p.love@lancaster.ac.uk for
 any monitoring questions.
 
 Monitoring cron jobs
 --------------------
+
 Two cron jobs are required to run on the factory machine, these query condor 
 and update the monitoring webservice about the state of each job:
 
@@ -78,6 +78,8 @@ and update the monitoring webservice about the state of each job:
 states based on pre-defined timeouts.
 
 Example crontab (todo: add to rpm post-install script):
-*/5 * * * * flock -xn /tmp/LCK_mon-exiting.py -c 'python bin/mon-exiting.py' 
+* * * * * flock -xn /tmp/LCK_mon-exiting.py -c 'python bin/mon-exiting.py -q'
 * * * * * flock -xn /tmp/LCK_mon-stale.py -c 'python bin/mon-stale.py -q' 
 
+These scripts need editing! You must change _THISFID to the name of your 
+factory. eg. _THISFID = 'peter-UK-devel'
