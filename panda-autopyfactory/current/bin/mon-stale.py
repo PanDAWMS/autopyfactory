@@ -62,10 +62,8 @@ class Signal:
         msg = self.buffer.read()
         logging.debug(msg)
 
-def states(line):
-    # build list of current job states
-    # states is a dict with keys: gk, jobstate, globusstate, cid
-    states = []
+def parse(line):
+    # parse condor output and return dict with keys: gk, jobstate, globusstate, cid
     items = line.split()
     values = {}
     for item in items:
@@ -73,7 +71,7 @@ def states(line):
             (key, value) = item.split('=', 1)
             values[key] = value
         except ValueError:
-            logging.warn('Bad condor_q output: %s' % line)
+            logging.warn('Bad condor output: %s' % line)
             continue
 
     return values
@@ -165,13 +163,15 @@ def main():
         logging.debug("condor_q %s: %s" % (cid, output))
         if output:
             outputs.append(output)
+            state = parse(output)
+            updatestate(state)
         else:
             cmd = "condor_history -backwards %s %s" % (form, cid)
             (exitcode, output) = commands.getstatusoutput(cmd)
             logging.debug("condor_history %s: %s" % (cid, output))
             if output:
                 outputs.append(output)
-                state = states(output)
+                state = parse(output)
                 updatestate(state)
             else:
                 # cid not found by condor_q or condor_history

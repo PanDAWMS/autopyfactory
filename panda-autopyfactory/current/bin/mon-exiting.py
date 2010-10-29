@@ -2,7 +2,7 @@
 
 """
 Cronjob on condor host to move job state from EXITING to 
-and end-state (either DONE or FAULT)
+an end-state (either DONE or FAULT)
 1. get list of CID in state EXITING (this factory only)
 2. check jobs with condor_q and condor_history
 3. update states
@@ -64,10 +64,8 @@ class Signal:
         msg = self.buffer.read()
         logging.debug(msg)
 
-def states(line):
-    # build list of current job states
-    # states is a dict with keys: gk, jobstate, globusstate, cid
-    states = []
+def parse(line):
+    # parse condor output and return dict with keys: gk, jobstate, globusstate, cid
     items = line.split()
     values = {}
     for item in items:
@@ -75,7 +73,7 @@ def states(line):
             (key, value) = item.split('=', 1)
             values[key] = value
         except ValueError:
-            logging.warn('Bad condor_q output: %s' % line)
+            logging.warn('Bad condor output: %s' % line)
             continue
 
     return values
@@ -156,28 +154,35 @@ def main():
     # outputs is a list of condor_q info for each EXITING job
     outputs = []
     awolcids = []
-    tstart = time.time()
     for cid in pending:
         cmd = "condor_q %s %s" % (form, cid)
+        t1 = time.time()
         (exitcode, output) = commands.getstatusoutput(cmd)
+        t2 = time.time()
+        t = t2-t1
+        logging.debug("condor_q timing:%.2f" % t)
         logging.debug("condor_q %s: %s" % (cid, output))
         if output:
             outputs.append(output)
+            state = parse(output)
+            updatestate(state)
         else:
             cmd = "condor_history -backwards %s %s" % (form, cid)
+            t1 = time.time()
             (exitcode, output) = commands.getstatusoutput(cmd)
+            t2 = time.time()
+            t = t2-t1
+            logging.debug("condor_history timing:%.2f" % t)
             logging.debug("condor_history %s: %s" % (cid, output))
             if output:
                 outputs.append(output)
-                state = states(output)
+                state = parse(output)
                 updatestate(state)
             else:
                 # cid not found by condor_q or condor_history
                 awolcids.append(cid)
                 updateawol(cid)
 
-    tend = time.time()
-    
     logging.info("Current number of found jobs: %d" % len(outputs))
     logging.info("Current number of AWOL jobs: %d" % len(awolcids))
 
