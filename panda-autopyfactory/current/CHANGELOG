@@ -3,6 +3,13 @@ ChangeLog
 
 $Id: CHANGELOG 181 2010-04-10 21:59:00Z graemes $
 
+2010-11-05
+
+* Wrapper now supports environment variables starting with APF_FORCE_ 
+  which set the environment variable with APF_FORCE_ stripped off.
+  This is needed when setting the normal environment variable via
+  condor-g fails because it gets overwritten by the site shell setup.
+
 2010-09-15
 
 * Removed deprecated code from runpilot3-wrapper.sh (uudecode and broken
