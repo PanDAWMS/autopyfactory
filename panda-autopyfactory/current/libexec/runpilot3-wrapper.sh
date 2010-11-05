@@ -156,6 +156,15 @@ function monpost() {
     echo Monitor debug end:
 }
 
+function set_forced_env() {
+    # Sometimes environment settings via condor fail if they are overwritten
+    # by the site. Force env vars by prefixing them with APF_FORCE_
+    echo Forced environment variables are
+    env | grep APF_FORCE_
+    eval $(env | egrep "^APF_FORCE_" | perl -pe 's/^APF_FORCE_//;')
+}
+
+
 ## main ##
 
 echo "This is pilot wrapper $Id$"
@@ -197,6 +206,12 @@ fi
 echo
 echo "---- Setting crazy job protection limits ----"
 set_limits $@
+echo
+
+# Set any forced environment variables
+echo
+echo "---- Looking for forced environment variables ----"
+set_forced_env
 echo
 
 # Environment sanity check (useful for debugging)
