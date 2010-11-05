@@ -3,7 +3,7 @@
 # Setup prog for autopyfactory
 #
 #
-release_version='1.0.2'
+release_version='1.1.0'
 
 import re
 import sys
@@ -30,6 +30,8 @@ setup(
                 # Utilitys and main script
                 ('/opt/panda/autopyfactory/bin', ['bin/factory.py',
                                                   'bin/cleanLogs.py',
+                                                  'bin/mon-exiting.py',
+                                                  'bin/mon-stale.py',
                                                   'bin/vomsrenew.sh',
                                                   ]
                  ),
