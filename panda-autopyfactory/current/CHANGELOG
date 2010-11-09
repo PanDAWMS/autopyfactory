@@ -3,6 +3,10 @@ ChangeLog
 
 $Id: CHANGELOG 181 2010-04-10 21:59:00Z graemes $
 
+2010-11-08
+
+* Monitoring requires pycurl (install standard python-curl RPM).
+
 2010-11-05
 
 * Wrapper now supports environment variables starting with APF_FORCE_ 
