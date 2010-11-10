@@ -336,6 +336,8 @@ class factory:
             self.getCondorStatus()
             self.getPandaStatus()
             self.submitPilots(cycleNumber)
+            if isinstance(self.mon, Monitor):
+                self.mon.shout()
         except CondorStatusFailure, errMsg:
             self.factoryMessages.error('Condor status polling failure: %s', errMsg)
             self.factoryMessages.error('Will sleep and carry on.')

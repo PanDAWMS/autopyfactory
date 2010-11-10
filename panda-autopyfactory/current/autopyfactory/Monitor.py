@@ -1,13 +1,19 @@
 # $Id: $
 #
 # Monitoring system for autopyfactory, signals Monitoring
-# webservice on each successful condor_submit
+# webservice at each factory cycle with list of condor jobs
 
 import commands
 import logging
 import pycurl
 import re
 import StringIO
+try:
+    import json as json
+except ImportError, err:
+    # Not critical (yet) - try simplejson
+    import simplejson as json
+
 _CIDMATCH = re.compile('\*\* Proc (\d+\.\d+)', re.M)
 
 class Monitor:
@@ -31,8 +37,11 @@ class Monitor:
             self.log.error(msg)
             return 
 
-        self.crurl = monurl + 'cr/'
-        self.msgurl = monurl + 'msg/'
+        self.crurl = monurl + 'c/'
+        self.msgurl = monurl + 'm/'
+        self.crlist = []
+        self.msglist = []
+        self.json = json.JSONEncoder()
         self.buffer = StringIO.StringIO()
         self.c = pycurl.Curl()
         self.c.setopt(pycurl.WRITEFUNCTION, self.buffer.write)
@@ -65,10 +74,8 @@ class Monitor:
             msg = "PyCurl server problem:", e[1]
             self.log.warn(msg)
         
-        msg = "%s: %s" % (url, postdata)
+        msg = "%s" % url
         self.log.debug(msg)
-        self.buffer.seek(0)
-        self.log.debug(self.buffer.read())
         self.buffer.seek(0)
     
     def _parse(self, output):
@@ -79,6 +86,9 @@ class Monitor:
             return []
 
     def notify(self, nick, label, output):
+        """
+        Record creation of the condor job
+        """
         msg = "nick: %s, fid: %s, label: %s" % (nick, self.fid, label)
         self.log.debug(msg)
 
@@ -88,15 +98,34 @@ class Monitor:
         self.log.debug(msg)
 
         for cid in joblist:
-            txt = "cid=%s&nick=%s&fid=%s&label=%s" % (cid, nick, self.fid, label)
-            self._signal(self.crurl, txt)
+            data = (cid, nick, self.fid, label)
+            self.crlist.append(data)
 
     def msg(self, nick, label, text):
         """
         Send the latest factory message to the monitoring webservice
         """
+        data = (nick, self.fid, label, text[:140])
+        self.msglist.append(data)
 
-        txt = "nick=%s&fid=%s&label=%s&msg=%s" % (nick, self.fid, label, text[:140])
-        self.log.debug(txt)
+    def shout(self):
+        """
+        Send information blob to webservice
+        """
+        msg = 'End of factory cycle'
+        self.log.debug(msg)
+        msg = 'msglist length: %d' % len(self.msglist)
+        self.log.debug(msg)
+        msg = 'crlist length: %d' % len(self.crlist)
+        self.log.debug(msg)
+
+        jsonmsg = self.json.encode(self.msglist)
+        txt = "data=%s" % jsonmsg
         self._signal(self.msgurl, txt)
+
+        jsonmsg = self.json.encode(self.crlist)
+        txt = "data=%s" % jsonmsg
+        self._signal(self.crurl, txt)
+        self.msglist = []
+        self.crlist = []
 
