@@ -40,5 +40,8 @@ setup(
                  ),
                 ('/opt/panda/autopyfactory/etc', ['etc/factory.conf-example',
                                                   ]),
+                ('/etc/cron.d', ['etc/apf-monstale',
+                                 'etc/apf-cleanlogs',
+                                ]),
                 ]
 )
