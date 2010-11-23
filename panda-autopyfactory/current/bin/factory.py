@@ -56,7 +56,7 @@ def main():
                       action="store_const", const=1, help="Run one cycle only")
     parser.add_option("--cycles", dest="cyclesToDo",
                       action="store", type="int", metavar="CYCLES", help="Run CYCLES times, then exit [default infinite]")
-    parser.add_option("--sleep", dest="sleepTime", default=60,
+    parser.add_option("--sleep", dest="sleepTime", default=120,
                       action="store", type="int", metavar="TIME", help="Sleep TIME seconds between cycles [default %default]")
     parser.add_option("--conf", dest="confFiles", default="factory.conf",
                       action="store", metavar="FILE1[,FILE2,FILE3]", help="Load configuration from FILEs (comma separated list)")

@@ -3,7 +3,9 @@ ChangeLog
 
 $Id: CHANGELOG 181 2010-04-10 21:59:00Z graemes $
 
-2010-11-08
+2010-11-22
+
+* Changed default sleep time to 120s.
 
 * Monitoring requires pycurl (install standard python-curl RPM).
 

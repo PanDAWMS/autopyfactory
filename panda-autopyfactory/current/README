@@ -50,6 +50,9 @@ get built automatically.
 
 The easiest way to do this is to add that line to ~/.rpmmacros.
 
+N.B. You must have the rpm-build package installed, or distutils will
+fallback to rpm and fail.
+
 Monitoring
 ----------
 
