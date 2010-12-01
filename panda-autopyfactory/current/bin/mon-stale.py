@@ -60,7 +60,7 @@ class Signal:
         if self.curl.getinfo(pycurl.HTTP_CODE) != 200:
             msg = "failed: %s%s" % (self.url, postdata)
             logging.debug(msg)
-            msg = "HTTP_CODE=%s" % pycurl.HTTP_CODE
+            msg = "HTTP_CODE=%s" % self.curl.getinfo(pycurl.HTTP_CODE)
             logging.debug(msg)
             # read from start of buffer
             self.buffer.seek(0)
@@ -89,6 +89,8 @@ class Signal:
         if self.curl.getinfo(pycurl.HTTP_CODE) != 200:
             msg = "failed: %s" % self.url
             logging.debug(msg)
+            msg = "HTTP_CODE=%s" % self.curl.getinfo(pycurl.HTTP_CODE)
+            logging.debug(msg)
             # read from start of buffer
             self.buffer.seek(0)
             logging.debug(self.buffer.read())
@@ -115,6 +117,8 @@ class CondorJob:
         """
         s = Signal(_OLDURL)
         self.stale = s.get()
+
+        logging.info("OLD jobs: %d" % len(self.stale))
         
     def qcondor(self):
         """
