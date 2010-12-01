@@ -41,12 +41,12 @@ class Signal:
         self.curl = pycurl.Curl()
         self.curl.setopt(pycurl.WRITEFUNCTION, self.buffer.write)
         self.curl.setopt(pycurl.URL, self.url)
-        self.curl.setopt(pycurl.POST, 1)
         self.curl.setopt(pycurl.SSL_VERIFYPEER, 0)
         self.curl.setopt(pycurl.CONNECTTIMEOUT, 5)
         self.curl.setopt(pycurl.TIMEOUT, 10)
     
     def post(self, postdata):
+        self.curl.setopt(pycurl.POST, 1)
         self.curl.setopt(pycurl.POSTFIELDS, postdata)
         # write at start of buffer
         self.buffer.seek(0)
@@ -78,6 +78,7 @@ class Signal:
         """
         send HTTP_GET to url and return the list
         """
+        self.curl.setopt(pycurl.HTTPGET, 1)
         self.curl.setopt(pycurl.URL, self.url)
         try:
             self.curl.perform()
