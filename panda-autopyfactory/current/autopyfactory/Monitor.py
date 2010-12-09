@@ -20,32 +20,26 @@ class Monitor:
     """
     Notifies a monitoring webservice about condor jobs
     """
-    def __init__(self, fid=None, monurl=None, loglevel='DEBUG'):
+    def __init__(self, **args):
         self.log = logging.getLogger('main.mon')
         mainlevel = logging.getLogger('main').getEffectiveLevel()
         self.log.setLevel(mainlevel)
 
-        if not fid:
-            msg = 'No factory ID defined'
-            self.log.error(msg)
-            return 
-        else:
-            self.fid = fid
+        msg = "ARGS: %s" % str(args)
+        self.log.debug(msg)
 
-        if not monurl:
-            msg = 'No monitoring URL defined'
-            self.log.error(msg)
-            return 
+        monurl = args['monitorURL']
+        self.fid = args['factoryId']
 
         self.crurl = monurl + 'c/'
         self.msgurl = monurl + 'm/'
+        self.furl = monurl + 'h/'
         self.crlist = []
         self.msglist = []
         self.json = json.JSONEncoder()
         self.buffer = StringIO.StringIO()
         self.c = pycurl.Curl()
         self.c.setopt(pycurl.WRITEFUNCTION, self.buffer.write)
-        self.c.setopt(pycurl.POST, 1)
         self.c.setopt(pycurl.SSL_VERIFYPEER, 0)
         self.c.setopt(pycurl.CONNECTTIMEOUT, 5)
         self.c.setopt(pycurl.TIMEOUT, 10)
@@ -53,12 +47,17 @@ class Monitor:
 
         self.log.debug('Instantiated monitor')
 
+        arglist = ["%s=%s" % (k, v) for k, v in args.items()]
+        data = '&'.join(arglist)
+        self._signal(self.furl, data)
+
     def _signal(self, url, postdata):
         """
         handle posting of payload to URL
         """
 
         self.c.setopt(pycurl.URL, url)
+        self.c.setopt(pycurl.POST, 1)
         self.c.setopt(pycurl.POSTFIELDS, postdata)
         try:
             self.c.perform()
