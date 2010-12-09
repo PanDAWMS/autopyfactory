@@ -39,13 +39,13 @@ class factory:
             self.config = factoryConfigLoader(self.factoryMessages, configFiles)
 
         self.mon = None
-        if self.config.config.has_option('Factory', 'monitorURL'):
-            url = self.config.config.get('Factory', 'monitorURL')
-            if url:
-                fid = self.config.config.get('Factory', 'factoryId')
-                self.mon = Monitor(fid=fid, monurl=url)
-        else:
+        try:
+            args = dict(self.config.config.items('Factory'))
+            args.update(self.config.config.items('Pilots'))
+            self.mon = Monitor(**args)
+        except:
             self.factoryMessages.warn('Monitoring not configured')
+            raise
 
     def note(self, queue, msg):
         self.factoryMessages.info('%s: %s' % (queue,msg))
