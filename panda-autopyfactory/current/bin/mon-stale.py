@@ -12,6 +12,7 @@ import commands
 import itertools
 import logging
 import pycurl
+import socket
 import sys
 import StringIO
 import time
@@ -22,12 +23,16 @@ try:
 except ImportError, err:
     import simplejson as json
 
-_THISFID = 'peter-UK-devel'
+_THISFID = ''
+_HOSTNAME = socket.gethostbyaddr(socket.gethostname())[0]
 _BASEURL = 'http://py-dev.lancs.ac.uk/mon/'
 # url to report awol jobs
 _AWOLURL = _BASEURL + 'awol/'
 # url to retrieve old stale jobs
-_OLDURL = _BASEURL + 'old/' + _THISFID
+if _THISFID:
+  _OLDURL = _BASEURL + 'old/' + _THISFID
+else:
+  _OLDURL = _BASEURL + 'old/' + _HOSTNAME
 # url to report stale jobs but only after status update
 _STALEURL = _BASEURL + 'stale/'
 
