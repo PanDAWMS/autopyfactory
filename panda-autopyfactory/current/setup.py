@@ -30,18 +30,13 @@ setup(
                 # Utilitys and main script
                 ('/opt/panda/autopyfactory/bin', ['bin/factory.py',
                                                   'bin/cleanLogs.py',
-                                                  'bin/mon-exiting.py',
-                                                  'bin/mon-stale.py',
                                                   'bin/vomsrenew.sh',
-                                                  ]
-                 ),
+                                                  ]),
                 ('/opt/panda/autopyfactory/libexec', ['libexec/runpilot3-wrapper.sh',
-                                                      ]
-                 ),
+                                                      ]),
                 ('/opt/panda/autopyfactory/etc', ['etc/factory.conf-example',
                                                   ]),
-                ('/etc/cron.d', ['etc/apf-monstale',
-                                 'etc/apf-cleanlogs',
+                ('/etc/cron.d', ['etc/apf-cleanlogs',
                                 ]),
                 ]
 )
