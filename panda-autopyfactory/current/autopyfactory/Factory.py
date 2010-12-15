@@ -283,6 +283,8 @@ class factory:
             print >>JDL, " -v %s" % self.config.queues[queue]['group'],
         if self.config.queues[queue]['country'] != None:
             print >>JDL, " -o %s" % self.config.queues[queue]['country'],
+        if self.config.queues[queue]['allowothercountry'] == True:
+            print >>JDL, " -A True",
         print >>JDL
         print >>JDL, "queue %d" % pilotNumber
         JDL.close()

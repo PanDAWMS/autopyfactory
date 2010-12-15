@@ -66,6 +66,9 @@ baseLogDirUrl = http://svr017.gla.scotgrid.ac.uk/factory/logs
 #  country is used to pickup jobs only from a particlar VOMS group, e.g., for /atlas/ca users use
 #    country = ca. This should only be used when submitting to special analysis resources. On
 #    ATLAS pledged resources it should be unset (Default None)
+#  allowothercountry is used to allow country specific pilots to pickup extra work using
+#    the panda server's 'beyond the pledge' fraction of 'dedicated' vs 'general' running jobs.
+#    (Boolean, Default False)
 #  group is used to pickup jobs only from a particlar VOMS group, e.g., poweruser0 
 #    (Default None)
 #  override, if True then schedconfig does not clobber configuration file values.
@@ -82,6 +85,7 @@ baseLogDirUrl = http://svr017.gla.scotgrid.ac.uk/factory/logs
 #user = None
 #cloud = UK
 #country = None
+#allowothercountry = False
 #group = None
 
 ## Set the server and port to contact for jobs

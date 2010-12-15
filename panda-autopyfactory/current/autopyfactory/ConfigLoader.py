@@ -87,6 +87,7 @@ class factoryConfigLoader:
                                        'user' : 'None',
                                        'group' : 'None',
                                        'country' : 'None',
+                                       'allowothercountry' : 'False',
                                        'cloud' : 'None',
                                        'server' : 'https://pandaserver.cern.ch',
                                        'queue' : 'Unset',
@@ -131,7 +132,7 @@ class factoryConfigLoader:
 
     def loadConfig(self):
         self.config = SafeConfigParser()
-        # Maintain case sensitivity in keys
+        # Maintain case sensitivity in keys (should try to get rid of this).
         self.config.optionxform = str
         self.configMessages.debug('Reading configuration files %s' % self.configFiles)
         readConfigFiles = self.config.read(self.configFiles)
