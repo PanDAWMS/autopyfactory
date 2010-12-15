@@ -8,11 +8,11 @@ Installation
     condorg.cern.ch doesn't exist anymore, but you don't need it. In
     condor_config set
 
-	CONDOR_HOST = my.pilot.factory.host.name
+    CONDOR_HOST = my.pilot.factory.host.name
 
     and (much lower down) set
 
-	DAEMON_LIST = MASTER, SCHEDD, COLLECTOR
+    DAEMON_LIST = MASTER, SCHEDD, COLLECTOR
 
     as well as setting your email address in CONDOR_ADMIN.
 
@@ -79,7 +79,7 @@ Installation
 7. To check that the syntax is ok and that the factory can get status
    for sites run it in test/oneshot mode:
 
-	$ /opt/panda/autopyfactory/bin/factory.py --verbose --test --oneshot --log=stdout
+    $ /opt/panda/autopyfactory/bin/factory.py --verbose --test --oneshot --log=stdout
 
     This will define the jdls in the log area, but not actually call
     condor_submit.
