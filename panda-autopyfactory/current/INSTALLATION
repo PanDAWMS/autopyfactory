@@ -105,9 +105,7 @@ Maintinance
    run from cron. This tar gzips old log directories (default old = 7
    days) and deletes very old ones (default very old = 21 days). 
    
-4. It is no longer recommended to uuencode the pilot in the script -
-   just leave it to download the latest release from CERN using curl.
-   If you want to send special pilots then make them available via
+4. If you want to send special pilots then make them available via
    http and use the PILOT_HTTP_SOURCES environment option for that
    queue. N.B. Use the environ setting in schedconfig!
 
@@ -115,9 +113,4 @@ Maintinance
    caching bug - create a soft link and update factory.conf to get
    around this.
 
-5. If you really do want to build your own wrapper script for testing
-   then the mkPilotWraper.py will rebuild the wrapper for
-   you. ("./mkPilotWraper.py --help" or, see Makefile.)  Generally
-   it's easier to set PILOT_HTTP_SOURCES in a queue's environment
-   though, as noted above.
 

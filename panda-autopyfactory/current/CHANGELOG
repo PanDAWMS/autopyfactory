@@ -13,6 +13,9 @@ $Id: CHANGELOG 181 2010-04-10 21:59:00Z graemes $
 
 * Monitoring improvement to help scale better. Removal of monitoring cron jobs.
 
+* This is the "Silent Running" release. Look after the plants, Dewey.
+  http://en.wikipedia.org/wiki/Silent_Running
+
 2010-11-22
 
 * Changed default sleep time to 120s.

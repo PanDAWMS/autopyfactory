@@ -35,12 +35,6 @@ def main():
 
   autopyfactory is an ATLAS pilot factory.
 
-  This is the first autopyfactory release, codename 'M-5'.
-  http://memory-alpha.org/en/wiki/The_Ultimate_Computer_(episode)
-
-  "Please don't say it's 'fascinating', Spock."
-  "No. But it is... interesting." 
-
   This program is licenced under the GPL, as set out in LICENSE file.
 
   Author(s):
@@ -85,7 +79,7 @@ def main():
     
     # Use the panda server squid cache, unless APF_NOSQUID is set
     if 'APF_NOSQUID' in os.environ:
-        factoryLogger.debug('Found APF_NOSQUID set - will not set or change any PANDA_URL_MAP')
+        factoryLogger.debug('Found APF_NOSQUID set - will not set or change PANDA_URL_MAP')
     else:
         # We also respect any operator setting for PANDA_URL_MAP
         if 'PANDA_URL_MAP' not in os.environ:
