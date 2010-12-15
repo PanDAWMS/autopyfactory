@@ -40,7 +40,7 @@ class factoryConfigLoader:
 
 
     def _loadQueueData(self, queue):
-        queueDataUrl = 'http://pandaserver.cern.ch:25080/cache/schedconfig/%s.factory.json' % queue
+        queueDataUrl = 'http://pandaserver.cern.ch:25085/cache/schedconfig/%s.factory.json' % queue
         try:
             handle = urlopen(queueDataUrl)
             jsonData = json.load(handle, 'utf-8')
