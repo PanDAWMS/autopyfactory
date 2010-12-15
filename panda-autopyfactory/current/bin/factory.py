@@ -25,6 +25,7 @@ from optparse import OptionParser
 import logging
 import logging.handlers
 import time
+import os
 
 from autopyfactory.Factory import factory
 from autopyfactory.Exceptions import FactoryConfigurationFailure
@@ -81,7 +82,19 @@ def main():
     factoryLogger.setLevel(options.logLevel)
 
     factoryLogger.debug('logging initialised')
+    
+    # Use the panda server squid cache, unless APF_NOSQUID is set
+    if 'APF_NOSQUID' in os.environ:
+        factoryLogger.debug('Found APF_NOSQUID set - will not set or change any PANDA_URL_MAP')
+    else:
+        # We also respect any operator setting for PANDA_URL_MAP
+        if 'PANDA_URL_MAP' not in os.environ:
+            os.environ['PANDA_URL_MAP'] = 'CERN,http://pandaserver.cern.ch:25085/server/panda,https://pandaserver.cern.ch:25443/server/panda'
+            factoryLogger.debug('Set PANDA_URL_MAP to use squid cache: %s', os.environ['PANDA_URL_MAP'])
+        else:
+            factoryLogger.debug('Found existing PANDA_URL_MAP setting: %s. Unchanged.', os.environ['PANDA_URL_MAP'])   
 
+    # Main loop
     try:
         f = factory(factoryLogger, options.dryRun, options.confFiles)
         cyclesDone = 0
