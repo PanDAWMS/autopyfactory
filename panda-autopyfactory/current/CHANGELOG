@@ -11,6 +11,8 @@ $Id: CHANGELOG 181 2010-04-10 21:59:00Z graemes $
   port (25085). (If it's already set then respect that. If APF_NOSQUID is set then
   do not set or change * Set the PANDA_URL_CONF.)
 
+* Monitoring improvement to help scale better. Removal of monitoring cron jobs.
+
 2010-11-22
 
 * Changed default sleep time to 120s.

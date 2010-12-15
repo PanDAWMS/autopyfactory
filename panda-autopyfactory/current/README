@@ -69,20 +69,3 @@ monitorURL = http://py-dev.lancs.ac.uk/mon/
 
 By default monitoring is disabled. Please email p.love@lancaster.ac.uk for
 any monitoring questions.
-
-Monitoring cron jobs
---------------------
-
-Two cron jobs are required to run on the factory machine, these query condor 
-and update the monitoring webservice about the state of each job:
-
-1. mon-exiting.sh refreshes jobs in state EXITING.
-2. mon-stale.sh notifies webservice about jobs which are stuck in particular
-states based on pre-defined timeouts.
-
-Example crontab (todo: add to rpm post-install script):
-* * * * * flock -xn /tmp/LCK_mon-exiting.py -c 'python bin/mon-exiting.py -q'
-* * * * * flock -xn /tmp/LCK_mon-stale.py -c 'python bin/mon-stale.py -q' 
-
-These scripts need editing! You must change _THISFID to the name of your 
-factory. eg. _THISFID = 'peter-UK-devel'
