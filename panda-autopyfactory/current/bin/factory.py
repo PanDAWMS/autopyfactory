@@ -27,6 +27,18 @@ import logging.handlers
 import time
 import os
 
+# Need to set PANDA_URL_MAP before the Client module is loaded (which happens
+# when the Factory module is loaded). Unfortunately this means that logging
+# is not yet available.
+if 'APF_NOSQUID' in os.environ:
+    # Use the panda server squid cache, unless APF_NOSQUID is set
+    print 'Found APF_NOSQUID set - will not set or change PANDA_URL_MAP, PANDA_URL'
+else:
+    os.environ['PANDA_URL_MAP'] = 'CERN,http://pandaserver.cern.ch:25085/server/panda,https://pandaserver.cern.ch:25443/server/panda'
+    os.environ['PANDA_URL'] = 'http://pandaserver.cern.ch:25085/server/panda'
+    print 'Set PANDA_URL_MAP, PANDA_URL to use squid cache: %s; %s' % (os.environ['PANDA_URL_MAP'], os.environ['PANDA_URL'])
+
+
 from autopyfactory.Factory import factory
 from autopyfactory.Exceptions import FactoryConfigurationFailure
 
@@ -77,17 +89,6 @@ def main():
 
     factoryLogger.debug('logging initialised')
     
-    # Use the panda server squid cache, unless APF_NOSQUID is set
-    if 'APF_NOSQUID' in os.environ:
-        factoryLogger.debug('Found APF_NOSQUID set - will not set or change PANDA_URL_MAP')
-    else:
-        # We also respect any operator setting for PANDA_URL_MAP
-        if 'PANDA_URL_MAP' not in os.environ:
-            os.environ['PANDA_URL_MAP'] = 'CERN,http://pandaserver.cern.ch:25085/server/panda,https://pandaserver.cern.ch:25443/server/panda'
-            factoryLogger.debug('Set PANDA_URL_MAP to use squid cache: %s', os.environ['PANDA_URL_MAP'])
-        else:
-            factoryLogger.debug('Found existing PANDA_URL_MAP setting: %s. Unchanged.', os.environ['PANDA_URL_MAP'])   
-
     # Main loop
     try:
         f = factory(factoryLogger, options.dryRun, options.confFiles)
