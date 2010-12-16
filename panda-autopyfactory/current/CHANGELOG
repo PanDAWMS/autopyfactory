@@ -8,7 +8,7 @@ $Id: CHANGELOG 181 2010-04-10 21:59:00Z graemes $
 * Support 'allowothercountry" for beyond the pledge resources. (Default False).
 
 * Set the PANDA_URL_CONF and PANDA_URL environment variables to use the 
-  panda server squid port (25085). Supress this by setting the APF_NOSQUID
+  panda server squid port (25085). Suppress this by setting the APF_NOSQUID
   environment variable.
   
 * Download of queue data also now happens via the squid cache.
