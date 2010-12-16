@@ -1,4 +1,7 @@
 #! /usr/bin/env python
+#
+# $Id$
+#
 '''Exception classes for pyfactory'''
 
 class FactoryConfigurationFailure(Exception):
