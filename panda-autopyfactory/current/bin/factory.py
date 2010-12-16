@@ -2,7 +2,7 @@
 #
 # Simple(ish) python condor_g factory for panda pilots
 #
-# $Id: factory.py 174 2010-04-10 20:17:11Z graemes $
+# $Id$
 #
 #
 #  Copyright (C) 2007,2008,2009 Graeme Andrew Stewart
@@ -51,7 +51,7 @@ def main():
 
   Author(s):
     Graeme A Stewart <g.stewart@physics.gla.ac.uk>, Peter Love <p.love@lancaster.ac.uk>
- ''', version="%prog $Id: factory.py 174 2010-04-10 20:17:11Z graemes $")
+ ''', version="%prog $Id$")
 
     parser.add_option("--verbose", "--debug", dest="logLevel", default=logging.INFO,
                       action="store_const", const=logging.DEBUG, help="Set logging level to DEBUG [default INFO]")
