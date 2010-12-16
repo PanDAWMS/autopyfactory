@@ -1,4 +1,4 @@
-# $Id: $
+# $Id$
 #
 # Monitoring system for autopyfactory, signals Monitoring
 # webservice at each factory cycle with list of condor jobs

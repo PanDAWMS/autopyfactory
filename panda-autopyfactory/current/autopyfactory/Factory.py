@@ -2,7 +2,7 @@
 #
 # Simple(ish) python condor_g factory for panda pilots
 #
-# $Id: Factory.py 154 2010-03-19 13:02:16Z graemes $
+# $Id$
 #
 #
 #  Copyright (C) 2007,2008,2009,2010 Graeme Andrew Stewart
