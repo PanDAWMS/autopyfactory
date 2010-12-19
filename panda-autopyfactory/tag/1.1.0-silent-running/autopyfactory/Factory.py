@@ -45,7 +45,6 @@ class factory:
             self.mon = Monitor(**args)
         except:
             self.factoryMessages.warn('Monitoring not configured')
-            raise
 
     def note(self, queue, msg):
         self.factoryMessages.info('%s: %s' % (queue,msg))
