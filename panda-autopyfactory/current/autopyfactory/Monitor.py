@@ -28,8 +28,11 @@ class Monitor:
         msg = "ARGS: %s" % str(args)
         self.log.debug(msg)
 
-        monurl = args['monitorURL']
-        self.fid = args['factoryId']
+        try:
+            monurl = args['monitorURL']
+            self.fid = args['factoryId']
+        except:
+            raise
 
         self.crurl = monurl + 'c/'
         self.msgurl = monurl + 'm/'
