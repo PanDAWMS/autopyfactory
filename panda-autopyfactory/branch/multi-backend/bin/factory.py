@@ -2,7 +2,7 @@
 #
 # Simple(ish) python condor_g factory for panda pilots
 #
-# $Id: factory.py 174 2010-04-10 20:17:11Z graemes $
+# $Id$
 #
 #
 #  Copyright (C) 2007,2008,2009 Graeme Andrew Stewart
@@ -25,6 +25,19 @@ from optparse import OptionParser
 import logging
 import logging.handlers
 import time
+import os
+
+# Need to set PANDA_URL_MAP before the Client module is loaded (which happens
+# when the Factory module is loaded). Unfortunately this means that logging
+# is not yet available.
+if 'APF_NOSQUID' in os.environ:
+    # Use the panda server squid cache, unless APF_NOSQUID is set
+    print 'Found APF_NOSQUID set - will not set or change PANDA_URL_MAP, PANDA_URL'
+else:
+    os.environ['PANDA_URL_MAP'] = 'CERN,http://pandaserver.cern.ch:25085/server/panda,https://pandaserver.cern.ch:25443/server/panda'
+    os.environ['PANDA_URL'] = 'http://pandaserver.cern.ch:25085/server/panda'
+    print 'Set PANDA_URL_MAP, PANDA_URL to use squid cache: %s; %s' % (os.environ['PANDA_URL_MAP'], os.environ['PANDA_URL'])
+
 
 from autopyfactory.Factory import factory
 from autopyfactory.Exceptions import FactoryConfigurationFailure
@@ -34,17 +47,11 @@ def main():
 
   autopyfactory is an ATLAS pilot factory.
 
-  This is the first autopyfactory release, codename 'M-5'.
-  http://memory-alpha.org/en/wiki/The_Ultimate_Computer_(episode)
-
-  "Please don't say it's 'fascinating', Spock."
-  "No. But it is... interesting." 
-
   This program is licenced under the GPL, as set out in LICENSE file.
 
   Author(s):
     Graeme A Stewart <g.stewart@physics.gla.ac.uk>, Peter Love <p.love@lancaster.ac.uk>
- ''', version="%prog $Id: factory.py 174 2010-04-10 20:17:11Z graemes $")
+ ''', version="%prog $Id$")
 
     parser.add_option("--verbose", "--debug", dest="logLevel", default=logging.INFO,
                       action="store_const", const=logging.DEBUG, help="Set logging level to DEBUG [default INFO]")
@@ -56,7 +63,7 @@ def main():
                       action="store_const", const=1, help="Run one cycle only")
     parser.add_option("--cycles", dest="cyclesToDo",
                       action="store", type="int", metavar="CYCLES", help="Run CYCLES times, then exit [default infinite]")
-    parser.add_option("--sleep", dest="sleepTime", default=60,
+    parser.add_option("--sleep", dest="sleepTime", default=120,
                       action="store", type="int", metavar="TIME", help="Sleep TIME seconds between cycles [default %default]")
     parser.add_option("--conf", dest="confFiles", default="factory.conf",
                       action="store", metavar="FILE1[,FILE2,FILE3]", help="Load configuration from FILEs (comma separated list)")
@@ -81,7 +88,8 @@ def main():
     factoryLogger.setLevel(options.logLevel)
 
     factoryLogger.debug('logging initialised')
-
+    
+    # Main loop
     try:
         f = factory(factoryLogger, options.dryRun, options.confFiles)
         cyclesDone = 0

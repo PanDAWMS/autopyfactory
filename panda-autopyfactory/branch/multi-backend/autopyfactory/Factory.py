@@ -2,7 +2,7 @@
 #
 # Simple(ish) python condor_g factory for panda pilots
 #
-# $Id: Factory.py 154 2010-03-19 13:02:16Z graemes $
+# $Id$
 #
 #
 #  Copyright (C) 2007,2008,2009,2010 Graeme Andrew Stewart
@@ -25,6 +25,7 @@ import os, os.path, sys, logging, commands, time, string, re
 
 from autopyfactory.Exceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.ConfigLoader import factoryConfigLoader
+from autopyfactory.Monitor import Monitor
 import userinterface.Client as Client
 
 
@@ -37,6 +38,19 @@ class factory:
         if configFiles != None:
             self.config = factoryConfigLoader(self.factoryMessages, configFiles)
 
+        self.mon = None
+        try:
+            args = dict(self.config.config.items('Factory'))
+            args.update(self.config.config.items('Pilots'))
+            self.mon = Monitor(**args)
+        except:
+            self.factoryMessages.warn('Monitoring not configured')
+
+    def note(self, queue, msg):
+        self.factoryMessages.info('%s: %s' % (queue,msg))
+        if isinstance(self.mon, Monitor):
+            nick = self.config.queues[queue]['nickname']
+            self.mon.msg(nick, queue, msg)
 
     def getCondorStatus(self):
         # We query condor for jobs running as us (owner) and this factoryId so that multiple 
@@ -72,10 +86,10 @@ class factory:
                         self.config.queues[statusDict['FACTORYQUEUE']]['pilotQueue']['active'] += 1
                     else:
                         self.config.queues[statusDict['FACTORYQUEUE']]['pilotQueue']['inactive'] += 1
-                except KeyError:
-                    self.factoryMessages.debug('Key error from unusual condor status line: %s' % line)
+                except KeyError,e:
+                    self.factoryMessages.debug('Key error from unusual condor status line: %s %s' % (e, line))
             for queue, queueParameters in self.config.queues.iteritems():
-                self.factoryMessages.debug('Condor: %s, %s: pilot status: %s',  queueParameters['site'], 
+                self.factoryMessages.debug('Condor: %s, %s: pilot status: %s',  queueParameters['siteid'], 
                                            queue, queueParameters['pilotQueue'])
         except ValueError, errorMsg:
             raise CondorStatusFailure, 'Error in condor queue result: %s' % errorMsg
@@ -87,20 +101,24 @@ class factory:
  
             # Check to see if a site or cloud is offline or in an error state
             if queueParameters['cloud'] in self.pandaCloudStatus and self.pandaCloudStatus[queueParameters['cloud']]['status'] == 'offline':
-                self.factoryMessages.info('Cloud %s containing queue %s: is offline - will not submit pilots.' % (queue, queueParameters['cloud']))
+                msg = 'Cloud %s is offline - will not submit pilots.' % queueParameters['cloud']
+                self.note(queue, msg)
                 continue
                 
             if queueParameters['status'] == 'offline':
-                self.factoryMessages.info('Site %s containing queue %s: is offline - will not submit pilots.' % (queue, queueParameters['site']))
+                msg = 'Site %s is offline - will not submit pilots.' % queueParameters['siteid']
+                self.note(queue, msg)
                 continue
                 
             if queueParameters['status'] == 'error':
-                self.factoryMessages.info('Site %s containing queue %s: is in an error state - will not submit pilots.' % (queue, queueParameters['site']))
+                msg = 'Site %s is in an error state - will not submit pilots.' % queueParameters['siteid']
+                self.note(queue, msg)
                 continue
                 
             # Check to see if the cloud is in test mode
             if queueParameters['cloud'] in self.pandaCloudStatus and self.pandaCloudStatus[queueParameters['cloud']]['status'] == 'test':
-                self.factoryMessages.info('Cloud %s containing queue %s: is in test mode.' % (queue, queueParameters['cloud']))
+                msg = 'Cloud %s in test mode.' % queueParameters['cloud']
+                self.note(queue, msg)
                 cloudTestStatus = True
             else:
                 cloudTestStatus = False
@@ -108,24 +126,24 @@ class factory:
                 
             # Now normal queue submission algorithm begins
             if queueParameters['pilotlimit'] != None and queueParameters['pilotQueue']['total'] >= queueParameters['pilotlimit']:
-                self.factoryMessages.info('%s: reached pilot limit %d (%s) - will not submit more pilots.', 
-                                          queue, queueParameters['pilotlimit'], queueParameters['pilotQueue'])
+                msg = 'reached pilot limit %d (%s) - will not submit more pilots.' % (queueParameters['pilotlimit'], queueParameters['pilotQueue'])
+                self.note(queue, msg)
                 continue
 
             if queueParameters['transferringlimit'] != None and 'transferring' in queueParameters['pandaStatus'] and \
                     queueParameters['pandaStatus']['transferring'] >= queueParameters['transferringlimit']:
-                self.factoryMessages.info('%s: too many transferring jobs (%d > limit %d) - will not submit more pilots.', 
-                                          queue, queueParameters['pandaStatus']['transferring'], queueParameters['transferringlimit'])
+                msg = 'too many transferring jobs (%d > limit %d) - will not submit more pilots.' % (queueParameters['pandaStatus']['transferring'], queueParameters['transferringlimit'])
+                self.note(queue, msg)
                 continue
 
             if queueParameters['status'] == 'test' or cloudTestStatus == True:
                 # For test sites only ever have one pilot queued, but allow up to nqueue to run
                 if queueParameters['pilotQueue']['inactive'] > 0 or queueParameters['pilotQueue']['total'] > queueParameters['nqueue']:
-                    self.factoryMessages.info('%s: test site has %d pilots, %d queued. Doing nothing.',
-                                              queue, queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
+                    msg = 'test site has %d pilots, %d queued. Doing nothing.' % (queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
+                    self.note(queue, msg)
                 else:
-                    self.factoryMessages.info('%s: test site has %d pilots, %d queued. Will submit 1 testing pilot.',
-                                              queue, queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
+                    msg = 'test site has %d pilots, %d queued. Will submit 1 testing pilot.' % (queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
+                    self.note(queue, msg)
                     self.condorPilotSubmit(queue, cycleNumber, 1)
                 continue
 
@@ -141,30 +159,27 @@ class factory:
                 if queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue'] or \
                         (queueParameters['pandaStatus']['activated'] > queueParameters['pilotQueue']['inactive'] and \
                          queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue'] * depthboost):
-                    self.factoryMessages.info('%s: %d activated jobs, %d inactive pilots queued (< queue depth %d * depth boost %d). Will submit full pilot load.',
-                                              queue, queueParameters['pandaStatus']['activated'], 
-                                              queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
+                    msg = '%d activated jobs, %d inactive pilots queued (< queue depth %d * depth boost %d). Will submit full pilot load.' % (queueParameters['pandaStatus']['activated'], queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
+                    self.note(queue, msg)
                     self.condorPilotSubmit(queue, cycleNumber, queueParameters['nqueue'])
                 else:
-                    self.factoryMessages.info('%s: %d activated jobs, %d inactive pilots queued (>= queue depth %d * depth boost %d). No extra pilots needed.',
-                                              queue, queueParameters['pandaStatus']['activated'],
-                                              queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
+                    msg = '%d activated jobs, %d inactive pilots queued (>= queue depth %d * depth boost %d). No extra pilots needed.' % (queueParameters['pandaStatus']['activated'],queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
+                    self.note(queue, msg)
                 continue
 
             # No activated jobs - send an idling pilot if there are less than queue depth pilots
             # and we are not in a suppressed cycle for this queue (so avoid racking up too many idleing jobs)
             if queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue']:
                 if queueParameters['idlepilotsuppression'] > 1 and cycleNumber % queueParameters['idlepilotsuppression'] != 0:
-                    self.factoryMessages.info('%s: No activated jobs, %d inactive pilots queued (queue depth %d). This factory cycle supressed (%d mod %d != 0).',
-                                              queue, queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'],
-                                              cycleNumber, queueParameters['idlepilotsuppression'])
+                    msg = 'No activated jobs, %d inactive pilots queued (queue depth %d). This factory cycle supressed (%d m od %d != 0).' % (queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'],cycleNumber, queueParameters['idlepilotsuppression'])
+                    self.note(queue, msg)
                 else:
-                    self.factoryMessages.info('%s: No activated jobs, %d inactive pilots queued (queue depth %d). Will submit 1 idling pilot.',
-                                              queue, queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
+                    msg = 'No activated jobs, %d inactive pilots queued (queue depth %d). Will submit 1 idling pilot.' % (queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
+                    self.note(queue, msg)
                     self.condorPilotSubmit(queue, cycleNumber, 1)
             else:
-                self.factoryMessages.info('%s: No activated jobs, %d inactive pilots queued (queue depth %d). No extra pilots needed.',
-                                          queue, queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
+                msg = 'No activated jobs, %d inactive pilots queued (queue depth %d). No extra pilots needed.' % (queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
+                self.note(queue, msg)
 
 
     def condorPilotSubmit(self, queue, cycleNumber=0, pilotNumber=1):
@@ -186,11 +201,16 @@ class factory:
             self.factoryMessages.error('Cannot submit pilots for %s', gatekeeper)
             return
         if not self.dryRun:
-            (exitStatus, output) = commands.getstatusoutput('condor_submit ' + jdlFile)
+            (exitStatus, output) = commands.getstatusoutput('condor_submit -verbose ' + jdlFile)
             if exitStatus != 0:
                 self.factoryMessages.error('condor_submit command for %s failed (status %d): %s', queue, exitStatus, output)
             else:
                 self.factoryMessages.debug('condor_submit command for %s succeeded', queue)
+                if isinstance(self.mon, Monitor):
+                    nick = self.config.queues[queue]['nickname']
+                    label = queue
+                    self.mon.notify(nick, label, output)
+
         else:
             self.factoryMessages.debug('Dry run mode - pilot submission supressed.')
             
@@ -205,9 +225,6 @@ class factory:
             self.factoryMessages.error('Failed to open file %s (error %d): %s', jdlFile, errno, errMsg)
             return 1
 
-        # If we have multiple gatekeepers, use a round robin approach
-        #gkIndex = cycleNumber % len(self.config.queues[queue]['jdl'])
-
         print >>JDL, "# Condor-G glidein pilot for panda"
         print >>JDL, "executable=%s" % self.config.config.get('Pilots', 'executable')
         print >>JDL, "Dir=%s/" % logDir
@@ -218,22 +235,35 @@ class factory:
         print >>JDL, "stream_error=False"
         print >>JDL, "notification=Error"
         print >>JDL, "notify_user=%s" % self.config.config.get('Factory', 'factoryOwner')
-        print >>JDL, "universe=globus"
-        print >>JDL, "x509userproxy=%s" % self.config.queues[queue]['gridProxy']
-        print >>JDL, "globusscheduler=%s" % self.config.queues[queue]['jdl']
-        print >>JDL, "globusrsl=(queue=%s)(jobtype=single)" % self.config.queues[queue]['localqueue']
+        print >>JDL, "universe=grid"
+        # Here we insert the switch for CREAM CEs. This is rather a hack for now, but will
+        # improve once multiple backends are supported properly
+        if self.config.queues[queue]['_isCream']:
+            print >>JDL, "grid_resource=cream %s:%d/ce-cream/services/CREAM2 %s %s" % (
+                 self.config.queues[queue]['_creamHost'], self.config.queues[queue]['_creamPort'], 
+                 self.config.queues[queue]['_creamBatchSys'], self.config.queues[queue]['localqueue'])
+        else:
+            # GRAM resource
+            print >>JDL, "grid_resource=gt2 %s" % self.config.queues[queue]['queue']
+            print >>JDL, "globusrsl=(queue=%s)(jobtype=single)" % self.config.queues[queue]['localqueue']
         # Probably not so helpful to set these in the JDL
         #if self.config.queues[queue]['memory'] != None:
         #    print >>JDL, "(maxMemory=%d)" % self.config.queues[queue]['memory'],
         #if self.config.queues[queue]['wallClock'] != None:
         #    print >>JDL, "(maxWallTime=%d)" % self.config.queues[queue]['wallClock'],
         #print >>JDL
-        print >>JDL, '+MATCH_gatekeeper_url="%s"' % self.config.queues[queue]['jdl']
-        print >>JDL, '+MATCH_queue="%s"' % self.config.queues[queue]['localqueue']
+        #print >>JDL, '+MATCH_gatekeeper_url="%s"' % self.config.queues[queue]['queue']
+        #print >>JDL, '+MATCH_queue="%s"' % self.config.queues[queue]['localqueue']
+        print >>JDL, "x509userproxy=%s" % self.config.queues[queue]['gridProxy']
         print >>JDL, 'periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)'
         print >>JDL, 'periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)'
         # In job environment correct GTAG to URL for logs, JSID should be factoryId
-        print >>JDL, 'environment = "GTAG=%s/$(Cluster).$(Process).out PANDA_JSID=%s' % (logUrl, self.config.config.get('Factory', 'factoryId')),
+        print >>JDL, 'environment = "PANDA_JSID=%s' % self.config.config.get('Factory', 'factoryId'),
+        print >>JDL, 'GTAG=%s/$(Cluster).$(Process).out' % logUrl,
+        print >>JDL, 'APFCID=$(Cluster).$(Process)',
+        print >>JDL, 'APFFID=%s' % self.config.config.get('Factory', 'factoryId'),
+        if isinstance(self.mon, Monitor):
+            print >>JDL, 'APFMON=%s' % self.config.config.get('Factory', 'monitorURL'),
         print >>JDL, 'FACTORYQUEUE=%s' % queue,
         if self.config.queues[queue]['user'] != None:
             print >>JDL, 'FACTORYUSER=%s' % self.config.queues[queue]['user'],
@@ -252,6 +282,8 @@ class factory:
             print >>JDL, " -v %s" % self.config.queues[queue]['group'],
         if self.config.queues[queue]['country'] != None:
             print >>JDL, " -o %s" % self.config.queues[queue]['country'],
+        if self.config.queues[queue]['allowothercountry'] == True:
+            print >>JDL, " -A True",
         print >>JDL
         print >>JDL, "queue %d" % pilotNumber
         JDL.close()
@@ -267,16 +299,16 @@ class factory:
                 if error != 0:
                     raise PandaStatusFailure, 'Client.getJobStatisticsPerSite(countryGroup=%s,workingGroup=%s) error: %s' % (country, group, error)
 
-                for site, queues in self.config.sites[country][group].iteritems():
-                    if site == 'siteStatus':
+                for siteid, queues in self.config.sites[country][group].iteritems():
+                    if siteid == 'siteStatus':
                         continue
-                    if site in self.config.sites[country][group]['siteStatus']:
-                        self.factoryMessages.debug('Panda status: %s (country=%s, group=%s) %s' % (site, country, group, self.config.sites[country][group]['siteStatus'][site]))
+                    if siteid in self.config.sites[country][group]['siteStatus']:
+                        self.factoryMessages.debug('Panda status: %s (country=%s, group=%s) %s' % (siteid, country, group, self.config.sites[country][group]['siteStatus'][siteid]))
                         for queue in queues:
-                            self.config.queues[queue]['pandaStatus'] = self.config.sites[country][group]['siteStatus'][site]
+                            self.config.queues[queue]['pandaStatus'] = self.config.sites[country][group]['siteStatus'][siteid]
                     else:
                         # If panda knows nothing, then we assume all zeros (site may be inactive)
-                        self.factoryMessages.debug('Panda status for site %s (country=%s, group=%s) not found - setting zeros in status to allow bootstraping of site.' % (site, country, group))
+                        self.factoryMessages.debug('Panda status for siteid %s (country=%s, group=%s) not found - setting zeros in status to allow bootstraping of site.' % (siteid, country, group))
                         for queue in queues:
                             self.config.queues[queue]['pandaStatus'] = {'transferring': 0, 'activated': 0, 'running': 0, 'assigned': 0, 'failed': 0, 'finished': 0}
 
@@ -305,6 +337,8 @@ class factory:
             self.getCondorStatus()
             self.getPandaStatus()
             self.submitPilots(cycleNumber)
+            if isinstance(self.mon, Monitor):
+                self.mon.shout()
         except CondorStatusFailure, errMsg:
             self.factoryMessages.error('Condor status polling failure: %s', errMsg)
             self.factoryMessages.error('Will sleep and carry on.')

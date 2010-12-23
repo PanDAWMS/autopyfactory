@@ -3,7 +3,7 @@
 # Setup prog for autopyfactory
 #
 #
-release_version='1.0.1'
+release_version='1.1.0'
 
 import re
 import sys
@@ -31,12 +31,12 @@ setup(
                 ('/opt/panda/autopyfactory/bin', ['bin/factory.py',
                                                   'bin/cleanLogs.py',
                                                   'bin/vomsrenew.sh',
-                                                  ]
-                 ),
+                                                  ]),
                 ('/opt/panda/autopyfactory/libexec', ['libexec/runpilot3-wrapper.sh',
-                                                      ]
-                 ),
+                                                      ]),
                 ('/opt/panda/autopyfactory/etc', ['etc/factory.conf-example',
                                                   ]),
+                ('/etc/cron.d', ['etc/apf-cleanlogs',
+                                ]),
                 ]
 )

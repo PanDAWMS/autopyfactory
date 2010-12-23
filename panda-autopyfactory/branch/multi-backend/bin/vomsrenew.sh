@@ -29,8 +29,8 @@ vomsinit() {
     fi
 }
 
-vomsinit /tmp/x509_u${ID}_novoms atlas:/atlas/Role=production /tmp/prodProxy
-#vomsinit /tmp/x509_u${ID}_novoms atlas:/atlas/Role=pilot /tmp/pilotProxy
+vomsinit /tmp/plainProxy atlas:/atlas/Role=production /tmp/prodProxy
+vomsinit /tmp/plainProxy atlas:/atlas/Role=pilot /tmp/pilotProxy
 #vomsinit /tmp/x509_u${ID}_novoms atlas:/atlas/uk/Role=poweruser0 /tmp/ukPowerProxy
 #vomsinit /tmp/x509_u${ID}_novoms atlas /tmp/atlasProxy
 

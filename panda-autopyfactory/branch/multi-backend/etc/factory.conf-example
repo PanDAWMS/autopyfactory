@@ -9,6 +9,7 @@ factoryOwner = g.stewart@physics.gla.ac.uk
 factoryId = graeme-UK
 # condorUser = unixUserName
 # schedConfigPollTime = 5
+# monitorURL = http://py-dev.lancs.ac.uk/mon/
 
 ## Configure the pilots which are sent
 # Executable, baseLogDir and baseLogDirUrl are mandatory
@@ -65,6 +66,9 @@ baseLogDirUrl = http://svr017.gla.scotgrid.ac.uk/factory/logs
 #  country is used to pickup jobs only from a particlar VOMS group, e.g., for /atlas/ca users use
 #    country = ca. This should only be used when submitting to special analysis resources. On
 #    ATLAS pledged resources it should be unset (Default None)
+#  allowothercountry is used to allow country specific pilots to pickup extra work using
+#    the panda server's 'beyond the pledge' fraction of 'dedicated' vs 'general' running jobs.
+#    (Boolean, Default False)
 #  group is used to pickup jobs only from a particlar VOMS group, e.g., poweruser0 
 #    (Default None)
 #  override, if True then schedconfig does not clobber configuration file values.
@@ -81,6 +85,7 @@ baseLogDirUrl = http://svr017.gla.scotgrid.ac.uk/factory/logs
 #user = None
 #cloud = UK
 #country = None
+#allowothercountry = False
 #group = None
 
 ## Set the server and port to contact for jobs
@@ -119,7 +124,7 @@ nickname = ANALY_GLASGOW
 # gatekeeper
 [UKI-SCOTGRID-GLASGOW-testCE]
 nickname = UKI-SCOTGRID-GLASGOW-svr029-atlprd-lcgpbs
-jdl = svr029.gla.scotgrid.ac.uk/jobmanager-lcgpbs
+queue = svr029.gla.scotgrid.ac.uk/jobmanager-lcgpbs
 localqueue = atlprd
 status = test
 nqueue = 1
@@ -130,7 +135,16 @@ override = True
 # into two parts: jdl and queue.
 [ANALY_GLASGOW-svr026]
 nickname = ANALY_GLASGOW
-jdl = svr026.gla.scotgrid.ac.uk/jobmanager-lcgpbs
+queue = svr026.gla.scotgrid.ac.uk/jobmanager-lcgpbs
 localqueue = atlanaly
 override = True
 
+# CREAM CE example
+# Currently CREAM CEs have incorrect parameters in schedconfig, so they
+# must have jdl (and probably localqueue) overrides.
+# If you don't specify the port then 8443 is assumed.
+[UKI-SCOTGRID-GLASGOW-cream14]
+nickname = UKI-SCOTGRID-GLASGOW-svr014-atlprd-pbs
+queue = svr014.gla.scotgrid.ac.uk:8443/cream-pbs
+localqueue = atlprd
+override = True
