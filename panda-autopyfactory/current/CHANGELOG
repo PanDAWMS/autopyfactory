@@ -3,6 +3,11 @@ ChangeLog
 
 $Id$
 
+
+2011-01-13
+
+* If PANDA_URL_CONF or PANDA_URL are set then do not alter them.
+
 2010-12-15
 
 * Support 'allowothercountry" for beyond the pledge resources. (Default False).

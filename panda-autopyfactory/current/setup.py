@@ -3,7 +3,7 @@
 # Setup prog for autopyfactory
 #
 #
-release_version='1.1.0'
+release_version='1.2.0'
 
 import re
 import sys
