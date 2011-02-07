@@ -56,13 +56,6 @@ fallback to rpm and fail.
 Monitoring
 ----------
 
-With monitoring enabled autopyfactory will send HTTP_GET and HTTP_POST
-requests to a remote webservice. The following requests are made:
-
-1. HTTP_POST for each condor job CREATED  (Factory.py)
-2. HTTP_GET when pilot job is RUNNING on WorkerNode (runpilot3-wrapper.sh)
-3. HTTP_GET when pilot job is EXITING on WorkerNode (runpilot3-wrapper.sh)
-
 Enable monitoring by including this line in the factory.conf, then visit 
 the URL for the web interface:
 monitorURL = http://py-dev.lancs.ac.uk/mon/
