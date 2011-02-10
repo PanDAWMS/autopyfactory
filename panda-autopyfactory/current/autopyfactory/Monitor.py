@@ -110,11 +110,11 @@ class Monitor:
         data = (nick, self.fid, label, text[:140])
         self.msglist.append(data)
 
-    def shout(self):
+    def shout(self, cycleNumber):
         """
         Send information blob to webservice
         """
-        msg = 'End of factory cycle'
+        msg = 'End of factory cycle: %d' % cycleNumber
         self.log.debug(msg)
         msg = 'msglist length: %d' % len(self.msglist)
         self.log.debug(msg)
@@ -122,12 +122,13 @@ class Monitor:
         self.log.debug(msg)
 
         jsonmsg = self.json.encode(self.msglist)
-        txt = "data=%s" % jsonmsg
+        txt = "cycle=%s&data=%s" % (cycleNumber, jsonmsg)
         self._signal(self.msgurl, txt)
 
         jsonmsg = self.json.encode(self.crlist)
         txt = "data=%s" % jsonmsg
         self._signal(self.crurl, txt)
+
         self.msglist = []
         self.crlist = []
 
