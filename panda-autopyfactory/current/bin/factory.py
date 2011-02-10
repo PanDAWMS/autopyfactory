@@ -26,6 +26,7 @@ import logging
 import logging.handlers
 import time
 import os
+import sys
 
 # Need to set PANDA_URL_MAP before the Client module is loaded (which happens
 # when the Factory module is loaded). Unfortunately this means that logging
