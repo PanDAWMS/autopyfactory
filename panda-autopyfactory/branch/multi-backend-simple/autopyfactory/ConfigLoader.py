@@ -98,6 +98,7 @@ class factoryConfigLoader:
                                        'site' : 'None',
                                        'siteid' : 'None',
                                        'nickname' : 'None',
+                                       'backend' : 'condorg',
                                        }
         if 'X509_USER_PROXY' in os.environ:
             defaults['QueueDefaults']['gridProxy'] = os.environ['X509_USER_PROXY']
@@ -168,6 +169,7 @@ class factoryConfigLoader:
 
         # Construct the structured siteData dictionary from the configuration stanzas
         self.queues = {}
+        self.backends = {}
         for queue in self.config.sections():
             if queue in ('Factory', 'Pilots', 'QueueDefaults'):
                 continue
@@ -254,7 +256,12 @@ class factoryConfigLoader:
                     continue
             else:
                 self.queues[queue]['_isCream'] = False
-
+                
+            # Look for alternative backends
+            if self.queues[queue]['backend'] in self.backends:
+                self.backends[self.queues[queue]['backend']].append(queue)
+            else:
+                self.backends[self.queues[queue]['backend']] = [queue,]
             
             # Sanity check queue
             self._validateQueue(queue)

@@ -21,7 +21,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import os, os.path, sys, logging, commands, time, string, re
+import os, os.path, sys, logging, commands, time, string, re, subprocess
+
+from xml.dom import minidom, DOMException
 
 from autopyfactory.Exceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.ConfigLoader import factoryConfigLoader
@@ -46,11 +48,13 @@ class factory:
         except:
             self.factoryMessages.warn('Monitoring not configured')
 
+
     def note(self, queue, msg):
         self.factoryMessages.info('%s: %s' % (queue,msg))
         if isinstance(self.mon, Monitor):
             nick = self.config.queues[queue]['nickname']
             self.mon.msg(nick, queue, msg)
+
 
     def getCondorStatus(self):
         # We query condor for jobs running as us (owner) and this factoryId so that multiple 
@@ -67,7 +71,7 @@ class factory:
         # Count the number of queued pilots for each queue
         # For now simply divide into active and inactive pilots (JobStatus == or != 2)
         try:
-            for queue in self.config.queues.keys():
+            for queue in self.config.backend['condorg']:
                 self.config.queues[queue]['pilotQueue'] = {'active' : 0, 'inactive' : 0, 'total' : 0,}
             for line in condorOutput.splitlines():
                 statusItems = line.split()
@@ -144,7 +148,7 @@ class factory:
                 else:
                     msg = 'test site has %d pilots, %d queued. Will submit 1 testing pilot.' % (queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
                     self.note(queue, msg)
-                    self.condorPilotSubmit(queue, cycleNumber, 1)
+                    self.pilotSubmit(queue, cycleNumber, 1)
                 continue
 
             # Production site, online - look for activated jobs and ensure pilot queue is topped up, or
@@ -161,7 +165,7 @@ class factory:
                          queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue'] * depthboost):
                     msg = '%d activated jobs, %d inactive pilots queued (< queue depth %d * depth boost %d). Will submit full pilot load.' % (queueParameters['pandaStatus']['activated'], queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
                     self.note(queue, msg)
-                    self.condorPilotSubmit(queue, cycleNumber, queueParameters['nqueue'])
+                    self.pilotSubmit(queue, cycleNumber, queueParameters['nqueue'])
                 else:
                     msg = '%d activated jobs, %d inactive pilots queued (>= queue depth %d * depth boost %d). No extra pilots needed.' % (queueParameters['pandaStatus']['activated'],queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
                     self.note(queue, msg)
@@ -176,13 +180,13 @@ class factory:
                 else:
                     msg = 'No activated jobs, %d inactive pilots queued (queue depth %d). Will submit 1 idling pilot.' % (queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
                     self.note(queue, msg)
-                    self.condorPilotSubmit(queue, cycleNumber, 1)
+                    self.pilotSubmit(queue, cycleNumber, 1)
             else:
                 msg = 'No activated jobs, %d inactive pilots queued (queue depth %d). No extra pilots needed.' % (queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
                 self.note(queue, msg)
 
 
-    def condorPilotSubmit(self, queue, cycleNumber=0, pilotNumber=1):
+    def pilotSubmit(self, queue, cycleNumber=0, pilotNumber=1):
         now = time.localtime()
         logPath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2]) + queue.translate(string.maketrans('/:','__'))
         logDir = self.config.config.get('Pilots', 'baseLogDir') + logPath
@@ -195,8 +199,15 @@ class factory:
                 self.factoryMessages.error('Failed to create directory %s (error %d): %s', logDir, errno, errMsg)
                 self.factoryMessages.error('Cannot submit pilots for %s', queue)
                 return
+
+        if queue['backend'] == 'condorg':
+            self.pilotSubmit(queue, cycleNumber, pilotNumber, logDir, logUrl)
+        elif queue['backend'] == 'batch':
+            self.batchPilotSubmit(queue,cycleNumber, pilotNumber, logDir, logUrl)
+
+    def condorPilotSubmit(self, queue, cycleNumber, pilotNumber, logDir, logUrl):
         jdlFile = logDir + '/submitMe.jdl'
-        error = self.writeJDL(queue, jdlFile, pilotNumber, logDir, logUrl, cycleNumber)
+        error = self.writeCondorJDL(queue, jdlFile, pilotNumber, logDir, logUrl, cycleNumber)
         if error != 0:
             self.factoryMessages.error('Cannot submit pilots for %s', gatekeeper)
             return
@@ -212,10 +223,10 @@ class factory:
                     self.mon.notify(nick, label, output)
 
         else:
-            self.factoryMessages.debug('Dry run mode - pilot submission supressed.')
+            self.factoryMessages.debug('Dry run mode - pilot submission suppressed.')
             
 
-    def writeJDL(self, queue, jdlFile, pilotNumber, logDir, logUrl, cycleNumber=0):
+    def writeCondorJDL(self, queue, jdlFile, pilotNumber, logDir, logUrl, cycleNumber=0):
         # Encoding the wrapper in the script is a bit inflexible, but saves
         # nasty search and replace on a template file, and means one less 
         # dependency for the factory.
@@ -290,6 +301,50 @@ class factory:
         return 0
 
 
+    def batchPilotSubmit(self, queue, cycleNumber, pilotNumber, logDir, logUrl):
+        '''Submit pilots to the batch system - this must be done one by one in torque'''
+        for pilotN in xrange(pilotNumber):
+            myId = '%06d-%03d' % (cycleNumber, pilotN)
+            jdlFile = os.path.join(logDir, myId + '.submit')
+            try:
+                JDL = open(jdlFile, "w")
+            except IOError, (errno, errMsg) :
+                self.factoryMessages.error('Failed to open file %s (error %d): %s', jdlFile, errno, errMsg)
+                return 1
+
+            print >>JDL, "#! /bin/bash"
+            print >>JDL, "#PBS -e %s" % os.path.join(logDir, myId + '.err')
+            print >>JDL, "#PBS -o %s" % os.path.join(logDir, myId + '.out')
+            print >>JDL, "#PBS -u %s" % self.config.config[queue]['user']
+            print >>JDL, "#PBS -q %s" % self.config.config[queue]['batchQueue']
+            
+            print >>JDL, "%s -s %s -h %s" % (self.config.config.get('Pilots', 'executable'), 
+                                             self.config.queues[queue]['siteid'], self.config.queues[queue]['nickname']),
+            print >>JDL, "-p %d -w %s" % (self.config.queues[queue]['port'], self.config.queues[queue]['server']),  
+            if self.config.queues[queue]['jobRecovery'] == False:
+                print >>JDL, " -j false",
+            if self.config.queues[queue]['memory'] != None:
+                print >>JDL, " -k %d" % self.config.queues[queue]['memory'],
+            if self.config.queues[queue]['user'] != None:
+                print >>JDL, " -u %s" % self.config.queues[queue]['user'],
+            if self.config.queues[queue]['group'] != None:
+                print >>JDL, " -v %s" % self.config.queues[queue]['group'],
+            if self.config.queues[queue]['country'] != None:
+                print >>JDL, " -o %s" % self.config.queues[queue]['country'],
+            if self.config.queues[queue]['allowothercountry'] == True:
+                print >>JDL, " -A True",
+            print >>JDL
+            JDL.close()
+            
+            if not self.dryRun:
+                try:
+                    subprocess.call(['qsub', '-V', 'jdlFile'])
+                except CalledProcessError:
+                    self.factoryMessages.error('qsub command failed for %s on %s' % (myId, queue))
+            else:
+                self.factoryMessages.debug('Dry run mode - pilot submission suppressed.')
+
+
     def getPandaStatus(self):
         for country in self.config.sites.keys():
             for group in self.config.sites[country].keys():
@@ -324,6 +379,33 @@ class factory:
             raise PandaStatusFailure, 'Client.getCloudSpecs() error: %s' % (error)
 
 
+    def getBatchStatus(self):
+        '''Use XML dump of qstat information'''
+        try:
+            batchState = minidom.parseString(subprocess.Popen(["qstat", "-x"], stdout=subprocess.PIPE).communicate()[0])
+        except DOMException:
+            raise
+        except OSError:
+            raise
+
+        for queue in self.config.backends['batch']:
+            self.config.queues[queue]['pilotQueue'] = {'active' : 0, 'inactive' : 0, 'total' : 0,}
+
+        jobs = batchState.getElementsByTagName('Job')
+        for j in jobs:
+            # No idea if this is efficient, but it works!
+            user = j.getElementsByTagName('euser')[0].firstChild.data.encode('utf-8')
+            state = j.getElementsByTagName('job_state')[0].firstChild.data.encode('utf-8')
+            
+            for queue in self.config.backends['batch']:
+                if user == self.config.queues[queue]['user']:
+                    self.config.queues[queue]['pilotQueue']['total'] += 1
+                    if state == 'R':
+                        self.config.queues[queue]['pilotQueue']['active'] += 1
+                    else:
+                        self.config.queues[queue]['pilotQueue']['inactive'] += 1
+
+
     def updateConfig(self, cycleNumber):
         '''Update configuration if necessary'''
         self.config.reloadConfigFilesIfChanged()
@@ -334,7 +416,11 @@ class factory:
     def factorySubmitCycle(self, cycleNumber=0):
         '''Go through one status/submission cycle'''
         try:
-            self.getCondorStatus()
+            # Only bother polling for configured backends
+            if 'condorg' in self.config.backends:
+                self.getCondorStatus()
+            if 'batch' in self.config.backends:
+                self.getBatchStatus()
             self.getPandaStatus()
             self.submitPilots(cycleNumber)
             if isinstance(self.mon, Monitor):

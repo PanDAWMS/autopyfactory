@@ -148,3 +148,13 @@ nickname = UKI-SCOTGRID-GLASGOW-svr014-atlprd-pbs
 queue = svr014.gla.scotgrid.ac.uk:8443/cream-pbs
 localqueue = atlprd
 override = True
+
+
+# Batch system example
+# Factory will do a "qstat" and match only jobs from the specified unix user
+# Jobs will be submitted to the cluster with "qsub -V wrapper-script"
+[GLASGOW-batch]
+nickname = UKI-SCOTGRID-GLASGOW-torque
+user = prdatlas001
+backend = batch
+batchQueue = atlas
