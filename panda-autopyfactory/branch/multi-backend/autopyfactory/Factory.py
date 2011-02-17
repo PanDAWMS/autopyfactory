@@ -29,7 +29,7 @@ from autopyfactory.Monitor import Monitor
 import userinterface.Client as Client
 
 
-class factory:
+class factory(object):
     def __init__(self, mainLogger, dryRun=False, configFiles=('factory.conf',)):
         self.factoryMessages = logging.getLogger('main.factory')
         self.factoryMessages.debug('Factory class initialised.')

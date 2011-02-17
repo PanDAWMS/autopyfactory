@@ -17,7 +17,7 @@ except ImportError, err:
     import simplejson as json
 
 
-class factoryConfigLoader:
+class factoryConfigLoader(object):
     def __init__(self, factoryLogger, configFiles = ('factory.conf',), loglevel=logging.DEBUG):
         self.configMessages = logging.getLogger('main.factory.conf')
         self.configMessages.debug('Factory configLoader class initialised.')
@@ -98,6 +98,7 @@ class factoryConfigLoader:
                                        'site' : 'None',
                                        'siteid' : 'None',
                                        'nickname' : 'None',
+                                       'backend' : 'condorg',
                                        }
         if 'X509_USER_PROXY' in os.environ:
             defaults['QueueDefaults']['gridProxy'] = os.environ['X509_USER_PROXY']
@@ -128,6 +129,9 @@ class factoryConfigLoader:
         if self.queues[queue]['siteid'] == None:
             self.configMessages.error('Queue %s has siteid=None and will be ignored. Update the queue if you really want to use it.' % queue)
             self.queues[queue]['status'] = 'error'
+            
+        # Check the backend for this queue exists
+        
 
 
     def loadConfig(self):
