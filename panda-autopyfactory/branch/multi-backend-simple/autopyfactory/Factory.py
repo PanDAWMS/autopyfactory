@@ -24,6 +24,7 @@
 import os, os.path, sys, logging, commands, time, string, re, subprocess
 
 from xml.dom import minidom, DOMException
+from xml.parsers.expat import ExpatError
 
 from autopyfactory.Exceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.ConfigLoader import factoryConfigLoader
@@ -381,15 +382,19 @@ class factory:
 
     def getBatchStatus(self):
         '''Use XML dump of qstat information'''
+        # Set current totals to zero here (in case of parsing error)
+        for queue in self.config.backends['batch']:
+            self.config.queues[queue]['pilotQueue'] = {'active' : 0, 'inactive' : 0, 'total' : 0,}
+        
         try:
             batchState = minidom.parseString(subprocess.Popen(["qstat", "-x"], stdout=subprocess.PIPE).communicate()[0])
         except DOMException:
             raise
+        except ExpatError, error:
+            self.factoryMessages.warning('Problem while parsing XML: %s' % (error, ))
+            return
         except OSError:
             raise
-
-        for queue in self.config.backends['batch']:
-            self.config.queues[queue]['pilotQueue'] = {'active' : 0, 'inactive' : 0, 'total' : 0,}
 
         jobs = batchState.getElementsByTagName('Job')
         for j in jobs:
