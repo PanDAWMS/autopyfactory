@@ -28,6 +28,9 @@ import time
 import os
 import sys
 
+from ConfigParser import SafeConfigParser, NoSectionError
+
+
 # Need to set PANDA_URL_MAP before the Client module is loaded (which happens
 # when the Factory module is loaded). Unfortunately this means that logging
 # is not yet available.
@@ -45,9 +48,10 @@ if not 'APF_NOSQUID' in os.environ:
 else:
     print >>sys.stderr, 'Found APD_NOSQUID set. Not changing/setting panda client environment.'
 
+from autopyfactory.factory import Factory
+from autopyfactory.configloader import FactoryConfigLoader
+from autopyfactory.exceptions import FactoryConfigurationFailure
 
-from autopyfactory.Factory import factory
-from autopyfactory.Exceptions import FactoryConfigurationFailure
 
 def main():
     parser = OptionParser(usage='''%prog [OPTIONS]

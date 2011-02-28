@@ -23,9 +23,9 @@
 
 import os, os.path, sys, logging, commands, time, string, re
 
-from autopyfactory.Exceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
-from autopyfactory.ConfigLoader import factoryConfigLoader
-from autopyfactory.Monitor import Monitor
+from autopyfactory.exceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
+from autopyfactory.configLoader import factoryConfigLoader
+from autopyfactory.monitor import Monitor
 import userinterface.Client as Client
 
 
