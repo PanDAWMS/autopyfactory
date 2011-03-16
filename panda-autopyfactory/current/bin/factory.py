@@ -27,6 +27,7 @@ import logging.handlers
 import time
 import os
 import sys
+import traceback
 
 # Need to set PANDA_URL_MAP before the Client module is loaded (which happens
 # when the Factory module is loaded). Unfortunately this means that logging
@@ -126,6 +127,8 @@ def main():
   exception so that the python stack trace is printed, which will allow
   it to be debugged - please send output from this message
   onwards. Exploding in 5...4...3...2...1... Have a nice day!''')
+        # The following line prints the exception to the logging module
+        factoryLogger.error(traceback.format_exc(None))
         raise
 
 
