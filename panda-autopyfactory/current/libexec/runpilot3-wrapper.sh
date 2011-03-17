@@ -29,12 +29,14 @@ function find_lfc_compatible_python() {
     # let the pilot setup the correct ATLAS environment for the
     # job.
     
-    # First try python2.6 (available from EPEL for SL5)
-    pybin=python2.6
-    lfc_test $pybin
-    if [ $? = "0" ]; then
-        return 0
-    fi    
+    # python2.6 is still under test, so only use it if we are asked to
+    if [ -n "$APF_PYTHON26" ]; then
+    	pybin=python2.6
+    	lfc_test $pybin
+    	if [ $? = "0" ]; then
+        	return 0
+    	fi
+    fi   
 
     # On many sites python now works just fine (m/w also now
     # distributes the LFC plugin in 64 bit)
