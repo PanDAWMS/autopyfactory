@@ -3,6 +3,34 @@ ChangeLog
 
 $Id$
 
+2011-03-25
+
+* If this is a ptest pilot use Paul's development pilot code (override with
+  PILOT_HTTP_SOURCES still possible).
+
+* This release is "The Captain".
+
+  Now the Captain called me to his bed 
+  He fumbled for my hand 
+  "Take these silver bars," he said 
+  "I'm giving you command." 
+  "Command of what, there's no one here 
+  There's only you and me -
+  All the rest are dead or in retreat 
+  Or with the enemy." 
+
+2011-03-17
+
+* Only try to use python2.6 if the env var APF_PYTHON26 is defined.
+
+2011-03-16
+
+* Prepended "FACTORY DEBUG:" to the setup of the panda client environment
+  variables which get set before logging is enabled (this confused
+  some people).
+  
+* Use traceback.format_exc() to dump exceptions properly into the 
+  configured factory logger ("raise" sends output to stderr).
 
 2011-01-13
 
