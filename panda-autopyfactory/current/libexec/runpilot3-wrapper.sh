@@ -80,16 +80,22 @@ function get_pilot() {
 function get_pilot_http() {
     # If you define the environment variable PILOT_HTTP_SOURCES then
     # loop over those servers. Otherwise use CERN, with Glasgow as a fallback.
-    # N.B. an RC pilot is chosen once every 100 downloads for production.
+    # N.B. an RC pilot is chosen once every 100 downloads for production and
+    # ptest jobs use Paul's development release.
     if [ -z "$PILOT_HTTP_SOURCES" ]; then
-            if [ $(($RANDOM%100)) = "0" ]; then
-                echo "DEBUG: Release candidate pilot will be used."
-                PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode-rc.tar.gz"
-                PILOT_TYPE=RC
-            else
-                PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
-                PILOT_TYPE=PR
-            fi
+    	if [ echo $@ | grep "-u ptest" > /dev/null ]; 
+    		echo "DEBUG: This is a ptest pilot. Will use development pilot code"
+            PILOT_HTTP_SOURCES="http://project-atlas-gmsb.web.cern.ch/project-atlas-gmsb/pilotcode-dev.tar.gz"
+            PILOT_TYPE=PT
+    	elif [ $(($RANDOM%100)) = "0" ]; then
+            echo "DEBUG: Release candidate pilot will be used."
+            PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode-rc.tar.gz"
+            PILOT_TYPE=RC
+        else
+            PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
+            PILOT_TYPE=PR
+
+    	fi
     fi
     for source in $PILOT_HTTP_SOURCES; do
         echo "Trying to download pilot from $source..."
