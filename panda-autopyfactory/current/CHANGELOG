@@ -3,12 +3,14 @@ ChangeLog
 
 $Id$
 
-2011-03-25
+2011-03-28
+
+* Update configuration example to Peter's new monitoring URl.
 
 * If this is a ptest pilot use Paul's development pilot code (override with
   PILOT_HTTP_SOURCES still possible).
 
-* This release is "The Captain".
+* This release is "The Captain". v1.2.0.
 
   Now the Captain called me to his bed 
   He fumbled for my hand 
