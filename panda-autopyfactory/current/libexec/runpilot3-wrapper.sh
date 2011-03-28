@@ -205,7 +205,7 @@ echo Changing work directory to $temp
 cd $temp
 
 # Try to get pilot code...
-get_pilot $me
+get_pilot $@
 ls -l
 if [ ! -f pilot.py ]; then
     echo "FATAL: Problem with pilot delivery - failing after dumping environment"
