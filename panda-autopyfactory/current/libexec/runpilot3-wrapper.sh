@@ -66,7 +66,7 @@ function get_pilot() {
     mkdir pilot3
     cd pilot3
 
-    get_pilot_http
+    get_pilot_http $@
     if [ $? = "0" ]; then
         return 0
     fi
