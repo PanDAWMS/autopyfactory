@@ -3,13 +3,14 @@
 # Make factoryId something descriptive and unique for your factory
 # schedConfigPollTime is the number of cycles which pass between reloads
 # of schedconfig data
+# Montoring should be enabled for all factories.
 
 [Factory]
 factoryOwner = g.stewart@physics.gla.ac.uk
 factoryId = graeme-UK
 # condorUser = unixUserName
 # schedConfigPollTime = 5
-# monitorURL = http://py-dev.lancs.ac.uk/mon/
+monitorURL =  http://apfmon.lancs.ac.uk/mon/
 
 ## Configure the pilots which are sent
 # Executable, baseLogDir and baseLogDirUrl are mandatory
