@@ -83,7 +83,7 @@ function get_pilot_http() {
     # N.B. an RC pilot is chosen once every 100 downloads for production and
     # ptest jobs use Paul's development release.
     if [ -z "$PILOT_HTTP_SOURCES" ]; then
-    	if [ echo $@ | grep "-u ptest" > /dev/null ]; 
+    	if echo $@ | grep -- "-u ptest" > /dev/null; then 
     		echo "DEBUG: This is a ptest pilot. Will use development pilot code"
             PILOT_HTTP_SOURCES="http://project-atlas-gmsb.web.cern.ch/project-atlas-gmsb/pilotcode-dev.tar.gz"
             PILOT_TYPE=PT
@@ -92,6 +92,7 @@ function get_pilot_http() {
             PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode-rc.tar.gz"
             PILOT_TYPE=RC
         else
+        	echo "DEBUG: Normal production pilot code used." 
             PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
             PILOT_TYPE=PR
 
