@@ -5,7 +5,7 @@
 
 import commands
 import logging
-import pycurl
+import pycrl
 import re
 import StringIO
 try:
