@@ -76,7 +76,10 @@ Installation
 6. Get a VOMS proxy: production for production, pilot for user
    analysis.
 
-7. To check that the syntax is ok and that the factory can get status
+8. If you need to use glexec at sites, your DN must be added to cloudconfig.pilotowners
+   in the Panda Schedconfig. 
+
+9. To check that the syntax is ok and that the factory can get status
    for sites run it in test/oneshot mode:
 
     $ /opt/panda/autopyfactory/bin/factory.py --verbose --test --oneshot --log=stdout
@@ -84,7 +87,7 @@ Installation
     This will define the jdls in the log area, but not actually call
     condor_submit.
 
-8. Run the factory:
+10. Run the factory:
 
        $ nohup /opt/panda/autopyfactory/bin/factory.py [--verbose] &
 

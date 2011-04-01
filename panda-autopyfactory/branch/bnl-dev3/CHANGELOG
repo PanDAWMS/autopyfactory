@@ -3,6 +3,31 @@ ChangeLog
 
 $Id$
 
+
+
+2011-03-XX
+
+* Major refactorization to integrate BNL changes. 
+
+* Refined distutils usage to allow deployment as non-root in a home directory, or
+  as root in system paths. Added functionality to drop privs even when run as root. 
+
+* Added typical init script and sysconfig functionality to handle shell-level/UNIX concerns. 
+
+* Split config system into main source for APF instance (factory.conf), proxy management (proxy.conf), individual queue configuration (queue.conf). The latter can be accessed as URI, paving the way to queue configuration via DB or URL.
+  
+* The previous change involved passing Config objects to classes, rather than passing through lists of config files. 
+
+* Adjusted module, file, and class names to follow Python recommended guidelines. See PEP 8:
+  http://www.python.org/dev/peps/pep-0008/ 
+  
+* Moved all filehandling to factory.py script from Factory class. Factory is now purely 
+  object-oriented suitable for embedding (e.g. in a web application). 
+
+* Added copy of Jose's generic top-level wrapper to libexec/.  
+
+
+
 2011-03-28
 
 * Update configuration example to Peter's new monitoring URl.

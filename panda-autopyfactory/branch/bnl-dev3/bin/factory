@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# Simple python program wrapper to allow /etc/init.d/functions (daemon, killproc, checkpid) to work properly. 
+# John Hover <jhover@bnl.gov>
+#
+# Choose proper python
+PYTH=`/bin/env python`
+
+# Find out path and name for this wrapper. Append ".py" and execute it with our args. 
+INVOKE=$0
+PROG=$(basename $0)
+BINDIR=$(dirname $0)
+$PYTH $BINDIR/$PROG.py $@ &
+
+# Record PID of this process in PID file...
+echo $! > /var/run/$PROG.pid
+
+exit 0

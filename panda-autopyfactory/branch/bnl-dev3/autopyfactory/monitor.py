@@ -8,6 +8,8 @@ import logging
 import pycurl
 import re
 import StringIO
+import threading
+
 try:
     import json as json
 except ImportError, err:
@@ -16,7 +18,7 @@ except ImportError, err:
 
 _CIDMATCH = re.compile('\*\* Proc (\d+\.\d+)', re.M)
 
-class Monitor:
+class Monitor(threading.Thread):
     """
     Notifies a monitoring webservice about condor jobs
     """

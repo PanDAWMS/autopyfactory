@@ -28,6 +28,9 @@ import time
 import os
 import sys
 import traceback
+import pwd
+import grp
+
 
 # Need to set PANDA_URL_MAP before the Client module is loaded (which happens
 # when the Factory module is loaded). Unfortunately this means that logging
@@ -47,8 +50,9 @@ else:
     print >>sys.stderr, 'FACTORY DEBUG: Found APF_NOSQUID set. Not changing/setting panda client environment.'
 
 
-from autopyfactory.Factory import factory
-from autopyfactory.Exceptions import FactoryConfigurationFailure
+from autopyfactory.factory import Factory
+from autopyfactory.configloader import FactoryConfigLoader
+from autopyfactory.exceptions import FactoryConfigurationFailure
 
 def main():
     parser = OptionParser(usage='''%prog [OPTIONS]
@@ -73,16 +77,18 @@ def main():
                       action="store", type="int", metavar="CYCLES", help="Run CYCLES times, then exit [default infinite]")
     parser.add_option("--sleep", dest="sleepTime", default=120,
                       action="store", type="int", metavar="TIME", help="Sleep TIME seconds between cycles [default %default]")
-    parser.add_option("--conf", dest="confFiles", default="factory.conf",
+    parser.add_option("--conf", dest="confFiles", default="/etc/apf/factory.conf",
                       action="store", metavar="FILE1[,FILE2,FILE3]", help="Load configuration from FILEs (comma separated list)")
     parser.add_option("--log", dest="logfile", default="syslog", metavar="LOGFILE", action="store", 
                       help="Send logging output to LOGFILE or SYSLOG or stdout [default <syslog>]")
+    parser.add_option("--runas", dest="runAs", default="apf",
+                      action="store", metavar="USERNAME", help="If run as root, drop privileges to USER")
     (options, args) = parser.parse_args()
 
     options.confFiles = options.confFiles.split(',')
     
     # Setup logging
-    factoryLogger = logging.getLogger('main')
+    log = logging.getLogger('main')
     if options.logfile == "stdout":
         logStream = logging.StreamHandler()
     elif options.logfile == 'syslog':
@@ -92,34 +98,59 @@ def main():
 
     formatter = logging.Formatter('%(asctime)s - %(name)s: %(levelname)s %(message)s')
     logStream.setFormatter(formatter)
-    factoryLogger.addHandler(logStream)
-    factoryLogger.setLevel(options.logLevel)
-
-    factoryLogger.debug('logging initialised')
+    log.addHandler(logStream)
+    log.setLevel(options.logLevel)
+    log.debug('logging initialised')
     
+    # If running as root, drop privileges to --runas' account.
+    starting_uid = os.getuid()
+    starting_gid = os.getgid()
+    starting_uid_name = pwd.getpwuid(starting_uid)[0]
+    
+    if os.getuid() !=0:
+        log.info("Already running as unprivileged user %s" % starting_uid_name)
+        
+    if os.getuid() == 0:
+        try:
+            runuid = pwd.getpwnam(options.runAs).pw_uid
+            rungid = pwd.getpwnam(options.runAs).pw_gid
+            os.chown(options.logfile, runuid, rungid)
+            
+            os.setgid(rungid)
+            os.setuid(runuid)
+            log.info("Now running as user %d:%d ..." % (runuid, rungid))
+        
+        except KeyError, e:
+            log.error('No such user %s, unable run properly. Error: %s' % (options.runAs, e))
+            sys.exit(1)
+            
+        except OSError, e:
+            log.error('Could not set user or group id to %s:%s. Error: %s' % (runuid, rungid, e))
+            sys.exit(1)
+    
+    # Create config, add in options...
+    if options.confFiles != None:
+        config = FactoryConfigLoader(options.confFiles)
+    
+    config.set("Factory","dryRun", options.dryRun)
+    config.set("Factory","cyclesToDo", options.cyclesToDo)
+    config.set("Factory", "sleepTime", options.sleepTime)
+    config.set("Factory", "confFiles", options.confFiles)
+    
+        
     # Main loop
     try:
-        f = factory(factoryLogger, options.dryRun, options.confFiles)
-        cyclesDone = 0
-        while True:
-            factoryLogger.info('\nStarting factory cycle %d at %s', cyclesDone, time.asctime(time.localtime()))
-            f.factorySubmitCycle(cyclesDone)
-            factoryLogger.info('Factory cycle %d done' % cyclesDone)
-            cyclesDone += 1
-            if cyclesDone == options.cyclesToDo:
-                break
-            factoryLogger.info('Sleeping %ds' % options.sleepTime)
-            time.sleep(options.sleepTime)
-            f.updateConfig(cyclesDone)
+        f = factory(config)
+        f.mainLoop()
     except KeyboardInterrupt:
-        factoryLogger.info('Caught keyboard interrupt - exiting')
+        log.info('Caught keyboard interrupt - exiting')
     except FactoryConfigurationFailure, errMsg:
-        factoryLogger.error('Factory configuration failure: %s', errMsg)
+        log.error('Factory configuration failure: %s', errMsg)
     except ImportError, errorMsg:
-        factoryLogger.error('Failed to import necessary python module: %s' % errorMsg)
+        log.error('Failed to import necessary python module: %s' % errorMsg)
     except:
         # TODO - make this a logger.exception() call
-        factoryLogger.error('''Unexpected exception! There was an exception
+        log.error('''Unexpected exception! There was an exception
   raised which the factory was not expecting and did not know how to
   handle. You may have discovered a new bug or an unforseen error
   condition. Please report this exception to Graeme
@@ -128,7 +159,7 @@ def main():
   it to be debugged - please send output from this message
   onwards. Exploding in 5...4...3...2...1... Have a nice day!''')
         # The following line prints the exception to the logging module
-        factoryLogger.error(traceback.format_exc(None))
+        log.error(traceback.format_exc(None))
         raise
 
 

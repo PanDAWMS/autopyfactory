@@ -12,6 +12,13 @@ from distutils.core import setup
 from distutils.command.install import install as install_org
 from distutils.command.install_data import install_data as install_data_org
 
+# Python version check. 
+major, minor, release, st, num = sys.version_info
+if major == 2:
+    if not minor >= 4:
+        print("Autopyfactory requires Python >= 2.4. Exitting.")
+        sys.exit(0)
+
         
 # setup for distutils
 setup(
@@ -26,17 +33,27 @@ setup(
     maintainer_email='graeme.andrew.stewart@cern.ch',
     url='https://twiki.cern.ch/twiki/bin/view/Atlas/PanDA',
     packages=['autopyfactory'],
-    data_files=[
+    scripts = [
                 # Utilitys and main script
-                ('/opt/panda/autopyfactory/bin', ['bin/factory.py',
-                                                  'bin/cleanLogs.py',
-                                                  'bin/vomsrenew.sh',
+                ('bin', ['bin/factory.py',
+                         'bin/cleanLogs.py',
+                         'bin/vomsrenew.sh',
+                        ]),
+                ('libexec', ['libexec/runpilot3-wrapper.sh',
+                              'libexec/wrapper.sh',                                   ]
+                 ),],
+    
+    data_files=[
+                ('/etc/apf', ['etc/factory.conf-example',
                                                   ]),
-                ('/opt/panda/autopyfactory/libexec', ['libexec/runpilot3-wrapper.sh',
-                                                      ]),
-                ('/opt/panda/autopyfactory/etc', ['etc/factory.conf-example',
-                                                  ]),
+                ('/etc/init.d', ['etc/factory',
+                                         ]),
+                ('/etc/sysconfig', ['etc/factory.sysconfig',
+                                         ]),                                         
                 ('/etc/cron.d', ['etc/apf-cleanlogs',
-                                ]),
-                ]
+                                         ]),
+                ],
+   
+  
+
 )
