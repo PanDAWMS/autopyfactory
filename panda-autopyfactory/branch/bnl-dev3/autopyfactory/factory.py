@@ -583,4 +583,52 @@ class PandaQueue(object):
 
 
 
+
+class PandaStatus(threading.Thread):
+    def __init__(self, config):
+        self.interval = int(config.get('Factory','pandaCheckInterval'))
+
+    def run(self):
+        self.getPandaStatus()
+        time.sleep(self.interval)
+
+
+    def getPandaStatus(self):
+        for country in self.config.sites.keys():
+            for group in self.config.sites[country].keys():
+                # country/group = None is equivalent to not specifing anything
+                self.factoryMessages.info('Polling panda status for country=%s, group=%s' % (country, group,))
+                error,self.config.sites[country][group]['siteStatus'] = Client.getJobStatisticsPerSite(countryGroup=country,workingGroup=group)
+                if error != 0:
+                    raise PandaStatusFailure, 'Client.getJobStatisticsPerSite(countryGroup=%s,workingGroup=%s) error: %s' % (country, group, error)
+
+                for siteid, queues in self.config.sites[country][group].iteritems():
+                    if siteid == 'siteStatus':
+                        continue
+                    if siteid in self.config.sites[country][group]['siteStatus']:
+                        self.factoryMessages.debug('Panda status: %s (country=%s, group=%s) %s' % (siteid, country, group, self.config.sites[country][group]['siteStatus'][siteid]))
+                        for queue in queues:
+                            self.config.queues[queue]['pandaStatus'] = self.config.sites[country][group]['siteStatus'][siteid]
+                    else:
+                        # If panda knows nothing, then we assume all zeros (site may be inactive)
+                        self.factoryMessages.debug('Panda status for siteid %s (country=%s, group=%s) not found - setting zeros in status to allow bootstrapping of site.' % (siteid, country, group))
+                        for queue in queues:
+                            self.config.queues[queue]['pandaStatus'] = {'transferring': 0, 'activated': 0, 'running': 0, 'assigned': 0, 'failed': 0, 'finished': 0}
+
+        # Now poll site and cloud status to suppress pilots if a site is offline
+        # Take site staus out - better to use individual queue status from schedconfig
+        #self.factoryMessages.info('Polling panda for site status')
+        #error,self.pandaSiteStatus = Client.getSiteSpecs(siteType='all')
+        #if error != 0:
+        #    raise PandaStatusFailure, '''Client.getSiteSpecs(siteType='all') error: %s''' % (error)
+        self.factoryMessages.info('Polling panda for cloud status')
+        error,self.pandaCloudStatus = Client.getCloudSpecs()
+        if error != 0:
+            raise PandaStatusFailure, 'Client.getCloudSpecs() error: %s' % (error)
+
+
+
+
+
+
         
