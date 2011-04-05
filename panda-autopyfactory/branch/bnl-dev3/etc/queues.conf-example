@@ -46,7 +46,10 @@
 #user = None
 cloud = US
 country = US
-#group = None
+group = None
+
+# What plugin should be used to calculate the number of pilots to submit?
+schedclass = SimpleSchedPlugin
 
 ## Set the server and port to contact for jobs
 ## These can be overridden on a per-queue basis
@@ -73,7 +76,7 @@ vomsLifetime=96:00
 # Interval to check proxy at, in minutes
 vomsCheck = 180 
 
-# analysisGridProxy = /tmp/pilotRoleProxy
+analysisGridProxy = /tmp/pilotProxy
 
 ## Individual queue configurations
 # It is recommended now only to have a nickname and let everything else

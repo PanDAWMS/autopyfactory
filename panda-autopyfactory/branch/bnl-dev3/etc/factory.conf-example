@@ -22,18 +22,25 @@ queueConf = file:///home/apf/etc/queue.conf
 # Where is the proxy config file
 proxyConf = file://etc/apf/proxy.conf
 
-# How often to pull information from Panda Server
-pandaCheckInterval = 60
+# How often (seconds) to pull information from Panda Server
+# Choose prime number to balance load. 
+pandaCheckInterval = 67
 
-# How often to pull information from underlying batch system, e.g. Condor 
-batchCheckInterval = 60
+# What plugin should be used to talk to a batch system for info and submit?
+# This string is the root of plugins.XYZBatchPlugin, which contains XYZXSubmit class and
+# XYZStatus class. 
+batchroot = CondorG
 
+# How often (seconds) to pull information from underlying batch system, e.g. Condor 
+# Choose prime number to balance load.
+batchCheckInterval = 53
 
 # Variables potentially altered by command-line options. Passed in via Config.
 # Defaults:
 dryrun=False         
 cycles=None   # None means forever
-sleep=120
+# Choose prime number to balance load.
+sleep=127
 conffiles=None
 logfile=None
 
