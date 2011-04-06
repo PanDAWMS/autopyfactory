@@ -72,7 +72,7 @@ class factory:
         # Count the number of queued pilots for each queue
         # For now simply divide into active and inactive pilots (JobStatus == or != 2)
         try:
-            for queue in self.config.backend['condorg']:
+            for queue in self.config.backend['condor']:
                 self.config.queues[queue]['pilotQueue'] = {'active' : 0, 'inactive' : 0, 'total' : 0,}
             for line in condorOutput.splitlines():
                 statusItems = line.split()
@@ -201,7 +201,7 @@ class factory:
                 self.factoryMessages.error('Cannot submit pilots for %s', queue)
                 return
 
-        if queue['backend'] == 'condorg':
+        if queue['backend'] == 'condor':
             self.pilotSubmit(queue, cycleNumber, pilotNumber, logDir, logUrl)
         elif queue['backend'] == 'batch':
             self.batchPilotSubmit(queue,cycleNumber, pilotNumber, logDir, logUrl)
@@ -237,7 +237,8 @@ class factory:
             self.factoryMessages.error('Failed to open file %s (error %d): %s', jdlFile, errno, errMsg)
             return 1
 
-        print >>JDL, "# Condor-G glidein pilot for panda"
+        print >>JDL, "# Condor pilot for panda, queue %s, type %s, subtype" % (queue, self.config.queues[queue][type],
+            self.config.queues[queue][subtype])
         print >>JDL, "executable=%s" % self.config.config.get('Pilots', 'executable')
         print >>JDL, "Dir=%s/" % logDir
         print >>JDL, "output=$(Dir)/$(Cluster).$(Process).out"
@@ -247,28 +248,20 @@ class factory:
         print >>JDL, "stream_error=False"
         print >>JDL, "notification=Error"
         print >>JDL, "notify_user=%s" % self.config.config.get('Factory', 'factoryOwner')
-        print >>JDL, "universe=grid"
-        # Here we insert the switch for CREAM CEs. This is rather a hack for now, but will
-        # improve once multiple backends are supported properly
-        if self.config.queues[queue]['_isCream']:
-            print >>JDL, "grid_resource=cream %s:%d/ce-cream/services/CREAM2 %s %s" % (
-                 self.config.queues[queue]['_creamHost'], self.config.queues[queue]['_creamPort'], 
-                 self.config.queues[queue]['_creamBatchSys'], self.config.queues[queue]['localqueue'])
-        else:
-            # GRAM resource
-            print >>JDL, "grid_resource=gt2 %s" % self.config.queues[queue]['queue']
-            print >>JDL, "globusrsl=(queue=%s)(jobtype=single)" % self.config.queues[queue]['localqueue']
-        # Probably not so helpful to set these in the JDL
-        #if self.config.queues[queue]['memory'] != None:
-        #    print >>JDL, "(maxMemory=%d)" % self.config.queues[queue]['memory'],
-        #if self.config.queues[queue]['wallClock'] != None:
-        #    print >>JDL, "(maxWallTime=%d)" % self.config.queues[queue]['wallClock'],
-        #print >>JDL
-        #print >>JDL, '+MATCH_gatekeeper_url="%s"' % self.config.queues[queue]['queue']
-        #print >>JDL, '+MATCH_queue="%s"' % self.config.queues[queue]['localqueue']
-        print >>JDL, "x509userproxy=%s" % self.config.queues[queue]['gridProxy']
-        print >>JDL, 'periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)'
-        print >>JDL, 'periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)'
+        if self.config.queues[queue][type] == 'grid':
+            if self.config.queues[queue][subtype] == 'cream':
+                print >>JDL, "grid_resource=cream %s:%d/ce-cream/services/CREAM2 %s %s" % (
+                    self.config.queues[queue]['_creamHost'], self.config.queues[queue]['_creamPort'], 
+                    self.config.queues[queue]['_creamBatchSys'], self.config.queues[queue]['localqueue'])
+            elif self.config.queues[queue][subtype] == 'gt2':
+                print >>JDL, "grid_resource=gt2 %s" % self.config.queues[queue]['queue']
+                print >>JDL, "globusrsl=(queue=%s)(jobtype=single)" % self.config.queues[queue]['localqueue']
+            print >>JDL, "x509userproxy=%s" % self.config.queues[queue]['gridProxy']
+            print >>JDL, 'periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)'
+            print >>JDL, 'periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)'
+        elif self.config.queues[queue][subtype] == 'vanilla':
+            # Do what needs to be done for straight condor submission
+            pass
         # In job environment correct GTAG to URL for logs, JSID should be factoryId
         print >>JDL, 'environment = "PANDA_JSID=%s' % self.config.config.get('Factory', 'factoryId'),
         print >>JDL, 'GTAG=%s/$(Cluster).$(Process).out' % logUrl,
@@ -422,7 +415,7 @@ class factory:
         '''Go through one status/submission cycle'''
         try:
             # Only bother polling for configured backends
-            if 'condorg' in self.config.backends:
+            if 'condor' in self.config.backends:
                 self.getCondorStatus()
             if 'batch' in self.config.backends:
                 self.getBatchStatus()
