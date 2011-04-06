@@ -98,7 +98,7 @@ class factoryConfigLoader:
                                        'site' : 'None',
                                        'siteid' : 'None',
                                        'nickname' : 'None',
-                                       'backend' : 'condorg',
+                                       'backend' : 'condor',
                                        }
         if 'X509_USER_PROXY' in os.environ:
             defaults['QueueDefaults']['gridProxy'] = os.environ['X509_USER_PROXY']
@@ -233,11 +233,16 @@ class factoryConfigLoader:
                                                     (queue, key, self.queues[queue][key], value))
                         continue
                     self.queues[queue][key] = value
-                
-            # Hack for CREAM CEs - would like to use the 'system' field in schedconfig for this
-            if self.queues[queue]['queue'].find('/cream') > 0:
+                    
+            # Now try to detect type and subtype of the queue - first set defaults (gt2 GRAM)
+            self.queues[queue]['type'] = 'grid'
+            self.queues[queue]['subtype'] = 'gt2'                
+
+            # CREAM CEs
+            if self.queues[queue]['queue'].find('/cream') > 0 or self.queues[queue]['system'] == 'cream':
                 self.configMessages.debug('Detected CREAM CE for queue %s' % (queue))
-                self.queues[queue]['_isCream'] = True
+                self.queues[queue]['type'] = 'grid'
+                self.queues[queue]['subtype'] = 'cream'                
                 match1 = re.match(r'([^/]+)/cream-(\w+)', self.queues[queue]['queue'])
                 if match1 != None:
                     # See if the port is explicitly given - if not assume 8443
@@ -254,8 +259,11 @@ class factoryConfigLoader:
                     self.configMessages.error('Queue %s was detected as CREAM, but failed re match.' % (queue))
                     del self.queues[queue]
                     continue
-            else:
-                self.queues[queue]['_isCream'] = False
+
+            # Condor local queues
+            if self.queues[queue]['system'] == 'condorlocal':
+                self.queues[queue]['type'] = 'vanilla'
+                self.queues[queue]['subtype'] = None                
                 
             # Look for alternative backends
             if self.queues[queue]['backend'] in self.backends:
