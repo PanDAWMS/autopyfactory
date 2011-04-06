@@ -29,7 +29,7 @@ pandaCheckInterval = 67
 # What plugin should be used to talk to a batch system for info and submit?
 # This string is the root of plugins.XYZBatchPlugin, which contains XYZXSubmit class and
 # XYZStatus class. 
-batchroot = CondorG
+batchplugin = CondorG
 
 # How often (seconds) to pull information from underlying batch system, e.g. Condor 
 # Choose prime number to balance load.

@@ -143,7 +143,6 @@ class CondorGStatus(BatchStatusInterface, threading.Thread):
         pass
 
 
-
     def _getCondorStatus(self):
         # We query condor for jobs running as us (owner) and this factoryId so that multiple 
         # factories can run on the same machine

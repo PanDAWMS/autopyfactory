@@ -66,9 +66,9 @@ class Factory:
                 
         
         # Handle batch plugin
-        batchclass = self.config.get("Factory", "batchClass")
+        batchclass = self.config.get("Factory", "batchplugin")
         BatchStatusPlugin = __import__("autopyfactory.plugins.%s" % batchclass)
-        self.batchplugin = BatchPlugin(self, )
+        self.batchplugin = BatchPlugin()
         
         
         
@@ -274,19 +274,30 @@ class PandaQueue(threading.Thread):
         self.cycles = factory.config.get("Factory", "cycles" )
         self.sleeptime = factory.config.get("Factory", "sleep")
         self.cyclesrun = 0
-    
+        
+        # Handle sched plugin
+        schedclass = self.qconfig.get(self.siteid, "schedplugin")                
+        SchedPlugin = __import__("autopyfactory.plugins.%sSchedPlugin" % schedclass)
+        self.scheduler = SchedPlugin()
+        
+        
+        
+        
     def run(self):
         '''
         Method called by thread.start()
         Main functional loop of this Queue. 
         '''    
         while True:
-            # get batch info
-            self.factory.batchplugin.getInfo()
-            # get panda info
+            # update batch info
+            batchstatus = self.factory.batchplugin.getInfo()
+            # update panda info
+            
+            
             # calculate number to submit
+            nsub = self.scheduler.calcSubmitNum()
             # submit using this number
-      
+            self.submitPilots(nsub)
             # Exit loop if desired number of cycles is reached...  
             if self.cycles and self.cyclesrun >= self.cycles:
                 break            
@@ -404,7 +415,7 @@ class PandaStatus(threading.Thread):
         self.getQueueInfo()
         time.sleep(self.interval)
 
-    def getQueueData(self):
+    def getQueueData(self, queue):
         pass
         
 
@@ -450,22 +461,51 @@ class PandaStatus(threading.Thread):
             raise PandaStatusFailure, 'Client.getCloudSpecs() error: %s' % (error)
 
         
-        
 
+class BatchStatus(object):
+    '''
+    Batch-agnostic aggregate information container returned by the BatchStatus getInfo() call. 
+    
+    ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD
+    
+    
+    '''
+    def _init__(self, queue, jobid, owner, submittime, runtime, state, priority  ):
+        self.queue = queue
+        
+class JobStatus(object):
+    '''
+    Batch agnostic information container about particular job. Returned by getJobInfo() call 
+    
+    '''
+
+
+####################################################################################
+#           Interface definitions, for clarity in plugin programming. 
+####################################################################################
 
 class BatchStatusInterface(object):
     '''
+    Interacts with the underlying batch system to get job status. 
+    Instantiated at the Factory level. 
     Should return information about number of jobs currently on the desired queue. 
-    It will be instantiated at the Factory level. 
     
     '''
     def getInfo(self, queue):
+        '''
+        Returns aggregate info about jobs on queue in batch system. 
+        '''
         pass
     
+    def getJobInfo(self, queue):
+        '''
+        Returns a list of JobStatus objects, one for each job. 
+        '''
+        pass
     
 class BatchSubmitInterface(object):
     '''
-    Handles all aspects of submitting jobs to the underlying batch system. 
+    Interacts with underlying batch system to submit jobs. 
     It should be instantiated one per queue. 
     
     '''
@@ -478,11 +518,13 @@ class SchedInterface(object):
     '''
     Calculates the number of jobs to submit for a queue. 
     
-    
     ''' 
 
-    def calculateSubmitNumber(self, config):
+    def calcSubmitNum(self, config):
         pass
+
+
+
 
 
 if __name__ == "__main__":
