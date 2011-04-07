@@ -44,12 +44,7 @@ class ConfigLoader(object):
                 myDict[k] = int(v)
 
 
-    def _validateQueue(self, queue):
-        '''Perform final validation of queue configuration'''
-        # If the queue has siteid=None it should be suppressed
-        if self.queues[queue]['siteid'] == None:
-            self.configMessages.error('Queue %s has siteid=None and will be ignored. Update the queue if you really want to use it.' % queue)
-            self.queues[queue]['status'] = 'error'
+
 
 
     def loadConfig(self):
@@ -60,18 +55,27 @@ class ConfigLoader(object):
         readConfigFiles = []
         unreadConfigFiles = []
         for f in self.configFiles:
-            try:
-                if _isURI(f):
-                    fp = _convertURItoReader(f)
+            self.log.debug('Reading file %s' % f)
+            if self._isURI(f):
+                self.log.debug('%s is a URI...' % f)
+                fp = self._convertURItoReader(f)
+                try:
                     self.config.readfp(fp)
-                else:
+                    readConfigFiles.append(f)
+                except Exception as e:
+                    self.log.debug("ERROR: %s Unable to read config file %s" % (e,f))
+                    unreadConfigFiles.append(f)
+            else:
+                self.log.debug('%s is not a URI...' % f)
+                try:
                     fp = open(f)
                     self.config.readfp(fp)
-                readConfigFiles.append(f)
-            except:
-                unreadConfigFiles.append(f)
+                    readConfigFiles.append(f)
+                except Exception as e:
+                    self.log.debug("ERROR: %s Unable to read config file %s" % (e,f))
+                    unreadConfigFiles.append(f)
         self.log.debug('Successfully read config files %s' % readConfigFiles)    
-        if len(unreadConfigFiles > 0):
+        if len(unreadConfigFiles) > 0:
             self.log.warn('Failed to read config files %s' % unreadConfigFiles)
 
         self._checkMandatoryValues()
@@ -90,11 +94,13 @@ class ConfigLoader(object):
         (No https:// yet). 
         
         '''
+        self.log.debug("Checking if %s is a URI.. " % itempath)
         isuri = False
         itempath = itempath.strip()
         head = itempath[:7].lower()
         if head == "file://" or head == "http://":
             isuri = True
+            self.log.debug("%s is a URI!" % itempath)
         if head == "https:/":
             raise FactoryConfigurationFailure, "https:// URI's are not supported yet. Please fix."
         return isuri
@@ -106,22 +112,33 @@ class ConfigLoader(object):
         Takes a URI string, opens it, and returns a filelike object of its contents.
         
         '''
-        self.log.debug("Converting %s ..." % uri)        
-        try:
-            uri = uri.strip()
-            opener = urllib2.build_opener()
-            urllib2.install_opener( opener )
-            uridata = urllib2.urlopen( uri )
-            firstLine = uridata.readline().strip()
-            if firstLine[0] == "<":
-                raise Exception("First character was '<'. Probably a Proxy error.")
-            reader = urllib2.urlopen( hostsURI )
-        
-        except Exception:  
-            errMsg = "Couldn't find URI %s (use file://... or http://... format)" % uri
-            self.log.error(errMsg)
-            sys.exit(0)
-        self.log.debug("Success. Returning reader." )
+        self.log.debug("Converting URI %s to reader..." % uri)        
+        uri = uri.strip()
+        head = uri[:7].lower()
+        if head == "file://": 
+            filepath = uri[7:]
+            self.log.debug("File URI detected. File path is %s" % filepath)
+            try:
+                reader = open(filepath)    
+            except IOError:
+                self.log.error("File path %s not openable." % filepath)
+                raise FactoryConfigurationFailure, "File URI %s does not exist or not readable" % uri  
+             
+        elif head == "http://":
+            try:
+                opener = urllib2.build_opener()
+                urllib2.install_opener( opener )
+                uridata = urllib2.urlopen( uri )
+                firstLine = uridata.readline().strip()
+                if firstLine[0] == "<":
+                    raise Exception("First character was '<'. Probably a Proxy error.")
+                reader = urllib2.urlopen( hostsURI )
+            
+            except Exception:  
+                errMsg = "Couldn't find URI %s (use file://... or http://... format)" % uri
+                self.log.error(errMsg)
+                sys.exit(0)
+            self.log.debug("Success. Returning reader." )
         return reader
     
 
@@ -131,7 +148,7 @@ class FactoryConfigLoader(ConfigLoader):
     
     
     '''
-
+    
     def loadConfig(self):
         super(FactoryConfigLoader, self).loadConfig()
         # Little bit of sanity...
@@ -161,18 +178,42 @@ class FactoryConfigLoader(ConfigLoader):
                 self.log.error('Failed to stat my configuration file %s, where did you hide it? %s' % (confFile, errMsg))
 
 
+
+    def _checkMandatoryValues(self):
+        '''Check we have a sane configuration'''
+        mustHave = {'Factory' : ('factoryOwner', 'factoryId'),
+                    'Pilots' : ('executable', 'baseLogDir', 'baseLogDirUrl',)
+                    }
+        for section in mustHave.keys():
+            if not self.config.has_section(section):
+                raise FactoryConfigurationFailure, 'Configuration files %s have no section %s (mandatory).' % (self.configFiles, section)
+            for option in mustHave[section]:
+                if not self.config.has_option(section, option):
+                    raise FactoryConfigurationFailure, 'Configuration files %s have no option %s in section %s (mandatory).' % (self.configFiles, option, section)
+
+    def _configurationDefaults(self):
+        '''Define default configuration parameters for autopyfactory instances'''
+        defaults = {}
+        try:
+            defaults = { 'Factory' : { 'condorUser' : os.environ['USER'], }}
+        except KeyError:
+            # Non-login shell - you'd better set it yourself
+            defaults = { 'Factory' : { 'condorUser' : 'unknown', }}
+        defaults['Factory']['schedConfigPoll'] = '5'
+        return defaults
+
+
+
+
+
 class QueueConfigLoader(ConfigLoader):
     '''
     ConfigLoader for queue-related parameters with one QueueConfigLoader per queue. 
     Since queue config sources can be URI, we have to check whether they are 'stat'-able or not. 
-    Since we have an override=True concept, we have to keep track of which properties came from queueconfigs vs. 
-    schedconfig.  
+
+    This object now just handles loading queue configuration form files/URIs. 
+
     '''
-
-    def __init__(self, queuename):
-        pass
-
-
 
     def loadConfig(self):
         super(QueueConfigLoader, self).loadConfig()
@@ -206,10 +247,7 @@ class QueueConfigLoader(ConfigLoader):
                     if not self.config.has_option(queue, deprecatedKeys[key]):
                         self.config.set(queue, deprecatedKeys[key], self.config.get(queue, key))
                     self.config.remove_option(queue, key)
-                else:
-                    if key not in self.config.options('QueueDefaults'):
-                        self.log.warning('Queue %s: "%s" is an unknown option and is ignored.' % (queue, key))
-                        self.config.remove_option(queue, key)
+              
             # Now load queue configuration
             for key, value in self.config.items('QueueDefaults'):
                 if self.config.has_option(queue, key):
@@ -308,30 +346,7 @@ class QueueConfigLoader(ConfigLoader):
 
 
 
-    def _checkMandatoryValues(self):
-        '''Check we have a sane configuration'''
-        mustHave = {'Factory' : ('factoryOwner', 'factoryId'),
-                    'Pilots' : ('executable', 'baseLogDir', 'baseLogDirUrl',)
-                    }
-        for section in mustHave.keys():
-            if not self.config.has_section(section):
-                raise FactoryConfigurationFailure, 'Configuration files %s have no section %s (mandatory).' % (self.configFiles, section)
-            for option in mustHave[section]:
-                if not self.config.has_option(section, option):
-                    raise FactoryConfigurationFailure, 'Configuration files %s have no option %s in section %s (mandatory).' % (self.configFiles, option, section)
 
-
-
-    def _configurationDefaults(self):
-        '''Define default configuration parameters for autopyfactory instances'''
-        defaults = {}
-        try:
-            defaults = { 'Factory' : { 'condorUser' : os.environ['USER'], }}
-        except KeyError:
-            # Non-login shell - you'd better set it yourself
-            defaults = { 'Factory' : { 'condorUser' : 'unknown', }}
-        defaults['Factory']['schedConfigPoll'] = '5'
-        return defaults
 
 
     def reloadSchedConfig(self):
@@ -357,43 +372,39 @@ class QueueConfigLoader(ConfigLoader):
             self._validateQueue(queue)
 
 
+    def _checkMandatoryValues(self):
+        '''Check we have a sane configuration'''
+        mustHave = {
+                    #'Factory' : ('factoryOwner', 'factoryId'),
+                    #'Pilots' : ('executable', 'baseLogDir', 'baseLogDirUrl',),
+                    #'QueueDefaults' : () 
+                    }
+        for section in mustHave.keys():
+            if not self.config.has_section(section):
+                raise FactoryConfigurationFailure, 'Configuration files %s have no section %s (mandatory).' % (self.configFiles, section)
+            for option in mustHave[section]:
+                if not self.config.has_option(section, option):
+                    raise FactoryConfigurationFailure, 'Configuration files %s have no option %s in section %s (mandatory).' % (self.configFiles, option, section)
 
+
+    def _validateQueue(self, queue):
+        '''Perform final validation of queue configuration'''
+        # If the queue has siteid=None it should be suppressed
+        if self.queues[queue]['siteid'] == None:
+            self.configMessages.error('Queue %s has siteid=None and will be ignored. Update the queue if you really want to use it.' % queue)
+            self.queues[queue]['status'] = 'error'
 
         
 
-    def _configurationDefaults():
+    def _configurationDefaults(self):
+        '''
+        Defaults for the queues.conf file are handled via the standard [DEFAULTS] 
+        ConfigParser approach, so we don't have to specify here. 
+        '''
+        
         defaults = {}
-        defaults['QueueDefaults'] =  { 'status' : 'test',
-                                       'nqueue' : '20',
-                                       'idlepilotsuppression' : '1',
-                                       'depthboost' : '2',
-                                       'wallClock' : 'None',
-                                       'memory' : 'None',
-                                       'jobRecovery' : 'False',
-                                       'pilotlimit' : 'None',
-                                       'transferringlimit' : 'None',
-                                       'user' : 'None',
-                                       'group' : 'None',
-                                       'country' : 'None',
-                                       'cloud' : 'None',
-                                       'server' : 'https://pandaserver.cern.ch',
-                                       'queue' : 'Unset',
-                                       'localqueue' : 'None',
-                                       'port' : '25443',
-                                       'environ' : '',
-                                       'override' : 'False',
-                                       'site' : 'None',
-                                       'siteid' : 'None',
-                                       'nickname' : 'None',
-                                       }
-        if 'X509_USER_PROXY' in os.environ:
-            defaults['QueueDefaults']['gridProxy'] = os.environ['X509_USER_PROXY']
-        else:
-            defaults['QueueDefaults']['gridProxy'] = '/tmp/prodRoleProxy'
-        # analysisGridProxy is the default for any ANALY site
-        defaults['QueueDefaults']['analysisGridProxy'] = '/tmp/pilotRoleProxy'
         return defaults
-        
+          
     def _loadQueueData(self, queue):
         queueDataUrl = 'http://pandaserver.cern.ch:25080/cache/schedconfig/%s.factory.json' % queue
         try:
@@ -422,11 +433,11 @@ class QueueConfigLoader(ConfigLoader):
 
 ## original file below...
 ######################################################################################################################
+#
 
 
 
-
-    def _loadQueueData(self, queue):
+    def orig_loadQueueData(self, queue):
         queueDataUrl = 'http://pandaserver.cern.ch:25085/cache/schedconfig/%s.factory.json' % queue
         try:
             handle = urlopen(queueDataUrl)
@@ -452,7 +463,7 @@ class QueueConfigLoader(ConfigLoader):
         return factoryData
 
 
-    def _configurationDefaults(self):
+    def orig_configurationDefaults(self):
         '''Define default configuration parameters for autopyfactory instances'''
         defaults = {}
         try:
@@ -496,7 +507,7 @@ class QueueConfigLoader(ConfigLoader):
         return defaults
 
 
-    def _checkMandatoryValues(self):
+    def orig_checkMandatoryValues(self):
         '''Check we have a sane configuration'''
         mustHave = {'Factory' : ('factoryOwner', 'factoryId'),
                     'Pilots' : ('executable', 'baseLogDir', 'baseLogDirUrl',),
@@ -509,7 +520,7 @@ class QueueConfigLoader(ConfigLoader):
                     raise FactoryConfigurationFailure, 'Configuration files %s have no option %s in section %s (mandatory).' % (self.configFiles, option, section)
 
 
-    def _validateQueue(self, queue):
+    def orig_validateQueue(self, queue):
         '''Perform final validation of queue configuration'''
         # If the queue has siteid=None it should be suppressed
         if self.queues[queue]['siteid'] == None:
@@ -517,7 +528,7 @@ class QueueConfigLoader(ConfigLoader):
             self.queues[queue]['status'] = 'error'
 
 
-    def loadConfig(self):
+    def orig_loadConfig(self):
         self.config = SafeConfigParser()
         # Maintain case sensitivity in keys (should try to get rid of this).
         self.config.optionxform = str
@@ -683,7 +694,7 @@ class QueueConfigLoader(ConfigLoader):
             # but belt 'n' braces...
             raise FactoryConfigurationFailure, "Failed to stat configuration file %s to get modifictaion time: %s\nDid you try to configure from a non-existent or unreadable file?" % (self.configFile, errMsg)
 
-    def reloadConfigFilesIfChanged(self):
+    def orig_reloadConfigFilesIfChanged(self):
         try:
             for confFile in self.configFiles:
                 if os.stat(confFile).st_mtime > self.configFileMtime[confFile]:
@@ -694,7 +705,7 @@ class QueueConfigLoader(ConfigLoader):
                 self.configMessages.error('Failed to stat my configuration file %s, where did you hide it? %s' % (confFile, errMsg))
 
 
-    def reloadSchedConfig(self):
+    def orig_reloadSchedConfig(self):
         '''Reload queue data from schedconfig'''
         self.configMessages.debug('Reloading schedconfig values for my queues.')
         for queue, queueParameters in self.queues.iteritems():

@@ -34,44 +34,49 @@ import pwd
 import grp
 
 from autopyfactory.exceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
-from autopyfactory.configloader import FactoryConfigLoader
+from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
 from autopyfactory.monitor import Monitor
 
 import userinterface.Client as Client
 
 class Factory:
+    '''
     
-    def __init__(self, config):
+    
+    '''
+    
+    def __init__(self, fcl):
+        '''
+        fconfig is a FactoryConfigLoader object. 
+        
+        '''
         self.log = logging.getLogger('main.factory')
         self.log.debug('Factory initializing...')
-        self.config = config
-        self.dryRun = config.get("Factory", "dryRun")
-        self.cycles = config.get("Factory", "cycles")
-        self.sleepinterval = config.get("Factory", "sleep")
-        self.qconfig = QueueConfigLoader(config.get('Factory', 'queueConf'))
+        self.fcl = fcl
+        self.dryRun = fcl.config.get("Factory", "dryRun")
+        self.cycles = fcl.config.get("Factory", "cycles")
+        self.sleepinterval = fcl.config.get("Factory", "sleep")
+        self.log.debug("queueConf file(s) = %s" % fcl.config.get('Factory', 'queueConf'))
+        self.qcl= QueueConfigLoader(fcl.config.get('Factory', 'queueConf').split(','))
+        
+        # Create all PandaQueue objects
         self.queues = []
-        for section in self.qconfig.sections():
-            q = PandaQueue(self, self.qconfig, section)
+        for section in self.qcl.config.sections():
+            q = PandaQueue(self, self.qcl, section)
             self.queues.append(q)
         
-        try:
-            args = dict(self.config.items('Factory'))
-            args.update(self.config.items('Pilots'))
+        self.pandastatus = PandaStatus(self.fcl)
+        #try:
+        #    args = dict(self.config.items('Factory'))
+        #    args.update(self.config.items('Pilots'))
             # pass through all Factory and Pilots config items to Monitor
-            self.monitor = Monitor(**args)
-        except:
-            self.log.warn('Monitoring not configured')
-        # Set up Panda status
-        self.pandastatus = PandaStatus(config)
-                
+        #    self.monitor = Monitor(**args)
+        #except:
+        #    self.log.warn('Monitoring not configured')
         
-        # Handle batch plugin
-        batchclass = self.config.get("Factory", "batchplugin")
-        BatchStatusPlugin = __import__("autopyfactory.plugins.%s" % batchclass)
-        self.batchplugin = BatchPlugin()
-        
-        
-        
+        #Set up Panda status
+        #self.pandastatus = PandaStatus(config)
+                        
         
         
         self.log.debug("Factory initialized.")
@@ -80,20 +85,26 @@ class Factory:
         '''
         Main functional loop of overall Factory. 
         '''
-        self.condorstatus.start()
         self.pandastatus.start()
+        for q in self.queues:
+            q.start()
         
-        cyclesDone = 0
+        
+#        cyclesDone = 0
+#        while True:
+#            self.log.info('\nStarting factory cycle %d at %s', cyclesDone, time.asctime(time.localtime()))
+#            self.factorySubmitCycle(cyclesDone)
+#            self.log.info('Factory cycle %d done' % cyclesDone)
+#            cyclesDone += 1
+#            if cyclesDone == self.config.get("options","cyclesToDo"):
+#                break
+#            self.log.info('Sleeping %ds' % options.sleepTime)
+#            time.sleep(options.sleepTime)
+#            f.updateConfig(cyclesDone)
         while True:
-            self.log.info('\nStarting factory cycle %d at %s', cyclesDone, time.asctime(time.localtime()))
-            self.factorySubmitCycle(cyclesDone)
-            self.log.info('Factory cycle %d done' % cyclesDone)
-            cyclesDone += 1
-            if cyclesDone == self.config.get("options","cyclesToDo"):
-                break
-            self.log.info('Sleeping %ds' % options.sleepTime)
-            time.sleep(options.sleepTime)
-            f.updateConfig(cyclesDone)
+            # check to see if all queue threads have finished?
+            pass
+
 
     def note(self, queue, msg):
         self.log.info('%s: %s' % (queue,msg))
@@ -263,12 +274,19 @@ class PandaQueue(threading.Thread):
     
     '''
     
-    def __init__(self, factory, qconfig, section ):
-        self.log = logging.getLogger()
+    def __init__(self, factory, qcl, siteid ):
+        '''
+        factory is the parent factory
+        qcl is a QueueConfigLoader object
+        siteid is the name of the section in the queueconfig
+        
+        '''
+        threading.Thread.__init__(self) # init the thread
+        self.log = logging.getLogger('main.pandaqueue')
         self.factory = factory      # Factory object that is the parent of this queue object. 
         self.fconfig = factory.config
-        self.qconfig = qconfig        # Queue config object for this queue object.
-        self.siteid = section    # Queue section designator from config
+        self.qcl = qconfig       # Queue config object for this queue object.
+        self.siteid = section        # Queue section designator from config
         self.nickname = qconfig.get(section, "nickname")
         self.dryrun = factory.config.get("Factory", "dryRun")
         self.cycles = factory.config.get("Factory", "cycles" )
@@ -280,7 +298,13 @@ class PandaQueue(threading.Thread):
         SchedPlugin = __import__("autopyfactory.plugins.%sSchedPlugin" % schedclass)
         self.scheduler = SchedPlugin()
         
+        # Handle status and submit batch plugins. 
+        batchclass = self.config.get(self.siteid, "batchplugin")
+        BatchStatusPlugin = __import__("autopyfactory.plugins.%sBatchPlugin.%sStatus" % (batchclass, batchclass))
+        self.batchstatus = BatchStatusPlugin()
         
+        BatchSubmitPlugin = __import__("autopyfactory.plugins.%sBatchPlugin.%Submit" % (batchclass, batchclass) )
+        self.batchsubmit = BatchSubmitPlugin()
         
         
     def run(self):
@@ -403,8 +427,13 @@ class PandaStatus(threading.Thread):
     Encapsulates all understanding needed to interpret data returned from Panda. 
     Runs every <pandaCheckInterval> seconds. 
     '''  
-    def __init__(self, config):
-        self.log = logging.getLogger('main.factory')
+    def __init__(self, fcl):
+        '''
+        fcl is a FactoryConfigLoader for this factory. 
+        
+        '''
+        threading.Thread.__init__(self) # init the thread
+        self.log = logging.getLogger('main.pandastatus')
         self.interval = int(config.get('Factory','pandaCheckInterval'))
         self.pandaCloudStatus = None 
         self.jobStats = {}
@@ -531,7 +560,7 @@ if __name__ == "__main__":
     import pprint
     pandaCloudStatus = Client.getCloudSpecs()
     pprint.pprint(pandaCloudStatus)
-    error, sitestatus = Client.getJobStatisticsPerSite(countryGroup='OSG',workingGroup='')
+    error, sitestatus = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
     print("Error: %s" % error)
     pprint.pprint(sitestatus)
 

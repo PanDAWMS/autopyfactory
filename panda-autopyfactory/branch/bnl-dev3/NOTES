@@ -9,7 +9,7 @@ factory (shell)
               Monitor (singleton)--handles updates to APF monitor. 
               ProxyManager
               BatchStatus (singleton)--queries underlying batch system for use by all PandaQueues
-              PandaQueue (xN) (one for each Panda queue)
+              PandaQueue (xN) (one for each Panda site-queue)
               contains:
                  BatchStatus -- Retrieves and encapsulates job status for a queue from underlying batch system.  
                  BatchSubmit -- Handles submission (JDL creation, submit) to underlying batch system. 

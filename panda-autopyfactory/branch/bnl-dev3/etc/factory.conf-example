@@ -15,9 +15,9 @@ monitorURL =  http://apfmon.lancs.ac.uk/mon/
 ## Configure the pilots which are sent
 # Executable, baseLogDir and baseLogDirUrl are mandatory
 
-# Where is the queue config file
-queueConf = file:///home/apf/etc/queue.conf
-#queueconf = file:///etc/apf/queue.conf
+# Where is the queue config file?
+#queueConf = file:///home/apf/etc/queues.conf
+queueConf = file:///etc/apf/queues.conf
 
 # Where is the proxy config file
 proxyConf = file://etc/apf/proxy.conf
@@ -25,11 +25,6 @@ proxyConf = file://etc/apf/proxy.conf
 # How often (seconds) to pull information from Panda Server
 # Choose prime number to balance load. 
 pandaCheckInterval = 67
-
-# What plugin should be used to talk to a batch system for info and submit?
-# This string is the root of plugins.XYZBatchPlugin, which contains XYZXSubmit class and
-# XYZStatus class. 
-batchplugin = CondorG
 
 # How often (seconds) to pull information from underlying batch system, e.g. Condor 
 # Choose prime number to balance load.
@@ -43,12 +38,6 @@ cycles=None   # None means forever
 sleep=127
 conffiles=None
 logfile=None
-
-
-
-
-
-
 
 
 [Pilots]

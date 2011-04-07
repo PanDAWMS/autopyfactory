@@ -1,11 +1,38 @@
+#!/bin/env python
+#
+# AutoPyfactory batch plugin for Condor
+#
+#
+#
+#
+#
+#
+#
+#
+#
+
+import logging
+import threading
 
 
 
-class CondorGSubmit(BatchSubmitInterface):
+# This variable points to a single, global CondorStatusThread object, which has the current status output. 
+STATUSTHREAD = None
+# Used to make sure that one and only one copy of the thread is started. 
+STATUSLOCK = Lock()
+
+
+class CondorSubmit(BatchSubmitInterface):
     '''
     This class is expected to have separate instances for each PandaQueue object. 
     
     '''
+    
+    def __init__(self, pandaqueue):
+        self.pandaqueue = pandaqueue
+        self.log = logging.getLogger("main.condorsubmit")
+    
+    
     def submitPilots(self):
         '''
         
@@ -122,26 +149,54 @@ class CondorGSubmit(BatchSubmitInterface):
         return 0
 
 
-
-
-class CondorGStatus(BatchStatusInterface, threading.Thread):
+class CondorStatus(BatchStatusInterface):
     '''
-    This class is expected to have a single instance contained in the main Factory. That way it only needs to be
-    called once per cycle to gather info applicable to all queues. 
-    
+    This class is expected to have separate instances for each PandaQueue object. 
+    The first time it is instantiated, 
     '''
 
-    def __init__(self):
-        self.batchinfo = None
-        self.condoruser = self.factory.config.get('Factory','condorUser')
+    def __init__(self, pandaqueue):
+            global STATUSTHREAD
+            global STATUSLOCK
+            self.pandaqueue = pandaqueue          
+            self.log = logging.getLogger("main.condorstatus")
+            if not STATUSLOCK.acquire(False):
+                # Somebody else has the lock, and will start the thread. 
+                pass
+            else:
+                try:
+                    if not STATUSTHREAD:
+                        # We are the first to get the lock. 
+                        # Initialize the thread object. 
+                        STATUSTHREAD = CondorStatusThread()
+                        # Start the thread.
+                        STATUSTHREAD.start()
+                finally:
+                    STATUSLOCK.release()
+                    
+                        
 
-    def run(self):
-        pass
-        
+            
 
     def getInfo(self, queue):
-        pass
+        return STATUSTHREAD.getInfo()
 
+
+  
+        
+        
+class CondorStatusThread(threading.Thread):        
+    '''
+    This class is expected to have only one instance, and is shared by multiple CondorStatus 
+    objects (one per PandaQueue object). 
+    
+    '''
+    
+    def __init__(self):
+        threading.Thread.__init__(self) # init the thread
+    
+    def run(self):
+        pass
 
     def _getCondorStatus(self):
         # We query condor for jobs running as us (owner) and this factoryId so that multiple 
@@ -184,6 +239,3 @@ class CondorGStatus(BatchStatusInterface, threading.Thread):
                                            queue, queueParameters['pilotQueue'])
         except ValueError, errorMsg:
             raise CondorStatusFailure, 'Error in condor queue result: %s' % errorMsg
-        
-        
-        

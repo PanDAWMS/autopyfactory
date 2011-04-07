@@ -33,27 +33,17 @@ setup(
     maintainer_email='graeme.andrew.stewart@cern.ch',
     url='https://twiki.cern.ch/twiki/bin/view/Atlas/PanDA',
     packages=['autopyfactory'],
-    scripts = [
-                # Utilitys and main script
-                ('bin', ['bin/factory.py',
-                         'bin/cleanLogs.py',
-                         'bin/vomsrenew.sh',
-                        ]),
-                ('libexec', ['libexec/runpilot3-wrapper.sh',
-                              'libexec/wrapper.sh',                                   ]
-                 ),],
+    scripts = [ # Utilities and main script
+                'bin/factory.py'],
     
-    data_files=[
+    data_files=[('libexec', ['libexec/runpilot3-wrapper.sh',
+                              'libexec/wrapper.sh',                                 
+                            ]),
                 ('/etc/apf', ['etc/factory.conf-example',
-                                                  ]),
+                             ]),
                 ('/etc/init.d', ['etc/factory',
-                                         ]),
+                                ]),
                 ('/etc/sysconfig', ['etc/factory.sysconfig',
-                                         ]),                                         
-                ('/etc/cron.d', ['etc/apf-cleanlogs',
-                                         ]),
-                ],
-   
-  
-
+                                   ]),                                         
+                ]
 )

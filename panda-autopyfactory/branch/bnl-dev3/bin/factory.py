@@ -38,7 +38,7 @@ import grp
 if not 'APF_NOSQUID' in os.environ:
     if not 'PANDA_URL_MAP' in os.environ:
         os.environ['PANDA_URL_MAP'] = 'CERN,http://pandaserver.cern.ch:25085/server/panda,https://pandaserver.cern.ch:25443/server/panda'
-        print >>sys.stderr, 'FACTORY DEBUG: Set PANDA_URL_MAP to %s' % os.environ['PANDA_URL_MAP']
+        print >>sys.stderr,  'FACTORY DEBUG: Set PANDA_URL_MAP to %s' % os.environ['PANDA_URL_MAP']  
     else:
         print >>sys.stderr, 'FACTORY DEBUG: Found PANDA_URL_MAP set to %s. Not changed.' % os.environ['PANDA_URL_MAP']
     if not 'PANDA_URL' in os.environ:
@@ -62,7 +62,9 @@ def main():
   This program is licenced under the GPL, as set out in LICENSE file.
 
   Author(s):
-    Graeme A Stewart <g.stewart@physics.gla.ac.uk>, Peter Love <p.love@lancaster.ac.uk>
+    Graeme A Stewart <g.stewart@physics.gla.ac.uk>
+    Peter Love <p.love@lancaster.ac.uk>
+    John Hover <jhover@bnl.gov>
  ''', version="%prog $Id$")
 
     parser.add_option("--verbose", "--debug", dest="logLevel", default=logging.INFO,
@@ -130,17 +132,18 @@ def main():
     
     # Create config, add in options...
     if options.confFiles != None:
-        config = FactoryConfigLoader(options.confFiles)
+        fc = FactoryConfigLoader(options.confFiles)
     
-    config.set("Factory","dryRun", options.dryRun)
-    config.set("Factory","cyclesToDo", options.cyclesToDo)
-    config.set("Factory", "sleepTime", options.sleepTime)
-    config.set("Factory", "confFiles", options.confFiles)
+    fc.config.set("Factory","dryRun", str(options.dryRun))
+    fc.config.set("Factory","cyclesToDo", str(options.cyclesToDo))
+    fc.config.set("Factory", "sleepTime", str(options.sleepTime))
+    fc.config.set("Factory", "confFiles", ','.join(options.confFiles))
     
         
-    # Main loop
+    # Create Factory and enter main loop
     try:
-        f = factory(config)
+        log.info('Creating Factory and entering main loop...')
+        f = Factory(fc)
         f.mainLoop()
     except KeyboardInterrupt:
         log.info('Caught keyboard interrupt - exiting')
