@@ -198,12 +198,12 @@ class CondorStatusThread(threading.Thread):
     '''
     This class is expected to have only one instance, and is shared by multiple CondorStatus 
     objects (one per PandaQueue object). 
-    
     '''
     
     def __init__(self, condoruser, factoryid, cycletime=53 ):
         threading.Thread.__init__(self) # init the thread
         self.log = logging.getLogger("main.condorstatusthread")
+        self.stopevent = threading.Event()
         self.currentinfo = None
         self.newinfo = None
         self.condoruser = condoruser
@@ -211,10 +211,20 @@ class CondorStatusThread(threading.Thread):
         self.cycletime = int(cycletime)
     
     def run(self):
-        while True:
+        while not self.stopevent.isSet():
             self.newinfo = self._getStatus()
             pprint.pprint(self.currentinfo)
             time.sleep(self.cycletime)
+
+    def join(self,timeout=None):
+        """
+        Stop the thread. Overriding this method required to handle Ctrl-C from console.
+        """
+        self.stopevent.set()
+        self.log.debug('Stopping thread....')
+        threading.Thread.join(self, timeout)
+    
+
             
     def getInfo(self):
         return "jobStatus=1 globusStatus=1 -None TMP=/tmp FACTORYUSER=user APFFID=BNL-gridui11-jhover APFMON=http://apfmon.lancs.ac.uk/mon/ APP=/usatlas/OSG APFCID=6974.0 PANDA_JSID=BNL-gridui11-jhover DATA=/usatlas/prodjob/share/ FACTORYQUEUE=ANALY_TEST-APF GTAG=http://gridui11.usatlas.bnl.gov:25880/2011-04-08/ANALY_TEST-APF/6974.0.out"        

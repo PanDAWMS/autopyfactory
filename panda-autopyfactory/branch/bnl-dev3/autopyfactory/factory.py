@@ -89,6 +89,22 @@ class Factory:
         self.log.info("Starting all Queue threads...")
         for q in self.queues:
             q.start()
+        
+        # Continue while there are still threads alive        
+        try:
+            while(1):
+                time.sleep(3)
+                self.log.debug('Checking for interrupt.')
+                
+        except (KeyboardInterrupt): 
+            logging.info("Shutdown via Ctrl-C or -INT signal.")
+            logging.debug(" Shutting down all threads...")
+            for t in self.threads:
+                t.join()
+        
+        
+        
+        
         self.log.info("Joining all Queue threads...")
         for q in self.queues:
             q.join()
@@ -291,6 +307,7 @@ class PandaQueue(threading.Thread):
         '''
         threading.Thread.__init__(self) # init the thread
         self.log = logging.getLogger('main.pandaqueue')
+        self.stopevent = threading.Event()
         self.factory = factory       # Factory object that is the parent of this queue object. 
         self.fcl = factory.fcl       # FactoryConfigLoader for this factory
         self.qcl = factory.qcl       # Queue config object for this queue object.
@@ -303,7 +320,7 @@ class PandaQueue(threading.Thread):
         
         # Handle sched plugin
         schedclass = self.qcl.config.get(self.siteid, "schedplugin")
-        self.log.debug(" Attempting to import derived classname: autopyfactory.plugins.%sSchedPlugin.%sSchedPlugin" % (schedclass,schedclass))                
+        self.log.debug("[%s] Attempting to import derived classname: autopyfactory.plugins.%sSchedPlugin.%sSchedPlugin" % (self.siteid,schedclass,schedclass))                
         _temp = __import__("autopyfactory.plugins.%sSchedPlugin" % (schedclass), 
                                  fromlist=["%sSchedPlugin" % schedclass])
         SchedPlugin = _temp.SchedPlugin
@@ -318,7 +335,7 @@ class PandaQueue(threading.Thread):
 
         BatchSubmitPlugin = _temp.BatchSubmitPlugin
         self.batchsubmit = BatchSubmitPlugin(self)
-        self.log.debug("PandaQueue initialization done.")
+        self.log.debug("[%s] PandaQueue initialization done." % self.siteid)
         
         
     def run(self):
@@ -326,30 +343,37 @@ class PandaQueue(threading.Thread):
         Method called by thread.start()
         Main functional loop of this Queue. 
         '''    
-        while True:
-            self.log.debug("Would be grabbing Batch info relevant to this queue.")
+        while not self.stopevent.isSet():
+            self.log.debug("[%s] Would be grabbing Batch info relevant to this queue." % self.siteid)
             # update batch info
             #batchstatus = self.factory.batchstatus.getInfo()
             # update panda info
-            self.log.debug("Would be getting panda info relevant to this queue.")
+            self.log.debug("[%s] Would be getting panda info relevant to this queue."% self.siteid)
             
-            self.log.debug("Would be calculating number to submit.")
+            self.log.debug("[%s] Would be calculating number to submit."% self.siteid)
             # calculate number to submit
             #nsub = self.scheduler.calcSubmitNum()
             # submit using this number
-            self.log.debug("Would be submitting jobs for this queue.")
+            self.log.debug("[%s] Would be submitting jobs for this queue."% self.siteid)
             #self.submitPilots(nsub)
             # Exit loop if desired number of cycles is reached...  
-            self.log.debug("Checking to see how many cycles to run.")
+            self.log.debug("[%s] Checking to see how many cycles to run."% self.siteid)
             if self.cycles and self.cyclesrun >= self.cycles:
                 break            
-            self.log.debug("Incrementing cycles...")
+            self.log.debug("[%s] Incrementing cycles..."% self.siteid)
             self.cyclesrun += 1
             # sleep interval
-            self.log.debug("Sleeping for %d seconds..." % self.sleep)
+            self.log.debug("[%s] Sleeping for %d seconds..." % (self.siteid, self.sleep))
             time.sleep(self.sleep)
               
-          
+    def join(self,timeout=None):
+        """
+        Stop the thread. Overriding this method required to handle Ctrl-C from console.
+        """
+        self.stopevent.set()
+        self.log.debug('%s.join(): [%s] Stopping thread....' % (self.klassname, self.section))
+        threading.Thread.join(self, timeout)
+         
 
     def submitPilots(self):
         
@@ -456,7 +480,7 @@ class PandaStatus(threading.Thread):
         self.log = logging.getLogger('main.pandastatus')
         self.fcl = fcl
         self.interval = int(self.fcl.config.get('Factory','pandaCheckInterval'))
-        
+        self.stopevent = threading.Event()
         # Hold return value of getCloudSpecs
         self.cloudconfig = None 
         self.newcloudconfig = None
@@ -468,15 +492,25 @@ class PandaStatus(threading.Thread):
         self.jobstats = None
         self.newjobstats = None
         
-
-
+    def join(self,timeout=None):
+        """
+        Stop the thread. Overriding this method required to handle Ctrl-C from console.
+        """
+        self.stopevent.set()
+        self.log.debug('Stopping PandaStatus thread...')
+        threading.Thread.join(self, timeout)
+    
     def run(self):
-        self.log.info("Starting PandaStatus update cycle...")
-        self.updateCloudConfig()
-        self.updateSiteConfig()
-        self.updateJobStats()
-        self.log.debug("Finished update loop. Sleeping %d seconds..." % self.interval)
-        time.sleep(self.interval)
+        '''
+        Run the thread (from start()). 
+        '''
+        while not self.stopevent.isSet():
+            self.log.info("Starting PandaStatus update cycle...")
+            self.updateCloudConfig()
+            self.updateSiteConfig()
+            self.updateJobStats()
+            self.log.debug("Finished update loop. Sleeping %d seconds..." % self.interval)
+            time.sleep(self.interval)
         
       
     def updateCloudConfig(self):
@@ -484,7 +518,8 @@ class PandaStatus(threading.Thread):
         error,self.newcloudconfig = Client.getCloudSpecs()
         if error != 0:
             raise PandaStatusFailure, 'Client.getCloudSpecs() error: %s' % (error)
-        self.log.debug("Got new cloud config: %s" % pprint.pformat(self.newcloudconfig))
+        #self.log.debug("Got new cloud config: %s" % pprint.pformat(self.newcloudconfig))
+        self.log.debug("Got new cloud config with entries for %d clouds" % len(self.newcloudconfig))
         self.cloudconfig = self.newcloudconfig
     
     
@@ -493,7 +528,8 @@ class PandaStatus(threading.Thread):
         error, self.newjobstats = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
         if error != 0:
             raise PandaStatusFailure, 'Client.getJobStatisticsPerSite() error: %s' % (error)
-        self.log.debug("Got new jobstats: %s" % pprint.pformat(self.newjobstats))
+        #self.log.debug("Got new jobstats: %s" % pprint.pformat(self.newjobstats))
+        self.log.debug("Got new jobstats with entries for %d sites: " % len(self.newjobstats))
         self.jobstats = self.newjobstats
     
     def updateSiteConfig(self):
@@ -501,7 +537,8 @@ class PandaStatus(threading.Thread):
         error, self.newsiteconfig = Client.getSiteSpecs(siteType='all')
         if error != 0:
             raise PandaStatusFailure, 'Client.getSiteSpecs() error: %s' % (error)
-        self.log.debug("Got new site config: %s" % pprint.pformat(self.newsiteconfig))
+        #self.log.debug("Got new site config: %s" % pprint.pformat(self.newsiteconfig))
+        self.log.debug("Got new site configs for %d sites" % len(self.newsiteconfig))
         self.siteconfig = self.newsiteconfig
     
 
