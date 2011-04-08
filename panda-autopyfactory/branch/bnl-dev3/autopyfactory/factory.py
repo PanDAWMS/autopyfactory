@@ -92,23 +92,19 @@ class Factory:
         
         # Continue while there are still threads alive        
         try:
-            while(1):
-                time.sleep(3)
+            while True:
+                time.sleep(10)
                 self.log.debug('Checking for interrupt.')
                 
         except (KeyboardInterrupt): 
             logging.info("Shutdown via Ctrl-C or -INT signal.")
             logging.debug(" Shutting down all threads...")
-            for t in self.threads:
-                t.join()
-        
-        
-        
-        
-        self.log.info("Joining all Queue threads...")
-        for q in self.queues:
-            q.join()
-        self.log.info("All Queue threads joined. Exitting.")
+            
+            self.log.info("Joining all Queue threads...")
+            for q in self.queues:
+                q.join()
+            
+            self.log.info("All Queue threads joined. Exitting.")
                 
 #        cyclesDone = 0
 #        while True:
@@ -359,7 +355,7 @@ class PandaQueue(threading.Thread):
             # Exit loop if desired number of cycles is reached...  
             self.log.debug("[%s] Checking to see how many cycles to run."% self.siteid)
             if self.cycles and self.cyclesrun >= self.cycles:
-                break            
+                self.stopevent.set()            
             self.log.debug("[%s] Incrementing cycles..."% self.siteid)
             self.cyclesrun += 1
             # sleep interval
@@ -371,7 +367,7 @@ class PandaQueue(threading.Thread):
         Stop the thread. Overriding this method required to handle Ctrl-C from console.
         """
         self.stopevent.set()
-        self.log.debug('%s.join(): [%s] Stopping thread....' % (self.klassname, self.section))
+        self.log.debug('[%s] Stopping thread...' % self.siteid )
         threading.Thread.join(self, timeout)
          
 
