@@ -13,7 +13,8 @@
 
 import logging
 import threading
-
+import time
+import pprint
 
 
 # This variable points to a single, global CondorStatusThread object, which has the current status output. 
@@ -192,11 +193,50 @@ class CondorStatusThread(threading.Thread):
     
     '''
     
-    def __init__(self):
+    def __init__(self, condoruser, factoryid, cycletime=53 ):
         threading.Thread.__init__(self) # init the thread
+        self.currentinfo = None
+        self.newinfo = None
+        self.condoruser = condoruser
+        self.factoryid = factoryid
+        self.cycletime = int(cycletime)
     
     def run(self):
-        pass
+        while True:
+            _getStatus()
+            pprint.pprint(self.currentinfo)
+            time.sleep(self.cycletime)
+            
+    def getInfo(self):        
+        return self.currentinfo
+        
+
+    def _getStatus(self):
+        '''
+        Query Condor for job status, validate and store info in newinfo, and 
+        finally swap newinfo for currentinfo. 
+        
+        Condor-G query template example:
+        
+        condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSI=BNL-gridui11-jhover",Environment, " ")'
+            -format 'jobStatus=%d ' jobStatus -format 'globusStatus=%d ' GlobusStatus -format 'gkUrl=%s' MATCH_gatekeeper_url
+            -format '-%s ' MATCH_queue -format '%s\n' Environment
+        
+        Condor-C query template example:
+        
+        
+        '''
+        
+        
+        
+        querycmd = "condor_q -constr '(owner==\"%s\") && stringListMember(\"PANDA_JSID=%s    " % (self.condoruser, )
+
+
+
+
+
+
+
 
     def _getCondorStatus(self):
         # We query condor for jobs running as us (owner) and this factoryId so that multiple 
@@ -239,3 +279,6 @@ class CondorStatusThread(threading.Thread):
                                            queue, queueParameters['pilotQueue'])
         except ValueError, errorMsg:
             raise CondorStatusFailure, 'Error in condor queue result: %s' % errorMsg
+        
+        
+        

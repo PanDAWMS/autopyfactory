@@ -435,9 +435,14 @@ class PandaStatus(threading.Thread):
         threading.Thread.__init__(self) # init the thread
         self.log = logging.getLogger('main.pandastatus')
         self.interval = int(config.get('Factory','pandaCheckInterval'))
-        self.pandaCloudStatus = None 
-        self.jobStats = {}
-        self.queconfig = {}
+        # Hold return value of getCloudSpecs
+        self.cloudstatus = None 
+        self.newcloudstatus
+        # Holds return vlue of getJobStatisticsPerSite(countryGroup='',workingGroup='')
+        self.jobstats = None
+        self.newjobstats = None
+        # ?
+        #self.queueconfig = {}
 
     def run(self):
         self.getPandaStatus()
@@ -447,6 +452,19 @@ class PandaStatus(threading.Thread):
     def getQueueData(self, queue):
         pass
         
+
+    def updateCloudSpecs(self):
+        self.factoryMessages.info('Polling panda for cloud status')
+        error,self.newcloudstatus = Client.getCloudSpecs()
+        if error != 0:
+            raise PandaStatusFailure, 'Client.getCloudSpecs() error: %s' % (error)
+    
+    
+    
+    def updateJobStats(self):
+        pass
+    
+    
 
 
     def getPandaStatus(self):
@@ -524,13 +542,13 @@ class BatchStatusInterface(object):
         '''
         Returns aggregate info about jobs on queue in batch system. 
         '''
-        pass
+        raise NotImplementedError
     
     def getJobInfo(self, queue):
         '''
         Returns a list of JobStatus objects, one for each job. 
         '''
-        pass
+        raise NotImplementedError
     
 class BatchSubmitInterface(object):
     '''
@@ -542,6 +560,7 @@ class BatchSubmitInterface(object):
         '''
         
         '''
+        raise NotImplementedError
 
 class SchedInterface(object):
     '''
@@ -549,11 +568,19 @@ class SchedInterface(object):
     
     ''' 
 
-    def calcSubmitNum(self, config):
-        pass
-
-
-
+    def calcSubmitNum(self, config, activated, failed, running, transferring):
+        '''
+        Calculates and exact number of new pilots to submit, based on provided Panda site info
+        and whatever relevant parameters are in config.
+        All Panda info:    
+        activated': 0,
+        'assigned': 0,
+        'failed': 4,
+        'finished': 493,
+        'running': 18,
+        'transferring': 38},
+        '''
+        raise NotImplementedError
 
 
 if __name__ == "__main__":
