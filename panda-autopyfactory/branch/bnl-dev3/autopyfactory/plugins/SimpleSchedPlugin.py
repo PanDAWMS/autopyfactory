@@ -5,10 +5,11 @@
 
 
 from autopyfactory.factory import SchedInterface
+import logging
 
-
-class SimpleSchedPlugin(SchedInterface):
+class SchedPlugin(SchedInterface):
     
     
     def __init__(self):
-        pass
+        self.log = logging.getLogger("main.simpleschedplugin")
+        self.log.debug("SimpleSchedPlugin initializing...")

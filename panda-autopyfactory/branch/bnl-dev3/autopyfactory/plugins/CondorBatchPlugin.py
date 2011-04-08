@@ -15,23 +15,23 @@ import logging
 import threading
 import time
 import pprint
-
+from autopyfactory.factory import BatchSubmitInterface, BatchStatusInterface
 
 # This variable points to a single, global CondorStatusThread object, which has the current status output. 
 STATUSTHREAD = None
 # Used to make sure that one and only one copy of the thread is started. 
-STATUSLOCK = Lock()
+STATUSLOCK = threading.Lock()
 
 
-class CondorSubmit(BatchSubmitInterface):
+class BatchSubmitPlugin(BatchSubmitInterface):
     '''
     This class is expected to have separate instances for each PandaQueue object. 
     
     '''
-    
     def __init__(self, pandaqueue):
-        self.pandaqueue = pandaqueue
         self.log = logging.getLogger("main.condorsubmit")
+        self.pandaqueue = pandaqueue
+        
     
     
     def submitPilots(self):
@@ -150,7 +150,7 @@ class CondorSubmit(BatchSubmitInterface):
         return 0
 
 
-class CondorStatus(BatchStatusInterface):
+class BatchStatusPlugin(BatchStatusInterface):
     '''
     This class is expected to have separate instances for each PandaQueue object. 
     The first time it is instantiated, 
@@ -159,27 +159,35 @@ class CondorStatus(BatchStatusInterface):
     def __init__(self, pandaqueue):
             global STATUSTHREAD
             global STATUSLOCK
-            self.pandaqueue = pandaqueue          
             self.log = logging.getLogger("main.condorstatus")
+            self.pandaqueue = pandaqueue
+            self.fconfig = pandaqueue.fcl.config          
+            self.siteid = pandaqueue.siteid
+            self.condoruser = pandaqueue.fcl.config.get('Factory', 'factoryUser')
+            self.factoryid = pandaqueue.fcl.config.get('Factory', 'factoryId') 
+            self.statuscycle = int(pandaqueue.qcl.config.get(self.siteid, 'batchCheckInterval'))
+            self.submitcycle = int(pandaqueue.qcl.config.get(self.siteid, 'batchSubmitInterval'))
+                        
             if not STATUSLOCK.acquire(False):
                 # Somebody else has the lock, and will start the thread. 
                 pass
             else:
                 try:
-                    if not STATUSTHREAD:
+                    if STATUSTHREAD:
+                        self.log.debug("StatusThread already created. Ignoring.")
+                    else:
+                        self.log.debug("First to get lock. Creating StatusThread...")
                         # We are the first to get the lock. 
                         # Initialize the thread object. 
-                        STATUSTHREAD = CondorStatusThread()
+                        STATUSTHREAD = CondorStatusThread(self.condoruser, self.factoryid, self.statuscycle )
                         # Start the thread.
                         STATUSTHREAD.start()
+                        
                 finally:
                     STATUSLOCK.release()
                     
-                        
-
-            
-
     def getInfo(self, queue):
+        global STATUSTHREAD
         return STATUSTHREAD.getInfo()
 
 
@@ -195,6 +203,7 @@ class CondorStatusThread(threading.Thread):
     
     def __init__(self, condoruser, factoryid, cycletime=53 ):
         threading.Thread.__init__(self) # init the thread
+        self.log = logging.getLogger("main.condorstatusthread")
         self.currentinfo = None
         self.newinfo = None
         self.condoruser = condoruser
@@ -203,12 +212,13 @@ class CondorStatusThread(threading.Thread):
     
     def run(self):
         while True:
-            _getStatus()
+            self.newinfo = self._getStatus()
             pprint.pprint(self.currentinfo)
             time.sleep(self.cycletime)
             
-    def getInfo(self):        
-        return self.currentinfo
+    def getInfo(self):
+        return "jobStatus=1 globusStatus=1 -None TMP=/tmp FACTORYUSER=user APFFID=BNL-gridui11-jhover APFMON=http://apfmon.lancs.ac.uk/mon/ APP=/usatlas/OSG APFCID=6974.0 PANDA_JSID=BNL-gridui11-jhover DATA=/usatlas/prodjob/share/ FACTORYQUEUE=ANALY_TEST-APF GTAG=http://gridui11.usatlas.bnl.gov:25880/2011-04-08/ANALY_TEST-APF/6974.0.out"        
+        #return self.currentinfo
         
 
     def _getStatus(self):
@@ -218,7 +228,7 @@ class CondorStatusThread(threading.Thread):
         
         Condor-G query template example:
         
-        condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSI=BNL-gridui11-jhover",Environment, " ")'
+        condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
             -format 'jobStatus=%d ' jobStatus -format 'globusStatus=%d ' GlobusStatus -format 'gkUrl=%s' MATCH_gatekeeper_url
             -format '-%s ' MATCH_queue -format '%s\n' Environment
         
@@ -226,11 +236,10 @@ class CondorStatusThread(threading.Thread):
         
         
         '''
-        
-        
-        
-        querycmd = "condor_q -constr '(owner==\"%s\") && stringListMember(\"PANDA_JSID=%s    " % (self.condoruser, )
-
+        self.log.debug("_getStatus called. Querying batch system...")      
+        querycmd = "condor_q -constr '(owner==\"%s\") && " % self.condoruser
+        querycmd += "stringListMember(\"PANDA_JSID=%s " % self.factoryid
+        querycmd += "" 
 
 
 

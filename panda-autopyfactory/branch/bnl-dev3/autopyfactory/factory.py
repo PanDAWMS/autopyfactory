@@ -28,6 +28,7 @@ import time
 import string
 import re
 import threading
+import pprint
 
 import os
 import pwd
@@ -44,7 +45,6 @@ class Factory:
     
     
     '''
-    
     def __init__(self, fcl):
         '''
         fconfig is a FactoryConfigLoader object. 
@@ -55,14 +55,14 @@ class Factory:
         self.fcl = fcl
         self.dryRun = fcl.config.get("Factory", "dryRun")
         self.cycles = fcl.config.get("Factory", "cycles")
-        self.sleepinterval = fcl.config.get("Factory", "sleep")
+        self.sleep = fcl.config.get("Factory", "sleep")
         self.log.debug("queueConf file(s) = %s" % fcl.config.get('Factory', 'queueConf'))
         self.qcl= QueueConfigLoader(fcl.config.get('Factory', 'queueConf').split(','))
         
         # Create all PandaQueue objects
         self.queues = []
         for section in self.qcl.config.sections():
-            q = PandaQueue(self, self.qcl, section)
+            q = PandaQueue(self, section)
             self.queues.append(q)
         
         self.pandastatus = PandaStatus(self.fcl)
@@ -86,10 +86,14 @@ class Factory:
         Main functional loop of overall Factory. 
         '''
         self.pandastatus.start()
+        self.log.info("Starting all Queue threads...")
         for q in self.queues:
             q.start()
-        
-        
+        self.log.info("Joining all Queue threads...")
+        for q in self.queues:
+            q.join()
+        self.log.info("All Queue threads joined. Exitting.")
+                
 #        cyclesDone = 0
 #        while True:
 #            self.log.info('\nStarting factory cycle %d at %s', cyclesDone, time.asctime(time.localtime()))
@@ -101,9 +105,13 @@ class Factory:
 #            self.log.info('Sleeping %ds' % options.sleepTime)
 #            time.sleep(options.sleepTime)
 #            f.updateConfig(cyclesDone)
-        while True:
+        #while True:
+            # trigger FCL update...
+        
+            
+            
             # check to see if all queue threads have finished?
-            pass
+            #time.sleep(self.sleep)
 
 
     def note(self, queue, msg):
@@ -274,7 +282,7 @@ class PandaQueue(threading.Thread):
     
     '''
     
-    def __init__(self, factory, qcl, siteid ):
+    def __init__(self, factory, siteid ):
         '''
         factory is the parent factory
         qcl is a QueueConfigLoader object
@@ -283,28 +291,34 @@ class PandaQueue(threading.Thread):
         '''
         threading.Thread.__init__(self) # init the thread
         self.log = logging.getLogger('main.pandaqueue')
-        self.factory = factory      # Factory object that is the parent of this queue object. 
-        self.fconfig = factory.config
-        self.qcl = qconfig       # Queue config object for this queue object.
-        self.siteid = section        # Queue section designator from config
-        self.nickname = qconfig.get(section, "nickname")
-        self.dryrun = factory.config.get("Factory", "dryRun")
-        self.cycles = factory.config.get("Factory", "cycles" )
-        self.sleeptime = factory.config.get("Factory", "sleep")
+        self.factory = factory       # Factory object that is the parent of this queue object. 
+        self.fcl = factory.fcl       # FactoryConfigLoader for this factory
+        self.qcl = factory.qcl       # Queue config object for this queue object.
+        self.siteid = siteid         # Queue section designator from config
+        self.nickname = self.qcl.config.get(siteid, "nickname")
+        self.dryrun = self.fcl.config.get("Factory", "dryRun")
+        self.cycles = self.fcl.config.get("Factory", "cycles" )
+        self.sleep = int(self.fcl.config.get("Factory", "sleep"))
         self.cyclesrun = 0
         
         # Handle sched plugin
-        schedclass = self.qconfig.get(self.siteid, "schedplugin")                
-        SchedPlugin = __import__("autopyfactory.plugins.%sSchedPlugin" % schedclass)
+        schedclass = self.qcl.config.get(self.siteid, "schedplugin")
+        self.log.debug(" Attempting to import derived classname: autopyfactory.plugins.%sSchedPlugin.%sSchedPlugin" % (schedclass,schedclass))                
+        _temp = __import__("autopyfactory.plugins.%sSchedPlugin" % (schedclass), 
+                                 fromlist=["%sSchedPlugin" % schedclass])
+        SchedPlugin = _temp.SchedPlugin
         self.scheduler = SchedPlugin()
         
         # Handle status and submit batch plugins. 
-        batchclass = self.config.get(self.siteid, "batchplugin")
-        BatchStatusPlugin = __import__("autopyfactory.plugins.%sBatchPlugin.%sStatus" % (batchclass, batchclass))
-        self.batchstatus = BatchStatusPlugin()
+        batchclass = self.qcl.config.get(self.siteid, "batchplugin")
         
-        BatchSubmitPlugin = __import__("autopyfactory.plugins.%sBatchPlugin.%Submit" % (batchclass, batchclass) )
-        self.batchsubmit = BatchSubmitPlugin()
+        _temp =  __import__("autopyfactory.plugins.%sBatchPlugin" % batchclass, fromlist=["%sBatchPlugin" % batchclass])
+        BatchStatusPlugin = _temp.BatchStatusPlugin
+        self.batchstatus = BatchStatusPlugin(self)
+
+        BatchSubmitPlugin = _temp.BatchSubmitPlugin
+        self.batchsubmit = BatchSubmitPlugin(self)
+        self.log.debug("PandaQueue initialization done.")
         
         
     def run(self):
@@ -313,21 +327,27 @@ class PandaQueue(threading.Thread):
         Main functional loop of this Queue. 
         '''    
         while True:
+            self.log.debug("Would be grabbing Batch info relevant to this queue.")
             # update batch info
-            batchstatus = self.factory.batchplugin.getInfo()
+            #batchstatus = self.factory.batchstatus.getInfo()
             # update panda info
+            self.log.debug("Would be getting panda info relevant to this queue.")
             
-            
+            self.log.debug("Would be calculating number to submit.")
             # calculate number to submit
-            nsub = self.scheduler.calcSubmitNum()
+            #nsub = self.scheduler.calcSubmitNum()
             # submit using this number
-            self.submitPilots(nsub)
+            self.log.debug("Would be submitting jobs for this queue.")
+            #self.submitPilots(nsub)
             # Exit loop if desired number of cycles is reached...  
+            self.log.debug("Checking to see how many cycles to run.")
             if self.cycles and self.cyclesrun >= self.cycles:
                 break            
+            self.log.debug("Incrementing cycles...")
             self.cyclesrun += 1
             # sleep interval
-            time.sleep(self.sleeptime)
+            self.log.debug("Sleeping for %d seconds..." % self.sleep)
+            time.sleep(self.sleep)
               
           
 
@@ -429,92 +449,67 @@ class PandaStatus(threading.Thread):
     '''  
     def __init__(self, fcl):
         '''
-        fcl is a FactoryConfigLoader for this factory. 
+        fcl is the FactoryConfigLoader for this factory. 
         
         '''
         threading.Thread.__init__(self) # init the thread
         self.log = logging.getLogger('main.pandastatus')
-        self.interval = int(config.get('Factory','pandaCheckInterval'))
+        self.fcl = fcl
+        self.interval = int(self.fcl.config.get('Factory','pandaCheckInterval'))
+        
         # Hold return value of getCloudSpecs
-        self.cloudstatus = None 
-        self.newcloudstatus
+        self.cloudconfig = None 
+        self.newcloudconfig = None
+
+        self.siteconfig = None
+        self.newsiteconfig = None
+        
         # Holds return vlue of getJobStatisticsPerSite(countryGroup='',workingGroup='')
         self.jobstats = None
         self.newjobstats = None
-        # ?
-        #self.queueconfig = {}
-
-    def run(self):
-        self.getPandaStatus()
-        self.getQueueInfo()
-        time.sleep(self.interval)
-
-    def getQueueData(self, queue):
-        pass
         
 
-    def updateCloudSpecs(self):
-        self.factoryMessages.info('Polling panda for cloud status')
-        error,self.newcloudstatus = Client.getCloudSpecs()
+
+    def run(self):
+        self.log.info("Starting PandaStatus update cycle...")
+        self.updateCloudConfig()
+        self.updateSiteConfig()
+        self.updateJobStats()
+        self.log.debug("Finished update loop. Sleeping %d seconds..." % self.interval)
+        time.sleep(self.interval)
+        
+      
+    def updateCloudConfig(self):
+        self.log.info('Polling Panda for cloud status...')
+        error,self.newcloudconfig = Client.getCloudSpecs()
         if error != 0:
             raise PandaStatusFailure, 'Client.getCloudSpecs() error: %s' % (error)
-    
+        self.log.debug("Got new cloud config: %s" % pprint.pformat(self.newcloudconfig))
+        self.cloudconfig = self.newcloudconfig
     
     
     def updateJobStats(self):
-        pass
-    
-    
-
-
-    def getPandaStatus(self):
-        
-        
-        
-        
-        
-        
-        
-        for country in self.config.sites.keys():
-            for group in self.config.sites[country].keys():
-                # country/group = None is equivalent to not specifing anything
-                self.log.info('Polling panda status for country=%s, group=%s' % (country, group,))
-                error,self.config.sites[country][group]['siteStatus'] = Client.getJobStatisticsPerSite(countryGroup=country,workingGroup=group)
-                if error != 0:
-                    raise PandaStatusFailure, 'Client.getJobStatisticsPerSite(countryGroup=%s,workingGroup=%s) error: %s' % (country, group, error)
-
-                for siteid, queues in self.config.sites[country][group].iteritems():
-                    if siteid == 'siteStatus':
-                        continue
-                    if siteid in self.config.sites[country][group]['siteStatus']:
-                        self.log.debug('Panda status: %s (country=%s, group=%s) %s' % (siteid, country, group, self.config.sites[country][group]['siteStatus'][siteid]))
-                        for queue in queues:
-                            self.config.queues[queue]['pandaStatus'] = self.config.sites[country][group]['siteStatus'][siteid]
-                    else:
-                        # If panda knows nothing, then we assume all zeros (site may be inactive)
-                        self.log.debug('Panda status for siteid %s (country=%s, group=%s) not found - setting zeros in status to allow bootstrapping of site.' % (siteid, country, group))
-                        for queue in queues:
-                            self.config.queues[queue]['pandaStatus'] = {'transferring': 0, 'activated': 0, 'running': 0, 'assigned': 0, 'failed': 0, 'finished': 0}
-
-        # Now poll site and cloud status to suppress pilots if a site is offline
-        # Take site staus out - better to use individual queue status from schedconfig
-        #self.factoryMessages.info('Polling panda for site status')
-        #error,self.pandaSiteStatus = Client.getSiteSpecs(siteType='all')
-        #if error != 0:
-        #    raise PandaStatusFailure, '''Client.getSiteSpecs(siteType='all') error: %s''' % (error)
-        self.factoryMessages.info('Polling panda for cloud status')
-        error,self.pandaCloudStatus = Client.getCloudSpecs()
+        self.log.info('Polling Panda for Job statistics')
+        error, self.newjobstats = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
         if error != 0:
-            raise PandaStatusFailure, 'Client.getCloudSpecs() error: %s' % (error)
-
-        
+            raise PandaStatusFailure, 'Client.getJobStatisticsPerSite() error: %s' % (error)
+        self.log.debug("Got new jobstats: %s" % pprint.pformat(self.newjobstats))
+        self.jobstats = self.newjobstats
+    
+    def updateSiteConfig(self):
+        self.log.info('Polling Panda for Site Configuration')
+        error, self.newsiteconfig = Client.getSiteSpecs(siteType='all')
+        if error != 0:
+            raise PandaStatusFailure, 'Client.getSiteSpecs() error: %s' % (error)
+        self.log.debug("Got new site config: %s" % pprint.pformat(self.newsiteconfig))
+        self.siteconfig = self.newsiteconfig
+    
 
 class BatchStatus(object):
     '''
     Batch-agnostic aggregate information container returned by the BatchStatus getInfo() call. 
     
-    ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD
-    
+    ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD   
     
     '''
     def _init__(self, queue, jobid, owner, submittime, runtime, state, priority  ):
@@ -572,23 +567,35 @@ class SchedInterface(object):
         '''
         Calculates and exact number of new pilots to submit, based on provided Panda site info
         and whatever relevant parameters are in config.
-        All Panda info:    
-        activated': 0,
+        All Panda info, not all relevant:    
+        'activated': 0,
         'assigned': 0,
-        'failed': 4,
+        'cancelled': 0,
+        'defined': 0,
+        'failed': 4
         'finished': 493,
+        'holding' : 3,
         'running': 18,
         'transferring': 38},
         '''
         raise NotImplementedError
 
 
-if __name__ == "__main__":
+def testPandaRetrieve():
     import pprint
-    pandaCloudStatus = Client.getCloudSpecs()
-    pprint.pprint(pandaCloudStatus)
-    error, sitestatus = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
+    error, cloudconfig = Client.getCloudSpecs()
     print("Error: %s" % error)
-    pprint.pprint(sitestatus)
+    pprint.pprint(cloudconfig)
+    error, jobstats = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
+    print("Error: %s" % error)
+    pprint.pprint(jobstats)    
+    error, siteconfig = Client.getSiteSpecs(siteType='all')
+    print("Error: %s" % error)
+    pprint.pprint(siteconfig)
+
+
+if __name__ == "__main__":
+    testPandaRetrieve()
+    
 
         

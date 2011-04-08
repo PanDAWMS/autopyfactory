@@ -16,7 +16,7 @@ $Id$
 
 * Split config system into main source for APF instance (factory.conf), proxy management (proxy.conf), individual queue configuration (queue.conf). The latter can be accessed as URI, paving the way to queue configuration via DB or URL.
   
-* The previous change involved passing Config objects to classes, rather than passing through lists of config files. 
+* The previous change involved passing ConfigLoader objects to classes, rather than passing through lists of config files. 
 
 * Adjusted module, file, and class names to follow Python recommended guidelines. See PEP 8:
   http://www.python.org/dev/peps/pep-0008/ 
@@ -25,6 +25,11 @@ $Id$
   object-oriented suitable for embedding (e.g. in a web application). 
 
 * Added copy of Jose's generic top-level wrapper to libexec/.  
+
+* IMPORTANT: For various reasons, it was very difficult to maintain the ability to automatically reload
+  configs by detecting file mtime changes. So for now simply restart if you change a file. This feature 
+  can be re-enabled soon. 
+
 
 
 

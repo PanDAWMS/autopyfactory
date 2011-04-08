@@ -2,12 +2,13 @@
 #
 ##
 #
-
+import logging
 
 class ProxyManager(object):
     
     def __init__(self, pconfig):
         # 
+        self.log = logging.getLogger('main.proxymanager')
         self.pconfig = pconfig
         self.handlers = []
         

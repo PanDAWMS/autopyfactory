@@ -23,7 +23,7 @@ class Monitor(threading.Thread):
     Notifies a monitoring webservice about condor jobs
     """
     def __init__(self, **args):
-        self.log = logging.getLogger('main.mon')
+        self.log = logging.getLogger('main.monitor')
         mainlevel = logging.getLogger('main').getEffectiveLevel()
         self.log.setLevel(mainlevel)
 

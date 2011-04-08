@@ -8,6 +8,7 @@
 [Factory]
 factoryOwner = g.stewart@physics.gla.ac.uk
 factoryId = graeme-UK
+factoryUser = apf
 # condorUser = unixUserName
 # schedConfigPollTime = 5
 monitorURL =  http://apfmon.lancs.ac.uk/mon/
@@ -26,16 +27,13 @@ proxyConf = file://etc/apf/proxy.conf
 # Choose prime number to balance load. 
 pandaCheckInterval = 67
 
-# How often (seconds) to pull information from underlying batch system, e.g. Condor 
-# Choose prime number to balance load.
-batchCheckInterval = 53
 
 # Variables potentially altered by command-line options. Passed in via Config.
 # Defaults:
 dryrun=False         
 cycles=None   # None means forever
 # Choose prime number to balance load.
-sleep=127
+sleep=17
 conffiles=None
 logfile=None
 

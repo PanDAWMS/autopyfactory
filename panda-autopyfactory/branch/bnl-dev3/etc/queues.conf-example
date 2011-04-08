@@ -88,6 +88,12 @@ batchplugin = Condor
 batchtype = grid
 batchsubtype = gt2
 
+# How often (seconds) to pull information from underlying batch system, e.g. Condor 
+# How often (seconds) to performt submission. 
+# Choose prime number to balance load.
+batchCheckInterval = 53
+batchSubmitInterval = 61
+
 ## Individual queue configurations
 # It is recommended now only to have a nickname and let everything else
 # be detected from schedconfig

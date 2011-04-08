@@ -63,7 +63,7 @@ class LogServer(threading.Thread):
                 
         '''
         threading.Thread.__init__(self)
-        self.log= logging.getLogger()
+        self.log= logging.getLogger('main.logserver')
         self.docroot = docroot
         self.port = int(port)
         #self.handler = SimpleHTTPServer.SimpleHTTPRequestHandler
