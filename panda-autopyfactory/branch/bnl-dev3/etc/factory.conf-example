@@ -18,6 +18,7 @@ monitorURL =  http://apfmon.lancs.ac.uk/mon/
 
 # Where is the queue config file?
 #queueConf = file:///home/apf/etc/queues.conf
+#queueConf = http://my.globalconfig.host/generateqconf/hostname
 queueConf = file:///etc/apf/queues.conf
 
 # Where is the proxy config file
