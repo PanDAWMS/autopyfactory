@@ -122,6 +122,10 @@ localqueue = atlprd
 status = test
 nqueue = 1
 override = True
+sftemplate=/path/to/file
+
+
+
 
 # Another override example is used here to submit pilots to an additional
 # resource supporting an ANALY queue. Note the old "gatekeeper" now breaks
