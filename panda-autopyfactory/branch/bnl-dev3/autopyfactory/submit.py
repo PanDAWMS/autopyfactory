@@ -44,57 +44,58 @@ class JSD(object):
         will be raised otherwise.
         """
 
-        def __init__(self, templatefile=None, templateurl=None, templatejdl=None):
-                # a txt template file is passed as input
-                # It is parsed, and all variables are recorded as attributes
+        def __init__(self, templatefile=None, templateurl=None, templatejsd=None):
                 if templatefile:
-                        templatef = open(templatefile)
-                        for line in templatef.readlines():
-                                line = line[:-1]  # removing the \n
-                                key, value = line.split('=')
-                                self.__setattr__(key.strip(), value.strip())
+                        # a txt template file is passed as input
+                        # It is parsed, and all variables are recorded as attributes
+                        self.__clonetemplatefromfile(templatefile)
+                elif templateurl:
+                        # An url containing a template file is passed as input
+                        # It is parsed, and all variables are recorded as attributes
+                        self.__clonetemplatefromurl(templateurl)
+                elif templatejsd:
+                        # Another object is passed as input.
+                        # All its attributes are copied. 
+                        self.__clonejsd(templatejsd)
 
-                # An url containing a template file is passed as input
-                # It is parsed, and all variables are recorded as attributes
-                if templateurl:
-                        pass 
+        def __clonetemplatefromfile(self, templatefile):
+                templatefd = open(templatefile)
+                for line in templatefd.readlines():
+                        line = line[:-1]  # removing the \n
+                        key, value = line.split('=')
+                        self.__setattr__(key.strip(), value.strip())
+                templatefd.close()
 
-                # Another object is passed as input.
-                # All its attributes are copied. 
-                if templatejdl:
-                        for k,v in templatejdl.__dict__.iteritems():
-                                self.__setattr__(k,v)
+        def __clonetemplatefromurl(self, url):
+                # to be implemented
+                pass
 
+        def __clonejsd(self, jsd):
+                for k,v in jsd.__dict__.iteritems():
+                        self.__setattr__(k,v)
 
         def write(self, path):
-                """loop over all attributes that have been added
-                dinamically to an object JSD, and print out
-                all of them in a file.
+                """calls __str__ and prints out the result in a file
                 """
-
-                # FIXME: just a temporary solution. It should be better.
-                if not self.__sanitycheck():
-                        return False
-
-                jdlfile = open(path, 'w')
-                for attr in self.__dict__.iteritems():
-                        print >> jdlfile, '%s = %s' %attr
-                print >> jdlfile, 'queue'
-                jdlfile.close()
+                jsdcontent = self.__str__()
+                if jsdcontent:
+                        jsdfile = open(path, 'w')
+                        print >> jdlfile, jsdcontent
+                        jsdfile.close()
 
         def __str__(self):
-                """creates an string with the content of the object
-                and returns it. 
+                """loop over all attributes, creates an string 
+                with the content of the object, and returns it. 
                 """
-
-                # FIXME: just a temporary solution. It should be better.
+                # FIXME: just a temporary solution.
+                # It should be better, it should raise an exception
                 if not self.__sanitycheck():
                         return False
 
                 out = ''
                 for attr in self.__dict__.iteritems():
                         out += '%s = %s\n' %attr
-                out += 'queue' 
+                out += 'queue'  # FIXME: this is a temporary solution 
                 return out
 
         def __sanitycheck(self):
