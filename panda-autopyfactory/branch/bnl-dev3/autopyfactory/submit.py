@@ -19,6 +19,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import re
+import urllib
+
 """
 Module with classes to handle the creation of the job description files
 to submit jobs/pilots, i.e. the condorG file. 
@@ -82,6 +85,7 @@ class JSDDirective(object):
                         * __call__()
                         * gettemplate()
                         * iscomment()
+                        * ispair()
         ------------------------------------------------------------------
         COMMENTS:
                 * I do not remember why I wrote __call__()
@@ -130,7 +134,6 @@ class JSDDirective(object):
                         <something>@@<something>@@<something>
                 """
 
-                import re
                 pattern = '^.*@@.+@@.*$'
 
                 if re.match(pattern, self.directive):
@@ -154,6 +157,14 @@ class JSDDirective(object):
                 """
                 return self.directive.strip()[0] == '#'
 
+        def ispair(self):
+                """return True if the content is like 'var = value'
+                """
+                pattern = '^.*=.*$'
+                if re.match(pattern, self.directive):
+                        return True
+                return False
+                
 
 class JSDFile(object):
         """
@@ -229,7 +240,6 @@ class JSDFile(object):
         def __clonetemplatefromurl(self, url):
                 """get the initial input from an url
                 """
-                import urllib
                 socket = urllib.urlopen(url)
                 data = socket.read()
                 socket.close()
