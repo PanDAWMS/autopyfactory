@@ -19,8 +19,142 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class JSD(object):
-        """class to create and handle the job submission file creation.
+"""
+Module with classes to handle the creation of the job description files
+to submit jobs/pilots, i.e. the condorG file. 
+The module contains 4 classes:
+    - JSDDirective: a class to handle each line in the job description files.
+    - JSDDirectiveException: an exception class to be used when the former 
+      one is still a template and its content is requested.
+    - JSDFile: a class to handle the entire job description file.
+    - JSDFileException: an exception class to be used when the former 
+      contains lines still a template, but the entire file content is requested. 
+
+TO-DO: 
+        * I do not like the name of classes and variables. I want to change them.
+        * Implement the code to admit an URL for the template
+"""
+
+
+class JSDDirectiveException(Exception):
+        """class to raise exceptions when we try to print the content of
+        an JSDDirective object which is a template and still not being 
+        replaced.
+        """
+        def __init__(self, directive):
+                self.directive = directive 
+        def __str__(self):
+                return "JSDDirective %s is still a template" %self.directive 
+
+class JSDFileException(Exception):
+        """class to raise exceptions when we try to print the content of
+        an JSDDirective object which is a template and still not being 
+        replaced.
+        """
+        def __init__(self):
+                pass
+        def __str__(self):
+                return "JSDFile is still a template" 
+
+class JSDDirective(object):
+        """
+        ------------------------------------------------------------------
+        class to handle each line in a Job Submission Description File. 
+
+        The constructor __init__ can accept a string or another object
+        of the same class JSDDirective as input. 
+        However, there is no difference,
+        because the class has implemented __str__, so the object shows
+        the same behaviour that a regular string.
+
+        The class implements a sanity check that validates the content
+        of the line is not a template to be replaced with a final value.
+        If the content of the line is requested but still a template, 
+        then an exception will be raised.
+        ------------------------------------------------------------------
+        Public Interface:
+                * attributes:
+                        * directive
+                * methods:
+                        * __init__(line, jsddirective)
+                        * replace(value)
+                        * isvalid()
+                        * __str__()
+                        * __call__()
+                        * gettemplate()
+        ------------------------------------------------------------------
+        COMMENTS:
+                * I do not remember why I wrote __call__()
+                * I do not like the name of the class and the attributes
+        ------------------------------------------------------------------
+        """
+
+        def __init__(self, line=None, jsddirective=None):
+                if line:
+                        self.directive = line
+                elif jsddirective:
+                        # this if-else is not really needed with 
+                        # the current implementation
+                        # given the method __str__ does the same
+                        # so the argument is always interpreted as 'line'
+                        # even thought when it is an JSDDirective object
+                        self.directive = jsddirective.directive
+                else:
+                        self.directive = None
+
+        def replace(self, value):
+                """method to replace the template string by its real value, 
+                when provided.
+                First we check the directive is really a template, 
+                and then we modify its value.
+                """
+                if not self.isvalid():
+                        tokens = self.directive.split('@@')
+                        tokens[1] = value
+                        self.directive = ''.join(tokens)
+
+        def __str__(self):
+                if self.isvalid():
+                        return self.directive
+                else:
+                        raise JSDDirectiveException(self.directive)
+
+        # why did I write this...?
+        def __call__(self):
+                return self.directive
+
+        def isvalid(self):
+                """checks that the content has a valid value and no
+                one that requires to be replaced. 
+                A regexp will look for the pattern:
+                        <something>@@<something>@@<something>
+                """
+
+                import re
+                pattern = '^.*@@.+@@.*$'
+
+                if re.match(pattern, self.directive):
+                        return False
+                return True
+
+        def gettemplate(self):
+                """if the directive is still a template, it returns
+                the content of the string to be replaced.
+                It returns False otherwise.
+                """
+                
+                if self.isvalid():
+                        return False
+                else:
+                        tokens = self.directive.split('@@')
+                        return tokens[1]
+
+
+
+class JSDFile(object):
+        """
+        ------------------------------------------------------------------
+        class to create and handle the job submission file creation.
         This class intents to facilitate the creation and handling of the
         job submission file for the different submission mechanisms that 
         AutoPyFactory will be using (or back-ends).
@@ -42,9 +176,31 @@ class JSD(object):
         The class implements a sanity check that validates all to-be-replaced
         attributes from the input template have a valid value. An exception 
         will be raised otherwise.
+
+        There is a method to pass a dictionary with the list of values 
+        to fill the template, when needed.
+        ------------------------------------------------------------------
+        Public Interface:
+                * attributes:
+                        * listofdirectives 
+                * methods:
+                        * __init__(templatefile, templateurl, templatejsd)
+                        * add(directive)
+                        * replace(template)
+                        * isvalid()
+                        * __str__()
+                        * write(path)
+        ------------------------------------------------------------------
+        COMMENTS:
+                * I do not like the name of the class and the attributes
+                $ The code to accept an URL for the template is still missing
+        ------------------------------------------------------------------
         """
 
         def __init__(self, templatefile=None, templateurl=None, templatejsd=None):
+
+                self.listofdirectives = []
+
                 if templatefile:
                         # a txt template file is passed as input
                         # It is parsed, and all variables are recorded as attributes
@@ -62,8 +218,7 @@ class JSD(object):
                 templatefd = open(templatefile)
                 for line in templatefd.readlines():
                         line = line[:-1]  # removing the \n
-                        key, value = line.split('=')
-                        self.__setattr__(key.strip(), value.strip())
+                        self.listofdirectives.append(JSDDirective(line=line))
                 templatefd.close()
 
         def __clonetemplatefromurl(self, url):
@@ -71,45 +226,53 @@ class JSD(object):
                 pass
 
         def __clonejsd(self, jsd):
-                for k,v in jsd.__dict__.iteritems():
-                        self.__setattr__(k,v)
+                for directive in jsd.listofdirectives:
+                        self.listofdirectives.append(directive)
+
+
+        def add(self, directive):
+                self.listofdirectives.append(directive)
+
+        def replace(self, template):
+                """template is a dictionary with a list of pairs
+                (key, value) used to complete each directive
+                """
+
+                for directive in self.listofdirectives:
+                        key = directive.gettemplate()
+                        if key:  # the directive is replace-able 
+                                value = template.get(key)
+                                if value: # the key is in the template 
+                                        directive.replace(value) 
 
         def write(self, path):
                 """calls __str__ and prints out the result in a file
                 """
-                jsdcontent = self.__str__()
-                if jsdcontent:
-                        jsdfile = open(path, 'w')
-                        print >> jdlfile, jsdcontent
-                        jsdfile.close()
+
+                if self.isvalid():
+                        jsdcontent = self.__str__()
+                        if jsdcontent:
+                                jsdfile = open(path, 'w')
+                                print >> jsdfile, jsdcontent
+                                jsdfile.close()
+                else:
+                        raise JSDFileException()
 
         def __str__(self):
                 """loop over all attributes, creates an string 
                 with the content of the object, and returns it. 
                 """
-                # FIXME: just a temporary solution.
-                # It should be better, it should raise an exception
-                if not self.__sanitycheck():
-                        return False
-
-                out = ''
-                for attr in self.__dict__.iteritems():
-                        out += '%s = %s\n' %attr
-                out += 'queue'  # FIXME: this is a temporary solution 
+                out = '\n'.join([dir() for dir in self.listofdirectives])
                 return out
 
-        def __sanitycheck(self):
-                """checks that all variables have a valid value and no
-                one from the templates still need to be replaced.
-                A regexp will look for the pattern:
-                        <something>@<something>@<something>
+        def isvalid(self):
+                """loops over all directives in self.listofdirectives
+                and check if they are valid or not, one by one.
+                As soon as one non-valid directive is found the entire
+                list is non-valid. 
                 """
-
-                import re
-                pattern = '^.*@.+@.*$'
-
-                for value in self.__dict__.values():
-                        if re.match(pattern, value):
+                for directive in self.listofdirectives:
+                        if not directive.isvalid():
                                 return False
-                # if everything went fine...
                 return True
+
