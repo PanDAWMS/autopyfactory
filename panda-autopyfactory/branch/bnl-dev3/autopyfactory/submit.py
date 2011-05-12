@@ -32,7 +32,6 @@ The module contains 4 classes:
 
 TO-DO: 
         * I do not like the name of classes and variables. I want to change them.
-        * Implement the code to admit an URL for the template
 """
 
 
@@ -198,7 +197,6 @@ class JSDFile(object):
         ------------------------------------------------------------------
         COMMENTS:
                 * I do not like the name of the class and the attributes
-                $ The code to accept an URL for the template is still missing
         ------------------------------------------------------------------
         """
 
@@ -220,6 +218,8 @@ class JSDFile(object):
                         self.__clonejsd(templatejsd)
 
         def __clonetemplatefromfile(self, templatefile):
+                """get the initial input from a file
+                """
                 templatefd = open(templatefile)
                 for line in templatefd.readlines():
                         line = line[:-1]  # removing the \n
@@ -227,10 +227,21 @@ class JSDFile(object):
                 templatefd.close()
 
         def __clonetemplatefromurl(self, url):
-                # to be implemented
-                pass
+                """get the initial input from an url
+                """
+                import urllib
+                socket = urllib.urlopen(url)
+                data = socket.read()
+                socket.close()
+
+                for line in data.split('\n'):
+                        if line.strip() != '':
+                                self.listofdirectives.append(JSDDirective(line=line))
+
 
         def __clonejsd(self, jsd):
+                """get the initial input from another object of class JSDFile
+                """
                 for directive in jsd.listofdirectives:
                         self.listofdirectives.append(directive)
 
