@@ -40,7 +40,7 @@ try:
 except JSDFileException, ex:
         print ex
 print '--------------------------------'
-f2 = JSDFile(templatefile='submit-test-template.jdl')
+f2 = JSDFile(templatefile='template.jdl')
 print f2
 print '--------------------------------'
 f3 = JSDFile(templatejsd=f)
@@ -54,4 +54,7 @@ f3.replace(toreplace)
 print f3
 print f3.isvalid()
 f.write('./out2')
+print '--------------------------------'
+f4 = JSDFile(templateurl='http://www.usatlas.bnl.gov/~caballer/template.jdl')
+print f4
 print '--------------------------------'
