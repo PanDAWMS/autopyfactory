@@ -82,6 +82,7 @@ class JSDDirective(object):
                         * __str__()
                         * __call__()
                         * gettemplate()
+                        * iscomment()
         ------------------------------------------------------------------
         COMMENTS:
                 * I do not remember why I wrote __call__()
@@ -148,7 +149,11 @@ class JSDDirective(object):
                 else:
                         tokens = self.directive.split('@@')
                         return tokens[1]
-
+        
+        def iscomment(self):
+                """return True if the first non-blank character is #
+                """
+                return self.directive.strip()[0] == '#'
 
 
 class JSDFile(object):
