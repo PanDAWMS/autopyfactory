@@ -40,7 +40,7 @@ try:
 except JSDFileException, ex:
         print ex
 print '--------------------------------'
-f2 = JSDFile(templatefile='template.jdl')
+f2 = JSDFile(templatefile='submit-test-template.jdl')
 print f2
 print '--------------------------------'
 f3 = JSDFile(templatejsd=f)
