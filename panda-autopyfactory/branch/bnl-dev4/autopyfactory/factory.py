@@ -57,14 +57,13 @@ class Factory:
         self.log.debug("queueConf file(s) = %s" % fcl.config.get('Factory', 'queueConf'))
         self.qcl= QueueConfigLoader(fcl.config.get('Factory', 'queueConf').split(','))
         
-        # Create all PandaQueue objects
+        # Create all Queue objects
         self.queues = []
         for section in self.qcl.config.sections():
-            q = PandaQueue(self, section)
+            q = Queue(self, section)
             self.queues.append(q)
         
         self.pandastatus = PandaStatus(self.fcl)
-        # NOTE: I have removed out-commented code from here (JC)
         
         self.log.debug("Factory initialized.")
 
@@ -92,7 +91,7 @@ class Factory:
             
             self.log.info("All Queue threads joined. Exitting.")
                 
-class PandaQueue(threading.Thread):
+class Queue(threading.Thread):
     '''
     Encapsulates all the functionality related to servicing each Panda queue (i.e. siteid, i.e. site).
     
@@ -136,7 +135,7 @@ class PandaQueue(threading.Thread):
 
         BatchSubmitPlugin = _temp.BatchSubmitPlugin
         self.batchsubmit = BatchSubmitPlugin(self)
-        self.log.debug("[%s] PandaQueue initialization done." % self.siteid)
+        self.log.debug("[%s] Queue initialization done." % self.siteid)
         
         
     def run(self):
