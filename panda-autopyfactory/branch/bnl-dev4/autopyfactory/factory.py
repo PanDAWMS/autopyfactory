@@ -93,9 +93,7 @@ class Factory:
                 
 class Queue(threading.Thread):
     '''
-    Encapsulates all the functionality related to servicing each Panda queue (i.e. siteid, i.e. site).
-    
-    
+    Encapsulates all the functionality related to servicing each queue (i.e. siteid, i.e. site).
     '''
     
     def __init__(self, factory, siteid ):
@@ -174,95 +172,6 @@ class Queue(threading.Thread):
         self.log.debug('[%s] Stopping thread...' % self.siteid )
         threading.Thread.join(self, timeout)
          
-
-    def submitPilots(self):
-        
-        for queue in self.config.queueKeys:
-             queueParameters = self.config.queues[queue]
-    
-             # Check to see if a site or cloud is offline or in an error state
-             if queueParameters['cloud'] in self.pandaCloudStatus and self.pandaCloudStatus[queueParameters['cloud']]['status'] == 'offline':
-                 self.log.info('Cloud %s containing queue %s: is offline - will not submit pilots.' % (queue, queueParameters['cloud']))
-                 continue
-                 
-             if queueParameters['status'] == 'offline':
-                 self.log.info('Site %s containing queue %s: is offline - will not submit pilots.' % (queue, queueParameters['site']))
-                 continue
-                 
-             if queueParameters['status'] == 'error':
-                 self.log.info('Site %s containing queue %s: is in an error state - will not submit pilots.' % (queue, queueParameters['site']))
-                 continue
-                 
-             # Check to see if the cloud is in test mode
-             if queueParameters['cloud'] in self.pandaCloudStatus and self.pandaCloudStatus[queueParameters['cloud']]['status'] == 'test':
-                 self.log.info('Cloud %s containing queue %s: is in test mode.' % (queue, queueParameters['cloud']))
-                 cloudTestStatus = True
-             else:
-                 cloudTestStatus = False
-                 
-                 
-             # Now normal queue submission algorithm begins
-             if queueParameters['pilotlimit'] != None and queueParameters['pilotQueue']['total'] >= queueParameters['pilotlimit']:
-                 self.log.info('%s: reached pilot limit %d (%s) - will not submit more pilots.', 
-                                           queue, queueParameters['pilotlimit'], queueParameters['pilotQueue'])
-                 continue
-    
-             if queueParameters['transferringlimit'] != None and 'transferring' in queueParameters['pandaStatus'] and \
-                     queueParameters['pandaStatus']['transferring'] >= queueParameters['transferringlimit']:
-                 self.log.info('%s: too many transferring jobs (%d > limit %d) - will not submit more pilots.', 
-                                           queue, queueParameters['pandaStatus']['transferring'], queueParameters['transferringlimit'])
-                 continue
-    
-             if queueParameters['status'] == 'test' or cloudTestStatus == True:
-                 # For test sites only ever have one pilot queued, but allow up to nqueue to run
-                 if queueParameters['pilotQueue']['inactive'] > 0 or queueParameters['pilotQueue']['total'] > queueParameters['nqueue']:
-                     self.log.info('%s: test site has %d pilots, %d queued. Doing nothing.',
-                                               queue, queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
-                 else:
-                     self.log.info('%s: test site has %d pilots, %d queued. Will submit 1 testing pilot.',
-                                               queue, queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
-                     self.condorPilotSubmit(queue, cycleNumber, 1)
-                 continue
-    
-             # Production site, online - look for activated jobs and ensure pilot queue is topped up, or
-             # submit some idling pilots
-             if queueParameters['pandaStatus']['activated'] > 0:
-                 # Activated jobs at this site
-                 if queueParameters['depthboost'] == None:
-                     self.log.info('Depth boost unset for queue %s - defaulting to 2' % queue)
-                     depthboost = 2
-                 else:
-                     depthboost = queueParameters['depthboost']
-                 if queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue'] or \
-                         (queueParameters['pandaStatus']['activated'] > queueParameters['pilotQueue']['inactive'] and \
-                          queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue'] * depthboost):
-                     self.log.info('%s: %d activated jobs, %d inactive pilots queued (< queue depth %d * depth boost %d). Will submit full pilot load.',
-                                               queue, queueParameters['pandaStatus']['activated'], 
-                                               queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
-                     self.condorPilotSubmit(queue, cycleNumber, queueParameters['nqueue'])
-                 else:
-                     self.log.info('%s: %d activated jobs, %d inactive pilots queued (>= queue depth %d * depth boost %d). No extra pilots needed.',
-                                               queue, queueParameters['pandaStatus']['activated'],
-                                               queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
-                 continue
-    
-             # No activated jobs - send an idling pilot if there are less than queue depth pilots
-             # and we are not in a suppressed cycle for this queue (so avoid racking up too many idleing jobs)
-             if queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue']:
-                 if queueParameters['idlepilotsuppression'] > 1 and cycleNumber % queueParameters['idlepilotsuppression'] != 0:
-                     self.log.info('%s: No activated jobs, %d inactive pilots queued (queue depth %d). This factory cycle supressed (%d mod %d != 0).',
-                                               queue, queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'],
-                                               cycleNumber, queueParameters['idlepilotsuppression'])
-                 else:
-                     self.log.info('%s: No activated jobs, %d inactive pilots queued (queue depth %d). Will submit 1 idling pilot.',
-                                               queue, queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
-                     self.condorPilotSubmit(queue, cycleNumber, 1)
-             else:
-                 self.log.info('%s: No activated jobs, %d inactive pilots queued (queue depth %d). No extra pilots needed.',
-                                           queue, queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
-
-
-
 
 
 class PandaStatus(threading.Thread):
