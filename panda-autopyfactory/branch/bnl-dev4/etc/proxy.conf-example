@@ -1,0 +1,25 @@
+#
+#  
+#
+[DEFAULT]
+# Use this if you already have voms-proxy-init in the path. 
+# gridsetup = None
+#
+#gridSetup = /path/to/my/setup/file
+gridSetup = /opt/osg-1.2/setup.sh
+
+#envset_KEY = VALUE
+#envunset = VAR1,VAR2,VAR3
+# baseProxy = /tmp/plainProxy
+
+[atlas-production]
+proxy = /tmp/prodProxy
+vomsRole = atlas:/atlas/Role=production
+
+[atlas-analysis]
+proxy = /tmp/anaProxy
+vomsRole = atlas:/atlas/Role=pilot
+
+[osgvo]
+proxy = /tmp/osgProxy
+vomsRole = osg:/osg
