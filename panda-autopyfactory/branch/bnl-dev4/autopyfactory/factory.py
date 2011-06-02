@@ -3,6 +3,11 @@
 # Simple(ish) python condor_g factory for panda pilots
 #
 # $Id: factory.py 7688 2011-04-08 22:15:52Z jhover $
+
+#
+#  Somehow we need to normalize the author list, and add Jose Caballero ;)
+#
+
 #
 #
 #  Copyright (C) 2007,2008,2009,2010 Graeme Andrew Stewart
@@ -20,15 +25,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import commands
-import grp
+
+
 import logging
-import os
-import pprint
-import pwd
-import re
-import string
-import sys
 import threading
 import time
 
@@ -40,38 +39,56 @@ import userinterface.Client as Client
           
 class Factory:
         '''
-        
-        
+        Class implementing the main loop. 
+        The class has two main goals:
+                1. load the config files
+                2. launch a new thread per queue 
         '''
+
         def __init__(self, fcl):
                 '''
-                fconfig is a FactoryConfigLoader object. 
-                
+                fcl is a FactoryConfigLoader object. 
                 '''
                 self.log = logging.getLogger('main.factory')
                 self.log.debug('Factory initializing...')
                 self.fcl = fcl
-                self.dryRun = fcl.config.get("Factory", "dryRun")
-                self.cycles = fcl.config.get("Factory", "cycles")
-                self.sleep = fcl.config.get("Factory", "sleep")
+                #self.dryRun = fcl.config.get("Factory", "dryRun")
+                #self.cycles = fcl.config.get("Factory", "cycles")
+                #self.sleep = fcl.config.get("Factory", "sleep")
                 self.log.debug("queueConf file(s) = %s" % fcl.config.get('Factory', 'queueConf'))
-                self.qcl= QueueConfigLoader(fcl.config.get('Factory', 'queueConf').split(','))
+                self.qcl = QueueConfigLoader(fcl.config.get('Factory', 'queueConf').split(','))
+                #self.queuesConfigParser = self.qcl.config
                 
                 # Create all WMSQueue objects
-                self.queues = []
-                for section in self.qcl.config.sections():
-                        q = WMSQueue(self, section)
-                        self.queues.append(q)
-                
-                self.pandastatus = PandaStatus(self.fcl)
-                
+                self.__create_queues__()               
+ 
                 self.log.debug("Factory initialized.")
+
+        def __create_queues__(self):
+                """internal method to create all WMSQueue queue objects
+                Each queue to be created is a section in the queues cofig file.
+                Inputs for each queue are:
+                        - the name of the queue object, 
+                          which is the name of the section in the config file
+                        - a reference to the Factory itself.
+                """
+                self.queues = []
+                for qname in self.qcl.config.sections():
+                        q = WMSQueue(qname, self)
+                        self.queues.append(q)
 
         def mainLoop(self):
                 '''
                 Main functional loop of overall Factory. 
+                Actions:
+                        1. creates all queues
+                        2. periodically re-check the config files 
+                           (or any other source of information)
+                           and update the internal information.
+                           Next time the queue object queries Factory
+                           the new information will be pulled.  
                 '''
-                self.pandastatus.start()
+
                 self.log.info("Starting all Queue threads...")
                 for q in self.queues:
                         q.start()
@@ -90,28 +107,28 @@ class Factory:
                                 q.join()
                         
                         self.log.info("All Queue threads joined. Exitting.")
-                                
+                               
+
+
+ 
 class WMSQueue(threading.Thread):
         '''
         Encapsulates all the functionality related to servicing each queue (i.e. siteid, i.e. site).
         '''
         
-        def __init__(self, factory, siteid ):
+        def __init__(self, siteid, factory):
                 '''
-                factory is the parent factory
-                qcl is a QueueConfigLoader object
                 siteid is the name of the section in the queueconfig
-                
+                fcl is a the Factory object who created the queue 
                 '''
                 threading.Thread.__init__(self) # init the thread
                 self.log = logging.getLogger('main.pandaqueue')
                 self.stopevent = threading.Event()
-                self.factory = factory           # Factory object that is the parent of this queue object. 
-                self.fcl = factory.fcl           # FactoryConfigLoader for this factory
-                self.qcl = factory.qcl           # Queue config object for this queue object.
                 self.siteid = siteid                 # Queue section designator from config
-                self.nickname = self.qcl.config.get(siteid, "nickname")
-                self.dryrun = self.fcl.config.get("Factory", "dryRun")
+                self.factory = factory
+                self.specs = factory.getQueueConfig(siteid)
+                #self.nickname = self.qcl.config.get(siteid, "nickname")
+                #self.dryrun = self.fcl.config.get("Factory", "dryRun")
                 self.cycles = self.fcl.config.get("Factory", "cycles" )
                 self.sleep = int(self.fcl.config.get("Factory", "sleep"))
                 self.cyclesrun = 0
@@ -144,7 +161,6 @@ class WMSQueue(threading.Thread):
                 while not self.stopevent.isSet():
                         self.log.debug("[%s] Would be grabbing Batch info relevant to this queue." % self.siteid)
                         # update batch info
-                        #batchstatus = self.factory.batchstatus.getInfo()
                         # update panda info
                         self.log.debug("[%s] Would be getting panda info relevant to this queue."% self.siteid)
                         
@@ -172,178 +188,3 @@ class WMSQueue(threading.Thread):
                 self.log.debug('[%s] Stopping thread...' % self.siteid )
                 threading.Thread.join(self, timeout)
                  
-
-
-class PandaStatus(threading.Thread):
-        '''
-        Contains all information pulled from Panda (schedconfig/job statistics/cloudspecs). 
-        Encapsulates all understanding needed to interpret data returned from Panda. 
-        Runs every <pandaCheckInterval> seconds. 
-        '''  
-        def __init__(self, fcl):
-                '''
-                fcl is the FactoryConfigLoader for this factory. 
-                
-                '''
-                threading.Thread.__init__(self) # init the thread
-                self.log = logging.getLogger('main.pandastatus')
-                self.fcl = fcl
-                self.interval = int(self.fcl.config.get('Factory','pandaCheckInterval'))
-                self.stopevent = threading.Event()
-                # Hold return value of getCloudSpecs
-                self.cloudconfig = None 
-                self.newcloudconfig = None
-
-                self.siteconfig = None
-                self.newsiteconfig = None
-                
-                # Holds return vlue of getJobStatisticsPerSite(countryGroup='',workingGroup='')
-                self.jobstats = None
-                self.newjobstats = None
-                
-        def join(self,timeout=None):
-                """
-                Stop the thread. Overriding this method required to handle Ctrl-C from console.
-                """
-                self.stopevent.set()
-                self.log.debug('Stopping PandaStatus thread...')
-                threading.Thread.join(self, timeout)
-        
-        def run(self):
-                '''
-                Run the thread (from start()). 
-                '''
-                while not self.stopevent.isSet():
-                        self.log.info("Starting PandaStatus update cycle...")
-                        self.updateCloudConfig()
-                        self.updateSiteConfig()
-                        self.updateJobStats()
-                        self.log.debug("Finished update loop. Sleeping %d seconds..." % self.interval)
-                        time.sleep(self.interval)
-                
-          
-        def updateCloudConfig(self):
-                self.log.info('Polling Panda for cloud status...')
-                error,self.newcloudconfig = Client.getCloudSpecs()
-                if error != 0:
-                        raise PandaStatusFailure, 'Client.getCloudSpecs() error: %s' % (error)
-                #self.log.debug("Got new cloud config: %s" % pprint.pformat(self.newcloudconfig))
-                self.log.debug("Got new cloud config with entries for %d clouds" % len(self.newcloudconfig))
-                self.cloudconfig = self.newcloudconfig
-        
-        
-        def updateJobStats(self):
-                self.log.info('Polling Panda for Job statistics')
-                error, self.newjobstats = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
-                if error != 0:
-                        raise PandaStatusFailure, 'Client.getJobStatisticsPerSite() error: %s' % (error)
-                #self.log.debug("Got new jobstats: %s" % pprint.pformat(self.newjobstats))
-                self.log.debug("Got new jobstats with entries for %d sites: " % len(self.newjobstats))
-                self.jobstats = self.newjobstats
-        
-        def updateSiteConfig(self):
-                self.log.info('Polling Panda for Site Configuration')
-                error, self.newsiteconfig = Client.getSiteSpecs(siteType='all')
-                if error != 0:
-                        raise PandaStatusFailure, 'Client.getSiteSpecs() error: %s' % (error)
-                #self.log.debug("Got new site config: %s" % pprint.pformat(self.newsiteconfig))
-                self.log.debug("Got new site configs for %d sites" % len(self.newsiteconfig))
-                self.siteconfig = self.newsiteconfig
-        
-
-class BatchStatus(object):
-        '''
-        Batch-agnostic aggregate information container returned by the BatchStatus getInfo() call. 
-        
-        ID          OWNER                        SUBMITTED         RUN_TIME ST PRI SIZE CMD   
-        
-        '''
-        def _init__(self, queue, jobid, owner, submittime, runtime, state, priority  ):
-                self.queue = queue
-                
-class JobStatus(object):
-        '''
-        Batch agnostic information container about particular job. Returned by getJobInfo() call 
-        
-        '''
-
-
-####################################################################################
-#                   Interface definitions, for clarity in plugin programming. 
-####################################################################################
-
-class BatchStatusInterface(object):
-        '''
-        Interacts with the underlying batch system to get job status. 
-        Instantiated at the Factory level. 
-        Should return information about number of jobs currently on the desired queue. 
-        
-        '''
-        def getInfo(self, queue):
-                '''
-                Returns aggregate info about jobs on queue in batch system. 
-                '''
-                raise NotImplementedError
-        
-        def getJobInfo(self, queue):
-                '''
-                Returns a list of JobStatus objects, one for each job. 
-                '''
-                raise NotImplementedError
-        
-class BatchSubmitInterface(object):
-        '''
-        Interacts with underlying batch system to submit jobs. 
-        It should be instantiated one per queue. 
-        
-        '''
-        def submitPilots(self, number):
-                '''
-                
-                '''
-                raise NotImplementedError
-
-class SchedInterface(object):
-        '''
-        Calculates the number of jobs to submit for a queue. 
-        
-        ''' 
-
-        def calcSubmitNum(self, config, activated, failed, running, transferring):
-                '''
-                Calculates and exact number of new pilots to submit, based on provided Panda site info
-                and whatever relevant parameters are in config.
-                All Panda info, not all relevant:        
-                'activated': 0,
-                'assigned': 0,
-                'cancelled': 0,
-                'defined': 0,
-                'failed': 4
-                'finished': 493,
-                'holding' : 3,
-                'running': 18,
-                'transferring': 38},
-                '''
-                raise NotImplementedError
-
-# ------------------------------------------------------------------------------ 
-#                                           T E S T S 
-# ------------------------------------------------------------------------------ 
-
-def testPandaRetrieve():
-        import pprint
-        error, cloudconfig = Client.getCloudSpecs()
-        print("Error: %s" % error)
-        pprint.pprint(cloudconfig)
-        error, jobstats = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
-        print("Error: %s" % error)
-        pprint.pprint(jobstats)        
-        error, siteconfig = Client.getSiteSpecs(siteType='all')
-        print("Error: %s" % error)
-        pprint.pprint(siteconfig)
-
-if __name__ == "__main__":
-        testPandaRetrieve()
-        
-
-                
