@@ -77,7 +77,7 @@ class Factory:
                 queues_to_remove, queues_to_add = self.__diff_lists(self.queues, newqueues)
                 self.__addqueues(queues_to_add) 
                 self.__delqueues(queues_to_remove)
-                self.queues = newqueues 
+                self.queues = newqueues
 
         def __addqueues(self, queues):
                 """creates new WMSQueue objects
@@ -90,9 +90,18 @@ class Factory:
                 """deletes WMSQueue objects
                 """
                 for qname in queues:
-                        # I don't know yet how to do this
-                        pass
-        
+                        q = self.__findqueue(qname):
+                        q.join()
+                                
+
+        def __findqueue(self, qname):
+                """finds out which WMSQueue object has name qname
+                Note: the internal attribute with qname is siteid
+                """
+                for q in self.queues:
+                        if q.siteid == qname:
+                                return q
+                        
 
 
         def __diff_lists(self, l1, l2):
