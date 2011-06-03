@@ -105,7 +105,7 @@ class Factory:
                 """
                 for qname in queues:
                         q = WMSQueue(qname, self)
-                        self.queues[qname, q]
+                        self.queues[qname] = q
 
         def __delqueues(self, queues):
                 """deletes WMSQueue objects
