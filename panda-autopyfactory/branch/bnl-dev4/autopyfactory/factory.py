@@ -142,7 +142,7 @@ class Factory:
                 '''
 
                 self.log.info("Starting all Queue threads...")
-                for q in self.queues:
+                for q in self.queues.values():
                         q.start()
                 
                 try:
@@ -155,7 +155,7 @@ class Factory:
                         logging.debug(" Shutting down all threads...")
                         
                         self.log.info("Joining all Queue threads...")
-                        for q in self.queues:
+                        for q in self.queues.values():
                                 q.join()
                         
                         self.log.info("All Queue threads joined. Exitting.")
