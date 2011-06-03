@@ -81,8 +81,8 @@ class Factory:
                 self.log.debug("Factory initialized.")
 
         def __refresh(self):
-                self.log.debug("queueConf file(s) = %s" % fcl.config.get('Factory', 'queueConf'))
-                self.qcl = QueueConfigLoader(fcl.config.get('Factory', 'queueConf').split(','))
+                self.log.debug("queueConf file(s) = %s" % self.fcl.config.get('Factory', 'queueConf'))
+                self.qcl = QueueConfigLoader(self.fcl.config.get('Factory', 'queueConf').split(','))
                 self.__checkqueues()
                 self.__refreshqueues()
 
