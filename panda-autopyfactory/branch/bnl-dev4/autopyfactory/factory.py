@@ -60,11 +60,12 @@ class Factory:
                 #self.queuesConfigParser = self.qcl.config
                 
                 # Create all WMSQueue objects
-                self.__create_queues__()               
+                self.queues = []
+                self.__createqueues()               
  
                 self.log.debug("Factory initialized.")
 
-        def __create_queues__(self):
+        def __createqueues(self):
                 """internal method to create all WMSQueue queue objects
                 Each queue to be created is a section in the queues cofig file.
                 Inputs for each queue are:
@@ -72,10 +73,35 @@ class Factory:
                           which is the name of the section in the config file
                         - a reference to the Factory itself.
                 """
-                self.queues = []
-                for qname in self.qcl.config.sections():
+                newqueues = self.qcl.config.sections()
+                queues_to_remove, queues_to_add = self.__diff_lists(self.queues, newqueues)
+                self.__addqueues(queues_to_add) 
+                self.__delqueues(queues_to_remove)
+                self.queues = newqueues 
+
+        def __addqueues(self, queues):
+                """creates new WMSQueue objects
+                """
+                for qname in queues:
                         q = WMSQueue(qname, self)
-                        self.queues.append(q)
+                        #self.queues.append(q)
+
+        def __delqueues(self, queues):
+                """deletes WMSQueue objects
+                """
+                for qname in queues:
+                        # I don't know yet how to do this
+                        pass
+        
+
+
+        def __diff_lists(self, l1, l2):
+                """util meethod to calculate diff between two lists
+                """
+                d1 = [i for i in l1 if not i in l2]
+                d2 = [i for i in l2 if not i in l1]
+                return d1, d2
+
 
         def mainLoop(self):
                 '''
