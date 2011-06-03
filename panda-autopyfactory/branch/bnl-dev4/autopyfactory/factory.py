@@ -60,7 +60,7 @@ class Factory:
                 #self.queuesConfigParser = self.qcl.config
                 
                 # Create all WMSQueue objects
-                self.queues = []
+                self.queues = {} # a dictionary {qname:WMSQueue object}
                 self.__createqueues()               
  
                 self.log.debug("Factory initialized.")
@@ -74,34 +74,26 @@ class Factory:
                         - a reference to the Factory itself.
                 """
                 newqueues = self.qcl.config.sections()
-                queues_to_remove, queues_to_add = self.__diff_lists(self.queues, newqueues)
+                currentqueues = self.queues.keys()
+                queues_to_remove, queues_to_add = self.__diff_lists(currentqueues, newqueues)
                 self.__addqueues(queues_to_add) 
                 self.__delqueues(queues_to_remove)
-                self.queues = newqueues
 
         def __addqueues(self, queues):
                 """creates new WMSQueue objects
                 """
                 for qname in queues:
                         q = WMSQueue(qname, self)
-                        #self.queues.append(q)
+                        self.queues[qname, q]
 
         def __delqueues(self, queues):
                 """deletes WMSQueue objects
                 """
                 for qname in queues:
-                        q = self.__findqueue(qname):
+                        q = self.queues[qname]
                         q.join()
                                 
 
-        def __findqueue(self, qname):
-                """finds out which WMSQueue object has name qname
-                Note: the internal attribute with qname is siteid
-                """
-                for q in self.queues:
-                        if q.siteid == qname:
-                                return q
-                        
 
 
         def __diff_lists(self, l1, l2):
