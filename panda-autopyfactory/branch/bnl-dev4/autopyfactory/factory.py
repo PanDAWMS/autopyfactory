@@ -43,6 +43,21 @@ class Factory:
         The class has two main goals:
                 1. load the config files
                 2. launch a new thread per queue 
+
+        Actions are triggered method __refresh().
+        __refresh() can be invoked at the beginning, from __init__,
+        or when needed. For example, is an external SIGNAL is received.
+        When it happens, __refresh() does several things:
+                1. reloads the config file 
+                2. inspects if there are new queues, or old queues have been 
+                   removed.
+                        2.1. creates the new WMSQueue objects for the new queues
+                        2.2. kills and deletes the dissapeared queues
+                3. tells all WMSQueue object to refresh
+
+        Information about queues created and running is stored in a dictionary
+                1. keys are the queue names
+                2. values are the actual WMSQueue objects
         '''
 
         def __init__(self, fcl):
@@ -55,17 +70,23 @@ class Factory:
                 #self.dryRun = fcl.config.get("Factory", "dryRun")
                 #self.cycles = fcl.config.get("Factory", "cycles")
                 #self.sleep = fcl.config.get("Factory", "sleep")
-                self.log.debug("queueConf file(s) = %s" % fcl.config.get('Factory', 'queueConf'))
-                self.qcl = QueueConfigLoader(fcl.config.get('Factory', 'queueConf').split(','))
+                #self.log.debug("queueConf file(s) = %s" % fcl.config.get('Factory', 'queueConf'))
+                #self.qcl = QueueConfigLoader(fcl.config.get('Factory', 'queueConf').split(','))
                 #self.queuesConfigParser = self.qcl.config
                 
                 # Create all WMSQueue objects
                 self.queues = {} # a dictionary {qname:WMSQueue object}
-                self.__createqueues()               
+                self.__refresh()               
  
                 self.log.debug("Factory initialized.")
 
-        def __createqueues(self):
+        def __refresh(self):
+                self.log.debug("queueConf file(s) = %s" % fcl.config.get('Factory', 'queueConf'))
+                self.qcl = QueueConfigLoader(fcl.config.get('Factory', 'queueConf').split(','))
+                self.__checkqueues()
+                self.__refreshqueues()
+
+        def __checkqueues(self):
                 """internal method to create all WMSQueue queue objects
                 Each queue to be created is a section in the queues cofig file.
                 Inputs for each queue are:
@@ -92,12 +113,16 @@ class Factory:
                 for qname in queues:
                         q = self.queues[qname]
                         q.join()
+                        self.queues.pop(qname)
+
+        def __refreshqueues(self):
+                """calls method refresh() for all WMSQueue objects
+                """
+                for q in self.queues.values():
+                        q.refresh()
                                 
-
-
-
         def __diff_lists(self, l1, l2):
-                """util meethod to calculate diff between two lists
+                """ancilla method to calculate diff between two lists
                 """
                 d1 = [i for i in l1 if not i in l2]
                 d2 = [i for i in l2 if not i in l1]
@@ -206,6 +231,12 @@ class WMSQueue(threading.Thread):
                         # sleep interval
                         self.log.debug("[%s] Sleeping for %d seconds..." % (self.siteid, self.sleep))
                         time.sleep(self.sleep)
+
+        def refresh(self):
+                """ method to reload, when requested, the config file
+                """
+                pass 
+                # TO BE IMPLEMENTED
                           
         def join(self,timeout=None):
                 """
