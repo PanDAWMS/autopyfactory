@@ -80,53 +80,7 @@ class Factory:
  
                 self.log.debug("Factory initialized.")
 
-        def __refresh(self):
-                self.log.debug("queueConf file(s) = %s" % self.fcl.config.get('Factory', 'queueConf'))
-                self.qcl = QueueConfigLoader(self.fcl.config.get('Factory', 'queueConf').split(','))
-                self.__checkqueues()
-                self.__refreshqueues()
 
-        def __checkqueues(self):
-                """internal method to create all WMSQueue queue objects
-                Each queue to be created is a section in the queues cofig file.
-                Inputs for each queue are:
-                        - the name of the queue object, 
-                          which is the name of the section in the config file
-                        - a reference to the Factory itself.
-                """
-                newqueues = self.qcl.config.sections()
-                currentqueues = self.queues.keys()
-                queues_to_remove, queues_to_add = self.__diff_lists(currentqueues, newqueues)
-                self.__addqueues(queues_to_add) 
-                self.__delqueues(queues_to_remove)
-
-        def __addqueues(self, queues):
-                """creates new WMSQueue objects
-                """
-                for qname in queues:
-                        q = WMSQueue(qname, self)
-                        self.queues[qname] = q
-
-        def __delqueues(self, queues):
-                """deletes WMSQueue objects
-                """
-                for qname in queues:
-                        q = self.queues[qname]
-                        q.join()
-                        self.queues.pop(qname)
-
-        def __refreshqueues(self):
-                """calls method refresh() for all WMSQueue objects
-                """
-                for q in self.queues.values():
-                        q.refresh()
-                                
-        def __diff_lists(self, l1, l2):
-                """ancilla method to calculate diff between two lists
-                """
-                d1 = [i for i in l1 if not i in l2]
-                d2 = [i for i in l2 if not i in l1]
-                return d1, d2
 
 
         def mainLoop(self):
@@ -161,7 +115,87 @@ class Factory:
                         self.log.info("All Queue threads joined. Exitting.")
                                
 
+class WMSQueuesManager(object):
+        """container with the list of WMSQueue objects
+        """
+        def __init__(self, factory):
+                """
+                """
+                self.__queues = {}
+                self.__factory = factory
 
+        # --------------------
+        #  public interface
+        # --------------------
+        
+        def update(self):
+                """compares the new list of queues with the current one
+                        1. creates and starts new queues if needed
+                        2. stops and deletes old queues if needed
+                """
+                newqueues = self.__factory.qcl.config.sections()
+                currentqueues = self.__queues.keys()
+                queues_to_remove, queues_to_add = self.__diff_lists(currentqueues, newqueues)
+                self.__addqueues(queues_to_add) 
+                self.__delqueues(queues_to_remove)
+                self.__refresh()
+
+        def join(self):
+                """joins all WMSQueue objects
+                """
+                for q in self.__queues.values():
+                        q.join()
+        
+        # --------------------
+        #  private methods
+        # --------------------
+
+        def __addqueues(self, queues):
+                """creates new WMSQueue objects
+                """
+                for qname in queues:
+                        self.__add(qname)
+
+        def __add(self, qname):
+                """creates a single new WMSQueue object
+                and starts it
+                """
+                qobject = WMSQueue(qname, self.__factory)
+                self.__queues[qname] = qobject
+                qobject.start()
+                
+        def __delqueues(self, queues):
+                """deletes WMSQueue objects
+                """
+                for qname in queues:
+                        q = self.queues[qname]
+                        q.join()
+                        self.queues.pop(qname)
+
+        def __del(self, qname):
+                """deletes a single queue object from the list
+                and stops it
+                """
+                qobject = self.__get(qname)
+                qname.join()
+                self.__queues.pop(qname)
+        
+        def __refresh(self):
+                """calls method refresh() for all WMSQueue objects
+                """
+                for q in self.__queues.values():
+                        q.refresh()
+
+        # --------------------
+        #  ancillas 
+        # --------------------
+
+        def __diff_lists(self, l1, l2):
+                """ancilla method to calculate diff between two lists
+                """
+                d1 = [i for i in l1 if not i in l2]
+                d2 = [i for i in l2 if not i in l1]
+                return d1, d2
  
 class WMSQueue(threading.Thread):
         '''
