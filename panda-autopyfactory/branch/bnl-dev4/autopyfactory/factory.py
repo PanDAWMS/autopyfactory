@@ -65,13 +65,10 @@ class Factory:
                 #self.dryRun = fcl.config.get("Factory", "dryRun")
                 #self.cycles = fcl.config.get("Factory", "cycles")
                 #self.sleep = fcl.config.get("Factory", "sleep")
-                #self.log.debug("queueConf file(s) = %s" % fcl.config.get('Factory', 'queueConf'))
+                self.log.debug("queueConf file(s) = %s" % fcl.config.get('Factory', 'queueConf'))
                 self.qcl = QueueConfigLoader(fcl.config.get('Factory', 'queueConf').split(','))
                 #self.queuesConfigParser = self.qcl.config
-                
-                # Create all WMSQueue objects
                 self.wmsmanager = WMSQueuesManager(self)
-                self.update()               
  
                 self.log.debug("Factory initialized.")
 
@@ -79,12 +76,9 @@ class Factory:
                 '''
                 Main functional loop of overall Factory. 
                 Actions:
-                        1. creates all queues
-                        2. periodically re-check the config files 
-                           (or any other source of information)
-                           and update the internal information.
-                           Next time the queue object queries Factory
-                           the new information will be pulled.  
+                        1. Creates all queues and starts them.
+                        2. Wait for a termination signal, and
+                           stops all queues when that happens.
                 '''
 
                 self.log.info("Starting all Queue threads...")
@@ -98,7 +92,6 @@ class Factory:
                 except (KeyboardInterrupt): 
                         logging.info("Shutdown via Ctrl-C or -INT signal.")
                         logging.debug(" Shutting down all threads...")
-                        
                         self.log.info("Joining all Queue threads...")
                         self.wmsmanager.join()
                         self.log.info("All Queue threads joined. Exitting.")
@@ -232,7 +225,9 @@ class WMSQueue(threading.Thread):
                 
                 # Handle sched plugin
                 schedclass = self.qcl.config.get(self.siteid, "schedplugin")
-                self.log.debug("[%s] Attempting to import derived classname: autopyfactory.plugins.%sSchedPlugin.%sSchedPlugin" % (self.siteid,schedclass,schedclass))                                
+                self.log.debug("[%s] Attempting to import derived classname: \
+                                autopyfactory.plugins.%sSchedPlugin.%sSchedPlugin"
+                                % (self.siteid,schedclass,schedclass))                                
                 _temp = __import__("autopyfactory.plugins.%sSchedPlugin" % (schedclass), 
                                                                  fromlist=["%sSchedPlugin" % schedclass])
                 SchedPlugin = _temp.SchedPlugin
@@ -241,7 +236,8 @@ class WMSQueue(threading.Thread):
                 # Handle status and submit batch plugins. 
                 batchclass = self.qcl.config.get(self.siteid, "batchplugin")
                 
-                _temp =  __import__("autopyfactory.plugins.%sBatchPlugin" % batchclass, fromlist=["%sBatchPlugin" % batchclass])
+                _temp =  __import__("autopyfactory.plugins.%sBatchPlugin" % batchclass, 
+                                                                fromlist=["%sBatchPlugin" % batchclass])
                 BatchStatusPlugin = _temp.BatchStatusPlugin
                 self.batchstatus = BatchStatusPlugin(self)
 
@@ -291,3 +287,30 @@ class WMSQueue(threading.Thread):
                 self.log.debug('[%s] Stopping thread...' % self.siteid )
                 threading.Thread.join(self, timeout)
                  
+
+# ==============================================================================                                
+#                      INTERFACES & TEMPLATES
+# ==============================================================================                                
+
+class SchedInterface(object):
+    '''
+    Calculates the number of jobs to submit for a queue. 
+    '''
+
+    def calcSubmitNum(self, config, activated, failed, running, transferring):
+        '''
+        Calculates and exact number of new pilots to submit, based on provided Panda site info
+        and whatever relevant parameters are in config.
+        All Panda info, not all relevant:    
+        'activated': 0,
+        'assigned': 0,
+        'cancelled': 0,
+        'defined': 0,
+        'failed': 4
+        'finished': 493,
+        'holding' : 3,
+        'running': 18,
+        'transferring': 38},
+        '''
+        raise NotImplementedError
+
