@@ -75,13 +75,11 @@ class Factory:
                 #self.queuesConfigParser = self.qcl.config
                 
                 # Create all WMSQueue objects
+                self.wmsmanager = WMSQueuesManager(self)
                 self.queues = {} # a dictionary {qname:WMSQueue object}
                 self.__refresh()               
  
                 self.log.debug("Factory initialized.")
-
-
-
 
         def mainLoop(self):
                 '''
@@ -113,7 +111,21 @@ class Factory:
                                 q.join()
                         
                         self.log.info("All Queue threads joined. Exitting.")
-                               
+
+        def update(self):
+                """method to update the status of the WMSQueuesManager object.
+                This method will be used every time the 
+                status of the queues changes: 
+                        - at the very beginning
+                        - when the config files change
+                That means this method will be invoked by the regular factory
+                main loop code or from any method capturing specific signals.
+                """
+                newqueues = self.factory.qcl.config.sections()
+                self.wmsmanager.update(newqueues) 
+
+
+# ==============================================================================                                
 
 class WMSQueuesManager(object):
         """container with the list of WMSQueue objects
@@ -121,20 +133,19 @@ class WMSQueuesManager(object):
         def __init__(self, factory):
                 """
                 """
-                self.__queues = {}
-                self.__factory = factory
+                self.queues = {}
+                self.factory = factory
 
         # --------------------
         #  public interface
         # --------------------
         
-        def update(self):
+        def update(self, newqueues):
                 """compares the new list of queues with the current one
                         1. creates and starts new queues if needed
                         2. stops and deletes old queues if needed
                 """
-                newqueues = self.__factory.qcl.config.sections()
-                currentqueues = self.__queues.keys()
+                currentqueues = self.queues.keys()
                 queues_to_remove, queues_to_add = self.__diff_lists(currentqueues, newqueues)
                 self.__addqueues(queues_to_add) 
                 self.__delqueues(queues_to_remove)
@@ -143,7 +154,7 @@ class WMSQueuesManager(object):
         def join(self):
                 """joins all WMSQueue objects
                 """
-                for q in self.__queues.values():
+                for q in self.queues.values():
                         q.join()
         
         # --------------------
@@ -160,8 +171,8 @@ class WMSQueuesManager(object):
                 """creates a single new WMSQueue object
                 and starts it
                 """
-                qobject = WMSQueue(qname, self.__factory)
-                self.__queues[qname] = qobject
+                qobject = WMSQueue(qname, self.factory)
+                self.queues[qname] = qobject
                 qobject.start()
                 
         def __delqueues(self, queues):
@@ -178,12 +189,12 @@ class WMSQueuesManager(object):
                 """
                 qobject = self.__get(qname)
                 qname.join()
-                self.__queues.pop(qname)
+                self.queues.pop(qname)
         
         def __refresh(self):
                 """calls method refresh() for all WMSQueue objects
                 """
-                for q in self.__queues.values():
+                for q in self.queues.values():
                         q.refresh()
 
         # --------------------
@@ -197,6 +208,7 @@ class WMSQueuesManager(object):
                 d2 = [i for i in l2 if not i in l1]
                 return d1, d2
  
+
 class WMSQueue(threading.Thread):
         '''
         Encapsulates all the functionality related to servicing each queue (i.e. siteid, i.e. site).
