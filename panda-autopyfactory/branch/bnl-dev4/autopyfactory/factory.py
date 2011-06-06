@@ -292,25 +292,35 @@ class WMSQueue(threading.Thread):
 #                      INTERFACES & TEMPLATES
 # ==============================================================================                                
 
-class SchedInterface(object):
-    '''
-    Calculates the number of jobs to submit for a queue. 
-    '''
+class Status(object):
+        """ancilla class to collect all relevant status variables
+        in a single object.
+        """
+        def __init__(self):
+                self.activated = 0
+                self.failed = 0
+                self.running = 0
+                self.transferring = 0
 
-    def calcSubmitNum(self, config, activated, failed, running, transferring):
+class SchedInterface(object):
         '''
-        Calculates and exact number of new pilots to submit, based on provided Panda site info
-        and whatever relevant parameters are in config.
-        All Panda info, not all relevant:    
-        'activated': 0,
-        'assigned': 0,
-        'cancelled': 0,
-        'defined': 0,
-        'failed': 4
-        'finished': 493,
-        'holding' : 3,
-        'running': 18,
-        'transferring': 38},
+        Calculates the number of jobs to submit for a queue. 
         '''
-        raise NotImplementedError
+    
+        def calcSubmitNum(self, status):
+                '''
+                Calculates and exact number of new pilots to submit, based on provided Panda site info
+                and whatever relevant parameters are in config.
+                All Panda info, not all relevant:    
+                'activated': 0,
+                'assigned': 0,
+                'cancelled': 0,
+                'defined': 0,
+                'failed': 4
+                'finished': 493,
+                'holding' : 3,
+                'running': 18,
+                'transferring': 38},
+                '''
+                raise NotImplementedError
 
