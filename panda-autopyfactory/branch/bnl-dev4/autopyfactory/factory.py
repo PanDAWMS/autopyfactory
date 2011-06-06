@@ -94,8 +94,7 @@ class Factory:
                 '''
 
                 self.log.info("Starting all Queue threads...")
-                for q in self.queues.values():
-                        q.start()
+                self.update()
                 
                 try:
                         while True:
@@ -107,9 +106,7 @@ class Factory:
                         logging.debug(" Shutting down all threads...")
                         
                         self.log.info("Joining all Queue threads...")
-                        for q in self.queues.values():
-                                q.join()
-                        
+                        self.wmsmanager.join()
                         self.log.info("All Queue threads joined. Exitting.")
 
         def update(self):
@@ -126,9 +123,15 @@ class Factory:
 
 
 # ==============================================================================                                
+#                       QUEUES MANAGEMENT
+# ==============================================================================                                
 
 class WMSQueuesManager(object):
         """container with the list of WMSQueue objects
+        Public Interface:
+                __init__(factory)
+                update(newqueues)
+                join()
         """
         def __init__(self, factory):
                 """
@@ -146,13 +149,15 @@ class WMSQueuesManager(object):
                         2. stops and deletes old queues if needed
                 """
                 currentqueues = self.queues.keys()
-                queues_to_remove, queues_to_add = self.__diff_lists(currentqueues, newqueues)
+                queues_to_remove, queues_to_add = \
+                        self.__diff_lists(currentqueues, newqueues)
                 self.__addqueues(queues_to_add) 
                 self.__delqueues(queues_to_remove)
                 self.__refresh()
 
         def join(self):
                 """joins all WMSQueue objects
+                QUESTION: should the queues also be removed from self.queues ?
                 """
                 for q in self.queues.values():
                         q.join()
