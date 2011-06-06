@@ -297,19 +297,23 @@ class Status(object):
         in a single object.
         """
         def __init__(self):
-                self.activated = 0
-                self.failed = 0
-                self.running = 0
-                self.transferring = 0
+                # I use None instead of 0 to distinguish between
+                #       - value has been provided and it is 0
+                #       - value not provided 
+                self.activated = None
+                self.failed = None
+                self.running = None
+                self.transferring = None
+
 
 class SchedInterface(object):
         '''
         Calculates the number of jobs to submit for a queue. 
         '''
-    
         def calcSubmitNum(self, status):
                 '''
-                Calculates and exact number of new pilots to submit, based on provided Panda site info
+                Calculates and exact number of new pilots to submit, 
+                based on provided Panda site info
                 and whatever relevant parameters are in config.
                 All Panda info, not all relevant:    
                 'activated': 0,
