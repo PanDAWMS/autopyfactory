@@ -44,20 +44,15 @@ class Factory:
                 1. load the config files
                 2. launch a new thread per queue 
 
-        Actions are triggered method __refresh().
-        __refresh() can be invoked at the beginning, from __init__,
-        or when needed. For example, is an external SIGNAL is received.
-        When it happens, __refresh() does several things:
-                1. reloads the config file 
-                2. inspects if there are new queues, or old queues have been 
-                   removed.
-                        2.1. creates the new WMSQueue objects for the new queues
-                        2.2. kills and deletes the dissapeared queues
-                3. tells all WMSQueue object to refresh
+        Information about queues created and running is stored in a 
+        WMSQueuesManager object.
 
-        Information about queues created and running is stored in a dictionary
-                1. keys are the queue names
-                2. values are the actual WMSQueue objects
+        Actions are triggered by method update() 
+        update() can be invoked at the beginning, from __init__,
+        or when needed. For example, is an external SIGNAL is received.
+        When it happens, update() does:
+                1. calculates the new list of queues from the config file
+                2. updates the WMSQueuesManager object 
         '''
 
         def __init__(self, fcl):
@@ -71,13 +66,12 @@ class Factory:
                 #self.cycles = fcl.config.get("Factory", "cycles")
                 #self.sleep = fcl.config.get("Factory", "sleep")
                 #self.log.debug("queueConf file(s) = %s" % fcl.config.get('Factory', 'queueConf'))
-                #self.qcl = QueueConfigLoader(fcl.config.get('Factory', 'queueConf').split(','))
+                self.qcl = QueueConfigLoader(fcl.config.get('Factory', 'queueConf').split(','))
                 #self.queuesConfigParser = self.qcl.config
                 
                 # Create all WMSQueue objects
                 self.wmsmanager = WMSQueuesManager(self)
-                self.queues = {} # a dictionary {qname:WMSQueue object}
-                self.__refresh()               
+                self.update()               
  
                 self.log.debug("Factory initialized.")
 
@@ -118,7 +112,7 @@ class Factory:
                 That means this method will be invoked by the regular factory
                 main loop code or from any method capturing specific signals.
                 """
-                newqueues = self.factory.qcl.config.sections()
+                newqueues = self.qcl.config.sections()
                 self.wmsmanager.update(newqueues) 
 
 
