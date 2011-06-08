@@ -232,18 +232,13 @@ class WMSQueue(threading.Thread):
                 # Handle sched plugin
                 self.scheduler = self.__getscheduler()
 
-                
+                # FIXME !!
                 # Handle status and submit batch plugins. 
-                batchclass = self.qcl.config.get(self.siteid, "batchplugin")
-                
-                _temp =  __import__("autopyfactory.plugins.%sBatchPlugin" % batchclass, 
-                                                                fromlist=["%sBatchPlugin" % batchclass])
-                BatchStatusPlugin = _temp.BatchStatusPlugin
-                self.batchstatus = BatchStatusPlugin(self)
+                self.batchstatus = self.__getbatchstatusplugin()
 
-                BatchSubmitPlugin = _temp.BatchSubmitPlugin
-                self.batchsubmit = BatchSubmitPlugin(self)
-                self.log.debug("[%s] WMSQueue initialization done." % self.siteid)
+                # Handle status and submit batch plugins. 
+                self.batchsubmit = self.__getbatchsubmitplugin()
+
                
         def __getscheduler(self): 
                 """
@@ -257,8 +252,34 @@ class WMSQueue(threading.Thread):
                 _temp = __import__("autopyfactory.plugins.%sSchedPlugin" % (schedclass), 
                                                                  fromlist=["%sSchedPlugin" % schedclass])
                 SchedPlugin = _temp.SchedPlugin
+                # all plugins have a class SchedPlugin
                 return SchedPlugin()
+
+        def __getbatchstatusplugin(self):
+                """
+                private method to find out the specific Batch Status Plugin
+                to be used for this queue.
+                """
+
+                batchstatclass = self.qcl.config.get(self.siteid, "batchplugin")
+
+                _temp =  __import__("autopyfactory.plugins.%sBatchPlugin" % batchstatclass, 
+                BatchStatusPlugin = _temp.BatchStatusPlugin
+                return BatchStatusPlugin(self)
                 
+        def __getbatchsubmitplugin(self):
+                """
+                private method to find out the specific Batch Submit Plugin
+                to be used for this queue.
+                """
+
+                batchsubmitclass = self.qcl.config.get(self.siteid, "batchplugin")
+
+                BatchSubmitPlugin = _temp.BatchSubmitPlugin
+                self.log.debug("[%s] WMSQueue initialization done." % self.siteid)
+                return BatchSubmitPlugin(self)
+
+
         def run(self):
                 '''
                 Method called by thread.start()
