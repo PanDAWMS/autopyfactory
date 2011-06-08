@@ -211,27 +211,27 @@ class WMSQueue(threading.Thread):
                 siteid is the name of the section in the queueconfig
                 fcl is a the Factory object who created the queue 
                 '''
+
                 threading.Thread.__init__(self) # init the thread
                 self.log = logging.getLogger('main.pandaqueue')
                 self.stopevent = threading.Event()
-                self.siteid = siteid                 # Queue section designator from config
+
+                self.siteid = siteid          # Queue section designator from config
                 self.factory = factory
-                self.specs = factory.getQueueConfig(siteid)
+                self.fcl = self.factory.fcl 
+                self.qcl = self.factory.qcl 
+
+                ##self.specs = self.factory.getQueueConfig(siteid)
+
                 #self.nickname = self.qcl.config.get(siteid, "nickname")
-                #self.dryrun = self.fcl.config.get("Factory", "dryRun")
+                self.dryrun = self.fcl.config.get("Factory", "dryRun")
                 self.cycles = self.fcl.config.get("Factory", "cycles" )
                 self.sleep = int(self.fcl.config.get("Factory", "sleep"))
                 self.cyclesrun = 0
                 
                 # Handle sched plugin
-                schedclass = self.qcl.config.get(self.siteid, "schedplugin")
-                self.log.debug("[%s] Attempting to import derived classname: \
-                                autopyfactory.plugins.%sSchedPlugin.%sSchedPlugin"
-                                % (self.siteid,schedclass,schedclass))                                
-                _temp = __import__("autopyfactory.plugins.%sSchedPlugin" % (schedclass), 
-                                                                 fromlist=["%sSchedPlugin" % schedclass])
-                SchedPlugin = _temp.SchedPlugin
-                self.scheduler = SchedPlugin()
+                self.scheduler = self.__getscheduler()
+
                 
                 # Handle status and submit batch plugins. 
                 batchclass = self.qcl.config.get(self.siteid, "batchplugin")
@@ -244,7 +244,20 @@ class WMSQueue(threading.Thread):
                 BatchSubmitPlugin = _temp.BatchSubmitPlugin
                 self.batchsubmit = BatchSubmitPlugin(self)
                 self.log.debug("[%s] WMSQueue initialization done." % self.siteid)
-                
+               
+        def __getscheduler(self): 
+                """
+                private method to find out the specific Sched Plugin
+                to be used for this queue.
+                """
+                schedclass = self.qcl.config.get(self.siteid, "schedplugin")
+                self.log.debug("[%s] Attempting to import derived classname: \
+                                autopyfactory.plugins.%sSchedPlugin.%sSchedPlugin"
+                                % (self.siteid,schedclass,schedclass))                                
+                _temp = __import__("autopyfactory.plugins.%sSchedPlugin" % (schedclass), 
+                                                                 fromlist=["%sSchedPlugin" % schedclass])
+                SchedPlugin = _temp.SchedPlugin
+                return SchedPlugin()
                 
         def run(self):
                 '''
