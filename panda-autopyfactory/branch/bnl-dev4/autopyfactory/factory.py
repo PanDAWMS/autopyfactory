@@ -232,14 +232,53 @@ class WMSQueue(threading.Thread):
                 # Handle sched plugin
                 self.scheduler = self.__getscheduler()
 
-                # FIXME !!
                 # Handle status and submit batch plugins. 
                 self.batchstatus = self.__getbatchstatusplugin()
-
-                # Handle status and submit batch plugins. 
+                self.wmsstatus = self.__getwmsstatusplugin()
                 self.batchsubmit = self.__getbatchsubmitplugin()
 
-               
+
+                # Handle sched plugin
+                self.scheduler = self.__getplugin('sched')
+
+                # Handle status and submit batch plugins. 
+                self.batchstatus = self.__getplugin('batchstatus')
+                self.wmsstatus = self.__getplugin('wmsstatus')
+                self.batchsubmit = self.__getplugin('batchsubmit')
+
+        def __getplugin(self, action):
+                """
+                generic private method to find out the specific plugin
+                to be used for this queue, depending on the action.
+                Action can be:
+                        - sched
+                        - batchstatus
+                        - wmsstatus
+                        - batchsubmit
+                """
+
+                plugin_prefixes = [
+                        'sched' : 'Sched',
+                        'wms': 'WMS',
+                        'batchstatus': 'BatchStatus',
+                        'batchsubmit': 'BatchSubmit'
+                ]
+
+                plugin_section = '%splugin' %action
+                plugin_prefix = plugin_module_prefixes[action] 
+                
+
+                schedclass = self.qcl.config.get(self.siteid, plugin_section)
+                self.log.debug("[%s] Attempting to import derived classname: \
+                                autopyfactory.plugins.%s%sPlugin.%s%sPlugin"
+                                % (self.siteid, schedclass, plugin_prefix, schedclass, plugin_prefix)) 
+
+                plugin_module = __import__("autopyfactory.plugins.%s%sPlugin" % (schedclass, plugin_prefix), 
+                                fromlist=["%s%sPlugin" % (schedclass, plugin_prefix)])
+
+                plugin_class = '%sPlugin' %plugin_prefix
+                return gettattr(plugin_module, plugin_class)()
+
         def __getscheduler(self): 
                 """
                 private method to find out the specific Sched Plugin
