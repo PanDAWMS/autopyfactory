@@ -257,12 +257,12 @@ class WMSQueue(threading.Thread):
                         - batchsubmit
                 """
 
-                plugin_prefixes = [
+                plugin_prefixes = {
                         'sched' : 'Sched',
                         'wmsstatus': 'WMSStatus',
                         'batchstatus': 'BatchStatus',
                         'batchsubmit': 'BatchSubmit'
-                ]
+                }
 
                 plugin_section = '%splugin' %action
                 plugin_prefix = plugin_module_prefixes[action] 
