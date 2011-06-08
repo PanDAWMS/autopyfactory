@@ -264,6 +264,7 @@ class WMSQueue(threading.Thread):
                 batchstatclass = self.qcl.config.get(self.siteid, "batchplugin")
 
                 _temp =  __import__("autopyfactory.plugins.%sBatchPlugin" % batchstatclass, 
+                                                                 fromlist=["%sBatchStatusPlugin" %batchstatclass ])
                 BatchStatusPlugin = _temp.BatchStatusPlugin
                 return BatchStatusPlugin(self)
                 
@@ -275,6 +276,8 @@ class WMSQueue(threading.Thread):
 
                 batchsubmitclass = self.qcl.config.get(self.siteid, "batchplugin")
 
+                _temp =  __import__("autopyfactory.plugins.%sBatchSubmitPlugin" % batchsubmitclass, 
+                                                                 fromlist=["%sBatchSubmitPlugin" %batchsubmitclass ])
                 BatchSubmitPlugin = _temp.BatchSubmitPlugin
                 self.log.debug("[%s] WMSQueue initialization done." % self.siteid)
                 return BatchSubmitPlugin(self)
