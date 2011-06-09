@@ -466,7 +466,6 @@ class BatchStatusInterface(object):
         '''
         -----------------------------------------------------------------------
         Interacts with the underlying batch system to get job status. 
-        Instantiated at the Factory level. 
         Should return information about number of jobs currently on the desired queue. 
         -----------------------------------------------------------------------
         Public Interface:
@@ -489,8 +488,19 @@ class BatchStatusInterface(object):
 
 class WMSStatusInterface(object):
         '''
+        -----------------------------------------------------------------------
+        Interface for all WMSStatus plugins. 
+        Should return information about cloud status, site status and jobs status. 
+        -----------------------------------------------------------------------
+        Public Interface:
+                update(status)
+        -----------------------------------------------------------------------
         '''
-        pass
+        def update(self, status):
+                '''
+                Method to update an object of class Status
+                '''
+                raise NotImplementedError
 
 
 
