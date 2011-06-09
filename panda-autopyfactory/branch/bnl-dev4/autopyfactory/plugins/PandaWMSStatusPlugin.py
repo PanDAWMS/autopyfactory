@@ -1,10 +1,13 @@
 #! /usr/bin/env python
 
+import logging
+import threading
+
 from autopyfactory.factory import WMSStatusInterface
 from autopyfactory.factory import Singleton 
-import logging
 
-class WMSStatus(WMSStatusInterface)
+
+class WMSStatus(threading.Thread, WMSStatusInterface):
 
         __metaclass__ = Singleton
 
