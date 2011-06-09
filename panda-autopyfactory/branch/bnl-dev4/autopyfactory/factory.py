@@ -255,6 +255,20 @@ class WMSQueue(threading.Thread):
                         - batchstatus
                         - wmsstatus
                         - batchsubmit
+
+                Steps taken are:
+                        1. The name of the item in the config file is calculated.
+                           It is supposed to have format <action>plugin.
+                           For example:  schedplugin, batchstatusplugin, ...
+                        2. The name of the plugin module is calculated.
+                           It is supposed to have format <config item><prefix>Plugin.
+                           The prefix is taken from a map.
+                           For example: SimpleSchedPlugin, CondorBatchStatusPlugin
+                        3. The plugin module is imported, using __import__
+                        4. The plugin class is retrieved. 
+                           The name of the class is supposed to have format
+                           <prefix>Plugin
+                           For example: SchedPlugin(), BatchStatusPlugin()
                 """
 
                 plugin_prefixes = {
@@ -264,16 +278,17 @@ class WMSQueue(threading.Thread):
                         'batchsubmit': 'BatchSubmit'
                 }
 
-                plugin_section = '%splugin' %action
-                plugin_prefix = plugin_module_prefixes[action] 
+                plugin_config_item = '%splugin' %action
+                plugin_prefix = plugin_prefixes[action] 
+                plugin_module_name = '%s%sPlugin' %(schedclass, plugin_prefix)
                 
-                schedclass = self.qcl.config.get(self.siteid, plugin_section)
+                schedclass = self.qcl.config.get(self.siteid, plugin_config_item)
                 self.log.debug("[%s] Attempting to import derived classname: \
-                                autopyfactory.plugins.%s%sPlugin.%s%sPlugin"
-                                % (self.siteid, schedclass, plugin_prefix, schedclass, plugin_prefix)) 
+                                autopyfactory.plugins.%s"
+                                % (self.siteid, plugin_module_name)) 
 
-                plugin_module = __import__("autopyfactory.plugins.%s%sPlugin" % (schedclass, plugin_prefix), 
-                                fromlist=["%s%sPlugin" % (schedclass, plugin_prefix)])
+                plugin_module = __import__("autopyfactory.plugins.%s" % plugin_module_name, 
+                                fromlist=["%s" % plugin_module_name])
 
                 plugin_class = '%sPlugin' %plugin_prefix
                 return gettattr(plugin_module, plugin_class)()
