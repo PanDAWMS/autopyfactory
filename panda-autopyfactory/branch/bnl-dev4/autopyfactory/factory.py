@@ -260,6 +260,9 @@ class WMSQueue(threading.Thread):
                 ### self.wmsstatus = self.__getwmsstatusplugin()
                 ### self.batchsubmit = self.__getbatchsubmitplugin()
 
+                # object Status to handle the whole system status
+                self.status = Status()
+
                 # Handle sched plugin
                 self.scheduler = self.__getplugin('sched')
 
@@ -364,26 +367,54 @@ class WMSQueue(threading.Thread):
                 Main functional loop of this WMSQueue. 
                 '''        
                 while not self.stopevent.isSet():
-                        self.log.debug("[%s] Would be grabbing Batch info relevant to this queue." % self.siteid)
-                        # update batch info
-                        # update panda info
-                        self.log.debug("[%s] Would be getting panda info relevant to this queue."% self.siteid)
-                        
-                        self.log.debug("[%s] Would be calculating number to submit."% self.siteid)
-                        # calculate number to submit
-                        nsub = self.scheduler.calcSubmitNum(self.status)
-                        # submit using this number
-                        self.log.debug("[%s] Would be submitting jobs for this queue."% self.siteid)
-                        self.batchsubmit.submit(nsub)
-                        # Exit loop if desired number of cycles is reached...  
-                        self.log.debug("[%s] Checking to see how many cycles to run."% self.siteid)
-                        if self.cycles and self.cyclesrun >= self.cycles:
-                                self.stopevent.set()                        
-                        self.log.debug("[%s] Incrementing cycles..."% self.siteid)
-                        self.cyclesrun += 1
-                        # sleep interval
-                        self.log.debug("[%s] Sleeping for %d seconds..." % (self.siteid, self.sleep))
-                        time.sleep(self.sleep)
+                        self.__updatestatus()
+                        nsub = self.__calculatenumberofpilots()
+                        self.__submitpilots(nsub)
+                        self.__exitloop()
+                        self.__sleep()
+
+        def __updatestatus(self):
+                '''
+                update batch info and panda info
+                '''
+                self.log.debug("[%s] Would be grabbing Batch info relevant to this queue." % self.siteid)
+                self.status.batch = self.batchstatus.getInfo()
+                self.log.debug("[%s] Would be getting WMS info relevant to this queue."% self.siteid)
+                self.status.cloud = self.wmsstatus.getCloudInfo()
+                self.status.site = self.wmsstatus.getSiteInfo()
+                self.status.jobs = self.wmsstatus.getJobsInfo()
+
+        def __calculatenumberofpilots(self):
+                '''
+                calculate number to submit
+                '''
+                self.log.debug("[%s] Would be calculating number to submit."% self.siteid)
+                nsub = self.scheduler.calcSubmitNum(self.status)
+
+        def __submitpilots(self, nsub):
+                '''
+                submit using this number
+                '''
+                self.log.debug("[%s] Would be submitting jobs for this queue."% self.siteid)
+                self.batchsubmit.submit(nsub)
+
+        def __exitloop(self):
+                '''
+                Exit loop if desired number of cycles is reached...  
+                '''
+                self.log.debug("[%s] Checking to see how many cycles to run."% self.siteid)
+                if self.cycles and self.cyclesrun >= self.cycles:
+                        self.stopevent.set()                        
+                self.log.debug("[%s] Incrementing cycles..."% self.siteid)
+                self.cyclesrun += 1
+
+        def __sleep(self):
+                '''
+                sleep interval
+                '''
+                self.log.debug("[%s] Sleeping for %d seconds..." % (self.siteid, self.sleep))
+                time.sleep(self.sleep)
+
 
         def refresh(self):
                 '''
@@ -415,10 +446,17 @@ class Status(object):
                 # I use None instead of 0 to distinguish between
                 #       - value has been provided and it is 0
                 #       - value not provided 
-                self.activated = None
-                self.failed = None
-                self.running = None
-                self.transferring = None
+
+                self.cloud = {}
+                self.site = {}
+                self.jobs = {}
+                self.batch = {}
+
+                # example:
+                self.jobs['activated'] = None
+                self.jobs['failed'] = None
+                self.jobs['running'] = None
+                self.jobs['transferring'] = None
 
 
 class Singleton(type):
@@ -493,12 +531,14 @@ class WMSStatusInterface(object):
         Should return information about cloud status, site status and jobs status. 
         -----------------------------------------------------------------------
         Public Interface:
-                update(status)
+                update()
         -----------------------------------------------------------------------
         '''
-        def update(self, status):
+        def getInfo(self):
                 '''
-                Method to update an object of class Status
+                Method to get and updated picture of the WMS status. 
+                It returns a dictionary to be inserted directly into an
+                Status object.
                 '''
                 raise NotImplementedError
 
