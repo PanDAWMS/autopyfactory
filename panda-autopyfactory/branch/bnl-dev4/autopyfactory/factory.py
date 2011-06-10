@@ -231,8 +231,9 @@ class WMSQueue(threading.Thread):
         
         def __init__(self, siteid, factory):
                 '''
-                siteid is the name of the section in the queueconfig
-                fcl is a the Factory object who created the queue 
+                siteid is the name of the section in the queueconfig, 
+                i.e. the queue name, 
+                factory is the Factory object who created the queue 
                 '''
 
                 threading.Thread.__init__(self) # init the thread
@@ -244,22 +245,12 @@ class WMSQueue(threading.Thread):
                 self.fcl = self.factory.fcl 
                 self.qcl = self.factory.qcl 
 
-                ##self.specs = self.factory.getQueueConfig(siteid)
-
-                #self.nickname = self.qcl.config.get(siteid, "nickname")
+                self.nickname = self.qcl.config.get(siteid, "nickname")
                 self.dryrun = self.fcl.config.get("Factory", "dryRun")
                 self.cycles = self.fcl.config.get("Factory", "cycles" )
                 self.sleep = int(self.fcl.config.get("Factory", "sleep"))
                 self.cyclesrun = 0
                 
-                ### # Handle sched plugin
-                ### self.scheduler = self.__getscheduler()
-
-                ### # Handle status and submit batch plugins. 
-                ### self.batchstatus = self.__getbatchstatusplugin()
-                ### self.wmsstatus = self.__getwmsstatusplugin()
-                ### self.batchsubmit = self.__getbatchsubmitplugin()
-
                 # object Status to handle the whole system status
                 self.status = Status()
 
@@ -318,6 +309,10 @@ class WMSQueue(threading.Thread):
                 plugin_class = '%sPlugin' %plugin_prefix
                 return gettattr(plugin_module, plugin_class)()
 
+        # ----------------------------------------------
+        #       run methods start here
+        # ----------------------------------------------
+
         def run(self):
                 '''
                 Method called by thread.start()
@@ -372,6 +367,9 @@ class WMSQueue(threading.Thread):
                 self.log.debug("[%s] Sleeping for %d seconds..." % (self.siteid, self.sleep))
                 time.sleep(self.sleep)
 
+        # ----------------------------------------------
+        #       run methods end here
+        # ----------------------------------------------
 
         def refresh(self):
                 '''
@@ -437,6 +435,9 @@ class SchedInterface(object):
         -----------------------------------------------------------------------
         Calculates the number of jobs to be submitted for a given queue. 
         -----------------------------------------------------------------------
+        Public Interface:
+                calcSubmitNum(status)
+        -----------------------------------------------------------------------
         '''
         def calcSubmitNum(self, status):
                 '''
@@ -488,16 +489,42 @@ class WMSStatusInterface(object):
         Should return information about cloud status, site status and jobs status. 
         -----------------------------------------------------------------------
         Public Interface:
-                update()
+                getCloudInfo()
+                getSiteInfo()
+                getJobsInfo()
         -----------------------------------------------------------------------
         '''
-        def getInfo(self):
+        def getCloudInfo(self):
                 '''
-                Method to get and updated picture of the WMS status. 
+                Method to get and updated picture of the cloud status. 
                 It returns a dictionary to be inserted directly into an
                 Status object.
                 '''
                 raise NotImplementedError
+
+        def getSiteInfo(self):
+                '''
+                Method to get and updated picture of the site status. 
+                It returns a dictionary to be inserted directly into an
+                Status object.
+                '''
+                raise NotImplementedError
+
+        def getJobsInfo(self):
+                '''
+                Method to get and updated picture of the jobs status. 
+                It returns a dictionary to be inserted directly into an
+                Status object.
+                '''
+                raise NotImplementedError
+
+        #def getInfo(self):
+        #        '''
+        #        Method to get and updated picture of the WMS status. 
+        #        It returns a dictionary to be inserted directly into an
+        #        Status object.
+        #        '''
+        #        raise NotImplementedError
 
 
 
