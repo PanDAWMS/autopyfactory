@@ -77,7 +77,7 @@ class WMSStatus(threading.Thread, WMSStatusInterface):
                 # FIXME
                 time.sleep(100)
 
-       def join(self,timeout=None):
+        def join(self,timeout=None):
                '''
                stops the thread.
                '''
