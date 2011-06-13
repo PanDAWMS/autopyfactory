@@ -1,159 +1,176 @@
 #!/bin/env python
 #
-# AutoPyfactory batch plugin for Condor
+# AutoPyfactory batch status plugin for Condor
 #
 
+
+#  Here the list of authors
+
+
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
+import commands
 import logging
-import threading
 import time
-import pprint
-from autopyfactory.factory import BatchSubmitInterface, BatchStatusInterface
+import threading
 
-class BatchStatusPlugin(BatchStatusInterface):
-    '''
-    This class is expected to have separate instances for each PandaQueue object. 
-    The first time it is instantiated, 
-    '''
-
-    def __init__(self, pandaqueue):
-            global STATUSTHREAD
-            global STATUSLOCK
-            self.log = logging.getLogger("main.condorstatus")
-            self.pandaqueue = pandaqueue
-            self.fconfig = pandaqueue.fcl.config          
-            self.siteid = pandaqueue.siteid
-            self.condoruser = pandaqueue.fcl.config.get('Factory', 'factoryUser')
-            self.factoryid = pandaqueue.fcl.config.get('Factory', 'factoryId') 
-            self.statuscycle = int(pandaqueue.qcl.config.get(self.siteid, 'batchCheckInterval'))
-            self.submitcycle = int(pandaqueue.qcl.config.get(self.siteid, 'batchSubmitInterval'))
-                        
-            if not STATUSLOCK.acquire(False):
-                # Somebody else has the lock, and will start the thread. 
-                pass
-            else:
-                try:
-                    if STATUSTHREAD:
-                        self.log.debug("StatusThread already created. Ignoring.")
-                    else:
-                        self.log.debug("First to get lock. Creating StatusThread...")
-                        # We are the first to get the lock. 
-                        # Initialize the thread object. 
-                        
-                finally:
-                    STATUSLOCK.release()
-                    
-    def getInfo(self, queue):
-        global STATUSTHREAD
-        return STATUSTHREAD.getInfo()
+from autopyfactory.factory import BatchStatusInterface
+from autopyfactory.factory import Singleton 
 
 
-  
-        
-        
-class CondorStatusThread(threading.Thread):        
-    '''
-    This class is expected to have only one instance, and is shared by multiple CondorStatus 
-    objects (one per PandaQueue object). 
-    '''
-    
-    def __init__(self, condoruser, factoryid, cycletime=53 ):
-        threading.Thread.__init__(self) # init the thread
-        self.log = logging.getLogger("main.condorstatusthread")
-        self.stopevent = threading.Event()
-        self.currentinfo = None
-        self.newinfo = None
-        self.condoruser = condoruser
-        self.factoryid = factoryid
-        self.cycletime = int(cycletime)
-    
-    def run(self):
-        while not self.stopevent.isSet():
-            self.newinfo = self._getStatus()
-            pprint.pprint(self.currentinfo)
-            time.sleep(self.cycletime)
-
-    def join(self,timeout=None):
-        """
-        Stop the thread. Overriding this method required to handle Ctrl-C from console.
-        """
-        self.stopevent.set()
-        self.log.debug('Stopping thread....')
-        threading.Thread.join(self, timeout)
-    
-
-            
-    def getInfo(self):
-        return "jobStatus=1 globusStatus=1 -None TMP=/tmp FACTORYUSER=user APFFID=BNL-gridui11-jhover APFMON=http://apfmon.lancs.ac.uk/mon/ APP=/usatlas/OSG APFCID=6974.0 PANDA_JSID=BNL-gridui11-jhover DATA=/usatlas/prodjob/share/ FACTORYQUEUE=ANALY_TEST-APF GTAG=http://gridui11.usatlas.bnl.gov:25880/2011-04-08/ANALY_TEST-APF/6974.0.out"        
-        #return self.currentinfo
-        
-
-    def _getStatus(self):
+class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
-        Query Condor for job status, validate and store info in newinfo, and 
-        finally swap newinfo for currentinfo. 
-        
-        Condor-G query template example:
-        
-        condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
-            -format 'jobStatus=%d ' jobStatus -format 'globusStatus=%d ' GlobusStatus -format 'gkUrl=%s' MATCH_gatekeeper_url
-            -format '-%s ' MATCH_queue -format '%s\n' Environment
-        
-        Condor-C query template example:
-        
-        
+        -----------------------------------------------------------------------
+        This class is expected to have separate instances for each PandaQueue object. 
+        The first time it is instantiated, 
+        -----------------------------------------------------------------------
+        Public Interface:
+                the interfaces inherited from Thread and from BatchStatusInterface
+        -----------------------------------------------------------------------
         '''
-        self.log.debug("_getStatus called. Querying batch system...")      
-        querycmd = "condor_q -constr '(owner==\"%s\") && " % self.condoruser
-        querycmd += "stringListMember(\"PANDA_JSID=%s " % self.factoryid
-        querycmd += "" 
-
-
-
-
-
-
-
-    def _getCondorStatus(self):
-        # We query condor for jobs running as us (owner) and this factoryId so that multiple 
-        # factories can run on the same machine
-        # Ask for the output from condor to be in the form of "key=value" pairs so we can easily 
-        # convert to a dictionary
-        condorQuery = '''condor_q -constr '(owner=="''' + self.config.config.get('Factory', 'condorUser') + \
-            '''") && stringListMember("PANDA_JSID=''' + self.config.config.get('Factory', 'factoryId') + \
-            '''", Environment, " ")' -format 'jobStatus=%d ' JobStatus -format 'globusStatus=%d ' GlobusStatus -format 'gkUrl=%s' MATCH_gatekeeper_url -format '-%s ' MATCH_queue -format '%s\n' Environment'''
-        self.log.debug("condor query: %s" % (condorQuery))
-        (condorStatus, condorOutput) = commands.getstatusoutput(condorQuery)
-        if condorStatus != 0:
-            raise CondorStatusFailure, 'Condor queue query returned %d: %s' % (condorStatus, condorOutput)
-        # Count the number of queued pilots for each queue
-        # For now simply divide into active and inactive pilots (JobStatus == or != 2)
-        try:
-            for queue in self.config.queues.keys():
-                self.config.queues[queue]['pilotQueue'] = {'active' : 0, 'inactive' : 0, 'total' : 0,}
-            for line in condorOutput.splitlines():
-                statusItems = line.split()
-                statusDict = {}
-                for item in statusItems:
-                    try:
-                        (key, value) = item.split('=', 1)
-                        statusDict[key] = value
-                    except ValueError:
-                        self.log.warning('Unexpected output from condor_q query: %s' % line)
-                        continue
-                # We have encoded the factory queue name in the environment
-                try:
-                    self.config.queues[statusDict['FACTORYQUEUE']]['pilotQueue']['total'] += 1                
-                    if statusDict['jobStatus'] == '2':
-                        self.config.queues[statusDict['FACTORYQUEUE']]['pilotQueue']['active'] += 1
-                    else:
-                        self.config.queues[statusDict['FACTORYQUEUE']]['pilotQueue']['inactive'] += 1
-                except KeyError,e:
-                    self.log.debug('Key error from unusual condor status line: %s %s' % (e, line))
-            for queue, queueParameters in self.config.queues.iteritems():
-                self.log.debug('Condor: %s, %s: pilot status: %s',  queueParameters['siteid'], 
-                                           queue, queueParameters['pilotQueue'])
-        except ValueError, errorMsg:
-            raise CondorStatusFailure, 'Error in condor queue result: %s' % errorMsg
         
+        __metaclass__ = Singleton 
         
-        
+        def __init__(self, pandaqueue):
+
+                self.log = logging.getLogger("main.condorstatus")
+                self.pandaqueue = pandaqueue
+                self.fconfig = pandaqueue.fcl.config          
+                self.siteid = pandaqueue.siteid
+                self.condoruser = pandaqueue.fcl.config.get('Factory', 'factoryUser')
+                self.factoryid = pandaqueue.fcl.config.get('Factory', 'factoryId') 
+                self.statuscycle = int(pandaqueue.qcl.config.get(self.siteid, 'batchCheckInterval'))
+                self.submitcycle = int(pandaqueue.qcl.config.get(self.siteid, 'batchSubmitInterval'))
+
+                threading.Thread.__init__(self) # init the thread
+                self.stopevent = threading.Event()
+                # to avoid the thread to be started more than once
+                self.__started = False
+
+        def getInfo(self, queue):
+                '''
+                '''
+                if not self.error:
+                        return self.status
+
+
+        def start(self):
+                '''
+                we override method start() to prevent the thread
+                to be started more than once
+                '''
+                if not self.__started:
+                        self.log.debug("Creating Condor batch status thread...")
+                        self.__started = True
+                        threading.Thread.start(self)
+
+        def run(self):
+                '''
+                Main loop
+                '''
+                while not self.stopevent.isSet():
+                        self.__upate()
+                        self.__sleep()
+
+        def __update(self):
+                '''        
+                Query Condor for job status, 
+                validate ?
+                Condor-G query template example:
+                
+                condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
+                         -format 'jobStatus=%d ' jobStatus 
+                         -format 'globusStatus=%d ' GlobusStatus 
+                         -format 'gkUrl=%s' MATCH_gatekeeper_url
+                         -format '-%s ' MATCH_queue 
+                         -format '%s\n' Environment
+
+
+                The JobStatus code indicates the current status of the job.
+                
+                        Value   Status
+                        0       Unexpanded (the job has never run)
+                        1       Idle
+                        2       Running
+                        3       Removed
+                        4       Completed
+                        5       Held
+                        6       Transferring Output
+
+
+                The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
+                
+                        Value   Status
+                        1       PENDING 
+                        2       ACTIVE 
+                        4       FAILED 
+                        8       DONE 
+                        16      SUSPENDED 
+                        32      UNSUBMITTED 
+                        64      STAGE_IN 
+                        128     STAGE_OUT 
+                '''
+
+                self.log.debug("_getStatus called. Querying batch system...")
+
+                #querycmd = "condor_q"
+                #querycmd += " -constr '(owner==\"%s\") && stringListMember(\"PANDA_JSID=%s\", Environment, \" \")'" %(self.factoryid, self.condoruser)
+                #querycmd += " -format 'jobStatus=%d ' jobStatus"
+                #querycmd += " -format 'globusStatus=%d ' GlobusStatus"
+                #querycmd += " -format 'gkURL=%s' MATCH_gatekeeper_url"
+                #querycmd += " -format '-%s' MATCH_queue"
+                #querycmd += " -format '-%s\\\\n' Environment"
+                # let's start with a simpler one
+                querycmd = "condor_q"
+                querycmd += " -constr '(owner==\"%s\") && stringListMember(\"PANDA_JSID=%s\", Environment, \" \")'" %(self.factoryid, self.condoruser)
+                querycmd += " -format 'jobStatus=%d\\\\n' jobStatus"
+
+                self.err, self.output = commands.getstatusoutput(querycmd)
+                self.status = self.__analyzeoutput(self.output, 'jobStatus')
+
+        def __analyzeoutput(self, output, key):
+                '''
+                ancilla method to analyze the output of the condor_q command
+                        - output is the output of the command
+                        - key is the pattern that counts
+                '''
+
+                output_dic = {}
+
+                lines = output.split('\n')
+                for line in lines:
+                        tokens = line.split()
+                        for token in tokens:
+                                if token.startswith(key):
+                                        code = token.split('=')[1]
+                                        if code not in output_dic.keys():
+                                                output_dic[code] = 0
+                                        else:
+                                                output_dic[code] += 1 
+                return output_dic
+                                                
+        def __sleep(self):
+                # FIXME: temporary solution
+                time.sleep(100)
+
+        def join(self, timeout=None):
+                ''' 
+                Stop the thread. Overriding this method required to handle Ctrl-C from console.
+                ''' 
+                self.stopevent.set()
+                self.log.debug('Stopping thread....')
+                threading.Thread.join(self, timeout)
