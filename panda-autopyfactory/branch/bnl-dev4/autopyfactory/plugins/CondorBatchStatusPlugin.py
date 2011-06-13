@@ -59,7 +59,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 # results of the condor_q query commands
                 self.error = None
                 self.output = None
-                self.status = None
+                self.status = None  # result of analyzing self.output
 
                 threading.Thread.__init__(self) # init the thread
                 self.stopevent = threading.Event()
@@ -71,11 +71,10 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 Returns a diccionary with the result of the analysis 
                 over the output of a condor_q command
                 '''
-
                 # FIXME : queue is not used !!
                 if not self.error:
+                        self.status = self.__analyzeoutput(self.output, 'jobStatus')
                         return self.status
-
 
         def start(self):
                 '''
@@ -150,7 +149,10 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 querycmd += " -format ' %s\n' Environment"
 
                 self.err, self.output = commands.getstatusoutput(querycmd)
-                self.status = self.__analyzeoutput(self.output, 'jobStatus')
+
+        def __sleep(self):
+                # FIXME: temporary solution
+                time.sleep(100)
 
         def __analyzeoutput(self, output, key):
                 '''
@@ -161,7 +163,9 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
                 output_dic = {}
 
-                # FIXME
+                # FIXME 1: too many identation levels
+                # FIXME 2: queue is not used at all
+
                 lines = output.split('\n')
                 for line in lines:
                         tokens = line.split()
@@ -173,10 +177,6 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                                         else:
                                                 output_dic[code] += 1 
                 return output_dic
-                                                
-        def __sleep(self):
-                # FIXME: temporary solution
-                time.sleep(100)
 
         def join(self, timeout=None):
                 ''' 
