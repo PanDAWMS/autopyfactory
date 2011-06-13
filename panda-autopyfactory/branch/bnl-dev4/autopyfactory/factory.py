@@ -321,7 +321,7 @@ class WMSQueue(threading.Thread):
                 while not self.stopevent.isSet():
                         self.__updatestatus()
                         nsub = self.__calculatenumberofpilots()
-                        self.__submitpilots(self.siteid, nsub)
+                        self.__submitpilots(nsub)
                         self.__exitloop()
                         self.__sleep()
 
@@ -348,7 +348,7 @@ class WMSQueue(threading.Thread):
                 submit using this number
                 '''
                 self.log.debug("[%s] Would be submitting jobs for this queue."% self.siteid)
-                self.batchsubmit.submit(nsub)
+                self.batchsubmit.submit(self.siteid, nsub)
 
         def __exitloop(self):
                 '''
