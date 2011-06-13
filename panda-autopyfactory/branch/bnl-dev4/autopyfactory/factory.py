@@ -321,7 +321,7 @@ class WMSQueue(threading.Thread):
                 while not self.stopevent.isSet():
                         self.__updatestatus()
                         nsub = self.__calculatenumberofpilots()
-                        self.__submitpilots(nsub)
+                        self.__submitpilots(self.siteid, nsub)
                         self.__exitloop()
                         self.__sleep()
 
