@@ -71,6 +71,8 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 Returns a diccionary with the result of the analysis 
                 over the output of a condor_q command
                 '''
+
+                # FIXME : queue is not used !!
                 if not self.error:
                         return self.status
 
@@ -90,7 +92,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 Main loop
                 '''
                 while not self.stopevent.isSet():
-                        self.__upate()
+                        self.__update()
                         self.__sleep()
 
         def __update(self):
@@ -106,6 +108,12 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                          -format '-%s ' MATCH_queue 
                          -format '%s\n' Environment
 
+                NOTE: using a single backslash in the final part of the 
+                      condor_q command '\n' only works with the 
+                      latest versions of condor. 
+                      With older versions, there are two options:
+                              - using 4 backslashes '\\\\n'
+                              - using a raw string and two backslashes '\\n'
 
                 The JobStatus code indicates the current status of the job.
                 
@@ -117,7 +125,6 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                         4       Completed
                         5       Held
                         6       Transferring Output
-
 
                 The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
                 
@@ -134,12 +141,6 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
                 self.log.debug("_getStatus called. Querying batch system...")
 
-                # NOTE: using a single backslash in the final part of the 
-                #       condor_q command '\n' only works with the 
-                #       latest versions of condor. 
-                #       With older versions, there are two options:
-                #               - using 4 backslashes '\\\\n'
-                #               - using a raw string and two backslashes '\\n'
                 querycmd = "condor_q"
                 querycmd += " -constr '(owner==\"%s\") && stringListMember(\"PANDA_JSID=%s\", Environment, \" \")'" %(self.factoryid, self.condoruser)
                 querycmd += " -format 'jobStatus=%d' jobStatus"
