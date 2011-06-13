@@ -56,6 +56,11 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.statuscycle = int(pandaqueue.qcl.config.get(self.siteid, 'batchCheckInterval'))
                 self.submitcycle = int(pandaqueue.qcl.config.get(self.siteid, 'batchSubmitInterval'))
 
+                # results of the condor_q query commands
+                self.error = None
+                self.output = None
+                self.status = None
+
                 threading.Thread.__init__(self) # init the thread
                 self.stopevent = threading.Event()
                 # to avoid the thread to be started more than once
@@ -63,6 +68,8 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         def getInfo(self, queue):
                 '''
+                Returns a diccionary with the result of the analysis 
+                over the output of a condor_q command
                 '''
                 if not self.error:
                         return self.status
@@ -70,7 +77,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         def start(self):
                 '''
-                we override method start() to prevent the thread
+                We override method start() to prevent the thread
                 to be started more than once
                 '''
                 if not self.__started:
@@ -127,17 +134,19 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
                 self.log.debug("_getStatus called. Querying batch system...")
 
-                #querycmd = "condor_q"
-                #querycmd += " -constr '(owner==\"%s\") && stringListMember(\"PANDA_JSID=%s\", Environment, \" \")'" %(self.factoryid, self.condoruser)
-                #querycmd += " -format 'jobStatus=%d ' jobStatus"
-                #querycmd += " -format 'globusStatus=%d ' GlobusStatus"
-                #querycmd += " -format 'gkURL=%s' MATCH_gatekeeper_url"
-                #querycmd += " -format '-%s' MATCH_queue"
-                #querycmd += " -format '-%s\\\\n' Environment"
-                # let's start with a simpler one
+                # NOTE: using a single backslash in the final part of the 
+                #       condor_q command '\n' only works with the 
+                #       latest versions of condor. 
+                #       With older versions, there are two options:
+                #               - using 4 backslashes '\\\\n'
+                #               - using a raw string and two backslashes '\\n'
                 querycmd = "condor_q"
                 querycmd += " -constr '(owner==\"%s\") && stringListMember(\"PANDA_JSID=%s\", Environment, \" \")'" %(self.factoryid, self.condoruser)
-                querycmd += " -format 'jobStatus=%d\\\\n' jobStatus"
+                querycmd += " -format 'jobStatus=%d' jobStatus"
+                querycmd += " -format 'globusStatus=%d ' GlobusStatus"
+                querycmd += " -format 'gkURL=%s' MATCH_gatekeeper_url"
+                querycmd += " -format '-%s' MATCH_queue"
+                querycmd += " -format ' %s\n' Environment"
 
                 self.err, self.output = commands.getstatusoutput(querycmd)
                 self.status = self.__analyzeoutput(self.output, 'jobStatus')
@@ -151,6 +160,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
                 output_dic = {}
 
+                # FIXME
                 lines = output.split('\n')
                 for line in lines:
                         tokens = line.split()
