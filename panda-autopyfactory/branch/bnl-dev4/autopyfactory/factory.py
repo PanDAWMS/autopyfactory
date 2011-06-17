@@ -342,13 +342,14 @@ class WMSQueue(threading.Thread):
                 '''
                 self.log.debug("[%s] Would be calculating number to submit."% self.siteid)
                 nsub = self.scheduler.calcSubmitNum(self.status)
+                return nsub
 
         def __submitpilots(self, nsub):
                 '''
                 submit using this number
                 '''
                 self.log.debug("[%s] Would be submitting jobs for this queue."% self.siteid)
-                self.batchsubmit.submit(self.siteid, nsub)
+                self.batchsubmit.submit(self.siteid, nsub, self.fcl, self.qcl)
 
         def __exitloop(self):
                 '''
@@ -538,7 +539,7 @@ class BatchSubmitInterface(object):
                 submitPilots(number)
         -----------------------------------------------------------------------
         '''
-        def submitPilots(self, number):
+        def submitPilots(self, queue, number, fcl, qcl):
                 '''
                 Method to submit pilots 
                 '''
