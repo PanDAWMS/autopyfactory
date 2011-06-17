@@ -1,3 +1,6 @@
+import popen2
+
+
 class CommandLine(object):
         '''
         ------------------------------------------------------------------
@@ -25,7 +28,7 @@ class CommandLine(object):
         '''
         def __init__(self, cmd, check=True, exception=None):
 
-                self.cmd = None      # program to be executed
+                self.cmd = cmd       # program to be executed
                 self.output = None   # the std output after execution
                 self.error = None    # the std error after execution
                 self.status = None   # the return code after execution
@@ -66,5 +69,28 @@ class CommandLine(object):
                 def __call__(self):
                         return self.command
                 
+
+if __name__ == '__main__':
+
+        print '-----------------------------------------'
+        cmd1 = '/bin/ls -ltr /tmp/'
+        exe1 = CommandLine(cmd1)
+        exe1.execute()
+        print exe1.output
+        print exe1.error
+        print exe1.status
+        print '-----------------------------------------'
+        cmd2 = '/bin/ls -ltr /tmpx/'
+        exe2 = CommandLine(cmd2)
+        exe2.execute()
+        print exe2.output
+        print exe2.error
+        print exe2.status
+        print '-----------------------------------------'
+
+
+
+
+
 
 
