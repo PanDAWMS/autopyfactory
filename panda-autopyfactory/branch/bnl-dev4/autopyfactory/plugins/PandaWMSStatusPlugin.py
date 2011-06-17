@@ -2,6 +2,7 @@
 
 import logging
 import threading
+import time
 
 from autopyfactory.factory import WMSStatusInterface
 from autopyfactory.factory import Singleton 
@@ -65,16 +66,19 @@ class WMSStatus(threading.Thread, WMSStatusInterface):
                 Main loop
                 '''
                 while not self.stopevent.isSet():
-                        self.__upate()
+                        self.__update()
                         self.__sleep()
 
         def __update(self):
-                self.clouds_error, self.all_clouds_config = Client.getCloudSpecs()
+                '''
+                add something here !!
+                '''
+                self.clouds_err, self.all_clouds_config = Client.getCloudSpecs()
                 self.sites_err, self.all_sites_config = Client.getSiteSpecs(siteType='all')
                 self.jobs_err, self.all_sites_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
 
         def __sleep(self):
-                # FIXME
+                # FIXME: temporary solution
                 time.sleep(100)
 
         def join(self,timeout=None):
