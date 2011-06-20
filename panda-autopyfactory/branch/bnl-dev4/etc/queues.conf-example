@@ -75,14 +75,19 @@ vomsCheck = 180
 
 analysisGridProxy = /tmp/pilotProxy
 
-# What plugin should be used to calculate the number of jobs to submit each cycle?
-# This string is the root of plugins.XYZSchedPlugin 
-schedplugin = Simple
+### # What plugin should be used to calculate the number of jobs to submit each cycle?
+### # This string is the root of plugins.XYZSchedPlugin 
+### schedplugin = Simple
+### # What plugin should be used to talk to a batch system for info and submit?
+### # This string is the root of plugins.XYZBatchPlugin, which contains XYZXSubmit class and
+### # XYZStatus class. 
+### batchplugin = Condor
 
-# What plugin should be used to talk to a batch system for info and submit?
-# This string is the root of plugins.XYZBatchPlugin, which contains XYZXSubmit class and
-# XYZStatus class. 
-batchplugin = Condor
+# plugins
+batchstatusplugin = Condor
+wmsstatusplugin = Panda
+batchsubmitplugin = Condor
+
 
 # Batch type and subtype. For Condor grid means Condor-G, vanilla means Condor-C
 batchtype = grid
