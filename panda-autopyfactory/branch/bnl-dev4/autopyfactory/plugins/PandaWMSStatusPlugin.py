@@ -11,7 +11,7 @@ import userinterface.Client as Client
 
 
 
-class WMSStatus(threading.Thread, WMSStatusInterface):
+class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         '''
         -----------------------------------------------------------------------
         PanDA-flavored version of WMSStatus class.
