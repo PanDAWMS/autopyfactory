@@ -296,9 +296,9 @@ class WMSQueue(threading.Thread):
 
                 plugin_config_item = '%splugin' %action
                 plugin_prefix = plugin_prefixes[action] 
+                schedclass = self.qcl.config.get(self.siteid, plugin_config_item)
                 plugin_module_name = '%s%sPlugin' %(schedclass, plugin_prefix)
                 
-                schedclass = self.qcl.config.get(self.siteid, plugin_config_item)
                 self.log.debug("[%s] Attempting to import derived classname: \
                                 autopyfactory.plugins.%s"
                                 % (self.siteid, plugin_module_name)) 
