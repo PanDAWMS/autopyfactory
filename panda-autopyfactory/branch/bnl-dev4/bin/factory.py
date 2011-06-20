@@ -99,7 +99,7 @@ class APF(object):
                                   action="store", metavar="USERNAME", help="If run as root, drop privileges to USER")
                 (self.options, self.args) = parser.parse_args()
 
-                self.options.confFiles = options.confFiles.split(',')
+                self.options.confFiles = self.options.confFiles.split(',')
    
         def setuplogging(self):
                 """ Setup logging
