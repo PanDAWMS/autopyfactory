@@ -180,9 +180,9 @@ class APF(object):
   exception so that the python stack trace is printed, which will allow
   it to be debugged - please send output from this message
   onwards. Exploding in 5...4...3...2...1... Have a nice day!''')
-                # The following line prints the exception to the logging module
-                self.log.error(traceback.format_exc(None))
-                raise
+                    # The following line prints the exception to the logging module
+                    self.log.error(traceback.format_exc(None))
+                    raise
 
  
 
