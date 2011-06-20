@@ -307,7 +307,7 @@ class WMSQueue(threading.Thread):
                                 fromlist=["%s" % plugin_module_name])
 
                 plugin_class = '%sPlugin' %plugin_prefix
-                return gettattr(plugin_module, plugin_class)()
+                return getattr(plugin_module, plugin_class)()
 
         # ----------------------------------------------
         #       run methods start here
