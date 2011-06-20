@@ -258,11 +258,11 @@ class WMSQueue(threading.Thread):
                 self.scheduler = self.__getplugin('sched')
 
                 # Handle status and submit batch plugins. 
-                self.batchstatus = self.__getplugin('batchstatus')
+                self.batchstatus = self.__getplugin('batchstatus', self)
                 self.wmsstatus = self.__getplugin('wmsstatus')
                 self.batchsubmit = self.__getplugin('batchsubmit')
 
-        def __getplugin(self, action):
+        def __getplugin(self, action, *k, **kw):
                 '''
                 Generic private method to find out the specific plugin
                 to be used for this queue, depending on the action.
@@ -271,6 +271,7 @@ class WMSQueue(threading.Thread):
                         - batchstatus
                         - wmsstatus
                         - batchsubmit
+                *k and *kw are inputs for the plugin class __init__() method
 
                 Steps taken are:
                         1. The name of the item in the config file is calculated.
@@ -307,7 +308,7 @@ class WMSQueue(threading.Thread):
                                 fromlist=["%s" % plugin_module_name])
 
                 plugin_class = '%sPlugin' %plugin_prefix
-                return getattr(plugin_module, plugin_class)()
+                return getattr(plugin_module, plugin_class)(*k, **kw)
 
         # ----------------------------------------------
         #       run methods start here
