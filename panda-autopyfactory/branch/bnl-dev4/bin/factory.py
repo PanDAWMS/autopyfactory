@@ -172,7 +172,7 @@ class APF(object):
                     self.log.error('Failed to import necessary python module: %s' % errorMsg)
                 except:
                     # TODO - make this a logger.exception() call
-                    log.error('''Unexpected exception! There was an exception
+                    self.log.error('''Unexpected exception! There was an exception
   raised which the factory was not expecting and did not know how to
   handle. You may have discovered a new bug or an unforseen error
   condition. Please report this exception to Graeme
