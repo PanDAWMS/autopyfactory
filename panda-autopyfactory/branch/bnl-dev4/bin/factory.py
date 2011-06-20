@@ -107,7 +107,7 @@ class APF(object):
                 self.log = logging.getLogger('main')
                 if self.options.logfile == "stdout":
                     logStream = logging.StreamHandler()
-                elif self.ptions.logfile == 'syslog':
+                elif self.options.logfile == 'syslog':
                     logStream = logging.handlers.SysLogHandler('/dev/log')
                 else:
                     logStream = logging.handlers.RotatingFileHandler(filename=self.options.logfile, maxBytes=10000000, backupCount=5)    
