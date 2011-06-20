@@ -48,7 +48,7 @@ setup(
                                    ]),                                         
                 ('/usr/share',['misc/rpm-post.sh',
                                'misc/rpm-pre.sh', 
-                               'misc/rpm-prerun.sh', 
+                               'misc/rpm-preun.sh', 
                               ]),
                 ]
 )
