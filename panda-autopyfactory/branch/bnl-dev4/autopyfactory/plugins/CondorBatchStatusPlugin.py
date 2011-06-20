@@ -166,6 +166,10 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 # FIXME 1: too many identation levels
                 # FIXME 2: queue is not used at all
 
+                # FIXME: temporary solution
+                if not output:
+                        return output_dic
+
                 lines = output.split('\n')
                 for line in lines:
                         tokens = line.split()
