@@ -246,6 +246,7 @@ class WMSQueue(threading.Thread):
                 self.qcl = self.factory.qcl 
 
                 self.nickname = self.qcl.config.get(siteid, "nickname")
+                self.cloud = self.qcl.config.get(siteid, "cloud")
                 self.dryrun = self.fcl.config.get("Factory", "dryRun")
                 self.cycles = self.fcl.config.get("Factory", "cycles" )
                 self.sleep = int(self.fcl.config.get("Factory", "sleep"))
@@ -333,9 +334,13 @@ class WMSQueue(threading.Thread):
                 self.log.debug("[%s] Would be grabbing Batch info relevant to this queue." % self.siteid)
                 self.status.batch = self.batchstatus.getInfo()
                 self.log.debug("[%s] Would be getting WMS info relevant to this queue."% self.siteid)
-                self.status.cloud = self.wmsstatus.getCloudInfo()
-                self.status.site = self.wmsstatus.getSiteInfo()
-                self.status.jobs = self.wmsstatus.getJobsInfo()
+
+                # starts the thread
+                self.wmsstatus.start()
+                
+                self.status.cloud = self.wmsstatus.getCloudInfo(self.cloud)
+                self.status.site = self.wmsstatus.getSiteInfo(self.siteid) # FIXME : maybe is nickname instead of siteid
+                self.status.jobs = self.wmsstatus.getJobsInfo(self.siteid) # FIXME : maybe is nickname instead of siteid 
 
         def __calculatenumberofpilots(self):
                 '''
