@@ -339,8 +339,8 @@ class WMSQueue(threading.Thread):
                 self.wmsstatus.start()
                 
                 self.status.cloud = self.wmsstatus.getCloudInfo(self.cloud)
-                self.status.site = self.wmsstatus.getSiteInfo(self.siteid) # FIXME : maybe is nickname instead of siteid
-                self.status.jobs = self.wmsstatus.getJobsInfo(self.siteid) # FIXME : maybe is nickname instead of siteid 
+                self.status.site = self.wmsstatus.getSiteInfo(self.siteid) 
+                self.status.jobs = self.wmsstatus.getJobsInfo(self.siteid)
 
         def __calculatenumberofpilots(self):
                 '''
