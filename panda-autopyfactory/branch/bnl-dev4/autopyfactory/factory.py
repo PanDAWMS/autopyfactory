@@ -261,6 +261,8 @@ class WMSQueue(threading.Thread):
                 # Handle status and submit batch plugins. 
                 self.batchstatus = self.__getplugin('batchstatus', self)
                 self.wmsstatus = self.__getplugin('wmsstatus')
+                # starts the thread
+                self.wmsstatus.start()
                 self.batchsubmit = self.__getplugin('batchsubmit')
 
         def __getplugin(self, action, *k, **kw):
@@ -335,9 +337,6 @@ class WMSQueue(threading.Thread):
                 self.status.batch = self.batchstatus.getInfo()
                 self.log.debug("[%s] Would be getting WMS info relevant to this queue."% self.siteid)
 
-                # starts the thread
-                self.wmsstatus.start()
-                
                 self.status.cloud = self.wmsstatus.getCloudInfo(self.cloud)
                 self.status.site = self.wmsstatus.getSiteInfo(self.siteid) 
                 self.status.jobs = self.wmsstatus.getJobsInfo(self.siteid)
