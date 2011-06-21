@@ -87,6 +87,7 @@ analysisGridProxy = /tmp/pilotProxy
 batchstatusplugin = Condor
 wmsstatusplugin = Panda
 batchsubmitplugin = Condor
+schedplugin = Trivial
 
 
 # Batch type and subtype. For Condor grid means Condor-G, vanilla means Condor-C
