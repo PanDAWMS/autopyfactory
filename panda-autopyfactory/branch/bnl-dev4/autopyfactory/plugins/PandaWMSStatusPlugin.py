@@ -29,6 +29,10 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 self.log = logging.getLogger("main.pandawmsstatusplugin")
                 self.log.debug("PandaWMSStatusPlugin initializing...")
 
+                # variable to check if the source of information 
+                # have been queried at least once
+                self.updated = False
+
                 threading.Thread.__init__(self) # init the thread
                 self.stopevent = threading.Event()
                 # to avoid the thread to be started more than once
@@ -37,20 +41,23 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         def getCloudInfo(self, cloud):
                 '''
                 '''
-                if not self.clouds_err:
-                        return self.all_clouds_config[cloud]
+                if self.updated:
+                        if not self.clouds_err:
+                                return self.all_clouds_config[cloud]
                 
         def getSiteInfo(self, site):
                 '''
                 '''
-                if not self.sites_err:
-                        return self.all_sites_config[site]
+                if self.updated:
+                        if not self.sites_err:
+                                return self.all_sites_config[site]
 
         def getJobsInfo(self, site):
                 '''
                 '''
-                if not self.jobs_err:
-                        return self.all_sites_config[site]
+                if self.updated:
+                        if not self.jobs_err:
+                                return self.all_sites_config[site]
        
         def start(self):
                 '''
@@ -76,6 +83,8 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 self.clouds_err, self.all_clouds_config = Client.getCloudSpecs()
                 self.sites_err, self.all_sites_config = Client.getSiteSpecs(siteType='all')
                 self.jobs_err, self.all_sites_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
+
+                self.updated = True
 
         def __sleep(self):
                 # FIXME: temporary solution
