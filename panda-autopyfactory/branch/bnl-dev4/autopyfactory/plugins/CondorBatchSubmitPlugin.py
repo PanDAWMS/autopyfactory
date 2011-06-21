@@ -33,6 +33,11 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.fcl = fcl
                 self.qcl = qcl
 
+                now = time.localtime()
+                self.logPath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2]) + self.queue.translate(string.maketrans('/:','__'))
+                self.logDir = self.fcl.config.get('Pilots', 'baseLogDir') + self.logPath
+                self.logUrl = self.fcl.config.get('Pilots', 'baseLogDirUrl') + self.logPath
+
                 self.__prepareJSDFile()
                 self.__submit() 
 
