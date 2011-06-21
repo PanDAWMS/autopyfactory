@@ -131,10 +131,6 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 Dumps the whole content of the JSDFile object into a disk file
                 '''
 
-                now = time.localtime()
-                logPath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2]) + self.queue.translate(string.maketrans('/:','__'))
-                self.logDir = self.fcl.config.get('Pilots', 'baseLogDir') + logPath
-                self.logUrl = self.fcl.config.get('Pilots', 'baseLogDirUrl') + logPath
                 if not os.access(self.logDir, os.F_OK):
                         try:
                                 os.makedirs(self.logDir)
