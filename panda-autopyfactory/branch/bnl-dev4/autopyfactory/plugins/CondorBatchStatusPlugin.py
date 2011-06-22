@@ -51,10 +51,10 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.pandaqueue = pandaqueue
                 self.fconfig = pandaqueue.fcl.config          
                 self.siteid = pandaqueue.siteid
-                self.condoruser = pandaqueue.fcl.config.get('Factory', 'factoryUser')
-                self.factoryid = pandaqueue.fcl.config.get('Factory', 'factoryId') 
-                self.statuscycle = int(pandaqueue.qcl.config.get(self.siteid, 'batchCheckInterval'))
-                self.submitcycle = int(pandaqueue.qcl.config.get(self.siteid, 'batchSubmitInterval'))
+                self.condoruser = pandaqueue.fcl.get('Factory', 'factoryUser')
+                self.factoryid = pandaqueue.fcl.get('Factory', 'factoryId') 
+                self.statuscycle = int(pandaqueue.qcl.get(self.siteid, 'batchCheckInterval'))
+                self.submitcycle = int(pandaqueue.qcl.get(self.siteid, 'batchSubmitInterval'))
 
                 # results of the condor_q query commands
                 self.error = None
