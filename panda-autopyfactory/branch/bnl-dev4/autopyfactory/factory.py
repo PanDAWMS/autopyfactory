@@ -69,11 +69,11 @@ class Factory:
                 self.log = logging.getLogger('main.factory')
                 self.log.debug('Factory initializing...')
                 self.fcl = fcl
-                self.dryRun = fcl.config.get("Factory", "dryRun")
-                #self.cycles = fcl.config.get("Factory", "cycles")
-                #self.sleep = fcl.config.get("Factory", "sleep")
-                self.log.debug("queueConf file(s) = %s" % fcl.config.get('Factory', 'queueConf'))
-                self.qcl = QueueConfigLoader(fcl.config.get('Factory', 'queueConf').split(','))
+                self.dryRun = fcl.get("Factory", "dryRun")
+                #self.cycles = fcl.get("Factory", "cycles")
+                #self.sleep = fcl.get("Factory", "sleep")
+                self.log.debug("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
+                self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
                 #self.queuesConfigParser = self.qcl.config
                 self.wmsmanager = WMSQueuesManager(self)
  
@@ -245,11 +245,11 @@ class WMSQueue(threading.Thread):
                 self.fcl = self.factory.fcl 
                 self.qcl = self.factory.qcl 
 
-                self.nickname = self.qcl.config.get(siteid, "nickname")
-                self.cloud = self.qcl.config.get(siteid, "cloud")
-                self.dryRun = self.fcl.config.get("Factory", "dryRun")
-                self.cycles = self.fcl.config.get("Factory", "cycles" )
-                self.sleep = int(self.fcl.config.get("Factory", "sleep"))
+                self.nickname = self.qcl.get(siteid, "nickname")
+                self.cloud = self.qcl.get(siteid, "cloud")
+                self.dryRun = self.fcl.get("Factory", "dryRun")
+                self.cycles = self.fcl.get("Factory", "cycles" )
+                self.sleep = int(self.fcl.get("Factory", "sleep"))
                 self.cyclesrun = 0
                 
                 # object Status to handle the whole system status
@@ -300,7 +300,7 @@ class WMSQueue(threading.Thread):
 
                 plugin_config_item = '%splugin' %action
                 plugin_prefix = plugin_prefixes[action] 
-                schedclass = self.qcl.config.get(self.siteid, plugin_config_item)
+                schedclass = self.qcl.get(self.siteid, plugin_config_item)
                 plugin_module_name = '%s%sPlugin' %(schedclass, plugin_prefix)
                 
                 self.log.debug("[%s] Attempting to import derived classname: \
