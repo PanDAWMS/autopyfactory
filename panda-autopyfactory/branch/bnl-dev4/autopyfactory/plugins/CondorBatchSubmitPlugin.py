@@ -35,8 +35,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
                 now = time.localtime()
                 self.logPath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2]) + self.queue.translate(string.maketrans('/:','__'))
-                self.logDir = self.fcl.config.get('Pilots', 'baseLogDir') + self.logPath
-                self.logUrl = self.fcl.config.get('Pilots', 'baseLogDirUrl') + self.logPath
+                self.logDir = self.fcl.get('Pilots', 'baseLogDir') + self.logPath
+                self.logUrl = self.fcl.get('Pilots', 'baseLogDirUrl') + self.logPath
 
                 self.__prepareJSDFile()
                 self.__submit() 
@@ -63,7 +63,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         
 
                 self.JSD.add("# Condor-G glidein pilot for panda")
-                self.JSD.add("executable=%s" % self.fcl.config.get('Pilots', 'executable'))
+                self.JSD.add("executable=%s" % self.fcl.get('Pilots', 'executable'))
                 self.JSD.add("Dir=%s/" % self.logDir)
                 self.JSD.add("output=$(Dir)/$(Cluster).$(Process).out")
                 self.JSD.add("error=$(Dir)/$(Cluster).$(Process).err")
@@ -71,7 +71,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add("stream_output=False")
                 self.JSD.add("stream_error=False")
                 self.JSD.add("notification=Error")
-                self.JSD.add("notify_user=%s" % self.fcl.config.get('Factory', 'factoryOwner'))
+                self.JSD.add("notify_user=%s" % self.fcl.get('Factory', 'factoryOwner'))
                 self.JSD.add("universe=grid")
 
                 ###  # Here we insert the switch for CREAM CEs. This is rather a hack for now, but will
@@ -92,16 +92,16 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 ###  ##print >>JDL
                 ###  #self.JSD.add('+MATCH_gatekeeper_url="%s"' % self.config.queues[self.queue]['queue'])
                 ###  #self.JSD.add('+MATCH_queue="%s"' % self.config.queues[self.queue]['localqueue'])
-                self.JSD.add("x509userproxy=%s" % self.qcl.config.get(self.queue, 'gridProxy'))
+                self.JSD.add("x509userproxy=%s" % self.qcl.get(self.queue, 'gridProxy'))
                 ###  self.JSD.add('periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)')
                 ###  self.JSD.add('periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)')
                 ###  # In job environment correct GTAG to URL for logs, JSID should be factoryId
-                ###  self.JSD.add('environment = "PANDA_JSID=%s' % self.fcl.config.get('Factory', 'factoryId'),)
+                ###  self.JSD.add('environment = "PANDA_JSID=%s' % self.fcl.get('Factory', 'factoryId'),)
                 ###  self.JSD.add('GTAG=%s/$(Cluster).$(Process).out' % self.logUrl,)
                 ###  self.JSD.add('APFCID=$(Cluster).$(Process)',)
-                ###  self.JSD.add('APFFID=%s' % self.fcl.config.get('Factory', 'factoryId'),)
+                ###  self.JSD.add('APFFID=%s' % self.fcl.get('Factory', 'factoryId'),)
                 ###  if isinstance(self.mon, Monitor):
-                ###          self.JSD.add('APFMON=%s' % self.fcl.config.get('Factory', 'monitorURL'),)
+                ###          self.JSD.add('APFMON=%s' % self.fcl.get('Factory', 'monitorURL'),)
                 ###  self.JSD.add('FACTORYQUEUE=%s' % self.queue,)
                 ###  if self.config.queues[self.queue]['user'] != None:
                 ###          self.JSD.add('FACTORYUSER=%s' % self.config.queues[self.queue]['user'],)
@@ -148,7 +148,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 Submit pilots
                 '''
 
-                self.dryRun = self.fcl.config.get('Factory', 'dryRun')
+                self.dryRun = self.fcl.get('Factory', 'dryRun')
                 if not self.dryRun:
                         (exitStatus, output) = commands.getstatusoutput('condor_submit -verbose ' + self.jdlFile)
                         if exitStatus != 0:
@@ -156,7 +156,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                         else:
                                 self.log.debug('condor_submit command for %s succeeded', self.queue)
                                 if isinstance(self.mon, Monitor):
-                                        nick = self.qcl.config.get(self.queue, 'nickname')
+                                        nick = self.qcl.get(self.queue, 'nickname')
                                         label = self.queue
                                         self.mon.notify(nick, label, output)
                 else:
