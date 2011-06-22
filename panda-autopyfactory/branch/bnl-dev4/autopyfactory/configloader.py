@@ -11,7 +11,7 @@ import sys
 from ConfigParser import SafeConfigParser, NoSectionError
 from urllib import urlopen
 
-from autopyfactory.exceptions import FactoryConfigurationFailure
+from autopyfactory.apfexceptions import FactoryConfigurationFailure
 
 try:
         import json as json
