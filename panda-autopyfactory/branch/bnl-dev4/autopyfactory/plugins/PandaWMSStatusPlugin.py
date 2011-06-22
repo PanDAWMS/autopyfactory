@@ -82,7 +82,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 '''
                 self.clouds_err, self.all_clouds_config = Client.getCloudSpecs()
                 self.sites_err, self.all_sites_config = Client.getSiteSpecs(siteType='all')
-                self.jobs_err, self.all_sites_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
+                self.jobs_err, self.all_jobs_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
 
                 self.updated = True
 
