@@ -334,7 +334,7 @@ class WMSQueue(threading.Thread):
                 update batch info and panda info
                 '''
                 self.log.debug("[%s] Would be grabbing Batch info relevant to this queue." % self.siteid)
-                self.status.batch = self.batchstatus.getInfo()
+                self.status.batch = self.batchstatus.getInfo(self.siteid)  # FIXME : is siteid the correct input ??
                 self.log.debug("[%s] Would be getting WMS info relevant to this queue."% self.siteid)
 
                 self.status.cloud = self.wmsstatus.getCloudInfo(self.cloud)
