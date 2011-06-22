@@ -260,9 +260,9 @@ class WMSQueue(threading.Thread):
 
                 # Handle status and submit batch plugins. 
                 self.batchstatus = self.__getplugin('batchstatus', self)
+                self.batchstatus.start()                # starts the thread
                 self.wmsstatus = self.__getplugin('wmsstatus')
-                # starts the thread
-                self.wmsstatus.start()
+                self.wmsstatus.start()                  # starts the thread
                 self.batchsubmit = self.__getplugin('batchsubmit')
 
         def __getplugin(self, action, *k, **kw):
