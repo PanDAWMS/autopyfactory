@@ -78,6 +78,14 @@ class ConfigLoader(object):
                                         self.config.set(section, k, v)
                                         self.log.debug('Set default value for %s in section %s to "%s".' % (k, section, v))
 
+        def get(self, section, item):
+                '''
+                This method just invocates the corresponding
+                ConfigParser object get() method. 
+                Just to simply the rest of the code.
+                '''
+                return self.config.get(section, item)
+
 
         #def _isURI(self, itempath):
         #        '''
