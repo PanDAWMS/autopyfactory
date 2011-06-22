@@ -32,7 +32,7 @@ import threading
 import time
 
 from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
-from autopyfactory.exceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
+from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.monitor import Monitor
 
 import userinterface.Client as Client
