@@ -52,7 +52,7 @@ else:
 
 from autopyfactory.factory import Factory
 from autopyfactory.configloader import FactoryConfigLoader
-from autopyfactory.exceptions import FactoryConfigurationFailure
+from autopyfactory.apfexceptions import FactoryConfigurationFailure
 
 class APF(object):
         """class to parse the input options,
