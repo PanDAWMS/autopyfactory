@@ -31,7 +31,7 @@ pandaCheckInterval = 67
 
 # Variables potentially altered by command-line options. Passed in via Config.
 # Defaults:
-dryrun=False         
+dryRun=False         
 cycles=None   # None means forever
 # Choose prime number to balance load.
 sleep=17
