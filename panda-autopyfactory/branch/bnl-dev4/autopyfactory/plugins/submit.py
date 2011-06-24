@@ -22,6 +22,8 @@
 import re
 import urllib
 
+from autopyfactory.utils import CommandLine
+
 """
 Module with classes to handle the creation of the job description files
 to submit jobs/pilots, i.e. the condorG file. 
