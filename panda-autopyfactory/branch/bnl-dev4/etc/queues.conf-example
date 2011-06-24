@@ -86,7 +86,7 @@ analysisGridProxy = /tmp/pilotProxy
 # plugins
 batchstatusplugin = Condor
 wmsstatusplugin = Panda
-batchsubmitplugin = Condor
+batchsubmitplugin = CondorGT2
 schedplugin = Trivial
 
 
