@@ -153,7 +153,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 # FIXME: temporary solution
                 time.sleep(100)
 
-        def __analyzeoutput(self, output, key):
+        def __analyzeoutput(self, output, key, queue):
                 '''
                 ancilla method to analyze the output of the condor_q command
                         - output is the output of the command
@@ -162,24 +162,40 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
                 output_dic = {}
 
-                # FIXME 1: too many identation levels
-                # FIXME 2: queue is not used at all
-
-                # FIXME: temporary solution
-                if not output:
-                        return output_dic
+                if not output: 
+                        # FIXME: temporary solution
+                        return output_dic        
 
                 lines = output.split('\n')
                 for line in lines:
-                        tokens = line.split()
-                        for token in tokens:
-                                if token.startswith(key):
-                                        code = token.split('=')[1]
-                                        if code not in output_dic.keys():
-                                                output_dic[code] = 0
-                                        else:
-                                                output_dic[code] += 1 
+                        dic = self.__line_to_dict(line)
+                        # check that the line had everything we are interested in
+                        if 'MATCH_APF_QUEUE' not in dic.keys():
+                                continue
+                        if key not in dic.keys():
+                                continue
+                        # if the line had everything, we keep searching
+                        if dic['MATCH_APF_QUEUE'] == queue:
+                                code = dic[key]
+                                if code not in output_dic.keys():
+                                        output_dic[code] = 0
+                                else:
+                                        output_dic[code] += 1 
+
+                print '=== output_dic from Condor query = ', output_dic
                 return output_dic
+
+        def __line_to_dict(self, line):
+                '''
+                method ancilla to convert each line from the output of condor_q
+                into a dictionary
+                '''
+                d = {}
+                tokens = line.split()
+                for token in tokens: 
+                        key, value = token.split('=')
+                        d[key] = value 
+                return d
 
         def join(self, timeout=None):
                 ''' 
