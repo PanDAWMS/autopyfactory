@@ -83,6 +83,9 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 ####  ##print >>JDL
                 ####  #self.JSD.add('+MATCH_gatekeeper_url="%s"' % self.config.queues[self.queue]['queue'])
                 ####  #self.JSD.add('+MATCH_queue="%s"' % self.config.queues[self.queue]['localqueue'])
+
+                self.JSD.add('+MATCH_APF_QUEUE="%s"' % self.queue)
+
                 self.JSD.add("x509userproxy=%s" % self.qcl.get(self.queue, 'gridProxy'))
                 self.JSD.add('periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)')
                 self.JSD.add('periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)')
