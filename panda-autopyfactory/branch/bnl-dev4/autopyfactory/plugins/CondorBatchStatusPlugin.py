@@ -142,7 +142,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
                 querycmd = "condor_q"
                 querycmd += " -constr '(owner==\"%s\") && stringListMember(\"PANDA_JSID=%s\", Environment, \" \")'" %(self.factoryid, self.condoruser)
-                querycmd += " -format 'jobStatus=%d' jobStatus"
+                querycmd += " -format 'jobStatus=%d ' jobStatus"
                 querycmd += " -format 'globusStatus=%d ' GlobusStatus"
                 querycmd += " -format 'gkURL=%s' MATCH_gatekeeper_url"
                 querycmd += " -format '-%s' MATCH_queue"
