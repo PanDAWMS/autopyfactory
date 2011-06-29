@@ -57,7 +57,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 '''
                 if self.updated:
                         if not self.jobs_err:
-                                return self.all_sites_config[site]
+                                return self.all_jobs_config[site]
        
         def start(self):
                 '''
