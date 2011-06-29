@@ -90,7 +90,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add('periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)')
                 self.JSD.add('periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)')
                 ####  # In job environment correct GTAG to URL for logs, JSID should be factoryId
-                self.JSD.add('environment = "PANDA_JSID=%s' % self.fcl.get('Factory', 'factoryId'))
+                self.JSD.add('environment = "PANDA_JSID=%s"' % self.fcl.get('Factory', 'factoryId'))
                 self.JSD.add('GTAG=%s/$(Cluster).$(Process).out' % self.logUrl)
                 self.JSD.add('APFCID=$(Cluster).$(Process)')
                 self.JSD.add('APFFID=%s' % self.fcl.get('Factory', 'factoryId'))
