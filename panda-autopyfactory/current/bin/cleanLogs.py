@@ -105,8 +105,11 @@ for entry in entries:
         then = datetime.date(int(logDirMatch.group(1)), int(logDirMatch.group(2)), int(logDirMatch.group(3)))
         deltaT = now - then
         mainMessages.info('Entry %s is %d days old' % (entry, deltaT.days))
-        if logDirMatch.group(4) != None and deltaT.days > delete:
-            mainMessages.info("Deleting compressed %s..." % entry)
+        if deltaT.days > delete:
+            if logDirMatch.group(4) != None:
+                mainMessages.info("Deleting compressed %s..." % entry)
+            else:
+                mainMessages.info("Too old for compression, deleting %s..." % entry)
             if dryRun:
                 mainMessages.info("Dry run - deletion supressed")
             else:
