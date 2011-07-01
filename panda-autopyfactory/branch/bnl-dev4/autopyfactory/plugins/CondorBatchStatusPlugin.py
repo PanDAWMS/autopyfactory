@@ -178,7 +178,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                         if dic['MATCH_APF_QUEUE'] == queue:
                                 code = dic[key]
                                 if code not in output_dic.keys():
-                                        output_dic[code] = 0
+                                        output_dic[code] = 1
                                 else:
                                         output_dic[code] += 1 
 
