@@ -38,8 +38,9 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.logDir = self.fcl.get('Pilots', 'baseLogDir') + self.logPath
                 self.logUrl = self.fcl.get('Pilots', 'baseLogDirUrl') + self.logPath
 
-                self.__prepareJSDFile()
-                self.__submit() 
+                if self.nbpilots != 0:
+                        self.__prepareJSDFile()
+                        self.__submit() 
 
         def __prepareJSDFile(self):
 
