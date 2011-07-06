@@ -105,7 +105,10 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                                 self.JSD.add(environ)
 
                 # adding the arguments to the wrapper
-                arguments = 'arguments = --pandasite=%s --pandaqueue=%s ' %(self.queue, self.qcl.get(self.queue, 'nickname'))
+                arguments = 'arguments = '
+                arguments += ' --pandasite=%s ' %self.queue
+                arguments += ' --pandaqueue=%s ' %self.qcl.get(self.queue, 'nickname')
+                arguments += ' --pandagrid=%s ' %self.qcl.get(self.queue, 'grid')
                 arguments += ' -j false'
                 if self.qcl.has_option(self.queue, 'memory'):
                         arguments += ' -k %s' %self.qcl.get(self.queue, 'memory')
