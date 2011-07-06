@@ -44,6 +44,8 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 if self.updated:
                         if not self.clouds_err:
                                 return self.all_clouds_config[cloud]
+                # if no info available yet...
+                return {}
                 
         def getSiteInfo(self, site):
                 '''
@@ -51,6 +53,8 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 if self.updated:
                         if not self.sites_err:
                                 return self.all_sites_config[site]
+                # if no info available yet...
+                return {}
 
         def getJobsInfo(self, site):
                 '''
@@ -58,6 +62,8 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 if self.updated:
                         if not self.jobs_err:
                                 return self.all_jobs_config[site]
+                # if no info available yet...
+                return {}
        
         def start(self):
                 '''
