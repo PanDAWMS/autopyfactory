@@ -109,7 +109,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 arguments = 'arguments = '
                 arguments += ' --pandasite=%s ' %self.queue
                 arguments += ' --pandaqueue=%s ' %self.qcl.get(self.queue, 'nickname')
-                arguments += ' --pandagrid=%s ' %self.qcl.get(self.queue, 'grid')
+                arguments += ' --pandagrid=%s ' %self.qcl.get(self.queue, 'pandagrid')
                 arguments += ' -j false'
                 if self.qcl.has_option(self.queue, 'memory'):
                         arguments += ' -k %s' %self.qcl.get(self.queue, 'memory')
