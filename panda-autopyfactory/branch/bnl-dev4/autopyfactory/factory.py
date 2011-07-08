@@ -67,17 +67,17 @@ class Factory:
                 fcl is a FactoryConfigLoader object. 
                 '''
                 self.log = logging.getLogger('main.factory')
-                self.log.debug('Factory initializing...')
+                self.log.info('Factory initializing...')
                 self.fcl = fcl
                 self.dryRun = fcl.get("Factory", "dryRun")
                 #self.cycles = fcl.get("Factory", "cycles")
                 #self.sleep = fcl.get("Factory", "sleep")
-                self.log.debug("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
+                self.log.info("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
                 self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
                 #self.queuesConfigParser = self.qcl.config
                 self.wmsmanager = WMSQueuesManager(self)
  
-                self.log.debug("Factory initialized.")
+                self.log.info("Factory initialized.")
 
         def mainLoop(self):
                 '''
