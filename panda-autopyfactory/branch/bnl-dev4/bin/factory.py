@@ -79,10 +79,12 @@ class APF(object):
  ''', version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $")
 
 
-                parser.add_option("--verbose", "--debug", dest="logLevel", default=logging.INFO,
-                                  action="store_const", const=logging.DEBUG, help="Set logging level to DEBUG [default INFO]")
-                parser.add_option("--quiet", dest="logLevel",
-                                  action="store_const", const=logging.WARNING, help="Set logging level to WARNING [default INFO]")
+                parser.add_option("-d", "--debug", dest="logLevel", default=logging.WARNING,
+                                  action="store_const", const=logging.DEBUG, help="Set logging level to DEBUG [default WARNING]")
+                parser.add_option("-v", "--info", dest="logLevel", default=logging.WARNING,
+                                  action="store_const", const=logging.INFO, help="Set logging level to INFO [default WARNING]")
+                parser.add_option("--quiet", dest="logLevel",, default=logging.WARNING,
+                                  action="store_const", const=logging.WARNING, help="Set logging level to WARNING [default]")
                 parser.add_option("--test", "--dry-run", dest="dryRun", default=False,
                                   action="store_true", help="Dry run - supress job submission")
                 parser.add_option("--oneshot", "--one-shot", dest="cyclesToDo", default=0,
@@ -134,6 +136,17 @@ class APF(object):
                 -- All messages are always printed out in the logs files,
                    but also to the stderr when DEBUG or INFO levels are selected.
 
+                -- We keep the original python levels meaning, 
+                   including WARNING as being the default level. 
+
+                        DEBUG      Detailed information, typically of interest only when diagnosing problems.
+                        INFO       Confirmation that things are working as expected.
+                        WARNING    An indication that something unexpected happened, 
+                                   or indicative of some problem in the near future (e.g. ‘disk space low’). 
+                                   The software is still working as expected.
+                        ERROR      Due to a more serious problem, the software has not been able to perform some function.
+                        CRITICAL   A serious error, indicating that the program itself may be unable to continue running.
+
                 Info:
 
                   http://docs.python.org/howto/logging.html#logging-advanced-tutorial 
@@ -150,6 +163,15 @@ class APF(object):
                 formatter = logging.Formatter('%(asctime)s - %(name)s: %(levelname)s %(message)s')
                 logStream.setFormatter(formatter)
                 self.log.addHandler(logStream)
+
+                # adding a new Handler for the console, 
+                # to be used only for DEBUG and INFO modes.
+                if self.options.logLevel in [logging.DEBUG, logging.INFO]:
+                        console = logging.StreamHandler()
+                        console.setFormatter(formatter)
+                        console.setLevel(self.options.logLevel)
+                        self.log.addHandler(console)
+
                 self.log.setLevel(self.options.logLevel)
                 self.log.debug('logging initialised')
 
