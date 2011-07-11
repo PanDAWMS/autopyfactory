@@ -87,7 +87,7 @@ class Factory:
                         2. Wait for a termination signal, and
                            stops all queues when that happens.
                 '''
-                self.log.debug("Starting Factory.mainLoop")
+                self.log.debug("Factory.mainLoop: Starting.")
                 self.log.info("Starting all Queue threads...")
                 self.update()
                 
@@ -103,7 +103,7 @@ class Factory:
                         self.wmsmanager.join()
                         self.log.info("All Queue threads joined. Exitting.")
 
-                self.log.debug("Leaving Factory.mainLoop")
+                self.log.debug("Factory.mainLoop: Leaving.")
 
         def update(self):
                 '''
@@ -115,10 +115,10 @@ class Factory:
                 That means this method will be invoked by the regular factory
                 main loop code or from any method capturing specific signals.
                 '''
-                self.log.debug("Starting Factory.update")
+                self.log.debug("Factory.update: Starting")
                 newqueues = self.qcl.config.sections()
                 self.wmsmanager.update(newqueues) 
-                self.log.debug("Leaving Factory.update")
+                self.log.debug("Factory.update: Leaving")
 
 
 # ==============================================================================                                
@@ -153,24 +153,24 @@ class WMSQueuesManager(object):
                         1. creates and starts new queues if needed
                         2. stops and deletes old queues if needed
                 '''
-                self.log.debug("Starting WMSQueuesManager.update with input ", newqueues)
+                self.log.debug("WMSQueuesManager.update: Starting with input ", newqueues)
                 currentqueues = self.queues.keys()
                 queues_to_remove, queues_to_add = \
                         self.__diff_lists(currentqueues, newqueues)
                 self.__addqueues(queues_to_add) 
                 self.__delqueues(queues_to_remove)
                 self.__refresh()
-                self.log.debug("Leaving WMSQueuesManager.update")
+                self.log.debug("WMSQueuesManager.update: Leaving")
 
         def join(self):
                 '''
                 Joins all WMSQueue objects
                 QUESTION: should the queues also be removed from self.queues ?
                 '''
-                self.log.debug("Starting WMSQueuesManager.join")
+                self.log.debug("WMSQueuesManager.join: Starting")
                 for q in self.queues.values():
                         q.join()
-                self.log.debug("Leaving WMSQueuesManager.join")
+                self.log.debug("WMSQueuesManager.join: Leaving")
         
         # --------------------
         #  private methods
@@ -180,50 +180,50 @@ class WMSQueuesManager(object):
                 '''
                 Creates new WMSQueue objects
                 '''
-                self.log.debug("Starting WMSQueuesManager.__addqueues with input ", queues)
+                self.log.debug("WMSQueuesManager.__addqueues: Starting with input ", queues)
                 for qname in queues:
                         self.__add(qname)
-                self.log.debug("Leaving WMSQueuesManager.__addqueues")
+                self.log.debug("WMSQueuesManager.__addqueues: Leaving")
 
         def __add(self, qname):
                 '''
                 Creates a single new WMSQueue object and starts it
                 '''
-                self.log.debug("Starting WMSQueuesManager.__add with input ", qname)
+                self.log.debug("WMSQueuesManager.__add: Starting with input ", qname)
                 qobject = WMSQueue(qname, self.factory)
                 self.queues[qname] = qobject
                 qobject.start()
-                self.log.debug("Leaving WMSQueuesManager.__add")
+                self.log.debug("WMSQueuesManager.__add: Leaving")
                 
         def __delqueues(self, queues):
                 '''
                 Deletes WMSQueue objects
                 '''
-                self.log.debug("Starting WMSQueuesManager.__delqueues with input ", queues)
+                self.log.debug("WMSQueuesManager.__delqueues: Starting with input ", queues)
                 for qname in queues:
                         q = self.queues[qname]
                         q.join()
                         self.queues.pop(qname)
-                self.log.debug("Leaving WMSQueuesManager.__delqueues")
+                self.log.debug("WMSQueuesManager.__delqueues: Leaving")
 
         def __del(self, qname):
                 '''
                 Deletes a single queue object from the list and stops it.
                 '''
-                self.log.debug("Starting WMSQueuesManager.__del with input ", qname)
+                self.log.debug("WMSQueuesManager.__del: Starting with input ", qname)
                 qobject = self.__get(qname)
                 qname.join()
                 self.queues.pop(qname)
-                self.log.debug("Leaving WMSQueuesManager.__del")
+                self.log.debug("WMSQueuesManager.__del: Leaving")
         
         def __refresh(self):
                 '''
                 Calls method refresh() for all WMSQueue objects
                 '''
-                self.log.debug("Starting WMSQueuesManager.__refresh")
+                self.log.debug("WMSQueuesManager.__refresh: Starting")
                 for q in self.queues.values():
                         q.refresh()
-                self.log.debug("Leaving WMSQueuesManager.__refresh")
+                self.log.debug("WMSQueuesManager.__refresh: Leaving")
 
         # --------------------
         #  ancillas 
@@ -310,7 +310,7 @@ class WMSQueue(threading.Thread):
                            For example: SchedPlugin(), BatchStatusPlugin()
                 '''
 
-                self.log.debug("Starting WMSQueue.__getplugin with inputs ", k, kw)
+                self.log.debug("WMSQueue[%s].__getplugin: Starting with inputs " %self.siteid, k, kw)
 
                 plugin_prefixes = {
                         'sched' : 'Sched',
@@ -332,7 +332,7 @@ class WMSQueue(threading.Thread):
                                 fromlist=["%s" % plugin_module_name])
 
                 plugin_class = '%sPlugin' %plugin_prefix
-                self.log.debug("Leaving WMSQueue.__getplugin with plugin named ", plugin_class)
+                self.log.debug("WMSQueue[%s].__getplugin: Leaving with plugin named " %self.siteid, plugin_class)
                 return getattr(plugin_module, plugin_class)(*k, **kw)
 
         # ----------------------------------------------
@@ -344,20 +344,20 @@ class WMSQueue(threading.Thread):
                 Method called by thread.start()
                 Main functional loop of this WMSQueue. 
                 '''        
-                self.log.debug("Starting WMSQueue.run")
+                self.log.debug("WMSQueue[%s].run: Starting" %self.siteid)
                 while not self.stopevent.isSet():
                         self.__updatestatus()
                         nsub = self.__calculatenumberofpilots()
                         self.__submitpilots(nsub)
                         self.__exitloop()
                         self.__sleep()
-                self.log.debug("Leaving WMSQueue.run")
+                self.log.debug("WMSQueue[%s].run: Leaving" %self.siteid)
 
         def __updatestatus(self):
                 '''
                 update batch info and panda info
                 '''
-                self.log.debug("Starting WMSQueue.__updatestatus")
+                self.log.debug("WMSQueue[%s].__updatestatus: Starting" %self.siteid)
                 self.log.debug("[%s] Would be grabbing Batch info relevant to this queue." % self.siteid)
                 self.status.batch = self.batchstatus.getInfo(self.siteid)  # FIXME : is siteid the correct input ??
                 self.log.debug("[%s] Would be getting WMS info relevant to this queue."% self.siteid)
@@ -365,47 +365,47 @@ class WMSQueue(threading.Thread):
                 self.status.cloud = self.wmsstatus.getCloudInfo(self.cloud)
                 self.status.site = self.wmsstatus.getSiteInfo(self.siteid) 
                 self.status.jobs = self.wmsstatus.getJobsInfo(self.siteid)
-                self.log.debug("Leaving WMSQueue.__updatestatus")
+                self.log.debug("WMSQueue[%s].__updatestatus: Leaving" %self.siteid)
 
         def __calculatenumberofpilots(self):
                 '''
                 calculate number to submit
                 '''
-                self.log.debug("Starting WMSQueue.__calculatenumberofpilots")
+                self.log.debug("WMSQueue[%s].__calculatenumberofpilots: Starting" %self.siteid)
                 self.log.debug("[%s] Would be calculating number to submit."% self.siteid)
                 nsub = self.scheduler.calcSubmitNum(self.status)
-                self.log.debug("Leaving WMSQueue.__calculatenumberofpilots with output ", nsub)
+                self.log.debug("WMSQueue[%s].__calculatenumberofpilots: Leaving with output " %self.siteid, nsub)
                 return nsub
 
         def __submitpilots(self, nsub):
                 '''
                 submit using this number
                 '''
-                self.log.debug("Starting WMSQueue.__submitpilots")
+                self.log.debug("WMSQueue[%s].__submitpilots: Starting" %self.siteid)
                 self.log.debug("[%s] Would be submitting jobs for this queue."% self.siteid)
                 self.batchsubmit.submitPilots(self.siteid, nsub, self.fcl, self.qcl)
-                self.log.debug("Leaving WMSQueue.__submitpilots")
+                self.log.debug("WMSQueue[%s].__submitpilots: Leaving" %self.siteid)
 
         def __exitloop(self):
                 '''
                 Exit loop if desired number of cycles is reached...  
                 '''
-                self.log.debug("Starting WMSQueue.__exitloop")
-                self.log.debug("[%s] Checking to see how many cycles to run."% self.siteid)
+                self.log.debug("WMSQueue[%s].__exitloop: Starting" %self.siteid)
+                self.log.debug("WMSQueue[%s].__exitloop. Checking to see how many cycles to run."% self.siteid)
                 if self.cycles and self.cyclesrun >= self.cycles:
                         self.stopevent.set()                        
-                self.log.debug("[%s] Incrementing cycles..."% self.siteid)
+                self.log.debug("WMSQueue[%s].__exitloop. Incrementing cycles..."% self.siteid)
                 self.cyclesrun += 1
-                self.log.debug("Leaving WMSQueue.__exitloop")
+                self.log.debug("WMSQueue[%s].__exitloop: Leaving" %self.siteid)
 
         def __sleep(self):
                 '''
                 sleep interval
                 '''
-                self.log.debug("Starting WMSQueue.__sleep")
-                self.log.debug("[%s] Sleeping for %d seconds..." % (self.siteid, self.sleep))
+                self.log.debug("WMSQueue[%s].__sleep: Starting" %self.siteid)
+                self.log.debug("WMSQueue[%s].__sleep. Sleeping for %d seconds..." % (self.siteid, self.sleep))
                 time.sleep(self.sleep)
-                self.log.debug("Leaving WMSQueue.__sleep")
+                self.log.debug("WMSQueue[%s].__sleep: Leaving" %self.siteid)
 
         # ----------------------------------------------
         #       run methods end here
@@ -422,11 +422,11 @@ class WMSQueue(threading.Thread):
                 '''
                 Stop the thread. Overriding this method required to handle Ctrl-C from console.
                 '''
-                self.log.debug("Starting WMSQueue.join")
+                self.log.debug("WMSQueue[%s].join: Starting" %self.siteid)
                 self.stopevent.set()
-                self.log.debug('[%s] Stopping thread...' % self.siteid )
+                self.log.info('[%s] Stopping thread...' % self.siteid )
                 threading.Thread.join(self, timeout)
-                self.log.debug("Leaving WMSQueue.join")
+                self.log.debug("WMSQueue[%s].join: Leaving" %self.siteid)
                  
 
 # ==============================================================================                                
