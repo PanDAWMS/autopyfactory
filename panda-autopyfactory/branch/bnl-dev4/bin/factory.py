@@ -131,6 +131,9 @@ class APF(object):
                    and at different levels of verbosity (DEBUG, INFO, WARN), and with different formatters. 
                    Control of this distribution should use the standard Python "logging.conf" format file:
 
+                -- All messages are always printed out in the logs files,
+                   but also to the stderr when DEBUG or INFO levels are selected.
+
                 Info:
 
                   http://docs.python.org/howto/logging.html#logging-advanced-tutorial 
