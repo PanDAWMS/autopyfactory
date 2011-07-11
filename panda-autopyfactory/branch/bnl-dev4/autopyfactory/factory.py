@@ -153,7 +153,7 @@ class WMSQueuesManager(object):
                         1. creates and starts new queues if needed
                         2. stops and deletes old queues if needed
                 '''
-                self.log.debug("WMSQueuesManager.update: Starting with input ", newqueues)
+                self.log.debug("WMSQueuesManager.update: Starting with input %s" %newqueues)
                 currentqueues = self.queues.keys()
                 queues_to_remove, queues_to_add = \
                         self.__diff_lists(currentqueues, newqueues)
@@ -180,7 +180,7 @@ class WMSQueuesManager(object):
                 '''
                 Creates new WMSQueue objects
                 '''
-                self.log.debug("WMSQueuesManager.__addqueues: Starting with input ", queues)
+                self.log.debug("WMSQueuesManager.__addqueues: Starting with input %s" %queues)
                 for qname in queues:
                         self.__add(qname)
                 self.log.debug("WMSQueuesManager.__addqueues: Leaving")
@@ -189,7 +189,7 @@ class WMSQueuesManager(object):
                 '''
                 Creates a single new WMSQueue object and starts it
                 '''
-                self.log.debug("WMSQueuesManager.__add: Starting with input ", qname)
+                self.log.debug("WMSQueuesManager.__add: Starting with input %s" %qname)
                 qobject = WMSQueue(qname, self.factory)
                 self.queues[qname] = qobject
                 qobject.start()
@@ -199,7 +199,7 @@ class WMSQueuesManager(object):
                 '''
                 Deletes WMSQueue objects
                 '''
-                self.log.debug("WMSQueuesManager.__delqueues: Starting with input ", queues)
+                self.log.debug("WMSQueuesManager.__delqueues: Starting with input %s" %queues)
                 for qname in queues:
                         q = self.queues[qname]
                         q.join()
@@ -210,7 +210,7 @@ class WMSQueuesManager(object):
                 '''
                 Deletes a single queue object from the list and stops it.
                 '''
-                self.log.debug("WMSQueuesManager.__del: Starting with input ", qname)
+                self.log.debug("WMSQueuesManager.__del: Starting with input %s" %qname)
                 qobject = self.__get(qname)
                 qname.join()
                 self.queues.pop(qname)
@@ -310,7 +310,7 @@ class WMSQueue(threading.Thread):
                            For example: SchedPlugin(), BatchStatusPlugin()
                 '''
 
-                self.log.debug("WMSQueue[%s].__getplugin: Starting with inputs " %self.siteid, k, kw)
+                self.log.debug("WMSQueue[%s].__getplugin: Starting with inputs %s and %s" %(self.siteid, k, kw))
 
                 plugin_prefixes = {
                         'sched' : 'Sched',
@@ -332,7 +332,7 @@ class WMSQueue(threading.Thread):
                                 fromlist=["%s" % plugin_module_name])
 
                 plugin_class = '%sPlugin' %plugin_prefix
-                self.log.debug("WMSQueue[%s].__getplugin: Leaving with plugin named " %self.siteid, plugin_class)
+                self.log.debug("WMSQueue[%s].__getplugin: Leaving with plugin named %s" %(self.siteid, plugin_class))
                 return getattr(plugin_module, plugin_class)(*k, **kw)
 
         # ----------------------------------------------
@@ -358,9 +358,9 @@ class WMSQueue(threading.Thread):
                 update batch info and panda info
                 '''
                 self.log.debug("WMSQueue[%s].__updatestatus: Starting" %self.siteid)
-                self.log.debug("[%s] Would be grabbing Batch info relevant to this queue." % self.siteid)
+                self.log.debug("[%s] Would be grabbing Batch info relevant to this queue." %self.siteid)
                 self.status.batch = self.batchstatus.getInfo(self.siteid)  # FIXME : is siteid the correct input ??
-                self.log.debug("[%s] Would be getting WMS info relevant to this queue."% self.siteid)
+                self.log.debug("[%s] Would be getting WMS info relevant to this queue." %self.siteid)
 
                 self.status.cloud = self.wmsstatus.getCloudInfo(self.cloud)
                 self.status.site = self.wmsstatus.getSiteInfo(self.siteid) 
@@ -374,7 +374,7 @@ class WMSQueue(threading.Thread):
                 self.log.debug("WMSQueue[%s].__calculatenumberofpilots: Starting" %self.siteid)
                 self.log.debug("[%s] Would be calculating number to submit."% self.siteid)
                 nsub = self.scheduler.calcSubmitNum(self.status)
-                self.log.debug("WMSQueue[%s].__calculatenumberofpilots: Leaving with output " %self.siteid, nsub)
+                self.log.debug("WMSQueue[%s].__calculatenumberofpilots: Leaving with output %s" %(self.siteid, nsub))
                 return nsub
 
         def __submitpilots(self, nsub):
