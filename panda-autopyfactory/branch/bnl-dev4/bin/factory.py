@@ -102,7 +102,39 @@ class APF(object):
                 self.options.confFiles = self.options.confFiles.split(',')
    
         def setuplogging(self):
-                """ Setup logging
+                """ 
+                Setup logging
+
+                General principles we have tried to used for logging:
+
+                -- Logging syntax and semantics should be uniform throughout the program, 
+                   based on whatever organization scheme is appropriate. 
+
+                -- Have at least a single log message at DEBUG at beginning and end of each function call. 
+                   The entry message should mention input parameters, 
+                   and the exit message should not any important result. 
+                   DEBUG output should be detailed enough that almost any logic error should become apparent. 
+                   It is OK if DEBUG messages are produced too fast to read interactively.
+
+                -- A moderate number of INFO messages should be logged to mark major 
+                   functional steps in the operation of the program, 
+                   e.g. when a persistent object is instantiated and initialized, 
+                   when a functional cycle/loop is complete. 
+                   It would be good if these messages note summary statistics, 
+                   e.g. "the last submit cycle submitted 90 jobs and 10 jobs finished". 
+                   A program being run with INFO log level should provide enough output 
+                   that the user can watch the program function and quickly observe interesting events.
+
+                -- Initially, all logging should be directed to a single file. 
+                   But provision should be made for eventually directing logging output from different subsystems 
+                   (submit, info, proxy management) to different files, 
+                   and at different levels of verbosity (DEBUG, INFO, WARN), and with different formatters. 
+                   Control of this distribution should use the standard Python "logging.conf" format file:
+
+                Info:
+
+                  http://docs.python.org/howto/logging.html#logging-advanced-tutorial 
+
                 """
                 self.log = logging.getLogger('main')
                 if self.options.logfile == "stdout":
