@@ -67,7 +67,7 @@ class Factory:
                 fcl is a FactoryConfigLoader object. 
                 '''
                 self.log = logging.getLogger('main.factory')
-                self.log.info('Initializing...')
+                self.log.info('Initializing object...')
                 self.fcl = fcl
                 self.dryRun = fcl.get("Factory", "dryRun")
                 #self.cycles = fcl.get("Factory", "cycles")
@@ -77,7 +77,7 @@ class Factory:
                 #self.queuesConfigParser = self.qcl.config
                 self.wmsmanager = WMSQueuesManager(self)
  
-                self.log.info("Initialized.")
+                self.log.info("Object initialized.")
 
         def mainLoop(self):
                 '''
@@ -140,10 +140,10 @@ class WMSQueuesManager(object):
                 """
                 """
                 self.log = logging.getLogger('main.wmsquuesmanager')
-                self.log.info('Initializing...')
+                self.log.info('Initializing object...')
                 self.queues = {}
                 self.factory = factory
-                self.log.info('Initialized.')
+                self.log.info('Object initialized.')
 
         # --------------------
         #  public interface
@@ -259,7 +259,7 @@ class WMSQueue(threading.Thread):
 
                 threading.Thread.__init__(self) # init the thread
                 self.log = logging.getLogger('main.wmsqueue[%s]' %siteid)
-                self.log.info('Initializing...')
+                self.log.info('Initializing object...')
 
 
                 self.stopevent = threading.Event()
@@ -288,7 +288,7 @@ class WMSQueue(threading.Thread):
                 self.wmsstatus = self.__getplugin('wmsstatus')
                 self.wmsstatus.start()                  # starts the thread
                 self.batchsubmit = self.__getplugin('batchsubmit')
-                self.log.info('Initialized.')
+                self.log.info('Object initialized.')
 
         def __getplugin(self, action, *k, **kw):
                 '''
