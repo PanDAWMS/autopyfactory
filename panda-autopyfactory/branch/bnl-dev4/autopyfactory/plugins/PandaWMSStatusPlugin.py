@@ -27,7 +27,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
         def __init__(self):
                 self.log = logging.getLogger("main.pandawmsstatusplugin")
-                self.log.debug("PandaWMSStatusPlugin initializing...")
+                self.log.debug("Initializing object...")
 
                 # variable to check if the source of information 
                 # have been queried at least once
@@ -38,6 +38,8 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 # to avoid the thread to be started more than once
                 self.__started = False 
 
+                self.log.debug('Object initialized.')
+
         def getCloudInfo(self, cloud):
                 '''
                 from the info (as a dict) retrieved from the PanDA server
@@ -45,11 +47,17 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 selects the entry corresponding to cloud
                 '''
 
+                self.log.debug('getCloudInfo: Starting with input %s' %cloud)
+
                 while not self.updated:
                         time.sleep(1)
                 if not self.clouds_err:
-                        return self.all_clouds_config.get(cloud, {})
-                return {}
+                        out = self.all_clouds_config.get(cloud, {})
+                else:
+                        out = {}
+
+                self.log.debug('getCloudInfo: Leaving returning %s' %out)
+                return out 
                 
         def getSiteInfo(self, site):
                 '''
@@ -58,11 +66,17 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 selects the entry corresponding to site 
                 '''
 
+                self.log.debug('getSiteInfo: Starting with input %s' %site)
+
                 while not self.updated:
                         time.sleep(1)
                 if not self.sites_err:
-                        return self.all_sites_config.get(site, {})
-                return {}
+                        out = self.all_sites_config.get(site, {})
+                else:
+                        out = {}
+
+                self.log.debug('getSiteInfo: Leaving returning %s' %out)
+                return out 
 
         def getJobsInfo(self, site):
                 '''
@@ -71,49 +85,79 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 selects the entry corresponding to site 
                 '''
 
+                self.log.debug('getJobsInfo: Starting with input %s' %site)
+
                 while not self.updated:
                         time.sleep(1)
                 if not self.jobs_err:
-                        return self.all_jobs_config.get(site, {})
-                return {}
+                        out = self.all_jobs_config.get(site, {})
+                else:
+                        out = {}
        
+                self.log.debug('getJobsInfo: Leaving returning %s' %out)
+                return out
+
         def start(self):
                 '''
                 we override method start to prevent the thread
                 to be started more than once
                 '''
+
+                self.log.debug('start: Staring.')
+
                 if not self.__started:
                         self.__started = True
                         threading.Thread.start(self)
+
+                self.log.debug('start: Leaving.')
 
         def run(self):                
                 '''
                 Main loop
                 '''
+
+                self.log.debug('run: Starting.')
+
                 while not self.stopevent.isSet():
                         self.__update()
                         self.__sleep()
 
+                self.log.debug('run: Leaving.')
+
         def __update(self):
                 '''
-                add something here !!
+                Queries the PanDA server for updated information about
+                        - Clouds configuration
+                        - Sites configuration
+                        - Jobs status per site
                 '''
+                
+                self.log.debug('__update: Starting.')
+
                 self.clouds_err, self.all_clouds_config = Client.getCloudSpecs()
                 self.sites_err, self.all_sites_config = Client.getSiteSpecs(siteType='all')
                 self.jobs_err, self.all_jobs_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
 
                 self.updated = True
 
+                self.log.debug('__update: Leaving.')
+
         def __sleep(self):
                 # FIXME: temporary solution
+                self.log.debug('__sleep: Starting.')
                 time.sleep(100)
+                self.log.debug('__sleep: Leaving.')
 
         def join(self,timeout=None):
-               '''
-               stops the thread.
-               '''
-               #self.log.debug('[%s] Stopping thread...' % self.siteid )
-               self.stopevent.set()
-               threading.Thread.join(self, timeout)
+                '''
+                stops the thread.
+                '''
+
+                self.log.debug('join: Starting with input %s' %timeout)
+
+                self.stopevent.set()
+                threading.Thread.join(self, timeout)
+
+                self.log.debug('join: Leaving.')
 
 
