@@ -160,7 +160,7 @@ class APF(object):
                 else:
                     logStream = logging.handlers.RotatingFileHandler(filename=self.options.logfile, maxBytes=10000000, backupCount=5)    
 
-                formatter = logging.Formatter('%(asctime)s - %(name)s: %(levelname)s %(message)s')
+                formatter = logging.Formatter('%(asctime)s - %(name)s: %(levelname)s: %(message)s')
                 logStream.setFormatter(formatter)
                 self.log.addHandler(logStream)
 
