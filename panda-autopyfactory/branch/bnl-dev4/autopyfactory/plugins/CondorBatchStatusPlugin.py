@@ -59,6 +59,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.submitcycle = int(pandaqueue.qcl.get(self.siteid, 'batchSubmitInterval'))
 
                 # results of the condor_q query commands
+                self.updated = False
                 self.error = None
                 self.output = None
                 self.status = None  # result of analyzing self.output
@@ -75,31 +76,46 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 Returns a diccionary with the result of the analysis 
                 over the output of a condor_q command
                 '''
+                
+                self.log.debug('getInfo: Starting with input %s' %queue)
 
-                while not self.output:
+                while not self.updated:
                         time.sleep(1)
                 if not self.error:
-                        self.status = self.__analyzeoutput(self.output, 'jobStatus')
+                        self.status = self.__analyzeoutput(self.output, 'jobStatus', queue)
                         return self.status
                 return {}
+
+                self.log.debug('getInfo: Leaving.')
+
 
         def start(self):
                 '''
                 We override method start() to prevent the thread
                 to be started more than once
                 '''
+
+                self.log.debug('start: Starting')
+
                 if not self.__started:
                         self.log.debug("Creating Condor batch status thread...")
                         self.__started = True
                         threading.Thread.start(self)
 
+                self.log.debug('start: Leaving.')
+
         def run(self):
                 '''
                 Main loop
                 '''
+
+                self.log.debug('run: Starting')
+
                 while not self.stopevent.isSet():
                         self.__update()
                         self.__sleep()
+
+                self.log.debug('run: Leaving')
 
         def __update(self):
                 '''        
@@ -145,20 +161,26 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                         128     STAGE_OUT 
                 '''
 
-                self.log.debug("_getStatus called. Querying batch system...")
+                self.log.debug('__update: Starting.')
 
                 querycmd = "condor_q"
-                querycmd += " -constr '(owner==\"%s\") && stringListMember(\"PANDA_JSID=%s\", Environment, \" \")'" %(self.factoryid, self.condoruser)
+                #querycmd += " -constr '(owner==\"%s\") && stringListMember(\"PANDA_JSID=%s\", Environment, \" \")'" %(self.factoryid, self.condoruser)
                 querycmd += " -format ' jobStatus=%d' jobStatus"
                 querycmd += " -format ' globusStatus=%d' GlobusStatus"
-                querycmd += " -format ' APF_QUEUE=%s' MATCH_APF_QUEUE"
+                querycmd += " -format ' MATCH_APF_QUEUE=%s' MATCH_APF_QUEUE"
                 querycmd += " -format ' %s\n' Environment"
 
                 self.err, self.output = commands.getstatusoutput(querycmd)
+                self.updated = True
+
+                self.log.debug('__update: Leaving.')
 
         def __sleep(self):
                 # FIXME: temporary solution
+
+                self.log.debug('__sleep: Starting.')
                 time.sleep(100)
+                self.log.debug('__sleep: Leaving.')
 
         def __analyzeoutput(self, output, key, queue):
                 '''
@@ -166,6 +188,8 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                         - output is the output of the command
                         - key is the pattern that counts
                 '''
+
+                self.log.debug('__analyzeoutput: Starting with inputs: output=%s key=%s queue=%s' %(output, key, queue))
 
                 output_dic = {}
 
@@ -189,8 +213,25 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                                 else:
                                         output_dic[code] += 1 
 
-                print '=== output_dic from Condor query = ', output_dic
+                self.log.debug('__analyzeoutput: Leaving and returning %s' %output_dic)
                 return output_dic
+
+        def join(self, timeout=None):
+                ''' 
+                Stop the thread. Overriding this method required to handle Ctrl-C from console.
+                ''' 
+
+                self.log.debug('join: Starting with input %s' %timeout)
+
+                self.stopevent.set()
+                self.log.debug('Stopping thread....')
+                threading.Thread.join(self, timeout)
+
+                self.log.debug('join: Leaving')
+
+                # ------------------------------------------------------------
+                #  ancillas 
+                # ------------------------------------------------------------
 
         def __line_to_dict(self, line):
                 '''
@@ -203,11 +244,3 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                         key, value = token.split('=')
                         d[key] = value 
                 return d
-
-        def join(self, timeout=None):
-                ''' 
-                Stop the thread. Overriding this method required to handle Ctrl-C from console.
-                ''' 
-                self.stopevent.set()
-                self.log.debug('Stopping thread....')
-                threading.Thread.join(self, timeout)
