@@ -47,7 +47,9 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         
         def __init__(self, pandaqueue):
 
-                self.log = logging.getLogger("main.condorstatus")
+                self.log = logging.getLogger("main.batchstatusplugin")
+                self.log.info('Initializing object...')
+
                 self.pandaqueue = pandaqueue
                 self.fconfig = pandaqueue.fcl.config          
                 self.siteid = pandaqueue.siteid
@@ -66,15 +68,20 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 # to avoid the thread to be started more than once
                 self.__started = False
 
+                self.log.info('Object initialized.')
+
         def getInfo(self, queue):
                 '''
                 Returns a diccionary with the result of the analysis 
                 over the output of a condor_q command
                 '''
-                # FIXME : queue is not used !!
+
+                while not self.output:
+                        time.sleep(1)
                 if not self.error:
                         self.status = self.__analyzeoutput(self.output, 'jobStatus')
                         return self.status
+                return {}
 
         def start(self):
                 '''
