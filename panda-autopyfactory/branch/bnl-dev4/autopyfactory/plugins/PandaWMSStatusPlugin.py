@@ -40,29 +40,41 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
         def getCloudInfo(self, cloud):
                 '''
+                from the info (as a dict) retrieved from the PanDA server
+                using method userinterface.Client.getCloudSpecs()
+                selects the entry corresponding to cloud
                 '''
-                if self.updated:
-                        if not self.clouds_err:
-                                return self.all_clouds_config[cloud]
-                # if no info available yet...
+
+                while not self.updated:
+                        time.sleep(1)
+                if not self.clouds_err:
+                        return self.all_clouds_config.get(cloud, {})
                 return {}
                 
         def getSiteInfo(self, site):
                 '''
+                from the info (as a dict) retrieved from the PanDA server
+                using method userinterface.Client.getSiteSpecs(siteType='all')
+                selects the entry corresponding to site 
                 '''
-                if self.updated:
-                        if not self.sites_err:
-                                return self.all_sites_config[site]
-                # if no info available yet...
+
+                while not self.updated:
+                        time.sleep(1)
+                if not self.sites_err:
+                        return self.all_sites_config.get(site, {})
                 return {}
 
         def getJobsInfo(self, site):
                 '''
+                from the info (as a dict) retrieved from the PanDA server
+                using method userinterface.Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
+                selects the entry corresponding to site 
                 '''
-                if self.updated:
-                        if not self.jobs_err:
-                                return self.all_jobs_config[site]
-                # if no info available yet...
+
+                while not self.updated:
+                        time.sleep(1)
+                if not self.jobs_err:
+                        return self.all_jobs_config.get(site, {})
                 return {}
        
         def start(self):
