@@ -67,7 +67,7 @@ class Factory:
                 fcl is a FactoryConfigLoader object. 
                 '''
                 self.log = logging.getLogger('main.factory')
-                self.log.info('Factory initializing...')
+                self.log.info('Initializing...')
                 self.fcl = fcl
                 self.dryRun = fcl.get("Factory", "dryRun")
                 #self.cycles = fcl.get("Factory", "cycles")
@@ -77,7 +77,7 @@ class Factory:
                 #self.queuesConfigParser = self.qcl.config
                 self.wmsmanager = WMSQueuesManager(self)
  
-                self.log.info("Factory initialized.")
+                self.log.info("Initialized.")
 
         def mainLoop(self):
                 '''
@@ -140,8 +140,10 @@ class WMSQueuesManager(object):
                 """
                 """
                 self.log = logging.getLogger('main.wmsquuesmanager')
+                self.log.info('Initializing...')
                 self.queues = {}
                 self.factory = factory
+                self.log.info('Initialized.')
 
         # --------------------
         #  public interface
@@ -257,6 +259,9 @@ class WMSQueue(threading.Thread):
 
                 threading.Thread.__init__(self) # init the thread
                 self.log = logging.getLogger('main.wmsqueue')
+                self.log.info('Initializing...')
+
+
                 self.stopevent = threading.Event()
 
                 self.siteid = siteid          # Queue section designator from config
@@ -283,6 +288,7 @@ class WMSQueue(threading.Thread):
                 self.wmsstatus = self.__getplugin('wmsstatus')
                 self.wmsstatus.start()                  # starts the thread
                 self.batchsubmit = self.__getplugin('batchsubmit')
+                self.log.info('Initialized.')
 
         def __getplugin(self, action, *k, **kw):
                 '''
@@ -324,9 +330,9 @@ class WMSQueue(threading.Thread):
                 schedclass = self.qcl.get(self.siteid, plugin_config_item)
                 plugin_module_name = '%s%sPlugin' %(schedclass, plugin_prefix)
                 
-                self.log.debug("[%s] Attempting to import derived classname: \
+                self.log.debug("Attempting to import derived classname: \
                                 autopyfactory.plugins.%s"
-                                % (self.siteid, plugin_module_name)) 
+                                % plugin_module_name)
 
                 plugin_module = __import__("autopyfactory.plugins.%s" % plugin_module_name, 
                                 fromlist=["%s" % plugin_module_name])
@@ -358,9 +364,9 @@ class WMSQueue(threading.Thread):
                 update batch info and panda info
                 '''
                 self.log.debug("__updatestatus: Starting")
-                self.log.debug("[%s] Would be grabbing Batch info relevant to this queue." %self.siteid)
+                self.log.debug("Would be grabbing Batch info relevant to this queue.")
                 self.status.batch = self.batchstatus.getInfo(self.siteid)  # FIXME : is siteid the correct input ??
-                self.log.debug("[%s] Would be getting WMS info relevant to this queue." %self.siteid)
+                self.log.debug("Would be getting WMS info relevant to this queue.")
 
                 self.status.cloud = self.wmsstatus.getCloudInfo(self.cloud)
                 self.status.site = self.wmsstatus.getSiteInfo(self.siteid) 
@@ -372,7 +378,7 @@ class WMSQueue(threading.Thread):
                 calculate number to submit
                 '''
                 self.log.debug("__calculatenumberofpilots: Starting")
-                self.log.debug("[%s] Would be calculating number to submit."% self.siteid)
+                self.log.debug("Would be calculating number to submit.")
                 nsub = self.scheduler.calcSubmitNum(self.status)
                 self.log.debug("__calculatenumberofpilots: Leaving with output %s" %nsub)
                 return nsub
@@ -382,7 +388,7 @@ class WMSQueue(threading.Thread):
                 submit using this number
                 '''
                 self.log.debug("__submitpilots: Starting")
-                self.log.debug("[%s] Would be submitting jobs for this queue."% self.siteid)
+                self.log.debug("Would be submitting jobs for this queue.")
                 self.batchsubmit.submitPilots(self.siteid, nsub, self.fcl, self.qcl)
                 self.log.debug("__submitpilots: Leaving")
 
@@ -424,7 +430,7 @@ class WMSQueue(threading.Thread):
                 '''
                 self.log.debug("join: Starting")
                 self.stopevent.set()
-                self.log.info('[%s] Stopping thread...' % self.siteid )
+                self.log.info('Stopping thread...')
                 threading.Thread.join(self, timeout)
                 self.log.debug("join: Leaving")
                  
