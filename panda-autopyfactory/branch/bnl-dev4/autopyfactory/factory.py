@@ -258,7 +258,7 @@ class WMSQueue(threading.Thread):
                 '''
 
                 threading.Thread.__init__(self) # init the thread
-                self.log = logging.getLogger('main.wmsqueue')
+                self.log = logging.getLogger('main.wmsqueue[%s]' %siteid)
                 self.log.info('Initializing...')
 
 
