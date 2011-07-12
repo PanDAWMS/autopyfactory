@@ -66,8 +66,10 @@ class Factory:
                 '''
                 fcl is a FactoryConfigLoader object. 
                 '''
+
                 self.log = logging.getLogger('main.factory')
                 self.log.info('Initializing object...')
+
                 self.fcl = fcl
                 self.dryRun = fcl.get("Factory", "dryRun")
                 #self.cycles = fcl.get("Factory", "cycles")
@@ -87,8 +89,10 @@ class Factory:
                         2. Wait for a termination signal, and
                            stops all queues when that happens.
                 '''
+
                 self.log.debug("mainLoop: Starting.")
                 self.log.info("Starting all Queue threads...")
+
                 self.update()
                 
                 try:
@@ -115,9 +119,12 @@ class Factory:
                 That means this method will be invoked by the regular factory
                 main loop code or from any method capturing specific signals.
                 '''
+
                 self.log.debug("update: Starting")
+
                 newqueues = self.qcl.config.sections()
                 self.wmsmanager.update(newqueues) 
+
                 self.log.debug("update: Leaving")
 
 
@@ -137,17 +144,21 @@ class WMSQueuesManager(object):
         -----------------------------------------------------------------------
         '''
         def __init__(self, factory):
-                """
-                """
+                '''
+                Initializes a container of WMSQueue objects
+                '''
+
                 self.log = logging.getLogger('main.wmsquuesmanager')
                 self.log.info('Initializing object...')
+
                 self.queues = {}
                 self.factory = factory
+
                 self.log.info('Object initialized.')
 
-        # --------------------
+        # ----------------------------------------------------------------------
         #  public interface
-        # --------------------
+        # ----------------------------------------------------------------------
         
         def update(self, newqueues):
                 '''
@@ -155,13 +166,16 @@ class WMSQueuesManager(object):
                         1. creates and starts new queues if needed
                         2. stops and deletes old queues if needed
                 '''
+
                 self.log.debug("update: Starting with input %s" %newqueues)
+
                 currentqueues = self.queues.keys()
                 queues_to_remove, queues_to_add = \
                         self.__diff_lists(currentqueues, newqueues)
                 self.__addqueues(queues_to_add) 
                 self.__delqueues(queues_to_remove)
                 self.__refresh()
+
                 self.log.debug("update: Leaving")
 
         def join(self):
@@ -169,62 +183,92 @@ class WMSQueuesManager(object):
                 Joins all WMSQueue objects
                 QUESTION: should the queues also be removed from self.queues ?
                 '''
+
                 self.log.debug("join: Starting")
+
+                count = 0
                 for q in self.queues.values():
                         q.join()
+                        count += 1
+                self.log.info('join: %d queues joined' %count)
+
                 self.log.debug("join: Leaving")
         
-        # --------------------
+        # ----------------------------------------------------------------------
         #  private methods
-        # --------------------
+        # ----------------------------------------------------------------------
 
         def __addqueues(self, queues):
                 '''
                 Creates new WMSQueue objects
                 '''
+
                 self.log.debug("__addqueues: Starting with input %s" %queues)
+
+                count = 0
                 for qname in queues:
                         self.__add(qname)
+                        count += 1
+                self.log.info('__addqueues: %d queues added' %count)
+
                 self.log.debug("__addqueues: Leaving")
 
         def __add(self, qname):
                 '''
                 Creates a single new WMSQueue object and starts it
                 '''
+
                 self.log.debug("__add: Starting with input %s" %qname)
+
                 qobject = WMSQueue(qname, self.factory)
                 self.queues[qname] = qobject
                 qobject.start()
+
                 self.log.debug("__add: Leaving")
                 
         def __delqueues(self, queues):
                 '''
                 Deletes WMSQueue objects
                 '''
+
                 self.log.debug("__delqueues: Starting with input %s" %queues)
+
+                count = 0
                 for qname in queues:
                         q = self.queues[qname]
                         q.join()
                         self.queues.pop(qname)
+                        count += 1
+                self.log.info('__delqueues: %d queues joined and removed' %count)
+
                 self.log.debug("__delqueues: Leaving")
 
         def __del(self, qname):
                 '''
                 Deletes a single queue object from the list and stops it.
                 '''
+
                 self.log.debug("__del: Starting with input %s" %qname)
+
                 qobject = self.__get(qname)
                 qname.join()
                 self.queues.pop(qname)
+
                 self.log.debug("__del: Leaving")
         
         def __refresh(self):
                 '''
                 Calls method refresh() for all WMSQueue objects
                 '''
+
                 self.log.debug("__refresh: Starting")
+
+                count = 0
                 for q in self.queues.values():
                         q.refresh()
+                        count += 1
+                self.log.info('__refresh: %d queues refreshed' %count)
+
                 self.log.debug("__refresh: Leaving")
 
         # --------------------
@@ -260,7 +304,6 @@ class WMSQueue(threading.Thread):
                 threading.Thread.__init__(self) # init the thread
                 self.log = logging.getLogger('main.wmsqueue[%s]' %siteid)
                 self.log.info('Initializing object...')
-
 
                 self.stopevent = threading.Event()
 
@@ -330,14 +373,16 @@ class WMSQueue(threading.Thread):
                 schedclass = self.qcl.get(self.siteid, plugin_config_item)
                 plugin_module_name = '%s%sPlugin' %(schedclass, plugin_prefix)
                 
-                self.log.debug("Attempting to import derived classname: \
+                self.log.info("Attempting to import derived classname: \
                                 autopyfactory.plugins.%s"
                                 % plugin_module_name)
 
                 plugin_module = __import__("autopyfactory.plugins.%s" % plugin_module_name, 
                                 fromlist=["%s" % plugin_module_name])
-
                 plugin_class = '%sPlugin' %plugin_prefix
+
+                self.log.info("__getplugin: Attempting to return plugin with classname %s" %plugin_class)
+
                 self.log.debug("__getplugin: Leaving with plugin named %s" %plugin_class)
                 return getattr(plugin_module, plugin_class)(*k, **kw)
 
@@ -350,36 +395,45 @@ class WMSQueue(threading.Thread):
                 Method called by thread.start()
                 Main functional loop of this WMSQueue. 
                 '''        
+
                 self.log.debug("run: Starting" )
+
                 while not self.stopevent.isSet():
                         self.__updatestatus()
                         nsub = self.__calculatenumberofpilots()
                         self.__submitpilots(nsub)
                         self.__exitloop()
                         self.__sleep()
+
                 self.log.debug("run: Leaving")
 
         def __updatestatus(self):
                 '''
                 update batch info and panda info
                 '''
+
                 self.log.debug("__updatestatus: Starting")
+
                 self.log.debug("Would be grabbing Batch info relevant to this queue.")
                 self.status.batch = self.batchstatus.getInfo(self.siteid)  # FIXME : is siteid the correct input ??
                 self.log.debug("Would be getting WMS info relevant to this queue.")
 
                 self.status.cloud = self.wmsstatus.getCloudInfo(self.cloud)
-                self.status.site = self.wmsstatus.getSiteInfo(self.siteid) 
+                self.status.site = self.wmsstatus.getSiteInfo(self.siteid)
                 self.status.jobs = self.wmsstatus.getJobsInfo(self.siteid)
+
                 self.log.debug("__updatestatus: Leaving")
 
         def __calculatenumberofpilots(self):
                 '''
                 calculate number to submit
                 '''
+
                 self.log.debug("__calculatenumberofpilots: Starting")
+
                 self.log.debug("Would be calculating number to submit.")
                 nsub = self.scheduler.calcSubmitNum(self.status)
+
                 self.log.debug("__calculatenumberofpilots: Leaving with output %s" %nsub)
                 return nsub
 
@@ -387,30 +441,39 @@ class WMSQueue(threading.Thread):
                 '''
                 submit using this number
                 '''
+
                 self.log.debug("__submitpilots: Starting")
+
                 self.log.debug("Would be submitting jobs for this queue.")
                 self.batchsubmit.submitPilots(self.siteid, nsub, self.fcl, self.qcl)
+
                 self.log.debug("__submitpilots: Leaving")
 
         def __exitloop(self):
                 '''
                 Exit loop if desired number of cycles is reached...  
                 '''
+
                 self.log.debug("__exitloop: Starting")
+
                 self.log.debug("__exitloop. Checking to see how many cycles to run.")
                 if self.cycles and self.cyclesrun >= self.cycles:
                         self.stopevent.set()                        
                 self.log.debug("__exitloop. Incrementing cycles...")
                 self.cyclesrun += 1
+
                 self.log.debug("__exitloop: Leaving")
 
         def __sleep(self):
                 '''
                 sleep interval
                 '''
+
                 self.log.debug("__sleep: Starting")
+
                 self.log.debug("__sleep. Sleeping for %d seconds..." %self.sleep)
                 time.sleep(self.sleep)
+
                 self.log.debug("__sleep: Leaving")
 
         # ----------------------------------------------
@@ -428,10 +491,13 @@ class WMSQueue(threading.Thread):
                 '''
                 Stop the thread. Overriding this method required to handle Ctrl-C from console.
                 '''
+
                 self.log.debug("join: Starting")
+
                 self.stopevent.set()
                 self.log.info('Stopping thread...')
                 threading.Thread.join(self, timeout)
+
                 self.log.debug("join: Leaving")
                  
 
