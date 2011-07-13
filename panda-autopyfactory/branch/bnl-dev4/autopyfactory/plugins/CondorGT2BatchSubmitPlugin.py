@@ -19,7 +19,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         '''
         
         def __init__(self):
-                self.log = logging.getLogger("main.condorsubmit")
+                self.log = logging.getLogger("main.batchsubmitplugin")
+                self.log.debug('Object initialized.')
  
         def submitPilots(self, queue, nbpilots, fcl, qcl):
                 '''
@@ -28,6 +29,9 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 fcl is the FactoryConfigLoader object
                 qcl is the QueueConfigLoader object
                 '''
+
+                self.log.debug('submitPilots: Starting with inputs queue=%s nbpilots=%s fcl=%s qcl=%s' %(queue, nbpilots, fcl, qcl)) 
+
                 self.queue = queue
                 self.nbpilots = nbpilots
                 self.fcl = fcl
@@ -42,11 +46,17 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                         self.__prepareJSDFile()
                         self.__submit() 
 
+                self.log.debug('submitPilots: Leaving.')
+
         def __prepareJSDFile(self):
+
+                self.log.debug('__prepareJSDFile: Starting.')
 
                 self.JSD = submit.JSDFile()
                 self.__createJSDFile()
                 self.__writeJSDFile()
+
+                self.log.debug('__prepareJSDFile: Leaving.')
 
         def __createJSDFile(self):
 
@@ -62,6 +72,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 #        self.log.error('Failed to open file %s (error %d): %s', self.jdlFile, errno, errMsg)
                 #        return 1
         
+                self.log.debug('__createJSDFile: Starting.')
 
                 self.JSD.add("# Condor-G glidein pilot for panda")
                 self.JSD.add("executable=%s" % self.fcl.get('Pilots', 'executable'))
@@ -143,11 +154,14 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add("queue %d" % self.nbpilots)
                 #return 0
 
+                self.log.debug('__createJSDFile: Leaving.')
 
         def __writeJSDFile(self):
                 '''
                 Dumps the whole content of the JSDFile object into a disk file
                 '''
+
+                self.log.debug('__writeJSDFile: Starting.')
 
                 if not os.access(self.logDir, os.F_OK):
                         try:
@@ -161,10 +175,14 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 ### error = self.writeJDL(queue, jdlFile, pilotNumber, logDir, logUrl, cycleNumber)
                 self.JSD.write(self.jdlFile)
 
+                self.log.debug('__writeJSDFile: Leaving.')
+
         def __submit(self):
                 '''
                 Submit pilots
                 '''
+
+                self.log.debug('__submit: Starting.')
 
                 self.dryRun = self.fcl.get('Factory', 'dryRun')
                 if not self.dryRun:
@@ -180,7 +198,6 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 else:
                         self.log.debug('Dry run mode - pilot submission supressed.')
 
-
-        
+                self.log.debug('__submit: Leaving.')
 
         
