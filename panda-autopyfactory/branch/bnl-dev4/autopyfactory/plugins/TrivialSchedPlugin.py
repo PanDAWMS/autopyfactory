@@ -11,7 +11,7 @@ class SchedPlugin(SchedInterface):
         
         def __init__(self):
                 self.log = logging.getLogger("main.schedplugin")
-                self.log.debug("Object initialized.")
+                self.log.info("Object initialized.")
 
         def calcSubmitNum(self, status):
                 """ 
