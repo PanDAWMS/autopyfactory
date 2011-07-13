@@ -20,7 +20,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         
         def __init__(self):
                 self.log = logging.getLogger("main.batchsubmitplugin")
-                self.log.debug('Object initialized.')
+                self.log.info('Object initialized.')
  
         def submitPilots(self, queue, nbpilots, fcl, qcl):
                 '''
