@@ -72,7 +72,6 @@ class Factory:
 
                 self.fcl = fcl
                 self.dryRun = fcl.get("Factory", "dryRun")
-                #self.cycles = fcl.get("Factory", "cycles")
                 #self.sleep = fcl.get("Factory", "sleep")
                 self.log.info("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
                 self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
@@ -271,9 +270,9 @@ class WMSQueuesManager(object):
 
                 self.log.debug("__refresh: Leaving")
 
-        # --------------------
+        # ----------------------------------------------------------------------
         #  ancillas 
-        # --------------------
+        # ----------------------------------------------------------------------
 
         def __diff_lists(self, l1, l2):
                 '''
@@ -413,10 +412,9 @@ class WMSQueue(threading.Thread):
 
                 self.log.debug("__updatestatus: Starting")
 
-                self.log.debug("Would be grabbing Batch info relevant to this queue.")
+                ## ? ## self.log.debug("Would be grabbing Batch info relevant to this queue.")
                 self.status.batch = self.batchstatus.getInfo(self.siteid)  # FIXME : is siteid the correct input ??
-                self.log.debug("Would be getting WMS info relevant to this queue.")
-
+                ## ? ## self.log.debug("Would be getting WMS info relevant to this queue.")
                 self.status.cloud = self.wmsstatus.getCloudInfo(self.cloud)
                 self.status.site = self.wmsstatus.getSiteInfo(self.siteid)
                 self.status.jobs = self.wmsstatus.getJobsInfo(self.siteid)
