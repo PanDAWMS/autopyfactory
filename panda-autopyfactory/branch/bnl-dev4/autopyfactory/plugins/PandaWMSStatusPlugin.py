@@ -27,7 +27,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
         def __init__(self):
                 self.log = logging.getLogger("main.pandawmsstatusplugin")
-                self.log.info("Initializing object...")
+                self.log.info("WMSStatusPlugin: Initializing object...")
 
                 # variable to check if the source of information 
                 # have been queried at least once
@@ -38,7 +38,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 # to avoid the thread to be started more than once
                 self.__started = False 
 
-                self.log.info('Object initialized.')
+                self.log.info('WMSStatusPlugin: Object initialized.')
 
         def getCloudInfo(self, cloud):
                 '''
@@ -134,9 +134,19 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 
                 self.log.debug('__update: Starting.')
 
+                # get Clouds Specs
                 self.clouds_err, self.all_clouds_config = Client.getCloudSpecs()
+                if self.clouds_err:
+                        self.log.error('Client.getCloudSpecs() failed')
+
+                # get Sites Specs
                 self.sites_err, self.all_sites_config = Client.getSiteSpecs(siteType='all')
+                if self.sites_err:
+                        self.log.error('Client.getSiteSpecs() failed')
+                # get Jobs Specs
                 self.jobs_err, self.all_jobs_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
+                if self.jobs_err:
+                        self.log.error('Client.getJobStatisticsPerSite() failed')
 
                 self.updated = True
 
