@@ -20,7 +20,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         
         def __init__(self):
                 self.log = logging.getLogger("main.batchsubmitplugin")
-                self.log.info('Object initialized.')
+                self.log.info('BatchSubmitPlugin: Object initialized.')
  
         def submitPilots(self, queue, nbpilots, fcl, qcl):
                 '''
@@ -186,11 +186,12 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
                 self.dryRun = self.fcl.get('Factory', 'dryRun')
                 if not self.dryRun:
+                        self.log.info('Attempt to submit %d pilots for queue %s' %(self.nbpilots, self.queue))
                         (exitStatus, output) = commands.getstatusoutput('condor_submit -verbose ' + self.jdlFile)
                         if exitStatus != 0:
                                 self.log.error('condor_submit command for %s failed (status %d): %s', self.queue, exitStatus, output)
                         else:
-                                self.log.debug('condor_submit command for %s succeeded', self.queue)
+                                self.log.info('condor_submit command for %s succeeded', self.queue)
                                 if isinstance(self.mon, Monitor):
                                         nick = self.qcl.get(self.queue, 'nickname')
                                         label = self.queue
