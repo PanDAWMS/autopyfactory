@@ -27,7 +27,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
         def __init__(self):
                 self.log = logging.getLogger("main.pandawmsstatusplugin")
-                self.log.debug("Initializing object...")
+                self.log.info("Initializing object...")
 
                 # variable to check if the source of information 
                 # have been queried at least once
@@ -38,7 +38,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 # to avoid the thread to be started more than once
                 self.__started = False 
 
-                self.log.debug('Object initialized.')
+                self.log.info('Object initialized.')
 
         def getCloudInfo(self, cloud):
                 '''
