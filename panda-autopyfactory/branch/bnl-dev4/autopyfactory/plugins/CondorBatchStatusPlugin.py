@@ -48,7 +48,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         def __init__(self, pandaqueue):
 
                 self.log = logging.getLogger("main.batchstatusplugin")
-                self.log.info('Initializing object...')
+                self.log.info('BatchStatusPlugin: Initializing object...')
 
                 self.pandaqueue = pandaqueue
                 self.fconfig = pandaqueue.fcl.config          
@@ -69,7 +69,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 # to avoid the thread to be started more than once
                 self.__started = False
 
-                self.log.info('Object initialized.')
+                self.log.info('BatchStatusPlugin: Object initialized.')
 
         def getInfo(self, queue):
                 '''
@@ -83,10 +83,12 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                         time.sleep(1)
                 if not self.error:
                         self.status = self.__analyzeoutput(self.output, 'jobStatus', queue)
-                        return self.status
-                return {}
+                        out = self.status
+                else:
+                        out = {}
 
-                self.log.debug('getInfo: Leaving.')
+                self.log.debug('getInfo: Leaving with output %s' %out)
+                return out 
 
 
         def start(self):
@@ -169,6 +171,8 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 querycmd += " -format ' globusStatus=%d' GlobusStatus"
                 querycmd += " -format ' MATCH_APF_QUEUE=%s' MATCH_APF_QUEUE"
                 querycmd += " -format ' %s\n' Environment"
+        
+                self.log.debug('__update: Querying cmd = %s' %querycmd.replace('\n','\\n'))
 
                 self.err, self.output = commands.getstatusoutput(querycmd)
                 self.updated = True
@@ -195,6 +199,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
                 if not output: 
                         # FIXME: temporary solution
+                        self.log.debug('__analyzeoutput: Leaving and returning %s' %output_dic)
                         return output_dic        
 
                 lines = output.split('\n')
