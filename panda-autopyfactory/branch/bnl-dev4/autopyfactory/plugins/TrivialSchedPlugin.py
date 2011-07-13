@@ -10,8 +10,8 @@ import logging
 class SchedPlugin(SchedInterface):
         
         def __init__(self):
-                self.log = logging.getLogger("main.simpleschedplugin")
-                self.log.debug("TrivialSchedPlugin initializing...")
+                self.log = logging.getLogger("main.schedplugin")
+                self.log.debug("Object initialized.")
 
         def calcSubmitNum(self, status):
                 """ 
@@ -23,8 +23,10 @@ class SchedPlugin(SchedInterface):
                                         no -> return 0
                 """
 
+                self.log.debug('calcSubmitNum: Starting with input %s' %status)
+
                 if not status:
-                        return 0
+                        out = 0
                 else:
                         nbjobs = status.jobs.get('activated', 0)
                         nbpilots = status.batch.get('1', 0) + status.batch.get('2', 0)
@@ -32,9 +34,12 @@ class SchedPlugin(SchedInterface):
                         #       in a simpler way, but in this way is easier to 
                         #       read and to understand what it does and why.
                         if nbjobs == 0:
-                                return 0
+                                out = 0
                         else:
                                 if nbjobs > nbpilots:
-                                        return nbjobs - nbpilots
+                                        out = nbjobs - nbpilots
                                 else:
-                                        return 0
+                                        out = 0
+
+                self.log.debug('calcSubmitNum: Leaving returning %s' %out)
+                return out
