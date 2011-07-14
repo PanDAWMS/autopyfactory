@@ -86,7 +86,7 @@ class ConfigLoader(object):
                 or
                         self.qcl.getboolean(section, item)
                 '''
-                        return getattr(self.config, f)
+                return getattr(self.config, f)
 
 
 
