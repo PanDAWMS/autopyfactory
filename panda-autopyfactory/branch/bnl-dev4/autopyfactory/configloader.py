@@ -52,7 +52,7 @@ class ConfigLoader(object):
                                 try:
                                         self.config.readfp(fp)
                                         readConfigFiles.append(f)
-                                except Exception as e:
+                                except Exception, e:
                                         self.log.debug("ERROR: %s Unable to read config file %s" % (e,f))
                                         unreadConfigFiles.append(f)
                         else:
@@ -61,7 +61,7 @@ class ConfigLoader(object):
                                         fp = open(f)
                                         self.config.readfp(fp)
                                         readConfigFiles.append(f)
-                                except Exception as e:
+                                except Exception, e:
                                         self.log.error("Unable to read file %s , Error: %s" % (f,e))
                                         unreadConfigFiles.append(f)
                 self.log.debug('Successfully read config files %s' % readConfigFiles)
