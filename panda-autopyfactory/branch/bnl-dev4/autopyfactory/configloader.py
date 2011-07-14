@@ -78,7 +78,7 @@ class ConfigLoader(object):
                                         self.config.set(section, k, v)
                                         self.log.debug('Set default value for %s in section %s to "%s".' % (k, section, v))
 
-                def __getattr__(self, f):
+        def __getattr__(self, f):
                 '''
                 We recover all functionalities from ConfigParser class.
                 For example, now we can call from factory
