@@ -2,3 +2,4 @@ include CHANGELOG INSTALLATION LICENSE README
 include bin/*
 include etc/*
 include libexec/*
+include misc/*
