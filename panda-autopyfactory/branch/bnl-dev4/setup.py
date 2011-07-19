@@ -34,6 +34,7 @@ setup(
     url='https://twiki.cern.ch/twiki/bin/view/Atlas/PanDA',
     packages=['autopyfactory'],
     scripts = [ # Utilities and main script
+               'bin/factory',
                 'bin/factory.py'],
     
     data_files=[('/usr/libexec', ['libexec/runpilot3-wrapper.sh',
