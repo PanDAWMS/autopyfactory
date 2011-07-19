@@ -79,26 +79,61 @@ class APF(object):
  ''', version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $")
 
 
-                parser.add_option("-d", "--debug", dest="logLevel", default=logging.WARNING,
-                                  action="store_const", const=logging.DEBUG, help="Set logging level to DEBUG [default WARNING]")
-                parser.add_option("-v", "--info", dest="logLevel", default=logging.WARNING,
-                                  action="store_const", const=logging.INFO, help="Set logging level to INFO [default WARNING]")
-                parser.add_option("--quiet", dest="logLevel", default=logging.WARNING,
-                                  action="store_const", const=logging.WARNING, help="Set logging level to WARNING [default]")
-                parser.add_option("--test", "--dry-run", dest="dryRun", default=False,
-                                  action="store_true", help="Dry run - supress job submission")
-                parser.add_option("--oneshot", "--one-shot", dest="cyclesToDo", default=0,
-                                  action="store_const", const=1, help="Run one cycle only")
-                parser.add_option("--cycles", dest="cyclesToDo",
-                                  action="store", type="int", metavar="CYCLES", help="Run CYCLES times, then exit [default infinite]")
-                parser.add_option("--sleep", dest="sleepTime", default=120,
-                                  action="store", type="int", metavar="TIME", help="Sleep TIME seconds between cycles [default %default]")
-                parser.add_option("--conf", dest="confFiles", default="/etc/apf/factory.conf",
-                                  action="store", metavar="FILE1[,FILE2,FILE3]", help="Load configuration from FILEs (comma separated list)")
-                parser.add_option("--log", dest="logfile", default="syslog", metavar="LOGFILE", action="store", 
+                parser.add_option("-d", "--debug", 
+                                  dest="logLevel", 
+                                  default=logging.WARNING,
+                                  action="store_const", 
+                                  const=logging.DEBUG, 
+                                  help="Set logging level to DEBUG [default WARNING]")
+                parser.add_option("-v", "--info", 
+                                  dest="logLevel", 
+                                  default=logging.WARNING,
+                                  action="store_const", 
+                                  const=logging.INFO, 
+                                  help="Set logging level to INFO [default WARNING]")
+                parser.add_option("--quiet", dest="logLevel", 
+                                  default=logging.WARNING,
+                                  action="store_const", 
+                                  const=logging.WARNING, 
+                                  help="Set logging level to WARNING [default]")
+                parser.add_option("--test", "--dry-run", 
+                                  dest="dryRun", 
+                                  default=False,
+                                  action="store_true", 
+                                  help="Dry run - supress job submission")
+                parser.add_option("--oneshot", "--one-shot", 
+                                  dest="cyclesToDo", 
+                                  default=0,
+                                  action="store_const", 
+                                  const=1, 
+                                  help="Run one cycle only")
+                parser.add_option("--cycles", 
+                                  dest="cyclesToDo",
+                                  action="store", 
+                                  type="int", 
+                                  metavar="CYCLES", 
+                                  help="Run CYCLES times, then exit [default infinite]")
+                parser.add_option("--sleep", dest="sleepTime", 
+                                  default=120,
+                                  action="store", 
+                                  type="int", 
+                                  metavar="TIME", 
+                                  help="Sleep TIME seconds between cycles [default %default]")
+                parser.add_option("--conf", dest="confFiles", 
+                                  default="/etc/apf/factory.conf",
+                                  action="store", 
+                                  metavar="FILE1[,FILE2,FILE3]", 
+                                  help="Load configuration from FILEs (comma separated list)")
+                parser.add_option("--log", dest="logfile", 
+                                  default="syslog", 
+                                  metavar="LOGFILE", 
+                                  action="store", 
                                   help="Send logging output to LOGFILE or SYSLOG or stdout [default <syslog>]")
-                parser.add_option("--runas", dest="runAs", default="apf",
-                                  action="store", metavar="USERNAME", help="If run as root, drop privileges to USER")
+                parser.add_option("--runas", dest="runAs", 
+                                  default="apf",
+                                  action="store", 
+                                  metavar="USERNAME", 
+                                  help="If run as root, drop privileges to USER")
                 (self.options, self.args) = parser.parse_args()
 
                 self.options.confFiles = self.options.confFiles.split(',')
