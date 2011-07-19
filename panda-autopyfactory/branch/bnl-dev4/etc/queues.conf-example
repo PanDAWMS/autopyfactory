@@ -75,14 +75,6 @@ vomsCheck = 180
 
 analysisGridProxy = /tmp/pilotProxy
 
-### # What plugin should be used to calculate the number of jobs to submit each cycle?
-### # This string is the root of plugins.XYZSchedPlugin 
-### schedplugin = Simple
-### # What plugin should be used to talk to a batch system for info and submit?
-### # This string is the root of plugins.XYZBatchPlugin, which contains XYZXSubmit class and
-### # XYZStatus class. 
-### batchplugin = Condor
-
 # plugins
 batchstatusplugin = Condor
 wmsstatusplugin = Panda
@@ -104,50 +96,63 @@ batchSubmitInterval = 61
 # It is recommended now only to have a nickname and let everything else
 # be detected from schedconfig
 
-# Two examples of the simplest and recommended configuration for sites
-[UKI-NORTHGRID-LANCS-HEP]
-nickname = UKI-NORTHGRID-LANCS-HEP-fal-pygrid-18-atlas-lcgpbs
 
-[UKI-SCOTGRID-GLASGOW-svr021]
-nickname = UKI-SCOTGRID-GLASGOW-svr021-atlprd-lcgpbs
-
-# Pilots going to an analysis site usually use a different proxy.
-# *** Please now see the setting analysisGridProxy in the QueueDefaults section
-[ANALY_GLASGOW]
-nickname = ANALY_GLASGOW
-#gridProxy = /tmp/myPilotRoleProxy  <--- No longer needed
-
-
-# If any values are set in the factory then these will be overwritten
-# by schedconfig, unless you set override = True. e.g., testing a new
-# gatekeeper
-[UKI-SCOTGRID-GLASGOW-testCE]
-nickname = UKI-SCOTGRID-GLASGOW-svr029-atlprd-lcgpbs
-jdl = svr029.gla.scotgrid.ac.uk/jobmanager-lcgpbs
-localqueue = atlprd
+[TEST2]
+nickname = TEST2
+jdl = gridtest01.racf.bnl.gov/jobmanager-condor
 status = test
 nqueue = 1
-override = True
 sftemplate=/path/to/file
+memory = 600
+user = Jose
+localqueue = OSG_ITB_Jose
+pandagrid = OSG
 
 
-
-
-# Another override example is used here to submit pilots to an additional
-# resource supporting an ANALY queue. Note the old "gatekeeper" now breaks
-# into two parts: jdl and queue.
-[ANALY_GLASGOW-svr026]
-nickname = ANALY_GLASGOW
-jdl = svr026.gla.scotgrid.ac.uk/jobmanager-lcgpbs
-localqueue = atlanaly
-override = True
-
-# CREAM CE example
-# Currently CREAM CEs have incorrect parameters in schedconfig, so they
-# must have jdl (and probably localqueue) overrides.
-# If you don't specify the port then 8443 is assumed.
-[UKI-SCOTGRID-GLASGOW-cream14]
-nickname = UKI-SCOTGRID-GLASGOW-svr014-atlprd-pbs
-jdl = svr014.gla.scotgrid.ac.uk:8443/cream-pbs
-localqueue = atlprd
-override = True
+#### # Two examples of the simplest and recommended configuration for sites
+#### [UKI-NORTHGRID-LANCS-HEP]
+#### nickname = UKI-NORTHGRID-LANCS-HEP-fal-pygrid-18-atlas-lcgpbs
+#### 
+#### [UKI-SCOTGRID-GLASGOW-svr021]
+#### nickname = UKI-SCOTGRID-GLASGOW-svr021-atlprd-lcgpbs
+#### 
+#### # Pilots going to an analysis site usually use a different proxy.
+#### # *** Please now see the setting analysisGridProxy in the QueueDefaults section
+#### [ANALY_GLASGOW]
+#### nickname = ANALY_GLASGOW
+#### #gridProxy = /tmp/myPilotRoleProxy  <--- No longer needed
+#### 
+#### 
+#### # If any values are set in the factory then these will be overwritten
+#### # by schedconfig, unless you set override = True. e.g., testing a new
+#### # gatekeeper
+#### [UKI-SCOTGRID-GLASGOW-testCE]
+#### nickname = UKI-SCOTGRID-GLASGOW-svr029-atlprd-lcgpbs
+#### jdl = svr029.gla.scotgrid.ac.uk/jobmanager-lcgpbs
+#### localqueue = atlprd
+#### status = test
+#### nqueue = 1
+#### override = True
+#### sftemplate=/path/to/file
+#### 
+#### 
+#### 
+#### 
+#### # Another override example is used here to submit pilots to an additional
+#### # resource supporting an ANALY queue. Note the old "gatekeeper" now breaks
+#### # into two parts: jdl and queue.
+#### [ANALY_GLASGOW-svr026]
+#### nickname = ANALY_GLASGOW
+#### jdl = svr026.gla.scotgrid.ac.uk/jobmanager-lcgpbs
+#### localqueue = atlanaly
+#### override = True
+#### 
+#### # CREAM CE example
+#### # Currently CREAM CEs have incorrect parameters in schedconfig, so they
+#### # must have jdl (and probably localqueue) overrides.
+#### # If you don't specify the port then 8443 is assumed.
+#### [UKI-SCOTGRID-GLASGOW-cream14]
+#### nickname = UKI-SCOTGRID-GLASGOW-svr014-atlprd-pbs
+#### jdl = svr014.gla.scotgrid.ac.uk:8443/cream-pbs
+#### localqueue = atlprd
+#### override = True
