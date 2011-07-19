@@ -6,12 +6,12 @@
 # Montoring should be enabled for all factories.
 
 [Factory]
-factoryOwner = g.stewart@physics.gla.ac.uk
-factoryId = graeme-UK
+factoryOwner = jcaballero@bnl.gov
+factoryId = BNL-gridui11-jhover
 factoryUser = apf
 # condorUser = unixUserName
 # schedConfigPollTime = 5
-monitorURL =  http://apfmon.lancs.ac.uk/mon/
+#monitorURL =  http://apfmon.lancs.ac.uk/mon/
 
 ## Configure the pilots which are sent
 # Executable, baseLogDir and baseLogDirUrl are mandatory
