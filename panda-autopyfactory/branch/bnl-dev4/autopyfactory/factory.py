@@ -33,7 +33,6 @@ import time
 
 from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
-from autopyfactory.monitor import Monitor
 
 import userinterface.Client as Client
           
@@ -73,6 +72,10 @@ class Factory:
                 self.fcl = fcl
                 self.dryRun = fcl.get("Factory", "dryRun")
                 #self.sleep = fcl.get("Factory", "sleep")
+
+                if self.fcl.has_option('Factory', 'monitorURL'):
+                        from autopyfactory.monitor import Monitor
+
                 self.log.info("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
                 self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
                 #self.queuesConfigParser = self.qcl.config
