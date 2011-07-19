@@ -166,10 +166,10 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 if not os.access(self.logDir, os.F_OK):
                         try:
                                 os.makedirs(self.logDir)
-                                self.log.debug('Created directory %s', self.logDir)
+                                self.log.debug('__writeJSDFile: Created directory %s', self.logDir)
                         except OSError, (errno, errMsg):
-                                self.log.error('Failed to create directory %s (error %d): %s', self.logDir, errno, errMsg)
-                                self.log.error('Cannot submit pilots for %s', self.queue)
+                                self.log.error('__writeJSDFile: Failed to create directory %s (error %d): %s', self.logDir, errno, errMsg)
+                                self.log.error('__writeJSDFile: Cannot submit pilots for %s', self.queue)
                                 return
                 self.jdlFile = self.logDir + '/submitMe.jdl'
                 ### error = self.writeJDL(queue, jdlFile, pilotNumber, logDir, logUrl, cycleNumber)
