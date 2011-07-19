@@ -50,7 +50,6 @@ else:
     print >>sys.stderr, 'FACTORY DEBUG: Found APF_NOSQUID set. Not changing/setting panda client environment.'
 
 
-from autopyfactory.factory import Factory
 from autopyfactory.configloader import FactoryConfigLoader
 from autopyfactory.apfexceptions import FactoryConfigurationFailure
 
@@ -217,6 +216,9 @@ class APF(object):
         def mainloop(self):
                 """Create Factory and enter main loop
                 """
+
+                from autopyfactory.factory import Factory
+
                 try:
                     self.log.info('Creating Factory and entering main loop...')
                     f = Factory(self.fc)
