@@ -5,16 +5,25 @@
 
 import commands
 import logging
-import pycurl
 import re
-import StringIO
 import threading
+import StringIO
 
 try:
-    import json as json
+        import pycurl
+except ImportError:
+        log = logging.getLogger('main.monitor')
+        log.error('module pycurl is not installed. Aborting.')
+        import sys
+        sys.exit()
+
+try:
+        import json as json
 except ImportError, err:
-    # Not critical (yet) - try simplejson
-    import simplejson as json
+        # Not critical (yet) - try simplejson
+        log = logging.getLogger('main.monitor')
+        log.warning('json package not installed. Trying to import simplejson as json')
+        import simplejson as json
 
 _CIDMATCH = re.compile('\*\* Proc (\d+\.\d+)', re.M)
 
