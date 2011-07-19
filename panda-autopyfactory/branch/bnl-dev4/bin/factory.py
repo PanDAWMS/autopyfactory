@@ -75,6 +75,7 @@ class APF(object):
     Graeme A Stewart <g.stewart@physics.gla.ac.uk>
     Peter Love <p.love@lancaster.ac.uk>
     John Hover <jhover@bnl.gov>
+    Jose Caballero <jcaballero@bnl.gov>
  ''', version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $")
 
 
@@ -103,53 +104,7 @@ class APF(object):
                 self.options.confFiles = self.options.confFiles.split(',')
    
         def setuplogging(self):
-                """ 
-                Setup logging
-
-                General principles we have tried to used for logging:
-
-                -- Logging syntax and semantics should be uniform throughout the program, 
-                   based on whatever organization scheme is appropriate. 
-
-                -- Have at least a single log message at DEBUG at beginning and end of each function call. 
-                   The entry message should mention input parameters, 
-                   and the exit message should not any important result. 
-                   DEBUG output should be detailed enough that almost any logic error should become apparent. 
-                   It is OK if DEBUG messages are produced too fast to read interactively.
-
-                -- A moderate number of INFO messages should be logged to mark major 
-                   functional steps in the operation of the program, 
-                   e.g. when a persistent object is instantiated and initialized, 
-                   when a functional cycle/loop is complete. 
-                   It would be good if these messages note summary statistics, 
-                   e.g. "the last submit cycle submitted 90 jobs and 10 jobs finished". 
-                   A program being run with INFO log level should provide enough output 
-                   that the user can watch the program function and quickly observe interesting events.
-
-                -- Initially, all logging should be directed to a single file. 
-                   But provision should be made for eventually directing logging output from different subsystems 
-                   (submit, info, proxy management) to different files, 
-                   and at different levels of verbosity (DEBUG, INFO, WARN), and with different formatters. 
-                   Control of this distribution should use the standard Python "logging.conf" format file:
-
-                -- All messages are always printed out in the logs files,
-                   but also to the stderr when DEBUG or INFO levels are selected.
-
-                -- We keep the original python levels meaning, 
-                   including WARNING as being the default level. 
-
-                        DEBUG      Detailed information, typically of interest only when diagnosing problems.
-                        INFO       Confirmation that things are working as expected.
-                        WARNING    An indication that something unexpected happened, 
-                                   or indicative of some problem in the near future (e.g. ‘disk space low’). 
-                                   The software is still working as expected.
-                        ERROR      Due to a more serious problem, the software has not been able to perform some function.
-                        CRITICAL   A serious error, indicating that the program itself may be unable to continue running.
-
-                Info:
-
-                  http://docs.python.org/howto/logging.html#logging-advanced-tutorial 
-
+                """ Setup logging
                 """
                 self.log = logging.getLogger('main')
                 if self.options.logfile == "stdout":
@@ -163,8 +118,6 @@ class APF(object):
                 logStream.setFormatter(formatter)
                 self.log.addHandler(logStream)
 
-                # adding a new Handler for the console, 
-                # to be used only for DEBUG and INFO modes.
                 if self.options.logLevel in [logging.DEBUG, logging.INFO]:
                         console = logging.StreamHandler()
                         console.setFormatter(formatter)
@@ -221,6 +174,7 @@ class APF(object):
 
                 try:
                     self.log.info('Creating Factory and entering main loop...')
+
                     f = Factory(self.fc)
                     f.mainLoop()
                 except KeyboardInterrupt:
@@ -231,14 +185,15 @@ class APF(object):
                     self.log.error('Failed to import necessary python module: %s' % errorMsg)
                 except:
                     # TODO - make this a logger.exception() call
-                    self.log.error('''Unexpected exception! There was an exception
-  raised which the factory was not expecting and did not know how to
-  handle. You may have discovered a new bug or an unforseen error
-  condition. Please report this exception to Graeme
-  <g.stewart@physics.gla.ac.uk>. The factory will now re-raise this
-  exception so that the python stack trace is printed, which will allow
-  it to be debugged - please send output from this message
-  onwards. Exploding in 5...4...3...2...1... Have a nice day!''')
+                    self.log.error('''Unexpected exception! \
+There was an exception raised which the factory was not expecting \
+and did not know how to handle. You may have discovered a new bug \
+or an unforseen error condition. \
+Please report this exception to Jose <jcaballero@bnl.gov>. \
+The factory will now re-raise this exception so that the python stack trace is printed, \
+which will allow it to be debugged - \
+please send output from this message onwards. \
+Exploding in 5...4...3...2...1... Have a nice day!''')
                     # The following line prints the exception to the logging module
                     self.log.error(traceback.format_exc(None))
                     raise
