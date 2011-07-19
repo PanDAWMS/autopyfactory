@@ -82,7 +82,7 @@ class APF(object):
                                   action="store_const", const=logging.DEBUG, help="Set logging level to DEBUG [default WARNING]")
                 parser.add_option("-v", "--info", dest="logLevel", default=logging.WARNING,
                                   action="store_const", const=logging.INFO, help="Set logging level to INFO [default WARNING]")
-                parser.add_option("--quiet", dest="logLevel",, default=logging.WARNING,
+                parser.add_option("--quiet", dest="logLevel", default=logging.WARNING,
                                   action="store_const", const=logging.WARNING, help="Set logging level to WARNING [default]")
                 parser.add_option("--test", "--dry-run", dest="dryRun", default=False,
                                   action="store_true", help="Dry run - supress job submission")
