@@ -200,18 +200,4 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
                 self.log.debug('__submit: Leaving.')
 
-        def __monitor_note(self, msg):
-                ''' 
-                collects messages for the Monitor
-                '''
-
-                self.log.debug('__note: Starting.')
-
-                if self.fcl.has_option('Factory', 'monitorURL'):
-                        from autopyfactory.monitor import Monitor
-                        self.monitor = Monitor()
-                        nick = self.qcl.get(self.queue, 'nickname')
-                        self.monitor.msg(nick, self.queue, msg)
-                        
-                self.log.debug('__note: Leaving.')
 
