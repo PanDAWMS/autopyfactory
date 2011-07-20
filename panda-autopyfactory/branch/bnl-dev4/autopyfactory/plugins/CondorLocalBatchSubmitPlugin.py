@@ -192,10 +192,15 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                                 self.log.error('condor_submit command for %s failed (status %d): %s', self.queue, exitStatus, output)
                         else:
                                 self.log.info('condor_submit command for %s succeeded', self.queue)
-                                if isinstance(self.mon, Monitor):
+
+                                # Monitor
+                                if self.fcl.has_option('Factory', 'monitorURL'):
+                                        from autopyfactory.monitor import Monitor
+                                        monitor = Monitor()
                                         nick = self.qcl.get(self.queue, 'nickname')
                                         label = self.queue
-                                        self.mon.notify(nick, label, output)
+                                        mon.notify(nick, label, output)
+
                 else:
                         self.log.debug('Dry run mode - pilot submission supressed.')
 
