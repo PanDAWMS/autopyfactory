@@ -187,6 +187,11 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.dryRun = self.fcl.getboolean('Factory', 'dryRun')
                 if not self.dryRun:
                         self.log.info('Attempt to submit %d pilots for queue %s' %(self.nbpilots, self.queue))
+
+                        # msg for the monitor
+                        msg = 'Attempt to submit %d pilots for queue %s' %(self.nbpilots, self.queue)
+                        self.__monitor_note(msg)
+
                         (exitStatus, output) = commands.getstatusoutput('condor_submit -verbose ' + self.jdlFile)
                         if exitStatus != 0:
                                 self.log.error('condor_submit command for %s failed (status %d): %s', self.queue, exitStatus, output)
@@ -194,16 +199,29 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                                 self.log.info('condor_submit command for %s succeeded', self.queue)
 
                                 # Monitor
-                                if self.fcl.has_option('Factory', 'monitorURL'):
-                                        from autopyfactory.monitor import Monitor
-                                        monitor = Monitor()
+                                if hasattr(self, 'monitor'):
                                         nick = self.qcl.get(self.queue, 'nickname')
                                         label = self.queue
-                                        mon.notify(nick, label, output)
+                                        self.mon.notify(nick, label, output)
 
                 else:
                         self.log.debug('Dry run mode - pilot submission supressed.')
 
                 self.log.debug('__submit: Leaving.')
+
+        def __monitor_note(self, msg):
+                '''
+                collects messages for the Monitor
+                '''
+
+                self.log.debug('__note: Starting.')
+
+                if self.fcl.has_option('Factory', 'monitorURL'):
+                        from autopyfactory.monitor import Monitor
+                        self.monitor = Monitor()
+                        nick = self.qcl.get(self.queue, 'nickname')
+                        self.monitor.msg(nick, self.queue, msg)
+                        
+                self.log.debug('__note: Leaving.')
 
         
