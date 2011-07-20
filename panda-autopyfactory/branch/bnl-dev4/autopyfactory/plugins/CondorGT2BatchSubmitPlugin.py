@@ -44,9 +44,12 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
                 if self.nbpilots != 0:
                         self.__prepareJSDFile()
-                        self.__submit() 
+                        st, output = self.__submit() 
 
                 self.log.debug('submitPilots: Leaving.')
+
+                # FIXME 
+                return st, output
 
         def __prepareJSDFile(self):
 
