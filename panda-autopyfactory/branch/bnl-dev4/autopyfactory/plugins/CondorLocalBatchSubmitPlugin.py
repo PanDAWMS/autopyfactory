@@ -194,9 +194,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                                 self.log.info('condor_submit command for %s succeeded', self.queue)
 
                                 # Monitor
-                                if self.fcl.has_option('Factory', 'monitorURL'):
-                                        from autopyfactory.monitor import Monitor
-                                        monitor = Monitor()
+                                if hasattr(self, 'monitor'):
                                         nick = self.qcl.get(self.queue, 'nickname')
                                         label = self.queue
                                         mon.notify(nick, label, output)
@@ -206,4 +204,18 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
                 self.log.debug('__submit: Leaving.')
 
-        
+        def __monitor_note(self, msg):
+                ''' 
+                collects messages for the Monitor
+                '''
+
+                self.log.debug('__note: Starting.')
+
+                if self.fcl.has_option('Factory', 'monitorURL'):
+                        from autopyfactory.monitor import Monitor
+                        self.monitor = Monitor()
+                        nick = self.qcl.get(self.queue, 'nickname')
+                        self.monitor.msg(nick, self.queue, msg)
+                        
+                self.log.debug('__note: Leaving.')
+
