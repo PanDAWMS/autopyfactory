@@ -448,12 +448,20 @@ class WMSQueue(threading.Thread):
                 self.log.debug("__submitpilots: Starting")
 
                 self.log.debug("Would be submitting jobs for this queue.")
+                # message for the monitor
+                msg = 'Attempt to submit %d pilots for queue %s' %(self.nbpilots, self.siteid)
+                self.__monitor_note(msg)
+
                 status, output = self.batchsubmit.submitPilots(self.siteid, nsub, self.fcl, self.qcl)
                 if output:
                         if status == 0:
                                 self.__monitor_notify(output)
 
                 self.log.debug("__submitpilots: Leaving")
+
+        # ------------------------------------------------------------ 
+        #       Monitor ancillas 
+        # ------------------------------------------------------------ 
 
         def __monitor_shout(self):
                 '''
