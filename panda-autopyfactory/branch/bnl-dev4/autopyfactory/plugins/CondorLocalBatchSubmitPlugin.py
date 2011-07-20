@@ -192,15 +192,11 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                                 self.log.error('condor_submit command for %s failed (status %d): %s', self.queue, exitStatus, output)
                         else:
                                 self.log.info('condor_submit command for %s succeeded', self.queue)
-
-                                # Monitor
-                                if hasattr(self, 'monitor'):
-                                        nick = self.qcl.get(self.queue, 'nickname')
-                                        label = self.queue
-                                        mon.notify(nick, label, output)
+                        return (exitStatus, output)
 
                 else:
                         self.log.debug('Dry run mode - pilot submission supressed.')
+                        return (None, None)
 
                 self.log.debug('__submit: Leaving.')
 
