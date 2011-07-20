@@ -72,10 +72,11 @@ class Factory:
                 self.fcl = fcl
                 self.dryRun = fcl.get("Factory", "dryRun")
                 #self.sleep = fcl.get("Factory", "sleep")
-
-                if self.fcl.has_option('Factory', 'monitorURL'):
-                        from autopyfactory.monitor import Monitor
-                        self.monitor = Monitor()
+                
+                ### FIXME
+                ### if self.fcl.has_option('Factory', 'monitorURL'):
+                ###         from autopyfactory.monitor import Monitor
+                ###         self.monitor = Monitor()
 
                 self.log.info("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
                 self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
@@ -404,7 +405,7 @@ class WMSQueue(threading.Thread):
                         self.__updatestatus()
                         nsub = self.__calculatenumberofpilots()
                         self.__submitpilots(nsub)
-                        self.__monitorshout()
+                        ### self.__monitorshout()
                         self.__exitloop()
                         self.__sleep()
 
@@ -451,17 +452,19 @@ class WMSQueue(threading.Thread):
 
                 self.log.debug("__submitpilots: Leaving")
 
-        def __monitorshout(self):
-                '''
-                call monitor.shout() method
-                '''
+        ### FIXME
+        ###
+        ### def __monitorshout(self):
+        ###         '''
+        ###         call monitor.shout() method
+        ###         '''
 
-                self.log.debug("__monitorshout: Starting.")
-                if hasattr(self.factory, 'monitor'):
-                        self.factory.monitor.shout(self.siteid, self.cyclesrun + 1)
-                else:
-                        self.log.info('__monitorshout: factory has no monitor')
-                self.log.debug("__monitorshout: Leaving.")
+        ###         self.log.debug("__monitorshout: Starting.")
+        ###         if hasattr(self.factory, 'monitor'):
+        ###                 self.factory.monitor.shout(self.siteid, self.cyclesrun + 1)
+        ###         else:
+        ###                 self.log.info('__monitorshout: factory has no monitor')
+        ###         self.log.debug("__monitorshout: Leaving.")
 
         def __exitloop(self):
                 '''
