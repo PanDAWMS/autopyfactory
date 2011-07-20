@@ -405,7 +405,7 @@ class WMSQueue(threading.Thread):
                         self.__updatestatus()
                         nsub = self.__calculatenumberofpilots()
                         self.__submitpilots(nsub)
-                        self.__monitorshout()
+                        self.__monitor_shout()
                         self.__exitloop()
                         self.__sleep()
 
@@ -448,21 +448,48 @@ class WMSQueue(threading.Thread):
                 self.log.debug("__submitpilots: Starting")
 
                 self.log.debug("Would be submitting jobs for this queue.")
-                self.batchsubmit.submitPilots(self.siteid, nsub, self.fcl, self.qcl)
+                status, output = self.batchsubmit.submitPilots(self.siteid, nsub, self.fcl, self.qcl)
+                if output:
+                        if status == 0:
+                                self.__monitor_notify(output)
 
                 self.log.debug("__submitpilots: Leaving")
 
-        def __monitorshout(self):
+        def __monitor_shout(self):
                 '''
                 call monitor.shout() method
                 '''
 
-                self.log.debug("__monitorshout: Starting.")
+                self.log.debug("__monitor_shout: Starting.")
                 if hasattr(self, 'monitor'):
                         self.monitor.shout(self.siteid, self.cyclesrun + 1)
                 else:
                         self.log.info('__monitorshout: no monitor instantiated')
-                self.log.debug("__monitorshout: Leaving.")
+                self.log.debug("__monitor_shout: Leaving.")
+
+        def __monitor_note(self, msg):
+                '''
+                collects messages for the Monitor
+                '''
+
+                self.log.debug('__monitor_note: Starting.')
+
+                if hasattr(self, 'monitor'):
+                        nick = self.qcl.get(self.siteid, 'nickname')
+                        self.monitor.msg(nick, self.siteid, msg)
+                        
+                self.log.debug('__monitor__note: Leaving.')
+
+        def __monitor_notify(self, output):
+                '''
+                sends all collected messages to the Monitor server
+                '''
+
+                if hasattr(self, 'monitor'):
+                        nick = self.qcl.get(self.siteid, 'nickname')
+                        label = self.siteid
+                        self.mon.notify(nick, label, output)
+
 
         def __exitloop(self):
                 '''
