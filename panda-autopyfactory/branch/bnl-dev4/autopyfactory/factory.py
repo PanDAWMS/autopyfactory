@@ -31,8 +31,8 @@ import logging
 import threading
 import time
 
-from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
+from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
 
 import userinterface.Client as Client
           
@@ -75,6 +75,7 @@ class Factory:
 
                 if self.fcl.has_option('Factory', 'monitorURL'):
                         from autopyfactory.monitor import Monitor
+                        self.monitor = Monitor()
 
                 self.log.info("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
                 self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
@@ -403,6 +404,7 @@ class WMSQueue(threading.Thread):
                         self.__updatestatus()
                         nsub = self.__calculatenumberofpilots()
                         self.__submitpilots(nsub)
+                        self.__monitorshout()
                         self.__exitloop()
                         self.__sleep()
 
@@ -448,6 +450,18 @@ class WMSQueue(threading.Thread):
                 self.batchsubmit.submitPilots(self.siteid, nsub, self.fcl, self.qcl)
 
                 self.log.debug("__submitpilots: Leaving")
+
+        def __monitorshout(self):
+                '''
+                call monitor.shout() method
+                '''
+
+                self.log.debug("__monitorshout: Starting.")
+                if hasattr(self.factory, 'monitor'):
+                        self.factory.monitor.shout(self.siteid, self.cyclesrun)
+                else:
+                        self.log.info('__monitorshout: factory has no monitor')
+                self.log.debug("__monitorshout: Leaving.")
 
         def __exitloop(self):
                 '''
