@@ -458,7 +458,7 @@ class WMSQueue(threading.Thread):
 
                 self.log.debug("__monitorshout: Starting.")
                 if hasattr(self.factory, 'monitor'):
-                        self.factory.monitor.shout(self.siteid, self.cyclesrun)
+                        self.factory.monitor.shout(self.siteid, self.cyclesrun + 1)
                 else:
                         self.log.info('__monitorshout: factory has no monitor')
                 self.log.debug("__monitorshout: Leaving.")
@@ -472,6 +472,7 @@ class WMSQueue(threading.Thread):
 
                 self.log.debug("__exitloop. Checking to see how many cycles to run.")
                 if self.cycles and self.cyclesrun >= self.cycles:
+                        self.log.info('__exitloop: stopping the thread because high cyclesrun')
                         self.stopevent.set()                        
                 self.log.debug("__exitloop. Incrementing cycles...")
                 self.cyclesrun += 1
