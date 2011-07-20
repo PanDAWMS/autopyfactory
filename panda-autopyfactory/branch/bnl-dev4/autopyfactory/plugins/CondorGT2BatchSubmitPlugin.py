@@ -198,6 +198,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 else:
                         self.log.debug('Dry run mode - pilot submission supressed.')
                         return (None, None)
+                        # FIXME
 
                 self.log.debug('__submit: Leaving.')
 
