@@ -327,7 +327,9 @@ class WMSQueue(threading.Thread):
                 # Monitor
                 if self.fcl.has_option('Factory', 'monitorURL'):
                         from autopyfactory.monitor import Monitor
-                        self.monitor = Monitor()
+                        args = dict(self.fcl.items('Factory'))
+                        args.update(dict(self.fcl.items('Pilots')))
+                        self.monitor = Monitor(**args)
 
                 # Handle status and submit batch plugins. 
                 self.batchstatus = self.__getplugin('batchstatus', self)
@@ -457,6 +459,8 @@ class WMSQueue(threading.Thread):
                         if status == 0:
                                 self.__monitor_notify(output)
 
+                self.cyclesrun += 1
+
                 self.log.debug("__submitpilots: Leaving")
 
         # ------------------------------------------------------------ 
@@ -470,7 +474,7 @@ class WMSQueue(threading.Thread):
 
                 self.log.debug("__monitor_shout: Starting.")
                 if hasattr(self, 'monitor'):
-                        self.monitor.shout(self.siteid, self.cyclesrun + 1)
+                        self.monitor.shout(self.siteid, self.cyclesrun)
                 else:
                         self.log.info('__monitor_shout: no monitor instantiated')
                 self.log.debug("__monitor_shout: Leaving.")
@@ -519,7 +523,6 @@ class WMSQueue(threading.Thread):
                         self.log.info('__exitloop: stopping the thread because high cyclesrun')
                         self.stopevent.set()                        
                 self.log.debug("__exitloop. Incrementing cycles...")
-                self.cyclesrun += 1
 
                 self.log.debug("__exitloop: Leaving")
 
