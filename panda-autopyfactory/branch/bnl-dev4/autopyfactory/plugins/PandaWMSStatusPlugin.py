@@ -25,8 +25,8 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
         __metaclass__ = Singleton
 
-        def __init__(self):
-                self.log = logging.getLogger("main.pandawmsstatusplugin")
+        def __init__(self, wmsqueue):
+                self.log = logging.getLogger("main.pandawmsstatusplugin[%s]" %wmsqueue.siteid)
                 self.log.info("WMSStatusPlugin: Initializing object...")
 
                 # variable to check if the source of information 
