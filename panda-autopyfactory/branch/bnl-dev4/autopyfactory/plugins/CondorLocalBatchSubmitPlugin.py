@@ -18,8 +18,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         This class is expected to have separate instances for each PandaQueue object. 
         '''
         
-        def __init__(self):
-                self.log = logging.getLogger("main.batchsubmitplugin")
+        def __init__(self, wmsqueue):
+                self.log = logging.getLogger("main.batchsubmitplugin[%s]" %wmsqueue.siteid)
                 self.log.info('BatchSubmitPlugin: Object initialized.')
  
         def submitPilots(self, queue, nbpilots, fcl, qcl):
