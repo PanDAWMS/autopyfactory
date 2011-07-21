@@ -300,6 +300,9 @@ class WMSQueue(threading.Thread):
                 factory is the Factory object who created the queue 
                 '''
 
+                # recording moment the object was created
+                self.inittime = datetime.datetime.now()
+
                 threading.Thread.__init__(self) # init the thread
                 self.log = logging.getLogger('main.wmsqueue[%s]' %siteid)
                 self.log.info('WMSQueue: Initializing object...')
@@ -334,10 +337,10 @@ class WMSQueue(threading.Thread):
                 # Handle status and submit batch plugins. 
                 self.batchstatus = self.__getplugin('batchstatus', self)
                 self.batchstatus.start()                # starts the thread
-                self.wmsstatus = self.__getplugin('wmsstatus')
+                self.wmsstatus = self.__getplugin('wmsstatus', self)
                 self.wmsstatus.start()                  # starts the thread
                 self.batchsubmit = self.__getplugin('batchsubmit')
-                self.log.info('WMSQueue: Object initialized.')
+                self.log.info('WMSQueue: Object initialized.', self)
 
         def __getplugin(self, action, *k, **kw):
                 '''
@@ -410,6 +413,7 @@ class WMSQueue(threading.Thread):
                         self.__monitor_shout()
                         self.__exitloop()
                         self.__sleep()
+                        self.__reporttime()
 
                 self.log.debug("run: Leaving")
 
@@ -537,6 +541,19 @@ class WMSQueue(threading.Thread):
                 time.sleep(self.sleep)
 
                 self.log.debug("__sleep: Leaving")
+
+        def __reporttime(self):
+                '''
+                report the time passed since the object was created
+                '''
+
+                self.log.debug("__reporttime: Starting")
+        
+                now = datetime.datetime.now()
+                delta = now - self.inittime
+                self.log.info('__reportime: %d days and %d seconds since this queue started running.' %(delta.days, delta.seconds))
+
+                self.log.debug("__reportime: Leaving")
 
         # ----------------------------------------------
         #       run methods end here
