@@ -551,7 +551,14 @@ class WMSQueue(threading.Thread):
         
                 now = datetime.datetime.now()
                 delta = now - self.inittime
+                days = delta.days
+                seconds = delta.seconds
+                total_seconds = days*86400 + seconds
+                average = total_seconds/self.cyclesrun
+                
                 self.log.info('__reportime: %d days and %d seconds since this queue started running.' %(delta.days, delta.seconds))
+                self.log.info('__reportime: %d cycles since this queue started running.' %self.cyclesrun)
+                self.log.info('__reportime: estimated average of %d seconds per cycle' %average)
 
                 self.log.debug("__reportime: Leaving")
 
