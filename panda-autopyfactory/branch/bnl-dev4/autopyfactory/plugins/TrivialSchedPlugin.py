@@ -9,8 +9,8 @@ import logging
 
 class SchedPlugin(SchedInterface):
         
-        def __init__(self):
-                self.log = logging.getLogger("main.schedplugin")
+        def __init__(self, wmsqueue):
+                self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.siteid)
                 self.log.info("SchedPlugin: Object initialized.")
 
         def calcSubmitNum(self, status):
