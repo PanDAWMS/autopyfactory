@@ -223,8 +223,8 @@ class APF(object):
                     
                 if os.getuid() == 0:
                     try:
-                        runuid = pwd.getpwnam(options.runAs).pw_uid
-                        rungid = pwd.getpwnam(options.runAs).pw_gid
+                        runuid = pwd.getpwnam(self.options.runAs).pw_uid
+                        rungid = pwd.getpwnam(self.options.runAs).pw_gid
                         os.chown(options.logfile, runuid, rungid)
                         
                         os.setgid(rungid)
