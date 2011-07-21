@@ -218,7 +218,7 @@ class APF(object):
                 starting_gid = os.getgid()
                 starting_uid_name = pwd.getpwuid(starting_uid)[0]
                 
-                if os.getuid() !=0:
+                if os.getuid() != 0:
                     self.log.info("Already running as unprivileged user %s" % starting_uid_name)
                     
                 if os.getuid() == 0:
