@@ -48,9 +48,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 else:
                         st, output = (None, None)
 
-                self.log.debug('submitPilots: Leaving.')
-
-                # FIXME 
+                self.log.debug('submitPilots: Leaving with output (%s, %s).' %(st, output))
                 return st, output
 
         def __prepareJSDFile(self):
@@ -198,12 +196,12 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                                 self.log.error('condor_submit command for %s failed (status %d): %s', self.queue, exitStatus, output)
                         else:
                                 self.log.info('condor_submit command for %s succeeded', self.queue)
-                        return (exitStatus, output)
+                        st, out = exitStatus, output
 
                 else:
                         self.log.debug('Dry run mode - pilot submission supressed.')
-                        return (None, None)
-                        # FIXME
+                        st, out = None, None
 
-                self.log.debug('__submit: Leaving.')
+                self.log.debug('__submit: Leaving with output (%s, %s).' %(st, out))
+                return st, out
 
