@@ -512,7 +512,7 @@ class WMSQueue(threading.Thread):
                 if hasattr(self, 'monitor'):
                         nick = self.qcl.get(self.siteid, 'nickname')
                         label = self.siteid
-                        self.mon.notify(nick, label, output)
+                        self.monitor.notify(nick, label, output)
                 else:
                         self.log.debug('__monitor_notify: no monitor instantiated')
 
