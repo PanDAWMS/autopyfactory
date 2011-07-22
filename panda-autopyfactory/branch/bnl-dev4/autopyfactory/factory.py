@@ -326,7 +326,7 @@ class WMSQueue(threading.Thread):
                 self.status = Status()
 
                 # Handle sched plugin
-                self.scheduler = self.__getplugin('sched')
+                self.scheduler = self.__getplugin('sched', self)
 
                 # Monitor
                 if self.fcl.has_option('Factory', 'monitorURL'):
