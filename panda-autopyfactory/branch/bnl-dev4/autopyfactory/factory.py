@@ -564,7 +564,7 @@ class WMSQueue(threading.Thread):
 
                 self.log.info('__reporttime: up to %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
                 
-                self.log.debug("__reportime: Leaving")
+                self.log.debug("__reporttime: Leaving")
 
         # ----------------------------------------------
         #       run methods end here
