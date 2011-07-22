@@ -27,10 +27,10 @@
 
 
 
+import datetime
 import logging
 import threading
 import time
-import datetime
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
