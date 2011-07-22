@@ -3,7 +3,7 @@
 # Setup prog for autopyfactory
 #
 #
-release_version='2.0.0rc'
+release_version='2.0.0'
 
 import re
 import sys
@@ -40,8 +40,8 @@ setup(
     data_files=[('/usr/libexec', ['libexec/runpilot3-wrapper.sh',
                                   'libexec/wrapper.sh',                                 
                                   ]),
-                ('/etc/apf', ['etc/factory.conf',
-                              'etc/queues.conf',
+                ('/etc/apf', ['etc/factory.conf-example',
+                              'etc/queues.conf-example',
                              ]),
                 ('/etc/init.d', ['etc/factory',
                                 ]),
