@@ -342,7 +342,7 @@ class WMSQueue(threading.Thread):
                 self.wmsstatus = self.__getplugin('wmsstatus', self)
                 self.wmsstatus.start()                  # starts the thread
                 self.batchsubmit = self.__getplugin('batchsubmit', self)
-                self.log.info('WMSQueue: Object initialized.', self)
+                self.log.info('WMSQueue: Object initialized.')
 
         def __getplugin(self, action, *k, **kw):
                 '''
