@@ -388,7 +388,9 @@ class WMSQueue(threading.Thread):
                                 % plugin_module_name)
 
                 plugin_module = __import__("autopyfactory.plugins.%s" % plugin_module_name, 
-                                fromlist=["%s" % plugin_module_name])
+                                           globals(), 
+                                           locals(),
+                                           ["%s" % plugin_module_name])
                 plugin_class = '%sPlugin' %plugin_prefix
 
                 self.log.info("__getplugin: Attempting to return plugin with classname %s" %plugin_class)
