@@ -194,7 +194,7 @@ class APF(object):
                 elif self.options.logfile == 'syslog':
                     logStream = logging.handlers.SysLogHandler('/dev/log')
                 else:
-                    logStream = logging.handlers.RotatingFileHandler(filename=self.options.logfile, maxBytes=10000000, backupCount=5)    
+                    logStream = logging.handlers.FileHandler(filename=self.options.logfile)    
 
                 formatter = logging.Formatter('%(asctime)s - %(name)s: %(levelname)s: %(module)s: %(message)s')
                 logStream.setFormatter(formatter)
