@@ -32,7 +32,7 @@ setup(
     maintainer='Jose Caballero',
     maintainer_email='jcaballero@bnl.gov',
     url='https://twiki.cern.ch/twiki/bin/view/Atlas/PanDA',
-    packages=['autopyfactory'],
+    packages=['autopyfactory','autopyfactory.plugins'],
     scripts = [ # Utilities and main script
                'bin/factory',
                 'bin/factory.py'],
