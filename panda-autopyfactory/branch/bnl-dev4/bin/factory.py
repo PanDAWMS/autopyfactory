@@ -91,6 +91,11 @@ class APF(object):
                                   action="store_const", 
                                   const=logging.INFO, 
                                   help="Set logging level to INFO [default WARNING]")
+                parser.add_option("--console", 
+                                  dest="console", 
+                                  default=False,
+                                  action="store_true", 
+                                  help="Forces debug and info messages to be sent to the console")
                 parser.add_option("--quiet", dest="logLevel", 
                                   default=logging.WARNING,
                                   action="store_const", 
@@ -203,10 +208,11 @@ class APF(object):
                 # adding a new Handler for the console, 
                 # to be used only for DEBUG and INFO modes. 
                 if self.options.logLevel in [logging.DEBUG, logging.INFO]:
-                        console = logging.StreamHandler()
-                        console.setFormatter(formatter)
-                        console.setLevel(self.options.logLevel)
-                        self.log.addHandler(console)
+                        if self.options.console:
+                                console = logging.StreamHandler()
+                                console.setFormatter(formatter)
+                                console.setLevel(self.options.logLevel)
+                                self.log.addHandler(console)
 
                 self.log.setLevel(self.options.logLevel)
                 self.log.debug('logging initialised')
