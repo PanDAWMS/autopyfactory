@@ -329,6 +329,7 @@ class WMSQueue(threading.Thread):
 
                 # Monitor
                 if self.fcl.has_option('Factory', 'monitorURL'):
+                        self.log.info('Instantiating a monitor...')
                         from autopyfactory.monitor import Monitor
                         args = dict(self.fcl.items('Factory'))
                         args.update(dict(self.fcl.items('Pilots')))
