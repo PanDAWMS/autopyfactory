@@ -192,9 +192,9 @@ class APF(object):
                 if self.options.logfile == "stdout":
                     logStream = logging.StreamHandler()
                 elif self.options.logfile == 'syslog':
-                    logStream = logging.handlers.SysLogHandler('/dev/log')
+                    logStream = logging.SysLogHandler('/dev/log')
                 else:
-                    logStream = logging.handlers.FileHandler(filename=self.options.logfile)    
+                    logStream = logging.FileHandler(filename=self.options.logfile)    
 
                 formatter = logging.Formatter('%(asctime)s - %(name)s: %(levelname)s: %(module)s: %(message)s')
                 logStream.setFormatter(formatter)
