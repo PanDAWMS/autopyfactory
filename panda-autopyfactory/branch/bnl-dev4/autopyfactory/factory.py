@@ -480,7 +480,7 @@ class WMSQueue(threading.Thread):
                 if hasattr(self, 'monitor'):
                         self.monitor.shout(self.siteid, self.cyclesrun)
                 else:
-                        self.log.info('__monitor_shout: no monitor instantiated')
+                        self.log.debug('__monitor_shout: no monitor instantiated')
                 self.log.debug("__monitor_shout: Leaving.")
 
         def __monitor_note(self, msg):
@@ -494,7 +494,7 @@ class WMSQueue(threading.Thread):
                         nick = self.qcl.get(self.siteid, 'nickname')
                         self.monitor.msg(nick, self.siteid, msg)
                 else:
-                        self.log.info('__monitor_note: no monitor instantiated')
+                        self.log.debug('__monitor_note: no monitor instantiated')
                         
                 self.log.debug('__monitor__note: Leaving.')
 
@@ -510,7 +510,7 @@ class WMSQueue(threading.Thread):
                         label = self.siteid
                         self.mon.notify(nick, label, output)
                 else:
-                        self.log.info('__monitor_notify: no monitor instantiated')
+                        self.log.debug('__monitor_notify: no monitor instantiated')
 
                 self.log.debug('__monitor_notify: Leaving.')
 
