@@ -562,7 +562,7 @@ class WMSQueue(threading.Thread):
                 total_seconds = days*86400 + seconds
                 average = total_seconds/self.cyclesrun
 
-                self.log.info('__reporttime: up to %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
+                self.log.info('__reporttime: up %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
                 
                 self.log.debug("__reporttime: Leaving")
 
