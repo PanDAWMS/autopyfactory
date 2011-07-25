@@ -2,6 +2,11 @@
 #
 # $Id: configloader.py 7686 2011-04-08 21:15:43Z jhover $
 #
+'''
+    Configuration object loader and storage component for AutoPyFactory.
+
+'''
+
 
 import logging
 import os
@@ -18,6 +23,15 @@ try:
 except ImportError, err:
         # Not critical (yet) - try simplejson
         import simplejson as json
+
+__author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
+__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010,2011 John Hover; 2011 Jose Caballero"
+__credits__ = []
+__license__ = "GPL"
+__version__ = "2.0.0"
+__maintainer__ = "Jose Caballero"
+__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
+__status__ = "Production"
 
 class ConfigLoader(object):
         '''

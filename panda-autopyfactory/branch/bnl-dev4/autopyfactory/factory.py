@@ -1,31 +1,10 @@
 #! /usr/bin/env python
 #
-# Simple(ish) python condor_g factory for panda pilots
-#
 # $Id: factory.py 7688 2011-04-08 22:15:52Z jhover $
-
 #
-#  Somehow we need to normalize the author list, and add Jose Caballero ;)
-#
-
-#
-#
-#  Copyright (C) 2007,2008,2009,2010 Graeme Andrew Stewart
-#
-#  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
+'''
+    Main module for autopyfactory, a pilot factory for PanDA
+'''
 
 import datetime
 import logging
@@ -37,6 +16,15 @@ from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
 from autopyfactory.logserver import LogServer
 
 import userinterface.Client as Client
+
+__author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
+__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010,2011 John Hover; 2011 Jose Caballero"
+__credits__ = []
+__license__ = "GPL"
+__version__ = "2.0.0"
+__maintainer__ = "Jose Caballero"
+__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
+__status__ = "Production"
           
 class Factory:
         '''

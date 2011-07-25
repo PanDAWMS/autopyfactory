@@ -1,28 +1,6 @@
 #! /usr/bin/env python
 #
-#  Job submission-related code. 
-#
-#
-#  Copyright (C) 2011 Jose Caballero
-#
-#  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-import re
-import urllib
-
-"""
+'''
 Module with classes to handle the creation of the job description files
 to submit jobs/pilots, i.e. the condorG file. 
 The module contains 4 classes:
@@ -35,8 +13,19 @@ The module contains 4 classes:
 
 TO-DO: 
         * I do not like the name of classes and variables. I want to change them.
-"""
+'''
 
+import re
+import urllib
+
+__author__ = "Jose Caballero"
+__copyright__ = "2011, Jose Caballero"
+__credits__ = []
+__license__ = "GPL"
+__version__ = "2.0.0"
+__maintainer__ = "Jose Caballero"
+__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
+__status__ = "Production"
 
 class JSDDirectiveException(Exception):
         """class to raise exceptions when we try to print the content of

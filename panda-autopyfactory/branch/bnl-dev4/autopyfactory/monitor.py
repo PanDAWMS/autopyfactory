@@ -1,7 +1,10 @@
+#!/usr/bin/env python
 # $Id: monitor.py 7686 2011-04-08 21:15:43Z jhover $
 #
-# Monitoring system for autopyfactory, signals Monitoring
-# webservice at each factory cycle with list of condor jobs
+
+'''Monitoring system for autopyfactory, signals Monitoring
+ webservice at each factory cycle with list of condor jobs
+'''
 
 import commands
 import logging
@@ -24,6 +27,15 @@ except ImportError, err:
         log = logging.getLogger('main.monitor')
         log.warning('json package not installed. Trying to import simplejson as json')
         import simplejson as json
+
+__author__ = "Peter Love, Jose Caballero"
+__copyright__ = "2010,2011 Peter Love; 2011 Jose Caballero"
+__credits__ = []
+__license__ = "GPL"
+__version__ = "2.0.0"
+__maintainer__ = "Jose Caballero"
+__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
+__status__ = "Production"
 
 _CIDMATCH = re.compile('\*\* Proc (\d+\.\d+)', re.M)
 

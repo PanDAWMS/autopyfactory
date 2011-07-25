@@ -1,14 +1,12 @@
 #
 # 
-# Simple classes for serving up logs via HTTP
-# @author: John Hover <jhover@bnl.gov> 
-#
-# @note log_message overridden in order to log to standard logs rather than stderr.
-# @note extensions_map expanded to handle Condor logfile extensions so user sees them as text rather
-# than being offered a download. 
-#
-#
-
+'''
+   Simple classes for serving up logs via HTTP
+   
+   @note log_message overridden in order to log to standard logs rather than stderr.
+   @note extensions_map expanded to handle Condor logfile extensions so user sees them as text rather
+      than being offered a download. 
+'''
 
 import logging
 import mimetypes
@@ -19,6 +17,14 @@ import threading
 import SimpleHTTPServer
 import SocketServer
 
+__author__ = "John Hover"
+__copyright__ = "2010,2011, John Hover"
+__credits__ = []
+__license__ = "GPL"
+__version__ = "2.0.0"
+__maintainer__ = "Jose Caballero"
+__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
+__status__ = "Production"
 
 class MySimpleHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
