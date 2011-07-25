@@ -1,8 +1,14 @@
 #
 # 
 # Simple classes for serving up logs via HTTP
-# 
+# @author: John Hover <jhover@bnl.gov> 
 #
+# @note log_message overridden in order to log to standard logs rather than stderr.
+# @note extensions_map expanded to handle Condor logfile extensions so user sees them as text rather
+# than being offered a download. 
+#
+#
+
 
 import logging
 import mimetypes
@@ -67,6 +73,7 @@ class MySimpleHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             every message.
     
             """
+            
             log = logging.getLogger('main.logserver')
             log.info("%s - - [%s] %s\n" %
                              (self.address_string(),
@@ -84,10 +91,6 @@ class LogServer(threading.Thread):
     def __init__(self, port=25880, docroot="/home/apf/factory/logs"):
         '''
         docroot is the path to the base directory of the files to be served. 
-        relpath is the URL pattern at which the docroot should be served. 
-        I.e. if you want to serve /home/apf/factory/logs at http://localhost:23456/my/logdir
-        docroot=/home/apf/factory/logs and relpath = /my/logdir
-                
         '''
         threading.Thread.__init__(self)
         self.log= logging.getLogger('main.logserver')
@@ -104,10 +107,9 @@ class LogServer(threading.Thread):
         os.chdir(self.docroot)
         self.log.debug("Changing working dir to %s"%  self.docroot)
         self.httpd.serve_forever()
-        
-        
-        
-        
+
+
+# simple main for testing during development                
 if __name__ == "__main__":
     logging.basicConfig(stream=sys.stdout,level=logging.DEBUG)
     ls = LogServer()
