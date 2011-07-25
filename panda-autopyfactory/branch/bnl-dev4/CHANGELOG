@@ -29,7 +29,8 @@ $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
   configs by detecting file mtime changes. So for now simply restart if you change a file. This feature 
   can be re-enabled soon. 
 
-
+* This release is "The Clockmaker". v2.0.0
+  http://en.wikipedia.org/wiki/List_of_Revelation_Space_characters#The_Clockmaker
 
 
 2011-03-28
