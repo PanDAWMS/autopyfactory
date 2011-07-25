@@ -67,7 +67,7 @@ class MySimpleHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             every message.
     
             """
-            logging.getLogger('main.logserver')
+            log = logging.getLogger('main.logserver')
             log.info("%s - - [%s] %s\n" %
                              (self.address_string(),
                               self.log_date_time_string(),
