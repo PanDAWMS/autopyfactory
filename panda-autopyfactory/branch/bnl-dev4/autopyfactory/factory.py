@@ -34,6 +34,7 @@ import time
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
+from autopyfactory.logserver import LogServer
 
 import userinterface.Client as Client
           
@@ -78,6 +79,12 @@ class Factory:
                 self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
                 #self.queuesConfigParser = self.qcl.config
                 self.wmsmanager = WMSQueuesManager(self)
+                self.logserver = LogServer(port=self.fcl.get('Pilots', 'baseLogHttpPort'),
+                                   docroot=self.fcl.get('Pilots', 'baseLogDir')
+                                   )
+                self.log.debug('LogServer initialized. Starting...')
+                self.logserver.start()
+                self.log.debug('LogServer thread started.')
  
                 self.log.info("Factory: Object initialized.")
 
