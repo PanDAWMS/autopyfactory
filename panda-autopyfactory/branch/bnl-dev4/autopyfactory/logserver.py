@@ -51,6 +51,33 @@ class MySimpleHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         else:
             return self.extensions_map['']
 
+    def log_message(self, format, *args):
+            """Log an arbitrary message.
+    
+            This is used by all other logging functions.  Override
+            it if you have specific logging wishes.
+    
+            The first argument, FORMAT, is a format string for the
+            message to be logged.  If the format string contains
+            any % escapes requiring parameters, they should be
+            specified as subsequent arguments (it's just like
+            printf!).
+    
+            The client host and current date/time are prefixed to
+            every message.
+    
+            """
+            logging.getLogger('main.logserver')
+            log.info("%s - - [%s] %s\n" %
+                             (self.address_string(),
+                              self.log_date_time_string(),
+                              format%args))
+            
+            #sys.stderr.write("%s - - [%s] %s\n" %
+            #                 (self.address_string(),
+            #                  self.log_date_time_string(),
+            #                  format%args))
+        
 
 class LogServer(threading.Thread):
     
