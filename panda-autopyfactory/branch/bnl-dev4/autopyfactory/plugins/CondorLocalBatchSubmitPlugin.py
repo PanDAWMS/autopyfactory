@@ -12,6 +12,14 @@ import time
 from autopyfactory.factory import BatchSubmitInterface
 import submit 
 
+__author__ = "John Hover, Jose Caballero"
+__copyright__ = "2011 John Hover, Jose Caballero"
+__credits__ = []
+__license__ = "GPL"
+__version__ = "2.0.0"
+__maintainer__ = "Jose Caballero"
+__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
+__status__ = "Production"
 
 class BatchSubmitPlugin(BatchSubmitInterface):
         '''

@@ -3,26 +3,6 @@
 # AutoPyfactory batch status plugin for Condor
 #
 
-
-#  Here the list of authors
-
-
-#
-#  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-
 import commands
 import logging
 import time
@@ -31,6 +11,14 @@ import threading
 from autopyfactory.factory import BatchStatusInterface
 from autopyfactory.factory import Singleton 
 
+__author__ = "John Hover, Jose Caballero"
+__copyright__ = "2011 John Hover, Jose Caballero"
+__credits__ = []
+__license__ = "GPL"
+__version__ = "2.0.0"
+__maintainer__ = "Jose Caballero"
+__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
+__status__ = "Production"
 
 class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
@@ -45,18 +33,18 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         
         __metaclass__ = Singleton 
         
-        def __init__(self, pandaqueue):
+        def __init__(self, wmsqueue):
 
-                self.log = logging.getLogger("main.batchstatusplugin")
+                self.log = logging.getLogger("main.batchstatusplugin[%s]" %wmsqueue.siteid)
                 self.log.info('BatchStatusPlugin: Initializing object...')
 
-                self.pandaqueue = pandaqueue
-                self.fconfig = pandaqueue.fcl.config          
-                self.siteid = pandaqueue.siteid
-                self.condoruser = pandaqueue.fcl.get('Factory', 'factoryUser')
-                self.factoryid = pandaqueue.fcl.get('Factory', 'factoryId') 
-                self.statuscycle = int(pandaqueue.qcl.get(self.siteid, 'batchCheckInterval'))
-                self.submitcycle = int(pandaqueue.qcl.get(self.siteid, 'batchSubmitInterval'))
+                self.wmsqueue = wmsqueue
+                self.fconfig = wmsqueue.fcl.config          
+                self.siteid = wmsqueue.siteid
+                self.condoruser = wmsqueue.fcl.get('Factory', 'factoryUser')
+                self.factoryid = wmsqueue.fcl.get('Factory', 'factoryId') 
+                self.statuscycle = int(wmsqueue.qcl.get(self.siteid, 'batchCheckInterval'))
+                self.submitcycle = int(wmsqueue.qcl.get(self.siteid, 'batchSubmitInterval'))
 
                 # results of the condor_q query commands
                 self.updated = False
