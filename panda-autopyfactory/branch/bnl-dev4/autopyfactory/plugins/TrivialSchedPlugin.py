@@ -36,6 +36,9 @@ class SchedPlugin(SchedInterface):
                 else:
                         nbjobs = status.jobs.get('activated', 0)
                         nbpilots = status.batch.get('1', 0) + status.batch.get('2', 0)
+                        # '1' means pilots in Idle status
+                        # '2' means pilots in Running status
+
                         # note: the following if-else algorithm can be written
                         #       in a simpler way, but in this way is easier to 
                         #       read and to understand what it does and why.
