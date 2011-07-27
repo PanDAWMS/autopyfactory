@@ -122,7 +122,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 if self.fcl.has_option('Factory', 'monitorURL'):
                         environment += ' APFMON=%s' % self.fcl.get('Factory', 'monitorURL')
                 environment += ' FACTORYQUEUE=%s' % self.queue
-                if self.fcl.has_option('Factory', 'user'):
+                if self.fcl.has_option('Factory', 'factoryUser'):
                         environment += ' FACTORYUSER=%s' % self.fcl.get('Factory', 'factoryUser')
                 if self.qcl.has_option(self.queue, 'environ'):
                         environ = self.qcl.get(self.queue, 'environ')
