@@ -115,7 +115,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 ####  # In job environment correct GTAG to URL for logs, JSID should be factoryId
 
                 ## ENVIRONMENT ##
-                environment = 'environment = "PANDA_JSID=%s"' % self.fcl.get('Factory', 'factoryId')
+                environment = 'environment = "PANDA_JSID=%s' % self.fcl.get('Factory', 'factoryId')
                 environment += ' GTAG=%s/$(Cluster).$(Process).out' % self.logUrl
                 environment += ' APFCID=$(Cluster).$(Process)'
                 environment += ' APFFID=%s' % self.fcl.get('Factory', 'factoryId')
