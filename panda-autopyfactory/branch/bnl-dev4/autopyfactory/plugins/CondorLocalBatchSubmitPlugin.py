@@ -110,19 +110,37 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add("x509userproxy=%s" % self.qcl.get(self.queue, 'gridProxy'))
                 self.JSD.add('periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)')
                 ####  # In job environment correct GTAG to URL for logs, JSID should be factoryId
-                self.JSD.add('environment = "PANDA_JSID=%s"' % self.fcl.get('Factory', 'factoryId'))
-                self.JSD.add('GTAG=%s/$(Cluster).$(Process).out' % self.logUrl)
-                self.JSD.add('APFCID=$(Cluster).$(Process)')
-                self.JSD.add('APFFID=%s' % self.fcl.get('Factory', 'factoryId'))
-                ####  if isinstance(self.mon, Monitor):
-                ####          self.JSD.add('APFMON=%s' % self.fcl.get('Factory', 'monitorURL'),)
-                self.JSD.add('FACTORYQUEUE=%s' % self.queue)
-                if self.qcl.has_option(self.queue, 'user'):
-                        self.JSD.add('FACTORYUSER=%s' % self.qcl.get(self.queue, 'user'))
+
+                ### Environment
+                environment = 'environment = "PANDA_JSID=%s' % self.fcl.get('Factory', 'factoryId')
+                environment += ' GTAG=%s/$(Cluster).$(Process).out' % self.logUrl
+                environment += ' APFCID=$(Cluster).$(Process)'
+                environment += ' APFFID=%s' % self.fcl.get('Factory', 'factoryId')
+                if self.fcl.has_option('Factory', 'monitorURL'):
+                        environment += ' APFMON=%s' % self.fcl.get('Factory', 'monitorURL')
+                environment += ' FACTORYQUEUE=%s' % self.queue
+                if self.fcl.has_option('Factory', 'factoryUser'):
+                        environment += ' FACTORYUSER=%s' % self.fcl.get('Factory', 'factoryUser')
                 if self.qcl.has_option(self.queue, 'environ'):
                         environ = self.qcl.get(self.queue, 'environ')
-                        if environ != '':
-                                self.JSD.add(environ)
+                        if environ != 'None' and environ != '':
+                                environment += environ
+                environment += '"'
+                self.JSD.add(environment)
+
+                ### self.JSD.add('environment = "PANDA_JSID=%s"' % self.fcl.get('Factory', 'factoryId'))
+                ### self.JSD.add('GTAG=%s/$(Cluster).$(Process).out' % self.logUrl)
+                ### self.JSD.add('APFCID=$(Cluster).$(Process)')
+                ### self.JSD.add('APFFID=%s' % self.fcl.get('Factory', 'factoryId'))
+                ### ####  if isinstance(self.mon, Monitor):
+                ### ####          self.JSD.add('APFMON=%s' % self.fcl.get('Factory', 'monitorURL'),)
+                ### self.JSD.add('FACTORYQUEUE=%s' % self.queue)
+                ### if self.qcl.has_option(self.queue, 'user'):
+                ###         self.JSD.add('FACTORYUSER=%s' % self.qcl.get(self.queue, 'user'))
+                ### if self.qcl.has_option(self.queue, 'environ'):
+                ###         environ = self.qcl.get(self.queue, 'environ')
+                ###         if environ != '':
+                ###                 self.JSD.add(environ)
 
                 # In case of Local submission, the env must be passed 
                 self.JSD.add('GetEnv = True')
