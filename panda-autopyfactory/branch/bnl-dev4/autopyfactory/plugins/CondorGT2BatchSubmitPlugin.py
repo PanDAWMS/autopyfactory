@@ -119,10 +119,10 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 environment += ' GTAG=%s/$(Cluster).$(Process).out' % self.logUrl
                 environment += ' APFCID=$(Cluster).$(Process)'
                 environment += ' APFFID=%s' % self.fcl.get('Factory', 'factoryId')
-                if self.fcl.has_item('Factory', 'monitorURL'):
+                if self.fcl.has_option('Factory', 'monitorURL'):
                         environment += ' APFMON=%s' % self.fcl.get('Factory', 'monitorURL')
                 enviroment += ' FACTORYQUEUE=%s' % self.queue
-                if self.fcl.has_item('Factory', 'user'):
+                if self.fcl.has_option('Factory', 'user'):
                         environment += ' FACTORYUSER=%s' % self.fcl.get('Factory', 'user')
                 if self.qcl.has_option(self.queue, 'environ'):
                         environ = self.qcl.get(self.queue, 'environ')
