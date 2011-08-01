@@ -4,6 +4,7 @@
 '''
 import logging
 
+
 __author__ = "John Hover"
 __copyright__ = "2010,2011, John Hover"
 __credits__ = []
@@ -28,10 +29,7 @@ class ProxyManager(object):
 
 class ProxyHandler(threading.Thread):
     '''
-    Checks, creates, and renews a VOMS proxy used by a queue. While it may seem excessive to have one per queue, 
-    in order to *allow* a queue to have a unique proxy setup, it must be set for each queue. As it is all local and
-    periodic, additional load should be low. 
-    
+    Checks, creates, and renews a VOMS proxy.    
     '''
     
     def __init__(self, ):
@@ -46,3 +44,10 @@ class ProxyHandler(threading.Thread):
         '''
         Main thread loop. 
         '''
+
+  
+if __name__ == '__main__':
+    from optparse import OptionParser
+    
+    
+    

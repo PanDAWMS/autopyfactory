@@ -42,6 +42,7 @@ setup(
                                   ]),
                 ('/etc/apf', ['etc/factory.conf-example',
                               'etc/queues.conf-example',
+                              'etc/proxy.conf-example',
                              ]),
                 ('/etc/init.d', ['etc/factory',
                                 ]),

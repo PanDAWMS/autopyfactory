@@ -11,15 +11,17 @@ gridSetup = /opt/osg-1.2/setup.sh
 #envset_KEY = VALUE
 #envunset = VAR1,VAR2,VAR3
 # baseProxy = /tmp/plainProxy
+usercert=~/.globus/usercert.pem
+userkey=~/.globus/userkey.pem
 
 [atlas-production]
 proxy = /tmp/prodProxy
 vomsRole = atlas:/atlas/Role=production
 
-[atlas-analysis]
-proxy = /tmp/anaProxy
-vomsRole = atlas:/atlas/Role=pilot
+#[atlas-analysis]
+#proxy = /tmp/anaProxy
+#vomsRole = atlas:/atlas/Role=pilot
 
-[osgvo]
-proxy = /tmp/osgProxy
-vomsRole = osg:/osg
+#[osgvo]
+#proxy = /tmp/osgProxy
+#vomsRole = osg:/osg
