@@ -3,7 +3,7 @@
     An X.509 proxy management component for AutoPyFactory 
 '''
 import logging
-
+import threading
 
 __author__ = "John Hover"
 __copyright__ = "2010,2011, John Hover"
