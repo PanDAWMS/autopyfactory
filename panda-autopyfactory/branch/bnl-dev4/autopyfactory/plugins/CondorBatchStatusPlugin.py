@@ -241,6 +241,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 d = {}
                 tokens = line.split()
                 for token in tokens: 
-                        key, value = token.split('=')
-                        d[key] = value 
+                        if token.find('=') != -1: 
+                                key, value = token.split('=')
+                                d[key] = value 
                 return d
