@@ -164,8 +164,10 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 #
                 #querycmd += " -format ' globusStatus=%d' GlobusStatus"
 
-                querycmd += " -format ' MATCH_APF_QUEUE=%s' MATCH_APF_QUEUE"
-                querycmd += " -format ' %s\n' Environment"
+                # removing temporarily (?) Environment from the query 
+                #querycmd += " -format ' MATCH_APF_QUEUE=%s' MATCH_APF_QUEUE"
+                #querycmd += " -format ' %s\n' Environment"
+                querycmd += " -format ' MATCH_APF_QUEUE=%s\n' MATCH_APF_QUEUE"
         
                 self.log.debug('__update: Querying cmd = %s' %querycmd.replace('\n','\\n'))
 
