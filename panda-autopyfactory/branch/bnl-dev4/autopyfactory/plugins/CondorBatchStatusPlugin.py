@@ -242,6 +242,12 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 tokens = line.split()
                 for token in tokens: 
                         if token.find('=') != -1: 
-                                key, value = token.split('=')
+                                #key, value = token.split('=')
+                                # we need to consider the possibility that the 
+                                # value includes itself the char '='
+                                # so we will consider as key the first word
+                                # after splitting, and as value the rest
+                                key = token.split('=')[0]
+                                value = '='.join(token.split('=')[1:])
                                 d[key] = value 
                 return d
