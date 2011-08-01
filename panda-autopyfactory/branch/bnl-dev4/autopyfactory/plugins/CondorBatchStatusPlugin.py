@@ -156,7 +156,14 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 querycmd = "condor_q"
                 #querycmd += " -constr '(owner==\"%s\") && stringListMember(\"PANDA_JSID=%s\", Environment, \" \")'" %(self.factoryid, self.condoruser)
                 querycmd += " -format ' jobStatus=%d' jobStatus"
-                querycmd += " -format ' globusStatus=%d' GlobusStatus"
+
+                # removing temporarily (?) globusStatus from condor_q
+                # it makes no sense with condor-C
+                # until we figure out if we need two plugins or not
+                # I just remove it
+                #
+                #querycmd += " -format ' globusStatus=%d' GlobusStatus"
+
                 querycmd += " -format ' MATCH_APF_QUEUE=%s' MATCH_APF_QUEUE"
                 querycmd += " -format ' %s\n' Environment"
         
