@@ -155,7 +155,6 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
                 querycmd = "condor_q"
                 #querycmd += " -constr '(owner==\"%s\") && stringListMember(\"PANDA_JSID=%s\", Environment, \" \")'" %(self.factoryid, self.condoruser)
-                querycmd += " -format ' jobStatus=%d' jobStatus"
 
                 # removing temporarily (?) globusStatus from condor_q
                 # it makes no sense with condor-C
@@ -167,7 +166,12 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 # removing temporarily (?) Environment from the query 
                 #querycmd += " -format ' MATCH_APF_QUEUE=%s' MATCH_APF_QUEUE"
                 #querycmd += " -format ' %s\n' Environment"
-                querycmd += " -format ' MATCH_APF_QUEUE=%s\n' MATCH_APF_QUEUE"
+                querycmd += " -format ' MATCH_APF_QUEUE=%s' MATCH_APF_QUEUE"
+
+                # I put jobStatus at the end, because all jobs have that variable
+                # defined, so there is no risk is undefined and therefore the 
+                # \n is never called
+                querycmd += " -format ' jobStatus=%d\n' jobStatus"
         
                 self.log.debug('__update: Querying cmd = %s' %querycmd.replace('\n','\\n'))
 
