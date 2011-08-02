@@ -145,6 +145,11 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 ##         if environ != '':
                 ##                 self.JSD.add(environ)
 
+                # Adding condor attributes
+                if self.qcl.has_option(self.queue, 'condor_attributes'):
+                        condor_attributes = self.qcl.get(self.queue, 'condor_attributes')
+                        for attr in condor_attributes.split(','):
+                                self.JSD.add(attr)
 
                 # adding the arguments to the wrapper
                 arguments = 'arguments = '
