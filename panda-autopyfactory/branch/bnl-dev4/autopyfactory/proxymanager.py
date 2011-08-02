@@ -45,6 +45,11 @@ class ProxyHandler(threading.Thread):
         Main thread loop. 
         '''
 
+    def getProxyPath(self):
+        '''
+        Returns file path to current, valid proxy for this Handler, e.g. /tmp/prodProxy123
+        '''
+
   
 if __name__ == '__main__':
     from optparse import OptionParser

@@ -15,13 +15,12 @@ usercert=~/.globus/usercert.pem
 userkey=~/.globus/userkey.pem
 
 [atlas-production]
-proxy = /tmp/prodProxy
 vomsRole = atlas:/atlas/Role=production
+proxyfile = /tmp/prodProxy
 
 #[atlas-analysis]
-#proxy = /tmp/anaProxy
 #vomsRole = atlas:/atlas/Role=pilot
+proxyfile = /tmp/analProxy
 
 #[osgvo]
-#proxy = /tmp/osgProxy
 #vomsRole = osg:/osg
