@@ -40,6 +40,10 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 # have been queried at least once
                 self.updated = False
 
+                # variable to record when was last time info was updated
+                # the info is recorded as seconds since epoch
+                self.lasttime = 0
+
                 threading.Thread.__init__(self) # init the thread
                 self.stopevent = threading.Event()
                 # to avoid the thread to be started more than once
@@ -47,7 +51,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
                 self.log.info('WMSStatusPlugin: Object initialized.')
 
-        def getCloudInfo(self, cloud):
+        def getCloudInfo(self, cloud, maxtime=0):
                 '''
                 from the info (as a dict) retrieved from the PanDA server
                 using method userinterface.Client.getCloudSpecs()
@@ -58,15 +62,20 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
                 while not self.updated:
                         time.sleep(1)
-                if not self.clouds_err:
-                        out = self.all_clouds_config.get(cloud, {})
-                else:
+
+                if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
+                        # info is too old
                         out = {}
+                else:
+                        if not self.clouds_err:
+                                out = self.all_clouds_config.get(cloud, {})
+                        else:
+                                out = {}
 
                 self.log.debug('getCloudInfo: Leaving returning %s' %out)
                 return out 
                 
-        def getSiteInfo(self, site):
+        def getSiteInfo(self, site, maxtime=0):
                 '''
                 from the info (as a dict) retrieved from the PanDA server
                 using method userinterface.Client.getSiteSpecs(siteType='all')
@@ -77,15 +86,20 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
                 while not self.updated:
                         time.sleep(1)
-                if not self.sites_err:
-                        out = self.all_sites_config.get(site, {})
-                else:
+
+                if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
+                        # info is too old
                         out = {}
+                else:
+                        if not self.sites_err:
+                                out = self.all_sites_config.get(site, {})
+                        else:
+                                out = {}
 
                 self.log.debug('getSiteInfo: Leaving returning %s' %out)
                 return out 
 
-        def getJobsInfo(self, site):
+        def getJobsInfo(self, site, maxtime=0):
                 '''
                 from the info (as a dict) retrieved from the PanDA server
                 using method userinterface.Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
@@ -96,10 +110,15 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
                 while not self.updated:
                         time.sleep(1)
-                if not self.jobs_err:
-                        out = self.all_jobs_config.get(site, {})
-                else:
+
+                if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
+                        # info is too old
                         out = {}
+                else:
+                        if not self.jobs_err:
+                                out = self.all_jobs_config.get(site, {})
+                        else:
+                                out = {}
        
                 self.log.debug('getJobsInfo: Leaving returning %s' %out)
                 return out
@@ -156,6 +175,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                         self.log.error('Client.getJobStatisticsPerSite() failed')
 
                 self.updated = True
+                self.lasttime = int(time.time())
 
                 self.log.debug('__update: Leaving.')
 
