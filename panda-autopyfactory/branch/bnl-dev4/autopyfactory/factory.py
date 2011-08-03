@@ -65,7 +65,6 @@ class Factory:
                 
                 self.log.info("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
                 self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
-                #self.queuesConfigParser = self.qcl.config
                 self.wmsmanager = WMSQueuesManager(self)
                 self.logserver = LogServer(port=self.fcl.get('Pilots', 'baseLogHttpPort'),
                                    docroot=self.fcl.get('Pilots', 'baseLogDir')
@@ -423,9 +422,7 @@ class WMSQueue(threading.Thread):
 
                 self.log.debug("__updatestatus: Starting")
 
-                ## ? ## self.log.debug("Would be grabbing Batch info relevant to this queue.")
-                self.status.batch = self.batchstatus.getInfo(self.siteid)  # FIXME : is siteid the correct input ??
-                ## ? ## self.log.debug("Would be getting WMS info relevant to this queue.")
+                self.status.batch = self.batchstatus.getInfo(self.siteid)
                 self.status.cloud = self.wmsstatus.getCloudInfo(self.cloud)
                 self.status.site = self.wmsstatus.getSiteInfo(self.siteid)
                 self.status.jobs = self.wmsstatus.getJobsInfo(self.siteid)
@@ -679,12 +676,6 @@ class BatchStatusInterface(object):
                 '''
                 raise NotImplementedError
 
-        def getJobInfo(self, queue):
-                '''
-                Returns a list of JobStatus objects, one for each job. 
-                '''
-                raise NotImplementedError
-
 
 class WMSStatusInterface(object):
         '''
@@ -721,15 +712,6 @@ class WMSStatusInterface(object):
                 Status object.
                 '''
                 raise NotImplementedError
-
-        #def getInfo(self):
-        #        '''
-        #        Method to get and updated picture of the WMS status. 
-        #        It returns a dictionary to be inserted directly into an
-        #        Status object.
-        #        '''
-        #        raise NotImplementedError
-
 
 
 class BatchSubmitInterface(object):
