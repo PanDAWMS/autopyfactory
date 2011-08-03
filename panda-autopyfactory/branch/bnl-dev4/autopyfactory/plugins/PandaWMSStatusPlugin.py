@@ -33,6 +33,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         __metaclass__ = Singleton
 
         def __init__(self, wmsqueue):
+                self.wmsqueue = wmsqueue
                 self.log = logging.getLogger("main.pandawmsstatusplugin[%s]" %wmsqueue.siteid)
                 self.log.info("WMSStatusPlugin: Initializing object...")
 
@@ -182,7 +183,8 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         def __sleep(self):
                 # FIXME: temporary solution
                 self.log.debug('__sleep: Starting.')
-                time.sleep(100)
+                sleeptime = self.wmsqueue.fcl.getint('Factory', 'wmsstatussleep')
+                time.sleep(sleeptime)
                 self.log.debug('__sleep: Leaving.')
 
         def join(self,timeout=None):
