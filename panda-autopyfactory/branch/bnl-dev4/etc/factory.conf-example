@@ -35,6 +35,10 @@ dryRun=False
 cycles=None   # None means forever
 # Choose prime number to balance load.
 sleep=17
+
+# Time the WMSStatus Plugin waits between cycles
+wmsstatussleep = 50
+
 conffiles=None
 logfile=None
 
