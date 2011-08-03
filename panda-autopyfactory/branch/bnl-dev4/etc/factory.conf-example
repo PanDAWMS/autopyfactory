@@ -38,6 +38,7 @@ sleep=17
 
 # Time the WMSStatus Plugin waits between cycles
 wmsstatussleep = 50
+# Time the BatchStatus Plugin waits between cycles
 batchstatussleep = 50
 
 conffiles=None
