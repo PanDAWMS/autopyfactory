@@ -71,18 +71,6 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
         def __createJSDFile(self):
 
-                ### def writeJDL(self, queue, jdlFile, pilotNumber, logDir, logUrl, cycleNumber=0):
-                # Encoding the wrapper in the script is a bit inflexible, but saves
-                # nasty search and replace on a template file, and means one less 
-                # dependency for the factory.
-
-
-                #try:
-                #        JDL = open(self.jdlFile, "w")
-                #except IOError, (errno, errMsg) :
-                #        self.log.error('Failed to open file %s (error %d): %s', self.jdlFile, errno, errMsg)
-                #        return 1
-        
                 self.log.debug('__createJSDFile: Starting.')
 
                 self.JSD.add("# Condor-G glidein pilot for panda")
@@ -98,21 +86,12 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add("universe=grid")
                 self.JSD.add('grid_resource=gt2 %s' % self.qcl.get(self.queue, 'jdl')) 
                 self.JSD.add("globusrsl=(queue=%s)(jobtype=single)" % self.qcl.get(self.queue, 'localqueue'))
-                ####  # Probably not so helpful to set these in the JDL
-                #if self.qcl.has_option(self.queue, 'memory'):
-                #        self.JSD.add("(maxMemory=%d)" % self.qcl.getint(self.queue, 'memory'))
-                ####  #if self.config.queues[self.queue]['wallClock'] != None:
-                ####  #        self.JSD.add("(maxWallTime=%d)" % self.config.queues[self.queue]['wallClock'],)
-                ####  ##print >>JDL
-                ####  #self.JSD.add('+MATCH_gatekeeper_url="%s"' % self.config.queues[self.queue]['queue'])
-                ####  #self.JSD.add('+MATCH_queue="%s"' % self.config.queues[self.queue]['localqueue'])
 
                 self.JSD.add('+MATCH_APF_QUEUE="%s"' % self.queue)
 
                 self.JSD.add("x509userproxy=%s" % self.qcl.get(self.queue, 'gridProxy'))
                 self.JSD.add('periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)')
                 self.JSD.add('periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)')
-                ####  # In job environment correct GTAG to URL for logs, JSID should be factoryId
 
                 ## ENVIRONMENT ##
                 environment = 'environment = "PANDA_JSID=%s' % self.fcl.get('Factory', 'factoryId')
@@ -130,20 +109,6 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                                 environment += environ 
                 environment += '"'
                 self.JSD.add(environment)
-
-                ## self.JSD.add('environment = "PANDA_JSID=%s"' % self.fcl.get('Factory', 'factoryId'))
-                ## self.JSD.add('GTAG=%s/$(Cluster).$(Process).out' % self.logUrl)
-                ## self.JSD.add('APFCID=$(Cluster).$(Process)')
-                ## self.JSD.add('APFFID=%s' % self.fcl.get('Factory', 'factoryId'))
-                ## ####  if isinstance(self.mon, Monitor):
-                ## ####          self.JSD.add('APFMON=%s' % self.fcl.get('Factory', 'monitorURL'),)
-                ## self.JSD.add('FACTORYQUEUE=%s' % self.queue)
-                ## if self.qcl.has_option(self.queue, 'user'):
-                ##         self.JSD.add('FACTORYUSER=%s' % self.qcl.get(self.queue, 'user'))
-                ## if self.qcl.has_option(self.queue, 'environ'):
-                ##         environ = self.qcl.get(self.queue, 'environ')
-                ##         if environ != '':
-                ##                 self.JSD.add(environ)
 
                 # Adding condor attributes
                 if self.qcl.has_option(self.queue, 'condor_attributes'):
@@ -170,24 +135,6 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                         arguments += ' -A True '
 
                 self.JSD.add(arguments)
-
-                #self.JSD.add('"')
-                ####  self.JSD.add("arguments = -s %s -h %s" % (self.config.queues[self.queue]['siteid'], self.config.queues[self.queue]['nickname']),)
-                ####  self.JSD.add("-p %d -w %s" % (self.config.queues[self.queue]['port'], self.config.queues[self.queue]['server']),)
-                ####  if self.config.queues[self.queue]['jobRecovery'] == False:
-                ####          self.JSD.add(" -j false",)
-                ####  if self.config.queues[self.queue]['memory'] != None:
-                ####          self.JSD.add(" -k %d" % self.config.queues[self.queue]['memory'],)
-                ####  if self.config.queues[self.queue]['user'] != None:
-                ####          self.JSD.add(" -u %s" % self.config.queues[self.queue]['user'],)
-                ####  if self.config.queues[self.queue]['group'] != None:
-                ####          self.JSD.add(" -v %s" % self.config.queues[self.queue]['group'],)
-                ####  if self.config.queues[self.queue]['country'] != None:
-                ####          self.JSD.add(" -o %s" % self.config.queues[self.queue]['country'],)
-                ####  if self.config.queues[self.queue]['allowothercountry'] == True:
-                ####          self.JSD.add(" -A True",)
-                self.JSD.add("queue %d" % self.nbpilots)
-                #return 0
 
                 self.log.debug('__createJSDFile: Leaving.')
 
