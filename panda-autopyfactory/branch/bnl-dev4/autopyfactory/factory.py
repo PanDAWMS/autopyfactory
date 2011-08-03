@@ -698,7 +698,7 @@ class WMSStatusInterface(object):
                 getJobsInfo()
         -----------------------------------------------------------------------
         '''
-        def getCloudInfo(self, cloud):
+        def getCloudInfo(self, cloud, maxtime=0):
                 '''
                 Method to get and updated picture of the cloud status. 
                 It returns a dictionary to be inserted directly into an
@@ -706,7 +706,7 @@ class WMSStatusInterface(object):
                 '''
                 raise NotImplementedError
 
-        def getSiteInfo(self, site):
+        def getSiteInfo(self, site, maxtime=0):
                 '''
                 Method to get and updated picture of the site status. 
                 It returns a dictionary to be inserted directly into an
@@ -714,7 +714,7 @@ class WMSStatusInterface(object):
                 '''
                 raise NotImplementedError
 
-        def getJobsInfo(self, site):
+        def getJobsInfo(self, site, maxtime=0):
                 '''
                 Method to get and updated picture of the jobs status. 
                 It returns a dictionary to be inserted directly into an
