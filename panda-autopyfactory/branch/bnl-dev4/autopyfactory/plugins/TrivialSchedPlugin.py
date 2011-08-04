@@ -16,6 +16,7 @@ __status__ = "Production"
 class SchedPlugin(SchedInterface):
         
         def __init__(self, wmsqueue):
+                self.wmsqueue = wmsqueue
                 self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.siteid)
                 self.log.info("SchedPlugin: Object initialized.")
 
@@ -33,6 +34,9 @@ class SchedPlugin(SchedInterface):
 
                 if not status:
                         out = 0
+                elif not status.valid():
+                        out = self.wmsqueue.qcl.getint(self.wmsqueue.siteid, 'defaultnbpilots')
+                        self.log.info('calcSubmitNum: status is not valid, returning default = %s' %out)
                 else:
                         nbjobs = status.jobs.get('activated', 0)
                         nbpilots = status.batch.get('1', 0) + status.batch.get('2', 0)
