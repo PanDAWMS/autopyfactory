@@ -67,8 +67,9 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 
                 self.log.debug('getInfo: Starting with input %s' %queue)
 
-                while not self.updated:
-                        time.sleep(1)
+                if not self.updated:
+                        return {}
+
                 if not self.error:
                         self.status = self.__analyzeoutput(self.output, 'jobStatus', queue)
                         out = self.status
