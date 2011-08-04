@@ -606,11 +606,14 @@ class Status(object):
                 self.jobs = {}
                 self.batch = {}
 
+                # In the future, the collected info should be
+                # translated into universal format
                 # example:
-                self.jobs['activated'] = None
-                self.jobs['failed'] = None
-                self.jobs['running'] = None
-                self.jobs['transferring'] = None
+                #
+                #self.jobs['activated'] = None
+                #self.jobs['failed'] = None
+                #self.jobs['running'] = None
+                #self.jobs['transferring'] = None
 
                 self.log.info('Status: Object Initialized')
 
