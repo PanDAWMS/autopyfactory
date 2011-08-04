@@ -106,7 +106,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 if self.qcl.has_option(self.queue, 'environ'):
                         environ = self.qcl.get(self.queue, 'environ')
                         if environ != 'None' and environ != '':
-                                environment += environ 
+                                environment += " " + environ 
                 environment += '"'
                 self.JSD.add(environment)
 
