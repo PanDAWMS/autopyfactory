@@ -184,7 +184,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 # FIXME: temporary solution
 
                 self.log.debug('__sleep: Starting.')
-                sleeptime = self.wmsqueue.fcl.getint('Factory', 'batchstatussleep'))
+                sleeptime = self.wmsqueue.fcl.getint('Factory', 'batchstatussleep')
                 time.sleep(sleeptime)
                 self.log.debug('__sleep: Leaving.')
 
