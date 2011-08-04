@@ -81,21 +81,9 @@ wmsstatusplugin = Panda
 batchsubmitplugin = CondorGT2
 schedplugin = Trivial
 
-
-# Batch type and subtype. For Condor grid means Condor-G, vanilla means Condor-C
-batchtype = grid
-batchsubtype = gt2
-
-# How often (seconds) to pull information from underlying batch system, e.g. Condor 
-# How often (seconds) to performt submission. 
-# Choose prime number to balance load.
-batchCheckInterval = 53
-batchSubmitInterval = 61
-
 ## Individual queue configurations
 # It is recommended now only to have a nickname and let everything else
 # be detected from schedconfig
-
 
 [BNL_ITB_Test1]
 nickname = BNL_ITB_Test1-condor
@@ -108,6 +96,14 @@ localqueue = OSG_ITB_Jose
 pandagrid = OSG
 batchsubmitplugin = CondorLocal
 schedplugin = Trivial
+
+# list of condor attributes, splited by comma, to be included in the condor submit file *verbatim*
+condor_attributes = +RACF_Group = "osgitb",+Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas"
+
+# list of environment variables, splitted by white spaces, to be included in the
+# condor attribute environment *verbatim*
+environ = OSG_GRID=/afs/usatlas/osg/wn-client/@sys/itb
+
 
 ### [TEST2]
 ### nickname = TEST2
