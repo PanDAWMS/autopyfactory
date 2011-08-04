@@ -85,8 +85,13 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         
                 self.log.debug('__createJSDFile: Starting.')
 
-                self.JSD.add("# Condor-G glidein pilot for panda")
+                self.JSD.add("# Condor-C glidein pilot for panda")
+
                 self.JSD.add("executable=%s" % self.fcl.get('Pilots', 'executable'))
+                self.JSD.add("transfer_executable = True")
+                self.JSD.add("should_transfer_files = YES")
+                self.JSD.add("when_to_transfer_output = ON_EXIT_OR_EVICT")
+
                 self.JSD.add("Dir=%s/" % self.logDir)
                 self.JSD.add("output=$(Dir)/$(Cluster).$(Process).out")
                 self.JSD.add("error=$(Dir)/$(Cluster).$(Process).err")
