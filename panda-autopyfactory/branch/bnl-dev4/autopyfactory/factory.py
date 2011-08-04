@@ -594,9 +594,6 @@ class Status(object):
         -----------------------------------------------------------------------
         '''
         def __init__(self):
-                # I use None instead of 0 to distinguish between
-                #       - value has been provided and it is 0
-                #       - value not provided 
 
                 self.log = logging.getLogger('main.status')
                 self.log.info('Status: Initializing object...')
@@ -614,8 +611,33 @@ class Status(object):
                 #self.jobs['failed'] = None
                 #self.jobs['running'] = None
                 #self.jobs['transferring'] = None
+                #
+                # I use None instead of 0 to distinguish between
+                #       - value has been provided and it is 0
+                #       - value not provided 
 
                 self.log.info('Status: Object Initialized')
+
+        def valid(self):
+                '''
+                checks if all attributes have a valid value, or
+                some of them is None and therefore the collected info 
+                is not reliable
+                '''
+                self.log.info('valid: Starting.')
+
+                out = True  # default
+                if self.cloud == None:
+                        out = False 
+                if self.site == None:
+                        out = False 
+                if self.jobs == None:
+                        out = False 
+                if self.batch == None:
+                        out = False 
+
+                self.log.info('valid: Leaving with output %s.' %out)
+                return out
 
 
 class Singleton(type):
