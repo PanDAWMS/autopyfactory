@@ -81,9 +81,16 @@ wmsstatusplugin = Panda
 batchsubmitplugin = CondorGT2
 schedplugin = Trivial
 
-## Individual queue configurations
-# It is recommended now only to have a nickname and let everything else
-# be detected from schedconfig
+# nb of pilots to be submitted when the info
+# collected from the batch system and/or the WMS system
+# is not reliable 
+defaultnbpilots = 0
+
+
+
+# ====================================================================== 
+#               Individual queue configurations
+# ====================================================================== 
 
 [BNL_ITB_Test1]
 nickname = BNL_ITB_Test1-condor
