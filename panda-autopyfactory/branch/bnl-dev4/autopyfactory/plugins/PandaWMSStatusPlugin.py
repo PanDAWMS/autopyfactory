@@ -61,8 +61,8 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
                 self.log.debug('getCloudInfo: Starting with input %s' %cloud)
 
-                while not self.updated:
-                        time.sleep(1)
+                if not self.updated:
+                        return {} 
 
                 if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
                         # info is too old
@@ -85,8 +85,8 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
                 self.log.debug('getSiteInfo: Starting with input %s' %site)
 
-                while not self.updated:
-                        time.sleep(1)
+                if not self.updated:
+                        return {}
 
                 if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
                         # info is too old
@@ -109,8 +109,8 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
                 self.log.debug('getJobsInfo: Starting with input %s' %site)
 
-                while not self.updated:
-                        time.sleep(1)
+                if not self.updated:
+                        return {}
 
                 if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
                         # info is too old
