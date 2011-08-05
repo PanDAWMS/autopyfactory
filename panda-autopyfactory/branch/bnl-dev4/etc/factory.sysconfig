@@ -19,7 +19,5 @@
 #
 # CONFFILE="/etc/apf/factory.conf
 # OPTIONS="--debug --test --sleep=60 --runas=apf --log=/var/log/apf/apf.log"
-#OPTIONS="--debug --sleep=60 --runas=apf --log=/var/log/apf/apf.log"
-OPTIONS="--debug --sleep=60 --runas=caballer --log=/var/log/apf/apf.log"
-
-
+OPTIONS="--debug --sleep=60 --runas=apf --log=/var/log/apf/apf.log"
+#OPTIONS="--debug --sleep=60 --runas=caballer --log=/var/log/apf/apf.log"
