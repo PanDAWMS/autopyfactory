@@ -90,7 +90,13 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add("notify_user=%s" % self.fcl.get('Factory', 'factoryOwner'))
                 self.JSD.add("universe=grid")
                 self.JSD.add('grid_resource=gt2 %s' % self.qcl.get(self.queue, 'jdl')) 
-                self.JSD.add("globusrsl=(queue=%s)(jobtype=single)" % self.qcl.get(self.queue, 'localqueue'))
+
+                # -- globusrsl -- 
+                #self.JSD.add("globusrsl=(queue=%s)(jobtype=single)" % self.qcl.get(self.queue, 'localqueue'))
+                globusrsl = "globusrsl=(jobtype=single)"
+                if self.qcl.has_option(self.queue,'localqueue'):
+                        globusrsl += "(queue=%s)" % self.qcl.get(self.queue, 'localqueue')
+                self.JSD.add(globusrsl)
 
                 self.JSD.add('+MATCH_APF_QUEUE="%s"' % self.queue)
 
@@ -98,7 +104,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add('periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)')
                 self.JSD.add('periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)')
 
-                ## ENVIRONMENT ##
+                # -- Environment -- 
                 environment = 'environment = "PANDA_JSID=%s' % self.fcl.get('Factory', 'factoryId')
                 environment += ' GTAG=%s/$(Cluster).$(Process).out' % self.logUrl
                 environment += ' APFCID=$(Cluster).$(Process)'
@@ -115,13 +121,13 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 environment += '"'
                 self.JSD.add(environment)
 
-                # Adding condor attributes
+                # -- Condor attributes -- 
                 if self.qcl.has_option(self.queue, 'condor_attributes'):
                         condor_attributes = self.qcl.get(self.queue, 'condor_attributes')
                         for attr in condor_attributes.split(','):
                                 self.JSD.add(attr)
 
-                # adding the arguments to the wrapper
+                # -- Arguments to the wrapper -- 
                 arguments = 'arguments = '
                 arguments += ' --pandasite=%s ' %self.queue
                 arguments += ' --pandaqueue=%s ' %self.qcl.get(self.queue, 'nickname')
