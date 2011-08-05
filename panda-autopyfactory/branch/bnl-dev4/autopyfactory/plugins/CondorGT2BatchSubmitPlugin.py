@@ -144,9 +144,9 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 if self.qcl.has_option(self.queue, 'allowothercountry') and\
                    self.qcl.getboolean(self.queue, 'allowothercountry'):
                         arguments += ' -A True '
-
                 self.JSD.add(arguments)
 
+                # -- Number of pilots --
                 self.JSD.add("queue %d" % self.nbpilots)
 
                 self.log.debug('__createJSDFile: Leaving.')
