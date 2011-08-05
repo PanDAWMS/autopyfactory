@@ -147,6 +147,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
                 self.JSD.add(arguments)
 
+                self.JSD.add("queue %d" % self.nbpilots)
+
                 self.log.debug('__createJSDFile: Leaving.')
 
         def __writeJSDFile(self):
