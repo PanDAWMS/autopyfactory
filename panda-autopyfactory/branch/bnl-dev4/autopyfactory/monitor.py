@@ -71,8 +71,10 @@ class Monitor(threading.Thread):
         self.c.setopt(pycurl.TIMEOUT, 10)
         self.c.setopt(pycurl.FOLLOWLOCATION, 1)
         #### BEGIN TEST ###
-        self.c.setopt(pycurl.PROXY, 'http://proxy.sec.bnl.local')
-        self.c.setopt(pycurl.PROXYPORT, 3128)
+        if args.has_key('HTTPproxy'):
+                self.c.setopt(pycurl.PROXY, args['HTTPproxy'])
+        if args.has_key('HTTPproxyport'):
+                self.c.setopt(pycurl.PROXYPORT, int(args['HTTPproxyport']))
         #### END TEST ###
 
         self.log.debug('Instantiated monitor')
