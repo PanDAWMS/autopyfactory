@@ -12,6 +12,8 @@ factoryUser = apf
 # condorUser = unixUserName
 # schedConfigPollTime = 5
 #monitorURL =  http://apfmon.lancs.ac.uk/mon/
+#HTTPproxy = http://proxy.sec.bnl.local
+#HTTPproxyport = 3128
 
 ## Configure the pilots which are sent
 # Executable, baseLogDir and baseLogDirUrl are mandatory
