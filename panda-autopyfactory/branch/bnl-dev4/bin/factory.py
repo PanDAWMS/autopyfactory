@@ -202,6 +202,7 @@ class APF(object):
                     logStream = logging.FileHandler(filename=self.options.logfile)    
 
                 formatter = logging.Formatter('%(asctime)s - %(name)s: %(levelname)s: %(module)s: %(message)s')
+                formatter.converter = time.gmtime  # to convert timestamps to UTC
                 logStream.setFormatter(formatter)
                 self.log.addHandler(logStream)
 
