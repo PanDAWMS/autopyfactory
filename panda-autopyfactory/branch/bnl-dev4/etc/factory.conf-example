@@ -14,6 +14,7 @@ factoryUser = apf
 #monitorURL =  http://apfmon.lancs.ac.uk/mon/
 #HTTPproxy = http://proxy.sec.bnl.local
 #HTTPproxyport = 3128
+versionTag = development
 
 ## Configure the pilots which are sent
 # Executable, baseLogDir and baseLogDirUrl are mandatory
