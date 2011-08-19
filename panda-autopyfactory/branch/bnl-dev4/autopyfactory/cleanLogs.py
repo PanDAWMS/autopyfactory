@@ -5,7 +5,8 @@
 # $Id: cleanLogs.py 154 2010-03-19 13:02:16Z graemes $
 #
 
-import os, os.path, sys, getopt, logging, commands, datetime, re, ConfigParser
+import os, sys, getopt, logging, datetime, re, ConfigParser
+import shutil
 
 # Global logging to console
 global console
@@ -26,59 +27,25 @@ conf = 'factory.conf'
 delete = 21
 dryRun = False
 
-# --------------------- usage message -----------------------------------
-usage_msg = '''cleanLogs.py OPTIONS
 
-  Basic clean-up script for factory log files.
-
-  Simple pilot factory for atlas production pilots.
-  Defaut configuration file is factory.conf.
-
-  Options:
-    --help: Print this message.
-    --quiet : Silent running.
-    --verbose: Tell me all about it.
-    --test, --dryrun: Don't do anything, just say what you would do.
-    --delete=N: Number of days after which logfile directories get
-                deleted (default 21).
-    --conf=FILE: Read configuration file FILE (default 'factory.conf')
-
-  Author:
-    Graeme A Stewart <g.stewart@physics.gla.ac.uk>
-'''
-# -----------------------------------------------------------------------
-
-try:
-    opts, args = getopt.getopt(sys.argv[1:], "h", \
-                                   ["help", "quiet", "verbose", "conf=",
-                                    "delete=", "test", "dryrun"])
-except getopt.GetoptError, errMsg:
-        mainMessages.error("Option parsing error (%s). Try '%s -h' for usage.", errMsg, sys.argv[0])
-        sys.exit(2)
-
-
-try:
-        for opt, val in opts:
-                if opt in ("-h", "--help"):
-                        print usage_msg
-                        sys.exit(0)
-                if opt in ("--quiet",):
-                        debugLevel = logging.WARNING
-                        mainMessages.setLevel(debugLevel)
-                if opt in ("--verbose", "--debug"):
-                        debugLevel = logging.DEBUG
-                        mainMessages.setLevel(debugLevel)
-                if opt in ("--test", "--dryrun",):
-                        dryRun = True
-                        cyclesToDo = 1
-                if opt in ("--delete",):
-                        delete = int(val)
-                if opt in ("--conf",):
-                        conf = val
-except ValueError, errMsg:
-            print >>sys.stderr, "Error converting '%s' to int: %s" % (val, errMsg)
-            sys.exit(1)
-
+#### try:
+####     opts, args = getopt.getopt(sys.argv[1:], "", ["conf=", "delete=", "test", "dryrun"])
+#### except getopt.GetoptError, errMsg:
+####         mainMessages.error("Option parsing error (%s). Try '%s -h' for usage.", errMsg, sys.argv[0])
+####         sys.exit(2)
+#### try:
+####         for opt, val in opts:
+####                 if opt in ("--test", "--dryrun",):
+####                         dryRun = True
+####                         cyclesToDo = 1
+####                 if opt in ("--delete",):
+####                         delete = int(val)
+####                 if opt in ("--conf",):
+####                         conf = val
+#### except ValueError, errMsg:
+####             print >>sys.stderr, "Error converting '%s' to int: %s" % (val, errMsg)
+####             sys.exit(1)
+#### 
 
 config = ConfigParser.SafeConfigParser()
 config.optionxform = str
