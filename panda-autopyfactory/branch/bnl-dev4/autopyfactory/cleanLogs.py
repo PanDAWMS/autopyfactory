@@ -22,9 +22,6 @@ mainMessages.setLevel(logging.INFO)
 # You'll never see this message, ha ha
 mainMessages.debug('Logger initialised')
 
-# Defaults
-dryRun = False
-
 config = ConfigParser.SafeConfigParser()
 config.optionxform = str
 config.read(conf)
@@ -89,8 +86,5 @@ class CleanCondorLogs(object):
 
                 if deltaT.days > self.delete:
                         mainMessages.info("Deleting %s..." % entry)
-                        if dryRun:
-                                mainMessages.info("Dry run - deletion supressed")
-                        else:
                                 entrypath = os.path.join(self.logDir, entry)
                                 shutil.rmtree(entrypath)
