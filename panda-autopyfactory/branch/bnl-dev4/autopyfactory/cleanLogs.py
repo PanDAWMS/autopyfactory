@@ -89,19 +89,39 @@ config = ConfigParser.SafeConfigParser()
 config.optionxform = str
 config.read(conf)
 
-logDir = config.get('Pilots', 'baseLogDir')
-if not os.access(logDir, os.F_OK):
-            mainMessages.error('Base log directory %s does not exist - nothing to do',
-                               logDir)
-            sys.exit(1)
  
 
 logDirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})(\.tgz)?$")  # i.e. 2011-08-12.tgz
 now = datetime.date.today()
 
-entries = os.listdir(logDir)
-entries.sort()
-for entry in entries:
+
+def getentries():
+        '''
+        get the list of subdirectories underneath 'baseLogDir'
+        '''
+
+        logDir = config.get('Pilots', 'baseLogDir')
+        if not os.access(logDir, os.F_OK):
+                    mainMessages.error('Base log directory %s does not exist - nothing to do',
+                                       logDir)
+                    sys.exit(1)
+        entries = os.listdir(logDir)
+        entries.sort()
+        return entries
+
+def process():
+        '''
+        loops over all directories to perform cleaning actions
+        '''
+        entries = getentries()
+        for entry in entries:
+                process_entry(entry)
+
+def process_entry(entry):
+        ''' 
+        processes each directory
+        ''' 
+
         mainMessages.debug('Looking at %s' % entry)
         logDirMatch = logDirRe.match(entry)
         if logDirMatch:
@@ -130,3 +150,5 @@ for entry in entries:
         else:
                 mainMessages.debug('This does not look like a factory log')
 
+
+process()
