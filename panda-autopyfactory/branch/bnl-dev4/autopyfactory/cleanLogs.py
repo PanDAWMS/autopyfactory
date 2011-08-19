@@ -23,7 +23,6 @@ mainMessages.debug('Logger initialised')
 
 # Defaults
 conf = 'factory.conf'
-compress = 7
 delete = 21
 dryRun = False
 
