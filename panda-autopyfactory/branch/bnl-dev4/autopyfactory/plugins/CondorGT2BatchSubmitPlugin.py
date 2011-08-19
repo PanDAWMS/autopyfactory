@@ -136,20 +136,6 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                         arguments += self.qcl.get(self.queue, 'arguments')
                 self.JSD.add(arguments)
 
-                ## arguments += ' -j false'
-                ## if self.qcl.has_option(self.queue, 'memory'):
-                ##         arguments += ' -k %s' %self.qcl.get(self.queue, 'memory')
-                ## if self.qcl.has_option(self.queue, 'user'):
-                ##         arguments += ' -u %s' %self.qcl.get(self.queue, 'user')
-                ## if self.qcl.has_option(self.queue, 'group'):
-                ##         arguments += ' -v %s' %self.qcl.get(self.queue, 'group')
-                ## if self.qcl.has_option(self.queue, 'country'):
-                ##         arguments += ' -o %s' %self.qcl.get(self.queue, 'country')
-                ## if self.qcl.has_option(self.queue, 'allowothercountry') and\
-                ##    self.qcl.getboolean(self.queue, 'allowothercountry'):
-                ##         arguments += ' -A True '
-                ## self.JSD.add(arguments)
-
                 # -- Number of pilots --
                 self.JSD.add("queue %d" % self.nbpilots)
 
