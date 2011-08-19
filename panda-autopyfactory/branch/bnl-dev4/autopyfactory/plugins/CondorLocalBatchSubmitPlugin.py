@@ -165,6 +165,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                         arguments += self.qcl.get(self.queue, 'arguments')
                 self.JSD.add(arguments)
 
+                # -- Number of pilots --
                 self.JSD.add("queue %d" % self.nbpilots)
 
                 self.log.debug('__createJSDFile: Leaving.')
