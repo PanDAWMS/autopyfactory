@@ -40,8 +40,6 @@ usage_msg = '''cleanLogs.py OPTIONS
     --quiet : Silent running.
     --verbose: Tell me all about it.
     --test, --dryrun: Don't do anything, just say what you would do.
-    --compress=N: Number of days after which logfile directories get
-                  compressed (default 7).
     --delete=N: Number of days after which logfile directories get
                 deleted (default 21).
     --conf=FILE: Read configuration file FILE (default 'factory.conf')
@@ -54,7 +52,7 @@ usage_msg = '''cleanLogs.py OPTIONS
 try:
     opts, args = getopt.getopt(sys.argv[1:], "h", \
                                    ["help", "quiet", "verbose", "conf=",
-                                    "compress=", "delete=", "test", "dryrun"])
+                                    "delete=", "test", "dryrun"])
 except getopt.GetoptError, errMsg:
         mainMessages.error("Option parsing error (%s). Try '%s -h' for usage.", errMsg, sys.argv[0])
         sys.exit(2)
@@ -74,8 +72,6 @@ try:
                 if opt in ("--test", "--dryrun",):
                         dryRun = True
                         cyclesToDo = 1
-                if opt in ("--compress",):
-                        compress = int(val)
                 if opt in ("--delete",):
                         delete = int(val)
                 if opt in ("--conf",):
@@ -88,12 +84,6 @@ except ValueError, errMsg:
 config = ConfigParser.SafeConfigParser()
 config.optionxform = str
 config.read(conf)
-
- 
-
-logDirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})(\.tgz)?$")  # i.e. 2011-08-12.tgz
-now = datetime.date.today()
-
 
 def getentries():
         '''
@@ -109,46 +99,37 @@ def getentries():
         entries.sort()
         return entries
 
-def process():
+def process(delete):
         '''
         loops over all directories to perform cleaning actions
         '''
         entries = getentries()
         for entry in entries:
-                process_entry(entry)
+                process_entry(entry, delete)
 
-def process_entry(entry):
+def process_entry(entry, delete):
         ''' 
         processes each directory
         ''' 
 
         mainMessages.debug('Looking at %s' % entry)
+
+        logDirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")  # i.e. 2011-08-12
         logDirMatch = logDirRe.match(entry)
-        if logDirMatch:
-                mainMessages.debug('This is a factory log')
-                then = datetime.date(int(logDirMatch.group(1)), int(logDirMatch.group(2)), int(logDirMatch.group(3)))
-                deltaT = now - then
-                mainMessages.info('Entry %s is %d days old' % (entry, deltaT.days))
-                if logDirMatch.group(4) != None and deltaT.days > delete:
-                        mainMessages.info("Deleting compressed %s..." % entry)
-                        if dryRun:
-                                mainMessages.info("Dry run - deletion supressed")
-                        else:
-                                commands.getstatusoutput('rm -fr %s' % (logDir + "/" + entry))
-                elif logDirMatch.group(4) == None and deltaT.days > compress:
-                        mainMessages.info("Compressing %s..." % entry)
-                        if dryRun:
-                                mainMessages.info("Dry run - compression supressed")
-                        else:
-                                commands.getstatusoutput('tar -czf %s %s' % (logDir + "/" + entry + ".tgz", logDir + "/" + entry))
-                                commands.getstatusoutput('rm -fr %s' % (logDir + "/" + entry))
+
+        then = datetime.date(int(logDirMatch.group(1)), int(logDirMatch.group(2)), int(logDirMatch.group(3)))
+        # then is the time of the directory, recreated from its name
+        now = datetime.date.today()
+        deltaT = now - then
+
+        mainMessages.info('Entry %s is %d days old' % (entry, deltaT.days))
+
+        if deltaT.days > delete:
+                mainMessages.info("Deleting %s..." % entry)
+                if dryRun:
+                        mainMessages.info("Dry run - deletion supressed")
                 else:
-                        if logDirMatch.group(4) == None:
-                                mainMessages.info("%s is fresh - doing nothing" % entry)
-                        else:
-                                mainMessages.info("%s is an archived log - doing nothing" % entry)
-        else:
-                mainMessages.debug('This does not look like a factory log')
+                        shutil.rmtree(logDir + '/' + entry)
 
-
-process()
+# --------------------------------------------------------------------------------------------
+process(delete)
