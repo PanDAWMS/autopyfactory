@@ -27,19 +27,8 @@ compress = 7
 delete = 21
 dryRun = False
 
-
-try:
-    opts, args = getopt.getopt(sys.argv[1:], "h", \
-                                   ["help", "quiet", "verbose", "conf=",
-                                    "compress=", "delete=", "test", "dryrun"])
-except getopt.GetoptError, errMsg:
-    mainMessages.error("Option parsing error (%s). Try '%s -h' for usage.", errMsg, sys.argv[0])
-    sys.exit(2)
-
-try:
-    for opt, val in opts:
-        if opt in ("-h", "--help"):
-            print '''cleanLogs.py OPTIONS
+# --------------------- usage message -----------------------------------
+usage_msg = '''cleanLogs.py OPTIONS
 
   Basic clean-up script for factory log files.
 
@@ -60,6 +49,21 @@ try:
   Author:
     Graeme A Stewart <g.stewart@physics.gla.ac.uk>
 '''
+# -----------------------------------------------------------------------
+
+try:
+    opts, args = getopt.getopt(sys.argv[1:], "h", \
+                                   ["help", "quiet", "verbose", "conf=",
+                                    "compress=", "delete=", "test", "dryrun"])
+except getopt.GetoptError, errMsg:
+    mainMessages.error("Option parsing error (%s). Try '%s -h' for usage.", errMsg, sys.argv[0])
+    sys.exit(2)
+
+
+try:
+    for opt, val in opts:
+        if opt in ("-h", "--help"):
+            print usage_msg
             sys.exit(0)
         if opt in ("--quiet",):
             debugLevel = logging.WARNING
