@@ -25,7 +25,6 @@ mainMessages.debug('Logger initialised')
 # Defaults
 dryRun = False
 
-
 config = ConfigParser.SafeConfigParser()
 config.optionxform = str
 config.read(conf)
@@ -51,9 +50,7 @@ class CleanCondorLogs(object):
 
                 return delete
                 
-
-
-        def process(self, delete):
+        def process(self):
                 '''
                 loops over all directories to perform cleaning actions
                 '''
@@ -99,4 +96,6 @@ class CleanCondorLogs(object):
                                 shutil.rmtree(entrypath)
 
 # --------------------------------------------------------------------------------------------
-process(delete)
+
+d = CleanCondorLogs()
+d.process()
