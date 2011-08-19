@@ -97,12 +97,11 @@ nickname = BNL_ITB_Test1-condor
 jdl = gridtest01.racf.bnl.gov/jobmanager-condor
 status = test
 sftemplate=/path/to/file
-memory = 600
-user = Jose
 localqueue = OSG_ITB_Jose
 pandagrid = OSG
 batchsubmitplugin = CondorLocal
 schedplugin = Trivial
+arguments = -j false -k 600 -u panda 
 
 # list of condor attributes, splited by comma, to be included in the condor submit file *verbatim*
 condor_attributes = +RACF_Group = "osgitb",+Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas"
