@@ -165,37 +165,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                         arguments += self.qcl.get(self.queue, 'arguments')
                 self.JSD.add(arguments)
 
-                ## arguments += ' -j false'
-                ## if self.qcl.has_option(self.queue, 'memory'):
-                ##         arguments += ' -k %s' %self.qcl.get(self.queue, 'memory')
-                ## if self.qcl.has_option(self.queue, 'user'):
-                ##         arguments += ' -u %s' %self.qcl.get(self.queue, 'user')
-                ## if self.qcl.has_option(self.queue, 'group'):
-                ##         arguments += ' -v %s' %self.qcl.get(self.queue, 'group')
-                ## if self.qcl.has_option(self.queue, 'country'):
-                ##         arguments += ' -o %s' %self.qcl.get(self.queue, 'country')
-                ## if self.qcl.has_option(self.queue, 'allowothercountry') and\
-                ##    self.qcl.getboolean(self.queue, 'allowothercountry'):
-                ##         arguments += ' -A True '
-                ## self.JSD.add(arguments)
-
-                #self.JSD.add('"')
-                ####  self.JSD.add("arguments = -s %s -h %s" % (self.config.queues[self.queue]['siteid'], self.config.queues[self.queue]['nickname']),)
-                ####  self.JSD.add("-p %d -w %s" % (self.config.queues[self.queue]['port'], self.config.queues[self.queue]['server']),)
-                ####  if self.config.queues[self.queue]['jobRecovery'] == False:
-                ####          self.JSD.add(" -j false",)
-                ####  if self.config.queues[self.queue]['memory'] != None:
-                ####          self.JSD.add(" -k %d" % self.config.queues[self.queue]['memory'],)
-                ####  if self.config.queues[self.queue]['user'] != None:
-                ####          self.JSD.add(" -u %s" % self.config.queues[self.queue]['user'],)
-                ####  if self.config.queues[self.queue]['group'] != None:
-                ####          self.JSD.add(" -v %s" % self.config.queues[self.queue]['group'],)
-                ####  if self.config.queues[self.queue]['country'] != None:
-                ####          self.JSD.add(" -o %s" % self.config.queues[self.queue]['country'],)
-                ####  if self.config.queues[self.queue]['allowothercountry'] == True:
-                ####          self.JSD.add(" -A True",)
                 self.JSD.add("queue %d" % self.nbpilots)
-                #return 0
 
                 self.log.debug('__createJSDFile: Leaving.')
 
