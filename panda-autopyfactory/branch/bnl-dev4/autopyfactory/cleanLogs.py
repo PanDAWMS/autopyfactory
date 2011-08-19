@@ -23,79 +23,80 @@ mainMessages.setLevel(logging.INFO)
 mainMessages.debug('Logger initialised')
 
 # Defaults
-conf = 'factory.conf'
-delete = 21
 dryRun = False
 
-
-#### try:
-####     opts, args = getopt.getopt(sys.argv[1:], "", ["conf=", "delete=", "test", "dryrun"])
-#### except getopt.GetoptError, errMsg:
-####         mainMessages.error("Option parsing error (%s). Try '%s -h' for usage.", errMsg, sys.argv[0])
-####         sys.exit(2)
-#### try:
-####         for opt, val in opts:
-####                 if opt in ("--test", "--dryrun",):
-####                         dryRun = True
-####                         cyclesToDo = 1
-####                 if opt in ("--delete",):
-####                         delete = int(val)
-####                 if opt in ("--conf",):
-####                         conf = val
-#### except ValueError, errMsg:
-####             print >>sys.stderr, "Error converting '%s' to int: %s" % (val, errMsg)
-####             sys.exit(1)
-#### 
 
 config = ConfigParser.SafeConfigParser()
 config.optionxform = str
 config.read(conf)
 
-def getentries():
-        '''
-        get the list of subdirectories underneath 'baseLogDir'
-        '''
+class CleanCondorLogs(object):
 
-        logDir = config.get('Pilots', 'baseLogDir')
-        if not os.access(logDir, os.F_OK):
-                    mainMessages.error('Base log directory %s does not exist - nothing to do',
-                                       logDir)
-                    sys.exit(1)
-        entries = os.listdir(logDir)
-        entries.sort()
-        return entries
+        def __init__(self, fcl):
+        
+                self.fcl = fcl
+                self.logDir = self.fcl.get('Pilots', 'baseLogDir')
+                self.delete = self.__getdelete()
 
-def process(delete):
-        '''
-        loops over all directories to perform cleaning actions
-        '''
-        entries = getentries()
-        for entry in entries:
-                process_entry(entry, delete)
+        def __getdelete(self):
+                '''
+                determines how old can logs be w/o being removed
+                '''
 
-def process_entry(entry, delete):
-        ''' 
-        processes each directory
-        ''' 
+                # default
+                delete = 14
 
-        mainMessages.debug('Looking at %s' % entry)
+                if self.fcl.has_option('Pilots', 'delete'):  # FIXME: pick up a better name
+                        delete = self.fcl.getint('Pilots','delete')
 
-        logDirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")  # i.e. 2011-08-12
-        logDirMatch = logDirRe.match(entry)
+                return delete
+                
 
-        then = datetime.date(int(logDirMatch.group(1)), int(logDirMatch.group(2)), int(logDirMatch.group(3)))
-        # then is the time of the directory, recreated from its name
-        now = datetime.date.today()
-        deltaT = now - then
 
-        mainMessages.info('Entry %s is %d days old' % (entry, deltaT.days))
+        def process(self, delete):
+                '''
+                loops over all directories to perform cleaning actions
+                '''
+                entries = self.__getentries()
+                for entry in entries:
+                        self.__process_entry(entry)
 
-        if deltaT.days > delete:
-                mainMessages.info("Deleting %s..." % entry)
-                if dryRun:
-                        mainMessages.info("Dry run - deletion supressed")
-                else:
-                        shutil.rmtree(logDir + '/' + entry)
+        def __getentries(self):
+                '''
+                get the list of subdirectories underneath 'baseLogDir'
+                '''
+                if not os.access(self.logDir, os.F_OK):
+                            mainMessages.error('Base log directory %s does not exist - nothing to do',
+                                               self.ogDir)
+                            sys.exit(1)
+                entries = os.listdir(self.logDir)
+                entries.sort()
+                return entries
+
+        def __process_entry(self, entry):
+                ''' 
+                processes each directory
+                ''' 
+
+                mainMessages.debug('Looking at %s' % entry)
+
+                logDirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")  # i.e. 2011-08-12
+                logDirMatch = logDirRe.match(entry)
+
+                then = datetime.date(int(logDirMatch.group(1)), int(logDirMatch.group(2)), int(logDirMatch.group(3)))
+                # then is the time of the directory, recreated from its name
+                now = datetime.date.today()
+                deltaT = now - then
+
+                mainMessages.info('Entry %s is %d days old' % (entry, deltaT.days))
+
+                if deltaT.days > self.delete:
+                        mainMessages.info("Deleting %s..." % entry)
+                        if dryRun:
+                                mainMessages.info("Dry run - deletion supressed")
+                        else:
+                                entrypath = os.path.join(self.logDir, entry)
+                                shutil.rmtree(entrypath)
 
 # --------------------------------------------------------------------------------------------
 process(delete)
