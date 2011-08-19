@@ -46,7 +46,7 @@ class CleanCondorLogs(object):
                 delete = 14
 
                 if self.fcl.has_option('Pilots', 'delete'):  # FIXME: pick up a better name
-                        delete = self.fcl.getint('Pilots','delete')
+                        delete = self.fcl.getint('Pilots', 'delete')
 
                 return delete
                 
@@ -94,8 +94,3 @@ class CleanCondorLogs(object):
                         else:
                                 entrypath = os.path.join(self.logDir, entry)
                                 shutil.rmtree(entrypath)
-
-# --------------------------------------------------------------------------------------------
-
-d = CleanCondorLogs()
-d.process()
