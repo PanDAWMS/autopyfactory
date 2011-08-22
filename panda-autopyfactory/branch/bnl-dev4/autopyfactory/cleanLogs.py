@@ -12,25 +12,9 @@ import re
 import shutil
 import sys
 
-import ConfigParser
-
-###### # Global logging to console
-###### global console
-###### console = logging.StreamHandler()
-###### console.setLevel(logging.DEBUG)
-###### formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
-###### console.setFormatter(formatter)
-###### 
-###### mainMessages = logging.getLogger('cleanLogs.py')
-###### mainMessages.addHandler(console)
-###### mainMessages.setLevel(logging.INFO)
-###### 
-###### # You'll never see this message, ha ha
-###### mainMessages.debug('Logger initialised')
-###### 
-###### config = ConfigParser.SafeConfigParser()
-###### config.optionxform = str
-###### config.read(conf)
+from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
+from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
+from autopyfactory.logserver import LogServer
 
 class CleanCondorLogs(object):
         '''
@@ -51,20 +35,21 @@ class CleanCondorLogs(object):
         -----------------------------------------------------------------------
         '''
 
-        ##def __init__(self, fcl):
-        ##
-        ##        self.fcl = fcl
-        ##        self.logDir = self.fcl.get('Pilots', 'baseLogDir')
-        ##        self.delete = self.__getdelete()
+
 
         def __init__(self, factory):
                 '''
                 factory is a reference to the Factory object that created
                 the CleanCondorLogs instance
                 '''
+
+                self.log = logging.getLogger('main.cleancondorlogs')
+                self.log.info('CleanCondorLogs: Initializing object...')
         
                 self.fcl = factory.fcl
                 self.logDir = self.fcl.get('Pilots', 'baseLogDir')
+
+                self.log.info('CleanCondorLogs: Object initialized.')
 
         def process(self):
                 '''
