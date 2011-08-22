@@ -78,10 +78,10 @@ class CleanCondorLogs(object):
                 '''
                 get the list of subdirectories underneath 'baseLogDir'
                 '''
-                if not os.access(self.logDir, os.F_OK):
-                            mainMessages.error('Base log directory %s does not exist - nothing to do',
-                                               self.ogDir)
-                            sys.exit(1)
+                #### if not os.access(self.logDir, os.F_OK):
+                ####             mainMessages.error('Base log directory %s does not exist - nothing to do',
+                ####                                self.ogDir)
+                ####             sys.exit(1)
                 entries = os.listdir(self.logDir)
                 entries.sort()
                 return entries
@@ -91,7 +91,7 @@ class CleanCondorLogs(object):
                 processes each directory
                 ''' 
 
-                mainMessages.debug('Looking at %s' % entry)
+                #### mainMessages.debug('Looking at %s' % entry)
 
                 logDirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")  # i.e. 2011-08-12
                 logDirMatch = logDirRe.match(entry)
@@ -103,13 +103,13 @@ class CleanCondorLogs(object):
                 now = datetime.date.today()
                 deltaT = now - then
 
-                mainMessages.info('Entry %s is %d days old' % (entry, deltaT.days))
+                #### mainMessages.info('Entry %s is %d days old' % (entry, deltaT.days))
 
                 # how many days before we delete?
                 maxdays = self.__getmaxdays() 
 
                 if deltaT.days > maxdays:
-                        mainMessages.info("Deleting %s..." % entry)
+                        ##### mainMessages.info("Deleting %s..." % entry)
                         entrypath = os.path.join(self.logDir, entry)
                         shutil.rmtree(entrypath)
 
