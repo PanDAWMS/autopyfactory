@@ -123,6 +123,6 @@ class CleanCondorLogs(object):
                 maxdays= 14
 
                 if self.fcl.has_option('Pilots', 'maxdays'):  # FIXME: pick up a better name
-                        delete = self.fcl.getint('Pilots', 'maxdays')
+                        maxdays = self.fcl.getint('Pilots', 'maxdays')
 
                 return maxdays
