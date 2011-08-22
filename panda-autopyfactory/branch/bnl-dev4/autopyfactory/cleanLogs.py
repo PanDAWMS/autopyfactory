@@ -59,21 +59,7 @@ class CleanCondorLogs(object):
         
                 self.fcl = factory.fcl
                 self.logDir = self.fcl.get('Pilots', 'baseLogDir')
-                self.delete = self.__getdelete()
 
-        def __getdelete(self):
-                '''
-                determines how old can logs be w/o being removed
-                '''
-
-                # default
-                delete = 14
-
-                if self.fcl.has_option('Pilots', 'delete'):  # FIXME: pick up a better name
-                        delete = self.fcl.getint('Pilots', 'delete')
-
-                return delete
-                
         def process(self):
                 '''
                 loops over all directories to perform cleaning actions
@@ -111,7 +97,23 @@ class CleanCondorLogs(object):
 
                 mainMessages.info('Entry %s is %d days old' % (entry, deltaT.days))
 
-                if deltaT.days > self.delete:
+                # how many days before we delete?
+                delete = self._getdelete() 
+
+                if deltaT.days > delete:
                         mainMessages.info("Deleting %s..." % entry)
                                 entrypath = os.path.join(self.logDir, entry)
                                 shutil.rmtree(entrypath)
+
+        def __getdelete(self):
+                '''
+                determines how old can logs be w/o being removed
+                '''
+
+                # default
+                delete = 14
+
+                if self.fcl.has_option('Pilots', 'delete'):  # FIXME: pick up a better name
+                        delete = self.fcl.getint('Pilots', 'delete')
+
+                return delete
