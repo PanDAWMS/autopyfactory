@@ -98,22 +98,23 @@ class CleanCondorLogs(object):
                 mainMessages.info('Entry %s is %d days old' % (entry, deltaT.days))
 
                 # how many days before we delete?
-                delete = self._getdelete() 
+                maxdays = self.__getmaxdays() 
 
-                if deltaT.days > delete:
+                if deltaT.days > maxdays:
                         mainMessages.info("Deleting %s..." % entry)
                                 entrypath = os.path.join(self.logDir, entry)
                                 shutil.rmtree(entrypath)
 
-        def __getdelete(self):
+        def __getmaxdays(self):
                 '''
-                determines how old can logs be w/o being removed
+                determines how old (in term of nb of days) 
+                can logs be w/o being removed
                 '''
 
                 # default
-                delete = 14
+                maxdays= 14
 
-                if self.fcl.has_option('Pilots', 'delete'):  # FIXME: pick up a better name
-                        delete = self.fcl.getint('Pilots', 'delete')
+                if self.fcl.has_option('Pilots', 'maxdays'):  # FIXME: pick up a better name
+                        delete = self.fcl.getint('Pilots', 'maxdays')
 
-                return delete
+                return maxdays
