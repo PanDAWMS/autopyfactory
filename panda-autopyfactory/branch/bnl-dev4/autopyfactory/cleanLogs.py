@@ -27,6 +27,23 @@ config.optionxform = str
 config.read(conf)
 
 class CleanCondorLogs(object):
+        '''
+        -----------------------------------------------------------------------
+        Class to handle the condor log files removal.
+        There are several possibilities to decide which files 
+        have to be deleted is:
+                - basic algorithm is just to remove files older than some 
+                  number of days.
+                - based on disk space usage. 
+                  We can keep files as long as possible, until some percentage
+                  of the disk is used. 
+                - Both algorithm can be combined. 
+        -----------------------------------------------------------------------
+        Public Interface:
+                __init__(fcl)
+                process()
+        -----------------------------------------------------------------------
+        '''
 
         ##def __init__(self, fcl):
         ##
@@ -35,6 +52,10 @@ class CleanCondorLogs(object):
         ##        self.delete = self.__getdelete()
 
         def __init__(self, factory):
+                '''
+                factory is a reference to the Factory object that created
+                the CleanCondorLogs instance
+                '''
         
                 self.fcl = factory.fcl
                 self.logDir = self.fcl.get('Pilots', 'baseLogDir')
