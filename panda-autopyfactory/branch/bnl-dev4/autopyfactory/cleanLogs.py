@@ -68,9 +68,12 @@ class CleanCondorLogs(object):
                 self.log.debug("__getentries: Starting.")
 
                 if not os.access(self.logDir, os.F_OK):
-                            self.log.warning('Base log directory %s does not exist - nothing to do',
-                                             self.logDir)
-        
+                        self.log.warning('__getentries: Base log directory %s does not exist - nothing to do',
+                                          self.logDir)
+                        self.log.warning("__getentries: Leaving with no output.") 
+                        return []
+       
+                # if the base directory exists...  
                 entries = os.listdir(self.logDir)
                 entries.sort()
 
