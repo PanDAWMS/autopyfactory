@@ -116,7 +116,7 @@ class CleanCondorLogs(object):
                 # default
                 maxdays = 14
 
-                if self.fcl.has_option('Pilots', 'maxdays'):  # FIXME: pick up a better name
+                if self.fcl.has_option('Pilots', 'maxdays'):
                         maxdays = self.fcl.getint('Pilots', 'maxdays')
 
                 self.log.debug("__getmaxdays: Leaving with output %s." %maxdays)
