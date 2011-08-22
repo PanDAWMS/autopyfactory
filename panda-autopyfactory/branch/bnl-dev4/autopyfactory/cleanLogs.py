@@ -74,7 +74,9 @@ class CleanCondorLogs(object):
                         return []
        
                 # if the base directory exists...  
+
                 entries = os.listdir(self.logDir)
+                # sort directories by name (== by creation date)
                 entries.sort()
 
                 self.log.debug("__getentries: Leaving with output %s." %entries) 
