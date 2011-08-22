@@ -5,26 +5,32 @@
 # $Id: cleanLogs.py 154 2010-03-19 13:02:16Z graemes $
 #
 
-import os, sys, getopt, logging, datetime, re, ConfigParser
+import datetime
+import logging
+import os
+import re
 import shutil
+import sys
 
-# Global logging to console
-global console
-console = logging.StreamHandler()
-console.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
-console.setFormatter(formatter)
+import ConfigParser
 
-mainMessages = logging.getLogger('cleanLogs.py')
-mainMessages.addHandler(console)
-mainMessages.setLevel(logging.INFO)
-
-# You'll never see this message, ha ha
-mainMessages.debug('Logger initialised')
-
-config = ConfigParser.SafeConfigParser()
-config.optionxform = str
-config.read(conf)
+###### # Global logging to console
+###### global console
+###### console = logging.StreamHandler()
+###### console.setLevel(logging.DEBUG)
+###### formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+###### console.setFormatter(formatter)
+###### 
+###### mainMessages = logging.getLogger('cleanLogs.py')
+###### mainMessages.addHandler(console)
+###### mainMessages.setLevel(logging.INFO)
+###### 
+###### # You'll never see this message, ha ha
+###### mainMessages.debug('Logger initialised')
+###### 
+###### config = ConfigParser.SafeConfigParser()
+###### config.optionxform = str
+###### config.read(conf)
 
 class CleanCondorLogs(object):
         '''
