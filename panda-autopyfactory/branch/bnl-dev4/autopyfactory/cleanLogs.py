@@ -110,8 +110,8 @@ class CleanCondorLogs(object):
 
                 if deltaT.days > maxdays:
                         mainMessages.info("Deleting %s..." % entry)
-                                entrypath = os.path.join(self.logDir, entry)
-                                shutil.rmtree(entrypath)
+                        entrypath = os.path.join(self.logDir, entry)
+                        shutil.rmtree(entrypath)
 
         def __getmaxdays(self):
                 '''
