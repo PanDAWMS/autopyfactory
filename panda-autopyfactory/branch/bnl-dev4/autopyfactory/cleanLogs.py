@@ -98,7 +98,7 @@ class CleanCondorLogs(object):
                 maxdays = self.__getmaxdays() 
 
                 if deltaT.days > maxdays:
-                        self.log..info("__process_entry: Entry %s is %d days old" % (entry, deltaT.days))
+                        self.log.info("__process_entry: Entry %s is %d days old" % (entry, deltaT.days))
                         self.log.info("__process_entry: Deleting %s..." % entry)
                         entrypath = os.path.join(self.logDir, entry)
                         shutil.rmtree(entrypath)
