@@ -28,9 +28,15 @@ config.read(conf)
 
 class CleanCondorLogs(object):
 
-        def __init__(self, fcl):
+        ##def __init__(self, fcl):
+        ##
+        ##        self.fcl = fcl
+        ##        self.logDir = self.fcl.get('Pilots', 'baseLogDir')
+        ##        self.delete = self.__getdelete()
+
+        def __init__(self, factory):
         
-                self.fcl = fcl
+                self.fcl = factory.fcl
                 self.logDir = self.fcl.get('Pilots', 'baseLogDir')
                 self.delete = self.__getdelete()
 
