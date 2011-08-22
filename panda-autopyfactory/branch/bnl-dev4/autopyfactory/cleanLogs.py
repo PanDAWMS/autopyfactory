@@ -96,7 +96,9 @@ class CleanCondorLogs(object):
                 logDirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")  # i.e. 2011-08-12
                 logDirMatch = logDirRe.match(entry)
 
-                then = datetime.date(int(logDirMatch.group(1)), int(logDirMatch.group(2)), int(logDirMatch.group(3)))
+                then = datetime.date(int(logDirMatch.group(1)), 
+                                     int(logDirMatch.group(2)), 
+                                     int(logDirMatch.group(3)))
                 # then is the time of the directory, recreated from its name
                 now = datetime.date.today()
                 deltaT = now - then
