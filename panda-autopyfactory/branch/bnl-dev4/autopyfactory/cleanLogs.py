@@ -10,7 +10,6 @@ import logging
 import os
 import re
 import shutil
-import sys
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
@@ -34,9 +33,6 @@ class CleanCondorLogs(object):
                 process()
         -----------------------------------------------------------------------
         '''
-
-
-
         def __init__(self, factory):
                 '''
                 factory is a reference to the Factory object that created
@@ -55,20 +51,30 @@ class CleanCondorLogs(object):
                 '''
                 loops over all directories to perform cleaning actions
                 '''
+
+                self.log.debug("process: Starting.")
+                
                 entries = self.__getentries()
                 for entry in entries:
                         self.__process_entry(entry)
+
+                self.log.debug("process: Leaving.")
 
         def __getentries(self):
                 '''
                 get the list of subdirectories underneath 'baseLogDir'
                 '''
-                #### if not os.access(self.logDir, os.F_OK):
-                ####             mainMessages.error('Base log directory %s does not exist - nothing to do',
-                ####                                self.ogDir)
-                ####             sys.exit(1)
+
+                self.log.debug("__getentries: Starting.")
+
+                if not os.access(self.logDir, os.F_OK):
+                            self.log.warning('Base log directory %s does not exist - nothing to do',
+                                             self.logDir)
+        
                 entries = os.listdir(self.logDir)
                 entries.sort()
+
+                self.log.debug("__getentries: Leaving with output %s." %entries) 
                 return entries
 
         def __process_entry(self, entry):
@@ -76,7 +82,7 @@ class CleanCondorLogs(object):
                 processes each directory
                 ''' 
 
-                #### mainMessages.debug('Looking at %s' % entry)
+                self.log.debug("__process_entry: Starting with input %s." %entry)
 
                 logDirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")  # i.e. 2011-08-12
                 logDirMatch = logDirRe.match(entry)
@@ -88,15 +94,16 @@ class CleanCondorLogs(object):
                 now = datetime.date.today()
                 deltaT = now - then
 
-                #### mainMessages.info('Entry %s is %d days old' % (entry, deltaT.days))
-
                 # how many days before we delete?
                 maxdays = self.__getmaxdays() 
 
                 if deltaT.days > maxdays:
-                        ##### mainMessages.info("Deleting %s..." % entry)
+                        self.log..info("__process_entry: Entry %s is %d days old" % (entry, deltaT.days))
+                        self.log.info("__process_entry: Deleting %s..." % entry)
                         entrypath = os.path.join(self.logDir, entry)
                         shutil.rmtree(entrypath)
+
+                self.log.debug("__process_entry: Leaving.")
 
         def __getmaxdays(self):
                 '''
@@ -104,10 +111,13 @@ class CleanCondorLogs(object):
                 can logs be w/o being removed
                 '''
 
+                self.log.debug("__getmaxdays: Starting.")
+
                 # default
                 maxdays = 14
 
                 if self.fcl.has_option('Pilots', 'maxdays'):  # FIXME: pick up a better name
                         maxdays = self.fcl.getint('Pilots', 'maxdays')
 
+                self.log.debug("__getmaxdays: Leaving with output %s." %maxdays)
                 return maxdays
