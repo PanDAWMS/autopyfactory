@@ -10,12 +10,13 @@ import logging
 import os
 import re
 import shutil
+import threading
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
 from autopyfactory.logserver import LogServer
 
-class CleanCondorLogs(object):
+class CleanCondorLogs(threading.Thread):
         '''
         -----------------------------------------------------------------------
         Class to handle the condor log files removal.
@@ -33,16 +34,16 @@ class CleanCondorLogs(object):
                 process()
         -----------------------------------------------------------------------
         '''
-        def __init__(self, factory):
+        def __init__(self, wmsqueue):
                 '''
                 factory is a reference to the Factory object that created
                 the CleanCondorLogs instance
                 '''
 
-                self.log = logging.getLogger('main.cleancondorlogs')
+                self.log = logging.getLogger('main.cleancondorlogs[%s]' %wmsqueue.siteid)
                 self.log.info('CleanCondorLogs: Initializing object...')
         
-                self.fcl = factory.fcl
+                self.fcl = wmsqueue.fcl
                 self.logDir = self.fcl.get('Pilots', 'baseLogDir')
 
                 self.log.info('CleanCondorLogs: Object initialized.')
