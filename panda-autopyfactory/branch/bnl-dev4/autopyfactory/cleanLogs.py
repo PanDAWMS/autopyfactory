@@ -58,6 +58,7 @@ class CleanCondorLogs(threading.Thread):
                 self.log.debug('run: Starting.')
 
                 while not self.stopevent.isSet():
+                        self.__wait_random()
                         self.__process()
                         self.__sleep()
 
@@ -157,14 +158,18 @@ class CleanCondorLogs(threading.Thread):
 
         def __sleep(self):
                 '''
-                sleep for one day, and then wait a random time 
-                to prevent all queues to trigger cleaning at the same time
+                sleep for one day
                 '''
-
                 # sleep 24 hours
                 sleeptime = 24 * 60 * 60 
                 time.sleep(sleeptime) 
-                
+               
+        def __wait_random(self) 
+                '''
+                wait a random time to prevent all queues to start
+                deleting at the same time. In particular, just after
+                APF is turned on.
+                '''
                 # wait some random time
                 randomsleep = int(random.uniform(0,30))                 
                 time.sleep(randomsleep)
