@@ -110,6 +110,9 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 ####  #self.JSD.add('+MATCH_gatekeeper_url="%s"' % self.config.queues[self.queue]['queue'])
                 ####  #self.JSD.add('+MATCH_queue="%s"' % self.config.queues[self.queue]['localqueue'])
 
+                # -- MATCH_APF_QUEUE --
+                # this token is very important, since it will be used by other plugins
+                # to identify this pilot from others when running condor_q
                 self.JSD.add('+MATCH_APF_QUEUE="%s"' % self.queue)
 
                 # -- proxy path --
