@@ -125,6 +125,15 @@ class CleanCondorLogs(threading.Thread):
                                 self.log.info("__process_entry: Deleting %s..." % entrypath)
                                 shutil.rmtree(entrypath)
 
+                # now, try to remove the parent directory                
+                try:
+                        entrypath = os.path.join(self.logDir, entry)
+                        # entrypath should look like  <logDir>/2011-08-12/
+                        os.rmdir(entrypath)         
+                except:
+                        # it only works if the directoy is empty. 
+                        pass
+
                 self.log.debug("__process_entry: Leaving.")
 
         def __getmaxdays(self):
