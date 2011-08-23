@@ -74,11 +74,13 @@ class Factory:
                 self.log.debug('ProxyManager initialized. Starting...')
                 self.proxymanager.start()
                 self.log.debug('ProxyManager thread started.')
-                
+               
+                # WMS Queues Manager 
                 self.wmsmanager = WMSQueuesManager(self)
                 self.logserver = LogServer(port=self.fcl.get('Pilots', 'baseLogHttpPort'),
                                    docroot=self.fcl.get('Pilots', 'baseLogDir')
                                    )
+
                 self.log.debug('LogServer initialized. Starting...')
                 self.logserver.start()
                 self.log.debug('LogServer thread started.')
