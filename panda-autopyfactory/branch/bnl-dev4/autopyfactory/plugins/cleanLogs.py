@@ -12,9 +12,6 @@ import re
 import shutil
 import threading
 
-from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
-from autopyfactory.logserver import LogServer
-
 class CleanCondorLogs(threading.Thread):
         '''
         -----------------------------------------------------------------------
