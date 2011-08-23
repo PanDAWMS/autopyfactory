@@ -159,6 +159,7 @@ class CleanCondorLogs(threading.Thread):
         def __sleep(self):
                 '''
                 sleep for one day
+                At some point, this should be read from config file
                 '''
                 # sleep 24 hours
                 sleeptime = 24 * 60 * 60 
