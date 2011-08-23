@@ -163,8 +163,9 @@ class CleanCondorLogs(threading.Thread):
                 # sleep 24 hours
                 sleeptime = 24 * 60 * 60 
                 time.sleep(sleeptime) 
+
                
-        def __wait_random(self) 
+        def __wait_random(self): 
                 '''
                 wait a random time to prevent all queues to start
                 deleting at the same time. In particular, just after
