@@ -100,6 +100,9 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                         globusrsl += "(queue=%s)" % self.qcl.get(self.queue, 'localqueue')
                 self.JSD.add(globusrsl)
 
+                # -- MATCH_APF_QUEUE --
+                # this token is very important, since it will be used by other plugins
+                # to identify this pilot from others when running condor_q
                 self.JSD.add('+MATCH_APF_QUEUE="%s"' % self.queue)
 
                 # -- proxy path --
