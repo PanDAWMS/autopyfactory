@@ -54,27 +54,6 @@ group = None
 server = https://pandaserver.cern.ch
 port = 25443
 
-## Note that the analysisGridProxy is the default set for ANALY_ queues - very
-## useful for mixed mode factories.
-
-# Comma-separated list of vo+group+role attributes to request
-# vorole=/atlas/usatlas/Role=production,/atlas/Role=production
-vorole=/atlas/usatlas/Role=production
-
-# Long-lived grid proxy to create VOMS proxy from. 
-gridProxy = /tmp/x509up_u500
-
-# Output file for VOMS proxy
-vomsProxy = /tmp/prodProxy
-
-# How long a VOMS proxy to request
-vomsLifetime=96:00
-
-# Interval to check proxy at, in minutes
-vomsCheck = 180 
-
-analysisGridProxy = /tmp/pilotProxy
-
 # plugins
 batchstatusplugin = Condor
 wmsstatusplugin = Panda
@@ -86,6 +65,26 @@ schedplugin = Trivial
 # is not reliable 
 defaultnbpilots = 0
 
+# New proxy configuration. Uses internal proxymanager.
+# Entry value should be the name of the proxy handler for the proxy you
+# wish to use. See etc/proxy.conf
+proxy = atlas-usatlas
+
+### Old proxy-related configuration. DEPRECATED
+## Note that the analysisGridProxy is the default set for ANALY_ queues - very
+## useful for mixed mode factories.
+# Comma-separated list of vo+group+role attributes to request
+# vorole=/atlas/usatlas/Role=production,/atlas/Role=production
+vorole=/atlas/usatlas/Role=production
+# Long-lived grid proxy to create VOMS proxy from. 
+gridProxy = /tmp/x509up_u500
+# Output file for VOMS proxy
+vomsProxy = /tmp/prodProxy
+# How long a VOMS proxy to request
+vomsLifetime=96:00
+# Interval to check proxy at, in minutes
+vomsCheck = 180 
+analysisGridProxy = /tmp/pilotProxy
 
 
 # ====================================================================== 

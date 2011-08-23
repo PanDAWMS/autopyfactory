@@ -22,13 +22,13 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 
-class ProxyManager(object):
+class ProxyManager(threading.Thread):
     '''
         Manager to maintain multiple ProxyHandlers, one for each target proxy. 
     
     '''
     def __init__(self, pconfig):
-        # 
+        threading.Thread.__init__(self) # init the thread 
         self.log = logging.getLogger('main.proxymanager')
         self.pconfig = pconfig
         self.handlers = []
@@ -36,8 +36,12 @@ class ProxyManager(object):
         for sect in self.pconfig.sections():
             ph = ProxyHandler(pconfig, sect)
             self.handlers.append(ph)
+        
+       
+    def run(self):
+        self.mainLoop()    
+        
             
-
     def mainLoop(self):
         for ph in self.handlers:
             self.log.debug("Starting handler [%s]" % ph.name)
@@ -58,8 +62,17 @@ class ProxyManager(object):
         '''
             Returns list of valid names of Handlers in this Manager. 
         '''
-        
+        names = []
+        for h in self.handlers:
+            names.append(h.name)
+        return names
 
+    def getProxyPath(self,name):
+        for h in self.handlers:
+            if h.name == name:
+                return h._getProxyPath()
+        return None
+        
 
 class ProxyHandler(threading.Thread):
     '''
@@ -185,7 +198,7 @@ class ProxyHandler(threading.Thread):
             self.log.info("[%s] Proxy OK (Timeleft %ds)." % ( self.name, self._checkTimeleft()))
         
         
-    def getProxyPath(self):
+    def _getProxyPath(self):
         '''
         Returns file path to current, valid proxy for this Handler, e.g. /tmp/prodProxy123
         '''
@@ -286,7 +299,7 @@ if __name__ == '__main__':
     log.debug("Read config file %s, return value: %s" % (pconfig_file, got_config))
     
     pm = ProxyManager(pconfig)
-    pm.mainLoop()
+    pm.start()
     
     
     
