@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 '''
     An X.509 proxy management component for AutoPyFactory 
+
+
 '''
 import logging
-import threading
+import math
 import os
+import threading
 import time
+
+from subprocess import Popen, PIPE, STDOUT
 
 __author__ = "John Hover"
 __copyright__ = "2010,2011, John Hover"
@@ -78,8 +83,55 @@ class ProxyHandler(threading.Thread):
 
     def _generateProxy(self):
         '''
+        Generates new proxy using current configuration settings for this Handler. 
         
         '''
+        self.log.info("Generating proxy...")
+        cmd = 'voms-proxy-init '
+        cmd += ' -dont-verify-ac '
+        cmd += ' -cert %s ' % self.usercert
+        cmd += ' -key %s ' % self.userkey
+        cmd += ' -voms %s ' % self.vorole
+        vomshours = ((self.lifetime / 60 )/ 60)
+        vomshours = int(math.floor((self.lifetime / 60.0 ) / 60.0))
+        if vomshours == 0:
+            vomshours = 1
+        cmd += ' -hours %d ' % vomshours
+        cmd += ' -out %s ' % self.proxyfile
+             
+        # Run command
+        self.log.info("Running Command: %s" % cmd)
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
+        stdout, stderr = p.communicate()
+        if p.returncode == 0:
+            self.log.debug("Command OK. Output = %s" % stdout)
+            self.log.info("Command OK.")
+        elif p.returncode == 1:
+            self.log.info("Command RC = 1. Error = %s" % stderr)
+            
+
+
+
+    def _checkTimeleft(self):
+        '''
+        Checks status of current proxy.         
+        Returns timeleft in seconds (0 for expired or non-existent proxy)
+        '''
+        self.log.debug("Begin...")
+        cmd = 'voms-proxy-info -timeleft '
+        cmd += ' -file %s ' % self.proxyfile
+        
+        # Run command
+        self.log.info("Running Command: %s" % cmd)
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
+        stdout, stderr = p.communicate()
+        if p.returncode == 0:
+            self.log.info("Command OK. Timeleft = %s" % stdout)
+            return int(stdout)
+        elif p.returncode == 1:
+            self.log.info("Command RC = 1")
+            return 0
+            
     
     
     def join(self,timeout=None):
@@ -101,10 +153,26 @@ class ProxyHandler(threading.Thread):
             if (now - lastrun ) < self.checktime:
                 pass
             else:
-                self.log.info("[%s] Running Handler cycle..." % self.name)    
+                self.log.info("[%s] Running Handler cycle..." % self.name)
+                self.handleProxy()
+                lastrun = int(time.time())    
             # Check relatively frequently for interrupts
             time.sleep(int(self.interruptcheck))
                           
+    def handleProxy(self):
+        '''
+        Create proxy if timeleft is less than minimum...
+        '''
+        tl = self._checkTimeleft()
+        self.log.info("Time left is %d" % tl)
+        if tl < self.minlife:
+            self.log.info("Need proxy. Generating...")
+            self._generateProxy()
+            self.log.info("Time left on proxy now %d seconds." % self._checkTimeleft() )    
+        else:
+            self.log.debug("Time left %d seconds." % self._checkTimeleft() )
+            self.log.info("Proxy OK. Do nothing...")
+        
         
     def getProxyPath(self):
         '''
@@ -113,13 +181,12 @@ class ProxyHandler(threading.Thread):
         return self.proxyfile
 
 
-    def validateProxy(self):
+    def _(self):
         '''
         Returns tuple (True|False , timeLeft in seconds)
         '''
 
-
-  
+ 
 if __name__ == '__main__':
     import getopt
     import sys

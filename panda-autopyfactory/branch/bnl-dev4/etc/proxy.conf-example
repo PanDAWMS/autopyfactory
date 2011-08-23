@@ -3,9 +3,10 @@
 #
 [DEFAULT]
 # Use this if you already have voms-proxy-init in the path. 
-# gridsetup = None
+gridsetup = None
+
 # gridSetup = /path/to/my/setup/file
-gridSetup = /opt/osg-1.2/setup.sh
+# gridSetup = /opt/osg-1.2/setup.sh
 
 #envset_KEY = VALUE
 #envunset = VAR1,VAR2,VAR3
@@ -14,11 +15,12 @@ baseproxy = /tmp/plainProxy
 #usercert=~/.globus/usercert.pem, ~/.globus/usercert2.pem
 #userkey=~/.globus/userkey.pem,~/.globus/userkey2.pem
 usercert=~/.globus/usercert.pem
-userkey=~/.globus/userkey.pem
+userkey=~/.globus/userkeynopw.pem
 # Initial voms lifetime, in seconds (604800 = 7 days)
 lifetime = 604800
 # How often to check proxy validity, in seconds
-checktime = 3600
+# checktime = 3600
+checktime = 120
 # Minimum lifetime of proxy (renew if less) in seconds
 minlife = 259200
 # Frequency to check for keyboard/signal interrupts, in seconds
@@ -28,13 +30,13 @@ interruptcheck = 1
 vorole = atlas:/atlas/Role=production
 proxyfile = /tmp/prodProxy
 
-[atlas-analysis]
-vorole = atlas:/atlas/Role=pilot
+#[atlas-analysis]
+#vorole = atlas:/atlas/Role=pilot
 #usercert=~/.globus/usercert.pem, ~/.globus/usercert2.pem
 #userkey=~/.globus/userkey.pem,~/.globus/userkey2.pem
-usercert=~/.globus/usercert.pem
-userkey=~/.globus/userkey.pem
-proxyfile = /tmp/analProxy
+#usercert=~/.globus/usercert.pem
+#userkey=~/.globus/userkeynopw.pem
+#proxyfile = /tmp/analProxy
 
 #[osgvo]
 #vomsRole = osg:/osg
