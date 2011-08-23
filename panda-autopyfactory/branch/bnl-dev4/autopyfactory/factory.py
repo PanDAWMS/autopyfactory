@@ -65,6 +65,16 @@ class Factory:
                 
                 self.log.info("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
                 self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
+              
+                # Handle ProxyManager
+                pconfig=ConfigParser()
+                got_config = pconfig.read(fcl.get('Factory','proxyConf'))
+                self.log.debug("Read config file %s, return value: %s" % (pconfig_file, got_config)) 
+                self.proxymanager = ProxyManager(pconfig)
+                self.log.debug('ProxyManager initialized. Starting...')
+                self.proxymanager.start()
+                self.log.debug('ProxyManager thread started.')
+                
                 self.wmsmanager = WMSQueuesManager(self)
                 self.logserver = LogServer(port=self.fcl.get('Pilots', 'baseLogHttpPort'),
                                    docroot=self.fcl.get('Pilots', 'baseLogDir')
@@ -337,6 +347,8 @@ class WMSQueue(threading.Thread):
                 self.wmsstatus.start()                  # starts the thread
                 self.batchsubmit = self.__getplugin('batchsubmit', self)
                 self.log.info('WMSQueue: Object initialized.')
+
+                
 
         def __getplugin(self, action, *k, **kw):
                 '''
