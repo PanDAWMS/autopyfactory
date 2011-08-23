@@ -42,6 +42,7 @@ class CleanCondorLogs(threading.Thread):
                 self.log.info('CleanCondorLogs: Initializing object...')
         
                 self.fcl = wmsqueue.fcl
+                self.qcl = wmsqueue.qcl
                 self.logDir = self.fcl.get('Pilots', 'baseLogDir')
 
                 threading.Thread.__init__(self) # init the thread
@@ -148,8 +149,8 @@ class CleanCondorLogs(threading.Thread):
                 # default
                 maxdays = 14
 
-                if self.fcl.has_option('Pilots', 'maxdays'):
-                        maxdays = self.fcl.getint('Pilots', 'maxdays')
+                if self.qcl.has_option(self.siteid, 'maxdays'):
+                        maxdays = self.qcl.getint(self.siteid, 'maxdays')
 
                 self.log.debug("__getmaxdays: Leaving with output %s." %maxdays)
                 return maxdays
