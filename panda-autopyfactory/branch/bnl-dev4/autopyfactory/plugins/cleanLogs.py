@@ -12,7 +12,6 @@ import re
 import shutil
 import threading
 
-from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
 from autopyfactory.logserver import LogServer
 
