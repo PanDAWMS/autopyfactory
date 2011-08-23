@@ -67,8 +67,9 @@ class Factory:
                 self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
               
                 # Handle ProxyManager
-                pconfig=ConfigParser()
-                got_config = pconfig.read(fcl.get('Factory','proxyConf'))
+                pconfig = ConfigParser()
+                pconfig_file = fcl.get('Factory','proxyConf')
+                got_config = pconfig.read(pconfig_file)
                 self.log.debug("Read config file %s, return value: %s" % (pconfig_file, got_config)) 
                 self.proxymanager = ProxyManager(pconfig)
                 self.log.debug('ProxyManager initialized. Starting...')
