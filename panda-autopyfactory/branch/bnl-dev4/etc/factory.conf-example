@@ -25,7 +25,7 @@ versionTag = development
 queueConf = file:///etc/apf/queues.conf
 
 # Where is the proxy config file
-proxyConf = file://etc/apf/proxy.conf
+proxyConf = file:///etc/apf/proxy.conf
 
 # How often (seconds) to pull information from Panda Server
 # Choose prime number to balance load. 
