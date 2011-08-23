@@ -14,7 +14,7 @@ import time
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
 from autopyfactory.logserver import LogServer
-form autopyfactory.proxymanager import ProxyManager
+from autopyfactory.proxymanager import ProxyManager
 
 import userinterface.Client as Client
 
