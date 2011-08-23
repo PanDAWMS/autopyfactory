@@ -15,8 +15,6 @@ gridsetup = None
 baseproxy = None
 
 
-#usercert=~/.globus/usercert.pem, ~/.globus/usercert2.pem
-#userkey=~/.globus/userkey.pem,~/.globus/userkey2.pem
 usercert=~/.globus/usercert.pem
 userkey=~/.globus/userkeynopw.pem
 # Initial voms lifetime, in seconds (604800 = 7 days)
@@ -44,8 +42,6 @@ proxyfile = /tmp/prodProxy
 #[atlas-analysis]
 #
 #vorole = atlas:/atlas/Role=pilot
-#usercert=~/.globus/usercert.pem, ~/.globus/usercert2.pem
-#userkey=~/.globus/userkey.pem,~/.globus/userkey2.pem
 #usercert=~/.globus/usercert.pem
 #userkey=~/.globus/userkeynopw.pem
 #proxyfile = /tmp/analProxy
