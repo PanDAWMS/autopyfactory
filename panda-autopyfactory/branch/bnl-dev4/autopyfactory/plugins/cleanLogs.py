@@ -60,7 +60,7 @@ class CleanCondorLogs(threading.Thread):
 
                 self.log.debug('run: Leaving.')
 
-        def ___process(self):
+        def __process(self):
                 '''
                 loops over all directories to perform cleaning actions
                 '''
