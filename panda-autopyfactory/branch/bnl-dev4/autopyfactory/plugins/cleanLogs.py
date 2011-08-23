@@ -8,9 +8,11 @@
 import datetime
 import logging
 import os
+import random
 import re
 import shutil
 import threading
+import time
 
 class CleanCondorLogs(threading.Thread):
         '''
@@ -141,3 +143,18 @@ class CleanCondorLogs(threading.Thread):
 
                 self.log.debug("__getmaxdays: Leaving with output %s." %maxdays)
                 return maxdays
+
+        def __sleep(self):
+                '''
+                sleep for one day, and then wait a random time 
+                to prevent all queues to trigger cleaning at the same time
+                '''
+
+                # sleep 24 hours
+                sleeptime = 24 * 60 * 60 
+                time.sleep(sleeptime) 
+                
+                # wait some random time
+                randomsleep = int(random.uniform(0,30))                 
+                time.sleep(randomsleep)
+
