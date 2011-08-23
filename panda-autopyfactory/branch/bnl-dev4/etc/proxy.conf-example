@@ -24,8 +24,8 @@ userkey=~/.globus/userkeynopw.pem
 # lifetime = 345600
 lifetime = 604800
 # How often to check proxy validity, in seconds
-# checktime = 3600
-checktime = 120
+checktime = 3600
+# checktime = 120
 # Minimum lifetime of proxy (renew if less) in seconds
 minlife = 259200
 # Frequency to check for keyboard/signal interrupts, in seconds

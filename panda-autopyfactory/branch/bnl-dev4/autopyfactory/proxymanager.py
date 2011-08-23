@@ -78,7 +78,6 @@ class ProxyHandler(threading.Thread):
     '''
     Checks, creates, and renews a VOMS proxy.    
     '''
-    
     def __init__(self,config,section ):
         threading.Thread.__init__(self) # init the thread
         self.log = logging.getLogger('main.proxyhandler')
@@ -88,13 +87,15 @@ class ProxyHandler(threading.Thread):
             self.baseproxy = None
         self.proxyfile = config.get(section,'proxyfile')
         self.vorole = config.get(section, 'vorole' ) 
+        self.usercert = os.path.expanduser(config.get(section, 'usercert'))
+        self.userkey = os.path.expanduser(config.get(section, 'userkey'))
+        self.stopevent = threading.Event()
+
+        # Handle numerics
         self.lifetime = int(config.get(section, 'lifetime'))
         self.checktime = int(config.get(section, 'checktime'))
         self.minlife = int(config.get(section, 'minlife'))
         self.interruptcheck = int(config.get(section,'interruptcheck'))
-        self.usercert = os.path.expanduser(config.get(section, 'usercert'))
-        self.userkey = os.path.expanduser(config.get(section, 'userkey'))
-        self.stopevent = threading.Event()
 
         self.log.debug("[%s] ProxyHandler initialized." % self.name)
 
