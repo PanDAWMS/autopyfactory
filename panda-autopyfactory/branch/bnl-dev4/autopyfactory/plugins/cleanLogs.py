@@ -30,8 +30,7 @@ class CleanCondorLogs(threading.Thread):
                 - Both algorithm can be combined. 
         -----------------------------------------------------------------------
         Public Interface:
-                __init__(fcl)
-                process()
+                the interface inherited from Thread `
         -----------------------------------------------------------------------
         '''
         def __init__(self, wmsqueue):
@@ -40,15 +39,32 @@ class CleanCondorLogs(threading.Thread):
                 the CleanCondorLogs instance
                 '''
 
-                self.log = logging.getLogger('main.cleancondorlogs[%s]' %wmsqueue.siteid)
+                self.siteid = wmsqueue.siteid
+                self.log = logging.getLogger('main.cleancondorlogs[%s]' %self.siteid)
                 self.log.info('CleanCondorLogs: Initializing object...')
         
                 self.fcl = wmsqueue.fcl
                 self.logDir = self.fcl.get('Pilots', 'baseLogDir')
 
+                threading.Thread.__init__(self) # init the thread
+                self.stopevent = threading.Event()
+
                 self.log.info('CleanCondorLogs: Object initialized.')
 
-        def process(self):
+        def run(self):
+                '''
+                Main loop
+                '''
+
+                self.log.debug('run: Starting.')
+
+                while not self.stopevent.isSet():
+                        self.__process()
+                        self.__sleep()
+
+                self.log.debug('run: Leaving.')
+
+        def ___process(self):
                 '''
                 loops over all directories to perform cleaning actions
                 '''
@@ -105,9 +121,11 @@ class CleanCondorLogs(threading.Thread):
 
                 if deltaT.days > maxdays:
                         self.log.info("__process_entry: Entry %s is %d days old" % (entry, deltaT.days))
-                        self.log.info("__process_entry: Deleting %s..." % entry)
-                        entrypath = os.path.join(self.logDir, entry)
-                        shutil.rmtree(entrypath)
+                        entrypath = os.path.join(self.logDir, entry, self.siteid)
+                        # entrypath should look like  <logDir>/2011-08-12/BNL_ITB/
+                        if os.path.exists(entrypath):
+                                self.log.info("__process_entry: Deleting %s..." % entrypath)
+                                shutil.rmtree(entrypath)
 
                 self.log.debug("__process_entry: Leaving.")
 
