@@ -71,6 +71,8 @@ class ProxyHandler(threading.Thread):
         self.log = logging.getLogger('main.proxyhandler')
         self.name = section
         self.baseproxy = config.get(section,'baseproxy' ) 
+        if self.baseproxy.lower() == "none":
+            self.baseproxy = None
         self.proxyfile = config.get(section,'proxyfile')
         self.vorole = config.get(section, 'vorole' ) 
         self.lifetime = int(config.get(section, 'lifetime'))
@@ -81,16 +83,27 @@ class ProxyHandler(threading.Thread):
         self.userkey = os.path.expanduser(config.get(section, 'userkey'))
         self.stopevent = threading.Event()
 
+        self.log.debug("[%s] ProxyHandler initialized." % self.name)
+
+
     def _generateProxy(self):
         '''
-        Generates new proxy using current configuration settings for this Handler. 
+        Unconditionally generates new proxy using current configuration settings for this Handler. 
+        Uses existing baseproxy if configured. 
         
         '''
-        self.log.info("Generating proxy...")
+        self.log.debug("[%s] Generating new proxy..." % self.name)
         cmd = 'voms-proxy-init '
         cmd += ' -dont-verify-ac '
-        cmd += ' -cert %s ' % self.usercert
-        cmd += ' -key %s ' % self.userkey
+        if self.baseproxy:
+            self.log.info("[%s] Using baseproxy = %s" % (self.name, self.baseproxy))
+            cmd += ' -noregen '
+            cmd += ' -cert %s ' % self.baseproxy
+            cmd += ' -key %s ' % self.baseproxy
+        else:
+            cmd += ' -cert %s ' % self.usercert
+            cmd += ' -key %s ' % self.userkey
+        
         cmd += ' -voms %s ' % self.vorole
         vomshours = ((self.lifetime / 60 )/ 60)
         vomshours = int(math.floor((self.lifetime / 60.0 ) / 60.0))
@@ -100,39 +113,36 @@ class ProxyHandler(threading.Thread):
         cmd += ' -out %s ' % self.proxyfile
              
         # Run command
-        self.log.info("Running Command: %s" % cmd)
+        self.log.debug("[%s] Running Command: %s" % (self.name, cmd))
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
         stdout, stderr = p.communicate()
         if p.returncode == 0:
-            self.log.debug("Command OK. Output = %s" % stdout)
-            self.log.info("Command OK.")
+            self.log.debug("[%s] Command OK. Output = %s" % (self.name, stdout))
+            self.log.debug("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))
         elif p.returncode == 1:
-            self.log.info("Command RC = 1. Error = %s" % stderr)
+            self.log.error("[%s] Command RC = 1. Error = %s" % (self.name, stderr))
             
-
-
 
     def _checkTimeleft(self):
         '''
         Checks status of current proxy.         
         Returns timeleft in seconds (0 for expired or non-existent proxy)
         '''
-        self.log.debug("Begin...")
-        cmd = 'voms-proxy-info -timeleft '
+        self.log.debug("[%s] Begin..." % self.name)
+        cmd = 'voms-proxy-info -actimeleft '
         cmd += ' -file %s ' % self.proxyfile
         
         # Run command
-        self.log.info("Running Command: %s" % cmd)
+        self.log.debug("[%s] Running Command: %s" % (self.name, cmd))
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
         stdout, stderr = p.communicate()
         if p.returncode == 0:
-            self.log.info("Command OK. Timeleft = %s" % stdout)
-            return int(stdout)
+            self.log.debug("[%s] Command OK. Timeleft = %s" % (self.name, stdout.strip() ))
+            return int(stdout.strip())
         elif p.returncode == 1:
-            self.log.info("Command RC = 1")
+            self.log.warn("[%s] Command RC = 1" % self.name)
             return 0
-            
-    
+        
     
     def join(self,timeout=None):
             '''
@@ -141,6 +151,7 @@ class ProxyHandler(threading.Thread):
             self.stopevent.set()
             self.log.info('Stopping thread...')
             threading.Thread.join(self, timeout)
+
    
     def run(self):
         '''
@@ -153,7 +164,7 @@ class ProxyHandler(threading.Thread):
             if (now - lastrun ) < self.checktime:
                 pass
             else:
-                self.log.info("[%s] Running Handler cycle..." % self.name)
+                self.log.info("[%s] Running ProxyHandler..." % self.name)
                 self.handleProxy()
                 lastrun = int(time.time())    
             # Check relatively frequently for interrupts
@@ -164,14 +175,14 @@ class ProxyHandler(threading.Thread):
         Create proxy if timeleft is less than minimum...
         '''
         tl = self._checkTimeleft()
-        self.log.info("Time left is %d" % tl)
+        self.log.debug("[%s] Time left is %d" % (self.name, tl))
         if tl < self.minlife:
-            self.log.info("Need proxy. Generating...")
+            self.log.info("[%s] Need proxy. Generating..." % self.name)
             self._generateProxy()
-            self.log.info("Time left on proxy now %d seconds." % self._checkTimeleft() )    
+            self.log.info("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))    
         else:
-            self.log.debug("Time left %d seconds." % self._checkTimeleft() )
-            self.log.info("Proxy OK. Do nothing...")
+            self.log.debug("[%s] Time left %d seconds." % (self.name, self._checkTimeleft() ))
+            self.log.info("[%s] Proxy OK (Timeleft %ds)." % ( self.name, self._checkTimeleft()))
         
         
     def getProxyPath(self):

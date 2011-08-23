@@ -11,12 +11,18 @@ gridsetup = None
 #envset_KEY = VALUE
 #envunset = VAR1,VAR2,VAR3
 # Baseproxy, if used. Probably no longer necessary. 
-baseproxy = /tmp/plainProxy
+# If used, create a very long-lived proxy, e.g.
+#        grid-proxy-init -valid 720:0 -out /tmp/plainProxy
+# baseproxy = /tmp/plainProxy
+baseproxy = None
+
 #usercert=~/.globus/usercert.pem, ~/.globus/usercert2.pem
 #userkey=~/.globus/userkey.pem,~/.globus/userkey2.pem
 usercert=~/.globus/usercert.pem
 userkey=~/.globus/userkeynopw.pem
 # Initial voms lifetime, in seconds (604800 = 7 days)
+# 345600 is ATLAS VOMS maximum
+# lifetime = 345600
 lifetime = 604800
 # How often to check proxy validity, in seconds
 # checktime = 3600
@@ -27,10 +33,12 @@ minlife = 259200
 interruptcheck = 1
 
 [atlas-production]
+# baseproxy = /tmp/plainProxy
 vorole = atlas:/atlas/Role=production
 proxyfile = /tmp/prodProxy
 
 #[atlas-analysis]
+#
 #vorole = atlas:/atlas/Role=pilot
 #usercert=~/.globus/usercert.pem, ~/.globus/usercert2.pem
 #userkey=~/.globus/userkey.pem,~/.globus/userkey2.pem
