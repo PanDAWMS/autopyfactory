@@ -110,7 +110,7 @@ class CleanCondorLogs(threading.Thread):
                 logDirMatch = logDirRe.match(entry)
                 if not logDirMatch:
                         # there is an entry robot.txt, which does not match the date format
-                        self.log.debug('__process_entry: ignoring entry %s', %entry)
+                        self.log.debug('__process_entry: ignoring entry %s' %entry)
                         return 
 
                 then = datetime.date(int(logDirMatch.group(1)), 
