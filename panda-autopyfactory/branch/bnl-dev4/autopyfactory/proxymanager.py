@@ -205,7 +205,7 @@ class ProxyHandler(threading.Thread):
         '''
         Create proxy if timeleft is less than minimum...
         '''
-        if renew:
+        if self.renew:
             tl = self._checkTimeleft()
             self.log.debug("[%s] Time left is %d" % (self.name, tl))
             if tl < self.minlife:
