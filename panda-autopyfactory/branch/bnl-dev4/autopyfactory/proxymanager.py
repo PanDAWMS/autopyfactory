@@ -123,7 +123,8 @@ class ProxyHandler(threading.Thread):
         '''
         self.log.debug("[%s] Generating new proxy..." % self.name)
         cmd = 'voms-proxy-init '
-        cmd += ' -dont-verify-ac '
+        #cmd += ' -dont-verify-ac '
+        cmd += ' -ignorewarn '
         if self.baseproxy:
             self.log.info("[%s] Using baseproxy = %s" % (self.name, self.baseproxy))
             cmd += ' -noregen '
