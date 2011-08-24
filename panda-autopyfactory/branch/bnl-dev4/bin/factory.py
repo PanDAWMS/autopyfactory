@@ -239,7 +239,9 @@ class APF(object):
                         os.setuid(runuid)
                         os.seteuid(runuid)
                         os.setegid(rungid)
-                        os.environ['HOME'] = pwd.getpwnam(self.options.runAs).pw_dir 
+
+                        self._changehome()
+
                         self.log.info("Now running as user %d:%d ..." % (runuid, rungid))
                     
                     except KeyError, e:
@@ -249,6 +251,19 @@ class APF(object):
                     except OSError, e:
                         self.log.error('Could not set user or group id to %s:%s. Error: %s' % (runuid, rungid, e))
                         sys.exit(1)
+
+        def _changehome(self):
+                '''
+                at some point, proxyManager will make use of method
+                      os.path.expanduser()
+                to find out the absolute path of the usercert and userkey files
+                in order to renew proxy.   
+                The thing is that expanduser() uses the value of $HOME
+                as it is stored in os.environ, and that value still is /root/
+                Ergo, if we want to path to be expanded to a different user, i.e. apf,
+                we need to change by hand the value of $HOME in the environment
+                '''
+                os.environ['HOME'] = pwd.getpwnam(self.options.runAs).pw_dir 
 
         def createconfig(self):
                 """Create config, add in options...
