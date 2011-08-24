@@ -1,11 +1,5 @@
 #
 [DEFAULT]
-# Use this if you already have voms-proxy-init in the path. 
-gridsetup = None
-
-# gridSetup = /path/to/my/setup/file
-# gridSetup = /opt/osg-1.2/setup.sh
-
 #envset_KEY = VALUE
 #envunset = VAR1,VAR2,VAR3
 # Baseproxy, if used. Probably no longer necessary. 
@@ -13,7 +7,6 @@ gridsetup = None
 #        grid-proxy-init -valid 720:0 -out /tmp/plainProxy
 # baseproxy = /tmp/plainProxy
 baseproxy = None
-
 
 usercert=~/.globus/usercert.pem
 userkey=~/.globus/userkeynopw.pem
@@ -28,6 +21,11 @@ checktime = 3600
 minlife = 259200
 # Frequency to check for keyboard/signal interrupts, in seconds
 interruptcheck = 1
+
+#
+# If you don't want to use ProxyManager to renew proxies, set this  False
+# and only define 'proxyfile'
+renew = True
 
 [atlas-usatlas]
 vorole = atlas:/atlas/usatlas

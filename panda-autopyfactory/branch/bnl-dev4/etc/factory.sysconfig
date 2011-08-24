@@ -1,18 +1,17 @@
 #
 # Sysconfig file for autopyfactory
 #
-#  --verbose, --debug    Set logging level to DEBUG [default INFO]
-#  --quiet               Set logging level to WARNING [default INFO]
-#  --test, --dry-run     Dry run - supress job submission
-#  --oneshot, --one-shot
-#                        Run one cycle only
-#  --cycles=CYCLES       Run CYCLES times, then exit [default infinite]
-#  --sleep=TIME          Sleep TIME seconds between cycles [default %default]
+
+#  OPTIONS:
+# 
+#  --verbose  
+#  --debug              Set logging level to DEBUG [default INFO]
 #  --conf=FILE1[,FILE2,FILE3]
+#  --runas=ACCOUNT       User account to run as. [apf]
+#  --sleep=TIME          Time to sleep between cycles. [60] 
 #                        Load configuration from FILEs (comma separated list)
 #  --log=LOGFILE         Send logging output to LOGFILE or SYSLOG or stdout
 #                        [default <syslog>]
-
 
 #
 # Override default conffile path if desired. 
@@ -21,3 +20,8 @@
 # OPTIONS="--debug --test --sleep=60 --runas=apf --log=/var/log/apf/apf.log"
 OPTIONS="--debug --sleep=60 --runas=apf --log=/var/log/apf/apf.log"
 #OPTIONS="--debug --sleep=60 --runas=caballer --log=/var/log/apf/apf.log"
+
+#
+# If you need grid client programs available (e.g. voms-proxy-*) set GRIDSETUP
+# Otherwise, leave commented out. 
+GRIDSETUP=/opt/osg-client/setup.sh 

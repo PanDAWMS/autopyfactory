@@ -48,6 +48,12 @@ if [ -f $SYSCONF ]; then
    . $SYSCONF
 fi
 
+if [ -v $GRIDSETUP ]; then
+   . $GRIDSETUP
+fi
+
+
+
 RETVAL=0
 #
 # See how we were called.

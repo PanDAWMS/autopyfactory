@@ -82,20 +82,35 @@ class ProxyHandler(threading.Thread):
         threading.Thread.__init__(self) # init the thread
         self.log = logging.getLogger('main.proxyhandler')
         self.name = section
+        
+        # Handle potential paths with expanduser
         self.baseproxy = config.get(section,'baseproxy' ) 
         if self.baseproxy.lower() == "none":
             self.baseproxy = None
-        self.proxyfile = config.get(section,'proxyfile')
-        self.vorole = config.get(section, 'vorole' ) 
+        else:
+            self.baseproxy = os.path.expanduser(self.baseproxy)
+        self.proxyfile = os.path.expanduser(config.get(section,'proxyfile'))
         self.usercert = os.path.expanduser(config.get(section, 'usercert'))
         self.userkey = os.path.expanduser(config.get(section, 'userkey'))
-        self.stopevent = threading.Event()
-
+       
+        # Handle strings       
+        self.vorole = config.get(section, 'vorole' ) 
+        
+        # Handle booleans
+        renewstr = config.get(section, 'renew').lower().strip()
+        if renewstr == 'true':
+            self.renew = True
+        else:
+            self.renew = False
+        
         # Handle numerics
         self.lifetime = int(config.get(section, 'lifetime'))
         self.checktime = int(config.get(section, 'checktime'))
         self.minlife = int(config.get(section, 'minlife'))
         self.interruptcheck = int(config.get(section,'interruptcheck'))
+
+        # Handle objects
+        self.stopevent = threading.Event()
 
         self.log.debug("[%s] ProxyHandler initialized." % self.name)
 
@@ -156,6 +171,8 @@ class ProxyHandler(threading.Thread):
         elif p.returncode == 1:
             self.log.warn("[%s] Command RC = 1" % self.name)
             return 0
+        else:
+            raise Exception("Strange error using command voms-proxy-info -actimeleft. Return code = %d" % p.returncode)
         
     
     def join(self,timeout=None):
@@ -188,15 +205,18 @@ class ProxyHandler(threading.Thread):
         '''
         Create proxy if timeleft is less than minimum...
         '''
-        tl = self._checkTimeleft()
-        self.log.debug("[%s] Time left is %d" % (self.name, tl))
-        if tl < self.minlife:
-            self.log.info("[%s] Need proxy. Generating..." % self.name)
-            self._generateProxy()
-            self.log.info("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))    
+        if renew:
+            tl = self._checkTimeleft()
+            self.log.debug("[%s] Time left is %d" % (self.name, tl))
+            if tl < self.minlife:
+                self.log.info("[%s] Need proxy. Generating..." % self.name)
+                self._generateProxy()
+                self.log.info("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))    
+            else:
+                self.log.debug("[%s] Time left %d seconds." % (self.name, self._checkTimeleft() ))
+                self.log.info("[%s] Proxy OK (Timeleft %ds)." % ( self.name, self._checkTimeleft()))
         else:
-            self.log.debug("[%s] Time left %d seconds." % (self.name, self._checkTimeleft() ))
-            self.log.info("[%s] Proxy OK (Timeleft %ds)." % ( self.name, self._checkTimeleft()))
+            self.log.info("Proxy checking and renewal disabled in config.")
         
         
     def _getProxyPath(self):
