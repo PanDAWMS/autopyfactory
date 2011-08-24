@@ -32,26 +32,9 @@ import traceback
 
 from optparse import OptionParser
 
-# Need to set PANDA_URL_MAP before the Client module is loaded (which happens
-# when the Factory module is loaded). Unfortunately this means that logging
-# is not yet available.
-if not 'APF_NOSQUID' in os.environ:
-    if not 'PANDA_URL_MAP' in os.environ:
-        os.environ['PANDA_URL_MAP'] = 'CERN,http://pandaserver.cern.ch:25085/server/panda,https://pandaserver.cern.ch:25443/server/panda'
-        print >>sys.stderr,  'FACTORY DEBUG: Set PANDA_URL_MAP to %s' % os.environ['PANDA_URL_MAP']  
-    else:
-        print >>sys.stderr, 'FACTORY DEBUG: Found PANDA_URL_MAP set to %s. Not changed.' % os.environ['PANDA_URL_MAP']
-    if not 'PANDA_URL' in os.environ:
-        os.environ['PANDA_URL'] = 'http://pandaserver.cern.ch:25085/server/panda'
-        print >>sys.stderr, 'FACTORY DEBUG: Set PANDA_URL to %s' % os.environ['PANDA_URL']
-    else:
-        print >>sys.stderr, 'FACTORY DEBUG: Found PANDA_URL set to %s. Not changed.' % os.environ['PANDA_URL']
-else:
-    print >>sys.stderr, 'FACTORY DEBUG: Found APF_NOSQUID set. Not changing/setting panda client environment.'
-
-
 from autopyfactory.configloader import FactoryConfigLoader
 from autopyfactory.apfexceptions import FactoryConfigurationFailure
+
 
 class APF(object):
         """class to parse the input options,
@@ -218,6 +201,27 @@ class APF(object):
                 self.log.setLevel(self.options.logLevel)
                 self.log.debug('logging initialised')
 
+
+        def setuppandaenv(self):
+                '''
+                seting up some panda variables.
+                '''
+
+                if not 'APF_NOSQUID' in os.environ:
+                    if not 'PANDA_URL_MAP' in os.environ:
+                        os.environ['PANDA_URL_MAP'] = 'CERN,http://pandaserver.cern.ch:25085/server/panda,https://pandaserver.cern.ch:25443/server/panda'
+                        self.log.warning('FACTORY DEBUG: Set PANDA_URL_MAP to %s' % os.environ['PANDA_URL_MAP'])
+                    else:
+                        self.log.warning('FACTORY DEBUG: Found PANDA_URL_MAP set to %s. Not changed.' % os.environ['PANDA_URL_MAP'])
+                    if not 'PANDA_URL' in os.environ:
+                        os.environ['PANDA_URL'] = 'http://pandaserver.cern.ch:25085/server/panda'
+                        self.log.warning('FACTORY DEBUG: Set PANDA_URL to %s' % os.environ['PANDA_URL'])
+                    else:
+                        self.log.warning('FACTORY DEBUG: Found PANDA_URL set to %s. Not changed.' % os.environ['PANDA_URL'])
+                else:
+                    self.log.warning('FACTORY DEBUG: Found APF_NOSQUID set. Not changing/setting panda client environment.')
+
+
         def checkroot(self): 
                 """If running as root, drop privileges to --runas' account.
                 """
@@ -320,6 +324,7 @@ def main():
         apf = APF()
         apf.parseopts()
         apf.setuplogging()
+        apf.setuppandaenv()
         apf.checkroot()
         apf.createconfig()
         apf.mainloop()
