@@ -26,6 +26,7 @@ import logging
 import logging.handlers
 import time
 import os
+import pwd
 import sys
 import traceback
 import pwd
@@ -238,6 +239,7 @@ class APF(object):
                         os.setuid(runuid)
                         os.seteuid(runuid)
                         os.setegid(rungid)
+                        os.environ['HOME'] = pwd.getpwnam(self.options.runAs).pw_dir 
                         self.log.info("Now running as user %d:%d ..." % (runuid, rungid))
                     
                     except KeyError, e:
