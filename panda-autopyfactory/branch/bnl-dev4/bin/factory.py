@@ -300,8 +300,8 @@ def main():
 
 
         apf = APF()
-        apf.checkroot()
         apf.parseopts()
+        apf.checkroot()
         apf.setuplogging()
         apf.createconfig()
         apf.mainloop()
