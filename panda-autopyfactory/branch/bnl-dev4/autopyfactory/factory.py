@@ -15,6 +15,7 @@ from ConfigParser import ConfigParser
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
+from autopyfactory.cleanLogs import CleanCondorLogs
 from autopyfactory.logserver import LogServer
 from autopyfactory.proxymanager import ProxyManager
 
@@ -345,6 +346,10 @@ class WMSQueue(threading.Thread):
                         args = dict(self.fcl.items('Factory'))
                         args.update(dict(self.fcl.items('Pilots')))
                         self.monitor = Monitor(**args)
+
+                # Condor logs cleaning
+                self.clean = CleanCondorLogs(self)
+                self.clean.start()
 
                 # Handle status and submit batch plugins. 
                 self.batchstatus = self.__getplugin('batchstatus', self)
