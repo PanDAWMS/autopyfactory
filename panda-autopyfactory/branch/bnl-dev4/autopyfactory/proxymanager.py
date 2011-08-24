@@ -85,7 +85,7 @@ class ProxyHandler(threading.Thread):
         
         # Handle potential paths with expanduser
         self.baseproxy = config.get(section,'baseproxy' ) 
-        if self.baseproxy.lower() == "none":
+        if self.baseproxy.lower().strip() == "none":
             self.baseproxy = None
         else:
             self.baseproxy = os.path.expanduser(self.baseproxy)

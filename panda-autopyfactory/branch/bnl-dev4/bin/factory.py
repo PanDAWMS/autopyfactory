@@ -298,10 +298,11 @@ Exploding in 5...4...3...2...1... Have a nice day!''')
 
 def main():
 
+
         apf = APF()
+        apf.checkroot()
         apf.parseopts()
         apf.setuplogging()
-        apf.checkroot()
         apf.createconfig()
         apf.mainloop()
         
