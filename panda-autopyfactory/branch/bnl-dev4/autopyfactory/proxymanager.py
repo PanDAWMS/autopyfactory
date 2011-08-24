@@ -160,7 +160,7 @@ class ProxyHandler(threading.Thread):
         Returns timeleft in seconds (0 for expired or non-existent proxy)
         '''
         self.log.debug("[%s] Begin..." % self.name)
-        cmd = 'voms-proxy-info --dont-verify-ac -actimeleft '
+        cmd = 'voms-proxy-info -dont-verify-ac -actimeleft '
         cmd += ' -file %s ' % self.proxyfile
         
         # Run command
