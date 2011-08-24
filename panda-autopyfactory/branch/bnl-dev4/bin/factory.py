@@ -260,7 +260,7 @@ class APF(object):
                 in order to renew proxy.   
                 The thing is that expanduser() uses the value of $HOME
                 as it is stored in os.environ, and that value still is /root/
-                Ergo, if we want to path to be expanded to a different user, i.e. apf,
+                Ergo, if we want the path to be expanded to a different user, i.e. apf,
                 we need to change by hand the value of $HOME in the environment
                 '''
                 os.environ['HOME'] = pwd.getpwnam(self.options.runAs).pw_dir 
