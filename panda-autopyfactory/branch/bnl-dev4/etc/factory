@@ -48,7 +48,7 @@ if [ -f $SYSCONF ]; then
    . $SYSCONF
 fi
 
-if [ -n $GRIDSETUP ]; then
+if [ -n "$GRIDSETUP" ]; then
    . $GRIDSETUP
 fi
 
