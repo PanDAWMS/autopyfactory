@@ -21,17 +21,16 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from optparse import OptionParser
+import grp
 import logging
 import logging.handlers
-import time
 import os
 import pwd
 import sys
+import time
 import traceback
-import pwd
-import grp
 
+from optparse import OptionParser
 
 # Need to set PANDA_URL_MAP before the Client module is loaded (which happens
 # when the Factory module is loaded). Unfortunately this means that logging
