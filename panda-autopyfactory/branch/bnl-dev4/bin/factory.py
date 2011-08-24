@@ -236,6 +236,8 @@ class APF(object):
                         
                         os.setgid(rungid)
                         os.setuid(runuid)
+                        os.seteuid(runuid)
+                        os.setegid(rungid)
                         self.log.info("Now running as user %d:%d ..." % (runuid, rungid))
                     
                     except KeyError, e:
