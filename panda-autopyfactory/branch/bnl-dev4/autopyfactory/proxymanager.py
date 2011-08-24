@@ -150,6 +150,8 @@ class ProxyHandler(threading.Thread):
             self.log.debug("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))
         elif p.returncode == 1:
             self.log.error("[%s] Command RC = 1. Error = %s" % (self.name, stderr))
+        else:
+            raise Exception("Strange error using command voms-proxy-init. Return code = %d" % p.returncode)
             
 
     def _checkTimeleft(self):
