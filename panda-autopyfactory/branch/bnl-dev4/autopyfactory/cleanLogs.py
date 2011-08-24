@@ -108,6 +108,10 @@ class CleanCondorLogs(threading.Thread):
 
                 logDirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")  # i.e. 2011-08-12
                 logDirMatch = logDirRe.match(entry)
+                if not logDirMatch:
+                        # there is an entry robot.txt, which does not match the date format
+                        self.log.debug('__process_entry: ignoring entry %s', %entry)
+                        return 
 
                 then = datetime.date(int(logDirMatch.group(1)), 
                                      int(logDirMatch.group(2)), 
