@@ -11,6 +11,8 @@ import logging
 import threading
 import time
 
+from ConfigParser import ConfigParser
+
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
 from autopyfactory.logserver import LogServer
