@@ -223,7 +223,8 @@ class APF(object):
 
 
         def checkroot(self): 
-                """If running as root, drop privileges to --runas' account.
+                """
+                If running as root, drop privileges to --runas' account.
                 """
                 starting_uid = os.getuid()
                 starting_gid = os.getgid()
