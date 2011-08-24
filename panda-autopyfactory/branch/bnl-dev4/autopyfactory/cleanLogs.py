@@ -173,6 +173,6 @@ class CleanCondorLogs(threading.Thread):
                 APF is turned on.
                 '''
                 # wait some random time
-                randomsleep = int(random.uniform(0,30))                 
+                randomsleep = int(random.uniform(0,30) * 60)                 
                 time.sleep(randomsleep)
 
