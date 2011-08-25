@@ -281,8 +281,8 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                                 else:
                                         output_dic[code] += 1 
 
-        self.log.debug('__analyzeoutput: Leaving and returning %s' %output_dic)
-        return output_dic
+                self.log.debug('__analyzeoutput: Leaving and returning %s' %output_dic)
+                return output_dic
 
         def join(self, timeout=None):
                 ''' 
