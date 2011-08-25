@@ -221,7 +221,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                                 if not node_dic.has_key(key):
                                         continue
                                 # if the line had everything, we keep searching
-                                if dic['MATCH_APF_QUEUE'] == queue:
+                                if node_dic['MATCH_APF_QUEUE'] == queue:
                                         code = node_dic[key]
                                         if code not in output_dic.keys():
                                                 output_dic[code] = 1
