@@ -93,6 +93,9 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add("universe=grid")
                 self.JSD.add('grid_resource=gt2 %s' % self.qcl.get(self.queue, 'jdl')) 
 
+                # -- copy to spool --
+                self.JSD.add('copy_to_spool = false')
+
                 # -- globusrsl -- 
                 #self.JSD.add("globusrsl=(queue=%s)(jobtype=single)" % self.qcl.get(self.queue, 'localqueue'))
                 globusrsl = "globusrsl=(jobtype=single)"
