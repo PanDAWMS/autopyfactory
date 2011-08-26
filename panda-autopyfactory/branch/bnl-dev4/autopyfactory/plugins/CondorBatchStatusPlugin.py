@@ -254,7 +254,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                                 if len(child.childNodes[0].childNodes) > 0:
                                         value = child.childNodes[0].firstChild.data
                                         dic[key] = str(value)
-             return dic
+                return dic
 
 ###        def __analyzeoutput(self, output, key, queue):
 ###                '''
