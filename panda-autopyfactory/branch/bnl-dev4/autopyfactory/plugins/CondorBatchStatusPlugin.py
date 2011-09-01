@@ -253,7 +253,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                                 #       - jobStatus doesn't exist. But there is JobStatus
                                 if len(child.childNodes[0].childNodes) > 0:
                                         value = child.childNodes[0].firstChild.data
-                                        dic[key] = str(value)
+                                        dic[key.lower()] = str(value)
                 return dic
 
 ###        def __analyzeoutput(self, output, key, queue):
