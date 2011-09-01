@@ -1,13 +1,18 @@
 #
+# proxy.conf   Configuration file for ProxyManager component of AutoPyFactory. 
+#
 [DEFAULT]
 #envset_KEY = VALUE
 #envunset = VAR1,VAR2,VAR3
-# Baseproxy, if used. Probably no longer necessary. 
+# Baseproxy, if used.
 # If used, create a very long-lived proxy, e.g.
-#        grid-proxy-init -valid 720:0 -out /tmp/plainProxy
+#     grid-proxy-init -valid 720:0 -out /tmp/plainProxy
+# Note that maintenance of this proxy must occur completely outside of APF. 
 # baseproxy = /tmp/plainProxy
+#
 baseproxy = None
 
+# 
 usercert=~/.globus/usercert.pem
 userkey=~/.globus/userkeynopw.pem
 # Initial voms lifetime, in seconds (604800 = 7 days)
@@ -25,12 +30,12 @@ interruptcheck = 1
 #
 # If you don't want to use ProxyManager to renew proxies, set this  False
 # and only define 'proxyfile'
+#  If renew is set to false, then no grid client setup is necessary. 
 renew = True
 
 [atlas-usatlas]
 vorole = atlas:/atlas/usatlas
 proxyfile = /tmp/atlasProxy
-
 
 [atlas-production]
 # baseproxy = /tmp/plainProxy
