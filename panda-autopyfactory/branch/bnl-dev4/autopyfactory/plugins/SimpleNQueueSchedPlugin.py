@@ -23,10 +23,11 @@ class SchedPlugin(SchedInterface):
         def calcSubmitNum(self, status):
                 """ 
                 is nqueue > number of idle?
-                        yes -> return nqueue - nbpilots
-                        no -> return 0
-
-                This version makes use of config variable maxPilotsPerCycle.
+                   no  -> return 0
+                   yes -> 
+                      is maxPilotsPerCycle defined?
+                         yes -> return min(nqueue - nbpilots, maxPilotsPerCycle)
+                         no  -> return (nqueue - nbpilots)
                 """
 
                 self.log.debug('calcSubmitNum: Starting with input %s' %status)
