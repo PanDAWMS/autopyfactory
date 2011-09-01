@@ -23,13 +23,14 @@ class SchedPlugin(SchedInterface):
         def calcSubmitNum(self, status):
                 """ 
                 is number of actived jobs == 0 ?
-                        yes -> return 0
-                        no ->
-                                is number of activated > number of idle?
-                                        yes -> return nbjobs - nbpilots
-                                        no -> return 0
-
-                This version makes use of config variable maxPilotsPerCycle.
+                   yes -> return 0
+                   no  ->
+                      is number of activated > number of idle?
+                         no  -> return 0
+                         yes -> 
+                            is maxPilotsPerCycle defined?
+                               yes -> return min(nbjobs - nbpilots, maxPilotsPerCycle)
+                               no  -> return (nbjobs - nbpilots)
                 """
 
                 self.log.debug('calcSubmitNum: Starting with input %s' %status)
