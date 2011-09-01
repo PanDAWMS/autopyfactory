@@ -36,7 +36,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         
         def __init__(self, wmsqueue):
 
-                self.log = logging.getLogger("main.batchstatusplugin[%s]" %wmsqueue.siteid)
+                self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %wmsqueue.siteid)
                 self.log.info('BatchStatusPlugin: Initializing object...')
 
                 self.wmsqueue = wmsqueue
@@ -66,7 +66,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 over the output of a condor_q command
                 '''
                 
-                self.log.debug('getInfo: Starting with input %s' %queue)
+                self.log.debug('getInfo[%s]: Starting ' %queue)
 
                 if not self.updated:
                         return {}
@@ -77,7 +77,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 else:
                         out = {}
 
-                self.log.debug('getInfo: Leaving with output %s' %out)
+                self.log.debug('getInfo[%s]: Leaving with output %s' %(queue, out))
                 return out 
 
 
@@ -199,7 +199,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                         - queue is the quename why want to analyze this time
                 '''
 
-                self.log.debug('__analyzeoutput: Starting with inputs: output=%s key=%s queue=%s' %(output, key, queue))
+                self.log.debug('__analyzeoutput[%s]: Starting with inputs: output=%s key=%s queue=%s' %(queue, output, key, queue))
  
                 output_dic = {}
  
@@ -224,7 +224,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                                                 output_dic[code] = 1
                                         else:
                                                 output_dic[code] += 1
-                self.log.debug('__analyzeoutput: Leaving and returning %s' %output_dic)
+                self.log.debug('__analyzeoutput[%s]: Leaving and returning %s' %(queue, output_dic))
                 return output_dic
  
         def __listnodesfromxml(self, xmldoc, tag):
