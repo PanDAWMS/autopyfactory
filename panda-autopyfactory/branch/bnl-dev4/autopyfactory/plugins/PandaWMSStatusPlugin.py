@@ -34,7 +34,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
         def __init__(self, wmsqueue):
                 self.wmsqueue = wmsqueue
-                self.log = logging.getLogger("main.pandawmsstatusplugin[%s]" %wmsqueue.siteid)
+                self.log = logging.getLogger("main.pandawmsstatusplugin[%s]" %wmsqueue.apfqueue)
                 self.log.info("WMSStatusPlugin: Initializing object...")
 
                 # variable to check if the source of information 

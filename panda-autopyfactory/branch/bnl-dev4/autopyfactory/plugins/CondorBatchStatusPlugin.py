@@ -36,16 +36,16 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         
         def __init__(self, wmsqueue):
 
-                self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %wmsqueue.siteid)
+                self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %wmsqueue.apfqueue)
                 self.log.info('BatchStatusPlugin: Initializing object...')
 
                 self.wmsqueue = wmsqueue
                 self.fconfig = wmsqueue.fcl.config          
-                self.siteid = wmsqueue.siteid
+                self.apfqueue = wmsqueue.apfqueue
                 self.condoruser = wmsqueue.fcl.get('Factory', 'factoryUser')
                 self.factoryid = wmsqueue.fcl.get('Factory', 'factoryId') 
-                self.statuscycle = int(wmsqueue.qcl.get(self.siteid, 'batchCheckInterval'))
-                self.submitcycle = int(wmsqueue.qcl.get(self.siteid, 'batchSubmitInterval'))
+                self.statuscycle = int(wmsqueue.qcl.get(self.apfqueue, 'batchCheckInterval'))
+                self.submitcycle = int(wmsqueue.qcl.get(self.apfqueue, 'batchSubmitInterval'))
 
                 # results of the condor_q query commands
                 self.updated = False
