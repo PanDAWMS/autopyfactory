@@ -77,6 +77,7 @@ proxy = atlas-usatlas
 # ====================================================================== 
 
 [BNL_ITB_Test1]
+siteid = BNL_ITB_Test1
 nickname = BNL_ITB_Test1-condor
 jdl = gridtest01.racf.bnl.gov/jobmanager-condor
 status = test
@@ -96,6 +97,7 @@ environ = OSG_GRID=/afs/usatlas/osg/wn-client/@sys/itb
 
 
 ### [TEST2]
+### siteid = TEST2
 ### nickname = TEST2
 ### jdl = gridtest01.racf.bnl.gov/jobmanager-condor
 ### status = test
@@ -109,14 +111,17 @@ environ = OSG_GRID=/afs/usatlas/osg/wn-client/@sys/itb
 
 #### # Two examples of the simplest and recommended configuration for sites
 #### [UKI-NORTHGRID-LANCS-HEP]
+#### siteid = UKI-NORTHGRID-LANCS-HEP
 #### nickname = UKI-NORTHGRID-LANCS-HEP-fal-pygrid-18-atlas-lcgpbs
 #### 
 #### [UKI-SCOTGRID-GLASGOW-svr021]
+#### siteid = UKI-SCOTGRID-GLASGOW-svr021
 #### nickname = UKI-SCOTGRID-GLASGOW-svr021-atlprd-lcgpbs
 #### 
 #### # Pilots going to an analysis site usually use a different proxy.
 #### # *** Please now see the setting analysisGridProxy in the QueueDefaults section
 #### [ANALY_GLASGOW]
+#### siteid = ANALY_GLASGOW
 #### nickname = ANALY_GLASGOW
 #### #gridProxy = /tmp/myPilotRoleProxy  <--- No longer needed
 #### 
@@ -125,6 +130,7 @@ environ = OSG_GRID=/afs/usatlas/osg/wn-client/@sys/itb
 #### # by schedconfig, unless you set override = True. e.g., testing a new
 #### # gatekeeper
 #### [UKI-SCOTGRID-GLASGOW-testCE]
+#### siteid = UKI-SCOTGRID-GLASGOW-testCE
 #### nickname = UKI-SCOTGRID-GLASGOW-svr029-atlprd-lcgpbs
 #### jdl = svr029.gla.scotgrid.ac.uk/jobmanager-lcgpbs
 #### localqueue = atlprd
@@ -140,6 +146,7 @@ environ = OSG_GRID=/afs/usatlas/osg/wn-client/@sys/itb
 #### # resource supporting an ANALY queue. Note the old "gatekeeper" now breaks
 #### # into two parts: jdl and queue.
 #### [ANALY_GLASGOW-svr026]
+#### siteid = ANALY_GLASGOW-svr026
 #### nickname = ANALY_GLASGOW
 #### jdl = svr026.gla.scotgrid.ac.uk/jobmanager-lcgpbs
 #### localqueue = atlanaly
@@ -150,6 +157,7 @@ environ = OSG_GRID=/afs/usatlas/osg/wn-client/@sys/itb
 #### # must have jdl (and probably localqueue) overrides.
 #### # If you don't specify the port then 8443 is assumed.
 #### [UKI-SCOTGRID-GLASGOW-cream14]
+#### siteid = UKI-SCOTGRID-GLASGOW-cream14
 #### nickname = UKI-SCOTGRID-GLASGOW-svr014-atlprd-pbs
 #### jdl = svr014.gla.scotgrid.ac.uk:8443/cream-pbs
 #### localqueue = atlprd
