@@ -22,7 +22,7 @@ class SchedPlugin(SchedInterface):
         '''       
  
         def __init__(self, wmsqueue):
-                self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.siteid)
+                self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
                 self.log.info("SchedPlugin: Object initialized.")
 
         def calcSubmitNum(self, status):
