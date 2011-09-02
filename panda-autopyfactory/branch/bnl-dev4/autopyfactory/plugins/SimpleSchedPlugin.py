@@ -38,7 +38,7 @@ class SchedPlugin(SchedInterface):
                 if not status:
                         out = 0
                 elif not status.valid():
-                        out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue 'defaultnbpilots')
+                        out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'defaultnbpilots')
                         self.log.info('calcSubmitNum: status is not valid, returning default = %s' %out)
                 else:
                         nbjobs = status.jobs.get('activated', 0)
@@ -55,6 +55,13 @@ class SchedPlugin(SchedInterface):
                                         out = nbjobs - nbpilots
                                 else:
                                         out = 0
+
+                # reducing the number of pilot by a ratio, if so
+                # This can be useful when one knows that there are several pilots queues 
+                # pulling jobs from the same panda siteid (a job queue)
+                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'pilotratio'):
+                        ratio = self.wmsqueue.qcl.getfloat(self.wmsqueue.apfqueue, 'pilotratio')
+                        out = int(round(out*ratio))
                 
                 # check if the config file has attribute maxPilotsPerCycle
                 if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'maxPilotsPerCycle'):

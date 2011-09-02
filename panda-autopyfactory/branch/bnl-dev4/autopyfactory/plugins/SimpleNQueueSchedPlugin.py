@@ -46,7 +46,14 @@ class SchedPlugin(SchedInterface):
                                 out = nqueue - nbpilots
                         else:
                                 out = 0
-                
+
+                # reducing the number of pilot by a ratio, if so
+                # This can be useful when one knows that there are several pilots queues 
+                # pulling jobs from the same panda siteid (a job queue)
+                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'pilotratio'):
+                        ratio = self.wmsqueue.qcl.getfloat(self.wmsqueue.apfqueue, 'pilotratio')
+                        out = int(round(out*ratio))               
+ 
                 # check if the config file has attribute maxPilotsPerCycle
                 if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'maxPilotsPerCycle'):
                         maxPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'maxPilotsPerCycle')
