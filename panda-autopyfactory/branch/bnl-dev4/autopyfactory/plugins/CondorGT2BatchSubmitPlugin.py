@@ -27,7 +27,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         '''
         
         def __init__(self, wmsqueue):
-                self.log = logging.getLogger("main.batchsubmitplugin[%s]" %wmsqueue.siteid)
+                self.log = logging.getLogger("main.batchsubmitplugin[%s]" %wmsqueue.apfqueue)
                 self.wmsqueue = wmsqueue
                 self.factory = wmsqueue.factory
                 self.log.info('BatchSubmitPlugin: Object initialized.')
