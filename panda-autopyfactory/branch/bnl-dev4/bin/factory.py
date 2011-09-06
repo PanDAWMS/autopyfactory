@@ -193,7 +193,7 @@ class APF(object):
                 # to be used only for DEBUG and INFO modes. 
                 if self.options.logLevel in [logging.DEBUG, logging.INFO]:
                         if self.options.console:
-                                console = logging.StreamHandler()
+                                console = logging.StreamHandler(sys.stdout)
                                 console.setFormatter(formatter)
                                 console.setLevel(self.options.logLevel)
                                 self.log.addHandler(console)
