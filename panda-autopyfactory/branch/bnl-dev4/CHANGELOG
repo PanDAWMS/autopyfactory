@@ -3,19 +3,21 @@ ChangeLog
 
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
+2011-09-06
 
-2011-08-01
+* Major refactorization to integrate BNL changes. Full object-oriented functional plugin architecture, each running in a distinct thread. Allows for end-user/third-party customization without touching core code. 
 
-* Major refactorization to integrate BNL changes. 
-
-* Refined distutils usage to allow deployment as non-root in a home directory, or
-  as root in system paths. Added functionality to drop privs even when run as root. 
+* Refined distutils usage to allow deployment as non-root in a home directory, 
+  or as root in system paths. Added functionality to drop privs even when run as
+  root. 
 
 * Added typical init script and sysconfig functionality to handle shell-level/UNIX concerns. 
 
 * Split config system into main source for APF instance (factory.conf), proxy management (proxy.conf), individual queue configuration (queue.conf). The latter can be accessed as URI, paving the way to queue configuration via DB or URL.
   
 * The previous change involved passing ConfigLoader objects to classes, rather than passing through lists of config files. 
+
+* Integrated proxy handling and renewal, integrated submit system log file rotation. 
 
 * Adjusted module, file, and class names to follow Python recommended guidelines. See PEP 8:
   http://www.python.org/dev/peps/pep-0008/ 
@@ -31,6 +33,7 @@ $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
 * This release is "The Clockmaker". v2.0.0
   http://en.wikipedia.org/wiki/List_of_Revelation_Space_characters#The_Clockmaker
+
 
 
 2011-03-28
