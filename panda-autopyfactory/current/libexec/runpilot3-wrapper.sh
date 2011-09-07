@@ -324,9 +324,10 @@ cmd="$pybin pilot.py $pilot_args"
 
 echo cmd: $cmd
 $cmd
+exitcode=$?
 
 echo
-echo "Pilot exit status was $?"
+echo "Pilot exit status was $exitcode"
 
 # notify monitoring, job exiting, capture the pilot exit status
 if [ -f STATUSCODE ]; then
