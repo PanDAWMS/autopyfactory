@@ -327,7 +327,13 @@ class WMSQueue(threading.Thread):
                 self.fcl = self.factory.fcl 
                 self.qcl = self.factory.qcl 
 
-                self.siteid = self.qcl.get(apfqueue, "siteid")
+                #self.siteid = self.qcl.get(apfqueue, "siteid")
+                if self.qcl.has_option(apfqueue, "siteid"):
+                        self.siteid = self.qcl.get(apfqueue, "siteid")
+                else:
+                        # if siteid is not in the specs, then
+                        # the very APF QUEUE name is teh siteid, as default
+                        self.siteid = apfqueue
                 self.nickname = self.qcl.get(apfqueue, "nickname")
                 self.cloud = self.qcl.get(apfqueue, "cloud")
                 self.dryRun = self.fcl.get("Factory", "dryRun")
