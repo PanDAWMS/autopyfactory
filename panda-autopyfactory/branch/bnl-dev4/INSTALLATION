@@ -1,11 +1,20 @@
 INSTALLATION
-
 Prerequisites:
-
    -- Condor (Condor-G)
-   -- Panda Client 
+   -- Panda Client library 
    -- simplejson
    -- 
+
+Installation Options
+--------------------
+   
+   
+RPM Installation
+----------------
+
+
+Python/Home Directory Setup Installation
+-------------------------
 
 
 Installation
