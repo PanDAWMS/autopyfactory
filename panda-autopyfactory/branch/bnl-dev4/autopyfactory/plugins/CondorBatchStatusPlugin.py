@@ -53,6 +53,10 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.output = None
                 self.status = None  # result of analyzing self.output
 
+                # variable to record when was last time info was updated
+                # the info is recorded as seconds since epoch
+                self.lasttime = 0
+
                 threading.Thread.__init__(self) # init the thread
                 self.stopevent = threading.Event()
                 # to avoid the thread to be started more than once
@@ -60,24 +64,35 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
                 self.log.info('BatchStatusPlugin: Object initialized.')
 
-        def getInfo(self, queue):
+        def getInfo(self, queue, maxtime=0):
                 '''
                 Returns a diccionary with the result of the analysis 
                 over the output of a condor_q command
+
+                Optionally, and maxtime parameter can be passed.
+                In that case, if the info recorded is older than that maxtime,
+                an empty dictionary is returned, 
+                as we understand that info is too old and most probably
+                not realiable anymore.
                 '''
                
                 self.log.debug('getInfo[%s]: Starting ' %queue)
 
                 # if there is not any info yet available, return an empty dictionary
                 if not self.updated:
-                        self.log.debug('getInfo: no info yet')
+                        self.log.debug('getInfo[%s]: no info yet' %queue)
                         return {}
 
-                if not self.error:
-                        self.status = self.__analyzeoutput(self.output, 'jobStatus', queue)
-                        out = self.status
-                else:
+                if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
+                        # if info is too old, return an empty dictionary
+                        self.log.debug('getInfo[%s]: info too old' %queue)
                         out = {}
+                else:
+                        if not self.error:
+                                self.status = self.__analyzeoutput(self.output, 'jobStatus', queue)
+                                out = self.status
+                        else:
+                                out = {}
 
                 self.log.debug('getInfo[%s]: Leaving with output %s' %(queue, out))
                 return out 
@@ -182,6 +197,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
                 self.err, self.output = commands.getstatusoutput(querycmd)
                 self.updated = True
+                self.lasttime = int(time.time())
 
                 self.log.debug('__update: Leaving.')
 
