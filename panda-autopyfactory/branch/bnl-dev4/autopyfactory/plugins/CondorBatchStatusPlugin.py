@@ -65,10 +65,12 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 Returns a diccionary with the result of the analysis 
                 over the output of a condor_q command
                 '''
-                
+               
                 self.log.debug('getInfo[%s]: Starting ' %queue)
 
+                # if there is not any info yet available, return an empty dictionary
                 if not self.updated:
+                        self.log.debug('getInfo: no info yet')
                         return {}
 
                 if not self.error:
