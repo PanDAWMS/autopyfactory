@@ -54,18 +54,27 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
         def getCloudInfo(self, cloud, maxtime=0):
                 '''
-                from the info (as a dict) retrieved from the PanDA server
-                using method userinterface.Client.getCloudSpecs()
                 selects the entry corresponding to cloud
+                from the info retrieved from the PanDA server (as a dict)
+                using method userinterface.Client.getCloudSpecs()
+
+                Optionally, and maxtime parameter can be passed.
+                In that case, if the info recorded is older than that maxtime,
+                an empty dictionary is returned, 
+                as we understand that info is too old and most probably
+                not realiable anymore.
                 '''
 
                 self.log.debug('getCloudInfo: Starting with input %s' %cloud)
 
+                # if there is not any info yet available, return an empty dictionary
                 if not self.updated:
+                        self.log.debug('getCloudInfo: no info yet')
                         return {} 
 
                 if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
-                        # info is too old
+                        # if info is too old, return an empty dictionary
+                        self.log.debug('getCloudInfo: info too old')
                         out = {}
                 else:
                         if not self.clouds_err:
@@ -78,18 +87,27 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 
         def getSiteInfo(self, site, maxtime=0):
                 '''
-                from the info (as a dict) retrieved from the PanDA server
+                selects the entry corresponding to sites
+                from the info retrieved from the PanDA server (as a dict)
                 using method userinterface.Client.getSiteSpecs(siteType='all')
-                selects the entry corresponding to site 
+
+                Optionally, and maxtime parameter can be passed.
+                In that case, if the info recorded is older than that maxtime,
+                an empty dictionary is returned, 
+                as we understand that info is too old and most probably
+                not realiable anymore.
                 '''
 
                 self.log.debug('getSiteInfo: Starting with input %s' %site)
 
+                # if there is not any info yet available, return an empty dictionary
                 if not self.updated:
+                        self.log.debug('getSiteInfo: no info yet')
                         return {}
 
                 if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
-                        # info is too old
+                        self.log.debug('getSiteInfo: info too old')
+                        # if info is too old, return an empty dictionary
                         out = {}
                 else:
                         if not self.sites_err:
@@ -102,18 +120,27 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
         def getJobsInfo(self, site, maxtime=0):
                 '''
-                from the info (as a dict) retrieved from the PanDA server
+                selects the entry corresponding to jobs 
+                from the info retrieved from the PanDA server (as a dict)
                 using method userinterface.Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
-                selects the entry corresponding to site 
+
+                Optionally, and maxtime parameter can be passed.
+                In that case, if the info recorded is older than that maxtime,
+                an empty dictionary is returned, 
+                as we understand that info is too old and most probably
+                not realiable anymore.
                 '''
 
                 self.log.debug('getJobsInfo: Starting with input %s' %site)
 
+                # if there is not any info yet available, return an empty dictionary
                 if not self.updated:
+                        self.log.debug('getJobsInfo: no info yet')
                         return {}
 
                 if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
-                        # info is too old
+                        # if info is too old, return an empty dictionary
+                        self.log.debug('getJobsInfo: info too old')
                         out = {}
                 else:
                         if not self.jobs_err:
