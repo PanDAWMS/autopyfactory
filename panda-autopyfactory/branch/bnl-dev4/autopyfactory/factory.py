@@ -726,7 +726,7 @@ class BatchStatusInterface(object):
                 getJobInfo(queue) 
         -----------------------------------------------------------------------
         '''
-        def getInfo(self, queue):
+        def getInfo(self, queue, maxtime=0):
                 '''
                 Returns aggregate info about jobs on queue in batch system. 
                 '''
