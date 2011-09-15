@@ -32,6 +32,13 @@ class SchedPlugin(SchedInterface):
 
                 self.log.debug('calcSubmitNum: Starting with input %s' %status)
 
+
+                # giving an initial value to some variables
+                # to prevent the logging from crashing
+                nbjobs = 0
+                pending_pilots = 0
+                running_pilots = 0
+
                 if not status:
                         out = 0
                 elif not status.valid():
@@ -39,9 +46,11 @@ class SchedPlugin(SchedInterface):
                         self.log.info('calcSubmitNum: status is not valid, returning default = %s' %out)
                 else:
                         nbjobs = status.jobs.get('activated', 0)
-                        nbpilots = status.batch.get('1', 0) + status.batch.get('2', 0)
                         # '1' means pilots in Idle status
                         # '2' means pilots in Running status
+                        pending_pilots = status.batch.get('1', 0)
+                        running_pilots = status.batch.get('2', 0)
+                        nbpilots = pending_pilots + running_pilots
 
                         # note: the following if-else algorithm can be written
                         #       in a simpler way, but in this way is easier to 
@@ -54,5 +63,5 @@ class SchedPlugin(SchedInterface):
                                 else:
                                         out = 0
 
-                self.log.debug('calcSubmitNum: Leaving returning %s' %out)
+                self.log.debug('calcSubmitNum (activated_jobs=%s; pending_pilots=%s; running_pilots=%s): Leaving returning %s' %(nbjobs, pending_pilots, running_pilots, out))
                 return out
