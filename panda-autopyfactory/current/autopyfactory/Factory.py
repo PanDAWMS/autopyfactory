@@ -346,7 +346,7 @@ class factory:
             self.factoryMessages.error('Panda status polling failure: %s', errMsg)
             self.factoryMessages.error('Will sleep and carry on.')
         except IOError, (errno, errMsg):
-            self.factoryMessages.error('Caught IOError Exception %d: %s (%d)' % (errno, errMsg))
+            self.factoryMessages.error('Caught IOError Exception %d: %s' % (errno, errMsg))
             self.factoryMessages.error('Will sleep and carry on.')
             
         
