@@ -18,6 +18,7 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
+
 class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         '''
         -----------------------------------------------------------------------
@@ -37,13 +38,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 self.log = logging.getLogger("main.pandawmsstatusplugin[%s]" %wmsqueue.apfqueue)
                 self.log.info("WMSStatusPlugin: Initializing object...")
 
-                # variable to check if the source of information 
-                # have been queried at least once
-                self.updated = False
-
-                # variable to record when was last time info was updated
-                # the info is recorded as seconds since epoch
-                self.lasttime = 0
+                self.info = InfoHandler()
 
                 threading.Thread.__init__(self) # init the thread
                 self.stopevent = threading.Event()
@@ -67,20 +62,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
                 self.log.debug('getCloudInfo: Starting with input %s' %cloud)
 
-                # if there is not any info yet available, return an empty dictionary
-                if not self.updated:
-                        self.log.debug('getCloudInfo: no info yet')
-                        return {} 
-
-                if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
-                        # if info is too old, return an empty dictionary
-                        self.log.debug('getCloudInfo: info too old')
-                        out = {}
-                else:
-                        if not self.clouds_err:
-                                out = self.all_clouds_config.get(cloud, {})
-                        else:
-                                out = {}
+                out = self.info.get(InfoHandler.CLOUDS, cloud, maxtime)
 
                 self.log.debug('getCloudInfo: Leaving returning %s' %out)
                 return out 
@@ -100,20 +82,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
                 self.log.debug('getSiteInfo: Starting with input %s' %site)
 
-                # if there is not any info yet available, return an empty dictionary
-                if not self.updated:
-                        self.log.debug('getSiteInfo: no info yet')
-                        return {}
-
-                if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
-                        self.log.debug('getSiteInfo: info too old')
-                        # if info is too old, return an empty dictionary
-                        out = {}
-                else:
-                        if not self.sites_err:
-                                out = self.all_sites_config.get(site, {})
-                        else:
-                                out = {}
+                out = self.info.get(InfoHandler.SITES, site, maxtime)
 
                 self.log.debug('getSiteInfo: Leaving returning %s' %out)
                 return out 
@@ -133,20 +102,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
                 self.log.debug('getJobsInfo: Starting with input %s' %site)
 
-                # if there is not any info yet available, return an empty dictionary
-                if not self.updated:
-                        self.log.debug('getJobsInfo: no info yet')
-                        return {}
-
-                if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
-                        # if info is too old, return an empty dictionary
-                        self.log.debug('getJobsInfo: info too old')
-                        out = {}
-                else:
-                        if not self.jobs_err:
-                                out = self.all_jobs_config.get(site, {})
-                        else:
-                                out = {}
+                out = self.info.get(InfoHandler.JOBS, site, maxtime)
        
                 self.log.debug('getJobsInfo: Leaving returning %s' %out)
                 return out
@@ -190,20 +146,20 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
                 # get Clouds Specs
                 self.clouds_err, self.all_clouds_config = Client.getCloudSpecs()
+                self.info.update(InfoHandler.CLOUDS, self.all_clouds_config, self.clouds_err)
                 if self.clouds_err:
                         self.log.error('Client.getCloudSpecs() failed')
 
                 # get Sites Specs
                 self.sites_err, self.all_sites_config = Client.getSiteSpecs(siteType='all')
+                self.info.update(InfoHandler.SITES, self.all_sites_config, self.sites_err)
                 if self.sites_err:
                         self.log.error('Client.getSiteSpecs() failed')
                 # get Jobs Specs
                 self.jobs_err, self.all_jobs_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
+                self.info.update(InfoHandler.JOBS, self.all_jobs_config, self.jobs_err)
                 if self.jobs_err:
                         self.log.error('Client.getJobStatisticsPerSite() failed')
-
-                self.updated = True
-                self.lasttime = int(time.time())
 
                 self.log.debug('__update: Leaving.')
 
@@ -226,4 +182,124 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
                 self.log.debug('join: Leaving.')
 
+
+class InfoHandler:
+        '''
+        -----------------------------------------------------------------------
+        this class is just an ancilla to store and handle 
+        the info that WMSStatusPlugin has to manage.
+        -----------------------------------------------------------------------
+        Public Interface:
+                update(self, name, value, error)
+                get(self, name, key, maxtime=0)
+        -----------------------------------------------------------------------
+        '''
+
+        CLOUDS = 'clouds'
+        SITES = 'sites'
+        JOBS = 'jobs'
+        
+        def __init__(self):
+
+                self.log = logging.getLogger("main.pandawmsstatusplugininfohandler") 
+                self.log.info("InfoHandler: Initializing object...")
+
+                # variable to check if the information 
+                # have been introduced at least once
+                self.initialized = False
+
+                # variable to record when was last time info was updated
+                # the info is recorded as seconds since epoch
+                self.lasttime = 0
+
+                # info 
+                self.all_clouds_config = {}
+                self.all_sites_config = {}
+                self.all_jobs_config = {}
+                # tmp info when there was an error
+                self.err_all_clouds_config = {}
+                self.err_all_sites_config = {}
+                self.err_all_jobs_config = {}
+                # errors
+                self.clouds_err = None
+                self.sites_err = None
+                self.jobs_err = None
+
+                self.log.info("InfoHandler: Object initialized.")
+
+        def update(self, name, value, error):
+                '''
+                just updates the stores info
+                for CLOUDS/SITES/JOBS        
+                
+                If there is no error, the value is stored in the regular 
+                all_clouds_config/all_sites_config/all_jobs_config variables
+
+                If there is an error, the value is stored in special variables
+                err_all_clouds_config/err_all_sites_config/err_all_jobs_config 
+                '''
+
+                #self.log.debug('update: Starting with inputs name=%s; value=%s; error=%s' %(name, value, error))
+                self.log.debug('update: Starting.')
+
+                self.initialized = True
+                self.lasttime = int(time.time())
+                
+                if name == InfoHandler.CLOUDS:
+                        if not error:
+                                self.all_clouds_config = value 
+                        else:
+                                self.err_all_clouds_config = value 
+                        self.clouds_err = error              
+
+                if name == InfoHandler.SITES:
+                        if not error:
+                                self.all_sites_config = value 
+                        else:
+                                self.err_all_sites_config = value 
+                        self.sites_err = error              
+
+                if name == InfoHandler.JOBS:
+                        if not error:
+                                self.all_jobs_config = value 
+                        else:
+                                self.err_all_jobs_config = value 
+                        self.jobs_err = error              
+
+                self.log.debug('update: Leaving.')
+
+        def get(self, name, key, maxtime=0):
+                '''
+                selects the entry corresponding to clouds/sites/jobs
+                from the info retrieved from the PanDA server 
+                (as a set of dicts)
+                using method userinterface.Client.getCloudSpecs()
+
+                Optionally, and maxtime parameter can be passed.
+                In that case, if the info recorded is older than that maxtime,
+                an empty dictionary is returned, 
+                as we understand that info is too old and most probably
+                not realiable anymore.
+                '''
+
+                self.log.debug('get: Starting with inputs name=%s key=%s maxtime=%s.' %(name, key, maxtime))
+
+                if not self.initialized:
+                        self.log.debug('get: Info not initialized.')
+                        self.log.debug('get: Leaving and return empty dictionary')
+                        return {}
+                if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
+                        self.log.debug('get: Info is too old')
+                        self.log.debug('get: Leaving and return empty dictionary')
+                        return {}
+                else:
+                        if name == InfoHandler.CLOUDS:
+                                out = self.all_clouds_config.get(key, {})
+                        if name == InfoHandler.SITES:
+                                out = self.all_sites_config.get(key, {})
+                        if name == InfoHandler.JOBS:
+                                out = self.all_jobs_config.get(key, {})
+        
+                self.log.debug('get: Leaving and returning %s' %out)
+                return out
 

@@ -21,6 +21,7 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
+
 class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
         -----------------------------------------------------------------------
@@ -47,15 +48,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.statuscycle = int(wmsqueue.qcl.get(self.apfqueue, 'batchCheckInterval'))
                 self.submitcycle = int(wmsqueue.qcl.get(self.apfqueue, 'batchSubmitInterval'))
 
-                # results of the condor_q query commands
-                self.updated = False
-                self.error = None
-                self.output = None
-                self.status = None  # result of analyzing self.output
-
-                # variable to record when was last time info was updated
-                # the info is recorded as seconds since epoch
-                self.lasttime = 0
+                self.info = InfoHandler()
 
                 threading.Thread.__init__(self) # init the thread
                 self.stopevent = threading.Event()
@@ -76,23 +69,9 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 not realiable anymore.
                 '''
                
-                self.log.debug('getInfo[%s]: Starting ' %queue)
+                self.log.debug('getInfo[%s]: Starting with maxtime=%s' %(queue, maxtime))
 
-                # if there is not any info yet available, return an empty dictionary
-                if not self.updated:
-                        self.log.debug('getInfo[%s]: no info yet' %queue)
-                        return {}
-
-                if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
-                        # if info is too old, return an empty dictionary
-                        self.log.debug('getInfo[%s]: info too old' %queue)
-                        out = {}
-                else:
-                        if not self.error:
-                                self.status = self.__analyzeoutput(self.output, 'jobStatus', queue)
-                                out = self.status
-                        else:
-                                out = {}
+                out = self.info.get(queue, maxtime)
 
                 self.log.debug('getInfo[%s]: Leaving with output %s' %(queue, out))
                 return out 
@@ -196,8 +175,6 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.log.debug('__update: Querying cmd = %s' %querycmd.replace('\n','\\n'))
 
                 self.err, self.output = commands.getstatusoutput(querycmd)
-                self.updated = True
-                self.lasttime = int(time.time())
 
                 self.log.debug('__update: Leaving.')
 
@@ -208,6 +185,100 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 sleeptime = self.wmsqueue.fcl.getint('Factory', 'batchstatussleep')
                 time.sleep(sleeptime)
                 self.log.debug('__sleep: Leaving.')
+
+        def join(self, timeout=None):
+                ''' 
+                Stop the thread. Overriding this method required to handle Ctrl-C from console.
+                ''' 
+
+                self.log.debug('join: Starting with input %s' %timeout)
+
+                self.stopevent.set()
+                self.log.debug('Stopping thread....')
+                threading.Thread.join(self, timeout)
+
+                self.log.debug('join: Leaving')
+
+                # ------------------------------------------------------------
+                #  ancillas 
+                # ------------------------------------------------------------
+
+
+class InfoHandler:
+        '''
+        -----------------------------------------------------------------------
+        this class is just an ancilla to store and handle 
+        the info that WMSStatusPlugin has to manage.
+        -----------------------------------------------------------------------
+        Public Interface:
+                update(self, value, error)
+                get(self, queue, maxtime=0)
+        -----------------------------------------------------------------------
+        '''
+
+        def __init__(self):
+
+                self.log = logging.getLogger("main.batchstatusplugininfohandler")
+                self.log.info("InfoHandler: Initializing object...")
+
+                # variable to check if the information 
+                # have been introduced at least once
+                self.initialized = False
+
+                self.info = {}          # info
+                self.err_info = {}      # info in case of error
+                self.error = None       # error
+
+                # variable to record when was last time info was updated
+                # the info is recorded as seconds since epoch
+                self.lasttime = 0
+
+                self.log.info("InfoHandler: Object initialized.") 
+
+        def update(self, value, error):
+                '''
+                just updates the stored info                
+                '''
+
+                self.log.debug('update: Starting.')
+
+                self.initialized = True
+                self.lasttime = int(time.time())
+
+                if not error:
+                        self.info = value
+                else:
+                        self.err_info = value
+                self.error = error
+
+                self.log.debug('update: Leaving.')
+
+        def get(self, queue, maxtime=0):
+                '''
+                Returns a diccionary with the result of the analysis 
+                over the output of a condor_q command
+
+                Optionally, and maxtime parameter can be passed.
+                In that case, if the info recorded is older than that maxtime,
+                an empty dictionary is returned, 
+                as we understand that info is too old and most probably
+                not realiable anymore.
+                '''
+
+                self.log.debug('get: Starting.')
+
+                if not self.initialized:
+                        self.log.debug('get: Info not initialized yet.')
+                        self.log.debug('get: Leaving and returning an empty dictionary.')
+                        return {}
+                if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
+                        self.log.debug('get: Info too old.')
+                        self.log.debug('get: Leaving and returning an empty dictionary.')
+                        return {}
+                else:
+                        out = self.__analyzeoutput(self.info, 'jobStatus', queue)
+                        self.log.debug('get: Leaving and returning %s' %out)
+                        return out
 
         def __analyzeoutput(self, output, key, queue):
                 '''
@@ -273,75 +344,4 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                                         value = child.childNodes[0].firstChild.data
                                         dic[key.lower()] = str(value)
                 return dic
-
-###        def __analyzeoutput(self, output, key, queue):
-###                '''
-###                ancilla method to analyze the output of the condor_q command
-###                        - output is the output of the command
-###                        - key is the pattern that counts
-###                '''
-###        
-###                self.log.debug('__analyzeoutput: Starting with inputs: output=%s key=%s queue=%s' %(output, key, queue))
-###        
-###                output_dic = {}
-###        
-###                if not output: 
-###                        # FIXME: temporary solution
-###                        self.log.debug('__analyzeoutput: Leaving and returning %s' %output_dic)
-###                        return output_dic        
-###        
-###                lines = output.split('\n')
-###                for line in lines:
-###                        dic = self.__line_to_dict(line)
-###                        # check that the line had everything we are interested in
-###                        if 'MATCH_APF_QUEUE' not in dic.keys():
-###                                continue
-###                        if key not in dic.keys():
-###                                continue
-###                        # if the line had everything, we keep searching
-###                        if dic['MATCH_APF_QUEUE'] == queue:
-###                                code = dic[key]
-###                                if code not in output_dic.keys():
-###                                        output_dic[code] = 1
-###                                else:
-###                                        output_dic[code] += 1 
-###
-###                self.log.debug('__analyzeoutput: Leaving and returning %s' %output_dic)
-###                return output_dic
-
-###        def __line_to_dict(self, line):
-###                '''
-###                method ancilla to convert each line from the output of condor_q
-###                into a dictionary
-###                '''
-###                d = {}
-###                tokens = line.split()
-###                for token in tokens: 
-###                        if token.find('=') != -1: 
-###                                #key, value = token.split('=')
-###                                # we need to consider the possibility that the 
-###                                # value includes itself the char '='
-###                                # so we will consider as key the first word
-###                                # after splitting, and as value the rest
-###                                key = token.split('=')[0]
-###                                value = '='.join(token.split('=')[1:])
-###                                d[key] = value 
-###                return d
-
-        def join(self, timeout=None):
-                ''' 
-                Stop the thread. Overriding this method required to handle Ctrl-C from console.
-                ''' 
-
-                self.log.debug('join: Starting with input %s' %timeout)
-
-                self.stopevent.set()
-                self.log.debug('Stopping thread....')
-                threading.Thread.join(self, timeout)
-
-                self.log.debug('join: Leaving')
-
-                # ------------------------------------------------------------
-                #  ancillas 
-                # ------------------------------------------------------------
 
