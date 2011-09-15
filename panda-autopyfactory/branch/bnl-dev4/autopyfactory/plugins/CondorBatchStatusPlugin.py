@@ -175,6 +175,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.log.debug('__update: Querying cmd = %s' %querycmd.replace('\n','\\n'))
 
                 self.err, self.output = commands.getstatusoutput(querycmd)
+                self.info.update(self.output, self.err)
 
                 self.log.debug('__update: Leaving.')
 
