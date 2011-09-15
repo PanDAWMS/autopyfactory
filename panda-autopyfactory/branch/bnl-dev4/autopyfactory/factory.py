@@ -453,10 +453,21 @@ class WMSQueue(threading.Thread):
 
                 self.log.debug("__updatestatus: Starting")
 
-                self.status.batch = self.batchstatus.getInfo(self.siteid)
-                self.status.cloud = self.wmsstatus.getCloudInfo(self.cloud)
-                self.status.site = self.wmsstatus.getSiteInfo(self.siteid)
-                self.status.jobs = self.wmsstatus.getJobsInfo(self.siteid)
+                # checking if factory.conf has attributes to say
+                # how old the status info (batch, wms) can be
+                batchstatusmaxtime = 0
+                if self.fcl.has_option('Factory', 'batchstatusmaxtime'):
+                        batchstatusmaxtime = self.fcl.get('Factory', 'batchstatusmaxtime')
+
+                wmsstatusmaxtime = 0
+                if self.fcl.has_option('Factory', 'wmsstatusmaxtime'):
+                        wmsstatusmaxtime = self.fcl.get('Factory', 'wmsstatusmaxtime')
+
+                # getting the info
+                self.status.batch = self.batchstatus.getInfo(self.siteid, batchstatusmaxtime)
+                self.status.cloud = self.wmsstatus.getCloudInfo(self.cloud, wmsstatusmaxtime)
+                self.status.site = self.wmsstatus.getSiteInfo(self.siteid, wmsstatusmaxtime)
+                self.status.jobs = self.wmsstatus.getJobsInfo(self.siteid, wmsstatusmaxtime)
 
                 self.log.debug("__updatestatus: Leaving")
 
