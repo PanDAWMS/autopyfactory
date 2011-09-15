@@ -108,7 +108,8 @@ class Factory:
                 
                 try:
                         while True:
-                                time.sleep(10)
+                                mainsleep = self.fcl.get('Factory', 'factorysleep')
+                                time.sleep(mainsleep)
                                 self.log.debug('Checking for interrupt.')
                                 
                 except (KeyboardInterrupt): 
