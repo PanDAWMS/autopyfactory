@@ -36,7 +36,10 @@ pandaCheckInterval = 67
 # Defaults:
 dryRun=False         
 cycles=None   # None means forever
-# Choose prime number to balance load.
+
+# sleep time between cycles in mainLoop in Factory object
+factorysleep=30
+# sleep time between cycles in WMSQueue object
 sleep=17
 
 # Time the WMSStatus Plugin waits between cycles
