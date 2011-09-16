@@ -1,9 +1,14 @@
 INSTALLATION
-Prerequisites:
-   -- Condor (Condor-G)
-   -- Panda Client library 
-   -- simplejson
-   -- 
+
+The approach to installation differs greatly between installation of RPMs as root and
+installation in a user home directory as an unprivileged user. Therefore, these
+instructions have been split into two files. Please 
+
+General prerequisites:
+-- Condor
+
+
+
 
 Installation Options
 --------------------

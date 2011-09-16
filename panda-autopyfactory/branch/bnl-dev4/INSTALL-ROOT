@@ -1,0 +1,59 @@
+AutoPyFactory INSTALL-ROOT
+
+Installation as root via RPMs has now been quite simplified. These instructions assume Red Hat 
+Enterprise Linux 5.X (and derivates) and the system Python 2.4.3. Other distros and higher 
+Python versions should work with some extra work. 
+
+1) Install Condor 
+
+Software available from  http://www.cs.wisc.edu/condor/. APF 
+
+2) Add the racf-grid YUM repo to your system
+ rpm -ivh http://dev.racf.bnl.gov/yum/grid/production/rhel/5Client/x86_64/racf-grid-release-0.9-1.noarch.rpm
+
+The warning about NOKEY is expected. This release RPM sets up YUM to point at our 
+repository, and installs the GPG key with which all our RPMs are signed. By default
+the racf-grid-release RPM sets our production repository to enabled (see 
+/etc/yum.repos.d/racf-grid-production.repo ). If you are testing APF and want to run
+a pre-release version, enabled the racf-grid-development or racf-grid-testing repository. 
+
+3) If you will be performing *local* batch system submission (as opposed to remote submission
+via grid interfaces) you must confirm that whatever account 
+
+
+4) Install the APF RPM:
+    yum install autopyfactory
+
+This performs several setup steps that otherwise would need to be done manually:
+   -- creates 'apf' user that APF will run under
+   -- enables the factory init script via chkconfig
+   
+5) Configure APF as desired. Read the CONFIGURATION documentation in order to do this. 
+
+6) Start APF:
+    /etc/init.d/factory start
+    
+7) Confirm that everything is OK:
+
+    -- Check to see if APF is running:
+          /etc/init.d/factory status
+    -- Look at the output of ps to see that APF is running under the expected user, e.g.:
+          ps aux | grep factory | grep -v grep
+       This should show who it is running as, and the arguments in 
+       /etc/sysconfig/factory.sysconfig: 
+       
+       apf    22106 1.3 0.1 318064 12580 pts/2  Sl 17:13 0:00 /usr/bin/python 
+         /usr/bin/factory.py --conf /etc/apf/factory.conf --debug --sleep=60 --runas=apf 
+         --log=/var/log/apf/apf.log
+    -- Tail the log output and look for problems. 
+         tail -f /var/log/apf/apf.log
+       APF should    
+    
+       
+       
+
+
+
+
+
+ 

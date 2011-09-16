@@ -1,0 +1,28 @@
+AutoPyFactory CONFIGURATION
+
+Configuration of APF is handled through 3 
+
+FILE                RPM LOCATION            USER LOCATION  
+factory.sysconfig   /etc/sysconfig/         ~/etc/
+
+factory.conf        /etc/apf                ~/etc/
+queues.conf         /etc/apf                ~/etc/
+proxy.conf          /etc/apf                ~/etc/
+
+
+FILE SPECIFIC SETUP
+
+factory.conf:
+
+Main Factory
+Log Server
+Monitor Setup
+
+
+queues.conf:
+Queues definition
+
+
+proxy.conf:
+
+Proxy Manager
