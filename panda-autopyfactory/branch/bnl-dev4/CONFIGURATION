@@ -1,18 +1,25 @@
 AutoPyFactory CONFIGURATION
 
-Configuration of APF is handled through 3 
+Configuration of APF functionality is handled through four files, whose
+locations depend on method of installation:
 
 FILE                RPM LOCATION            USER LOCATION  
 factory.sysconfig   /etc/sysconfig/         ~/etc/
-
 factory.conf        /etc/apf                ~/etc/
 queues.conf         /etc/apf                ~/etc/
 proxy.conf          /etc/apf                ~/etc/
 
+For factory.conf, queues.conf, and proxy.conf files, simply copy the 
+example files within the etc/ directory, removing the '-example' suffix. Edit 
+each file in turn, following the instructions below and the commented hints 
+within the config files. 
+
 
 FILE SPECIFIC SETUP
 
-factory.conf:
+factory.sysconfig: This file determines several top-level run options. 
+
+factory.conf: This configuration
 
 Main Factory
 Log Server

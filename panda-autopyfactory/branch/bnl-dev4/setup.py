@@ -46,11 +46,14 @@ setup(
                              ]),
                 ('/etc/init.d', ['etc/factory',
                                 ]),
+                ('/etc/logrotate.d', ['etc/factory.logrotate',
+                                ]),
                 ('/etc/sysconfig', ['etc/factory.sysconfig',
                                    ]),                                         
-                ('/usr/share',['misc/rpm-post.sh',
-                               'misc/rpm-pre.sh', 
-                               'misc/rpm-preun.sh', 
-                              ]),
+                #('/usr/share/',['misc/rpm-post.sh',
+                #               'misc/rpm-pre.sh', 
+                #               'misc/rpm-preun.sh', 
+                #              ]),
+
                 ]
 )

@@ -29,6 +29,7 @@ This performs several setup steps that otherwise would need to be done manually:
    -- enables the factory init script via chkconfig
    
 5) Configure APF as desired. Read the CONFIGURATION documentation in order to do this. 
+Be sure to configure at least one queue in order to test function. 
 
 6) Start APF:
     /etc/init.d/factory start
@@ -46,9 +47,11 @@ This performs several setup steps that otherwise would need to be done manually:
          /usr/bin/factory.py --conf /etc/apf/factory.conf --debug --sleep=60 --runas=apf 
          --log=/var/log/apf/apf.log
     -- Tail the log output and look for problems. 
-         tail -f /var/log/apf/apf.log
-       APF should    
-    
+             tail -f /var/log/apf/apf.log
+    -- Check to be sure jobs are being submitted by whatever account APF is using by 
+         executing condor_q manually:  
+             condor_q | grep apf
+
        
        
 

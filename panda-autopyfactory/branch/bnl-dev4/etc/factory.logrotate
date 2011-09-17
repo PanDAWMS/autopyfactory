@@ -1,0 +1,13 @@
+/var/log/apf/apf.log {
+  missingok
+  notifempty
+  sharedscripts
+  size 500M
+  rotate 6
+  prerotate
+    [ -e /etc/init.d/factory ] && /etc/init.d/factory stop >/dev/null 2>&1 || true
+  endscript
+  postrotate
+    [ -e /etc/init.d/factory ] && /etc/init.d/factory start >/dev/null 2>&1 || true
+  endscript
+}
