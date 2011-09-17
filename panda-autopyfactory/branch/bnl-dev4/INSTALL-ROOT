@@ -20,16 +20,17 @@ a pre-release version, enabled the racf-grid-development or racf-grid-testing re
 3) If you will be performing *local* batch system submission (as opposed to remote submission
 via grid interfaces) you must confirm that whatever account 
 
-
 4) Install the APF RPM:
     yum install autopyfactory
 
 This performs several setup steps that otherwise would need to be done manually:
-   -- creates 'apf' user that APF will run under
-   -- enables the factory init script via chkconfig
+   -- Creates 'apf' user that APF will run under.
+   -- Enables the factory init script via chkconfig.
+   -- Pulls in the panda userinterface Python library RPM from our repository. 
+   -- Pulls in the python-simplejson RPM from the standard repository.
    
-5) Configure APF as desired. Read the CONFIGURATION documentation in order to do this. 
-Be sure to configure at least one queue in order to test function. 
+5) Configure APF queues/job submission as desired. Read the CONFIGURATION documentation in 
+   order to do this. Be sure to configure at least one queue in order to test function. 
 
 6) Start APF:
     /etc/init.d/factory start
