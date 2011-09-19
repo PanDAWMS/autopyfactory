@@ -70,6 +70,10 @@ defaultnbpilots = 0
 # wish to use. See etc/proxy.conf
 proxy = atlas-usatlas
 
+# URL with the wrapper tar ball
+pandawrappertarballurl = http://www.usatlas.bnl.gov/~caballer/panda/wrapper-devel/
+# base URL with the VO-specific pilot tarball
+pandaserverurl = https://pandaserver.cern.ch:25443/server/panda
 
 
 # ====================================================================== 

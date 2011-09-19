@@ -68,12 +68,6 @@ logfile=None
 #  "executable = runpilot3-wrapper-1.sh"
 executable = /usr/libexec/wrapper.sh
 
-# URL with the wrapper tar ball
-pandawrappertarballurl = http://www.usatlas.bnl.gov/~caballer/panda/wrapper-devel/
-# base URL with the VO-specific pilot tarball
-pandaserverurl = https://pandaserver.cern.ch:25443/server/panda
-
-
 # Where outputs from pilots are stored
 baseLogDir = /home/apf/factory/logs
 # Where outputs from pilots are available via http
