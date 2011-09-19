@@ -13,7 +13,7 @@
 #   - pandaspecialcmd 
 #   - pandaplugin 
 #   - pandapilottype
-#   - pandadebug
+#   - pandaloglevel
 #
 # where
 #
@@ -59,7 +59,8 @@
 #    
 #     - pandapilottype is the actual  pilot code to be executed at the end.
 #
-#     - pandadebug is a flag to activate high verbosity mode.
+#     - pandaloglevel is a flag to activate high verbosity mode.
+#     Accepted values are debug or info.  
 #
 # ----------------------------------------------------------------------------
 #
@@ -101,7 +102,7 @@
 f_init(){
         f_print_line
         echo "=== Pilot wrapper running at"
-        echo "date:        " `date`
+        echo "date (UTC):  " `date --utc`
         echo "hostname:    " `hostname`
         echo "working dir: " `pwd`
         echo "user:        " `id`
@@ -258,19 +259,21 @@ f_schedconfig_setup(){
 
         QUEUE=$1
         envsetup=`curl  --connect-timeout 20 --max-time 60 "http://panda.cern.ch:25880/server/pandamon/query?tpmes=pilotpars&getpar=envsetup&queue=$QUEUE" -s -S`
-        if [ "$envsetup" != "" ]; then
-                f_print_msg "schedconfig setup command found for queue $QUEUE"
-                catsetup="`echo $envsetup | sed 's?source ?cat ?'`"
-                lssetup="`echo $envsetup | sed 's?source ?ls -alL ?'`"
-                echo "Setup command: '$envsetup'"
-                echo "Listing: $lssetup"
-                $lssetup
-                echo "___________ setup content:"
-                $catsetup
-                echo "___________ running setup"
-                $envsetup
-                echo "Environment after setup command from SchedConfig:"
-                f_check_env
+        if [ "${envsetup:0:13}" != "No data found" ]; then
+                if [ "$envsetup" != "" ]; then
+                        f_print_msg "schedconfig setup command found for queue $QUEUE"
+                        catsetup="`echo $envsetup | sed 's?source ?cat ?'`"
+                        lssetup="`echo $envsetup | sed 's?source ?ls -alL ?'`"
+                        echo "Setup command: '$envsetup'"
+                        echo "Listing: $lssetup"
+                        $lssetup
+                        echo "___________ setup content:"
+                        $catsetup
+                        echo "___________ running setup"
+                        $envsetup
+                        echo "Environment after setup command from SchedConfig:"
+                        f_check_env
+                fi
         fi
 }
 
@@ -305,7 +308,7 @@ f_usage(){
 [--pandaspecialcmd=<special_setup_command>] \
 [--pandaplugin=<plugin_name>]\
 [--pandapilottype=<pilot_type]\
-[--pandadebug]"
+[--pandaloglevel=debug|info]"
 }
 
 f_parse_arguments(){
@@ -319,7 +322,7 @@ f_parse_arguments(){
         #         --pandaspecialcmd=...
         #         --pandaplugin=...
         #         --pandapilottype=...
-        #         --pandadebug=...
+        #         --pandaloglevel=...
         # An error/warning message is displayed in case a different 
         # input option is passed
 
@@ -374,8 +377,8 @@ f_parse_arguments(){
                                         --pandapilottype=*) 
                                                 PANDAPILOTTYPE=${WORD/--pandapilottype=/}
                                                 shift ;;
-                                        --pandadebug) 
-                                                PANDADEBUG="True"
+                                        --pandaloglevel=*) 
+                                                PANDALOGLEVEL=${WORD/--pandaloglevel=/}
                                                 shift ;;
                                         *) unexpectedopts=${unexpectedopts}" "$WORD 
                                            shift ;;     
@@ -400,7 +403,7 @@ f_print_options(){
         echo " special commands: "$PANDASPECIALCMD
         echo " plugin module: "$PANDAPLUGIN
         echo " pilot type: "$PANDAPILOTTYPE
-        echo " debug mode: "$PANDADEBUG
+        echo " debug mode: "$PANDALOGLEVEL
         if [ "$unexpectedopts" != "" ]; then
                 # warning message for unrecognized input options
                 f_print_warning_msg "Unrecognized input options"
@@ -452,7 +455,7 @@ f_build_pythonwrapper_opts(){
         pythonwrapperopts=${pythonwrapperopts}" --pandawrappertarballurl="$PANDAWRAPPERTARBALLURL
         pythonwrapperopts=${pythonwrapperopts}" --pandaplugin="$PANDAPLUGIN
         pythonwrapperopts=${pythonwrapperopts}" --pandapilottype="$PANDAPILOTTYPE
-        pythonwrapperopts=${pythonwrapperopts}" --pandadebug="$PANDADEBUG
+        pythonwrapperopts=${pythonwrapperopts}" --pandaloglevel="$PANDALOGLEVEL
         pythonwrapperopts=${pythonwrapperopts}" "$extraopts
 
 }
