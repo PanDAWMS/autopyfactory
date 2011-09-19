@@ -169,6 +169,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 arguments += ' --pandasite=%s ' %self.queue
                 arguments += ' --pandaqueue=%s ' %self.qcl.get(self.queue, 'nickname')
                 arguments += ' --pandagrid=%s ' %self.qcl.get(self.queue, 'pandagrid')
+                arguments += ' --pandaserverurl=%s ' %self.fcl.get('Pilots', 'pandaserverurl')
+                arguments += ' --pandawrappertarballurl=%s ' %self.fcl.get('Pilots', 'pandawrappertarballurl')
                 if self.qcl.has_option(self.queue, 'arguments'):
                         arguments += self.qcl.get(self.queue, 'arguments')
                 self.JSD.add(arguments)
