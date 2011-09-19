@@ -6,7 +6,7 @@ Python versions should work with some extra work.
 
 1) Install Condor 
 
-Software available from  http://www.cs.wisc.edu/condor/. APF 
+Software available from  http://www.cs.wisc.edu/condor/.
 
 2) Add the racf-grid YUM repo to your system
  rpm -ivh http://dev.racf.bnl.gov/yum/grid/production/rhel/5Client/x86_64/racf-grid-release-0.9-1.noarch.rpm
