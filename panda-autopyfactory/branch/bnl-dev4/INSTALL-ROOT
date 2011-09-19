@@ -4,11 +4,16 @@ Installation as root via RPMs has now been quite simplified. These instructions 
 Enterprise Linux 5.X (and derivates) and the system Python 2.4.3. Other distros and higher 
 Python versions should work with some extra work. 
 
-1) Install Condor 
+1) Install and enable a supported batch system. Condor is the current supported default. 
+Software available from  http://www.cs.wisc.edu/condor/. Condor/Condor-G setup and 
+configuration is beyond the scope of this documentation. Ensure that it is working
+properly before proceeding. 
 
-Software available from  http://www.cs.wisc.edu/condor/.
+2) Install a grid client and set up the grid certificate+key under the user APF will run as. 
+Please read the CONFIGURATION documentation regarding the proxy.conf file, so you see what 
+will be needed. Make sure voms-proxy-* commands work properly. 
 
-2) Add the racf-grid YUM repo to your system
+3) Add the racf-grid YUM repo to your system
  rpm -ivh http://dev.racf.bnl.gov/yum/grid/production/rhel/5Client/x86_64/racf-grid-release-0.9-1.noarch.rpm
 
 The warning about NOKEY is expected. This release RPM sets up YUM to point at our 
@@ -17,10 +22,10 @@ the racf-grid-release RPM sets our production repository to enabled (see
 /etc/yum.repos.d/racf-grid-production.repo ). If you are testing APF and want to run
 a pre-release version, enable the racf-grid-development or racf-grid-testing repository. 
 
-3) If you will be performing *local* batch system submission (as opposed to remote submission
+4) If you will be performing *local* batch system submission (as opposed to remote submission
 via grid interfaces) you must confirm that whatever account 
 
-4) Install the APF RPM:
+5) Install the APF RPM:
     yum install autopyfactory
 
 This performs several setup steps that otherwise would need to be done manually:
@@ -29,13 +34,13 @@ This performs several setup steps that otherwise would need to be done manually:
    -- Pulls in the panda userinterface Python library RPM from our repository. 
    -- Pulls in the python-simplejson RPM from the standard repository.
    
-5) Configure APF queues/job submission as desired. Read the CONFIGURATION documentation in 
+6) Configure APF queues/job submission as desired. Read the CONFIGURATION documentation in 
    order to do this. Be sure to configure at least one queue in order to test function. 
 
-6) Start APF:
+7) Start APF:
     /etc/init.d/factory start
     
-7) Confirm that everything is OK:
+8) Confirm that everything is OK:
 
     -- Check to see if APF is running:
           /etc/init.d/factory status
@@ -52,12 +57,7 @@ This performs several setup steps that otherwise would need to be done manually:
     -- Check to be sure jobs are being submitted by whatever account APF is using by 
          executing condor_q manually:  
              condor_q | grep apf
-
-       
-       
-
-
-
+     
 
 
  
