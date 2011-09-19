@@ -25,6 +25,8 @@ $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 * The previous change involved passing ConfigLoader objects to classes, rather than 
   passing through lists of config files. 
 
+* Integrated batch system log export via HTTP; now uses embedded Python HTTP server. 
+
 * Integrated proxy handling and renewal, integrated submit system log file rotation. 
 
 * Adjusted module, file, and class names to follow Python recommended guidelines. See PEP 8:
