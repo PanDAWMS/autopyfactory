@@ -45,7 +45,7 @@ class Monitor:
         self.c.setopt(pycurl.WRITEFUNCTION, self.buffer.write)
         self.c.setopt(pycurl.SSL_VERIFYPEER, 0)
         self.c.setopt(pycurl.CONNECTTIMEOUT, 5)
-        self.c.setopt(pycurl.TIMEOUT, 10)
+        self.c.setopt(pycurl.TIMEOUT, 20)
         self.c.setopt(pycurl.FOLLOWLOCATION, 1)
 
         self.log.debug('Instantiated monitor')
@@ -132,3 +132,8 @@ class Monitor:
         self.msglist = []
         self.crlist = []
 
+    def sendmq(self):
+        """
+        Create XML and send to activeMQ
+        """
+        pass
