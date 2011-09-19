@@ -9,7 +9,7 @@
 #   - pandagrid
 #   - pandaproject
 #   - pandaserverurl
-#   - pandaurl
+#   - pandawrappertarballurl
 #   - pandaspecialcmd 
 #   - pandaplugin 
 #   - pandapilottype
@@ -46,7 +46,7 @@
 #    
 #     - pandaserverurl is the url with the PanDA server instance
 #    
-#     - pandaurl is the base url with the pyton tarball to be downloaded
+#     - pandawrappertarballurl is the base url with the wrapper tarball to be downloaded
 #    
 #     - pandaspecialcmd is special command to be performed, 
 #     for some specific reason, just after sourcing the Grid environment,
@@ -301,7 +301,7 @@ f_usage(){
 [--pandagrid=<grid_flavor> ] \
 [--pandaproject=<application_type>] \
 [--pandaserverurl=<panda_server_url>] \
-[--pandaurl=<pilot_code_url>] \
+[--pandawrappertarballurl=<wrapper_tarball_url>] \
 [--pandaspecialcmd=<special_setup_command>] \
 [--pandaplugin=<plugin_name>]\
 [--pandapilottype=<pilot_type]\
@@ -315,7 +315,7 @@ f_parse_arguments(){
         #         --pandagrid=...
         #         --pandaproject=...
         #         --pandaserverurl=...
-        #         --pandaurl=...
+        #         --pandawrappertarballurl=...
         #         --pandaspecialcmd=...
         #         --pandaplugin=...
         #         --pandapilottype=...
@@ -362,8 +362,8 @@ f_parse_arguments(){
                                         --pandaserverurl=*) 
                                                 PANDASERVERURL=${WORD/--pandaserverurl=/}
                                                 shift ;;
-                                        --pandaurl=*) 
-                                                PANDAURL=${WORD/--pandaurl=/}
+                                        --pandawrappertarballurl=*) 
+                                                PANDAWRAPPERTARBALLURL=${WORD/--pandawrappertarballurl=/}
                                                 shift ;;
                                         --pandaspecialcmd=*) 
                                                 PANDASPECIALCMD=${WORD/--pandaspecialcmd=/}
@@ -449,7 +449,7 @@ f_build_pythonwrapper_opts(){
         pythonwrapperopts=${pythonwrapperopts}" --pandagrid="$PANDAGRID
         pythonwrapperopts=${pythonwrapperopts}" --pandaproject="$PANDAPROJECT
         pythonwrapperopts=${pythonwrapperopts}" --pandaserverurl="$PANDASERVERURL
-        pythonwrapperopts=${pythonwrapperopts}" --pandaurl="$PANDAURL
+        pythonwrapperopts=${pythonwrapperopts}" --pandawrappertarballurl="$PANDAWRAPPERTARBALLURL
         pythonwrapperopts=${pythonwrapperopts}" --pandaplugin="$PANDAPLUGIN
         pythonwrapperopts=${pythonwrapperopts}" --pandapilottype="$PANDAPILOTTYPE
         pythonwrapperopts=${pythonwrapperopts}" --pandadebug="$PANDADEBUG
@@ -469,7 +469,7 @@ f_download_wrapper_tarball(){
         # URL is the base url. 
         # The name of the tarball (wrapper.tar.gz) must to be added.
         WRAPPERTARBALLNAME="wrapper.tar.gz"
-        WRAPPERURL=${PANDAURL}/${WRAPPERTARBALLNAME}
+        WRAPPERURL=${PANDAWRAPPERTARBALLURL}/${WRAPPERTARBALLNAME}
 
         cmd="curl  --connect-timeout 20 --max-time 120 -s -S $WRAPPERURL -o $WRAPPERTARBALLNAME"
         $cmd
