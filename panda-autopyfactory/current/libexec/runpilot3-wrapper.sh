@@ -31,11 +31,11 @@ function find_lfc_compatible_python() {
     
     # python2.6 is still under test, so only use it if we are asked to
     if [ -n "$APF_PYTHON26" ]; then
-    	pybin=python2.6
-    	lfc_test $pybin
-    	if [ $? = "0" ]; then
-        	return 0
-    	fi
+        pybin=python2.6
+        lfc_test $pybin
+        if [ $? = "0" ]; then
+            return 0
+        fi
     fi   
 
     # On many sites python now works just fine (m/w also now
@@ -83,20 +83,20 @@ function get_pilot_http() {
     # N.B. an RC pilot is chosen once every 100 downloads for production and
     # ptest jobs use Paul's development release.
     if [ -z "$PILOT_HTTP_SOURCES" ]; then
-    	if echo $@ | grep -- "-u ptest" > /dev/null; then 
-    		echo "DEBUG: This is a ptest pilot. Will use development pilot code"
+        if echo $@ | grep -- "-u ptest" > /dev/null; then 
+            echo "DEBUG: This is a ptest pilot. Will use development pilot code"
             PILOT_HTTP_SOURCES="http://project-atlas-gmsb.web.cern.ch/project-atlas-gmsb/pilotcode-dev.tar.gz"
             PILOT_TYPE=PT
-    	elif [ $(($RANDOM%100)) = "0" ]; then
+        elif [ $(($RANDOM%100)) = "0" ]; then
             echo "DEBUG: Release candidate pilot will be used."
-            PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode-rc.tar.gz"
+            PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25085/cache/pilot/pilotcode-rc.tar.gz"
             PILOT_TYPE=RC
         else
-        	echo "DEBUG: Normal production pilot code used." 
-            PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
+            echo "DEBUG: Normal production pilot code used." 
+            PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25085/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
             PILOT_TYPE=PR
 
-    	fi
+        fi
     fi
     for source in $PILOT_HTTP_SOURCES; do
         echo "Trying to download pilot from $source..."
