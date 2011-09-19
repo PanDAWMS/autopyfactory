@@ -36,24 +36,36 @@ APF using a built-in Python HTTP server. No need to set up Apache to export thes
 /etc/apf/queues.conf:
 
 This file defines APF submission queues. Usually these will be one-to-one with Panda queues, 
-but don't have to be. Details of 
+but don't have to be. Details of valid parameters are commented in the file. In the
+simplest case, create a section named for the Panda site you wish to serve, e.g. [BNL_ATLAS_1]. 
+
+Valid site names are listed here:
+  http://panda.cern.ch/server/pandamon/query?dash=site
+
+If no other variables are set, all info for submission will be pulled from the Panda 
+server schedconfig info. 
+
 
 /etc/apf/proxy.conf:
 
 This file governs the operation of the integrated proxy generation and management component. 
-The key question to be answered here is if you 
+The key question to be answered here is if you: 
 1) want to independently generate a long-lived vanilla proxy, and define baseproxy in this file.
 2) want to let the proxymanager automatically generate VOMS proxies directly from your user
 cert and key files.
 
+If the former, you must create the long-lived proxy *as the user APF will run as*. E.g.
+  grid-proxy-init -valid 720:0 -out /tmp/plainProxy
+This creates a plain proxy valid for 30 days. Don't forget to manually renew it at least 7 days
+before it expires.  
+
 If the latter, we assume the key has had its password removed. Use this command to create
 the file:
-
    openssl rsa -in ~/.globus/userkey.pem -out ~/.globus/userkeynopw.pem
-
 Note that this is no less secure than having password-handling within APF, and less subject to
-errors. Maximum security would be derived from using a long-lived grid proxy and using the
-baseproxy option. 
+errors. 
+
+. 
 
 
 
