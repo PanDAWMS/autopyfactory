@@ -23,7 +23,8 @@ the racf-grid-release RPM sets our production repository to enabled (see
 a pre-release version, enable the racf-grid-development or racf-grid-testing repository. 
 
 4) If you will be performing *local* batch system submission (as opposed to remote submission
-via grid interfaces) you must confirm that whatever account 
+via grid interfaces) you must confirm that whatever account you'll be submitting as exists on
+the batch cluster. 
 
 5) Install the APF RPM:
     yum install autopyfactory
