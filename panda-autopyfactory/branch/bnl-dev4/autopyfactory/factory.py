@@ -108,7 +108,7 @@ class Factory(object):
                 
                 try:
                         while True:
-                                mainsleep = self.fcl.get('Factory', 'factorysleep')
+                                mainsleep = int(self.fcl.get('Factory', 'factorysleep'))
                                 time.sleep(mainsleep)
                                 self.log.debug('Checking for interrupt.')
                                 
