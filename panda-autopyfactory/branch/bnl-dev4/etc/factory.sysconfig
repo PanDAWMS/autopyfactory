@@ -23,4 +23,8 @@
 OPTIONS="--debug --sleep=60 --runas=apf --log=/var/log/apf/apf.log"
 #OPTIONS="--debug --sleep=60 --runas=caballer --log=/usatlas/u/caballer/var/apf.log"
 
+#
+# Use this to provide voms-proxy-* on the path if it is not pre-setup by
+# default. 
+#
 GRIDSETUP=/opt/osg-client/setup.sh

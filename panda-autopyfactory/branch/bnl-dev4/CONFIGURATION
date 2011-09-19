@@ -22,7 +22,9 @@ FILE SPECIFIC SETUP
 /etc/sysconfig/factory.sysconfig: 
 
 This file determines several top-level run options. By default it runs with debug enabled. 
-Examine the file for a couple examples. The default should be OK.  
+Examine the file for a couple examples. IMPORTANT: If you have a grid environment already set
+up for root, then comment out GRIDSETUP in the sysconfig, otherwise you must point to
+a valid grid client setup, e.g. an OSG-Client setup.sh. 
 
 /etc/apf/factory.conf: 
 
