@@ -30,7 +30,7 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
           
-class Factory:
+class Factory(object):
         '''
         -----------------------------------------------------------------------
         Class implementing the main loop. 
