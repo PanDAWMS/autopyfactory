@@ -1,9 +1,12 @@
 AutoPyFactory CONFIGURATION
 
+INTRODUCTION
+
 Configuration of APF functionality is handled through four files, whose
 locations depend on method of installation:
 
 FILE                RPM LOCATION            USER LOCATION  
+---------------------------------------------------------
 factory.sysconfig   /etc/sysconfig/         ~/etc/
 factory.conf        /etc/apf                ~/etc/
 queues.conf         /etc/apf                ~/etc/
@@ -14,22 +17,47 @@ example files within the etc/ directory, removing the '-example' suffix. Edit
 each file in turn, following the instructions below and the commented hints 
 within the config files. 
 
-
 FILE SPECIFIC SETUP
 
-factory.sysconfig: This file determines several top-level run options. 
+/etc/sysconfig/factory.sysconfig: 
 
-factory.conf: This configuration
+This file determines several top-level run options. By default it runs with debug enabled. 
+Examine the file for a couple examples. The default should be OK.  
 
-Main Factory
-Log Server
-Monitor Setup
+/etc/apf/factory.conf: 
+
+This file governs overall factory run parameters. At a minimum factoryOwner, factoryID, 
+and monitorURL, and baseLogUrl hostname must be customized. All other values should
+be valid for the RPM install. Note that submit system logfiles are now exported natively by
+APF using a built-in Python HTTP server. No need to set up Apache to export these directories. 
+
+/etc/apf/queues.conf:
+
+This file defines APF submission queues. Usually these will be one-to-one with Panda queues, 
+but don't have to be. Details of 
+
+/etc/apf/proxy.conf:
+
+This file governs the operation of the integrated proxy generation and management component. 
+The key question to be answered here is if you 
+1) want to independently generate a long-lived vanilla proxy, and define baseproxy in this file.
+2) want to let the proxymanager automatically generate VOMS proxies directly from your user
+cert and key files.
+
+If the latter, we assume the key has had its password removed. Use this command to create
+the file:
+
+   openssl rsa -in ~/.globus/userkey.pem -out ~/.globus/userkeynopw.pem
+
+Note that this is no less secure than having password-handling within APF, and less subject to
+errors. Maximum security would be derived from using a long-lived grid proxy and using the
+baseproxy option. 
 
 
-queues.conf:
-Queues definition
 
 
-proxy.conf:
 
-Proxy Manager
+
+
+
+

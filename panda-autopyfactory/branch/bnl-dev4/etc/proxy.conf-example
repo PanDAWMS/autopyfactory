@@ -1,6 +1,7 @@
 #
 # proxy.conf   Configuration file for ProxyManager component of AutoPyFactory. 
 #
+
 [DEFAULT]
 #envset_KEY = VALUE
 #envunset = VAR1,VAR2,VAR3
@@ -12,9 +13,10 @@
 #
 baseproxy = None
 
-# 
+
 usercert=~/.globus/usercert.pem
 userkey=~/.globus/userkeynopw.pem
+
 # Initial voms lifetime, in seconds (604800 = 7 days)
 # 345600 is ATLAS VOMS maximum
 # lifetime = 345600

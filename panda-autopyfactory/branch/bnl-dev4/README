@@ -7,7 +7,7 @@ serve as the primary production factory for the ATLAS workload management system
 DOCUMENTATION
 
 To install using RPMs (i.e. installing as root) read INSTALL-ROOT.
-To install locally in a user's home directory, and run as that user, read INSTALL-ROOT. 
+To install locally in a user's home directory, and run as that user, read INSTALL-USER. 
 Once installed, before running read CONFIGURATION to understand how to configure APF. 
 
 DEVELOPERS

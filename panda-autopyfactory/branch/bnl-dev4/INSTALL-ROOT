@@ -15,7 +15,7 @@ The warning about NOKEY is expected. This release RPM sets up YUM to point at ou
 repository, and installs the GPG key with which all our RPMs are signed. By default
 the racf-grid-release RPM sets our production repository to enabled (see 
 /etc/yum.repos.d/racf-grid-production.repo ). If you are testing APF and want to run
-a pre-release version, enabled the racf-grid-development or racf-grid-testing repository. 
+a pre-release version, enable the racf-grid-development or racf-grid-testing repository. 
 
 3) If you will be performing *local* batch system submission (as opposed to remote submission
 via grid interfaces) you must confirm that whatever account 

@@ -1,9 +1,11 @@
-## Configuration settings for the whole factory
+#
+# factory.conf Configuration file for main Factory component of AutoPyFactory.
+#
 # factoryOwner and factoryId are mandatory
 # Make factoryId something descriptive and unique for your factory
 # schedConfigPollTime is the number of cycles which pass between reloads
 # of schedconfig data
-# Montoring should be enabled for all factories.
+# Monitoring should be enabled for all factories.
 
 [Factory]
 factoryOwner = jcaballero@bnl.gov
@@ -11,7 +13,7 @@ factoryId = BNL-gridui11-jhover
 factoryUser = apf
 # condorUser = unixUserName
 # schedConfigPollTime = 5
-#monitorURL =  http://apfmon.lancs.ac.uk/mon/
+# monitorURL =  http://apfmon.lancs.ac.uk/mon/
 #HTTPproxy = http://proxy.sec.bnl.local
 #HTTPproxyport = 3128
 versionTag = 2.0.0
@@ -30,7 +32,6 @@ proxyConf = /etc/apf/proxy.conf
 # How often (seconds) to pull information from Panda Server
 # Choose prime number to balance load. 
 pandaCheckInterval = 67
-
 
 # Variables potentially altered by command-line options. Passed in via Config.
 # Defaults:

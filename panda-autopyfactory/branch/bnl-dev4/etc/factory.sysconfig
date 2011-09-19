@@ -16,12 +16,10 @@
 #
 # Override default conffile path if desired. 
 #
-# CONFFILE="/etc/apf/factory.conf
+# CONFFILE=/etc/apf/factory.conf
+# CONFFILE="/usatlas/us/caballer/etc/factory.conf"
+
 # OPTIONS="--debug --test --sleep=60 --runas=apf --log=/var/log/apf/apf.log"
 OPTIONS="--debug --sleep=60 --runas=apf --log=/var/log/apf/apf.log"
-#OPTIONS="--debug --sleep=60 --runas=caballer --log=/var/log/apf/apf.log"
+#OPTIONS="--debug --sleep=60 --runas=caballer --log=/usatlas/u/caballer/var/apf.log"
 
-#
-# If you need grid client programs available (e.g. voms-proxy-*) set GRIDSETUP
-# Otherwise, leave commented out. 
-GRIDSETUP=/opt/osg-client/setup.sh 
