@@ -396,7 +396,7 @@ f_print_options(){
         echo " grid flavor: "$PANDAGRID
         echo " project: "$PANDAPROJECT
         echo " server url: "$PANDASERVERURL
-        echo " code url: "$PANDAURL
+        echo " code url: "$PANDAWRAPPERTARBALLURL
         echo " special commands: "$PANDASPECIALCMD
         echo " plugin module: "$PANDAPLUGIN
         echo " pilot type: "$PANDAPILOTTYPE
@@ -410,7 +410,7 @@ f_print_options(){
         f_check_mandatory_option "SITE" $PANDASITE
         f_check_mandatory_option "QUEUE" $PANDAQUEUE
         f_check_mandatory_option "SERVER URL" $PANDASERVERURL
-        f_check_mandatory_option "CODE URL" $PANDAURL
+        f_check_mandatory_option "CODE URL" $PANDAWRAPPERTARBALLURL
 
 }
 
@@ -464,7 +464,7 @@ f_build_pythonwrapper_opts(){
 f_download_wrapper_tarball(){
         # donwload a tarball with scripts in python
         # to complete the wrapper actions chain
-        f_print_msg "=== Dowloading the wrapper tarball from $PANDAURL"
+        f_print_msg "=== Dowloading the wrapper tarball from $PANDAWRAPPERTARBALLURL"
 
         # URL is the base url. 
         # The name of the tarball (wrapper.tar.gz) must to be added.
