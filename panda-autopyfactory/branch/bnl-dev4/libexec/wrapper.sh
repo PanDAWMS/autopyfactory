@@ -61,11 +61,6 @@
 #
 #     - pandadebug is a flag to activate high verbosity mode.
 #
-# Some input options have a default value:
-#
-#     - PANDAURL="http://www.usatlas.bnl.gov/~caballer/panda/wrapper-devel/"
-#     - PANDASERVERURL="https://pandaserver.cern.ch:25443/server/panda"
-#
 # ----------------------------------------------------------------------------
 #
 # Note:
@@ -313,13 +308,6 @@ f_usage(){
 [--pandadebug]"
 }
 
-f_default_input_opts(){
-        # set default values for some input options
-
-        PANDAURL="http://www.usatlas.bnl.gov/~caballer/panda/wrapper-devel/"
-        PANDASERVERURL="https://pandaserver.cern.ch:25443/server/panda"
-}
-
 f_parse_arguments(){
         # Function to parse the command line input options.
         #         --pandasite=...
@@ -351,9 +339,6 @@ f_parse_arguments(){
             items="$items \"$i\""
         done
         eval set -- $items
-
-        # setup default values for some input options
-        f_default_input_opts
 
         # all unrecognized options are collected in a single variable
         unexpectedopts=""
@@ -424,6 +409,8 @@ f_print_options(){
 
         f_check_mandatory_option "SITE" $PANDASITE
         f_check_mandatory_option "QUEUE" $PANDAQUEUE
+        f_check_mandatory_option "SERVER URL" $PANDASERVERURL
+        f_check_mandatory_option "CODE URL" $PANDAURL
 
 }
 
@@ -436,9 +423,7 @@ f_check_mandatory_option(){
                 f_usage
                 f_exit -1
         fi
-
 }
-
 
 f_build_extra_opts(){
         # variable unexpectedopts is analyzed, 
