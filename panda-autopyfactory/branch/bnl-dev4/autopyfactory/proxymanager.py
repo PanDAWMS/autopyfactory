@@ -229,7 +229,7 @@ class ProxyHandler(threading.Thread):
         return self.proxyfile
 
 
-    def _(self):
+    def _isValid(self):
         '''
         Returns tuple (True|False , timeLeft in seconds)
         '''
