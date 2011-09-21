@@ -59,7 +59,8 @@ class SchedPlugin(SchedInterface):
                 # check if the config file has attribute maxPilotsPerCycle
                 if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'maxPilotsPerCycle'):
                         maxPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'maxPilotsPerCycle')
+                        self.log.debug('calcSubmitNum: there is a maxPilotsPerCycle number setup to %s' %maxPilotsPerCycle)
                         out = min(out, maxPilotsPerCycle)
 
-                self.log.debug('calcSubmitNum: Leaving returning %s' %out)
+                self.log.debug('calcSubmitNum (activated_jobs=%s; pending_pilots=%s) : Leaving returning %s' %(nbjobs, nbpilots, out))
                 return out
