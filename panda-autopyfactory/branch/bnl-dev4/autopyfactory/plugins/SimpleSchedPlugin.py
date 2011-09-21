@@ -62,5 +62,13 @@ class SchedPlugin(SchedInterface):
                         self.log.debug('calcSubmitNum: there is a maxPilotsPerCycle number setup to %s' %maxPilotsPerCycle)
                         out = min(out, maxPilotsPerCycle)
 
+                ### if no pilots are supposed to be submitted,
+                ### check if there is anyway a minimum nb of pilots 
+                ##if out == 0 and self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'minPilotsPerCycle'):
+                ##        minPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'minPilotsPerCycle')
+                ##        self.log.debug('calcSubmitNum: there is a minPilotsPerCycle number setup to %s and it is being used' %minPilotsPerCycle)
+                ##        out = minPilotsPerCycle
+                        
+
                 self.log.debug('calcSubmitNum (activated_jobs=%s; pending_pilots=%s) : Leaving returning %s' %(nbjobs, nbpilots, out))
                 return out
