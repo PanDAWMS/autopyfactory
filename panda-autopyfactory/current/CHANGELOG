@@ -3,6 +3,13 @@ ChangeLog
 
 $Id$
 
+2011-09-21
+
+* A few minor bug fixes, mainly to download pilotcode
+  from pandasvr squid, rather than panda server itself
+
+* This release is "Patches in the Sky". v1.3.0
+
 2011-03-28
 
 * Update configuration example to Peter's new monitoring URl.

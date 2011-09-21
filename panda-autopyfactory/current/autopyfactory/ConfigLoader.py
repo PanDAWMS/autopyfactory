@@ -74,7 +74,7 @@ class factoryConfigLoader:
             # Non-login shell - you'd better set it yourself
             defaults = { 'Factory' : { 'condorUser' : 'unknown', }}
         defaults['Factory']['schedConfigPoll'] = '5'
-        defaults['Factory']['versionTag'] = 'development'
+        defaults['Factory']['versionTag'] = '1.3.0'
 
         defaults['QueueDefaults'] =  { 'status' : 'test',
                                        'nqueue' : '20',
