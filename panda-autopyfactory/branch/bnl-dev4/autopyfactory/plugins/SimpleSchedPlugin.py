@@ -31,9 +31,17 @@ class SchedPlugin(SchedInterface):
                             is maxPilotsPerCycle defined?
                                yes -> return min(nbjobs - nbpilots, maxPilotsPerCycle)
                                no  -> return (nbjobs - nbpilots)
+                            is minPilotsPerCycle defined?
+                               yes -> return (minPilotsPerCycle - nbpilots) if needed
                 """
 
                 self.log.debug('calcSubmitNum: Starting with input %s' %status)
+
+                # giving an initial value to some variables
+                # to prevent the logging from crashing
+                nbjobs = 0
+                pending_pilots = 0
+                running_pilots = 0
 
                 if not status:
                         out = 0
@@ -42,9 +50,12 @@ class SchedPlugin(SchedInterface):
                         self.log.info('calcSubmitNum: status is not valid, returning default = %s' %out)
                 else:
                         nbjobs = status.jobs.get('activated', 0)
-                        nbpilots = status.batch.get('1', 0)
                         # '1' means pilots in Idle status
-
+                        # '2' means pilots in Running status
+                        pending_pilots = status.batch.get('1', 0)
+                        running_pilots = status.batch.get('2', 0)
+                        nbpilots = pending_pilots + running_pilots
+                        
                         # note: the following if-else algorithm can be written
                         #       in a simpler way, but in this way is easier to 
                         #       read and to understand what it does and why.
@@ -62,13 +73,14 @@ class SchedPlugin(SchedInterface):
                         self.log.debug('calcSubmitNum: there is a maxPilotsPerCycle number setup to %s' %maxPilotsPerCycle)
                         out = min(out, maxPilotsPerCycle)
 
-                ### if no pilots are supposed to be submitted,
-                ### check if there is anyway a minimum nb of pilots 
-                ##if out == 0 and self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'minPilotsPerCycle'):
-                ##        minPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'minPilotsPerCycle')
-                ##        self.log.debug('calcSubmitNum: there is a minPilotsPerCycle number setup to %s and it is being used' %minPilotsPerCycle)
-                ##        out = minPilotsPerCycle
-                        
-
-                self.log.debug('calcSubmitNum (activated_jobs=%s; pending_pilots=%s) : Leaving returning %s' %(nbjobs, nbpilots, out))
+                # check if there is anyway a minimum nb of pilots 
+                # and submit as many pilots as needed to complete that minimum
+                # together with the pilots already submitted
+                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'minPilotsPerCycle'):
+                        minPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'minPilotsPerCycle')
+                        if minPilotsPerCycle > nbpilots:
+                                self.log.debug('calcSubmitNum: there is a minPilotsPerCycle number setup to %s and it is being used' %minPilotsPerCycle)
+                                out = minPilotsPerCycle - nbpilots
+                                        
+                self.log.debug('calcSubmitNum (activated_jobs=%s; pending_pilots=%s; running_pilots=%s) : Leaving returning %s' %(nbjobs, pending_pilots, running_pilots, out))
                 return out
