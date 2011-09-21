@@ -54,7 +54,7 @@ class SchedPlugin(SchedInterface):
                         # '2' means pilots in Running status
                         pending_pilots = status.batch.get('1', 0)
                         running_pilots = status.batch.get('2', 0)
-                        nbpilots = pending_pilots + running_pilots
+                        nbpilots = pending_pilots
                         
                         # note: the following if-else algorithm can be written
                         #       in a simpler way, but in this way is easier to 
@@ -82,5 +82,5 @@ class SchedPlugin(SchedInterface):
                                 self.log.debug('calcSubmitNum: there is a minPilotsPerCycle number setup to %s and it is being used' %minPilotsPerCycle)
                                 out = minPilotsPerCycle - nbpilots
                                         
-                self.log.debug('calcSubmitNum (activated_jobs=%s; pending_pilots=%s; running_pilots=%s) : Leaving returning %s' %(nbjobs, pending_pilots, running_pilots, out))
+                self.log.debug('calcSubmitNum (activated_jobs=%s; pending_pilots=%s) : Leaving returning %s' %(nbjobs, pending_pilots, out))
                 return out
