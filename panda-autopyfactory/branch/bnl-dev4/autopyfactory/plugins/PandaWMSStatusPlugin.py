@@ -156,7 +156,14 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 if self.sites_err:
                         self.log.error('Client.getSiteSpecs() failed')
                 # get Jobs Specs
-                self.jobs_err, self.all_jobs_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
+                #self.jobs_err, self.all_jobs_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='') 
+                self.jobs_err, self.all_jobs_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='', jobTypes='test,managed,user,panda,ddm,rc_test') 
+                                                                                                                        # FIXME
+                                                                                                                        # THIS IS A TEMPORARY SOLUTION
+                                                                                                                        # THE LIST OF JOB TYPES SHOULD BE PASSED AS INPUT
+                                                                                                                        # THAT LIST SHOULD BE CALCULATED:
+                                                                                                                        #       - AS A PARAMETER
+                                                                                                                        #       - REPORTED DYNAMICALLY BY CLIENT
                 self.info.update(InfoHandler.JOBS, self.all_jobs_config, self.jobs_err)
                 if self.jobs_err:
                         self.log.error('Client.getJobStatisticsPerSite() failed')
