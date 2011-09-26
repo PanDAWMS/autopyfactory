@@ -171,6 +171,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 arguments += ' --pandagrid=%s ' %self.qcl.get(self.queue, 'pandagrid')
                 arguments += ' --pandaserverurl=%s ' %self.qcl.get(self.queue, 'pandaserverurl')
                 arguments += ' --pandawrappertarballurl=%s ' %self.qcl.get(self.queue, 'pandawrappertarballurl')
+                if self.qcl.has_option(self.queue, 'pandaloglevel'):
+                        arguments += ' --pandaloglevel=%s' %self.qcl.get(self.queue, 'pandaloglevel')
                 if self.qcl.has_option(self.queue, 'arguments'):
                         arguments += self.qcl.get(self.queue, 'arguments')
                 self.JSD.add(arguments)
