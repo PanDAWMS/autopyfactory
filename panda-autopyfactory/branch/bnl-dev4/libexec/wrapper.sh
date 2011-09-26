@@ -471,7 +471,8 @@ f_download_wrapper_tarball(){
 
         # URL is the base url. 
         # The name of the tarball (wrapper.tar.gz) must to be added.
-        WRAPPERTARBALLNAME="wrapper.tar.gz"
+        #WRAPPERTARBALLNAME="wrapper.tar.gz"
+        WRAPPERTARBALLNAME="wrapper2.tar.gz" #FIXME
         WRAPPERURL=${PANDAWRAPPERTARBALLURL}/${WRAPPERTARBALLNAME}
 
         cmd="curl  --connect-timeout 20 --max-time 120 -s -S $WRAPPERURL -o $WRAPPERTARBALLNAME"
@@ -485,7 +486,8 @@ f_download_wrapper_tarball(){
 f_untar_wrapper_tarball(){
         # untar the wrapper tarball and remove the original file
         f_print_msg "=== Untarring the wrapper tarball"
-        WRAPPERTARBALLNAME="wrapper.tar.gz"
+        #WRAPPERTARBALLNAME="wrapper.tar.gz"
+        WRAPPERTARBALLNAME="wrapper2.tar.gz"  #FIXME
         tar zxvf $WRAPPERTARBALLNAME
         rm $WRAPPERTARBALLNAME
         return $?
