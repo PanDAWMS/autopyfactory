@@ -14,12 +14,14 @@ Please read the CONFIGURATION documentation regarding the proxy.conf file, so yo
 will be needed. Make sure voms-proxy-* commands work properly. 
 
 3) Add the racf-grid YUM repo to your system
- rpm -ivh http://dev.racf.bnl.gov/yum/grid/production/rhel/5Client/x86_64/racf-grid-release-0.9-2.noarch.rpm
+ rpm -ivh http://dev.racf.bnl.gov/yum/grid/production/rhel/5Client/x86_64/racf-grid-release-0.9-3.noarch.rpm
 
 The warning about NOKEY is expected. This release RPM sets up YUM to point at our 
 repository, and installs the GPG key with which all our RPMs are signed. By default
 the racf-grid-release RPM sets our production repository to enabled (see 
-/etc/yum.repos.d/racf-grid-production.repo ). If you are testing APF and want to run
+/etc/yum.repos.d/racf-grid-production.repo ). 
+
+NOTE: If you are testing APF and want to run
 a pre-release version, enable the racf-grid-development or racf-grid-testing repository. 
 
 4) If you will be performing *local* batch system submission (as opposed to remote submission
@@ -27,7 +29,7 @@ via grid interfaces) you must confirm that whatever account you'll be submitting
 the batch cluster. This is also the user you should set APF to run as. 
 
 5) Install the APF RPM:
-    yum install autopyfactory
+    yum install panda-autopyfactory
 
 This performs several setup steps that otherwise would need to be done manually:
    -- Creates 'apf' user that APF will run under.
