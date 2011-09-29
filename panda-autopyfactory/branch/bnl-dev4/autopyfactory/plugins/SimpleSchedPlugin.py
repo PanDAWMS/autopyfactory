@@ -28,11 +28,12 @@ class SchedPlugin(SchedInterface):
                       is number of activated > number of idle?
                          no  -> return 0
                          yes -> 
+                            is maxPendingPilots defined?
+                               yes -> return (minPilotsPerCycle - nbpilots) if needed
                             is maxPilotsPerCycle defined?
+                            ## FIX THIS 
                                yes -> return min(nbjobs - nbpilots, maxPilotsPerCycle)
                                no  -> return (nbjobs - nbpilots)
-                            is minPilotsPerCycle defined?
-                               yes -> return (minPilotsPerCycle - nbpilots) if needed
                 """
 
                 self.log.debug('calcSubmitNum: Starting with input %s' %status)
@@ -67,20 +68,19 @@ class SchedPlugin(SchedInterface):
                                 else:
                                         out = 0
 
+                # check if there is a maximum number of pending pilots 
+                # and submit as many pilots as needed to complete that maximum
+                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'maxPendingPilots'):
+                        minPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'maxPendingPilots')
+                        if maxPendingPilots > nbpilots:
+                                self.log.debug('calcSubmitNum: there is a maxPendingPilots number setup to %s and it is being used' %maxPendingPilots)
+                                out = maxPendingPilots - nbpilots
+                                        
                 # check if the config file has attribute maxPilotsPerCycle
                 if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'maxPilotsPerCycle'):
                         maxPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'maxPilotsPerCycle')
                         self.log.debug('calcSubmitNum: there is a maxPilotsPerCycle number setup to %s' %maxPilotsPerCycle)
                         out = min(out, maxPilotsPerCycle)
 
-                # check if there is anyway a minimum nb of pilots 
-                # and submit as many pilots as needed to complete that minimum
-                # together with the pilots already submitted
-                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'minPilotsPerCycle'):
-                        minPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'minPilotsPerCycle')
-                        if minPilotsPerCycle > nbpilots:
-                                self.log.debug('calcSubmitNum: there is a minPilotsPerCycle number setup to %s and it is being used' %minPilotsPerCycle)
-                                out = minPilotsPerCycle - nbpilots
-                                        
                 self.log.debug('calcSubmitNum (activated_jobs=%s; pending_pilots=%s) : Leaving returning %s' %(nbjobs, pending_pilots, out))
                 return out
