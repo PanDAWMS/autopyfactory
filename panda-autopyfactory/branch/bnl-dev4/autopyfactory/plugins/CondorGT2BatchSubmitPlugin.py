@@ -150,7 +150,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 if self.qcl.has_option(self.queue, 'pandaloglevel'):
                         arguments += ' --pandaloglevel=%s' %self.qcl.get(self.queue, 'pandaloglevel')
                 if self.qcl.has_option(self.queue, 'arguments'):
-                        arguments += self.qcl.get(self.queue, 'arguments')
+                        arguments += ' ' + self.qcl.get(self.queue, 'arguments')
                 self.JSD.add(arguments)
 
                 # -- Number of pilots --
