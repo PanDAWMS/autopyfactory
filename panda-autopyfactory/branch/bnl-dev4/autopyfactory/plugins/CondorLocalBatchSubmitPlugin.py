@@ -210,19 +210,15 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
                 self.log.debug('__submit: Starting.')
 
-                self.dryRun = self.fcl.getboolean('Factory', 'dryRun')
-                if not self.dryRun:
-                        self.log.info('Attempt to submit %d pilots for queue %s' %(self.nbpilots, self.queue))
-                        (exitStatus, output) = commands.getstatusoutput('condor_submit -verbose ' + self.jdlFile)
-                        if exitStatus != 0:
-                                self.log.error('condor_submit command for %s failed (status %d): %s', self.queue, exitStatus, output)
-                        else:
-                                self.log.info('condor_submit command for %s succeeded', self.queue)
-                        st, out = exitStatus, output
+                self.log.info('Attempt to submit %d pilots for queue %s' %(self.nbpilots, self.queue))
 
+                (exitStatus, output) = commands.getstatusoutput('condor_submit -verbose ' + self.jdlFile)
+                if exitStatus != 0:
+                        self.log.error('condor_submit command for %s failed (status %d): %s', self.queue, exitStatus, output)
                 else:
-                        self.log.debug('Dry run mode - pilot submission supressed.')
-                        st, out = None, None
+                        self.log.info('condor_submit command for %s succeeded', self.queue)
+                st, out = exitStatus, output
+
 
                 self.log.debug('__submit: Leaving with output (%s, %s).' %(st, out))
                 return st, out
