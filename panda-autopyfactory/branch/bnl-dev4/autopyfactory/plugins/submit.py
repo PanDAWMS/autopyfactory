@@ -41,7 +41,8 @@ TO-DO:
 
 
 class JSDDirectiveException(Exception):
-        """class to raise exceptions when we try to print the content of
+        """
+        class to raise exceptions when we try to print the content of
         an JSDDirective object which is a template and still not being 
         replaced.
         """
@@ -51,7 +52,8 @@ class JSDDirectiveException(Exception):
                 return "JSDDirective %s is still a template" %self.directive 
 
 class JSDFileException(Exception):
-        """class to raise exceptions when we try to print the content of
+        """
+        class to raise exceptions when we try to print the content of
         an JSDDirective object which is a template and still not being 
         replaced.
         """
@@ -119,7 +121,8 @@ class JSDDirective(object):
 
 
         def replace(self, value):
-                """method to replace the template string by its real value, 
+                """
+                method to replace the template string by its real value, 
                 when provided.
                 First we check the directive is really a template, 
                 and then we modify its value.
@@ -140,7 +143,8 @@ class JSDDirective(object):
                 return self.directive
 
         def isvalid(self):
-                """checks that the content has a valid value and no
+                """
+                checks that the content has a valid value and no
                 one that requires to be replaced. 
                 A regexp will look for the pattern:
                         <something>@@<something>@@<something>
@@ -153,7 +157,8 @@ class JSDDirective(object):
                 return True
 
         def gettemplate(self):
-                """if the directive is still a template, it returns
+                """
+                if the directive is still a template, it returns
                 the content of the string to be replaced.
                 It returns False otherwise.
                 """
@@ -165,12 +170,14 @@ class JSDDirective(object):
                         return tokens[1]
         
         def iscomment(self):
-                """return True if the first non-blank character is #
+                """
+                return True if the first non-blank character is #
                 """
                 return self.directive.strip()[0] == '#'
 
         def ispair(self):
-                """return True if the content is like 'var = value'
+                """
+                return True if the content is like 'var = value'
                 """
                 pattern = '^.*=.*$'
                 if re.match(pattern, self.directive):
@@ -241,7 +248,8 @@ class JSDFile(object):
                         self.__clonejsd(templatejsd)
 
         def __clonetemplatefromfile(self, templatefile):
-                """get the initial input from a file
+                """
+                get the initial input from a file
                 """
                 templatefd = open(templatefile)
                 for line in templatefd.readlines():
@@ -251,7 +259,8 @@ class JSDFile(object):
                 templatefd.close()
 
         def __clonetemplatefromurl(self, url):
-                """get the initial input from an url
+                """
+                get the initial input from an url
                 """
                 socket = urllib.urlopen(url)
                 data = socket.read()
@@ -264,7 +273,8 @@ class JSDFile(object):
 
 
         def __clonejsd(self, jsd):
-                """get the initial input from another object of class JSDFile
+                """
+                get the initial input from another object of class JSDFile
                 """
                 for directive in jsd.listofdirectives:
                         self.listofdirectives.append(directive)
@@ -274,7 +284,8 @@ class JSDFile(object):
                 self.listofdirectives.append(JSDDirective(directive))
 
         def replace(self, template):
-                """template is a dictionary with a list of pairs
+                """
+                template is a dictionary with a list of pairs
                 (key, value) used to complete each directive
                 """
 
@@ -286,7 +297,8 @@ class JSDFile(object):
                                         directive.replace(value) 
 
         def write(self, path):
-                """calls __str__ and prints out the result in a file
+                """
+                calls __str__ and prints out the result in a file
                 """
 
                 if self.isvalid():
@@ -299,14 +311,16 @@ class JSDFile(object):
                         raise JSDFileException()
 
         def __str__(self):
-                """loop over all attributes, creates an string 
+                """
+                loop over all attributes, creates an string 
                 with the content of the object, and returns it. 
                 """
                 out = '\n'.join([dir() for dir in self.listofdirectives])
                 return out
 
         def isvalid(self):
-                """loops over all directives in self.listofdirectives
+                """
+                loops over all directives in self.listofdirectives
                 and check if they are valid or not, one by one.
                 As soon as one non-valid directive is found the entire
                 list is non-valid. 
