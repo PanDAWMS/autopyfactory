@@ -174,7 +174,11 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
                 self.log.debug('__update: Querying cmd = %s' %querycmd.replace('\n','\\n'))
 
+                before = time.time()
                 self.err, self.output = commands.getstatusoutput(querycmd)
+                delta = time.time() - before
+                self.log.debug('__update: it took %s seconds to perform the query' %delta)
+
                 self.info.update(self.output, self.err)
 
                 self.log.debug('__update: Leaving.')
