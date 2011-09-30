@@ -173,7 +173,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                                 self.log.error('__writeJSDFile: Failed to create directory %s (error %d): %s', self.logDir, errno, errMsg)
                                 self.log.error('__writeJSDFile: Cannot submit pilots for %s', self.queue)
                                 return
-                self.jdlFile = self.logDir + '/submitMe.jdl'
+                self.jdlFile = self.logDir + '/submit.jdl'
                 ### error = self.writeJDL(queue, jdlFile, pilotNumber, logDir, logUrl, cycleNumber)
                 self.JSD.write(self.jdlFile)
 
