@@ -64,8 +64,6 @@ class Factory(object):
                 self.log.info('Factory: Initializing object...')
 
                 self.fcl = fcl
-                self.dryRun = fcl.get("Factory", "dryRun")
-                #self.sleep = fcl.get("Factory", "sleep")
                 
                 self.log.info("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
                 self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
@@ -337,7 +335,6 @@ class WMSQueue(threading.Thread):
                         self.siteid = apfqueue
                 self.nickname = self.qcl.get(apfqueue, "nickname")
                 self.cloud = self.qcl.get(apfqueue, "cloud")
-                self.dryRun = self.fcl.get("Factory", "dryRun")
                 self.cycles = self.fcl.get("Factory", "cycles" )
                 self.sleep = int(self.qcl.get(apfqueue, "sleep"))
                 self.cyclesrun = 0
