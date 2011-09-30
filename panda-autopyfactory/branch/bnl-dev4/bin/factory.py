@@ -84,11 +84,6 @@ class APF(object):
                                   action="store_const", 
                                   const=logging.WARNING, 
                                   help="Set logging level to WARNING [default]")
-                parser.add_option("--test", "--dry-run", 
-                                  dest="dryRun", 
-                                  default=False,
-                                  action="store_true", 
-                                  help="Dry run - supress job submission")
                 parser.add_option("--oneshot", "--one-shot", 
                                   dest="cyclesToDo", 
                                   default=0,
@@ -275,7 +270,6 @@ class APF(object):
                 if self.options.confFiles != None:
                     self.fc = FactoryConfigLoader(self.options.confFiles)
                 
-                self.fc.config.set("Factory","dryRun", str(self.options.dryRun))
                 self.fc.config.set("Factory","cyclesToDo", str(self.options.cyclesToDo))
                 self.fc.config.set("Factory", "sleepTime", str(self.options.sleepTime))
                 self.fc.config.set("Factory", "confFiles", ','.join(self.options.confFiles))
