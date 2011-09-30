@@ -339,7 +339,7 @@ class WMSQueue(threading.Thread):
                 self.cloud = self.qcl.get(apfqueue, "cloud")
                 self.dryRun = self.fcl.get("Factory", "dryRun")
                 self.cycles = self.fcl.get("Factory", "cycles" )
-                self.sleep = int(self.fcl.get("Factory", "sleep"))
+                self.sleep = int(self.qcl.get(apfqueue, "sleep"))
                 self.cyclesrun = 0
                 
                 # object Status to handle the whole system status
