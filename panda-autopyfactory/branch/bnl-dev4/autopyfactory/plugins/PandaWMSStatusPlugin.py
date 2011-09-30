@@ -144,6 +144,8 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 
                 self.log.debug('__update: Starting.')
 
+                before = time.time()
+
                 # get Clouds Specs
                 self.clouds_err, self.all_clouds_config = Client.getCloudSpecs()
                 self.info.update(InfoHandler.CLOUDS, self.all_clouds_config, self.clouds_err)
@@ -157,13 +159,17 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                         self.log.error('Client.getSiteSpecs() failed')
                 # get Jobs Specs
                 #self.jobs_err, self.all_jobs_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='') 
-                self.jobs_err, self.all_jobs_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='', jobType='test,managed,user,panda,ddm,rc_test') 
+                self.jobs_err, self.all_jobs_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='', jobType='test,prod,managed,user,panda,ddm,rc_test') 
                                                                                                                         # FIXME
                                                                                                                         # THIS IS A TEMPORARY SOLUTION
                                                                                                                         # THE LIST OF JOB TYPES SHOULD BE PASSED AS INPUT
                                                                                                                         # THAT LIST SHOULD BE CALCULATED:
                                                                                                                         #       - AS A PARAMETER
                                                                                                                         #       - REPORTED DYNAMICALLY BY CLIENT
+
+                delta = time.time() - before
+                self.log.debug('__update: it took %s seconds to perform the query' %delta)
+
                 self.info.update(InfoHandler.JOBS, self.all_jobs_config, self.jobs_err)
                 if self.jobs_err:
                         self.log.error('Client.getJobStatisticsPerSite() failed')
