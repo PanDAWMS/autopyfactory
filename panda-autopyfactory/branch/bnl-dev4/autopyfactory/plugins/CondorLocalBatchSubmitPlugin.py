@@ -198,8 +198,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                                 self.log.error('__writeJSDFile: Cannot submit pilots for %s', self.queue)
                                 return
                 self.jdlFile = self.logDir + '/submit.jdl'
-                ### error = self.writeJDL(queue, jdlFile, pilotNumber, logDir, logUrl, cycleNumber)
                 self.JSD.write(self.jdlFile)
+                self.log.debug('__writeJSDFile: the submit file content is\n %s ' %self.JSD)
 
                 self.log.debug('__writeJSDFile: Leaving.')
 
