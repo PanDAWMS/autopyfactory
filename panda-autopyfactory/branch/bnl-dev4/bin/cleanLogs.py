@@ -25,7 +25,6 @@ mainMessages.debug('Logger initialised')
 conf = 'factory.conf'
 compress = 7
 delete = 21
-dryRun = False
 
 
 try:
@@ -67,8 +66,7 @@ try:
         if opt in ("--verbose", "--debug"):
             debugLevel = logging.DEBUG
             mainMessages.setLevel(debugLevel)
-        if opt in ("--test", "--dryrun",):
-            dryRun = True
+        if opt in ("--test"):
             cyclesToDo = 1
         if opt in ("--compress",):
             compress = int(val)
@@ -107,17 +105,11 @@ for entry in entries:
         mainMessages.info('Entry %s is %d days old' % (entry, deltaT.days))
         if logDirMatch.group(4) != None and deltaT.days > delete:
             mainMessages.info("Deleting compressed %s..." % entry)
-            if dryRun:
-                mainMessages.info("Dry run - deletion supressed")
-            else:
-                commands.getstatusoutput('rm -fr %s' % (logDir + "/" + entry))
+            commands.getstatusoutput('rm -fr %s' % (logDir + "/" + entry))
         elif logDirMatch.group(4) == None and deltaT.days > compress:
             mainMessages.info("Compressing %s..." % entry)
-            if dryRun:
-                mainMessages.info("Dry run - compression supressed")
-            else:
-                commands.getstatusoutput('tar -czf %s %s' % (logDir + "/" + entry + ".tgz", logDir + "/" + entry))
-                commands.getstatusoutput('rm -fr %s' % (logDir + "/" + entry))
+            commands.getstatusoutput('tar -czf %s %s' % (logDir + "/" + entry + ".tgz", logDir + "/" + entry))
+            commands.getstatusoutput('rm -fr %s' % (logDir + "/" + entry))
         else:
             if logDirMatch.group(4) == None:
                 mainMessages.info("%s is fresh - doing nothing" % entry)
