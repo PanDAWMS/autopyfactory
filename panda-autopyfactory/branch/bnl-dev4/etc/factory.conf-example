@@ -40,8 +40,10 @@ cycles=None   # None means forever
 
 # sleep time between cycles in mainLoop in Factory object
 factorysleep=30
-# sleep time between cycles in WMSQueue object
-sleep=17
+
+##### MOVED TO QUEUE.CONF
+##### sleep time between cycles in WMSQueue object
+#####sleep=17
 
 # Time the WMSStatus Plugin waits between cycles
 wmsstatussleep = 50
