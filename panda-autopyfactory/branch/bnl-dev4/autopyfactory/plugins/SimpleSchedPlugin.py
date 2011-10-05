@@ -1,6 +1,16 @@
 #! /usr/bin/env python
 #
 
+"""
+
+        NOTE:   Most probably this module 
+                will be deleted
+                since all functionalities 
+                are included in Activated Plugin
+              
+"""
+
+
 from autopyfactory.factory import SchedInterface
 import logging
 
