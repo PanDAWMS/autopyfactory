@@ -22,7 +22,19 @@ class SchedPlugin(SchedInterface):
 
         def calcSubmitNum(self, status):
                 """ 
-                documentation needed here !!
+                By default, returns nb of Activated Jobs - nb of Pending Pilots
+
+                But, if MAX_JOBS_RUNNING is defined, 
+                it can impose a limit on the number of new pilots,
+                to prevent passing that limit on max nb of running jobs.
+
+                If there is a MAX_PILOTS_PER_CYCLE defined, 
+                it can impose a limit too.
+
+                If there is a MIN_PILOTS_PER_CYCLE defined, 
+                and the final decission was a lower number, 
+                then this MIN_PILOTS_PER_CYCLE is the number of pilots 
+                to be submitted.
                 """
 
                 self.log.debug('calcSubmitNum: Starting with input %s' %status)
