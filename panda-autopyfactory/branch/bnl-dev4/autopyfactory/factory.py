@@ -85,7 +85,7 @@ class Factory(object):
                 # Set up LogServer
                 logpath = self.fcl.get('Pilots', 'baseLogDir')
                 if not os.path.exists(logpath):
-                    os.mkdirs(logpath)
+                    os.makedirs(logpath)
                 
                 self.logserver = LogServer(port=self.fcl.get('Pilots', 'baseLogHttpPort'),
                                    docroot=logpath
