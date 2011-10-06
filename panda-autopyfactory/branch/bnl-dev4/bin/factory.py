@@ -177,7 +177,14 @@ class APF(object):
                 elif self.options.logfile == 'syslog':
                     logStream = logging.SysLogHandler('/dev/log')
                 else:
-                    logStream = logging.FileHandler(filename=self.options.logfile)    
+                    lf = self.options.logfile
+                    logdir = os.path.dirname(lf)
+                    if not os.path.exists(logdir):
+                        os.makedirs(logdir)
+                    runuid = pwd.getpwnam(self.options.runAs).pw_uid
+                    rungid = pwd.getpwnam(self.options.runAs).pw_gid                  
+                    os.chown(logdir, runuid, rungid)
+                    logStream = logging.FileHandler(filename=lf)    
 
                 formatter = logging.Formatter('%(asctime)s - %(name)s: %(levelname)s: %(module)s: %(message)s')
                 formatter.converter = time.gmtime  # to convert timestamps to UTC
