@@ -45,8 +45,8 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.apfqueue = wmsqueue.apfqueue
                 self.condoruser = wmsqueue.fcl.get('Factory', 'factoryUser')
                 self.factoryid = wmsqueue.fcl.get('Factory', 'factoryId') 
-                self.statuscycle = int(wmsqueue.qcl.get(self.apfqueue, 'batchCheckInterval'))
-                self.submitcycle = int(wmsqueue.qcl.get(self.apfqueue, 'batchSubmitInterval'))
+                #self.statuscycle = int(wmsqueue.qcl.get(self.apfqueue, 'batchCheckInterval'))
+                #self.submitcycle = int(wmsqueue.qcl.get(self.apfqueue, 'batchSubmitInterval'))
 
                 self.info = InfoHandler()
 
