@@ -63,7 +63,7 @@ defaultnbpilots = 0
 # New proxy configuration. Uses internal proxymanager.
 # Entry value should be the name of the proxy handler for the proxy you
 # wish to use. See etc/proxy.conf
-proxy = atlas-usatlas
+# proxy = atlas-usatlas
 
 # URL with the wrapper tar ball
 pandawrappertarballurl = http://www.usatlas.bnl.gov/~caballer/panda/wrapper-devel/
