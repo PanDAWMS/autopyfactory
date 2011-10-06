@@ -10,6 +10,7 @@ import datetime
 import logging
 import threading
 import time
+import os
 
 from ConfigParser import ConfigParser
 
@@ -80,8 +81,14 @@ class Factory(object):
                
                 # WMS Queues Manager 
                 self.wmsmanager = WMSQueuesManager(self)
+                
+                # Set up LogServer
+                logpath = self.fcl.get('Pilots', 'baseLogDir')
+                if not os.path.exists(logpath):
+                    os.mkdirs(logpath)
+                
                 self.logserver = LogServer(port=self.fcl.get('Pilots', 'baseLogHttpPort'),
-                                   docroot=self.fcl.get('Pilots', 'baseLogDir')
+                                   docroot=logpath
                                    )
 
                 self.log.debug('LogServer initialized. Starting...')
