@@ -109,7 +109,6 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add('+MATCH_APF_QUEUE="%s"' % self.queue)
 
                 # -- proxy path --
-                #self.JSD.add("x509userproxy=%s" % self.qcl.get(self.queue, 'gridProxy'))
                 x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.queue,'proxy'))
                 self.JSD.add("x509userproxy=%s" % x509userproxy) 
                
