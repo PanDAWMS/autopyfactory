@@ -116,9 +116,9 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add('+MATCH_APF_QUEUE="%s"' % self.queue)
 
                 # -- proxy path --
-                #self.JSD.add("x509userproxy=%s" % self.qcl.get(self.queue, 'gridProxy'))
-                x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.queue,'proxy'))
-                self.JSD.add("x509userproxy=%s" % x509userproxy)
+                if self.qcl.has_option(self.queue, 'proxy'):
+                        x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.queue,'proxy'))
+                        self.JSD.add("x509userproxy=%s" % x509userproxy)
 
                 # -- stuffs -- 
                 self.JSD.add('periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)')
