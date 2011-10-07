@@ -55,6 +55,8 @@ logfile=None
 
 
 [Pilots]
+
+##### MOVED TO QUEUE.CONF
 # Executable is the script which will be run by condor. This can contain
 # the uuencoded pilot tarball (rebuild with mkPilotWraper.py), but it is now
 # recommended only to send the script and let it download the latest
@@ -69,7 +71,7 @@ logfile=None
 #  "emacs runpilot3-wrapper.sh"
 #  "ln -s runpilot3-wrapper.sh runpilot3-wrapper-1.sh"
 #  "executable = runpilot3-wrapper-1.sh"
-executable = /usr/libexec/wrapper.sh
+#executable = /usr/libexec/wrapper.sh
 
 # Where outputs from pilots are stored
 baseLogDir = /home/apf/factory/logs
