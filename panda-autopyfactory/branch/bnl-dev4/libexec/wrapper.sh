@@ -223,7 +223,7 @@ f_setup_grid(){
                         return $?
                         ;;
                 *) 
-                        f_print_warning_msg "GRID value not defined"
+                        f_print_warning_msg "GRID value not defined or not recognized"
                         return 0
                         ;;
         esac
