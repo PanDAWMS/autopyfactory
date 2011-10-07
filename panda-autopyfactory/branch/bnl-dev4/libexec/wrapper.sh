@@ -222,6 +222,10 @@ f_setup_grid(){
                         f_setup_osg
                         return $?
                         ;;
+                local|LOCAL|Local)
+                        f_print_warning_msg "GRID value setup to LOCAL, doing nothing."
+                        return 0
+                        ;;
                 *) 
                         f_print_warning_msg "GRID value not defined or not recognized"
                         return 0
