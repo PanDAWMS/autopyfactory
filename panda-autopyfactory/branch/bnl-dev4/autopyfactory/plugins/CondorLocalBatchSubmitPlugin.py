@@ -168,7 +168,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 arguments = 'arguments = '
                 arguments += ' --pandasite=%s ' %self.queue
                 arguments += ' --pandaqueue=%s ' %self.qcl.get(self.queue, 'nickname')
-                arguments += ' --pandagrid=%s ' %self.qcl.get(self.queue, 'pandagrid')
+                if self.qcl.has_option(self.queue, 'pandagrid'):
+                        arguments += ' --pandagrid=%s ' %self.qcl.get(self.queue, 'pandagrid')
                 arguments += ' --pandaserverurl=%s ' %self.qcl.get(self.queue, 'pandaserverurl')
                 arguments += ' --pandawrappertarballurl=%s ' %self.qcl.get(self.queue, 'pandawrappertarballurl')
                 if self.qcl.has_option(self.queue, 'pandaloglevel'):
