@@ -75,8 +75,8 @@ logfile=None
 
 # Where outputs from pilots are stored
 baseLogDir = /home/apf/factory/logs
-# Where outputs from pilots are available via http
-baseLogDirUrl = http://my.host.domain:25880/
+# Where outputs from pilots are available via http NOTE: No trailing '/'!!!
+baseLogDirUrl = http://my.host.domain:25880
 
 # What port to run the HTTP server to export logs. Make sure this matches
 # the value in the baseLogDirUrl above!!

@@ -139,7 +139,7 @@ class ProxyHandler(threading.Thread):
         vomshours = int(math.floor((self.lifetime / 60.0 ) / 60.0))
         if vomshours == 0:
             vomshours = 1
-        cmd += ' -hours %d ' % vomshours
+        cmd += ' -valid %d:00 ' % vomshours
         cmd += ' -out %s ' % self.proxyfile
              
         # Run command
