@@ -77,7 +77,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
                 self.JSD.add("# Condor-G glidein pilot for panda")
 
-                self.JSD.add("executable=%s" % self.fcl.get('Pilots', 'executable'))
+                self.JSD.add("executable=%s" % self.qcl.get(self.queue, 'executable'))
                 self.JSD.add("transfer_executable = True")
                 self.JSD.add("should_transfer_files = YES")
                 self.JSD.add("when_to_transfer_output = ON_EXIT_OR_EVICT")
