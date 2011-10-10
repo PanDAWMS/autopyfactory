@@ -67,7 +67,7 @@ defaultnbpilots = 0
 
 # MOVED FROM FACTORY.CONF
 # sleep time between cycles in WMSQueue object
-sleep = 360
+wmsqueue.sleep = 360
 
 # MOVED FROM FACTORY.CONF
 # Executable is the script which will be run by condor. This can contain
