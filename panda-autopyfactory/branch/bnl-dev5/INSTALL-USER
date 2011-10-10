@@ -1,0 +1,13 @@
+AutoPyFactory INSTALL-USER
+
+User installation assumes that APF will be installed in the users home directory using the 
+standard Python distutils setup commands. It assumes that pre-requisites have already
+been installed and properly configured, either within the user's home directory or on
+the general system. 
+
+
+Prerequisites:
+   -- Python  
+   -- Condor (Condor-G)
+   -- Panda Client library 
+   -- simplejson
