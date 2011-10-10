@@ -48,7 +48,7 @@ class SchedPlugin(SchedInterface):
                 if not status:
                         out = 0
                 elif not status.valid():
-                        out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'defaultnbpilots')
+                        out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.defaultnbpilots')
                         self.log.info('calcSubmitNum: status is not valid, returning default = %s' %out)
                 else:
                         nbjobs = status.jobs.get('activated', 0)
@@ -61,21 +61,21 @@ class SchedPlugin(SchedInterface):
                         out = max(0, nbjobs - pending_pilots)
                 
                         # check if the config file has attribute MAX_JOBS_TORUN
-                        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'MAX_JOBS_TORUN'):
-                                MAX_JOBS_TORUN = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'MAX_JOBS_TORUN')
+                        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_jobs_torun'):
+                                MAX_JOBS_TORUN = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_jobs_torun')
                                 self.log.debug('calcSubmitNum: there is a MAX_JOBS_TORUN number setup to %s' %MAX_JOBS_TORUN)
                                 out_2 = max(0, MAX_JOBS_TORUN - nbpilots)
                                 out = min(out, out_2)
 
                 # check if the config file has attribute MAX_PILOTS_PER_CYCLE 
-                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'MAX_PILOTS_PER_CYCLE'):
-                        MAX_PILOTS_PER_CYCLE = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'MAX_PILOTS_PER_CYCLE')
+                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_per_cycle'):
+                        MAX_PILOTS_PER_CYCLE = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_per_cycle')
                         self.log.debug('calcSubmitNum: there is a MAX_PILOTS_PER_CYCLE number setup to %s' %MAX_PILOTS_PER_CYCLE)
                         out = min(out, MAX_PILOTS_PER_CYCLE)
 
                 # check if the config file has attribute MIN_PILOTS_PER_CYCLE 
-                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'MIN_PILOTS_PER_CYCLE'):
-                        MIN_PILOTS_PER_CYCLE = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'MIN_PILOTS_PER_CYCLE')
+                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.min_pilots_per_cycle'):
+                        MIN_PILOTS_PER_CYCLE = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.min_pilots_per_cycle')
                         self.log.debug('calcSubmitNum: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %MIN_PILOTS_PER_CYCLE)
                         out = max(out, MIN_PILOTS_PER_CYCLE)
 
