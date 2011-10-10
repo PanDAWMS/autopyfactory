@@ -113,7 +113,7 @@ class Factory(object):
                 
                 try:
                         while True:
-                                mainsleep = int(self.fcl.get('Factory', 'factorysleep'))
+                                mainsleep = int(self.fcl.get('Factory', 'factory.sleep'))
                                 time.sleep(mainsleep)
                                 self.log.debug('Checking for interrupt.')
                                 
@@ -343,7 +343,7 @@ class WMSQueue(threading.Thread):
                 self.nickname = self.qcl.get(apfqueue, "nickname")
                 self.cloud = self.qcl.get(apfqueue, "cloud")
                 self.cycles = self.fcl.get("Factory", "cycles" )
-                self.sleep = int(self.qcl.get(apfqueue, "sleep"))
+                self.sleep = int(self.qcl.get(apfqueue, "wmsqueue.sleep"))
                 self.cyclesrun = 0
                 
                 # object Status to handle the whole system status
