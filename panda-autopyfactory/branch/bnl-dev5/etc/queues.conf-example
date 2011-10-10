@@ -65,11 +65,6 @@ defaultnbpilots = 0
 # wish to use. See etc/proxy.conf
 # proxy = atlas-usatlas
 
-# URL with the wrapper tar ball
-pandawrappertarballurl = http://www.usatlas.bnl.gov/~caballer/panda/wrapper-devel/
-# base URL with the VO-specific pilot tarball
-pandaserverurl = http://pandaserver.cern.ch:25080/cache/pilot
-
 # MOVED FROM FACTORY.CONF
 # sleep time between cycles in WMSQueue object
 sleep = 360
@@ -91,6 +86,10 @@ sleep = 360
 #  "executable = runpilot3-wrapper-1.sh"
 executable = /usr/libexec/wrapper.sh
 
+# URL with the wrapper tar ball
+executable.pandawrappertarballurl = http://www.usatlas.bnl.gov/~caballer/panda/wrapper-devel/
+# base URL with the VO-specific pilot tarball
+executable.pandaserverurl = http://pandaserver.cern.ch:25080/cache/pilot
 
 #  override, if True then schedconfig does not clobber configuration file values.
 override = True
@@ -105,81 +104,40 @@ nickname = BNL_ITB_Test1-condor
 jdl = gridtest01.racf.bnl.gov/jobmanager-condor
 status = test
 sftemplate=/path/to/file
-localqueue = OSG_ITB_Jose
-pandagrid = OSG
-batchsubmitplugin = CondorLocal
+
+executable.pandagrid = OSG
+executable.arguments = -j false -k 600 -u panda 
+
 schedplugin = Trivial
-arguments = -j false -k 600 -u panda 
 
+batchsubmitplugin = CondorLocal
+batchsubmit.condorlocal.localqueue = OSG_ITB_Jose
 # list of condor attributes, splited by comma, to be included in the condor submit file *verbatim*
-condor_attributes = +RACF_Group = "osgitb",+Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas"
-
+batchsubmit.condorlocal.condor_attributes = +RACF_Group = "osgitb",+Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas"
 # list of environment variables, splitted by white spaces, to be included in the
 # condor attribute environment *verbatim*
-environ = OSG_GRID=/afs/usatlas/osg/wn-client/@sys/itb
+batchsubmit.condorlocal.environ = OSG_GRID=/afs/usatlas/osg/wn-client/@sys/itb
 
 
-# [TEST2]
-# siteid = TEST2
-# nickname = TEST2
-# jdl = gridtest01.racf.bnl.gov/jobmanager-condor
-# status = test
-# nqueue = 1
-# sftemplate=/path/to/file
-# memory = 600
-# user = Jose
-# localqueue = OSG_ITB_Jose
-# pandagrid = OSG
+# ------------------------------------------------------------------------
 
+[ANALY_BNL_ATLAS_1]
+siteid = ANALY_BNL_ATLAS_1
+nickname = ANALY_BNL_ATLAS_1-condor
+jdl = gridgk05.racf.bnl.gov/jobmanager-condor
 
-# # Two examples of the simplest and recommended configuration for sites
-# [UKI-NORTHGRID-LANCS-HEP]
-# siteid = UKI-NORTHGRID-LANCS-HEP
-# nickname = UKI-NORTHGRID-LANCS-HEP-fal-pygrid-18-atlas-lcgpbs
-# 
-# [UKI-SCOTGRID-GLASGOW-svr021]
-# siteid = UKI-SCOTGRID-GLASGOW-svr021
-# nickname = UKI-SCOTGRID-GLASGOW-svr021-atlprd-lcgpbs
-# 
-# # Pilots going to an analysis site usually use a different proxy.
-# # *** Please now see the setting analysisGridProxy in the QueueDefaults section
-# [ANALY_GLASGOW]
-# siteid = ANALY_GLASGOW
-# nickname = ANALY_GLASGOW
-# #gridProxy = /tmp/myPilotRoleProxy  <--- No longer needed
-# 
-# 
-# # If any values are set in the factory then these will be overwritten
-# # by schedconfig, unless you set override = True. e.g., testing a new
-# # gatekeeper
-# [UKI-SCOTGRID-GLASGOW]
-# siteid = UKI-SCOTGRID-GLASGOW
-# nickname = UKI-SCOTGRID-GLASGOW-svr029-atlprd-lcgpbs
-# jdl = svr029.gla.scotgrid.ac.uk/jobmanager-lcgpbs
-# localqueue = atlprd
-# status = test
-# nqueue = 1
-# override = True
-# sftemplate=/path/to/file
-# 
+executable.pandagrid = OSG
+executable.pandaloglevel = debug
+executable.arguments = --script=pilot.py --libcode=pilotcode.tar.gz,pilotcode-rc.tar.gz --pilotsrcurl=http://panda.cern.ch:25880/cache -f false -m false --user user
 
-# # Another override example is used here to submit pilots to an additional
-# # resource supporting an ANALY queue. Note the old "gatekeeper" now breaks
-# # into two parts: jdl and queue.
-# [ANALY_GLASGOW-2]
-# siteid = ANALY_GLASGOW
-# nickname = ANALY_GLASGOW
-# jdl = svr026.gla.scotgrid.ac.uk/jobmanager-lcgpbs
-# localqueue = atlanaly
-# override = True
-# 
-# # CREAM CE example
-# # Currently CREAM CEs have incorrect parameters in schedconfig, so they
-# # must have jdl (and probably localqueue) overrides.
-# # If you don't specify the port then 8443 is assumed.
-# [UKI-SCOTGRID-GLASGOW-cream14]
-# siteid = UKI-SCOTGRID-GLASGOW-cream14
-# nickname = UKI-SCOTGRID-GLASGOW-svr014-atlprd-pbs
-# jdl = svr014.gla.scotgrid.ac.uk:8443/cream-pbs
-# localqueue = atlprd
-# override = True
+proxy = atlas-production
+
+schedplugin = Activated
+sched.activated.min_pilots_per_cycle = 0
+sched.activated.max_pilots_per_cycle = 10
+sched.activated.max_jobs_torun = 60
+
+batchsubmit.condorgt2.localqueue = short
+
+sleep = 600 ; #10 minutes
+
