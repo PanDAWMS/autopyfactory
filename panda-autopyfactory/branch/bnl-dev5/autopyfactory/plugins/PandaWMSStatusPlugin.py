@@ -179,7 +179,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         def __sleep(self):
                 # FIXME: temporary solution
                 self.log.debug('__sleep: Starting.')
-                sleeptime = self.wmsqueue.fcl.getint('Factory', 'wmsstatussleep')
+                sleeptime = self.wmsqueue.fcl.getint('Factory', 'wmsstatus.panda.sleep')
                 time.sleep(sleeptime)
                 self.log.debug('__sleep: Leaving.')
 
