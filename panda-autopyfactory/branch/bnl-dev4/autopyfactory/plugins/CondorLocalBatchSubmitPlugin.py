@@ -45,7 +45,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.fcl = fcl
                 self.qcl = qcl
 
-                now = time.localtime()
+                #now = time.localtime()
+                now = time.gmtime() # gmtime() is like localtime() but in UTC
                 self.logPath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2]) + self.queue.translate(string.maketrans('/:','__'))
                 self.logDir = self.fcl.get('Pilots', 'baseLogDir') + self.logPath
                 self.logUrl = self.fcl.get('Pilots', 'baseLogDirUrl') + self.logPath
