@@ -57,7 +57,7 @@ class SchedPlugin(SchedInterface):
                 if not status:
                         out = 0
                 elif not status.valid():
-                        out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simple.defaultnbpilots')
+                        out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simple.default')
                         self.log.info('calcSubmitNum: status is not valid, returning default = %s' %out)
                 else:
                         nbjobs = status.jobs.get('activated', 0)
