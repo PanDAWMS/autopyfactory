@@ -35,20 +35,15 @@ pandaCheckInterval = 67
 
 # Variables potentially altered by command-line options. Passed in via Config.
 # Defaults:
-dryRun=False         
 cycles=None   # None means forever
 
 # sleep time between cycles in mainLoop in Factory object
-factorysleep=30
-
-##### MOVED TO QUEUE.CONF
-##### sleep time between cycles in WMSQueue object
-#####sleep=17
+factory.sleep=30
 
 # Time the WMSStatus Plugin waits between cycles
-wmsstatussleep = 50
+wmsstatus.panda.sleep = 50
 # Time the BatchStatus Plugin waits between cycles
-batchstatussleep = 50
+batchstatus.condor.sleep = 50
 
 conffiles=None
 logfile=None
