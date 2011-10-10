@@ -35,10 +35,10 @@ class SchedPlugin(SchedInterface):
                 if not status:
                         out = 0
                 elif not status.valid():
-                        out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'defaultnbpilots')
+                        out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.defaultnbpilots')
                         self.log.info('calcSubmitNum: status is not valid, returning default = %s' %out)
                 else:
-                        nqueue = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'nqueue')
+                        nqueue = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.nqueue')
                         nbpilots = status.batch.get('1', 0)
                         # '1' means pilots in Idle status
 
@@ -48,8 +48,8 @@ class SchedPlugin(SchedInterface):
                                 out = 0
 
                 # check if the config file has attribute maxPilotsPerCycle
-                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'maxPilotsPerCycle'):
-                        maxPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'maxPilotsPerCycle')
+                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.simplenqueue.maxpilotspercycle'):
+                        maxPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.maxpilotspercycle')
                         out = min(out, maxPilotsPerCycle)
 
                 self.log.debug('calcSubmitNum: Leaving returning %s' %out)
