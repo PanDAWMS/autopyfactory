@@ -58,7 +58,10 @@ schedplugin = Trivial
 # number of pilots to be submitted when the info
 # collected from the batch system and/or the WMS system
 # is not reliable 
-defaultnbpilots = 0
+sched.trivial.default = 0
+sched.simple.default = 0
+sched.simplenqueue.default = 0
+sched.activated.default = 0
 
 # New proxy configuration. Uses internal proxymanager.
 # Entry value should be the name of the proxy handler for the proxy you
