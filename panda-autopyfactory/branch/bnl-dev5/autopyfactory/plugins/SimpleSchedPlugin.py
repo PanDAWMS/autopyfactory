@@ -57,7 +57,7 @@ class SchedPlugin(SchedInterface):
                 if not status:
                         out = 0
                 elif not status.valid():
-                        out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'defaultnbpilots')
+                        out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simple.defaultnbpilots')
                         self.log.info('calcSubmitNum: status is not valid, returning default = %s' %out)
                 else:
                         nbjobs = status.jobs.get('activated', 0)
@@ -80,15 +80,15 @@ class SchedPlugin(SchedInterface):
 
                 # check if there is a maximum number of pending pilots 
                 # and submit as many pilots as needed to complete that maximum
-                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'maxPendingPilots'):
-                        minPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'maxPendingPilots')
+                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.simple.maxpendingpilots'):
+                        minPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simple.maxpendingpilots')
                         if maxPendingPilots > nbpilots:
                                 self.log.debug('calcSubmitNum: there is a maxPendingPilots number setup to %s and it is being used' %maxPendingPilots)
                                 out = maxPendingPilots - nbpilots
                                         
                 # check if the config file has attribute maxPilotsPerCycle
-                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'maxPilotsPerCycle'):
-                        maxPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'maxPilotsPerCycle')
+                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.simple.maxpilotspercycle'):
+                        maxPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simple.maxpilotspercycle')
                         self.log.debug('calcSubmitNum: there is a maxPilotsPerCycle number setup to %s' %maxPilotsPerCycle)
                         out = min(out, maxPilotsPerCycle)
 
