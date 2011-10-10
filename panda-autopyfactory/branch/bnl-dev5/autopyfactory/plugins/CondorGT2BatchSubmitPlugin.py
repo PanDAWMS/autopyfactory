@@ -98,10 +98,9 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add('copy_to_spool = false')
 
                 # -- globusrsl -- 
-                #self.JSD.add("globusrsl=(queue=%s)(jobtype=single)" % self.qcl.get(self.queue, 'localqueue'))
                 globusrsl = "globusrsl=(jobtype=single)"
-                if self.qcl.has_option(self.queue,'localqueue'):
-                        globusrsl += "(queue=%s)" % self.qcl.get(self.queue, 'localqueue')
+                if self.qcl.has_option(self.queue,'batchsubmit.condorgt2.localqueue'):
+                        globusrsl += "(queue=%s)" % self.qcl.get(self.queue, 'batchsubmit.condorgt2.localqueue')
                 self.JSD.add(globusrsl)
 
                 # -- MATCH_APF_QUEUE --
@@ -127,16 +126,16 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 environment += ' FACTORYQUEUE=%s' % self.queue
                 if self.fcl.has_option('Factory', 'factoryUser'):
                         environment += ' FACTORYUSER=%s' % self.fcl.get('Factory', 'factoryUser')
-                if self.qcl.has_option(self.queue, 'environ'):
-                        environ = self.qcl.get(self.queue, 'environ')
+                if self.qcl.has_option(self.queue, 'batchsubmit.condorgt2.environ'):
+                        environ = self.qcl.get(self.queue, 'batchsubmit.condorgt2.environ')
                         if environ != 'None' and environ != '':
                                 environment += " " + environ 
                 environment += '"'
                 self.JSD.add(environment)
 
                 # -- Condor attributes -- 
-                if self.qcl.has_option(self.queue, 'condor_attributes'):
-                        condor_attributes = self.qcl.get(self.queue, 'condor_attributes')
+                if self.qcl.has_option(self.queue, 'batchsubmit.condorgt2.condor_attributes'):
+                        condor_attributes = self.qcl.get(self.queue, 'batchsubmit.condorgt2.condor_attributes')
                         for attr in condor_attributes.split(','):
                                 self.JSD.add(attr)
 
@@ -144,14 +143,14 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 arguments = 'arguments = '
                 arguments += ' --pandasite=%s ' %self.queue
                 arguments += ' --pandaqueue=%s ' %self.qcl.get(self.queue, 'nickname')
-                if self.qcl.has_option(self.queue, 'pandagrid'):
-                        arguments += ' --pandagrid=%s ' %self.qcl.get(self.queue, 'pandagrid')
-                arguments += ' --pandaserverurl=%s ' %self.qcl.get(self.queue, 'pandaserverurl') 
-                arguments += ' --pandawrappertarballurl=%s ' %self.qcl.get(self.queue, 'pandawrappertarballurl')
-                if self.qcl.has_option(self.queue, 'pandaloglevel'):
-                        arguments += ' --pandaloglevel=%s' %self.qcl.get(self.queue, 'pandaloglevel')
-                if self.qcl.has_option(self.queue, 'arguments'):
-                        arguments += ' ' + self.qcl.get(self.queue, 'arguments')
+                if self.qcl.has_option(self.queue, 'executable.pandagrid'):
+                        arguments += ' --pandagrid=%s ' %self.qcl.get(self.queue, 'executable.pandagrid')
+                arguments += ' --pandaserverurl=%s ' %self.qcl.get(self.queue, 'executable.pandaserverurl') 
+                arguments += ' --pandawrappertarballurl=%s ' %self.qcl.get(self.queue, 'executable.pandawrappertarballurl')
+                if self.qcl.has_option(self.queue, 'executable.pandaloglevel'):
+                        arguments += ' --pandaloglevel=%s' %self.qcl.get(self.queue, 'executable.pandaloglevel')
+                if self.qcl.has_option(self.queue, 'executable.arguments'):
+                        arguments += ' ' + self.qcl.get(self.queue, 'executable.arguments')
                 self.JSD.add(arguments)
 
                 # -- Number of pilots --
