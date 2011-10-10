@@ -29,10 +29,6 @@ queueConf = file:///etc/apf/queues.conf
 # Where is the proxy config file
 proxyConf = /etc/apf/proxy.conf
 
-# How often (seconds) to pull information from Panda Server
-# Choose prime number to balance load. 
-pandaCheckInterval = 67
-
 # Variables potentially altered by command-line options. Passed in via Config.
 # Defaults:
 cycles=None   # None means forever
