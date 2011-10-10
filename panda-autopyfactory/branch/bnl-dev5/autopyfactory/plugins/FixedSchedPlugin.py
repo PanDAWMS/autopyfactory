@@ -25,8 +25,8 @@ class SchedPlugin(SchedInterface):
                 returns always a fixed number of pilots
                 """
 
-                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'fixedPilotsPerCycle'):
-                        out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'fixedPilotsPerCycle')
+                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.fixed.pilotspercycle'):
+                        out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.fixed.pilotspercycle')
                         self.log.debug('calcSubmitNum: there is a fixedPilotsPerCycle number setup to %s' %out)
                 else:
                         self.log.debug('calcSubmitNum: there is not a fixedPilotsPerCycle, returning 0')
