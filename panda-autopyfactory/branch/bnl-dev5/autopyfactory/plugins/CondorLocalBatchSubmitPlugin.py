@@ -102,14 +102,6 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add("notification=Error")
                 self.JSD.add("notify_user=%s" % self.fcl.get('Factory', 'factoryOwner'))
                 self.JSD.add("universe=vanilla")
-                ####  # Probably not so helpful to set these in the JDL
-                #if self.qcl.has_option(self.queue, 'memory'):
-                #        self.JSD.add("(maxMemory=%d)" % self.qcl.getint(self.queue, 'memory'))
-                ####  #if self.config.queues[self.queue]['wallClock'] != None:
-                ####  #        self.JSD.add("(maxWallTime=%d)" % self.config.queues[self.queue]['wallClock'],)
-                ####  ##print >>JDL
-                ####  #self.JSD.add('+MATCH_gatekeeper_url="%s"' % self.config.queues[self.queue]['queue'])
-                ####  #self.JSD.add('+MATCH_queue="%s"' % self.config.queues[self.queue]['localqueue'])
 
                 # -- MATCH_APF_QUEUE --
                 # this token is very important, since it will be used by other plugins
@@ -141,20 +133,6 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                                 environment += " " + environ
                 environment += '"'
                 self.JSD.add(environment)
-
-                ### self.JSD.add('environment = "PANDA_JSID=%s"' % self.fcl.get('Factory', 'factoryId'))
-                ### self.JSD.add('GTAG=%s/$(Cluster).$(Process).out' % self.logUrl)
-                ### self.JSD.add('APFCID=$(Cluster).$(Process)')
-                ### self.JSD.add('APFFID=%s' % self.fcl.get('Factory', 'factoryId'))
-                ### ####  if isinstance(self.mon, Monitor):
-                ### ####          self.JSD.add('APFMON=%s' % self.fcl.get('Factory', 'monitorURL'),)
-                ### self.JSD.add('FACTORYQUEUE=%s' % self.queue)
-                ### if self.qcl.has_option(self.queue, 'user'):
-                ###         self.JSD.add('FACTORYUSER=%s' % self.qcl.get(self.queue, 'user'))
-                ### if self.qcl.has_option(self.queue, 'environ'):
-                ###         environ = self.qcl.get(self.queue, 'environ')
-                ###         if environ != '':
-                ###                 self.JSD.add(environ)
 
                 # Adding condor attributes
                 if self.qcl.has_option(self.queue, 'batchsubmit.condorlocal.condor_attributes'):
