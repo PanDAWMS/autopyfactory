@@ -15,26 +15,15 @@
 
 # VARIABLES
 
-# batchsubmit.condorgt2.condor_attributes
-# batchsubmit.condorgt2.environ
-# batchsubmit.condorgt2.localqueue
-# batchsubmit.condorlocal.condor_attributes
-# batchsubmit.condorlocal.environ
-# cleanlogs.maxdays
 # cloud
-# executable
-# executable.arguments
-# executable.pandagrid
-# executable.pandaloglevel
-# executable.pandaserverurl
-# executable.pandawrappertarballurl
 # jdl
 # nickname
+# siteid
 # proxy
+#
+# cleanlogs.maxdays
+#
 # schedplugin
-# batchstatusplugin
-# wmsstatusplugin
-# batchsubmitplugin
 # sched.activated.default
 # sched.activated.max_jobs_torun
 # sched.activated.max_pilots_per_cycle
@@ -47,9 +36,25 @@
 # sched.simplenqueue.maxpilotspercycle
 # sched.simplenqueue.nqueue
 # sched.trivial.default
-# siteid
+#
+# wmsstatusplugin
 # wmsqueue.sleep
-
+#
+# batchstatusplugin
+#
+# batchsubmitplugin
+# batchsubmit.condorgt2.condor_attributes
+# batchsubmit.condorgt2.environ
+# batchsubmit.condorgt2.localqueue
+# batchsubmit.condorlocal.condor_attributes
+# batchsubmit.condorlocal.environ
+#
+# executable
+# executable.arguments
+# executable.pandagrid
+# executable.pandaloglevel
+# executable.pandaserverurl
+# executable.pandawrappertarballurl
 
 
 [DEFAULT]
