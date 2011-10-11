@@ -461,12 +461,12 @@ class WMSQueue(threading.Thread):
                 # checking if factory.conf has attributes to say
                 # how old the status info (batch, wms) can be
                 batchstatusmaxtime = 0
-                if self.fcl.has_option('Factory', 'batchstatusmaxtime'):
-                        batchstatusmaxtime = self.fcl.get('Factory', 'batchstatusmaxtime')
+                if self.fcl.has_option('Factory', 'batchstatus.maxtime'):
+                        batchstatusmaxtime = self.fcl.get('Factory', 'batchstatus.maxtime')
 
                 wmsstatusmaxtime = 0
-                if self.fcl.has_option('Factory', 'wmsstatusmaxtime'):
-                        wmsstatusmaxtime = self.fcl.get('Factory', 'wmsstatusmaxtime')
+                if self.fcl.has_option('Factory', 'wmsstatus.maxtime'):
+                        wmsstatusmaxtime = self.fcl.get('Factory', 'wmsstatus.maxtime')
 
                 # getting the info
                 self.status.batch = self.batchstatus.getInfo(self.siteid, batchstatusmaxtime)
