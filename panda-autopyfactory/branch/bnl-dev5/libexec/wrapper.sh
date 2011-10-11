@@ -520,26 +520,11 @@ f_exit(){
 }
 
 # ------------------------------------------------------------------------- #  
-#                           M O N I T O R                                   # 
-# ------------------------------------------------------------------------- #  
-
-f_monping() {
-    echo -n 'Monitor ping: '
-    curl -fksS --connect-timeout 10 --max-time 20 ${APFMON}$1/$APFFID/$APFCID/$2
-    if [ $? -eq 0 ]; then
-        echo
-    else
-        echo $?
-        echo ARGS: ${APFMON}$1/$APFFID/$APFCID/$2
-    fi
-}
-
-# ------------------------------------------------------------------------- #  
 #                           M A I N                                         # 
 # ------------------------------------------------------------------------- #  
 
 # notify the monitor
-f_monping rn
+./apf_monitor.sh rn
 
 f_init
 
@@ -591,7 +576,7 @@ f_invoke_wrapper $pythonwrapperopts
 rc=$?
 
 # notify the monitor
-f_monping ex $rc
+apf_monitor.sh ex $rc
 
 # exit
 f_exit $rc
