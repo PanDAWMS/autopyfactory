@@ -13,6 +13,45 @@
 # Some of these values may be in the process of deprecation, especially submission parameters 
 # which are now handled by the submit plugins. 
 
+# VARIABLES
+
+# batchsubmit.condorgt2.condor_attributes
+# batchsubmit.condorgt2.environ
+# batchsubmit.condorgt2.localqueue
+# batchsubmit.condorlocal.condor_attributes
+# batchsubmit.condorlocal.environ
+# cleanlogs.maxdays
+# cloud
+# executable
+# executable.arguments
+# executable.pandagrid
+# executable.pandaloglevel
+# executable.pandaserverurl
+# executable.pandawrappertarballurl
+# jdl
+# nickname
+# proxy
+# schedplugin
+# batchstatusplugin
+# wmsstatusplugin
+# batchsubmitplugin
+# sched.activated.default
+# sched.activated.max_jobs_torun
+# sched.activated.max_pilots_per_cycle
+# sched.activated.min_pilots_per_cycle
+# sched.fixed.pilotspercycle
+# sched.simple.default
+# sched.simple.maxpendingpilots
+# sched.simple.maxpilotspercycle
+# sched.simplenqueue.default
+# sched.simplenqueue.maxpilotspercycle
+# sched.simplenqueue.nqueue
+# sched.trivial.default
+# siteid
+# wmsqueue.sleep
+
+
+
 [DEFAULT]
 # Status can be test, offline, or online 
 #status = test

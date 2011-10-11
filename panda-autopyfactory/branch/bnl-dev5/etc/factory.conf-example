@@ -7,6 +7,27 @@
 # of schedconfig data
 # Monitoring should be enabled for all factories.
 
+
+# VARIABLES 
+
+# baseLogDir
+# baseLogDirUrl
+# batchstatus.condor.sleep
+# batchstatus.maxtime
+# cycles
+# factoryId
+# factoryOwner
+# factory.sleep
+# factoryUser
+# monitorURL
+# proxy
+# proxyConf
+# queueConf
+# wmsstatus.maxtime
+# wmsstatus.panda.sleep
+
+
+
 [Factory]
 factoryOwner = jcaballero@bnl.gov
 factoryId = BNL-gridui11-jhover
