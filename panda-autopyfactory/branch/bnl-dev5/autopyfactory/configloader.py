@@ -36,7 +36,6 @@ __status__ = "Production"
 class ConfigLoader(object):
         '''
         Base class of configloader. Handles file/URI storage.
-                
         '''
         
         def __init__(self, configFiles, loglevel=logging.DEBUG):
@@ -102,30 +101,6 @@ class ConfigLoader(object):
                 '''
                 return getattr(self.config, f)
 
-
-
-        #def _isURI(self, itempath):
-        #        '''
-        #        Tests to see if given path is a URI or filename. file:// http:// 
-        #        (No https:// yet).           
-        #        '''
-        #        self.log.debug("Checking if %s is a URI..." % itempath)
-        #        itempath = itempath.strip()
-        #        heads = { 'file://': True,
-        #                          'http://': True,
-        #                          'https://': False
-        #                        }
-        #        for k, v in patterns.iteritems():
-        #                        if itempath.startswith(k):
-        #                                        if v:
-        #                                                        self.log.debug('%s is a URI!' % itempath)
-        #                                                        return True
-        #                                        else:
-        #                                                        raise FactoryConfigurationFailure, '%s URIs not supported yet.' %k
-        #        return False
-                                                                 
-
-
         def _isURI(self, itempath):
                 '''
                 Tests to see if given path is a URI or filename. file:// http:// 
@@ -141,7 +116,6 @@ class ConfigLoader(object):
                 if head == "https:/":
                         raise FactoryConfigurationFailure, "https:// URIs not supported yet."
                 return isuri
-                
                 
         def _convertURItoReader(self, uri):
                 '''
@@ -173,7 +147,6 @@ class ConfigLoader(object):
                 self.log.debug("Success. Returning reader." )
                 return reader
 
-
         def _pythonify(self, myDict):
                 '''
                 Set special string values to appropriate python objects in a configuration dictionary
@@ -187,10 +160,10 @@ class ConfigLoader(object):
                                 myDict[k] = True
                         elif isinstance(v, str) and v.isdigit():
                                 myDict[k] = int(v)
-        
 
         def getConfigParser(self, section):     
-                """creates a new SafeConfigParser object
+                """
+                creates a new SafeConfigParser object
                 with the content of a given section.
                 Then it can be used like this:
                         newcp = getConfigParser(section)
@@ -216,7 +189,9 @@ class FactoryConfigLoader(ConfigLoader):
 
 
         def _statConfigs(self):
-                # Finally, stat the conf file(s) so we can tell if they changed
+                '''
+                Finally, stat the conf file(s) so we can tell if they changed
+                '''
                 try:
                         self.configFileMtime = dict()
                         for confFile in self.configFiles:
@@ -228,7 +203,9 @@ class FactoryConfigLoader(ConfigLoader):
 
 
         def _checkMandatoryValues(self):
-                '''Check we have a sane configuration'''
+                '''
+                Check we have a sane configuration
+                '''
                 mustHave = {'Factory' : ('factoryOwner', 'factoryId'),
                                         'Pilots' : ('executable', 'baseLogDir', 'baseLogDirUrl',)
                                         }
@@ -240,7 +217,9 @@ class FactoryConfigLoader(ConfigLoader):
                                         raise FactoryConfigurationFailure, 'Config files %s have no option %s in section %s (mandatory).' % (self.configFiles, option, section)
 
         def _configurationDefaults(self):
-                '''Define default configuration parameters for autopyfactory instances'''
+                '''
+                Define default configuration parameters for autopyfactory instances
+                '''
                 defaults = {}
                 try:
                         defaults = { 'Factory' : { 'condorUser' : os.environ['USER'], }}
@@ -273,7 +252,9 @@ class QueueConfigLoader(ConfigLoader):
                                                   }
 
         def _checkMandatoryValues(self):
-                '''Check we have a sane configuration'''
+                '''
+                Check we have a sane configuration
+                '''
                 mustHave = {
                                         #'Factory' : ('factoryOwner', 'factoryId'),
                                         #'Pilots' : ('executable', 'baseLogDir', 'baseLogDirUrl',),
@@ -286,15 +267,14 @@ class QueueConfigLoader(ConfigLoader):
                                 if not self.config.has_option(section, option):
                                         raise FactoryConfigurationFailure, 'Configuration files %s have no option %s in section %s (mandatory).' % (self.configFiles, option, section)
 
-
         def _validateQueue(self, queue):
-                '''Perform final validation of queue configuration'''
+                '''
+                Perform final validation of queue configuration
+                '''
                 # If the queue has siteid=None it should be suppressed
                 if self.queues[queue]['siteid'] == None:
                         self.configMessages.error('Queue %s has siteid=None and will be ignored. Update the queue if you really want to use it.' % queue)
                         self.queues[queue]['status'] = 'error'
-
-                
 
         def _configurationDefaults(self):
                 '''
@@ -306,6 +286,9 @@ class QueueConfigLoader(ConfigLoader):
                 return defaults
                   
         def _loadQueueData(self, queue):
+                '''
+                
+                '''
                 queueDataUrl = 'http://pandaserver.cern.ch:25080/cache/schedconfig/%s.factory.json' % queue
                 try:
                         handle = urlopen(queueDataUrl)
