@@ -36,9 +36,15 @@ class Config(SafeConfigParser, object):
         '''
         '''
         def __init__(self, source):
+                '''
+                input is a source. 
+                Source can be:
+                        - a physical path to a file on disk
+                        - or an URI. 
+                '''
                 super(Config, self).__init__(self)
 
-                self.source = source
+                self.__load(source)
 
         def merge(self, config):
                 '''
@@ -47,17 +53,31 @@ class Config(SafeConfigParser, object):
                 '''
                 self.__cloneallsections(config)
 
-        def __load(self):
+        def __load(self, source):
                 '''
+                inspects the format of the source, 
+                and decides which action to perform depending on
+                        - source is a path of a file
+                        - source is an URI
                 '''
-                typesource = self.__gettytesource(source)
-                if typesource == 'file':
+                sourcetype = self.__gettytesource(source)
+                if sourcetype == 'file':
                         self.__loadfile(source)
-                if typesource == 'uri':
-                        self.__loadurl(source)
+                if sourcetype == 'uri':
+                        self.__loaduri(source)
 
-        def __gettytesource(self, source):
-                pass
+        def __getsourcetype(self, source):
+                '''
+                determines if the source is a file on disk on an URI
+                '''
+                sourcetype = 'file'  # default
+
+                uritokens = ['file://', 'http://']
+                for token in uritokens:
+                        if source.startswith(token):
+                                sourcetype = 'uri'
+                                break
+                return type
 
         def __loadfile(self, path):
                 '''
@@ -66,9 +86,9 @@ class Config(SafeConfigParser, object):
                 f = open(path)
                 self.readfp(f)
                 
-        def __loadurl(self, uri):
+        def __loaduri(self, uri):
                 ''' 
-                load a config file from an URL
+                load a config file from an URI
                 ''' 
 
                 opener = urllib2.build_opener()
@@ -98,3 +118,27 @@ class Config(SafeConfigParser, object):
                 for opt in config.options(section):
                         value = config.get(opt)
                         self.set(section, opt, value)
+
+
+class ConfigContainer:
+        '''
+        list of Config objects
+        '''
+        def __init__(self, *sources):
+                '''
+                input is a list of sources
+                '''
+
+                self.configs = []
+                for source in sources:
+                        self.configs = Config(source)
+
+        # Is this really needed?
+        def merge(self):
+                '''
+                '''
+                config = self.configs[0]
+                for tmpconfig in self.configs[1:]:
+                        config.merge(tmpconfig)
+
+                return config
