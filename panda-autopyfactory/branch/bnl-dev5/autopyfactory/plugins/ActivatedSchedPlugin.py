@@ -79,5 +79,11 @@ class SchedPlugin(SchedInterface):
                         self.log.debug('calcSubmitNum: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %MIN_PILOTS_PER_CYCLE)
                         out = max(out, MIN_PILOTS_PER_CYCLE)
 
+                # check if the config file has attribute MAX_PILOTS_PENDING
+                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_pending'):
+                        MAX_PILOTS_PENDING = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_pending')
+                        self.log.debug('calcSubmitNum: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %MAX_PILOTS_PENDING)
+                        out = min(out, MAX_PILOTS_PENDING - pending_pilots)
+
                 self.log.debug('calcSubmitNum (activated_jobs=%s; pending_pilots=%s; running_pilots=%s;) : Leaving returning %s' %(nbjobs, pending_pilots, running_pilots, out))
                 return out
