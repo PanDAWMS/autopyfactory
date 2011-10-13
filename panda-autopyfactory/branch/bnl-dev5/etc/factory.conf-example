@@ -8,7 +8,9 @@
 # Monitoring should be enabled for all factories.
 
 
-# VARIABLES 
+# ================================================== 
+#               VARIABLES
+# ================================================== 
 
 # baseLogDir
 # baseLogDirUrl
@@ -26,6 +28,7 @@
 # wmsstatus.maxtime
 # wmsstatus.panda.sleep
 
+# ================================================== 
 
 
 [Factory]

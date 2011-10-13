@@ -143,12 +143,12 @@ class Config(SafeConfigParser, object):
                         else:
                                 if override:
                                         self.set(section, opt, value)
-                                                        
-
 
 
 class ConfigManager:
         '''
-        
+        class to manage Config objects
         '''
-        pass
+
+        def getSchedConfig(self,   ):
+        

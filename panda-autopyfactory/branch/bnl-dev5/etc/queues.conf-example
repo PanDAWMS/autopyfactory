@@ -13,7 +13,9 @@
 # Some of these values may be in the process of deprecation, especially submission parameters 
 # which are now handled by the submit plugins. 
 
-# VARIABLES
+# ================================================== 
+#               VARIABLES
+# ================================================== 
 
 # cloud
 # jdl
@@ -55,6 +57,8 @@
 # executable.pandaloglevel
 # executable.pandaserverurl
 # executable.pandawrappertarballurl
+
+# ================================================== 
 
 
 [DEFAULT]
