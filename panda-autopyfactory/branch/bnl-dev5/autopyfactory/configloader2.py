@@ -46,12 +46,12 @@ class Config(SafeConfigParser, object):
 
                 self.__load(source)
 
-        def merge(self, config):
+        def merge(self, config, override=False):
                 '''
-                merge the current SafeConfigParser object 
-                with the content of another item.
+                merge the current Config object 
+                with the content of another Config object.
                 '''
-                self.__cloneallsections(config)
+                self.__cloneallsections(config, override)
 
         def __load(self, source):
                 '''
@@ -101,14 +101,17 @@ class Config(SafeConfigParser, object):
                 self.readfp(reader)
 
 
-        def __cloneallsections(self, config):
+        def __cloneallsections(self, config, override):
                 '''
                 clone all sections in config
                 '''
 
                 sections = config.sections()
                 for section in sections:
-                        self.__clonesection(section, config)
+                        if section not in self.sections(): 
+                                self.__clonesection(section, config)
+                        else:
+                                self.__mergesection(section, config, override)
 
         def __clonesection(self, section, config):
                 ''' 
@@ -119,26 +122,33 @@ class Config(SafeConfigParser, object):
                         value = config.get(opt)
                         self.set(section, opt, value)
 
+        def __mergesection(self, section, config, override):
+                '''
+                merge the content of a current Config object section
+                with the content of the same section 
+                from a different Config object
 
-class ConfigContainer:
+                We loop over all options in new Config object section.
+                If the option is NOT in the current object, 
+                we add it with the same value.
+                If the option is in the current object, 
+                we override its value with the new Config object value
+                if override is True.
+                '''
+
+                for opt in config.options(section):
+                        value = config.get(section, opt)        
+                        if opt not in self.options(section):
+                                self.set(section, opt, value)
+                        else:
+                                if override:
+                                        self.set(section, opt, value)
+                                                        
+
+
+
+class ConfigManager:
         '''
-        list of Config objects
+        
         '''
-        def __init__(self, *sources):
-                '''
-                input is a list of sources
-                '''
-
-                self.configs = []
-                for source in sources:
-                        self.configs = Config(source)
-
-        # Is this really needed?
-        def merge(self):
-                '''
-                '''
-                config = self.configs[0]
-                for tmpconfig in self.configs[1:]:
-                        config.merge(tmpconfig)
-
-                return config
+        pass
