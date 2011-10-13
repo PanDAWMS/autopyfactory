@@ -64,7 +64,7 @@ class SchedPlugin(SchedInterface):
                         if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_jobs_torun'):
                                 MAX_JOBS_TORUN = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_jobs_torun')
                                 self.log.debug('calcSubmitNum: there is a MAX_JOBS_TORUN number setup to %s' %MAX_JOBS_TORUN)
-                                out_2 = max(0, MAX_JOBS_TORUN - nbpilots)
+                                out_2 = max(0, MAX_JOBS_TORUN - nbpilots) # this is to prevent having a negative number as solution
                                 out = min(out, out_2)
 
                 # check if the config file has attribute MAX_PILOTS_PER_CYCLE 
@@ -83,7 +83,8 @@ class SchedPlugin(SchedInterface):
                 if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_pending'):
                         MAX_PILOTS_PENDING = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_pending')
                         self.log.debug('calcSubmitNum: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %MAX_PILOTS_PENDING)
-                        out = min(out, MAX_PILOTS_PENDING - pending_pilots)
+                        out2 = max(0, MAX_PILOTS_PENDING - pending_pilots) # this is to prevent having a negative number as solution
+                        out = min(out, out2)
 
                 self.log.debug('calcSubmitNum (activated_jobs=%s; pending_pilots=%s; running_pilots=%s;) : Leaving returning %s' %(nbjobs, pending_pilots, running_pilots, out))
                 return out
