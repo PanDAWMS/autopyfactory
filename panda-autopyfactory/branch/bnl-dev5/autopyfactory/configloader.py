@@ -184,8 +184,8 @@ class FactoryConfigLoader(ConfigLoader):
         def loadConfig(self):
                 super(FactoryConfigLoader, self).loadConfig()
                 # Little bit of sanity...
-                if not os.path.isfile(self.config.get('Pilots', 'executable')):
-                        raise FactoryConfigurationFailure, 'Pilot executable %s does not seem to be a readable file.' % self.config.get('Pilots', 'executable')
+                #if not os.path.isfile(self.config.get('Pilots', 'executable')):
+                #        raise FactoryConfigurationFailure, 'Pilot executable %s does not seem to be a readable file.' % self.config.get('Pilots', 'executable')
 
 
         def _statConfigs(self):
