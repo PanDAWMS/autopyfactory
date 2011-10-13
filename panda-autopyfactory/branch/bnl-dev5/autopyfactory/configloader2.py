@@ -145,10 +145,9 @@ class Config(SafeConfigParser, object):
                                         self.set(section, opt, value)
 
 
-class ConfigManager:
-        '''
-        class to manage Config objects
-        '''
-
-        def getSchedConfig(self,   ):
+#class ConfigManager:
+#        '''
+#        class to manage Config objects
+#        '''
+#        def getSchedConfig(self,   ):
         
