@@ -207,7 +207,7 @@ class FactoryConfigLoader(ConfigLoader):
                 Check we have a sane configuration
                 '''
                 mustHave = {'Factory' : ('factoryOwner', 'factoryId'),
-                                        'Pilots' : ('executable', 'baseLogDir', 'baseLogDirUrl',)
+                                        'Pilots' : ('baseLogDir', 'baseLogDirUrl',)
                                         }
                 for section in mustHave.keys():
                         if not self.config.has_section(section):
