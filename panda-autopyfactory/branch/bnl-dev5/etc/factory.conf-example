@@ -84,7 +84,11 @@ logfile=None
 #  "ln -s runpilot3-wrapper.sh runpilot3-wrapper-1.sh"
 #  "executable = runpilot3-wrapper-1.sh"
 #executable = /usr/libexec/wrapper.sh
+############################################################
 
+# Batch Log Export via HTTP
+# Do you want to export via built-in Python webserver? 0|1
+logserver.enabled = True
 # Where outputs from pilots are stored
 baseLogDir = /home/apf/factory/logs
 # Where outputs from pilots are available via http NOTE: No trailing '/'!!!
