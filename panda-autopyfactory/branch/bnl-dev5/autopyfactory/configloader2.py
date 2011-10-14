@@ -67,7 +67,7 @@ class Config(SafeConfigParser, object):
                         - source is a path of a file
                         - source is an URI
                 '''
-                sourcetype = self.__gettytesource(source)
+                sourcetype = self.__getsourcetype(source)
                 if sourcetype == 'file':
                         self.__loadfile(source)
                 if sourcetype == 'uri':
