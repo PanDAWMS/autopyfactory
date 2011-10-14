@@ -83,14 +83,15 @@ class Factory(object):
                 self.wmsmanager = WMSQueuesManager(self)
                 
                 # Set up LogServer
-                ls = self.fcl.get('Pilots', 'logserver.enabled')
+                ls = self.fcl.get('Factory', 'logserver.enabled')
+                lsidx = self.fcl.get('Factory','logserver.index')
                 if ls:
-                    logpath = self.fcl.get('Pilots', 'baseLogDir')
+                    logpath = self.fcl.get('Factory', 'baseLogDir')
                     if not os.path.exists(logpath):
                         os.makedirs(logpath)
                 
-                    self.logserver = LogServer(port=self.fcl.get('Pilots', 'baseLogHttpPort'),
-                                   docroot=logpath
+                    self.logserver = LogServer(port=self.fcl.get('Factory', 'baseLogHttpPort'),
+                                   docroot=logpath, index=lsidx
                                    )
 
                     self.log.debug('LogServer initialized. Starting...')

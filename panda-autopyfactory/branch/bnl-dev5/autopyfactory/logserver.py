@@ -90,11 +90,16 @@ class MySimpleHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             #                 (self.address_string(),
             #                  self.log_date_time_string(),
             #                  format%args))
+
+class MyNoListingHTTPRequestHandler(MySimpleHTTPRequestHandler):
+    
+        def list_directory(self, path):
+            return None
         
 
 class LogServer(threading.Thread):
     
-    def __init__(self, port=25880, docroot="/home/apf/factory/logs"):
+    def __init__(self, port=25880, docroot="/home/apf/factory/logs", index = True):
         '''
         docroot is the path to the base directory of the files to be served. 
         '''
@@ -102,11 +107,16 @@ class LogServer(threading.Thread):
         self.log= logging.getLogger('main.logserver')
         self.docroot = docroot
         self.port = int(port)
+        self.list = list
         #self.handler = SimpleHTTPServer.SimpleHTTPRequestHandler
-        self.handler = MySimpleHTTPRequestHandler
+        if index:
+            self.handler = MySimpleHTTPRequestHandler
+        else:
+            self.handler = MyNoListingHTTPRequestHandler
+            
         self.httpd = SocketServer.TCPServer(("", self.port), self.handler)
         
-        self.log.debug("Initialized HTTP server. port=%d, root=%s" % (self.port, self.docroot)) 
+        self.log.debug("Initialized HTTP server. port=%d, root=%s, list = %s" % (self.port, self.docroot, self.list)) 
     
     def run(self):
         self.log.debug("Starting HTTP server")
@@ -118,7 +128,8 @@ class LogServer(threading.Thread):
 # simple main for testing during development                
 if __name__ == "__main__":
     logging.basicConfig(stream=sys.stdout,level=logging.DEBUG)
-    ls = LogServer()
+    # ls = LogServer()
+    ls = LogServer(index = False)
     ls.start()
         
         
