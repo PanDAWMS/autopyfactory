@@ -576,7 +576,7 @@ f_invoke_wrapper $pythonwrapperopts
 rc=$?
 
 # notify the monitor
-apf_monitor.sh ex $rc
+./apf_monitor.sh ex $rc
 
 # exit
 f_exit $rc
