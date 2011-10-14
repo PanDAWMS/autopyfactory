@@ -136,11 +136,13 @@ class Config(SafeConfigParser, object):
                 from a different Config object
 
                 We loop over all options in new Config object section.
+
                 If the option is NOT in the current object, 
                 we add it with the same value.
+
                 If the option is in the current object, 
                 we override its value with the new Config object value
-                if override is True.
+                if override is not True.
                 '''
 
                 for opt in config.options(section):
@@ -148,7 +150,7 @@ class Config(SafeConfigParser, object):
                         if opt not in self.options(section):
                                 self.set(section, opt, value)
                         else:
-                                if override:
+                                if not override:
                                         self.set(section, opt, value)
 
 
