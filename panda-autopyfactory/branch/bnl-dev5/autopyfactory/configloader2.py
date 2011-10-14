@@ -34,6 +34,13 @@ __status__ = "Production"
 
 class Config(SafeConfigParser, object):
         '''
+        -----------------------------------------------------------------------
+        Class to handle config files. 
+        -----------------------------------------------------------------------
+        Public Interface:
+                The interface inherited from SafeConfigParser.
+                merge(config, override=False)
+        -----------------------------------------------------------------------
         '''
         def __init__(self, source):
                 '''
