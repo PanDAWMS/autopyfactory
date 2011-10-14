@@ -84,7 +84,7 @@ class Config(SafeConfigParser, object):
                         if source.startswith(token):
                                 sourcetype = 'uri'
                                 break
-                return type
+                return sourcetype
 
         def __loadfile(self, path):
                 '''
