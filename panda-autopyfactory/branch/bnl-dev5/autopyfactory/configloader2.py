@@ -42,17 +42,6 @@ class Config(SafeConfigParser, object):
                 merge(config, override=False)
         -----------------------------------------------------------------------
         '''
-        def __init__(self, source):
-                '''
-                input is a source. 
-                Source can be:
-                        - a physical path to a file on disk
-                        - or an URI. 
-                '''
-                super(Config, self).__init__(self)
-
-                self.__load(source)
-
         def merge(self, config, override=False):
                 '''
                 merge the current Config object 
@@ -60,52 +49,6 @@ class Config(SafeConfigParser, object):
                 '''
                 self.__cloneallsections(config, override)
 
-        def __load(self, source):
-                '''
-                inspects the format of the source, 
-                and decides which action to perform depending on
-                        - source is a path of a file
-                        - source is an URI
-                '''
-                sourcetype = self.__getsourcetype(source)
-                if sourcetype == 'file':
-                        self.__loadfile(source)
-                if sourcetype == 'uri':
-                        self.__loaduri(source)
-
-        def __getsourcetype(self, source):
-                '''
-                determines if the source is a file on disk on an URI
-                '''
-                sourcetype = 'file'  # default
-
-                uritokens = ['file://', 'http://']
-                for token in uritokens:
-                        if source.startswith(token):
-                                sourcetype = 'uri'
-                                break
-                return sourcetype
-
-        def __loadfile(self, path):
-                '''
-                load a config file from disk
-                '''
-                f = open(path)
-                self.readfp(f)
-                
-        def __loaduri(self, uri):
-                ''' 
-                load a config file from an URI
-                ''' 
-
-                opener = urllib2.build_opener()
-                urllib2.install_opener(opener)
-                uridata = urllib2.urlopen(uri)
-                firstLine = uridata.readline().strip() 
-                #if firstLine[0] == "<":
-                #        raise FactoryConfigurationFailure("First response character was '<'. Proxy error?")
-                reader = urllib2.urlopen(hostsURI)  #FIXME
-                self.readfp(reader)
 
 
         def __cloneallsections(self, config, override):
@@ -126,7 +69,7 @@ class Config(SafeConfigParser, object):
                 ''' 
                 self.add_section(section)
                 for opt in config.options(section):
-                        value = config.get(opt)
+                        value = config.get(section, opt)
                         self.set(section, opt, value)
 
         def __mergesection(self, section, config, override):
@@ -154,9 +97,82 @@ class Config(SafeConfigParser, object):
                                         self.set(section, opt, value)
 
 
-#class ConfigManager:
-#        '''
-#        class to manage Config objects
-#        '''
-#        def getSchedConfig(self,   ):
+
+class ConfigManager:
+
+
+        #
+        #
+        #       TO BE IMPLEMENTED
+        #
+        #
+
+
+        def __init__(self, source):
+                self.source = source
+
+        def __load(self, source):
+                '''
+                inspects the format of the source, 
+                and decides which action to perform depending on
+                        - source is a path of a file
+                        - source is an URI
+                '''
+                sourcetype = self.__getsourcetype(source)
+                if sourcetype == 'file':
+                        self.__loadfile(source)
+                if sourcetype == 'uri':
+                        self.__loaduri(source)
+        def __getsourcetype(self, source):
+                '''
+                determines if the source is a file on disk on an URI
+                '''
+                sourcetype = 'file'  # default
+                uritokens = ['file://', 'http://']
+                for token in uritokens:
+                        if source.startswith(token):
+                                sourcetype = 'uri'
+                                break
+                return sourcetype
+        def __loadfile(self, path):
+                '''
+                load a config file from disk
+                '''
+                f = open(path)
+                self.readfp(f)
+        def __loaduri(self, uri):
+                ''' 
+                load a config file from an URI
+                ''' 
+                opener = urllib2.build_opener()
+                urllib2.install_opener(opener)
+                uridata = urllib2.urlopen(uri)
+                firstLine = uridata.readline().strip() 
+                #if firstLine[0] == "<":
+                #        raise FactoryConfigurationFailure("First response character was '<'. Proxy error?")
+                reader = urllib2.urlopen(hostsURI)  #FIXME
+                self.readfp(reader)
+
+
+####################################################################################################
         
+c1 = Config()
+c2 = Config()
+
+c1.readfp(open('cfg1'))
+c2.readfp(open('cfg2'))
+
+print c1.sections()
+print c2.sections()
+for o in c1.options('SEC12'):
+        print o, c1.get('SEC12', o)
+print
+for o in c2.options('SEC12'):
+        print o, c2.get('SEC12', o)
+print
+c1.merge(c2, True)
+print c1.sections()
+for o in c1.options('SEC12'):
+        print o, c1.get('SEC12', o)
+
+
