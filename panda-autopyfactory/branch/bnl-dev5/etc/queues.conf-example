@@ -30,6 +30,7 @@
 # sched.activated.max_jobs_torun
 # sched.activated.max_pilots_per_cycle
 # sched.activated.min_pilots_per_cycle
+# sched.activated.max_pilots_pending
 # sched.fixed.pilotspercycle
 # sched.simple.default
 # sched.simple.maxpendingpilots
