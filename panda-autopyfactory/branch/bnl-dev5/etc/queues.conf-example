@@ -139,7 +139,7 @@ wmsqueue.sleep = 360
 executable = /usr/libexec/wrapper.sh
 
 # URL with the wrapper tar ball
-executable.pandawrappertarballurl = http://www.usatlas.bnl.gov/~caballer/panda/wrapper-devel/
+executable.pandawrappertarballurl = http://dev.racf.bnl.gov/dist/wrapper/
 # base URL with the VO-specific pilot tarball
 executable.pandaserverurl = http://pandaserver.cern.ch:25080/cache/pilot
 
