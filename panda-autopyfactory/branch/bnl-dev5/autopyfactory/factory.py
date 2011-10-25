@@ -299,7 +299,7 @@ class WMSQueuesManager(object):
 
         def __diff_lists(self, l1, l2):
                 '''
-                Ancilla method to calculate diff between two lists
+                Ancillary method to calculate diff between two lists
                 '''
                 d1 = [i for i in l1 if not i in l2]
                 d2 = [i for i in l2 if not i in l1]
@@ -445,13 +445,16 @@ class WMSQueue(threading.Thread):
                 self.log.debug("run: Starting" )
 
                 while not self.stopevent.isSet():
-                        self.__updatestatus()
-                        nsub = self.__calculatenumberofpilots()
-                        self.__submitpilots(nsub)
-                        self.__monitor_shout()
-                        self.__exitloop()
-                        self.__sleep()
-                        self.__reporttime()
+                        try:
+                            self.__updatestatus()
+                            nsub = self.__calculatenumberofpilots()
+                            self.__submitpilots(nsub)
+                            self.__monitor_shout()
+                            self.__exitloop()
+                            self.__sleep()
+                            self.__reporttime()
+                        except Exception, e:
+                            self.log.error("Caught exception: %s" % str(e))
 
                 self.log.debug("run: Leaving")
 
@@ -641,7 +644,7 @@ class WMSQueue(threading.Thread):
 class Status(object):
         '''
         -----------------------------------------------------------------------
-        Ancilla class to collect all relevant status variables in a single object.
+        Ancillary class to collect all relevant status variables in a single object.
         -----------------------------------------------------------------------
         '''
         def __init__(self):
