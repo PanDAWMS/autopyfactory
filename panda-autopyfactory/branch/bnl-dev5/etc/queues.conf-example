@@ -116,6 +116,7 @@ sched.activated.default = 0
 # Entry value should be the name of the proxy handler for the proxy you
 # wish to use. See etc/proxy.conf
 # proxy = atlas-usatlas
+proxy = None
 
 # MOVED FROM FACTORY.CONF
 # sleep time between cycles in WMSQueue object

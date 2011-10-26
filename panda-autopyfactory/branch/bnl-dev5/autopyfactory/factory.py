@@ -70,14 +70,19 @@ class Factory(object):
                 self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
               
                 # Handle ProxyManager
-                pconfig = ConfigParser()
-                pconfig_file = fcl.get('Factory','proxyConf')
-                got_config = pconfig.read(pconfig_file)
-                self.log.debug("Read config file %s, return value: %s" % (pconfig_file, got_config)) 
-                self.proxymanager = ProxyManager(pconfig)
-                self.log.debug('ProxyManager initialized. Starting...')
-                self.proxymanager.start()
-                self.log.debug('ProxyManager thread started.')
+                usepman = fcl.get('Factory', 'proxymanager.enabled')
+                if usepman:
+                                    
+                    pconfig = ConfigParser()
+                    pconfig_file = fcl.get('Factory','proxyConf')
+                    got_config = pconfig.read(pconfig_file)
+                    self.log.debug("Read config file %s, return value: %s" % (pconfig_file, got_config)) 
+                    self.proxymanager = ProxyManager(pconfig)
+                    self.log.debug('ProxyManager initialized. Starting...')
+                    self.proxymanager.start()
+                    self.log.debug('ProxyManager thread started.')
+                else:
+                    self.log.info("ProxyManager disabled.")
                
                 # WMS Queues Manager 
                 self.wmsmanager = WMSQueuesManager(self)
@@ -498,8 +503,6 @@ class WMSQueue(threading.Thread):
                 '''
 
                 self.log.debug("__submitpilots: Starting")
-
-                self.log.debug("Would be submitting jobs for this queue.")
                 # message for the monitor
                 msg = 'Attempt to submit %d pilots for queue %s' %(nsub, self.siteid)
                 self.__monitor_note(msg)

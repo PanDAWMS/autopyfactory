@@ -50,6 +50,9 @@ versionTag = 2.0.0
 #queueConf = http://my.globalconfig.host/generateqconf/hostname
 queueConf = file:///etc/apf/queues.conf
 
+# The ProxyManager doesn't have to be used at all. If not, set this to false:
+proxymanager.enabled = True
+
 # Where is the proxy config file
 proxyConf = /etc/apf/proxy.conf
 
