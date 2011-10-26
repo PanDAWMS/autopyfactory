@@ -6,4 +6,3 @@
 chmod ugo+x /etc/init.d/factory
 chmod ugo+x /usr/libexec/wrapper.sh
 /sbin/chkconfig --add factory
-/sbin/chkconfig factory on
