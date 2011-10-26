@@ -694,9 +694,9 @@ class Status(object):
                 self.log.info('valid: Leaving with output %s.' %out)
                 return out
 
-        def __repr__(self):
-            s = pprint(self,depth=3)
-            return s
+        #def __repr__(self):
+        #    s = pprint(self,depth=3)
+        #    return s
 
 
 
