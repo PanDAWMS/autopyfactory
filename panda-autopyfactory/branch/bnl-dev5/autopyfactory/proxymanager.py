@@ -39,8 +39,11 @@ class ProxyManager(threading.Thread):
         
        
     def run(self):
-        self.mainLoop()    
-        
+        try:
+            self.mainLoop()    
+        except Exception, e:
+            self.log.error("ProxyManager mainloop threw exception: %s. Cannot continue without re-init..." % str(e))
+            
             
     def mainLoop(self):
         for ph in self.handlers:

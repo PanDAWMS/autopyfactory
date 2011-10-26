@@ -127,11 +127,13 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 '''
 
                 self.log.debug('run: Starting.')
-
-                while not self.stopevent.isSet():
-                        self.__update()
-                        self.__sleep()
-
+                while True:
+                    try:
+                        while not self.stopevent.isSet():
+                                self.__update()
+                                self.__sleep()
+                    except Exception, e:
+                        self.log.error("Main loop caught exception: %s " % str(e))
                 self.log.debug('run: Leaving.')
 
         def __update(self):

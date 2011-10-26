@@ -122,7 +122,11 @@ class LogServer(threading.Thread):
         self.log.debug("Starting HTTP server")
         os.chdir(self.docroot)
         self.log.debug("Changing working dir to %s"%  self.docroot)
-        self.httpd.serve_forever()
+        while True:
+            try:
+                self.httpd.serve_forever()
+            except Exception, e:
+                self.log.error("HTTP Server threw exception: %s" % str(e))
 
 
 # simple main for testing during development                
