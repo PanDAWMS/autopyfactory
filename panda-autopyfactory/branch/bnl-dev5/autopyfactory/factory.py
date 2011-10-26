@@ -692,6 +692,12 @@ class Status(object):
                 self.log.info('valid: Leaving with output %s.' %out)
                 return out
 
+        def __str__(self):
+            s = "factory.Status object."
+            return s
+            
+
+
 
 class Singleton(type):
         '''
