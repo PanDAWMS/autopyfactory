@@ -12,6 +12,8 @@ import threading
 import time
 import os
 
+from pprint import pprint
+
 from ConfigParser import ConfigParser
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
@@ -692,17 +694,16 @@ class Status(object):
                 self.log.info('valid: Leaving with output %s.' %out)
                 return out
 
-        def __str__(self):
-            s = "factory.Status object."
+        def __repr__(self):
+            s = pprint(self,depth=3)
             return s
-            
 
 
 
 class Singleton(type):
         '''
         -----------------------------------------------------------------------
-        Ancilla class to be used as metaclass to make other classes Singleton.
+        Ancillary class to be used as metaclass to make other classes Singleton.
         -----------------------------------------------------------------------
         '''
         def __init__(cls, name, bases, dct):
