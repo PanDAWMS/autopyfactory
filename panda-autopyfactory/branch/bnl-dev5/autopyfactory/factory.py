@@ -488,10 +488,7 @@ class WMSQueue(threading.Thread):
                 '''
 
                 self.log.debug("__calculatenumberofpilots: Starting")
-
-                self.log.debug("Would be calculating number to submit.")
                 nsub = self.scheduler.calcSubmitNum(self.status)
-
                 self.log.debug("__calculatenumberofpilots: Leaving with output %s" %nsub)
                 return nsub
 
