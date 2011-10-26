@@ -43,7 +43,7 @@ class CleanCondorLogs(threading.Thread):
         
                 self.fcl = wmsqueue.fcl
                 self.qcl = wmsqueue.qcl
-                self.logDir = self.fcl.get('Pilots', 'baseLogDir')
+                self.logDir = self.fcl.get('Factory', 'baseLogDir')
 
                 threading.Thread.__init__(self) # init the thread
                 self.stopevent = threading.Event()
