@@ -29,27 +29,28 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         def __init__(self, wmsqueue):
                 self.log = logging.getLogger("main.batchsubmitplugin[%s]" %wmsqueue.apfqueue)
                 self.wmsqueue = wmsqueue
+                self.apfqueue = self.wmsqueue.apfqueue
                 self.factory = wmsqueue.factory
                 self.log.info('BatchSubmitPlugin: Object initialized.')
  
-        def submitPilots(self, queue, nbpilots, fcl, qcl):
+        def submitPilots(self, siteid, nbpilots, fcl, qcl):
                 '''
-                queue is the queue
+                siteid is the panda queue
                 nsub is the number of pilots to be submitted 
                 fcl is the FactoryConfigLoader object
                 qcl is the QueueConfigLoader object
                 '''
 
-                self.log.debug('submitPilots: Starting with inputs queue=%s nbpilots=%s fcl=%s qcl=%s' %(queue, nbpilots, fcl, qcl)) 
+                self.log.debug('submitPilots: Starting with inputs siteid=%s nbpilots=%s fcl=%s qcl=%s' %(siteid, nbpilots, fcl, qcl)) 
 
-                self.queue = queue
+                self.siteid = siteid 
                 self.nbpilots = nbpilots
                 self.fcl = fcl
                 self.qcl = qcl
 
                 #now = time.localtime()
                 now = time.gmtime() # gmtime() is like localtime() but in UTC 
-                self.logPath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2]) + self.queue.translate(string.maketrans('/:','__'))
+                self.logPath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2]) + self.apfqueue.translate(string.maketrans('/:','__'))
                 self.logDir = self.fcl.get('Factory', 'baseLogDir') + self.logPath
                 self.logUrl = self.fcl.get('Factory', 'baseLogDirUrl') + self.logPath
 
@@ -78,7 +79,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
                 self.JSD.add("# Condor-G glidein pilot for panda")
 
-                self.JSD.add("executable=%s" % self.qcl.get(self.queue, 'executable'))
+                self.JSD.add("executable=%s" % self.qcl.get(self.apfqueue, 'executable'))
+
                 self.JSD.add("transfer_executable = True")
                 self.JSD.add("should_transfer_files = YES")
                 self.JSD.add("when_to_transfer_output = ON_EXIT_OR_EVICT")
@@ -92,29 +94,30 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add("notification=Error")
                 self.JSD.add("notify_user=%s" % self.fcl.get('Factory', 'factoryOwner'))
                 self.JSD.add("universe=grid")
-                self.JSD.add('grid_resource=gt2 %s' % self.qcl.get(self.queue, 'jdl')) 
+                self.JSD.add('grid_resource=gt2 %s' % self.qcl.get(self.apfqueue, 'jdl')) 
 
                 # -- copy to spool --
                 self.JSD.add('copy_to_spool = false')
 
                 # -- globusrsl -- 
                 globusrsl = "globusrsl=(jobtype=single)"
-                if self.qcl.has_option(self.queue,'batchsubmit.condorgt2.localqueue'):
-                        globusrsl += "(queue=%s)" % self.qcl.get(self.queue, 'batchsubmit.condorgt2.localqueue')
+                if self.qcl.has_option(self.apfqueue,'batchsubmit.condorgt2.localqueue'):
+                        globusrsl += "(queue=%s)" % self.qcl.get(self.apfqueue, 'batchsubmit.condorgt2.localqueue')
                 self.JSD.add(globusrsl)
 
                 # -- MATCH_APF_QUEUE --
                 # this token is very important, since it will be used by other plugins
                 # to identify this pilot from others when running condor_q
-                self.JSD.add('+MATCH_APF_QUEUE="%s"' % self.queue)
+                self.JSD.add('+MATCH_APF_QUEUE="%s"' % self.apfqueue)
 
                 # -- proxy path --
-                x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.queue,'proxy'))
+                x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqueue,'proxy'))
                 self.JSD.add("x509userproxy=%s" % x509userproxy) 
                
                 # -- stuffs -- 
                 self.JSD.add('periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)')
                 self.JSD.add('periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)')
+                self.JSD.add('+Nonessential = True')
 
                 # -- Environment -- 
                 environment = 'environment = "PANDA_JSID=%s' % self.fcl.get('Factory', 'factoryId')
@@ -123,34 +126,34 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 environment += ' APFFID=%s' % self.fcl.get('Factory', 'factoryId')
                 if self.fcl.has_option('Factory', 'monitorURL'):
                         environment += ' APFMON=%s' % self.fcl.get('Factory', 'monitorURL')
-                environment += ' FACTORYQUEUE=%s' % self.queue
+                environment += ' FACTORYQUEUE=%s' % self.apfqueue
                 if self.fcl.has_option('Factory', 'factoryUser'):
                         environment += ' FACTORYUSER=%s' % self.fcl.get('Factory', 'factoryUser')
-                if self.qcl.has_option(self.queue, 'batchsubmit.condorgt2.environ'):
-                        environ = self.qcl.get(self.queue, 'batchsubmit.condorgt2.environ')
+                if self.qcl.has_option(self.apfqueue, 'batchsubmit.condorgt2.environ'):
+                        environ = self.qcl.get(self.apfqueue, 'batchsubmit.condorgt2.environ')
                         if environ != 'None' and environ != '':
                                 environment += " " + environ 
                 environment += '"'
                 self.JSD.add(environment)
 
                 # -- Condor attributes -- 
-                if self.qcl.has_option(self.queue, 'batchsubmit.condorgt2.condor_attributes'):
-                        condor_attributes = self.qcl.get(self.queue, 'batchsubmit.condorgt2.condor_attributes')
+                if self.qcl.has_option(self.apfqueue, 'batchsubmit.condorgt2.condor_attributes'):
+                        condor_attributes = self.qcl.get(self.apfqueue, 'batchsubmit.condorgt2.condor_attributes')
                         for attr in condor_attributes.split(','):
                                 self.JSD.add(attr)
 
                 # -- Arguments to the wrapper -- 
                 arguments = 'arguments = '
-                arguments += ' --pandasite=%s ' %self.queue
-                arguments += ' --pandaqueue=%s ' %self.qcl.get(self.queue, 'nickname')
-                if self.qcl.has_option(self.queue, 'executable.pandagrid'):
-                        arguments += ' --pandagrid=%s ' %self.qcl.get(self.queue, 'executable.pandagrid')
-                arguments += ' --pandaserverurl=%s ' %self.qcl.get(self.queue, 'executable.pandaserverurl') 
-                arguments += ' --pandawrappertarballurl=%s ' %self.qcl.get(self.queue, 'executable.pandawrappertarballurl')
-                if self.qcl.has_option(self.queue, 'executable.pandaloglevel'):
-                        arguments += ' --pandaloglevel=%s' %self.qcl.get(self.queue, 'executable.pandaloglevel')
-                if self.qcl.has_option(self.queue, 'executable.arguments'):
-                        arguments += ' ' + self.qcl.get(self.queue, 'executable.arguments')
+                arguments += ' --pandasite=%s ' %self.siteid
+                arguments += ' --pandaqueue=%s ' %self.qcl.get(self.apfqueue, 'nickname')
+                if self.qcl.has_option(self.apfqueue, 'executable.pandagrid'):
+                        arguments += ' --pandagrid=%s ' %self.qcl.get(self.apfqueue, 'executable.pandagrid')
+                arguments += ' --pandaserverurl=%s ' %self.qcl.get(self.apfqueue, 'executable.pandaserverurl') 
+                arguments += ' --pandawrappertarballurl=%s ' %self.qcl.get(self.apfqueue, 'executable.pandawrappertarballurl')
+                if self.qcl.has_option(self.apfqueue, 'executable.pandaloglevel'):
+                        arguments += ' --pandaloglevel=%s' %self.qcl.get(self.apfqueue, 'executable.pandaloglevel')
+                if self.qcl.has_option(self.apfqueue, 'executable.arguments'):
+                        arguments += ' ' + self.qcl.get(self.apfqueue, 'executable.arguments')
                 self.JSD.add(arguments)
 
                 # -- Number of pilots --
@@ -171,7 +174,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                                 self.log.debug('__writeJSDFile: Created directory %s', self.logDir)
                         except OSError, (errno, errMsg):
                                 self.log.error('__writeJSDFile: Failed to create directory %s (error %d): %s', self.logDir, errno, errMsg)
-                                self.log.error('__writeJSDFile: Cannot submit pilots for %s', self.queue)
+                                self.log.error('__writeJSDFile: Cannot submit pilots for %s', self.siteid)
                                 return
                 self.jdlFile = self.logDir + '/submit.jdl'
                 self.JSD.write(self.jdlFile)
@@ -186,13 +189,13 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
                 self.log.debug('__submit: Starting.')
 
-                self.log.info('Attempt to submit %d pilots for queue %s' %(self.nbpilots, self.queue))
+                self.log.info('Attempt to submit %d pilots for queue %s' %(self.nbpilots, self.siteid))
 
                 (exitStatus, output) = commands.getstatusoutput('condor_submit -verbose ' + self.jdlFile)
                 if exitStatus != 0:
-                        self.log.error('condor_submit command for %s failed (status %d): %s', self.queue, exitStatus, output)
+                        self.log.error('condor_submit command for %s failed (status %d): %s', self.siteid, exitStatus, output)
                 else:
-                        self.log.info('condor_submit command for %s succeeded', self.queue)
+                        self.log.info('condor_submit command for %s succeeded', self.siteid)
                 st, out = exitStatus, output
 
 
