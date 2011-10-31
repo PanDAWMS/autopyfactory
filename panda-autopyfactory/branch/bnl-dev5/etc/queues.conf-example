@@ -147,6 +147,8 @@ executable.pandaserverurl = http://pandaserver.cern.ch:25080/cache/pilot
 #  override, if True then schedconfig does not clobber configuration file values.
 override = True
 
+enabled = True
+
 # ====================================================================== 
 #               Individual queue configurations
 # ====================================================================== 
