@@ -249,9 +249,14 @@ class WMSQueuesManager(object):
 
                 self.log.debug("__add: Starting with input %s" %apfqueue)
 
-                qobject = WMSQueue(apfqueue, self.factory)
-                self.queues[apfqueue] = qobject
-                qobject.start()
+                enabled = self.factory.qcl.get(apfqueue, 'enabled') 
+                if enabled:
+                        qobject = WMSQueue(apfqueue, self.factory)
+                        self.queues[apfqueue] = qobject
+                        qobject.start()
+                        self.log.info('__add: %s enabled.' %apfqueue)
+                else:
+                        self.log.info('__add: %s not enabled.' %apfqueue)
 
                 self.log.debug("__add: Leaving")
                 
