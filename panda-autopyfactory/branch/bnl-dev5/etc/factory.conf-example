@@ -39,6 +39,7 @@
 #               Make sure this matchesthe value in the baseLogDirUrl.
 #
 # batchstatus.condor.sleep = time the BatchStatus Plugin waits between cycles
+#               Value is in seconds.
 #
 # batchstatus.maxtime = maximum time while the info is considered reasonable. 
 #               If info stored is older than that, is considered not valid, 
@@ -55,6 +56,7 @@
 #               with an specific APF instance.
 #
 # factory.sleep = sleep time between cycles in mainLoop in Factory object
+#               Value is in seconds.
 #
 # factoryUser = account under which APF will run
 #
@@ -81,6 +83,7 @@
 #               and some NULL output will be returned.
 #
 # wmsstatus.panda.sleep = time the WMSStatus Plugin waits between cycles
+#               Value is in seconds.
 
 
 # ===========================================================================
