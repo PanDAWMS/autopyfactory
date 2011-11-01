@@ -175,7 +175,7 @@ class APF(object):
                 if self.options.logfile == "stdout":
                     logStream = logging.StreamHandler()
                 elif self.options.logfile == 'syslog':
-                    logStream = logging.SysLogHandler('/dev/log')
+                    logStream = logging.handlers.SysLogHandler('/dev/log')
                 else:
                     lf = self.options.logfile
                     logdir = os.path.dirname(lf)
