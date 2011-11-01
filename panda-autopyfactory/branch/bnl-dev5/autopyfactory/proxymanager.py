@@ -32,17 +32,18 @@ class ProxyManager(threading.Thread):
         self.log = logging.getLogger('main.proxymanager')
         self.pconfig = pconfig
         self.handlers = []
-        
+        self.stopevent = threading.Event()
         for sect in self.pconfig.sections():
             ph = ProxyHandler(pconfig, sect)
             self.handlers.append(ph)
         
        
     def run(self):
-        try:
-            self.mainLoop()    
-        except Exception, e:
-            self.log.error("ProxyManager mainloop threw exception: %s. Cannot continue without re-init..." % str(e))
+        while not self.stopevent.isSet():
+            try:
+                self.mainLoop()    
+            except Exception, e:
+                self.log.error("ProxyManager mainloop threw exception: %s." % str(e))
             
             
     def mainLoop(self):
@@ -53,7 +54,7 @@ class ProxyManager(threading.Thread):
         try:
             while True:
                 #self.log.debug('Checking for interrupt.')
-                time.sleep(1)                  
+                time.sleep(2)                  
         except (KeyboardInterrupt): 
                 self.log.info("Shutdown via Ctrl-C or -INT signal.")
                 self.log.debug("Shutting down all threads...")

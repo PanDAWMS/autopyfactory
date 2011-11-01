@@ -96,11 +96,10 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 '''
 
                 self.log.debug('run: Starting')
-                while True:
+                while not self.stopevent.isSet():
                     try:
-                        while not self.stopevent.isSet():
-                                self.__update()
-                                self.__sleep()
+                        self.__update()
+                        self.__sleep()
                     except Exception, e:
                         self.log.error("Main loop caught exception: %s " % str(e))
                 self.log.debug('run: Leaving')
