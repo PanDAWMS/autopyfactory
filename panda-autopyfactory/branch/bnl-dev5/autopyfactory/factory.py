@@ -652,6 +652,9 @@ class Status(object):
         -----------------------------------------------------------------------
         Ancillary class to collect all relevant status variables in a single object.
         -----------------------------------------------------------------------
+        Public Interface:
+                valid()
+        -----------------------------------------------------------------------
         '''
         def __init__(self):
 
@@ -704,6 +707,80 @@ class Status(object):
         #    return s
 
 
+class WMSStatus(object):
+        '''
+        -----------------------------------------------------------------------
+        Class to collect info from WMS Status Plugin 
+        -----------------------------------------------------------------------
+        Public Interface:
+                valid()
+        -----------------------------------------------------------------------
+        '''
+        def __init__(self):
+
+                self.log = logging.getLogger('main.wmsstatus')
+                self.log.info('Status: Initializing object...')
+
+                self.cloud = {}
+                self.site = {}
+                self.jobs = {}
+
+                self.log.info('Status: Object Initialized')
+
+        def valid(self):
+                '''
+                checks if all attributes have a valid value, or
+                some of them is None and therefore the collected info 
+                is not reliable
+                '''
+                self.log.info('valid: Starting.')
+
+                out = True  # default
+                if self.cloud == None:
+                        out = False 
+                if self.site == None:
+                        out = False 
+                if self.jobs == None:
+                        out = False 
+
+                self.log.info('valid: Leaving with output %s.' %out)
+                return out
+
+
+class BatchStatus(object):
+        '''
+        -----------------------------------------------------------------------
+        Class to collect info from Batch Status Plugin 
+        -----------------------------------------------------------------------
+        Public Interface:
+                valid()
+        -----------------------------------------------------------------------
+        '''
+        def __init__(self):
+
+                self.log = logging.getLogger('main.batchstatus')
+                self.log.info('Status: Initializing object...')
+
+                self.batch = {}
+
+                self.log.info('Status: Object Initialized')
+
+        def valid(self):
+                '''
+                checks if all attributes have a valid value, or
+                some of them is None and therefore the collected info 
+                is not reliable
+                '''
+                self.log.info('valid: Starting.')
+
+                out = True  # default
+                if self.batch == None:
+                        out = False 
+
+                self.log.info('valid: Leaving with output %s.' %out)
+                return out
+
+# --------------------------------------------------------------------------- 
 
 class Singleton(type):
         '''
