@@ -101,8 +101,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
                 # -- globusrsl -- 
                 globusrsl = "globusrsl=(jobtype=single)"
-                if self.qcl.has_option(self.apfqueue,'batchsubmit.condorgt2.localqueue'):
-                        globusrsl += "(queue=%s)" % self.qcl.get(self.apfqueue, 'batchsubmit.condorgt2.localqueue')
+                if self.qcl.has_option(self.apfqueue,'batchsubmit.condorgt2.queue'):
+                        globusrsl += "(queue=%s)" % self.qcl.get(self.apfqueue, 'batchsubmit.condorgt2.queue')
                 self.JSD.add(globusrsl)
 
                 # -- MATCH_APF_QUEUE --
