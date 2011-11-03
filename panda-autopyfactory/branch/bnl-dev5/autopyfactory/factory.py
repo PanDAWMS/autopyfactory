@@ -821,7 +821,6 @@ class Singleton(type):
                 return cls.__instance
 
 
-
 class SchedInterface(object):
         '''
         -----------------------------------------------------------------------

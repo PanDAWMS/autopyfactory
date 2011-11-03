@@ -301,7 +301,8 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
 
 def test():
-    bsp = BatchStatusPlugin()
+    
+    bsp = BatchStatusPlugin(wmsqueue=None)
     bsp._update()
     i = bsp.getInfo()
     print(i)
