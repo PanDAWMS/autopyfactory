@@ -13,15 +13,17 @@
 # Some of these values may be in the process of deprecation, especially submission parameters 
 # which are now handled by the submit plugins. 
 
-# ================================================== 
+# =========================================================================== 
 #               VARIABLES
-# ================================================== 
+# =========================================================================== 
 
 # cloud
 # jdl
 # nickname
 # siteid
 # proxy
+# enabled
+# override
 #
 # cleanlogs.maxdays
 #
@@ -59,44 +61,181 @@
 # executable.pandaserverurl
 # executable.pandawrappertarballurl
 
-# ================================================== 
+# ---------------------------------------------------------------------------
+# Description:
+# ---------------------------------------------------------------------------
+
+# cloud = is the cloud this queue is in. You should set this to suppress pilot 
+#               submission when the cloud goes offline
+#               N.B. Panda clouds are UPPER CASE, e.g., UK
+#
+# jdl = name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor)
+#
+# nickname = PanDA queue name   
+#
+# siteid = PanDA siteid name
+#
+# proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
+#               (See etc/proxy.conf)
+#               None if no automatic proxy renewal is desired.
+#
+# enabled = determines if each queue section must be used by AutoPyFactory
+#               or not. Allows to disable a queue without commenting out all the values. 
+#               Valid values are True|False.
+#
+# override = determines if values from this config file have precedence over
+#               the same values comming from different sources of information.
+#               If True then schedconfig does not clobber configuration file values.
+#               Valid values are True|False.
+#
+# cleanlogs.maxdays = maximum number of days the condor logs
+#               will be kept
+#
+# schedplugin = specific Scheduler Plugin implementing
+#               the algorithm deciding how many new pilots
+#               to submit next cycle.
+#
+# sched.activated.default = default number of pilots to be submitted
+#               when the context information 
+#               does not exist is not reliable 
+#               To be used in Activated Scheduler Plugin.
+#
+# sched.activated.max_jobs_torun = maximum number of jobs running
+#               simoultaneously. 
+#               To be used in Activated Scheduler Plugin.
+#
+# sched.activated.max_pilots_per_cycle = maximum number of pilots
+#               to be submitted per cycle.
+#               To be used in Activated Scheduler Plugin.
+#
+# sched.activated.min_pilots_per_cycle = minimum number of pilots
+#               to be submitted per cycle.
+#               To be used in Activated Scheduler Plugin.
+#
+# sched.activated.max_pilots_pending = maximum number of pilots
+#               to be idle on queue waiting to start execution.
+#               To be used in Activated Scheduler Plugin.
+#
+# sched.fixed.pilotspercycle = fixed number of pilots to be submitted
+#               each cycle, when using the Fixed Scheduler Plugin.
+#
+# sched.simple.default = default number of pilots to be submitted
+#               when the context information does not exist
+#               or is not reliable.
+#               To be used in Simple Scheduler Plugin.
+#
+# sched.simple.maxpendingpilots = maximum number of pilots
+#               to be idle on queue waiting to start execution.
+#               To be used in Simple Scheduler Plugin.
+#
+# sched.simple.maxpilotspercycle = maximum number of pilots
+#               to be submitted per cycle.
+#               To be used in Simple Scheduler Plugin.
+#
+# sched.simplenqueue.default = default number of pilots to be submitted
+#               when the context information does not exist 
+#               or is not reliable.
+#               To be used in SimpleNQueue Scheduler Plugin.
+#
+# sched.simplenqueue.maxpilotspercycle = maximum number of pilots
+#               to be submitted each cycle.
+#               To be used in SimpleNQueue Scheduler Plugin.
+#
+# sched.simplenqueue.nqueue = desired number of pilots
+#               in idle status waiting in queue to start execution.
+#               To be used in SimpleNQueue Scheduler Plugin.
+#
+# sched.trivial.default = default number of pilots
+#               to be submitted when the context information
+#               does not exist or is not reliable.
+#               To be used in Trivial Scheduler Plugin.
+#
+# wmsstatusplugin = WMS Status Plugin.
+#
+# wmsqueue.sleep = sleep time between cycles in WMSQueue object.
+#               Value is in seconds.   
+#
+# batchstatusplugin = Batch Status Plugin.
+#
+# batchsubmitplugin = Batch Submit Plugin.
+#
+# batchsubmit.condorgt2.condor_attributes = list of condor attributes, 
+#               splited by comma, 
+#               to be included in the condor submit file *verbatim*
+#               e.g. +Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas"
+#               Can be used to include any line in the Condor-G file
+#               that is not otherwise added programmatically by AutoPyFactory.
+#               Note the following directives are added by default:
+#
+#                       transfer_executable = True
+#                       should_transfer_files = YES
+#                       when_to_transfer_output = ON_EXIT_OR_EVICT
+#                       stream_output=False
+#                       stream_error=False
+#                       notification=Error
+#                       copy_to_spool = false
+#                       periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)
+#                       periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
+#                       +Nonessential = True
+#
+#               To be used in CondorGT2 Batch Submit Plugin.
+#
+# batchsubmit.condorgt2.environ = list of environment variables, 
+#               splitted by white spaces, 
+#               to be included in the condor attribute environment *verbatim*
+#               To be used by CondorGT2 Batch Submit Plugin.
+#
+# batchsubmit.condorgt2.localqueue = local batch queue 
+#               to be included in the globusrsl directive.
+#               To be used by CondorGT2 Batch Submit Plugin.
+#
+# batchsubmit.condorlocal.condor_attributes = list of condor attributes, 
+#               splited by comma, 
+#               to be included in the condor submit file *verbatim*
+#               e.g. +Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas"
+#               Can be used to include any line in the Condor-G file
+#               that is not otherwise added programmatically by AutoPyFactory.
+#               Note the following directives are added by default:
+#
+#                       transfer_executable = True
+#                       should_transfer_files = YES
+#                       when_to_transfer_output = ON_EXIT_OR_EVICT
+#                       stream_output=False
+#                       stream_error=False
+#                       notification=Error
+#                       periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
+#
+#               To be used in CondorLocal Batch Submit Plugin.
+#
+# batchsubmit.condorlocal.environ = list of environment variables, 
+#               splitted by white spaces, 
+#               to be included in the condor attribute environment *verbatim*
+#               To be used by CondorLocal Batch Submit Plugin.
+#
+# executable = the script which will be run by condor. 
+#
+# executable.arguments = input options to be passed verbatim to the executable script.
+#
+# executable.pandagrid = type of Grid Midleware (e.g. OSG).
+#               To be used by the 'new panda wrapper' distributed with AutoPyFactory.
+#
+# executable.pandaloglevel = log level.
+#               To be used by the 'new panda wrapper' distributed with AutoPyFactory.
+#
+# executable.pandaserverurl =  base URL with the VO-specific pilot tarball
+#               To be used by the 'new panda wrapper' distributed with AutoPyFactory.
+#
+# executable.pandawrappertarballurl =  URL with the wrapper tar ball
+#               To be used by the 'new panda wrapper' distributed with AutoPyFactory.
+#
+# =========================================================================== 
 
 
 [DEFAULT]
-# Status can be test, offline, or online 
-#status = test
 
-#nqueue = 10
-#depthboost = 2
-#idlepilotsupression = 1
-
-#   wallClock and *memory are in minutes and MB - 'None' means nothing is added to JDL
-#   Any setting for memory is now used as a flag to the pilot wrapper which will set this 
-#   as a ulimit before starting the pilot.
-# wallClock = None
-# memory = None
-# jobRecovery = False
-
-# pilotlimit sets a hard limit on the total number of pilots at a site, active + queued
-# pilotlimit = None
-
-#  *transferringlimit sets a limit on the number of jobs in transferring status allowed at a site -
-#    when this limit is reached no pilots will be submitted to allow backlogs to clear
-#transferringlimit = 3000
-#user = None
-
-#  *cloud is the cloud this queue is in. You should set this to suppress pilot submission when the cloud
-#   goes offline
-#   N.B. Panda clouds are UPPER CASE, e.g., UK
 cloud = US
 country = US
 group = None
-
-## Set the server and port to contact for jobs
-## These can be overridden on a per-queue basis
-## But in general do not touch these
-server = https://pandaserver.cern.ch
-port = 25443
 
 # plugins
 batchstatusplugin = Condor
@@ -104,50 +243,21 @@ wmsstatusplugin = Panda
 batchsubmitplugin = CondorGT2
 schedplugin = Trivial
 
-# number of pilots to be submitted when the info
-# collected from the batch system and/or the WMS system
-# is not reliable 
 sched.trivial.default = 0
 sched.simple.default = 0
 sched.simplenqueue.default = 0
 sched.activated.default = 0
 
-# New proxy configuration. Uses internal proxymanager.
-# Entry value should be the name of the proxy handler for the proxy you
-# wish to use. See etc/proxy.conf
 # proxy = atlas-usatlas
 proxy = None
 
-# MOVED FROM FACTORY.CONF
-# sleep time between cycles in WMSQueue object
 wmsqueue.sleep = 360
 
-# MOVED FROM FACTORY.CONF
-# Executable is the script which will be run by condor. This can contain
-# the uuencoded pilot tarball (rebuild with mkPilotWraper.py), but it is now
-# recommended only to send the script and let it download the latest
-# pilot code from CERN (which it will do automatically).
-#
-# If you are doing pilot development you can set the PILOT_HTTP_SOURCES variable
-# to get your pilot code downloaded on any queue.
-#
-# *** N.B. there is a caching bug in condor_g which means that changes to this
-#  script are not picked up by condor. Best to make a soft link from a 
-#  fake name back to the original when you modify this script, e.g,
-#  "emacs runpilot3-wrapper.sh"
-#  "ln -s runpilot3-wrapper.sh runpilot3-wrapper-1.sh"
-#  "executable = runpilot3-wrapper-1.sh"
 executable = /usr/libexec/wrapper.sh
-
-# URL with the wrapper tar ball
 executable.pandawrappertarballurl = http://dev.racf.bnl.gov/dist/wrapper/
-# base URL with the VO-specific pilot tarball
 executable.pandaserverurl = http://pandaserver.cern.ch:25080/cache/pilot
 
-#  override, if True then schedconfig does not clobber configuration file values.
 override = True
-
-# Allows you to disable a queue without commenting out all the values. 
 enabled = True
 
 # ====================================================================== 
@@ -158,8 +268,6 @@ enabled = True
 siteid = BNL_ITB_Test1
 nickname = BNL_ITB_Test1-condor
 jdl = gridtest01.racf.bnl.gov/jobmanager-condor
-status = test
-sftemplate=/path/to/file
 
 executable.pandagrid = OSG
 executable.arguments = -j false -k 600 -u panda 
@@ -168,10 +276,7 @@ schedplugin = Trivial
 
 batchsubmitplugin = CondorLocal
 batchsubmit.condorlocal.localqueue = OSG_ITB_Jose
-# list of condor attributes, splited by comma, to be included in the condor submit file *verbatim*
 batchsubmit.condorlocal.condor_attributes = +RACF_Group = "osgitb",+Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas"
-# list of environment variables, splitted by white spaces, to be included in the
-# condor attribute environment *verbatim*
 batchsubmit.condorlocal.environ = OSG_GRID=/afs/usatlas/osg/wn-client/@sys/itb
 
 
@@ -194,6 +299,4 @@ sched.activated.max_pilots_per_cycle = 10
 sched.activated.max_jobs_torun = 60
 
 batchsubmit.condorgt2.localqueue = short
-
-sleep = 600 ; #10 minutes
 
