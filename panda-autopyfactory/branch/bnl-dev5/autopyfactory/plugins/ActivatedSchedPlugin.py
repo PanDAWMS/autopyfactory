@@ -20,24 +20,23 @@ class SchedPlugin(SchedInterface):
                 self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
                 self.log.info("SchedPlugin: Object initialized.")
 
-        def calcSubmitNum(self, status):
+        def calcSubmitNum(self):
                 """ 
                 By default, returns nb of Activated Jobs - nb of Pending Pilots
 
-                But, if MAX_JOBS_RUNNING is defined, 
+                But, if max_jobs_running is defined, 
                 it can impose a limit on the number of new pilots,
                 to prevent passing that limit on max nb of running jobs.
 
-                If there is a MAX_PILOTS_PER_CYCLE defined, 
+                If there is a max_pilots_per_cycle defined, 
                 it can impose a limit too.
 
-                If there is a MIN_PILOTS_PER_CYCLE defined, 
+                If there is a min_pilots_per_cycle defined, 
                 and the final decission was a lower number, 
-                then this MIN_PILOTS_PER_CYCLE is the number of pilots 
+                then this min_pilots_per_cycle is the number of pilots 
                 to be submitted.
                 """
-
-                self.log.debug('calcSubmitNum: Starting with input %s' %status)
+                self.log.debug('calcSubmitNum: Starting with input ')
 
                 # giving an initial value to some variables
                 # to prevent the logging from crashing
@@ -45,15 +44,20 @@ class SchedPlugin(SchedInterface):
                 pending_pilots = 0
                 running_pilots = 0
 
-                if not status:
+                wmsinfo = self.wmsqueue.wmsstatus.getInfo()
+                batchinfo = self.wmsqueue.batchstatus.getInfo()
+
+                if not (wmsinfo and batchinfo):
                         out = 0
-                elif not status.valid():
+                elif not wmsinfo.valid() and batchinfo.valid():
                         out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.default')
-                        self.log.info('calcSubmitNum: status is not valid, returning default = %s' %out)
+                        self.log.info('calcSubmitNum: a status is not valid, returning default = %s' %out)
                 else:
-                        nbjobs = status.jobs.get('activated', 0)
+                        nbjobs = wmsinfo.jobs[self.wmsqueue.apfqueue].activated
+
+                        
                         # '1' means pilots in Idle status
-                        # '2' means pilots in Running status
+                        # '2' means pilots in Running status                        
                         pending_pilots = status.batch.get('1', 0)
                         running_pilots = status.batch.get('2', 0)
                         nbpilots = pending_pilots + running_pilots

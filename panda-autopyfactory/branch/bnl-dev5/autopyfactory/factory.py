@@ -344,6 +344,7 @@ class WMSQueue(threading.Thread):
 
                 self.stopevent = threading.Event()
 
+                # apfqueue is the APF queue name, i.e. the section heading in queues.conf
                 self.apfqueue = apfqueue
                 #self.siteid = siteid          # Queue section designator from config
                 self.factory = factory
@@ -362,9 +363,6 @@ class WMSQueue(threading.Thread):
                 self.sleep = int(self.qcl.get(apfqueue, 'wmsqueue.sleep'))
                 self.cyclesrun = 0
                 
-                # object Status to handle the whole system status
-                # self.status = Status()
-
                 # Handle sched plugin
                 self.scheduler = self.__getplugin('sched', self)
 

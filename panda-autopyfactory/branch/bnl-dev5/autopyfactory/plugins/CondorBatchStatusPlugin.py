@@ -225,40 +225,69 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             '''
             ancillary method to parse the XML output of the condor_q command
                    - output is the output of the condor_q command, in XML format
-                   - key is the pattern that counts, i.e. 'jobStatus'
-                   - queue is the quename why want to analyze this time
             '''
 
             self.log.debug('__parseoutput: Starting with inputs: output=%s' %(output))
-
             output_dic = {}
+            
+            '''
+            This is the format we are looking for:
+            
+            { 'UC_ITB' : { 'jobStatus' : { '1': '17',
+                                           '2' : '24',
+                                           '3' : '17',
+                                         },
+                           'globusStatus' : { '1':'13',
+                                              '2' : '26',
+                                              }
+                          },
+            { 'BNL_TEST_1' :{ 'jobStatus' : { '1': '7',
+                                           '2' : '4',
+                                           '3' : '6',
+                                         },
+                           'globusStatus' : { '1':'12',
+                                              '2' : '46',
+                                              }
+                          },             
+            '''
 
             if not output:
                 # FIXME: temporary solution
                 self.log.debug('_parseoutput: Leaving and returning %s' %output_dic)
-                return output_dic
+                return None
 
             xmldoc = xml.dom.minidom.parseString(output).documentElement
 
-            for c in self.__listnodesfromxml(xmldoc, 'c') :
+            for c in self._listnodesfromxml(xmldoc, 'c') :
                 node_dic = self.__node2dic(c)
+                '''
+                    {'globusStatus':'32', 
+                     'MATCH_APF_QUEUE':'UC_ITB', 
+                     'jobStatus':'1'
+                    } 
+                '''
+                apfqueue = node_dic['MATCH_APF_QUEUE']
+                for k in node_dic.keys():
+                    if not k == 'MATCH_APF_QUEUE':
+                        output_dic['apfqueue']  
 
-                if not node_dic.has_key('MATCH_APF_QUEUE'.lower()):
-                    continue
-                if not node_dic.has_key(key.lower()):
-                    continue
+
+                #if not node_dic.has_key('MATCH_APF_QUEUE'.lower()):
+                #    continue
+                #if not node_dic.has_key(key.lower()):
+                #    continue
                 # if the line had everything, we keep searching
-                if node_dic['MATCH_APF_QUEUE'.lower()] == queue:
-                    code = node_dic[key.lower()]
-                    if code not in output_dic.keys():
-                        output_dic[code] = 1
-                    else:
-                        output_dic[code] += 1
+                #if node_dic['MATCH_APF_QUEUE'.lower()] == queue:
+                #    code = node_dic[key.lower()]
+                #    if code not in output_dic.keys():
+                #        output_dic[code] = 1
+                #    else:
+                #        output_dic[code] += 1
             self.log.debug('_parseoutput: Leaving and returning %s' %(output_dic))
             return output_dic
 
 
-        def __listnodesfromxml(self, xmldoc, tag):
+        def _listnodesfromxml(self, xmldoc, tag):
             return xmldoc.getElementsByTagName(tag)
 
         def __node2dic(self, node):
@@ -297,4 +326,14 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.log.debug('Stopping thread....')
                 threading.Thread.join(self, timeout)
                 self.log.debug('join: Leaving')
+
+
+def test():
+    blah
+    
+    
+if __name__=='__main__':
+    test()
+
+
 
