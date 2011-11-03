@@ -31,6 +31,7 @@
 # ---------------------------------------------------------------------------
 
 # baseLogDir =  where outputs from pilots are stored
+#               NOTE: No trailing '/'!!!
 #
 # baseLogDirUrl = where outputs from pilots are available via http 
 #               NOTE: No trailing '/'!!!
