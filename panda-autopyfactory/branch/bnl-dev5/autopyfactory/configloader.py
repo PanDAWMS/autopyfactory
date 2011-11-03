@@ -206,7 +206,7 @@ class FactoryConfigLoader(ConfigLoader):
                 '''
                 Check we have a sane configuration
                 '''
-                mustHave = {'Factory' : ('factoryOwner', 'factoryId'),
+                mustHave = {'Factory' : ('factoryAdminEmail', 'factoryId'),
                             'Factory' : ('baseLogDir', 'baseLogDirUrl',)
                                         }
                 for section in mustHave.keys():
@@ -256,7 +256,7 @@ class QueueConfigLoader(ConfigLoader):
                 Check we have a sane configuration
                 '''
                 mustHave = {
-                                        #'Factory' : ('factoryOwner', 'factoryId'),
+                                        #'Factory' : ('factoryAdminEmail', 'factoryId'),
                                         #'Pilots' : ('executable', 'baseLogDir', 'baseLogDirUrl',),
                                         #'QueueDefaults' : () 
                                         }
