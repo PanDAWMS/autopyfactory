@@ -13,7 +13,7 @@
 # batchstatus.maxtime
 # cycles
 # factoryId
-# factoryOwner
+# factoryAdminEmail
 # factory.sleep
 # factoryUser
 # monitorURL
@@ -53,7 +53,7 @@
 #               Make factoryId something descriptive and unique for your factory,
 #               for example <site>-<host>-<admin> (e.g. BNL-gridui11-jhover)
 #
-# factoryOwner = Email of the local admin to contact in case of a problem
+# factoryAdminEmail = Email of the local admin to contact in case of a problem
 #               with an specific APF instance.
 #
 # factory.sleep = sleep time between cycles in mainLoop in Factory object
@@ -92,7 +92,7 @@
 
 [Factory]
 
-factoryOwner = neo@matrix.net
+factoryAdminEmail = neo@matrix.net
 factoryId = BNL-gridui11-jhover
 factoryUser = apf
 versionTag = 2.0.1
