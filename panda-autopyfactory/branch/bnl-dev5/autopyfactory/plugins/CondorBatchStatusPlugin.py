@@ -298,21 +298,3 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 threading.Thread.join(self, timeout)
                 self.log.debug('join: Leaving')
 
-
-
-def test():
-    
-    class TestQueue:
-        def __init__(self):
-            self.apfqueue = "APFQUEUE"
-    
-    t = TestQueue()
-    bsp = BatchStatusPlugin(wmsqueue=t)
-    bsp._update()
-    i = bsp.getInfo()
-    print(i)
-    
-    
-if __name__=='__main__':
-    test()
-
