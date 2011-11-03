@@ -302,7 +302,12 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
 def test():
     
-    bsp = BatchStatusPlugin(wmsqueue=None)
+    class TestQueue:
+        def __init__(self):
+            self.apfqueue = "APFQUEUE"
+    
+    t = TestQueue()
+    bsp = BatchStatusPlugin(wmsqueue=t)
     bsp._update()
     i = bsp.getInfo()
     print(i)
