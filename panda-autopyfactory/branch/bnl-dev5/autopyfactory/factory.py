@@ -363,7 +363,7 @@ class WMSQueue(threading.Thread):
                 self.cyclesrun = 0
                 
                 # object Status to handle the whole system status
-                self.status = Status()
+                # self.status = Status()
 
                 # Handle sched plugin
                 self.scheduler = self.__getplugin('sched', self)
@@ -457,19 +457,21 @@ class WMSQueue(threading.Thread):
 
                 while not self.stopevent.isSet():
                         try:
-                            self.__updatestatus()
-                            nsub = self.__calculatenumberofpilots()
-                            self.__submitpilots(nsub)
-                            self.__monitor_shout()
-                            self.__exitloop()
-                            self.__sleep()
-                            self.__reporttime()
+                            #self.__updatestatus()
+                            nsub = self.scheduler.calcSubmitNum(self.status)
+                            #nsub = self.__calculatenumberofpilots()
+                            self._submitpilots(nsub)
+                            self._monitor_shout()
+                            self._exitloop()
+                            self._reporttime()
+                            time.sleep(self.sleep)
+                        
                         except Exception, e:
                             self.log.error("Caught exception: %s" % str(e))
 
                 self.log.debug("run: Leaving")
 
-        def __updatestatus(self):
+        def _updatestatus(self):
                 '''
                 update batch info and panda info
                 '''
@@ -494,17 +496,17 @@ class WMSQueue(threading.Thread):
 
                 self.log.debug("__updatestatus: Leaving")
 
-        def __calculatenumberofpilots(self):
-                '''
-                calculate number to submit
-                '''
+        #def __calculatenumberofpilots(self):
+        #        '''
+        #        calculate number to submit
+        #        '''
+        #
+        #        self.log.debug("__calculatenumberofpilots: Starting")
+        #        nsub = self.scheduler.calcSubmitNum(self.status)
+        #        self.log.debug("__calculatenumberofpilots: Leaving with output %s" %nsub)
+        #        return nsub
 
-                self.log.debug("__calculatenumberofpilots: Starting")
-                nsub = self.scheduler.calcSubmitNum(self.status)
-                self.log.debug("__calculatenumberofpilots: Leaving with output %s" %nsub)
-                return nsub
-
-        def __submitpilots(self, nsub):
+        def _submitpilots(self, nsub):
                 '''
                 submit using this number
                 '''
@@ -527,7 +529,7 @@ class WMSQueue(threading.Thread):
         #       Monitor ancillas 
         # ------------------------------------------------------------ 
 
-        def __monitor_shout(self):
+        def _monitor_shout(self):
                 '''
                 call monitor.shout() method
                 '''
@@ -539,7 +541,7 @@ class WMSQueue(threading.Thread):
                         self.log.debug('__monitor_shout: no monitor instantiated')
                 self.log.debug("__monitor_shout: Leaving.")
 
-        def __monitor_note(self, msg):
+        def _monitor_note(self, msg):
                 '''
                 collects messages for the Monitor
                 '''
@@ -554,7 +556,7 @@ class WMSQueue(threading.Thread):
                         
                 self.log.debug('__monitor__note: Leaving.')
 
-        def __monitor_notify(self, output):
+        def _monitor_notify(self, output):
                 '''
                 sends all collected messages to the Monitor server
                 '''
@@ -571,7 +573,7 @@ class WMSQueue(threading.Thread):
                 self.log.debug('__monitor_notify: Leaving.')
 
 
-        def __exitloop(self):
+        def _exitloop(self):
                 '''
                 Exit loop if desired number of cycles is reached...  
                 '''
@@ -586,19 +588,18 @@ class WMSQueue(threading.Thread):
 
                 self.log.debug("__exitloop: Leaving")
 
-        def __sleep(self):
-                '''
-                sleep interval
-                '''
+        #def _sleep(self):
+        #        '''
+        #        sleep interval
+        #        '''
+        #        self.log.debug("__sleep: Starting")
 
-                self.log.debug("__sleep: Starting")
+        #        self.log.debug("__sleep. Sleeping for %d seconds..." %self.sleep)
+        #        time.sleep(self.sleep)
 
-                self.log.debug("__sleep. Sleeping for %d seconds..." %self.sleep)
-                time.sleep(self.sleep)
+        #        self.log.debug("__sleep: Leaving")
 
-                self.log.debug("__sleep: Leaving")
-
-        def __reporttime(self):
+        def _reporttime(self):
                 '''
                 report the time passed since the object was created
                 '''
@@ -707,7 +708,7 @@ class Status(object):
         #    return s
 
 
-class WMSStatus(object):
+class WMSStatusInfo(object):
         '''
         -----------------------------------------------------------------------
         Class to collect info from WMS Status Plugin 
@@ -747,7 +748,7 @@ class WMSStatus(object):
                 return out
 
 
-class BatchStatus(object):
+class BatchStatusInfo(object):
         '''
         -----------------------------------------------------------------------
         Class to collect info from Batch Status Plugin 
@@ -757,13 +758,36 @@ class BatchStatus(object):
         -----------------------------------------------------------------------
         '''
         def __init__(self):
+            '''
+            Batch status is accessed via APF queuename, e.g.
+                numrunning = info.queue['APF-Queuename'].running
+        
+            Primary attributes are:
+                pending            job is queued (somewhere) but not running yet.
+                running            job is currently active (run + stagein + stageout)
+                error              job has been reported to be in an error state
+                suspended          job is active, but held or suspended
+                done               job has completed
+                unknown            unknown or transient intermediate state
+                
+            Secondary attributes are:
+                transferring       stagein + stageout
+                stagein
+                stageout           
+                failed             (done - success)
+                success            (done - failed)
+                ?
+             
+            
+            '''
+            
+            self.log = logging.getLogger('main.batchstatus')
+            self.log.info('Status: Initializing object...')
+            self.queue = {}
+            #self.lasttime = int(time.time())
+            self.createdtime = None
+            self.log.info('Status: Object Initialized')
 
-                self.log = logging.getLogger('main.batchstatus')
-                self.log.info('Status: Initializing object...')
-
-                self.batch = {}
-
-                self.log.info('Status: Object Initialized')
 
         def valid(self):
                 '''

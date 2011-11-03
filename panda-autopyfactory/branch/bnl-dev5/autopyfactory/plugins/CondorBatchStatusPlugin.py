@@ -3,14 +3,16 @@
 # AutoPyfactory batch status plugin for Condor
 #
 
-import commands
+import subprocess
 import logging
 import time
 import threading
 import xml.dom.minidom
 
 from autopyfactory.factory import BatchStatusInterface
+from autopyfactory.factory import BatchStatusInfo
 from autopyfactory.factory import Singleton 
+
 
 __author__ = "John Hover, Jose Caballero"
 __copyright__ = "2011 John Hover, Jose Caballero"
@@ -36,43 +38,55 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         __metaclass__ = Singleton 
         
         def __init__(self, wmsqueue):
-
+                threading.Thread.__init__(self) # init the thread
+                
                 self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %wmsqueue.apfqueue)
                 self.log.info('BatchStatusPlugin: Initializing object...')
+                self.stopevent = threading.Event()
+
+                # to avoid the thread to be started more than once
+                self.__started = False
 
                 self.wmsqueue = wmsqueue
                 self.fconfig = wmsqueue.fcl.config          
                 self.apfqueue = wmsqueue.apfqueue
                 self.condoruser = wmsqueue.fcl.get('Factory', 'factoryUser')
                 self.factoryid = wmsqueue.fcl.get('Factory', 'factoryId') 
+                self.sleeptime = self.wmsqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
+                self.currentinfo = None              
+                #self.error = None       # error
 
-                self.info = InfoHandler()
-
-                threading.Thread.__init__(self) # init the thread
-                self.stopevent = threading.Event()
-                # to avoid the thread to be started more than once
-                self.__started = False
+                # variable to record when was last time info was updated
+                # the info is recorded as seconds since epoch
+                self.lasttime = 0
 
                 self.log.info('BatchStatusPlugin: Object initialized.')
 
-        def getInfo(self, queue, maxtime=0):
+        def getInfo(self, maxtime=0):
                 '''
-                Returns a diccionary with the result of the analysis 
+                Returns a BatchStatusInfo object populated by the analysis 
                 over the output of a condor_q command
 
-                Optionally, and maxtime parameter can be passed.
+                Optionally, a maxtime parameter can be passed.
                 In that case, if the info recorded is older than that maxtime,
-                an empty dictionary is returned, 
-                as we understand that info is too old and most probably
-                not realiable anymore.
+                None is returned, as we understand that info is too old and 
+                not reliable anymore.
                 '''
                
                 self.log.debug('getInfo[%s]: Starting with maxtime=%s' %(queue, maxtime))
-
-                out = self.info.get(queue, maxtime)
-
-                self.log.debug('getInfo[%s]: Leaving with output %s' %(queue, out))
-                return out 
+                if not self.currentinfo:
+                        self.log.debug('get: Info not initialized yet.')
+                        self.log.debug('get: Leaving and returning an empty dictionary.')
+                        return None
+                if maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
+                        self.log.debug('get: Info too old.')
+                        self.log.debug('get: Leaving and returning an empty dictionary.')
+                        return None
+                else:
+                        
+                        #out = self.__analyzeoutput(self.info, 'jobStatus', queue)
+                        self.log.debug('get: Leaving and returning %s' %out)
+                        return self.currentinfo
 
 
         def start(self):
@@ -98,16 +112,16 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.log.debug('run: Starting')
                 while not self.stopevent.isSet():
                     try:
-                        self.__update()
-                        self.__sleep()
+                        self._update()
+                        self.log.debug("Sleeping for %d seconds..." % self.sleeptime)
+                        time.sleep(self.sleeptime)
                     except Exception, e:
                         self.log.error("Main loop caught exception: %s " % str(e))
                 self.log.debug('run: Leaving')
 
-        def __update(self):
+        def _update(self):
                 '''        
-                Query Condor for job status, 
-                validate ?
+                Query Condor for job status, validate ?, and populate BatchStatusInfo object.
                 Condor-G query template example:
                 
                 condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
@@ -149,46 +163,129 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 '''
 
                 self.log.debug('__update: Starting.')
-
-                querycmd = "condor_q"
-                #querycmd += " -constr '(owner==\"%s\") && stringListMember(\"PANDA_JSID=%s\", Environment, \" \")'" %(self.factoryid, self.condoruser)
-
-                # removing temporarily (?) globusStatus from condor_q
-                # it makes no sense with condor-C
-                # until we figure out if we need two plugins or not
-                # I just remove it
-                #
-                #querycmd += " -format ' globusStatus=%d' GlobusStatus"
-
-                # removing temporarily (?) Environment from the query 
-                #querycmd += " -format ' MATCH_APF_QUEUE=%s' MATCH_APF_QUEUE"
-                #querycmd += " -format ' %s\n' Environment"
-                querycmd += " -format ' MATCH_APF_QUEUE=%s' MATCH_APF_QUEUE"
-
-                # I put jobStatus at the end, because all jobs have that variable
-                # defined, so there is no risk is undefined and therefore the 
-                # \n is never called
-                querycmd += " -format ' jobStatus=%d\n' jobStatus"
-                querycmd += " -xml"
-
-                self.log.debug('__update: Querying cmd = %s' %querycmd.replace('\n','\\n'))
-
-                before = time.time()
-                self.err, self.output = commands.getstatusoutput(querycmd)
-                delta = time.time() - before
-                self.log.debug('__update: it took %s seconds to perform the query' %delta)
-
-                self.info.update(self.output, self.err)
+                
+                try:
+                    strout = self._querycondor()
+                    outdic = self._parseoutput(strout)
+                    newinfo = BatchStatusInfo()
+                    newinfo.queues = outdic
+                    self.currentinfo = newinfo
+                except (Exception, e):
+                    self.info.update(self.output, self.err)
 
                 self.log.debug('__update: Leaving.')
 
-        def __sleep(self):
-                # FIXME: temporary solution
+        def _querycondor(self):
+            '''
+                Query condor for all job info and return xml representation string...
+            
+            '''
+            
+            querycmd = "condor_q"
+            #querycmd += " -constr '(owner==\"%s\") && stringListMember(\"PANDA_JSID=%s\", Environment, \" \")'" %(self.factoryid, self.condoruser)
 
-                self.log.debug('__sleep: Starting.')
-                sleeptime = self.wmsqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
-                time.sleep(sleeptime)
-                self.log.debug('__sleep: Leaving.')
+            # removing temporarily (?) globusStatus from condor_q
+            # it makes no sense with condor-C
+            # until we figure out if we need two plugins or not
+            # I just remove it
+            #
+            #querycmd += " -format ' globusStatus=%d' GlobusStatus"
+
+            # removing temporarily (?) Environment from the query 
+            #querycmd += " -format ' MATCH_APF_QUEUE=%s' MATCH_APF_QUEUE"
+            #querycmd += " -format ' %s\n' Environment"
+            querycmd += " -format ' MATCH_APF_QUEUE=%s' MATCH_APF_QUEUE"
+
+            # I put jobStatus at the end, because all jobs have that variable
+            # defined, so there is no risk is undefined and therefore the 
+            # \n is never called
+            querycmd += " -format ' jobStatus=%d\n' jobStatus"
+            querycmd += " -xml"
+
+            self.log.debug('_update: Querying cmd = %s' %querycmd.replace('\n','\\n'))
+
+            # Run and time condor_q
+            # XXXXXX FIXME
+            # As condor_q can take a long time, we need to wrap this in a fully protected 
+            # timed command
+            # See http://stackoverflow.com/questions/1191374/subprocess-with-timeout
+            #
+            before = time.time()          
+            p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True )
+            delta = time.time() - before
+            self.log.debug('_update: it took %s seconds to perform the query' %delta)
+            
+            out = None
+            if status == 0:
+                 (out, err) = p.communicate()
+                 return out
+
+
+        def _parseoutput(self, output):
+            '''
+            ancillary method to parse the XML output of the condor_q command
+                   - output is the output of the condor_q command, in XML format
+                   - key is the pattern that counts, i.e. 'jobStatus'
+                   - queue is the quename why want to analyze this time
+            '''
+
+            self.log.debug('__parseoutput: Starting with inputs: output=%s' %(output))
+
+            output_dic = {}
+
+            if not output:
+                # FIXME: temporary solution
+                self.log.debug('_parseoutput: Leaving and returning %s' %output_dic)
+                return output_dic
+
+            xmldoc = xml.dom.minidom.parseString(output).documentElement
+
+            for c in self.__listnodesfromxml(xmldoc, 'c') :
+                node_dic = self.__node2dic(c)
+
+                if not node_dic.has_key('MATCH_APF_QUEUE'.lower()):
+                    continue
+                if not node_dic.has_key(key.lower()):
+                    continue
+                # if the line had everything, we keep searching
+                if node_dic['MATCH_APF_QUEUE'.lower()] == queue:
+                    code = node_dic[key.lower()]
+                    if code not in output_dic.keys():
+                        output_dic[code] = 1
+                    else:
+                        output_dic[code] += 1
+            self.log.debug('_parseoutput: Leaving and returning %s' %(output_dic))
+            return output_dic
+
+
+        def __listnodesfromxml(self, xmldoc, tag):
+            return xmldoc.getElementsByTagName(tag)
+
+        def __node2dic(self, node):
+            '''
+            parses a node in an xml doc, as it is generated by 
+            xml.dom.minidom.parseString(xml).documentElement
+            and returns a dictionary with the relevant info. 
+            An example of output looks like
+                   {'globusStatus':'32', 
+                     'MATCH_APF_QUEUE':'UC_ITB', 
+                     'jobStatus':'1'
+                   }        
+            '''
+            dic = {}
+            for child in node.childNodes:
+                    if child.nodeType == child.ELEMENT_NODE:
+                            key = child.attributes['n'].value
+                            # the following 'if' is to protect us against
+                            # all condor_q versions format, which is kind of 
+                            # weird:
+                            #       - there are tags with different format, with no data
+                            #       - jobStatus doesn't exist. But there is JobStatus
+                            if len(child.childNodes[0].childNodes) > 0:
+                                    value = child.childNodes[0].firstChild.data
+                                    dic[key.lower()] = str(value)
+            return dic
+              
 
         def join(self, timeout=None):
                 ''' 
@@ -196,156 +293,20 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 ''' 
 
                 self.log.debug('join: Starting with input %s' %timeout)
-
                 self.stopevent.set()
                 self.log.debug('Stopping thread....')
                 threading.Thread.join(self, timeout)
-
                 self.log.debug('join: Leaving')
 
-                # ------------------------------------------------------------
-                #  ancillas 
-                # ------------------------------------------------------------
 
 
-class InfoHandler:
-        '''
-        -----------------------------------------------------------------------
-        this class is just an ancilla to store and handle 
-        the info that WMSStatusPlugin has to manage.
-        -----------------------------------------------------------------------
-        Public Interface:
-                update(self, value, error)
-                get(self, queue, maxtime=0)
-        -----------------------------------------------------------------------
-        '''
-
-        def __init__(self):
-
-                self.log = logging.getLogger("main.batchstatusplugininfohandler")
-                self.log.info("InfoHandler: Initializing object...")
-
-                # variable to check if the information 
-                # have been introduced at least once
-                self.initialized = False
-
-                self.info = {}          # info
-                self.err_info = {}      # info in case of error
-                self.error = None       # error
-
-                # variable to record when was last time info was updated
-                # the info is recorded as seconds since epoch
-                self.lasttime = 0
-
-                self.log.info("InfoHandler: Object initialized.") 
-
-        def update(self, value, error):
-                '''
-                just updates the stored info                
-                '''
-
-                self.log.debug('update: Starting.')
-
-                self.initialized = True
-                self.lasttime = int(time.time())
-
-                if not error:
-                        self.info = value
-                else:
-                        self.err_info = value
-                self.error = error
-
-                self.log.debug('update: Leaving.')
-
-        def get(self, queue, maxtime=0):
-                '''
-                Returns a diccionary with the result of the analysis 
-                over the output of a condor_q command
-
-                Optionally, and maxtime parameter can be passed.
-                In that case, if the info recorded is older than that maxtime,
-                an empty dictionary is returned, 
-                as we understand that info is too old and most probably
-                not realiable anymore.
-                '''
-
-                self.log.debug('get: Starting.')
-
-                if not self.initialized:
-                        self.log.debug('get: Info not initialized yet.')
-                        self.log.debug('get: Leaving and returning an empty dictionary.')
-                        return {}
-                if maxtime > 0 and (int(time.time()) - self.lasttime) > maxtime:
-                        self.log.debug('get: Info too old.')
-                        self.log.debug('get: Leaving and returning an empty dictionary.')
-                        return {}
-                else:
-                        out = self.__analyzeoutput(self.info, 'jobStatus', queue)
-                        self.log.debug('get: Leaving and returning %s' %out)
-                        return out
-
-        def __analyzeoutput(self, output, key, queue):
-                '''
-                ancilla method to analyze the output of the condor_q command
-                        - output is the output of the condor_q command, in XML format
-                        - key is the pattern that counts, i.e. 'jobStatus'
-                        - queue is the quename why want to analyze this time
-                '''
-
-                self.log.debug('__analyzeoutput[%s]: Starting with inputs: output=%s key=%s queue=%s' %(queue, output, key, queue))
- 
-                output_dic = {}
- 
-                if not output:
-                        # FIXME: temporary solution
-                        self.log.debug('__analyzeoutput: Leaving and returning %s' %output_dic)
-                        return output_dic
- 
-                xmldoc = xml.dom.minidom.parseString(output).documentElement
- 
-                for c in self.__listnodesfromxml(xmldoc, 'c') :
-                                node_dic = self.__node2dic(c)
- 
-                                if not node_dic.has_key('MATCH_APF_QUEUE'.lower()):
-                                        continue
-                                if not node_dic.has_key(key.lower()):
-                                        continue
-                                # if the line had everything, we keep searching
-                                if node_dic['MATCH_APF_QUEUE'.lower()] == queue:
-                                        code = node_dic[key.lower()]
-                                        if code not in output_dic.keys():
-                                                output_dic[code] = 1
-                                        else:
-                                                output_dic[code] += 1
-                self.log.debug('__analyzeoutput[%s]: Leaving and returning %s' %(queue, output_dic))
-                return output_dic
- 
-        def __listnodesfromxml(self, xmldoc, tag):
-                return xmldoc.getElementsByTagName(tag)
- 
-        def __node2dic(self, node):
-                '''
-                parses a node in an xml doc, as it is generated by 
-                xml.dom.minidom.parseString(xml).documentElement
-                and returns a dictionary with the relevant info. 
-                An example of output looks like
-                        {'globusStatus':'32', 
-                         'MATCH_APF_QUEUE':'UC_ITB', 
-                         'jobStatus':'1'
-                        }        
-                '''
-
-                dic = {}
-                for child in node.childNodes:
-                        if child.nodeType == child.ELEMENT_NODE:
-                                key = child.attributes['n'].value
-                                # the following 'if' is to protect us against
-                                # all condor_q versions format, which is kind of 
-                                # weird:
-                                #       - there are tags with different format, with no data
-                                #       - jobStatus doesn't exist. But there is JobStatus
-                                if len(child.childNodes[0].childNodes) > 0:
-                                        value = child.childNodes[0].firstChild.data
-                                        dic[key.lower()] = str(value)
-                return dic
+def test():
+    bsp = BatchStatusPlugin()
+    bsp._update()
+    i = bsp.getInfo()
+    print(i)
+    
+    
+if __name__=='__main__':
+    test()
 
