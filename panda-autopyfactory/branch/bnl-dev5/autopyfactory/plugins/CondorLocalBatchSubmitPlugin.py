@@ -101,7 +101,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add("stream_output=False")
                 self.JSD.add("stream_error=False")
                 self.JSD.add("notification=Error")
-                self.JSD.add("notify_user=%s" % self.fcl.get('Factory', 'factoryOwner'))
+                self.JSD.add("notify_user=%s" % self.fcl.get('Factory', 'factoryAdminEmail'))
                 self.JSD.add("universe=vanilla")
 
                 # -- MATCH_APF_QUEUE --
