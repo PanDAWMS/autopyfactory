@@ -50,7 +50,7 @@
 # batchsubmitplugin
 # batchsubmit.condorgt2.condor_attributes
 # batchsubmit.condorgt2.environ
-# batchsubmit.condorgt2.localqueue
+# batchsubmit.condorgt2.queue
 # batchsubmit.condorlocal.condor_attributes
 # batchsubmit.condorlocal.environ
 #
@@ -70,6 +70,7 @@
 #               N.B. Panda clouds are UPPER CASE, e.g., UK
 #
 # jdl = name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor)
+#               Used only for remte submission.
 #
 # nickname = PanDA queue name   
 #
@@ -185,7 +186,7 @@
 #               to be included in the condor attribute environment *verbatim*
 #               To be used by CondorGT2 Batch Submit Plugin.
 #
-# batchsubmit.condorgt2.localqueue = local batch queue 
+# batchsubmit.condorgt2.queue = local batch queue 
 #               to be included in the globusrsl directive.
 #               To be used by CondorGT2 Batch Submit Plugin.
 #
@@ -197,6 +198,7 @@
 #               that is not otherwise added programmatically by AutoPyFactory.
 #               Note the following directives are added by default:
 #
+#                       universe = vanilla
 #                       transfer_executable = True
 #                       should_transfer_files = YES
 #                       when_to_transfer_output = ON_EXIT_OR_EVICT
