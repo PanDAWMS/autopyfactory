@@ -238,7 +238,7 @@ class WMSQueuesManager(object):
                 for apfqueue in apfqueues:
                         self.__add(apfqueue)
                         count += 1
-                self.log.info('__addqueues: %d queues added' %count)
+                self.log.info('__addqueues: %d queues in the config file' %count)
 
                 self.log.debug("__addqueues: Leaving")
 
