@@ -92,7 +92,10 @@ stop() {
 
 restart() {
 	stop
+	sleep 2
 	start
+	RETVAL=$?
+	return $RETVAL
 }	
 
 reload() {

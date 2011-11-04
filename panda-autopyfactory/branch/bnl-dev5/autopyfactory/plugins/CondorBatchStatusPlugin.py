@@ -167,7 +167,9 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 
                 try:
                     strout = self._querycondor()
-                    outdic = self._parseoutput(strout)
+                    outlist = self._parseoutput(strout)
+                    aggdict = self._aggregateinfo(outlist)
+                    infolist = self._map2info(aggdict)
                     newinfo = BatchStatusInfo()
                     newinfo.queues = outdic
                     self.currentinfo = newinfo
@@ -222,99 +224,50 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                  (out, err) = p.communicate()
                  return out
 
-
         def _parseoutput(self, output):
             '''
-            ancillary method to parse the XML output of the condor_q command
-                   - output is the output of the condor_q command, in XML format
-            '''
-
-            self.log.debug('__parseoutput: Starting with inputs: output=%s' %(output))
+            parses XML output of condor_q command with an arbitrary number of attribute -format arguments,
+            and creates a List of dictionaries of them. 
             
-            # Output dictionary will be a dictionary of QueueInfo objects
-            # indexed by APF queuename
-            output_dict = {}
-            
+            Input:
+            <!DOCTYPE classads SYSTEM "classads.dtd">
+            <classads>
+                <c>
+                    <a n="MATCH_APF_QUEUE"><s>BNL_ATLAS_1</s></a>
+                    <a n="jobStatus"><i>2</i></a>
+                </c>
+                <c>
+                    <a n="MATCH_APF_QUEUE"><s>BNL_ATLAS_1</s></a>
+                    <a n="jobStatus"><i>2</i></a>
+                </c>
+            </classads>                       
+            Output:
+            [ { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
+                'jobStatus' : '2' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
+                'jobStatus' : '1' }
+            ]
             '''
-            This is the format we are looking for:
-            
-            { 'UC_ITB' : { 'jobStatus' : { '1': '17',
-                                           '2' : '24',
-                                           '3' : '17',
-                                         },
-                           'globusStatus' : { '1':'13',
-                                              '2' : '26',
-                                              }
-                          },
-            { 'BNL_TEST_1' :{ 'jobStatus' : { '1': '7',
-                                           '2' : '4',
-                                           '3' : '6',
-                                         },
-                           'globusStatus' : { '1':'12',
-                                              '2' : '46',
-                                              }
-                          },             
-            '''
-
+            self.log.debug('_parseoutput: Starting with inputs: output=%s' %(output))
+                     
             if not output:
                 # FIXME: temporary solution
                 self.log.debug('_parseoutput: Leaving and returning %s' %output_dic)
                 return None
 
             xmldoc = xml.dom.minidom.parseString(output).documentElement
-
+            nodelist = []
             for c in self._listnodesfromxml(xmldoc, 'c') :
-                node_dict = self.__node2dic(c)
-                '''
-                    {'globusStatus':'32', 
-                     'MATCH_APF_QUEUE':'UC_ITB', 
-                     'jobStatus':'1'
-                    } 
-                '''
-                try:
-                    apfqueue = node_dict['MATCH_APF_QUEUE']
-                
-                    qi = None
-                    # See if QueueInfo object already exists
-                    try:
-                        qi = output_dict
-                    # If not, create it
-                    except KeyError:
-                        qi = QueueInfo()
-                        output_dict[apfqueue] = qi
-                
-                    for k in node_dict.keys():
-                        if not k == 'MATCH_APF_QUEUE':
-                            v = getattr(qi, k.lower())
-                            
-                            
-                except KeyError:
-                    pass
-                                
-                          
-
-
-                #if not node_dic.has_key('MATCH_APF_QUEUE'.lower()):
-                #    continue
-                #if not node_dic.has_key(key.lower()):
-                #    continue
-                # if the line had everything, we keep searching
-                #if node_dic['MATCH_APF_QUEUE'.lower()] == queue:
-                #    code = node_dic[key.lower()]
-                #    if code not in output_dic.keys():
-                #        output_dic[code] = 1
-                #    else:
-                #        output_dic[code] += 1
-            
-            
+                node_dict = self.__node2dict(c)
+                nodelist.append(node_dict)            
             self.log.debug('_parseoutput: Leaving and returning %s' %(output_dic))
-            return output_dic
+            return nodelist
 
 
         def _listnodesfromxml(self, xmldoc, tag):
             return xmldoc.getElementsByTagName(tag)
 
-        def __node2dic(self, node):
+        def __node2dict(self, node):
             '''
             parses a node in an xml doc, as it is generated by 
             xml.dom.minidom.parseString(xml).documentElement
@@ -338,8 +291,150 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                                     value = child.childNodes[0].firstChild.data
                                     dic[key.lower()] = str(value)
             return dic
-              
 
+
+        def _aggregateinfo(self, input):
+            '''
+            This takes a list of job status dicts, and aggregates them by queue,
+            ignoring entries without MATCH_APF_QUEUE 
+            Input:
+            [ { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
+                'jobStatus' : '2' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
+                'jobStatus' : '1' }
+            ]                        
+            
+            Output:
+            { 'UC_ITB' : { 'jobStatus' : { '1': '17',
+                                           '2' : '24',
+                                           '3' : '17',
+                                         },
+                           'globusStatus' : { '1':'13',
+                                              '2' : '26',
+                                              }
+                          },
+            { 'BNL_TEST_1' :{ 'jobStatus' : { '1':  '7',
+                                              '2' : '4',
+                                              '3' : '6',
+                                         },
+                           'globusStatus' : { '1':'12',
+                                              '2' : '46',
+                                              }
+                          },             
+            '''
+            queues = {}
+            for item in input:
+                if not item.has_key('match_apf_queue'):
+                    # This job is not managed by APF. Ignore...
+                    continue
+                apfq = item['match_apf_queue']
+                # get current dict for this apf queue
+                try:
+                    qdict = queues[apfq]
+                # Or create an empty one and insert it.
+                except KeyError:
+                    qdict = {}
+                    queues[apfq] = qdict    
+                
+                # Iterate over attributes and increment counts...
+                for attrkey in item.keys():
+                    # ignore the match_apf_queue attrbute. 
+                    if attrkey == 'match_apf_queue':
+                        continue
+                    attrval = item[attrkey]
+                    # Get the current count and add it
+                    try:
+                        attcount = qdict[attrkey][attrval]
+                        qdict[attrkey][attrval] += 1
+                    # Or create it and set to 1
+                    except KeyError:
+                        qdict[attrkey][attrval] = 1
+                
+                    
+                     
+                
+
+
+
+
+                #if not node_dic.has_key('MATCH_APF_QUEUE'.lower()):
+                #    continue
+                #if not node_dic.has_key(key.lower()):
+                #    continue
+                # if the line had everything, we keep searching
+                #if node_dic['MATCH_APF_QUEUE'.lower()] == queue:
+                #    code = node_dic[key.lower()]
+                #    if code not in output_dic.keys():
+                #        output_dic[code] = 1
+                #    else:
+                #        output_dic[code] += 1
+
+
+
+
+        def _map2info(self, input):
+            
+            '''
+            This takes aggregated info by queue, with condor/condor-g specific status totals, and maps them 
+            to the APF-agnostic dictionary of QueueInfo objects.
+            
+               APF             Condor-C/Local              Condor-G/Globus 
+            .pending           Unexp + Idle                PENDING
+            .running           Running                     RUNNING
+            .suspended         Held                        SUSPENDED
+            .done              Completed                   DONE
+            .unknown           
+            .error
+            
+            Primary attributes. Each job is in one and only one state:
+                pending            job is queued (somewhere) but not running yet.
+                running            job is currently active (run + stagein + stageout)
+                error              job has been reported to be in an error state
+                suspended          job is active, but held or suspended
+                done               job has completed
+                unknown            unknown or transient intermediate state
+                
+            Secondary attributes. Each job may be in more than one. 
+                transferring       stagein + stageout
+                stagein
+                stageout           
+                failed             (done - success)
+                success            (done - failed)
+                ?
+            
+              The JobStatus code indicates the current status of the job.
+                
+                        Value   Status
+                        0       Unexpanded (the job has never run)
+                        1       Idle
+                        2       Running
+                        3       Removed
+                        4       Completed
+                        5       Held
+                        6       Transferring Output
+
+                The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
+                
+                        Value   Status
+                        1       PENDING 
+                        2       ACTIVE 
+                        4       FAILED 
+                        8       DONE 
+                        16      SUSPENDED 
+                        32      UNSUBMITTED 
+                        64      STAGE_IN 
+                        128     STAGE_OUT 
+             
+            
+            Input:
+            
+            
+            Output:
+            
+            
+            
+            
+            '''
         def join(self, timeout=None):
                 ''' 
                 Stop the thread. Overriding this method required to handle Ctrl-C from console.
@@ -353,11 +448,30 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
 
 def test():
-    blah
+    list =  [ { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
+                'jobStatus' : '2' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
+                'jobStatus' : '1' },
+                           { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
+                'jobStatus' : '1' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
+                'jobStatus' : '1' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
+                'jobStatus' : '2' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
+                'jobStatus' : '3' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
+                'jobStatus' : '3' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
+                'jobStatus' : '3' }
+            ] 
+    
+    
+    
     
     
 if __name__=='__main__':
-    test()
+    
 
 
 
