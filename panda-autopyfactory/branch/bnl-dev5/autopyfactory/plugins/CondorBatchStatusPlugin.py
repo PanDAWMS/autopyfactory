@@ -11,6 +11,7 @@ import xml.dom.minidom
 
 from autopyfactory.factory import BatchStatusInterface
 from autopyfactory.factory import BatchStatusInfo
+from autopyfactory.factory import QueueInfo
 from autopyfactory.factory import Singleton 
 
 
@@ -200,6 +201,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             # defined, so there is no risk is undefined and therefore the 
             # \n is never called
             querycmd += " -format ' jobStatus=%d\n' jobStatus"
+            querycmd += " -format ' GlobusStatus=%d\n' GlobusStatus"
             querycmd += " -xml"
 
             self.log.debug('_update: Querying cmd = %s' %querycmd.replace('\n','\\n'))
@@ -228,7 +230,10 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             '''
 
             self.log.debug('__parseoutput: Starting with inputs: output=%s' %(output))
-            output_dic = {}
+            
+            # Output dictionary will be a dictionary of QueueInfo objects
+            # indexed by APF queuename
+            output_dict = {}
             
             '''
             This is the format we are looking for:
@@ -259,17 +264,34 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             xmldoc = xml.dom.minidom.parseString(output).documentElement
 
             for c in self._listnodesfromxml(xmldoc, 'c') :
-                node_dic = self.__node2dic(c)
+                node_dict = self.__node2dic(c)
                 '''
                     {'globusStatus':'32', 
                      'MATCH_APF_QUEUE':'UC_ITB', 
                      'jobStatus':'1'
                     } 
                 '''
-                apfqueue = node_dic['MATCH_APF_QUEUE']
-                for k in node_dic.keys():
-                    if not k == 'MATCH_APF_QUEUE':
-                        output_dic['apfqueue']  
+                try:
+                    apfqueue = node_dict['MATCH_APF_QUEUE']
+                
+                    qi = None
+                    # See if QueueInfo object already exists
+                    try:
+                        qi = output_dict
+                    # If not, create it
+                    except KeyError:
+                        qi = QueueInfo()
+                        output_dict[apfqueue] = qi
+                
+                    for k in node_dict.keys():
+                        if not k == 'MATCH_APF_QUEUE':
+                            v = getattr(qi, k.lower())
+                            
+                            
+                except KeyError:
+                    pass
+                                
+                          
 
 
                 #if not node_dic.has_key('MATCH_APF_QUEUE'.lower()):
@@ -283,6 +305,8 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 #        output_dic[code] = 1
                 #    else:
                 #        output_dic[code] += 1
+            
+            
             self.log.debug('_parseoutput: Leaving and returning %s' %(output_dic))
             return output_dic
 

@@ -802,6 +802,14 @@ class BatchStatusInfo(object):
                 self.log.info('valid: Leaving with output %s.' %out)
                 return out
 
+
+class QueueInfo(object):
+    '''
+     Empty anonymous placeholder for attribute-based queue information.
+     One per queue. 
+    '''
+
+
 # --------------------------------------------------------------------------- 
 
 class Singleton(type):
