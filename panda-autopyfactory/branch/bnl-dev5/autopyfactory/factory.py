@@ -746,6 +746,7 @@ class WMSStatusInfo(object):
                 return out
 
 
+
 class BatchStatusInfo(object):
         '''
         -----------------------------------------------------------------------
@@ -757,9 +758,11 @@ class BatchStatusInfo(object):
         '''
         def __init__(self):
             '''
-            Batch status is accessed via APF queuename, e.g.
-                numrunning = info.queue['APF-Queuename'].running
-        
+            Info for each queue is retrieved, set, and adjusted via APF queuename, e.g.
+                numrunning = info.BNL_ATLAS_1.running
+                info.BNL_ITB1.pending = 17
+                info.BNL_ITB_q.finished += 1
+                
             Primary attributes are:
                 pending            job is queued (somewhere) but not running yet.
                 running            job is currently active (run + stagein + stageout)
@@ -775,16 +778,32 @@ class BatchStatusInfo(object):
                 failed             (done - success)
                 success            (done - failed)
                 ?
-             
+            
+            Any alteration access updates the info.mtime attribute. 
             
             '''
             
             self.log = logging.getLogger('main.batchstatus')
             self.log.info('Status: Initializing object...')
-            self.queue = {}
+            self._queues = {}
             #self.lasttime = int(time.time())
             self.lastmodified = None
             self.log.info('Status: Object Initialized')
+
+        def __getattr__(self, item):
+            pass
+    
+        def __setattr__(self, item, value):
+            """Maps attributes to values.
+            Only if we are initialised
+            """
+            if not self.__dict__.has_key('_attrExample__initialised'):  # this test allows attributes to be set in the __init__ method
+                return dict.__setattr__(self, item, value)
+            elif self.__dict__.has_key(item):       # any normal attributes are handled normally
+                dict.__setattr__(self, item, value)
+            else:
+                self.__setitem__(item, value)
+        
 
         def valid(self):
                 '''
@@ -802,13 +821,50 @@ class BatchStatusInfo(object):
                 return out
 
 
-
-
 class QueueInfo(object):
     '''
      Empty anonymous placeholder for attribute-based queue information.
      One per queue. 
+     
+     Makes sure that only valid attributes can be set.         
+            .pending          
+            .running           
+            .suspended  
+            .done        
+            .unknown           
+            .error
+    
     '''
+    
+    def __init__(self):
+        self.pending = 0
+        self.running = 0
+        self.suspended = 0
+        self.done = 0
+        self.unknown = 0
+        self.error = 0
+        
+    
+    
+    def __getattr__(self, item):
+        """Maps values to attributes.
+        Only called if there *isn't* an attribute with this name
+        """
+        try:
+            return self.__getitem__(item)
+        except KeyError:
+            raise AttributeError(item)
+
+    def __setattr__(self, item, value):
+        """Maps attributes to values.
+        Only if we are initialised
+        """
+        if not self.__dict__.has_key('_attrExample__initialised'):  # this test allows attributes to be set in the __init__ method
+            return dict.__setattr__(self, item, value)
+        elif self.__dict__.has_key(item):       # any normal attributes are handled normally
+            dict.__setattr__(self, item, value)
+        else:
+            self.__setitem__(item, value)
 
 
 # --------------------------------------------------------------------------- 
