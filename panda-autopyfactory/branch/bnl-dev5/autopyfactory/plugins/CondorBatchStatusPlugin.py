@@ -295,7 +295,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         def _aggregateinfo(self, input):
             '''
-            This takes a list of job status dicts, and aggregates them by queue,
+            This function takes a list of job status dicts, and aggregates them by queue,
             ignoring entries without MATCH_APF_QUEUE 
             Input:
             [ { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
@@ -327,14 +327,14 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 if not item.has_key('match_apf_queue'):
                     # This job is not managed by APF. Ignore...
                     continue
-                apfq = item['match_apf_queue']
+                apfqname = item['match_apf_queue']
                 # get current dict for this apf queue
                 try:
-                    qdict = queues[apfq]
+                    qdict = queues[apfqname]
                 # Or create an empty one and insert it.
                 except KeyError:
                     qdict = {}
-                    queues[apfq] = qdict    
+                    queues[apfqname] = qdict    
                 
                 # Iterate over attributes and increment counts...
                 for attrkey in item.keys():
@@ -342,35 +342,23 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     if attrkey == 'match_apf_queue':
                         continue
                     attrval = item[attrkey]
-                    # Get the current count and add it
+                    # So attrkey : attrval in joblist
+                    
+                    
+                    # Get current attrdict for this attribute from qdict
                     try:
-                        attcount = qdict[attrkey][attrval]
-                        qdict[attrkey][attrval] += 1
-                    # Or create it and set to 1
+                        attrdict = qdict[attrkey]
+                    except KeyError:
+                        attrdict = {}
+                        qdict[attrkey] = attrdict
+                    
+                    try:
+                        curcount = qdict[attrkey][attrval]
+                        qdict[attrkey][attrval] = curcount + 1                    
                     except KeyError:
                         qdict[attrkey][attrval] = 1
-                
-                    
-                     
-                
-
-
-
-
-                #if not node_dic.has_key('MATCH_APF_QUEUE'.lower()):
-                #    continue
-                #if not node_dic.has_key(key.lower()):
-                #    continue
-                # if the line had everything, we keep searching
-                #if node_dic['MATCH_APF_QUEUE'.lower()] == queue:
-                #    code = node_dic[key.lower()]
-                #    if code not in output_dic.keys():
-                #        output_dic[code] = 1
-                #    else:
-                #        output_dic[code] += 1
-
-
-
+                        
+            return queues
 
         def _map2info(self, input):
             
@@ -394,7 +382,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 done               job has completed
                 unknown            unknown or transient intermediate state
                 
-            Secondary attributes. Each job may be in more than one. 
+            Secondary attributes. Each job may be in more than one category. 
                 transferring       stagein + stageout
                 stagein
                 stageout           
@@ -424,17 +412,34 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                         32      UNSUBMITTED 
                         64      STAGE_IN 
                         128     STAGE_OUT 
-             
-            
             Input:
-            
-            
+              Dictionary of APF queues consisting of dicts of job attributes and counts.
+              { 'UC_ITB' : { 'jobStatus' : { '1': '17',
+                                           '2' : '24',
+                                           '3' : '17',
+                                         },
+                           'globusStatus' : { '1':'13',
+                                              '2' : '26',
+                                              }
+                          }
+               }          
             Output:
-            
-            
-            
-            
+                A BatchStatusInfo object which maps attribute counts to generic APF
+                queue attribute counts. 
             '''
+            out = BatchStatusInfo()
+            for k in input.keys():
+                pass
+                
+                
+            
+            
+            
+            
+            
+            
+            
+            
         def join(self, timeout=None):
                 ''' 
                 Stop the thread. Overriding this method required to handle Ctrl-C from console.
@@ -466,12 +471,8 @@ def test():
                 'jobStatus' : '3' }
             ] 
     
-    
-    
-    
-    
 if __name__=='__main__':
-    
+    pass
 
 
 

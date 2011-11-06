@@ -783,9 +783,8 @@ class BatchStatusInfo(object):
             self.log.info('Status: Initializing object...')
             self.queue = {}
             #self.lasttime = int(time.time())
-            self.createdtime = None
+            self.lastmodified = None
             self.log.info('Status: Object Initialized')
-
 
         def valid(self):
                 '''
@@ -801,6 +800,8 @@ class BatchStatusInfo(object):
 
                 self.log.info('valid: Leaving with output %s.' %out)
                 return out
+
+
 
 
 class QueueInfo(object):
