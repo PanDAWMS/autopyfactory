@@ -58,7 +58,7 @@ class SchedPlugin(SchedInterface):
                         
                         # '1' means pilots in Idle status
                         # '2' means pilots in Running status                        
-                        pending_pilots = status.batch.get('1', 0)
+                        pending_pilots = batchinfo[self.wmsqueue.apfqueue]
                         running_pilots = status.batch.get('2', 0)
                         nbpilots = pending_pilots + running_pilots
 

@@ -26,430 +26,481 @@ __status__ = "Production"
 
 
 class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
-        '''
-        -----------------------------------------------------------------------
-        This class is expected to have separate instances for each PandaQueue object. 
-        The first time it is instantiated, 
-        -----------------------------------------------------------------------
-        Public Interface:
-                the interfaces inherited from Thread and from BatchStatusInterface
-        -----------------------------------------------------------------------
-        '''
-        
-        __metaclass__ = Singleton 
-        
-        def __init__(self, wmsqueue):
-                threading.Thread.__init__(self) # init the thread
-                
-                self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %wmsqueue.apfqueue)
-                self.log.info('BatchStatusPlugin: Initializing object...')
-                self.stopevent = threading.Event()
+    '''
+    -----------------------------------------------------------------------
+    This class is expected to have separate instances for each PandaQueue object. 
+    The first time it is instantiated, 
+    -----------------------------------------------------------------------
+    Public Interface:
+            the interfaces inherited from Thread and from BatchStatusInterface
+    -----------------------------------------------------------------------
+    '''
+    
+    __metaclass__ = Singleton 
+    
+    def __init__(self, wmsqueue):
+            threading.Thread.__init__(self) # init the thread
+            
+            self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %wmsqueue.apfqueue)
+            self.log.info('BatchStatusPlugin: Initializing object...')
+            self.stopevent = threading.Event()
 
-                # to avoid the thread to be started more than once
-                self.__started = False
+            # to avoid the thread to be started more than once
+            self.__started = False
 
-                self.wmsqueue = wmsqueue
-                self.fconfig = wmsqueue.fcl.config          
-                self.apfqueue = wmsqueue.apfqueue
-                self.condoruser = wmsqueue.fcl.get('Factory', 'factoryUser')
-                self.factoryid = wmsqueue.fcl.get('Factory', 'factoryId') 
-                self.sleeptime = self.wmsqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
-                self.currentinfo = None              
-                #self.error = None       # error
+            self.wmsqueue = wmsqueue
+            self.fconfig = wmsqueue.fcl.config          
+            self.apfqueue = wmsqueue.apfqueue
+            self.condoruser = wmsqueue.fcl.get('Factory', 'factoryUser')
+            self.factoryid = wmsqueue.fcl.get('Factory', 'factoryId') 
+            self.sleeptime = self.wmsqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
+            self.currentinfo = None              
+            #self.error = None       # error
 
-                # variable to record when was last time info was updated
-                # the info is recorded as seconds since epoch
-                self.lasttime = 0
+            # variable to record when was last time info was updated
+            # the info is recorded as seconds since epoch
+            self.lasttime = 0
 
-                self.log.info('BatchStatusPlugin: Object initialized.')
+            self.log.info('BatchStatusPlugin: Object initialized.')
 
-        def getInfo(self, maxtime=0):
-                '''
-                Returns a BatchStatusInfo object populated by the analysis 
-                over the output of a condor_q command
+    def getInfo(self, maxtime=0):
+            '''
+            Returns a BatchStatusInfo object populated by the analysis 
+            over the output of a condor_q command
 
-                Optionally, a maxtime parameter can be passed.
-                In that case, if the info recorded is older than that maxtime,
-                None is returned, as we understand that info is too old and 
-                not reliable anymore.
-                '''
-               
-                self.log.debug('getInfo[%s]: Starting with maxtime=%s' %(queue, maxtime))
-                if not self.currentinfo:
-                        self.log.debug('get: Info not initialized yet.')
-                        self.log.debug('get: Leaving and returning an empty dictionary.')
-                        return None
-                if maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
-                        self.log.debug('get: Info too old.')
-                        self.log.debug('get: Leaving and returning an empty dictionary.')
-                        return None
-                else:
-                        
-                        #out = self.__analyzeoutput(self.info, 'jobStatus', queue)
-                        self.log.debug('get: Leaving and returning %s' %out)
-                        return self.currentinfo
+            Optionally, a maxtime parameter can be passed.
+            In that case, if the info recorded is older than that maxtime,
+            None is returned, as we understand that info is too old and 
+            not reliable anymore.
+            '''
+           
+            self.log.debug('getInfo[%s]: Starting with maxtime=%s' %(queue, maxtime))
+            if not self.currentinfo:
+                    self.log.debug('get: Info not initialized yet.')
+                    self.log.debug('get: Leaving and returning an empty dictionary.')
+                    return None
+            if maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
+                    self.log.debug('get: Info too old.')
+                    self.log.debug('get: Leaving and returning an empty dictionary.')
+                    return None
+            else:
+                    
+                    #out = self.__analyzeoutput(self.info, 'jobStatus', queue)
+                    self.log.debug('get: Leaving and returning %s' %out)
+                    return self.currentinfo
 
 
-        def start(self):
-                '''
-                We override method start() to prevent the thread
-                to be started more than once
-                '''
+    def start(self):
+            '''
+            We override method start() to prevent the thread
+            to be started more than once
+            '''
 
-                self.log.debug('start: Starting')
+            self.log.debug('start: Starting')
 
-                if not self.__started:
-                        self.log.debug("Creating Condor batch status thread...")
-                        self.__started = True
-                        threading.Thread.start(self)
+            if not self.__started:
+                    self.log.debug("Creating Condor batch status thread...")
+                    self.__started = True
+                    threading.Thread.start(self)
 
-                self.log.debug('start: Leaving.')
+            self.log.debug('start: Leaving.')
 
-        def run(self):
-                '''
-                Main loop
-                '''
+    def run(self):
+            '''
+            Main loop
+            '''
 
-                self.log.debug('run: Starting')
-                while not self.stopevent.isSet():
-                    try:
-                        self._update()
-                        self.log.debug("Sleeping for %d seconds..." % self.sleeptime)
-                        time.sleep(self.sleeptime)
-                    except Exception, e:
-                        self.log.error("Main loop caught exception: %s " % str(e))
-                self.log.debug('run: Leaving')
-
-        def _update(self):
-                '''        
-                Query Condor for job status, validate ?, and populate BatchStatusInfo object.
-                Condor-G query template example:
-                
-                condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
-                         -format 'jobStatus=%d ' jobStatus 
-                         -format 'globusStatus=%d ' GlobusStatus 
-                         -format 'gkUrl=%s' MATCH_gatekeeper_url
-                         -format '-%s ' MATCH_queue 
-                         -format '%s\n' Environment
-
-                NOTE: using a single backslash in the final part of the 
-                      condor_q command '\n' only works with the 
-                      latest versions of condor. 
-                      With older versions, there are two options:
-                              - using 4 backslashes '\\\\n'
-                              - using a raw string and two backslashes '\\n'
-
-                The JobStatus code indicates the current status of the job.
-                
-                        Value   Status
-                        0       Unexpanded (the job has never run)
-                        1       Idle
-                        2       Running
-                        3       Removed
-                        4       Completed
-                        5       Held
-                        6       Transferring Output
-
-                The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
-                
-                        Value   Status
-                        1       PENDING 
-                        2       ACTIVE 
-                        4       FAILED 
-                        8       DONE 
-                        16      SUSPENDED 
-                        32      UNSUBMITTED 
-                        64      STAGE_IN 
-                        128     STAGE_OUT 
-                '''
-
-                self.log.debug('__update: Starting.')
-                
+            self.log.debug('run: Starting')
+            while not self.stopevent.isSet():
                 try:
-                    strout = self._querycondor()
-                    outlist = self._parseoutput(strout)
-                    aggdict = self._aggregateinfo(outlist)
-                    infolist = self._map2info(aggdict)
-                    newinfo = BatchStatusInfo()
-                    newinfo.queues = outdic
-                    self.currentinfo = newinfo
-                except (Exception, e):
-                    self.info.update(self.output, self.err)
+                    self._update()
+                    self.log.debug("Sleeping for %d seconds..." % self.sleeptime)
+                    time.sleep(self.sleeptime)
+                except Exception, e:
+                    self.log.error("Main loop caught exception: %s " % str(e))
+            self.log.debug('run: Leaving')
 
-                self.log.debug('__update: Leaving.')
-
-        def _querycondor(self):
-            '''
-                Query condor for all job info and return xml representation string...
+    def _update(self):
+            '''        
+            Query Condor for job status, validate ?, and populate BatchStatusInfo object.
+            Condor-G query template example:
             
-            '''
+            condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
+                     -format 'jobStatus=%d ' jobStatus 
+                     -format 'globusStatus=%d ' GlobusStatus 
+                     -format 'gkUrl=%s' MATCH_gatekeeper_url
+                     -format '-%s ' MATCH_queue 
+                     -format '%s\n' Environment
+
+            NOTE: using a single backslash in the final part of the 
+                  condor_q command '\n' only works with the 
+                  latest versions of condor. 
+                  With older versions, there are two options:
+                          - using 4 backslashes '\\\\n'
+                          - using a raw string and two backslashes '\\n'
+
+            The JobStatus code indicates the current Condor status of the job.
             
-            querycmd = "condor_q"
-            #querycmd += " -constr '(owner==\"%s\") && stringListMember(\"PANDA_JSID=%s\", Environment, \" \")'" %(self.factoryid, self.condoruser)
+                    Value   Status                            
+                    0       U - Unexpanded (the job has never run)    
+                    1       I - Idle                                  
+                    2       R - Running                               
+                    3       X - Removed                              
+                    4       C -Completed                            
+                    5       H - Held                                 
+                    6       > - Transferring Output
 
-            # removing temporarily (?) globusStatus from condor_q
-            # it makes no sense with condor-C
-            # until we figure out if we need two plugins or not
-            # I just remove it
-            #
-            #querycmd += " -format ' globusStatus=%d' GlobusStatus"
-
-            # removing temporarily (?) Environment from the query 
-            #querycmd += " -format ' MATCH_APF_QUEUE=%s' MATCH_APF_QUEUE"
-            #querycmd += " -format ' %s\n' Environment"
-            querycmd += " -format ' MATCH_APF_QUEUE=%s' MATCH_APF_QUEUE"
-
-            # I put jobStatus at the end, because all jobs have that variable
-            # defined, so there is no risk is undefined and therefore the 
-            # \n is never called
-            querycmd += " -format ' jobStatus=%d\n' jobStatus"
-            querycmd += " -format ' GlobusStatus=%d\n' GlobusStatus"
-            querycmd += " -xml"
-
-            self.log.debug('_update: Querying cmd = %s' %querycmd.replace('\n','\\n'))
-
-            # Run and time condor_q
-            # XXXXXX FIXME
-            # As condor_q can take a long time, we need to wrap this in a fully protected 
-            # timed command
-            # See http://stackoverflow.com/questions/1191374/subprocess-with-timeout
-            #
-            before = time.time()          
-            p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True )
-            delta = time.time() - before
-            self.log.debug('_update: it took %s seconds to perform the query' %delta)
+            The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
             
-            out = None
-            if status == 0:
-                 (out, err) = p.communicate()
-                 return out
-
-        def _parseoutput(self, output):
+                    Value   Status
+                    1       PENDING 
+                    2       ACTIVE 
+                    4       FAILED 
+                    8       DONE 
+                    16      SUSPENDED 
+                    32      UNSUBMITTED 
+                    64      STAGE_IN 
+                    128     STAGE_OUT 
             '''
-            parses XML output of condor_q command with an arbitrary number of attribute -format arguments,
-            and creates a List of dictionaries of them. 
+
+            self.log.debug('__update: Starting.')
             
-            Input:
-            <!DOCTYPE classads SYSTEM "classads.dtd">
-            <classads>
-                <c>
-                    <a n="MATCH_APF_QUEUE"><s>BNL_ATLAS_1</s></a>
-                    <a n="jobStatus"><i>2</i></a>
-                </c>
-                <c>
-                    <a n="MATCH_APF_QUEUE"><s>BNL_ATLAS_1</s></a>
-                    <a n="jobStatus"><i>2</i></a>
-                </c>
-            </classads>                       
-            Output:
-            [ { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
-                'jobStatus' : '2' },
-              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
-                'jobStatus' : '1' }
-            ]
-            '''
-            self.log.debug('_parseoutput: Starting with inputs: output=%s' %(output))
-                     
-            if not output:
-                # FIXME: temporary solution
-                self.log.debug('_parseoutput: Leaving and returning %s' %output_dic)
-                return None
+            try:
+                strout = self._querycondor()
+                outlist = self._parseoutput(strout)
+                aggdict = self._aggregateinfo(outlist)
+                infolist = self._map2info(aggdict)
+                newinfo = BatchStatusInfo()
+                newinfo.queues = outdic
+                self.currentinfo = newinfo
+            except (Exception, e):
+                self.info.update(self.output, self.err)
 
-            xmldoc = xml.dom.minidom.parseString(output).documentElement
-            nodelist = []
-            for c in self._listnodesfromxml(xmldoc, 'c') :
-                node_dict = self.__node2dict(c)
-                nodelist.append(node_dict)            
-            self.log.debug('_parseoutput: Leaving and returning %s' %(output_dic))
-            return nodelist
+            self.log.debug('__update: Leaving.')
 
+    def _querycondor(self):
+        '''
+            Query condor for all job info and return xml representation string
+            for further processing.
+        
+        '''
+        self.log.debug('_querycondor: Starting.')
+        querycmd = "condor_q"
+        
+        # removing temporarily (?) Environment from the query 
+        #querycmd += " -format ' %s\n' Environment"
+        querycmd += " -format ' MATCH_APF_QUEUE=%s' match_apf_queue"
 
-        def _listnodesfromxml(self, xmldoc, tag):
-            return xmldoc.getElementsByTagName(tag)
+        # I put jobStatus at the end, because all jobs have that variable
+        # defined, so there is no risk is undefined and therefore the 
+        # \n is never called
+        querycmd += " -format ' JobStatus=%d\n' jobstatus"
+        querycmd += " -format ' GlobusStatus=%d\n' globusstatus"
+        querycmd += " -xml"
 
-        def __node2dict(self, node):
-            '''
-            parses a node in an xml doc, as it is generated by 
-            xml.dom.minidom.parseString(xml).documentElement
-            and returns a dictionary with the relevant info. 
-            An example of output looks like
-                   {'globusStatus':'32', 
-                     'MATCH_APF_QUEUE':'UC_ITB', 
-                     'jobStatus':'1'
-                   }        
-            '''
-            dic = {}
-            for child in node.childNodes:
-                    if child.nodeType == child.ELEMENT_NODE:
-                            key = child.attributes['n'].value
-                            # the following 'if' is to protect us against
-                            # all condor_q versions format, which is kind of 
-                            # weird:
-                            #       - there are tags with different format, with no data
-                            #       - jobStatus doesn't exist. But there is JobStatus
-                            if len(child.childNodes[0].childNodes) > 0:
-                                    value = child.childNodes[0].firstChild.data
-                                    dic[key.lower()] = str(value)
-            return dic
+        self.log.debug('_update: Querying cmd = %s' %querycmd.replace('\n','\\n'))
+
+        # Run and time condor_q
+        # XXXXXX FIXME
+        # As condor_q can take a long time, we need to wrap this in a fully protected 
+        # timed command
+        # See http://stackoverflow.com/questions/1191374/subprocess-with-timeout
+        #
+        before = time.time()          
+        p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True )
+        delta = time.time() - before
+        self.log.debug('_update: it took %s seconds to perform the query' %delta)
+        
+        out = None
+        if status == 0:
+             (out, err) = p.communicate()
+        self.log.debug('_querycondor: Leaving. Out is %s' % out)
+        return out
 
 
-        def _aggregateinfo(self, input):
-            '''
-            This function takes a list of job status dicts, and aggregates them by queue,
-            ignoring entries without MATCH_APF_QUEUE 
-            Input:
-            [ { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
-                'jobStatus' : '2' },
-              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
-                'jobStatus' : '1' }
-            ]                        
+    def _parseoutput(self, output):
+        '''
+        parses XML output of condor_q command with an arbitrary number of attribute -format arguments,
+        and creates a Python List of Dictionaries of them. 
+        
+        Input:
+        <!DOCTYPE classads SYSTEM "classads.dtd">
+        <classads>
+            <c>
+                <a n="match_apf_queue"><s>BNL_ATLAS_1</s></a>
+                <a n="jobstatus"><i>2</i></a>
+            </c>
+            <c>
+                <a n="match_apf_queue"><s>BNL_ATLAS_1</s></a>
+                <a n="jobstatus"><i>1</i></a>
+            </c>
+        </classads>                       
+        
+        Output:
+        [ { 'match_apf_queue' : 'BNL_ATLAS_1',
+            'jobstatus' : '2' },
+          { 'match_apf_queue' : 'BNL_ATLAS_1',
+            'jobstatus' : '1' }
+        ]
+        '''
+        self.log.debug('_parseoutput: Starting with inputs: output=%s' %(output))
+                 
+        if not output:
+            # FIXME: temporary solution
+            self.log.debug('_parseoutput: Leaving and returning %s' %output_dic)
+            return None
+
+        xmldoc = xml.dom.minidom.parseString(output).documentElement
+        nodelist = []
+        for c in self._listnodesfromxml(xmldoc, 'c') :
+            node_dict = self._node2dict(c)
+            nodelist.append(node_dict)            
+        self.log.debug('_parseoutput: Leaving and returning %s' %(output_dic))
+        
+        return nodelist
+
+
+    def _listnodesfromxml(self, xmldoc, tag):
+        return xmldoc.getElementsByTagName(tag)
+
+    def _node2dict(self, node):
+        '''
+        parses a node in an xml doc, as it is generated by 
+        xml.dom.minidom.parseString(xml).documentElement
+        and returns a dictionary with the relevant info. 
+        An example of output looks like
+               {'globusstatus':'32', 
+                 'match_apf_queue':'UC_ITB', 
+                 'jobstatus':'1'
+               }        
+        '''
+        dic = {}
+        for child in node.childNodes:
+            if child.nodeType == child.ELEMENT_NODE:
+                key = child.attributes['n'].value
+                # the following 'if' is to protect us against
+                # all condor_q versions format, which is kind of 
+                # weird:
+                #       - there are tags with different format, with no data
+                #       - jobStatus doesn't exist. But there is JobStatus
+                if len(child.childNodes[0].childNodes) > 0:
+                    value = child.childNodes[0].firstChild.data
+                    dic[key.lower()] = str(value)
+        return dic
+
+
+    def _aggregateinfo(self, input):
+        '''
+        This function takes a list of job status dicts, and aggregates them by queue,
+        ignoring entries without MATCH_APF_QUEUE
+        
+        Assumptions:
+          -- Input has a single level of nesting, and consists of dictionaries.
+          -- You are only interested in the *count* of the various attributes and value 
+          combinations. 
+         
+        Example input:
+        [ { 'match_apf_queue' : 'BNL_ATLAS_1',
+            'jobstatus' : '2' },
+          { 'match_apf_queue' : 'BNL_ATLAS_1',
+            'jobstatus' : '1' }
+        ]                        
+        
+        Output:
+        { 'UC_ITB' : { 'jobstatus' : { '1': '17',
+                                       '2' : '24',
+                                       '3' : '17',
+                                     },
+                       'globusstatus' : { '1':'13',
+                                          '2' : '26',
+                                          }
+                      },
+        { 'BNL_TEST_1' :{ 'jobstatus' : { '1':  '7',
+                                          '2' : '4',
+                                          '3' : '6',
+                                     },
+                       'globusstatus' : { '1':'12',
+                                          '2' : '46',
+                                          }
+                      },             
+        '''
+        self.log.debug('_aggregateinfo: Starting.')
+        queues = {}
+        for item in input:
+            if not item.has_key('match_apf_queue'):
+                # This job is not managed by APF. Ignore...
+                continue
+            apfqname = item['match_apf_queue']
+            # get current dict for this apf queue
+            try:
+                qdict = queues[apfqname]
+            # Or create an empty one and insert it.
+            except KeyError:
+                qdict = {}
+                queues[apfqname] = qdict    
             
-            Output:
-            { 'UC_ITB' : { 'jobStatus' : { '1': '17',
-                                           '2' : '24',
-                                           '3' : '17',
-                                         },
-                           'globusStatus' : { '1':'13',
-                                              '2' : '26',
-                                              }
-                          },
-            { 'BNL_TEST_1' :{ 'jobStatus' : { '1':  '7',
-                                              '2' : '4',
-                                              '3' : '6',
-                                         },
-                           'globusStatus' : { '1':'12',
-                                              '2' : '46',
-                                              }
-                          },             
-            '''
-            queues = {}
-            for item in input:
-                if not item.has_key('match_apf_queue'):
-                    # This job is not managed by APF. Ignore...
+            # Iterate over attributes and increment counts...
+            for attrkey in item.keys():
+                # ignore the match_apf_queue attrbute. 
+                if attrkey == 'match_apf_queue':
                     continue
-                apfqname = item['match_apf_queue']
-                # get current dict for this apf queue
+                attrval = item[attrkey]
+                # So attrkey : attrval in joblist
+                
+                
+                # Get current attrdict for this attribute from qdict
                 try:
-                    qdict = queues[apfqname]
-                # Or create an empty one and insert it.
+                    attrdict = qdict[attrkey]
                 except KeyError:
-                    qdict = {}
-                    queues[apfqname] = qdict    
+                    attrdict = {}
+                    qdict[attrkey] = attrdict
                 
-                # Iterate over attributes and increment counts...
-                for attrkey in item.keys():
-                    # ignore the match_apf_queue attrbute. 
-                    if attrkey == 'match_apf_queue':
-                        continue
-                    attrval = item[attrkey]
-                    # So attrkey : attrval in joblist
-                    
-                    
-                    # Get current attrdict for this attribute from qdict
-                    try:
-                        attrdict = qdict[attrkey]
-                    except KeyError:
-                        attrdict = {}
-                        qdict[attrkey] = attrdict
-                    
-                    try:
-                        curcount = qdict[attrkey][attrval]
-                        qdict[attrkey][attrval] = curcount + 1                    
-                    except KeyError:
-                        qdict[attrkey][attrval] = 1
-                        
-            return queues
+                try:
+                    curcount = qdict[attrkey][attrval]
+                    qdict[attrkey][attrval] = curcount + 1                    
+                except KeyError:
+                    qdict[attrkey][attrval] = 1
+        self.log.debug('_aggregateinfo: Returning dict with %d queues.' % len(queues))            
+        return queues
 
-        def _map2info(self, input):
+    def _map2info(self, input):
+        '''
+        This takes aggregated info by queue, with condor/condor-g specific status totals, and maps them 
+        to the backend-agnostic APF BatchQueueInfo object.
+        
+           APF             Condor-C/Local              Condor-G/Globus 
+        .pending           Unexp + Idle                PENDING
+        .running           Running                     RUNNING
+        .suspended         Held                        SUSPENDED
+        .done              Completed                   DONE
+        .unknown           
+        .error
+        
+        Primary attributes. Each job is in one and only one state:
+            pending            job is queued (somewhere) but not running yet.
+            running            job is currently active (run + stagein + stageout)
+            error              job has been reported to be in an error state
+            suspended          job is active, but held or suspended
+            done               job has completed
+            unknown            unknown or transient intermediate state
             
-            '''
-            This takes aggregated info by queue, with condor/condor-g specific status totals, and maps them 
-            to the APF-agnostic dictionary of QueueInfo objects.
+        Secondary attributes. Each job may be in more than one category. 
+            transferring       stagein + stageout
+            stagein
+            stageout           
+            failed             (done - success)
+            success            (done - failed)
+            ?
+        
+          The JobStatus code indicates the current status of the job.
             
-               APF             Condor-C/Local              Condor-G/Globus 
-            .pending           Unexp + Idle                PENDING
-            .running           Running                     RUNNING
-            .suspended         Held                        SUSPENDED
-            .done              Completed                   DONE
-            .unknown           
-            .error
-            
-            Primary attributes. Each job is in one and only one state:
-                pending            job is queued (somewhere) but not running yet.
-                running            job is currently active (run + stagein + stageout)
-                error              job has been reported to be in an error state
-                suspended          job is active, but held or suspended
-                done               job has completed
-                unknown            unknown or transient intermediate state
-                
-            Secondary attributes. Each job may be in more than one category. 
-                transferring       stagein + stageout
-                stagein
-                stageout           
-                failed             (done - success)
-                success            (done - failed)
-                ?
-            
-              The JobStatus code indicates the current status of the job.
-                
-                        Value   Status
-                        0       Unexpanded (the job has never run)
-                        1       Idle
-                        2       Running
-                        3       Removed
-                        4       Completed
-                        5       Held
-                        6       Transferring Output
+                    Value   Status
+                    0       Unexpanded (the job has never run)
+                    1       Idle
+                    2       Running
+                    3       Removed
+                    4       Completed
+                    5       Held
+                    6       Transferring Output
 
-                The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
+            The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
+            
+                    Value   Status
+                    1       PENDING 
+                    2       ACTIVE 
+                    4       FAILED 
+                    8       DONE 
+                    16      SUSPENDED 
+                    32      UNSUBMITTED 
+                    64      STAGE_IN 
+                    128     STAGE_OUT 
+        Input:
+          Dictionary of APF queues consisting of dicts of job attributes and counts.
+          { 'UC_ITB' : { 'Jobstatus' : { '1': '17',
+                                       '2' : '24',
+                                       '3' : '17',
+                                     },
+                       'Globusstatus' : { '1':'13',
+                                          '2' : '26',
+                                          }
+                      }
+           }          
+        Output:
+            A BatchStatusInfo object which maps attribute counts to generic APF
+            queue attribute counts. 
+        '''
+        self.log.debug('_map2info: Starting.')
+        bsi = BatchStatusInfo()
+        for site in input.keys():
+            qi = QueueInfo()
+            setattr(bsi,site,qi)
+            attrdict = input[site]
+            
+            # use finer-grained globus statuses in preference to local summaries. 
+            if 'globusstatus' in attrdict.keys():
+                valdict = attrdict['globusstatus']
+                for status in valdict.keys():
+                    valct = valdict[status]
+                    if status == '1':
+                        qi.pending += valct                        
+                    elif status == '2':
+                        qi.running += valct
+                    elif status == '4':
+                        # FAILED jobs are done
+                        qi.done += valct
+                    elif status == '8':
+                        # DONE jobs are done
+                        qi.done += valct
+                    elif status == '16':
+                        qi.suspended += valct
+                    elif status == '32':
+                        # UNSUBMITTED jobs are pending
+                        qi.pending += valct
+                    elif status == '64':
+                        # STAGE-IN jobs are running
+                        qi.running += valct
+                    elif status == '128':
+                        # STAGE-OUT jobs are running
+                        qi.running += valct                
                 
-                        Value   Status
-                        1       PENDING 
-                        2       ACTIVE 
-                        4       FAILED 
-                        8       DONE 
-                        16      SUSPENDED 
-                        32      UNSUBMITTED 
-                        64      STAGE_IN 
-                        128     STAGE_OUT 
-            Input:
-              Dictionary of APF queues consisting of dicts of job attributes and counts.
-              { 'UC_ITB' : { 'jobStatus' : { '1': '17',
-                                           '2' : '24',
-                                           '3' : '17',
-                                         },
-                           'globusStatus' : { '1':'13',
-                                              '2' : '26',
-                                              }
-                          }
-               }          
-            Output:
-                A BatchStatusInfo object which maps attribute counts to generic APF
-                queue attribute counts. 
-            '''
-            out = BatchStatusInfo()
-            for k in input.keys():
-                pass
-                
-                
-            
-            
-            
-            
-            
-            
-            
-            
-        def join(self, timeout=None):
-                ''' 
-                Stop the thread. Overriding this method required to handle Ctrl-C from console.
-                ''' 
+            # must be a local-only job.
+            else:
+                valdict = attrdict['jobstatus']
+                for status in valdict.keys():
+                    valct = valdict[status]
+                    if status == '0':
+                        # Unexpanded jobs are pending
+                        qi.pending += valct                        
+                    elif status == '1':
+                        qi.pending += valct
+                    elif status == '2':
+                        qi.running += valct
+                    elif status == '3':
+                        # Removed jobs are done. 
+                        qi.done += valct
+                    elif status == '4':
+                        qi.done += valct
+                    elif status == '5':
+                        # Held jobs are suspended
+                        qi.suspended += valct
+                    elif status == '6':
+                        # Transferring jobs are running
+                        qi.running += valct
 
-                self.log.debug('join: Starting with input %s' %timeout)
-                self.stopevent.set()
-                self.log.debug('Stopping thread....')
-                threading.Thread.join(self, timeout)
-                self.log.debug('join: Leaving')
+        self.log.debug('_map2info: Returning BatchStatusInfo: %s' % bsi)
+        return bsi
+
+
+    def join(self, timeout=None):
+        ''' 
+        Stop the thread. Overriding this method required to handle Ctrl-C from console.
+        ''' 
+
+        self.log.debug('join: Starting with input %s' %timeout)
+        self.stopevent.set()
+        self.log.debug('Stopping thread....')
+        threading.Thread.join(self, timeout)
+        self.log.debug('join: Leaving')
 
 
 def test():

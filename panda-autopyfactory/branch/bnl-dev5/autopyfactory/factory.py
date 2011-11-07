@@ -34,127 +34,127 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
           
 class Factory(object):
+    '''
+    -----------------------------------------------------------------------
+    Class implementing the main loop. 
+    The class has two main goals:
+            1. load the config files
+            2. launch a new thread per queue 
+
+    Information about queues created and running is stored in a 
+    WMSQueuesManager object.
+
+    Actions are triggered by method update() 
+    update() can be invoked at the beginning, from __init__,
+    or when needed. For example, is an external SIGNAL is received.
+    When it happens, update() does:
+            1. calculates the new list of queues from the config file
+            2. updates the WMSQueuesManager object 
+    -----------------------------------------------------------------------
+    Public Interface:
+            __init__(fcl)
+            mainLoop()
+            update()
+    -----------------------------------------------------------------------
+    '''
+
+    def __init__(self, fcl):
         '''
-        -----------------------------------------------------------------------
-        Class implementing the main loop. 
-        The class has two main goals:
-                1. load the config files
-                2. launch a new thread per queue 
-
-        Information about queues created and running is stored in a 
-        WMSQueuesManager object.
-
-        Actions are triggered by method update() 
-        update() can be invoked at the beginning, from __init__,
-        or when needed. For example, is an external SIGNAL is received.
-        When it happens, update() does:
-                1. calculates the new list of queues from the config file
-                2. updates the WMSQueuesManager object 
-        -----------------------------------------------------------------------
-        Public Interface:
-                __init__(fcl)
-                mainLoop()
-                update()
-        -----------------------------------------------------------------------
+        fcl is a FactoryConfigLoader object. 
         '''
 
-        def __init__(self, fcl):
-                '''
-                fcl is a FactoryConfigLoader object. 
-                '''
+        self.log = logging.getLogger('main.factory')
+        self.log.info('Factory: Initializing object...')
 
-                self.log = logging.getLogger('main.factory')
-                self.log.info('Factory: Initializing object...')
+        self.fcl = fcl
+        
+        self.log.info("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
+        self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
+      
+        # Handle ProxyManager
+        usepman = fcl.get('Factory', 'proxymanager.enabled')
+        if usepman:
+                            
+            pconfig = ConfigParser()
+            pconfig_file = fcl.get('Factory','proxyConf')
+            got_config = pconfig.read(pconfig_file)
+            self.log.debug("Read config file %s, return value: %s" % (pconfig_file, got_config)) 
+            self.proxymanager = ProxyManager(pconfig)
+            self.log.debug('ProxyManager initialized. Starting...')
+            self.proxymanager.start()
+            self.log.debug('ProxyManager thread started.')
+        else:
+            self.log.info("ProxyManager disabled.")
+       
+        # WMS Queues Manager 
+        self.wmsmanager = WMSQueuesManager(self)
+        
+        # Set up LogServer
+        ls = self.fcl.get('Factory', 'logserver.enabled')
+        lsidx = self.fcl.get('Factory','logserver.index')
+        if ls:
+            logpath = self.fcl.get('Factory', 'baseLogDir')
+            if not os.path.exists(logpath):
+                os.makedirs(logpath)
+        
+            self.logserver = LogServer(port=self.fcl.get('Factory', 'baseLogHttpPort'),
+                           docroot=logpath, index=lsidx
+                           )
 
-                self.fcl = fcl
-                
-                self.log.info("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
-                self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
-              
-                # Handle ProxyManager
-                usepman = fcl.get('Factory', 'proxymanager.enabled')
-                if usepman:
-                                    
-                    pconfig = ConfigParser()
-                    pconfig_file = fcl.get('Factory','proxyConf')
-                    got_config = pconfig.read(pconfig_file)
-                    self.log.debug("Read config file %s, return value: %s" % (pconfig_file, got_config)) 
-                    self.proxymanager = ProxyManager(pconfig)
-                    self.log.debug('ProxyManager initialized. Starting...')
-                    self.proxymanager.start()
-                    self.log.debug('ProxyManager thread started.')
-                else:
-                    self.log.info("ProxyManager disabled.")
-               
-                # WMS Queues Manager 
-                self.wmsmanager = WMSQueuesManager(self)
-                
-                # Set up LogServer
-                ls = self.fcl.get('Factory', 'logserver.enabled')
-                lsidx = self.fcl.get('Factory','logserver.index')
-                if ls:
-                    logpath = self.fcl.get('Factory', 'baseLogDir')
-                    if not os.path.exists(logpath):
-                        os.makedirs(logpath)
-                
-                    self.logserver = LogServer(port=self.fcl.get('Factory', 'baseLogHttpPort'),
-                                   docroot=logpath, index=lsidx
-                                   )
+            self.log.debug('LogServer initialized. Starting...')
+            self.logserver.start()
+            self.log.debug('LogServer thread started.')
+        else:
+            self.log.info('LogServer disabled. Not running.')
+             
+        self.log.info("Factory: Object initialized.")
 
-                    self.log.debug('LogServer initialized. Starting...')
-                    self.logserver.start()
-                    self.log.debug('LogServer thread started.')
-                else:
-                    self.log.info('LogServer disabled. Not running.')
-                     
-                self.log.info("Factory: Object initialized.")
+    def mainLoop(self):
+        '''
+        Main functional loop of overall Factory. 
+        Actions:
+                1. Creates all queues and starts them.
+                2. Wait for a termination signal, and
+                   stops all queues when that happens.
+        '''
 
-        def mainLoop(self):
-                '''
-                Main functional loop of overall Factory. 
-                Actions:
-                        1. Creates all queues and starts them.
-                        2. Wait for a termination signal, and
-                           stops all queues when that happens.
-                '''
+        self.log.debug("mainLoop: Starting.")
+        self.log.info("Starting all Queue threads...")
 
-                self.log.debug("mainLoop: Starting.")
-                self.log.info("Starting all Queue threads...")
+        self.update()
+        
+        try:
+            while True:
+                mainsleep = int(self.fcl.get('Factory', 'factory.sleep'))
+                time.sleep(mainsleep)
+                self.log.debug('Checking for interrupt.')
+                        
+        except (KeyboardInterrupt): 
+            logging.info("Shutdown via Ctrl-C or -INT signal.")
+            logging.debug(" Shutting down all threads...")
+            self.log.info("Joining all Queue threads...")
+            self.wmsmanager.join()
+            self.log.info("All Queue threads joined. Exitting.")
 
-                self.update()
-                
-                try:
-                        while True:
-                                mainsleep = int(self.fcl.get('Factory', 'factory.sleep'))
-                                time.sleep(mainsleep)
-                                self.log.debug('Checking for interrupt.')
-                                
-                except (KeyboardInterrupt): 
-                        logging.info("Shutdown via Ctrl-C or -INT signal.")
-                        logging.debug(" Shutting down all threads...")
-                        self.log.info("Joining all Queue threads...")
-                        self.wmsmanager.join()
-                        self.log.info("All Queue threads joined. Exitting.")
+        self.log.debug("mainLoop: Leaving.")
 
-                self.log.debug("mainLoop: Leaving.")
+    def update(self):
+        '''
+        Method to update the status of the WMSQueuesManager object.
+        This method will be used every time the 
+        status of the queues changes: 
+                - at the very beginning
+                - when the config files change
+        That means this method will be invoked by the regular factory
+        main loop code or from any method capturing specific signals.
+        '''
 
-        def update(self):
-                '''
-                Method to update the status of the WMSQueuesManager object.
-                This method will be used every time the 
-                status of the queues changes: 
-                        - at the very beginning
-                        - when the config files change
-                That means this method will be invoked by the regular factory
-                main loop code or from any method capturing specific signals.
-                '''
+        self.log.debug("update: Starting")
 
-                self.log.debug("update: Starting")
+        newqueues = self.qcl.config.sections()
+        self.wmsmanager.update(newqueues) 
 
-                newqueues = self.qcl.config.sections()
-                self.wmsmanager.update(newqueues) 
-
-                self.log.debug("update: Leaving")
+        self.log.debug("update: Leaving")
 
 
 # ==============================================================================                                
@@ -162,160 +162,160 @@ class Factory(object):
 # ==============================================================================                                
 
 class WMSQueuesManager(object):
+    '''
+    -----------------------------------------------------------------------
+    Container with the list of WMSQueue objects.
+    -----------------------------------------------------------------------
+    Public Interface:
+            __init__(factory)
+            update(newqueues)
+            join()
+    -----------------------------------------------------------------------
+    '''
+    def __init__(self, factory):
         '''
-        -----------------------------------------------------------------------
-        Container with the list of WMSQueue objects.
-        -----------------------------------------------------------------------
-        Public Interface:
-                __init__(factory)
-                update(newqueues)
-                join()
-        -----------------------------------------------------------------------
+        Initializes a container of WMSQueue objects
         '''
-        def __init__(self, factory):
-                '''
-                Initializes a container of WMSQueue objects
-                '''
 
-                self.log = logging.getLogger('main.wmsquuesmanager')
-                self.log.info('WMSQueuesManager: Initializing object...')
+        self.log = logging.getLogger('main.wmsquuesmanager')
+        self.log.info('WMSQueuesManager: Initializing object...')
 
-                self.queues = {}
-                self.factory = factory
+        self.queues = {}
+        self.factory = factory
 
-                self.log.info('WMSQueuesManager: Object initialized.')
+        self.log.info('WMSQueuesManager: Object initialized.')
 
-        # ----------------------------------------------------------------------
-        #  public interface
-        # ----------------------------------------------------------------------
-        
-        def update(self, newqueues):
-                '''
-                Compares the new list of queues with the current one
-                        1. creates and starts new queues if needed
-                        2. stops and deletes old queues if needed
-                '''
+    # ----------------------------------------------------------------------
+    #  public interface
+    # ----------------------------------------------------------------------
+    
+    def update(self, newqueues):
+        '''
+        Compares the new list of queues with the current one
+                1. creates and starts new queues if needed
+                2. stops and deletes old queues if needed
+        '''
 
-                self.log.debug("update: Starting with input %s" %newqueues)
+        self.log.debug("update: Starting with input %s" %newqueues)
 
-                currentqueues = self.queues.keys()
-                queues_to_remove, queues_to_add = \
-                        self.__diff_lists(currentqueues, newqueues)
-                self.__addqueues(queues_to_add) 
-                self.__delqueues(queues_to_remove)
-                self.__refresh()
+        currentqueues = self.queues.keys()
+        queues_to_remove, queues_to_add = \
+                self.__diff_lists(currentqueues, newqueues)
+        self.__addqueues(queues_to_add) 
+        self.__delqueues(queues_to_remove)
+        self.__refresh()
 
-                self.log.debug("update: Leaving")
+        self.log.debug("update: Leaving")
 
-        def join(self):
-                '''
-                Joins all WMSQueue objects
-                QUESTION: should the queues also be removed from self.queues ?
-                '''
+    def join(self):
+        '''
+        Joins all WMSQueue objects
+        QUESTION: should the queues also be removed from self.queues ?
+        '''
 
-                self.log.debug("join: Starting")
+        self.log.debug("join: Starting")
 
-                count = 0
-                for q in self.queues.values():
-                        q.join()
-                        count += 1
-                self.log.info('join: %d queues joined' %count)
+        count = 0
+        for q in self.queues.values():
+            q.join()
+            count += 1
+        self.log.info('join: %d queues joined' %count)
 
-                self.log.debug("join: Leaving")
-        
-        # ----------------------------------------------------------------------
-        #  private methods
-        # ----------------------------------------------------------------------
+        self.log.debug("join: Leaving")
+    
+    # ----------------------------------------------------------------------
+    #  private methods
+    # ----------------------------------------------------------------------
 
-        def __addqueues(self, apfqueues):
-                '''
-                Creates new WMSQueue objects
-                '''
+    def __addqueues(self, apfqueues):
+        '''
+        Creates new WMSQueue objects
+        '''
 
-                self.log.debug("__addqueues: Starting with input %s" %apfqueues)
+        self.log.debug("__addqueues: Starting with input %s" %apfqueues)
 
-                count = 0
-                for apfqueue in apfqueues:
-                        self.__add(apfqueue)
-                        count += 1
-                self.log.info('__addqueues: %d queues in the config file' %count)
+        count = 0
+        for apfqueue in apfqueues:
+            self.__add(apfqueue)
+            count += 1
+        self.log.info('__addqueues: %d queues in the config file' %count)
 
-                self.log.debug("__addqueues: Leaving")
+        self.log.debug("__addqueues: Leaving")
 
-        def __add(self, apfqueue):
-                '''
-                Creates a single new WMSQueue object and starts it
-                '''
+    def __add(self, apfqueue):
+        '''
+        Creates a single new WMSQueue object and starts it
+        '''
 
-                self.log.debug("__add: Starting with input %s" %apfqueue)
+        self.log.debug("__add: Starting with input %s" %apfqueue)
 
-                enabled = self.factory.qcl.getboolean(apfqueue, 'enabled') 
-                if enabled:
-                        qobject = WMSQueue(apfqueue, self.factory)
-                        self.queues[apfqueue] = qobject
-                        qobject.start()
-                        self.log.info('__add: %s enabled.' %apfqueue)
-                else:
-                        self.log.info('__add: %s not enabled.' %apfqueue)
+        enabled = self.factory.qcl.getboolean(apfqueue, 'enabled') 
+        if enabled:
+            qobject = WMSQueue(apfqueue, self.factory)
+            self.queues[apfqueue] = qobject
+            qobject.start()
+            self.log.info('__add: %s enabled.' %apfqueue)
+        else:
+            self.log.info('__add: %s not enabled.' %apfqueue)
 
-                self.log.debug("__add: Leaving")
-                
-        def __delqueues(self, apfqueues):
-                '''
-                Deletes WMSQueue objects
-                '''
+        self.log.debug("__add: Leaving")
+            
+    def __delqueues(self, apfqueues):
+        '''
+        Deletes WMSQueue objects
+        '''
 
-                self.log.debug("__delqueues: Starting with input %s" %apfqueues)
+        self.log.debug("__delqueues: Starting with input %s" %apfqueues)
 
-                count = 0
-                for apfqueue in apfqueues:
-                        q = self.queues[apfqueue]
-                        q.join()
-                        self.queues.pop(apfqueue)
-                        count += 1
-                self.log.info('__delqueues: %d queues joined and removed' %count)
+        count = 0
+        for apfqueue in apfqueues:
+            q = self.queues[apfqueue]
+            q.join()
+            self.queues.pop(apfqueue)
+            count += 1
+        self.log.info('__delqueues: %d queues joined and removed' %count)
 
-                self.log.debug("__delqueues: Leaving")
+        self.log.debug("__delqueues: Leaving")
 
-        def __del(self, apfqueue):
-                '''
-                Deletes a single queue object from the list and stops it.
-                '''
+    def __del(self, apfqueue):
+        '''
+        Deletes a single queue object from the list and stops it.
+        '''
 
-                self.log.debug("__del: Starting with input %s" %apfqueue)
+        self.log.debug("__del: Starting with input %s" %apfqueue)
 
-                qobject = self.__get(apfqueue)
-                qname.join()
-                self.queues.pop(apfqueue)
+        qobject = self.__get(apfqueue)
+        qname.join()
+        self.queues.pop(apfqueue)
 
-                self.log.debug("__del: Leaving")
-        
-        def __refresh(self):
-                '''
-                Calls method refresh() for all WMSQueue objects
-                '''
+        self.log.debug("__del: Leaving")
+    
+    def __refresh(self):
+        '''
+        Calls method refresh() for all WMSQueue objects
+        '''
 
-                self.log.debug("__refresh: Starting")
+        self.log.debug("__refresh: Starting")
 
-                count = 0
-                for q in self.queues.values():
-                        q.refresh()
-                        count += 1
-                self.log.info('__refresh: %d queues refreshed' %count)
+        count = 0
+        for q in self.queues.values():
+            q.refresh()
+            count += 1
+        self.log.info('__refresh: %d queues refreshed' %count)
 
-                self.log.debug("__refresh: Leaving")
+        self.log.debug("__refresh: Leaving")
 
-        # ----------------------------------------------------------------------
-        #  ancillas 
-        # ----------------------------------------------------------------------
+    # ----------------------------------------------------------------------
+    #  ancillas 
+    # ----------------------------------------------------------------------
 
-        def __diff_lists(self, l1, l2):
-                '''
-                Ancillary method to calculate diff between two lists
-                '''
-                d1 = [i for i in l1 if not i in l2]
-                d2 = [i for i in l2 if not i in l1]
-                return d1, d2
+    def __diff_lists(self, l1, l2):
+        '''
+        Ancillary method to calculate diff between two lists
+        '''
+        d1 = [i for i in l1 if not i in l2]
+        d2 = [i for i in l2 if not i in l1]
+        return d1, d2
  
 
 class WMSQueue(threading.Thread):
@@ -748,77 +748,77 @@ class WMSStatusInfo(object):
 
 
 class BatchStatusInfo(object):
+    '''
+    -----------------------------------------------------------------------
+    Class to collect info from Batch Status Plugin 
+    -----------------------------------------------------------------------
+    Public Interface:
+            valid()
+    -----------------------------------------------------------------------
+    '''
+    def __init__(self):
         '''
-        -----------------------------------------------------------------------
-        Class to collect info from Batch Status Plugin 
-        -----------------------------------------------------------------------
-        Public Interface:
-                valid()
-        -----------------------------------------------------------------------
-        '''
-        def __init__(self):
-            '''
-            Info for each queue is retrieved, set, and adjusted via APF queuename, e.g.
-                numrunning = info.BNL_ATLAS_1.running
-                info.BNL_ITB1.pending = 17
-                info.BNL_ITB_q.finished += 1
-                
-            Primary attributes are:
-                pending            job is queued (somewhere) but not running yet.
-                running            job is currently active (run + stagein + stageout)
-                error              job has been reported to be in an error state
-                suspended          job is active, but held or suspended
-                done               job has completed
-                unknown            unknown or transient intermediate state
-                
-            Secondary attributes are:
-                transferring       stagein + stageout
-                stagein
-                stageout           
-                failed             (done - success)
-                success            (done - failed)
-                ?
+        Info for each queue is retrieved, set, and adjusted via APF queuename, e.g.
+            numrunning = info.BNL_ATLAS_1.running
+            info.BNL_ITB_1.pending = 17
+            info.BNL_ITB_1.finished += 1
             
-            Any alteration access updates the info.mtime attribute. 
+        Primary attributes are:
+            pending            job is queued (somewhere) but not running yet.
+            running            job is currently active (run + stagein + stageout)
+            error              job has been reported to be in an error state
+            suspended          job is active, but held or suspended
+            done               job has completed
+            unknown            unknown or transient intermediate state
             
-            '''
-            
-            self.log = logging.getLogger('main.batchstatus')
-            self.log.info('Status: Initializing object...')
-            self._queues = {}
-            #self.lasttime = int(time.time())
-            self.lastmodified = None
-            self.log.info('Status: Object Initialized')
-
-        def __getattr__(self, item):
-            pass
-    
-        def __setattr__(self, item, value):
-            """Maps attributes to values.
-            Only if we are initialised
-            """
-            if not self.__dict__.has_key('_attrExample__initialised'):  # this test allows attributes to be set in the __init__ method
-                return dict.__setattr__(self, item, value)
-            elif self.__dict__.has_key(item):       # any normal attributes are handled normally
-                dict.__setattr__(self, item, value)
-            else:
-                self.__setitem__(item, value)
+        Secondary attributes are:
+            transferring       stagein + stageout
+            stagein
+            stageout           
+            failed             (done - success)
+            success            (done - failed)
+            ?
         
+        Any alteration access updates the info.mtime attribute. 
+        
+        '''
+        
+        self.log = logging.getLogger('main.batchstatus')
+        self.log.info('Status: Initializing object...')
+        self._queues = {}
+        #self.lasttime = int(time.time())
+        self.lastmodified = None
+        self.log.info('Status: Object Initialized')
 
-        def valid(self):
-                '''
-                checks if all attributes have a valid value, or
-                some of them is None and therefore the collected info 
-                is not reliable
-                '''
-                self.log.info('valid: Starting.')
+    #def __getattr__(self, item):
+    #    pass
 
-                out = True  # default
-                if self.batch == None:
-                        out = False 
+    #def __setattr__(self, item, value):
+    #    """Maps attributes to values.
+    #    Only if we are initialised
+    #    """
+    #    if not self.__dict__.has_key('_attrExample__initialised'):  # this test allows attributes to be set in the __init__ method
+    #        return dict.__setattr__(self, item, value)
+    #    elif self.__dict__.has_key(item):       # any normal attributes are handled normally
+    #        dict.__setattr__(self, item, value)
+    #    else:
+    #        self.__setitem__(item, value)
+    
 
-                self.log.info('valid: Leaving with output %s.' %out)
-                return out
+    def valid(self):
+        '''
+        checks if all attributes have a valid value, or
+        some of them is None and therefore the collected info 
+        is not reliable
+        '''
+        self.log.info('valid: Starting.')
+
+        out = True  # default
+        #if self.batch == None:
+        #    out = False 
+
+        #self.log.info('valid: Leaving with output %s.' %out)
+        return out
 
 
 class QueueInfo(object):
@@ -835,7 +835,6 @@ class QueueInfo(object):
             .error
     
     '''
-    
     def __init__(self):
         self.pending = 0
         self.running = 0
@@ -843,143 +842,132 @@ class QueueInfo(object):
         self.done = 0
         self.unknown = 0
         self.error = 0
-        
-    
-    
-    def __getattr__(self, item):
-        """Maps values to attributes.
-        Only called if there *isn't* an attribute with this name
-        """
-        try:
-            return self.__getitem__(item)
-        except KeyError:
-            raise AttributeError(item)
 
-    def __setattr__(self, item, value):
-        """Maps attributes to values.
-        Only if we are initialised
-        """
-        if not self.__dict__.has_key('_attrExample__initialised'):  # this test allows attributes to be set in the __init__ method
-            return dict.__setattr__(self, item, value)
-        elif self.__dict__.has_key(item):       # any normal attributes are handled normally
-            dict.__setattr__(self, item, value)
-        else:
-            self.__setitem__(item, value)
+
+    #def __getattr__(self, item):
+    #    """Maps values to attributes.
+    #    Only called if there *isn't* an attribute with this name
+    #    """
+    #    try:
+    #        return self.__getitem__(item)
+    #    except KeyError:
+    #        raise AttributeError(item)
+
+    #def __setattr__(self, item, value):
+    #    """Maps attributes to values.
+    #    Only if we are initialised
+    #    """
+    #    if not self.__dict__.has_key('_attrExample__initialised'):  # this test allows attributes to be set in the __init__ method
+    #        return dict.__setattr__(self, item, value)
+    #    elif self.__dict__.has_key(item):       # any normal attributes are handled normally
+    #        dict.__setattr__(self, item, value)
+    #    else:
+    #        self.__setitem__(item, value)
 
 
 # --------------------------------------------------------------------------- 
 
 class Singleton(type):
-        '''
-        -----------------------------------------------------------------------
-        Ancillary class to be used as metaclass to make other classes Singleton.
-        -----------------------------------------------------------------------
-        '''
-        def __init__(cls, name, bases, dct):
-                cls.__instance = None 
-                type.__init__(cls, name, bases, dct)
-        def __call__(cls, *args, **kw): 
-                if cls.__instance is None:
-                        cls.__instance = type.__call__(cls, *args,**kw)
-                return cls.__instance
+    '''
+    -----------------------------------------------------------------------
+    Ancillary class to be used as metaclass to make other classes Singleton.
+    -----------------------------------------------------------------------
+    '''
+    def __init__(cls, name, bases, dct):
+        cls.__instance = None 
+        type.__init__(cls, name, bases, dct)
+    def __call__(cls, *args, **kw): 
+        if cls.__instance is None:
+            cls.__instance = type.__call__(cls, *args,**kw)
+        return cls.__instance
 
 
 class SchedInterface(object):
+    '''
+    -----------------------------------------------------------------------
+    Calculates the number of jobs to be submitted for a given queue. 
+    -----------------------------------------------------------------------
+    Public Interface:
+            calcSubmitNum()
+    -----------------------------------------------------------------------
+    '''
+    def calcSubmitNum(self):
         '''
-        -----------------------------------------------------------------------
-        Calculates the number of jobs to be submitted for a given queue. 
-        -----------------------------------------------------------------------
-        Public Interface:
-                calcSubmitNum(status)
-        -----------------------------------------------------------------------
+        Calculates number of jobs to submit for the associated APF queue. 
         '''
-        def calcSubmitNum(self, status):
-                '''
-                Calculates and exact number of new pilots to submit, 
-                based on provided Panda site info
-                and whatever relevant parameters are in config.
-                All Panda info, not all relevant:    
-                'activated': 0,
-                'assigned': 0,
-                'cancelled': 0,
-                'defined': 0,
-                'failed': 4
-                'finished': 493,
-                'holding' : 3,
-                'running': 18,
-                'transferring': 38},
-                '''
-                raise NotImplementedError
+        raise NotImplementedError
 
 
 class BatchStatusInterface(object):
+    '''
+    -----------------------------------------------------------------------
+    Interacts with the underlying batch system to get job status. 
+    Should return information about number of jobs currently on the desired queue. 
+    -----------------------------------------------------------------------
+    Public Interface:
+            getInfo()
+    
+    Returns BatchStatusInfo object
+     
+    -----------------------------------------------------------------------
+    '''
+    def getInfo(self, maxtime=0):
         '''
-        -----------------------------------------------------------------------
-        Interacts with the underlying batch system to get job status. 
-        Should return information about number of jobs currently on the desired queue. 
-        -----------------------------------------------------------------------
-        Public Interface:
-                getInfo(queue)
-                getJobInfo(queue) 
-        -----------------------------------------------------------------------
+        Returns aggregate info about jobs in batch system. 
         '''
-        def getInfo(self, queue, maxtime=0):
-                '''
-                Returns aggregate info about jobs on queue in batch system. 
-                '''
-                raise NotImplementedError
+        raise NotImplementedError
 
 
 class WMSStatusInterface(object):
+    '''
+    -----------------------------------------------------------------------
+    Interface for all WMSStatus plugins. 
+    Should return information about cloud status, site status and jobs status. 
+    -----------------------------------------------------------------------
+    Public Interface:
+            getCloudInfo()
+            getSiteInfo()
+            getJobsInfo()
+    -----------------------------------------------------------------------
+    '''
+    def getCloudInfo(self, cloud, maxtime=0):
         '''
-        -----------------------------------------------------------------------
-        Interface for all WMSStatus plugins. 
-        Should return information about cloud status, site status and jobs status. 
-        -----------------------------------------------------------------------
-        Public Interface:
-                getCloudInfo()
-                getSiteInfo()
-                getJobsInfo()
-        -----------------------------------------------------------------------
+        Method to get and updated picture of the cloud status. 
+        It returns a dictionary to be inserted directly into an
+        Status object.
         '''
-        def getCloudInfo(self, cloud, maxtime=0):
-                '''
-                Method to get and updated picture of the cloud status. 
-                It returns a dictionary to be inserted directly into an
-                Status object.
-                '''
-                raise NotImplementedError
+        raise NotImplementedError
 
-        def getSiteInfo(self, site, maxtime=0):
-                '''
-                Method to get and updated picture of the site status. 
-                It returns a dictionary to be inserted directly into an
-                Status object.
-                '''
-                raise NotImplementedError
+    def getSiteInfo(self, site, maxtime=0):
+        '''
+        Method to get and updated picture of the site status. 
+        It returns a dictionary to be inserted directly into an
+        Status object.
+        '''
+        raise NotImplementedError
 
-        def getJobsInfo(self, site, maxtime=0):
-                '''
-                Method to get and updated picture of the jobs status. 
-                It returns a dictionary to be inserted directly into an
-                Status object.
-                '''
-                raise NotImplementedError
+    def getJobsInfo(self, site, maxtime=0):
+        '''
+        Method to get and updated picture of the jobs status. 
+        It returns a dictionary to be inserted directly into an
+        Status object.
+        '''
+        raise NotImplementedError
 
 
 class BatchSubmitInterface(object):
+    '''
+    -----------------------------------------------------------------------
+    Interacts with underlying batch system to submit jobs. 
+    It should be instantiated one per queue. 
+    -----------------------------------------------------------------------
+    Public Interface:
+            submitPilots(number)
+    -----------------------------------------------------------------------
+    '''
+    def submitPilots(self, queue, number, fcl, qcl):
         '''
-        -----------------------------------------------------------------------
-        Interacts with underlying batch system to submit jobs. 
-        It should be instantiated one per queue. 
-        -----------------------------------------------------------------------
-        Public Interface:
-                submitPilots(number)
-        -----------------------------------------------------------------------
+        Method to submit pilots 
         '''
-        def submitPilots(self, queue, number, fcl, qcl):
-                '''
-                Method to submit pilots 
-                '''
-                raise NotImplementedError
+        raise NotImplementedError
 
