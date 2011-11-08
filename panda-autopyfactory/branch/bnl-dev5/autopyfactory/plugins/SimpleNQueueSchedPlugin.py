@@ -14,43 +14,43 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 class SchedPlugin(SchedInterface):
-        
-        def __init__(self, wmsqueue):
-                self.wmsqueue = wmsqueue
-                self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
-                self.log.info("SchedPlugin: Object initialized.")
+    
+    def __init__(self, wmsqueue):
+        self.wmsqueue = wmsqueue
+        self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
+        self.log.info("SchedPlugin: Object initialized.")
 
-        def calcSubmitNum(self, status):
-                """ 
-                is nqueue > number of idle?
-                   no  -> return 0
-                   yes -> 
-                      is maxPilotsPerCycle defined?
-                         yes -> return min(nqueue - nbpilots, maxPilotsPerCycle)
-                         no  -> return (nqueue - nbpilots)
-                """
+    def calcSubmitNum(self, status):
+        """ 
+        is nqueue > number of idle?
+           no  -> return 0
+           yes -> 
+              is maxPilotsPerCycle defined?
+                 yes -> return min(nqueue - nbpilots, maxPilotsPerCycle)
+                 no  -> return (nqueue - nbpilots)
+        """
 
-                self.log.debug('calcSubmitNum: Starting with input %s' %status)
+        self.log.debug('calcSubmitNum: Starting with input %s' %status)
 
-                if not status:
-                        out = 0
-                elif not status.valid():
-                        out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.default')
-                        self.log.info('calcSubmitNum: status is not valid, returning default = %s' %out)
-                else:
-                        nqueue = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.nqueue')
-                        nbpilots = status.batch.get('1', 0)
-                        # '1' means pilots in Idle status
+        if not status:
+            out = 0
+        elif not status.valid():
+            out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.default')
+            self.log.info('calcSubmitNum: status is not valid, returning default = %s' %out)
+        else:
+            nqueue = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.nqueue')
+            nbpilots = status.batch.get('1', 0)
+            # '1' means pilots in Idle status
 
-                        if nqueue > nbpilots:
-                                out = nqueue - nbpilots
-                        else:
-                                out = 0
+            if nqueue > nbpilots:
+                    out = nqueue - nbpilots
+            else:
+                    out = 0
 
-                # check if the config file has attribute maxPilotsPerCycle
-                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.simplenqueue.maxpilotspercycle'):
-                        maxPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.maxpilotspercycle')
-                        out = min(out, maxPilotsPerCycle)
+        # check if the config file has attribute maxPilotsPerCycle
+        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.simplenqueue.maxpilotspercycle'):
+            maxPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.maxpilotspercycle')
+            out = min(out, maxPilotsPerCycle)
 
-                self.log.debug('calcSubmitNum: Leaving returning %s' %out)
-                return out
+        self.log.debug('calcSubmitNum: Leaving returning %s' %out)
+        return out

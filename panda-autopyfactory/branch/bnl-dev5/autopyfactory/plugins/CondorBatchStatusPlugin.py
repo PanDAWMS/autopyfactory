@@ -169,9 +169,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 strout = self._querycondor()
                 outlist = self._parseoutput(strout)
                 aggdict = self._aggregateinfo(outlist)
-                infolist = self._map2info(aggdict)
-                newinfo = BatchStatusInfo()
-                newinfo.queues = outdic
+                newinfo = self._map2info(aggdict)
                 self.currentinfo = newinfo
             except (Exception, e):
                 self.info.update(self.output, self.err)
@@ -486,7 +484,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     elif status == '6':
                         # Transferring jobs are running
                         qi.running += valct
-
+        bsi.lasttime = int(time.time())
         self.log.debug('_map2info: Returning BatchStatusInfo: %s' % bsi)
         return bsi
 
