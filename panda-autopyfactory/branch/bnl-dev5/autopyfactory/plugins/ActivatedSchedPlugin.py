@@ -73,8 +73,8 @@ class SchedPlugin(SchedInterface):
 
             #activate_jobs = wmsinfo.jobs[siteid]['activated']            
            
-            pending_pilots = batchinfo[self.wmsqueue.apfqueue].pending            
-            running_pilots = batchinfo[self.wmsqueue.apfqueue].running
+            pending_pilots = batchinfo.queues[self.wmsqueue.apfqueue].pending            
+            running_pilots = batchinfo.queues[self.wmsqueue.apfqueue].running
             #running_pilots = status.batch.get('2', 0)
             nbpilots = pending_pilots + running_pilots
 
