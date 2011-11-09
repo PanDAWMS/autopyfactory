@@ -95,8 +95,8 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
         self.log.debug('start: Staring.')
 
-        if not self.__started:
-                self.__started = True
+        if not self._started:
+                self._started = True
                 threading.Thread.start(self)
 
         self.log.debug('start: Leaving.')
