@@ -5,6 +5,7 @@ import threading
 import time
 
 from autopyfactory.factory import WMSStatusInterface
+from autopyfactory.factory import WMSStatusInfo
 from autopyfactory.factory import Singleton 
 
 import userinterface.Client as Client
