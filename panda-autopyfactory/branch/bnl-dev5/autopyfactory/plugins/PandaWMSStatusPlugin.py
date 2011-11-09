@@ -146,8 +146,8 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         newinfo = WMSStatusInfo()
         
         try:
-            newinfo.clouds = self._updateclouds()
-            newinfo.sites = self._updatesites()
+            newinfo.cloud = self._updateclouds()
+            newinfo.site = self._updatesites()
             newinfo.jobs = self._updatejobs()
             self.currentinfo = newinfo
             self.currentinfo.lasttime = int(time.time())
@@ -156,6 +156,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
             self.log.debug("Exception: %s" % traceback.format_exc()) 
 
         self.log.debug('_update: Leaving.')
+
 
     def _updateclouds(self):
         '''
@@ -244,9 +245,10 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
         before = time.time()
         # get Clouds Specs
-        self.clouds_err, self.all_clouds_config = Client.getCloudSpecs()
-        self.info.update(InfoHandler.CLOUDS, self.all_clouds_config, self.clouds_err)
-        if self.clouds_err:
+        clouds_err, all_clouds_config = Client.getCloudSpecs()
+        if not clouds_err:
+            self.currentinfo.cloud = all_clouds_config 
+        else:
             self.log.error('Client.getCloudSpecs() failed')
         delta = time.time() - before
         self.log.debug('_updateclouds: it took %s seconds to perform the query' %delta)
@@ -347,12 +349,13 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         '''
         before = time.time()
         # get Sites Specs
-        self.sites_err, self.all_sites_config = Client.getSiteSpecs(siteType='all')
-        self.info.update(InfoHandler.SITES, self.all_sites_config, self.sites_err)
-        if self.sites_err:
+        sites_err, all_sites_config = Client.getSiteSpecs(siteType='all')
+        if not sites_err:
+            self.currentinfo.site = all_sites_config 
+        else:
             self.log.error('Client.getSiteSpecs() failed.')
                     
-                
+       
     def _updatejobs(self):
         '''
         
@@ -386,13 +389,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         before = time.time()
         # get Jobs Specs
         #self.jobs_err, self.all_jobs_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='') 
-        # FIXME
-        # THIS IS A TEMPORARY SOLUTION
-        # THE LIST OF JOB TYPES SHOULD BE PASSED AS INPUT
-        # THAT LIST SHOULD BE CALCULATED:
-        #       - AS A PARAMETER
-        #       - REPORTED DYNAMICALLY BY C
-        self.jobs_err, self.all_jobs_config = Client.getJobStatisticsPerSite(
+        jobs_err, all_jobs_config = Client.getJobStatisticsPerSite(
                     countryGroup='',
                     workingGroup='', 
                     jobType='test,prod,managed,user,panda,ddm,rc_test'
@@ -400,10 +397,11 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                                                                                    
         delta = time.time() - before
         self.log.debug('_update: it took %s seconds to perform the query' %delta)
+        if not jobs_err:
+            self.currentinfo.jobs = all_jobs_config
+        else:
+            self.log.error('Client.getJobStatisticsPerSite() failed.')
 
-        self.info.update(InfoHandler.JOBS, self.all_jobs_config, self.jobs_err)
-        if self.jobs_err:
-                self.log.error('Client.getJobStatisticsPerSite() failed')
 
     def join(self,timeout=None):
             '''
