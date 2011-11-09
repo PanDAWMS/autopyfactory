@@ -36,7 +36,7 @@ class SchedPlugin(SchedInterface):
         then this min_pilots_per_cycle is the number of pilots 
         to be submitted.
         """
-        self.log.debug('calcSubmitNum: Starting with input ')
+        self.log.debug('calcSubmitNum: Starting.')
 
         # giving an initial value to some variables
         # to prevent the logging from crashing
@@ -64,7 +64,6 @@ class SchedPlugin(SchedInterface):
             nbpilots = pending_pilots + running_pilots
 
             out = max(0, nbjobs - pending_pilots)
-    
             # check if the config file has attribute MAX_JOBS_TORUN
             if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_jobs_torun'):
                 MAX_JOBS_TORUN = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_jobs_torun')
