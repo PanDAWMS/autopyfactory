@@ -105,5 +105,8 @@ class SchedPlugin(SchedInterface):
             out2 = max(0, MAX_PILOTS_PENDING - pending_pilots) # this is to prevent having a negative number as solution
             out = min(out, out2)
 
-        self.log.debug('calcSubmitNum (activated_jobs=%s; pending_pilots=%s; running_pilots=%s;) : Leaving returning %s' %(nbjobs, pending_pilots, running_pilots, out))
+        self.log.debug('calcSubmitNum (activated_jobs=%s; pending_pilots=%s; running_pilots=%s;) : Leaving returning %s' %(activated_jobs, 
+                                                                                                                           pending_pilots, 
+                                                                                                                           running_pilots, 
+                                                                                                                           out))
         return out
