@@ -3,6 +3,7 @@
 import logging
 import threading
 import time
+import traceback
 
 from autopyfactory.factory import WMSStatusInterface
 from autopyfactory.factory import WMSStatusInfo
@@ -150,8 +151,10 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
             newinfo.jobs = self._updatejobs()
             self.currentinfo = newinfo
             self.currentinfo.lasttime = int(time.time())
-        except Exception:
-            self.log.error("Problem updating new info for WMS status.")
+        except Exception, e:
+            self.log.error("_update: Exception: %s" % str(e))
+            self.log.debug("Exception: %s" % traceback.format_exc()) 
+
         self.log.debug('_update: Leaving.')
 
     def _updateclouds(self):

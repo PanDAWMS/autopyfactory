@@ -7,6 +7,7 @@ import subprocess
 import logging
 import time
 import threading
+import traceback
 import xml.dom.minidom
 
 from autopyfactory.factory import BatchStatusInterface
@@ -168,6 +169,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.currentinfo = newinfo
             except Exception, e:
                 self.log.error("_update: Exception: %s" % str(e))
+                self.log.debug("Exception: %s" % traceback.format_exc())            
 
             self.log.debug('__update: Leaving.')
 
