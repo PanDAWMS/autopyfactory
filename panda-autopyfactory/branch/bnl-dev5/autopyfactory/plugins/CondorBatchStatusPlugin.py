@@ -74,15 +74,15 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             not reliable anymore.
             '''           
             self.log.debug('getInfo: Starting with maxtime=%s' % maxtime)
+            
             if not self.currentinfo:
                     self.log.debug('getInfo: Not initialized yet. Returning None.')
                     return None
-            if maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
-                    self.log.debug('get: Info too old. Leaving and returning None.')
+            elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
+                    self.log.debug('getInfo: Info too old. Leaving and returning None.')
                     return None
             else:                    
-                    #out = self.__analyzeoutput(self.info, 'jobStatus', queue)
-                    self.log.debug('get: Leaving and returning %s' %out)
+                    self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentinfo))
                     return self.currentinfo
 
 
