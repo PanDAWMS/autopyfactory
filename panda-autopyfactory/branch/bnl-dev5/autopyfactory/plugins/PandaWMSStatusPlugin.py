@@ -248,11 +248,12 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         clouds_err, all_clouds_config = Client.getCloudSpecs()
         delta = time.time() - before
         self.log.debug('_updateclouds: it took %s seconds to perform the query' %delta)
+        out = None
         if not clouds_err:
-            self.currentinfo.cloud = all_clouds_config 
+            out = all_clouds_config 
         else:
             self.log.error('Client.getCloudSpecs() failed')
-
+        return out
 
         
     def _updatesites(self):
@@ -354,11 +355,12 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         delta = time.time() - before
         self.log.debug('_updateSites: it took %s seconds to perform the query' %delta)
         
+        out = None
         if not sites_err:
-            self.currentinfo.site = all_sites_config 
+            out = all_sites_config 
         else:
             self.log.error('Client.getSiteSpecs() failed.')
-                    
+        return out     
        
     def _updatejobs(self):
         '''
@@ -401,11 +403,12 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                                                                                    
         delta = time.time() - before
         self.log.debug('_updateJobs: it took %s seconds to perform the query' %delta)
+        out = None
         if not jobs_err:
-            self.currentinfo.jobs = all_jobs_config
+            out = all_jobs_config
         else:
             self.log.error('Client.getJobStatisticsPerSite() failed.')
-
+        return out
 
     def join(self,timeout=None):
             '''
