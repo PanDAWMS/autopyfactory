@@ -615,9 +615,9 @@ class WMSStatusInfo(object):
             self.log = logging.getLogger('main.wmsstatus')
             self.log.info('Status: Initializing object...')
 
-            self.cloud = {}
-            self.site = {}
-            self.jobs = {}
+            self.cloud = None
+            self.site = None
+            self.jobs = None
             self.lasttime = None
 
             self.log.info('Status: Object Initialized')
@@ -640,6 +640,18 @@ class WMSStatusInfo(object):
 
             self.log.info('valid: Leaving with output %s.' %out)
             return out
+
+        def len(self):
+            length = 3
+            if self.cloud is None:
+                length -= 1
+            if self.site is None:
+                length -= 1
+            if self.jobs is None:
+                length -= 1
+            return length
+            
+
 
 #
 # At some point it would be good to encapsulate a non-Panda-specific vocabulary

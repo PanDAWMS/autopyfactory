@@ -47,7 +47,7 @@ class SchedPlugin(SchedInterface):
         wmsinfo = self.wmsqueue.wmsstatus.getInfo(maxtime = self.wmsqueue.wmsstatusmaxtime)
         batchinfo = self.wmsqueue.batchstatus.getInfo(maxtime = self.wmsqueue.batchstatusmaxtime)
 
-        if not (wmsinfo and batchinfo):
+        if wmsinfo is None or batchinfo is None:
             out = 0
         elif not wmsinfo.valid() and batchinfo.valid():
             out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.default')

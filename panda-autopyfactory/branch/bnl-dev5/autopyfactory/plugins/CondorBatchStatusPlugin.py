@@ -166,6 +166,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     outlist = self._parseoutput(strout)
                     aggdict = self._aggregateinfo(outlist)
                     newinfo = self._map2info(aggdict)
+                    self.log.info("Replacing old info with newly generated info.")
                     self.currentinfo = newinfo
             except Exception, e:
                 self.log.error("_update: Exception: %s" % str(e))
