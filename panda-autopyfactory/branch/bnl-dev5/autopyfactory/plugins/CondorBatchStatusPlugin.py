@@ -71,15 +71,13 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             In that case, if the info recorded is older than that maxtime,
             None is returned, as we understand that info is too old and 
             not reliable anymore.
-            '''
-           
+            '''           
             self.log.debug('getInfo: Starting with maxtime=%s' % maxtime)
             if not self.currentinfo:
-                    self.log.debug('get: Info not initialized yet.')
-                    self.log.debug('get: Leaving and returning an empty dictionary.')
+                    self.log.debug('getInfo: Not initialized yet. Returning None.')
                     return None
             if maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
-                    self.log.info('get: Info too old. Leaving and returning None.')
+                    self.log.debug('get: Info too old. Leaving and returning None.')
                     return None
             else:                    
                     #out = self.__analyzeoutput(self.info, 'jobStatus', queue)
