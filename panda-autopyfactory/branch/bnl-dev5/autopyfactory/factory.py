@@ -641,7 +641,7 @@ class WMSStatusInfo(object):
             self.log.info('valid: Leaving with output %s.' %out)
             return out
 
-        def len(self):
+        def __len__(self):
             length = 3
             if self.cloud is None:
                 length -= 1
