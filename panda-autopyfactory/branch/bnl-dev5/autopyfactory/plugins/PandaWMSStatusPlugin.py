@@ -113,9 +113,9 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         while not self.stopevent.isSet():
             try:                       
                 self._update()
-                time.sleep(self.sleeptime)
             except Exception, e:
                 self.log.error("Main loop caught exception: %s " % str(e))
+            time.sleep(self.sleeptime)
         self.log.debug('run: Leaving.')
 
     def _getmaxtimeinfo(self, infotype, maxtime):

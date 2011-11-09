@@ -54,7 +54,7 @@ class ProxyManager(threading.Thread):
         try:
             while True:
                 #self.log.debug('Checking for interrupt.')
-                time.sleep(2)                  
+                time.sleep(3)                  
         except (KeyboardInterrupt): 
                 self.log.info("Shutdown via Ctrl-C or -INT signal.")
                 self.log.debug("Shutting down all threads...")

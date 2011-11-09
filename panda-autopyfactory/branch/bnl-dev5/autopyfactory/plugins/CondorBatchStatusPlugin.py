@@ -109,10 +109,10 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             while not self.stopevent.isSet():
                 try:
                     self._update()
-                    self.log.debug("Sleeping for %d seconds..." % self.sleeptime)
-                    time.sleep(self.sleeptime)
                 except Exception, e:
                     self.log.error("Main loop caught exception: %s " % str(e))
+                self.log.debug("Sleeping for %d seconds..." % self.sleeptime)
+                time.sleep(self.sleeptime)
             self.log.debug('run: Leaving')
 
     def _update(self):

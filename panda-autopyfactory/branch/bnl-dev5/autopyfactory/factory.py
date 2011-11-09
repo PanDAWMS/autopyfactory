@@ -467,12 +467,11 @@ class WMSQueue(threading.Thread):
                 self._submitpilots(nsub)
                 self._monitor_shout()
                 self._exitloop()
-                self._reporttime()
-                time.sleep(self.sleep)
-            
+                self._reporttime()           
             except Exception, e:
                 self.log.error("Caught exception: %s " % str(e))
                 self.log.debug("Exception: %s" % traceback.format_exc())
+            time.sleep(self.sleep)
 
         self.log.debug("run: Leaving")
 
