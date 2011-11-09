@@ -149,8 +149,9 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
             newinfo.cloud = self._updateclouds()
             newinfo.site = self._updatesites()
             newinfo.jobs = self._updatejobs()
+            newinfo.lasttime = int(time.time())
+            self.log.info("Replacing old info with newly generated info.")
             self.currentinfo = newinfo
-            self.currentinfo.lasttime = int(time.time())
         except Exception, e:
             self.log.error("_update: Exception: %s" % str(e))
             self.log.debug("Exception: %s" % traceback.format_exc()) 
@@ -430,14 +431,13 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
             
             '''
             self.log.debug('get: Starting with inputs maxtime=%s' % maxtime)
-            out = None
-            if not self.currentinfo:
-                    self.log.debug('get: Info not initialized.')
-                    self.log.debug('get: Leaving and return empty dictionary')
+            if self.currentinfo is None:
+                self.log.debug('getInfo: Info not initialized. Return None.')
+                return None    
             elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
-                    self.log.debug('get: Info is too old')
-                    self.log.debug('get: Leaving and return empty dictionary')
+                self.log.debug('getInfo: Info is too old. Maxtime = %d. Returning None' % maxtime)
+                return None    
             else:
-                    out = self.currentinfo
-            self.log.debug('get: Leaving and returning %s' %out)
-            return out
+                self.log.debug('getInfo: Leaving. Returning info with %d items' %len(self.currentinfo))
+                return self.currentinfo
+            
