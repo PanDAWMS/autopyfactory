@@ -55,7 +55,6 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.factoryid = wmsqueue.fcl.get('Factory', 'factoryId') 
             self.sleeptime = self.wmsqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
             self.currentinfo = None              
-            #self.error = None       # error
 
             # variable to record when was last time info was updated
             # the info is recorded as seconds since epoch
@@ -75,7 +74,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             '''           
             self.log.debug('getInfo: Starting with maxtime=%s' % maxtime)
             
-            if not self.currentinfo:
+            if self.currentinfo is None:
                 self.log.debug('getInfo: Not initialized yet. Returning None.')
                 return None
             elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
@@ -159,7 +158,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     128     STAGE_OUT 
             '''
 
-            self.log.debug('__update: Starting.')
+            self.log.debug('_update: Starting.')
             
             try:
                 strout = self._querycondor()
@@ -240,7 +239,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             'jobstatus' : '1' }
         ]
         '''
-        self.log.debug('_parseoutput: Starting')                
+        self.log.debug('_parseoutput: Starting.')                
 
         xmldoc = xml.dom.minidom.parseString(output).documentElement
         nodelist = []
