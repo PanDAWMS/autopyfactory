@@ -44,8 +44,8 @@ class SchedPlugin(SchedInterface):
         pending_pilots = 0
         running_pilots = 0
 
-        wmsinfo = self.wmsqueue.wmsstatus.getInfo()
-        batchinfo = self.wmsqueue.batchstatus.getInfo()
+        wmsinfo = self.wmsqueue.wmsstatus.getInfo(maxtime = self.wmsqueue.wmsstatusmaxtime)
+        batchinfo = self.wmsqueue.batchstatus.getInfo(maxtime = self.wmsqueue.batchstatusmaxtime)
 
         if not (wmsinfo and batchinfo):
             out = 0

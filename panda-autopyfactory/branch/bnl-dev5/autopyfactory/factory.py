@@ -363,6 +363,15 @@ class WMSQueue(threading.Thread):
         self.sleep = int(self.qcl.get(apfqueue, 'wmsqueue.sleep'))
         self.cyclesrun = 0
         
+        # Get status-related vars
+        self.batchstatusmaxtime = 0
+        if self.fcl.has_option('Factory', 'batchstatus.maxtime'):
+            self.batchstatusmaxtime = self.fcl.get('Factory', 'batchstatus.maxtime')
+
+        self.wmsstatusmaxtime = 0
+        if self.fcl.has_option('Factory', 'wmsstatus.maxtime'):
+            self.wmsstatusmaxtime = self.fcl.get('Factory', 'wmsstatus.maxtime')
+        
         # Handle sched plugin
         self.scheduler = self._getplugin('sched', self)
 
@@ -453,7 +462,7 @@ class WMSQueue(threading.Thread):
 
         while not self.stopevent.isSet():
             try:
-                nsub = self.scheduler.calcSubmitNum(self.status)
+                nsub = self.scheduler.calcSubmitNum()
                 self._submitpilots(nsub)
                 self._monitor_shout()
                 self._exitloop()
@@ -466,30 +475,6 @@ class WMSQueue(threading.Thread):
 
         self.log.debug("run: Leaving")
 
-    def _updatestatus(self):
-            '''
-            update batch info and panda info
-            '''
-            self.log.debug("__updatestatus: Starting")
-
-            # checking if factory.conf has attributes to say
-            # how old the status info (batch, wms) can be
-            batchstatusmaxtime = 0
-            if self.fcl.has_option('Factory', 'batchstatus.maxtime'):
-                batchstatusmaxtime = self.fcl.get('Factory', 'batchstatus.maxtime')
-
-            wmsstatusmaxtime = 0
-            if self.fcl.has_option('Factory', 'wmsstatus.maxtime'):
-                wmsstatusmaxtime = self.fcl.get('Factory', 'wmsstatus.maxtime')
-
-            # getting the info
-            self.status.batch = self.batchstatus.getInfo(self.siteid, batchstatusmaxtime)
-            self.status.cloud = self.wmsstatus.getCloudInfo(self.cloud, wmsstatusmaxtime)
-            self.status.site = self.wmsstatus.getSiteInfo(self.siteid, wmsstatusmaxtime)
-            self.status.jobs = self.wmsstatus.getJobsInfo(self.siteid, wmsstatusmaxtime)
-
-            self.log.debug("__updatestatus: Leaving")
-
 
     def _submitpilots(self, nsub):
         '''
@@ -499,7 +484,7 @@ class WMSQueue(threading.Thread):
         self.log.debug("__submitpilots: Starting")
         # message for the monitor
         msg = 'Attempt to submit %d pilots for queue %s' %(nsub, self.siteid)
-        self.__monitor_note(msg)
+        self._monitor_note(msg)
 
         (status, output) = self.batchsubmit.submitPilots(self.siteid, nsub, self.fcl, self.qcl)
         if output:
