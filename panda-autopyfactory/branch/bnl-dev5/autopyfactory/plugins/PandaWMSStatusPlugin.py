@@ -109,8 +109,8 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         self.log.debug('run: Starting.')
         while not self.stopevent.isSet():
             try:                       
-                self.__update()
-                self.__sleep()
+                self._update()
+                self._sleep()
             except Exception, e:
                 self.log.error("Main loop caught exception: %s " % str(e))
         self.log.debug('run: Leaving.')
@@ -394,7 +394,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                     ) 
                                                                                    
         delta = time.time() - before
-        self.log.debug('__update: it took %s seconds to perform the query' %delta)
+        self.log.debug('_update: it took %s seconds to perform the query' %delta)
 
         self.info.update(InfoHandler.JOBS, self.all_jobs_config, self.jobs_err)
         if self.jobs_err:
