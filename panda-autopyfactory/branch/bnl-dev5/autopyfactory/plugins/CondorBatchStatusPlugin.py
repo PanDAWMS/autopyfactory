@@ -24,7 +24,6 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
-
 class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
     '''
     -----------------------------------------------------------------------
@@ -116,7 +115,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     self._update()
                     self.log.debug("Sleeping for %d seconds..." % self.sleeptime)
                     time.sleep(self.sleeptime)
-                except Exception as e:
+                except Exception, e:
                     self.log.error("Main loop caught exception: %s " % str(e))
             self.log.debug('run: Leaving')
 
