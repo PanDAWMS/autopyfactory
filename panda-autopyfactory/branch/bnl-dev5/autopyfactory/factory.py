@@ -702,7 +702,6 @@ class BatchStatusInfo(object):
         self.lasttime = None
         self.log.info('Status: Object Initialized')
 
-   
 
     def valid(self):
         '''
@@ -718,6 +717,12 @@ class BatchStatusInfo(object):
 
         #self.log.info('valid: Leaving with output %s.' %out)
         return out
+
+    def __len__(self):
+        '''
+        Implement len() so debug can confirm number of queue entries. 
+        '''
+        return len(self._queues)
 
 
 class QueueInfo(object):

@@ -76,14 +76,14 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.log.debug('getInfo: Starting with maxtime=%s' % maxtime)
             
             if not self.currentinfo:
-                    self.log.debug('getInfo: Not initialized yet. Returning None.')
-                    return None
+                self.log.debug('getInfo: Not initialized yet. Returning None.')
+                return None
             elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
-                    self.log.debug('getInfo: Info too old. Leaving and returning None.')
-                    return None
+                self.log.debug('getInfo: Info too old. Leaving and returning None.')
+                return None
             else:                    
-                    self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentinfo))
-                    return self.currentinfo
+                self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentinfo))
+                return self.currentinfo
 
 
     def start(self):
