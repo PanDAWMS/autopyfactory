@@ -170,7 +170,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 aggdict = self._aggregateinfo(outlist)
                 newinfo = self._map2info(aggdict)
                 self.currentinfo = newinfo
-            except Exception as e:
+            except Exception, e:
                 self.log.error("_update: Exception: %s" % str(e))
 
             self.log.debug('__update: Leaving.')
