@@ -40,6 +40,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         self.wmsstatusmaxtime = 0
         if self.wmsqueue.fcl.has_option('Factory', 'wmsstatus.maxtime'):
             self.wmsstatusmaxtime = self.fcl.get('Factory', 'wmsstatus.maxtime')
+        self.sleeptime = self.wmsqueue.fcl.getint('Factory', 'wmsstatus.panda.sleep')
 
         # current WMSStatusIfno object
         self.currentinfo = None
@@ -110,7 +111,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         while not self.stopevent.isSet():
             try:                       
                 self._update()
-                self._sleep()
+                time.sleep(self.sleeptime)
             except Exception, e:
                 self.log.error("Main loop caught exception: %s " % str(e))
         self.log.debug('run: Leaving.')
@@ -399,14 +400,6 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         self.info.update(InfoHandler.JOBS, self.all_jobs_config, self.jobs_err)
         if self.jobs_err:
                 self.log.error('Client.getJobStatisticsPerSite() failed')
-
-
-    def __sleep(self):
-            # FIXME: temporary solution
-            self.log.debug('__sleep: Starting.')
-            sleeptime = self.wmsqueue.fcl.getint('Factory', 'wmsstatus.panda.sleep')
-            time.sleep(sleeptime)
-            self.log.debug('__sleep: Leaving.')
 
     def join(self,timeout=None):
             '''
