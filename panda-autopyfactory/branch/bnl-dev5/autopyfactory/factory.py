@@ -738,9 +738,9 @@ class BatchStatusInfo(object):
 
     def __len__(self):
         '''
-        Implement len() so debug can confirm number of queue entries. 
+        Implement len() so debug can confirm number of queueInfo objects in this BatchStatusInfo. 
         '''
-        return len(self._queues)
+        return len(self.queues)
 
 
 class QueueInfo(object):
