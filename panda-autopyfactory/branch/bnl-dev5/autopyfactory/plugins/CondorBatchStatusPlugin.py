@@ -163,10 +163,11 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             
             try:
                 strout = self._querycondor()
-                outlist = self._parseoutput(strout)
-                aggdict = self._aggregateinfo(outlist)
-                newinfo = self._map2info(aggdict)
-                self.currentinfo = newinfo
+                if strout:
+                    outlist = self._parseoutput(strout)
+                    aggdict = self._aggregateinfo(outlist)
+                    newinfo = self._map2info(aggdict)
+                    self.currentinfo = newinfo
             except Exception, e:
                 self.log.error("_update: Exception: %s" % str(e))
                 self.log.debug("Exception: %s" % traceback.format_exc())            
@@ -239,19 +240,14 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             'jobstatus' : '1' }
         ]
         '''
-        self.log.debug('_parseoutput: Starting with inputs: output=%s' %(output))
-                 
-        if not output:
-            # FIXME: temporary solution
-            self.log.debug('_parseoutput: Leaving and returning %s' %output_dic)
-            return None
+        self.log.debug('_parseoutput: Starting')                
 
         xmldoc = xml.dom.minidom.parseString(output).documentElement
         nodelist = []
         for c in self._listnodesfromxml(xmldoc, 'c') :
             node_dict = self._node2dict(c)
             nodelist.append(node_dict)            
-        self.log.debug('_parseoutput: Leaving and returning %s' %(output_dic))
+        self.log.debug('_parseoutput: Leaving and returning list of %d entries.' %len(nodelist))
         
         return nodelist
 
@@ -320,7 +316,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                                           }
                       },             
         '''
-        self.log.debug('_aggregateinfo: Starting.')
+        self.log.debug('_aggregateinfo: Starting with list of %d items.' % len(input))
         queues = {}
         for item in input:
             if not item.has_key('match_apf_queue'):
