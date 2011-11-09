@@ -461,6 +461,7 @@ class WMSQueue(threading.Thread):
             
             except Exception, e:
                 self.log.error("Caught exception: %s" % str(e))
+                self.log.debug("Exception: %s" % sys.exc_info()[0])
 
         self.log.debug("run: Leaving")
 

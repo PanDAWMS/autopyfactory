@@ -116,7 +116,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     self._update()
                     self.log.debug("Sleeping for %d seconds..." % self.sleeptime)
                     time.sleep(self.sleeptime)
-                except Exception, e:
+                except Exception as e:
                     self.log.error("Main loop caught exception: %s " % str(e))
             self.log.debug('run: Leaving')
 
@@ -171,8 +171,8 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 aggdict = self._aggregateinfo(outlist)
                 newinfo = self._map2info(aggdict)
                 self.currentinfo = newinfo
-            except (Exception, e):
-                self.info.update(self.output, self.err)
+            except Exception as e:
+                self.log.error("_update: Exception: %s" % str(e))
 
             self.log.debug('__update: Leaving.')
 
@@ -205,12 +205,13 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         # See http://stackoverflow.com/questions/1191374/subprocess-with-timeout
         #
         before = time.time()          
-        p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True )
+        p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        rc = p.wait()
         delta = time.time() - before
         self.log.debug('_update: it took %s seconds to perform the query' %delta)
         
         out = None
-        if status == 0:
+        if rc == 0:
              (out, err) = p.communicate()
         self.log.debug('_querycondor: Leaving. Out is %s' % out)
         return out
