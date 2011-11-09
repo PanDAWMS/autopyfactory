@@ -423,7 +423,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
             '''
             self.log.debug('get: Starting with inputs maxtime=%s' % maxtime)
             out = None
-            if not self.initialized:
+            if not self.currentinfo:
                     self.log.debug('get: Info not initialized.')
                     self.log.debug('get: Leaving and return empty dictionary')
             elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
