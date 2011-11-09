@@ -425,7 +425,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         bsi = BatchStatusInfo()
         for site in input.keys():
             qi = QueueInfo()
-            setattr(bsi,site,qi)
+            bsi.queues[site] = qi
             attrdict = input[site]
             
             # use finer-grained globus statuses in preference to local summaries. 

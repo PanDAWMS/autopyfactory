@@ -40,7 +40,7 @@ class SchedPlugin(SchedInterface):
 
         # giving an initial value to some variables
         # to prevent the logging from crashing
-        nbjobs = 0
+        activated_jobs = 0
         pending_pilots = 0
         running_pilots = 0
 
@@ -48,17 +48,32 @@ class SchedPlugin(SchedInterface):
         batchinfo = self.wmsqueue.batchstatus.getInfo(maxtime = self.wmsqueue.batchstatusmaxtime)
 
         if wmsinfo is None or batchinfo is None:
+            self.log.warning("wsinfo or batchinfo is None!")
             out = 0
         elif not wmsinfo.valid() and batchinfo.valid():
             out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.default')
-            self.log.info('calcSubmitNum: a status is not valid, returning default = %s' %out)
+            self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             # NOTE: This could change to 
             # nbjobs = wmsinfo.jobs[self.wmsqueue.apfqueue].activated      
             # if we regularize the *Info object interfaces. 
             #
-            nbjobs = wmsinfo.jobs[self.wmsqueue.apfqueue]['activated']                     
-            pending_pilots = batchinfo[self.wmsqueue.apfqueue].pending
+            # Carefully get wmsinfo, activated. 
+            siteid = self.wmsqueue.siteid
+            self.log.debug("Siteid is %s" % siteid)
+            jobsinfo = wmsinfo.jobs
+            self.log.debug("jobsinfo class is %s" % jobsinfo.__class__ )
+            try:
+                sitedict = jobsinfo[siteid]
+                self.log.debug("sitedict class is %s" % sitedict.__class__ )
+                activated_jobs = sitedict['activated']
+            
+            except KeyError:
+                self.log.error("siteid: %s not present in jobs info from WMS" % siteid)
+
+            #activate_jobs = wmsinfo.jobs[siteid]['activated']            
+           
+            pending_pilots = batchinfo[self.wmsqueue.apfqueue].pending            
             running_pilots = batchinfo[self.wmsqueue.apfqueue].running
             #running_pilots = status.batch.get('2', 0)
             nbpilots = pending_pilots + running_pilots

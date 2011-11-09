@@ -356,7 +356,7 @@ class WMSQueue(threading.Thread):
             self.siteid = self.qcl.get(apfqueue, 'siteid')
         else:
             # if siteid is not in the specs, then
-            # the very APF QUEUE name is teh siteid, as default
+            # the very APF QUEUE name is the siteid, as default
             self.siteid = apfqueue
         self.nickname = self.qcl.get(apfqueue, 'nickname')
         self.cloud = self.qcl.get(apfqueue, 'cloud')
@@ -710,7 +710,9 @@ class BatchStatusInfo(object):
         
         self.log = logging.getLogger('main.batchstatus')
         self.log.info('Status: Initializing object...')
-        self._queues = {}
+        
+        # queues is a dictionary of QueueInfo objects
+        self.queues = {}
         self.lasttime = None
         self.log.info('Status: Object Initialized')
 
@@ -729,6 +731,10 @@ class BatchStatusInfo(object):
 
         #self.log.info('valid: Leaving with output %s.' %out)
         return out
+
+
+
+
 
     def __len__(self):
         '''
