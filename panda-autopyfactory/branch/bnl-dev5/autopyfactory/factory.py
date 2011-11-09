@@ -10,6 +10,7 @@ import datetime
 import logging
 import threading
 import time
+import traceback
 import os
 import sys
 
@@ -461,17 +462,17 @@ class WMSQueue(threading.Thread):
         self.log.debug("run: Starting" )
 
         while not self.stopevent.isSet():
-            #try:
-            nsub = self.scheduler.calcSubmitNum()
-            self._submitpilots(nsub)
-            self._monitor_shout()
-            self._exitloop()
-            self._reporttime()
-            time.sleep(self.sleep)
+            try:
+                nsub = self.scheduler.calcSubmitNum()
+                self._submitpilots(nsub)
+                self._monitor_shout()
+                self._exitloop()
+                self._reporttime()
+                time.sleep(self.sleep)
             
-            #except Exception, e:
-            #    self.log.error("Caught exception: %s" % str(e))
-            #    self.log.debug("Exception: %s" % sys.exc_info()[0])
+            except Exception, e:
+                self.log.error("Caught exception: %s " % str(e))
+                self.log.debug("Exception: %s" % traceback.format_exc())
 
         self.log.debug("run: Leaving")
 

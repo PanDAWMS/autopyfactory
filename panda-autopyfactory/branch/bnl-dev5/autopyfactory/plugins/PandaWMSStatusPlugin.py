@@ -421,7 +421,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
             None is returned, 
             
             '''
-            self.log.debug('get: Starting with inputs name=%s key=%s maxtime=%s.' %(name, key, maxtime))
+            self.log.debug('get: Starting with inputs maxtime=%s' % maxtime)
             out = None
             if not self.initialized:
                     self.log.debug('get: Info not initialized.')
