@@ -18,6 +18,28 @@ class SchedPlugin(SchedInterface):
     def __init__(self, wmsqueue):
         self.wmsqueue = wmsqueue                
         self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
+        self.max_jobs_torun = None
+        self.max_pilots_per_cycle = None
+        
+        # A default value is required. 
+        self.default = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.default')    
+        
+        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_jobs_torun'):
+            self.max_jobs_torun = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_jobs_torun')
+ 
+        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_per_cycle'):
+            self.max_pilots_per_cycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_per_cycle')
+
+        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.min_pilots_per_cycle'):
+            self.min_pilots_per_cycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.min_pilots_per_cycle')
+        
+        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_pending'):
+            self.max_pilots_pending = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_pending')
+        
+        self.log.debug('calcSubmitNum: max_pilots_per_cycle = %s' %self.max_pilots_per_cycle)
+        self.log.debug('calcSubmitNum: max_jobs_torun = %s' %self.max_jobs_torun)
+        self.log.debug('calcSubmitNum: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %self.min_pilots_per_cycle)
+        self.log.debug('calcSubmitNum: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %self.max_pilots_pending)   
         self.log.info("SchedPlugin: Object initialized.")
 
     def calcSubmitNum(self):
@@ -38,8 +60,7 @@ class SchedPlugin(SchedInterface):
         """
         self.log.debug('calcSubmitNum: Starting.')
 
-        # giving an initial value to some variables
-        # to prevent the logging from crashing
+        # initial default values. 
         activated_jobs = 0
         pending_pilots = 0
         running_pilots = 0
@@ -49,15 +70,11 @@ class SchedPlugin(SchedInterface):
 
         if wmsinfo is None or batchinfo is None:
             self.log.warning("wsinfo or batchinfo is None!")
-            out = 0
+            out = self.default
         elif not wmsinfo.valid() and batchinfo.valid():
-            out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.default')
+            out = self.default
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
-            # NOTE: This could change to 
-            # nbjobs = wmsinfo.jobs[self.wmsqueue.apfqueue].activated      
-            # if we regularize the *Info object interfaces. 
-            #
             # Carefully get wmsinfo, activated. 
             siteid = self.wmsqueue.siteid
             self.log.debug("Siteid is %s" % siteid)
@@ -70,8 +87,7 @@ class SchedPlugin(SchedInterface):
             except KeyError:
                 # This is OK--it just means no jobs in any state at the siteid. 
                 self.log.error("siteid: %s not present in jobs info from WMS" % siteid)
-            activated_jobs = 0
-            #activate_jobs = wmsinfo.jobs[siteid]['activated']            
+                activated_jobs = 0
            
             try:
                 pending_pilots = batchinfo.queues[self.wmsqueue.apfqueue].pending            
@@ -84,35 +100,21 @@ class SchedPlugin(SchedInterface):
             except KeyError:
                 # This is OK--it just means no jobs. 
                 pass
-            #running_pilots = status.batch.get('2', 0)
-            nbpilots = pending_pilots + running_pilots
 
-            out = max(0, nbjobs - pending_pilots)
-            # check if the config file has attribute MAX_JOBS_TORUN
-            if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_jobs_torun'):
-                MAX_JOBS_TORUN = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_jobs_torun')
-                self.log.debug('calcSubmitNum: there is a MAX_JOBS_TORUN number setup to %s' %MAX_JOBS_TORUN)
-                out_2 = max(0, MAX_JOBS_TORUN - nbpilots) # this is to prevent having a negative number as solution
-                out = min(out, out_2)
+            all_pilots = pending_pilots + running_pilots
+            out = max(0, activated_jobs - all_pilots)
+            
+            if self.max_jobs_torun: 
+                out = min(out, self.max_jobs_torun - all_pilots) # this is to prevent having a negative number as solution
+           
+            if self.max_pilots_per_cycle:
+                out = min(out, self.max_pilots_per_cycle)
 
-        # check if the config file has attribute MAX_PILOTS_PER_CYCLE 
-        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_per_cycle'):
-            MAX_PILOTS_PER_CYCLE = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_per_cycle')
-            self.log.debug('calcSubmitNum: there is a MAX_PILOTS_PER_CYCLE number setup to %s' %MAX_PILOTS_PER_CYCLE)
-            out = min(out, MAX_PILOTS_PER_CYCLE)
+            if self.min_pilots_per_cycle:
+                out = max(out, self.min_pilots_per_cycle)
 
-        # check if the config file has attribute MIN_PILOTS_PER_CYCLE 
-        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.min_pilots_per_cycle'):
-            MIN_PILOTS_PER_CYCLE = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.min_pilots_per_cycle')
-            self.log.debug('calcSubmitNum: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %MIN_PILOTS_PER_CYCLE)
-            out = max(out, MIN_PILOTS_PER_CYCLE)
-
-        # check if the config file has attribute MAX_PILOTS_PENDING
-        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_pending'):
-            MAX_PILOTS_PENDING = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_pending')
-            self.log.debug('calcSubmitNum: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %MAX_PILOTS_PENDING)
-            out2 = max(0, MAX_PILOTS_PENDING - pending_pilots) # this is to prevent having a negative number as solution
-            out = min(out, out2)
+            if self.max_pilots_pending:
+                out = min(out, self.max_pilots_pending - pending_pilots) # this is to prevent having a negative number as solution
 
         self.log.debug('calcSubmitNum (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
                                                                                              pending_pilots, 
