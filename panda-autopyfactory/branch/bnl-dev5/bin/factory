@@ -1,18 +1,21 @@
-#!/bin/sh
+#!/usr/bin/env python
 #
-# Simple python program wrapper to allow /etc/init.d/functions (daemon, killproc, checkpid) to work properly. 
-# John Hover <jhover@bnl.gov>
+# Very simple wrapper to go in /usr/bin to be executed by init script. 
 #
-# Choose proper python
-PYTH=`/bin/env python`
+from autopyfactory.factory import FactoryCLI 
 
-# Find out path and name for this wrapper. Append ".py" and execute it with our args. 
-INVOKE=$0
-PROG=$(basename $0)
-BINDIR=$(dirname $0)
-$PYTH $BINDIR/$PROG.py $@ &
-
-# Record PID of this process in PID file...
-echo $! > /var/run/$PROG.pid
-
-exit 0
+def main():
+    '''
+    Simplest possible invocation of AutoPyFactory program. Does not have the .py extension
+    to keep the RPM building system happy. 
+    '''
+    apf = FactoryCLI()
+    apf.parseopts()
+    apf.setuplogging()
+    apf.setuppandaenv()
+    apf.checkroot()
+    apf.createconfig()
+    apf.mainloop()
+        
+if __name__ == "__main__":
+    main()
