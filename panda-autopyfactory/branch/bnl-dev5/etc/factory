@@ -68,9 +68,11 @@ start() {
 	# Check if it is already running
 	if [ ! -f $PIDFILE ]; then
 		echo -n $"Starting APF daemon: "	
-	    daemon --pidfile=$PIDFILE "$BINDIR/factory --conf $CONFFILE $OPTIONS &"
-	    RETVAL=$?
-	    [ $RETVAL -eq 0 ] && touch $PIDFILE
+	    # daemon --pidfile=${PIDFILE} "$BINDIR/factory --conf $CONFFILE $OPTIONS "
+        $BINDIR/factory --conf $CONFFILE $OPTIONS &
+        RETVAL=$?
+	    [ $RETVAL -eq 0 ] && echo $! > $PIDFILE
+	    [ "$?" -eq 0 ] && success $"factory startup" || failure $"factory startup"
 	    echo
 	else
 	    echo "$0: PID file exists: $PIDFILE" 
