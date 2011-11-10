@@ -34,12 +34,21 @@ def testjobs():
     pp.pprint(all_jobs_config)
     print("###########################################")
 
+def testjobswithlabelswithlabels():
+    print("Testing job retrieval:")
+    jobs_err, all_jobs_config = Client.getJobStatisticsWithLabel()
+    print("dir all_jobs_config %s" % dir(all_jobs_config))
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(all_jobs_config)
+    print("###########################################")
+
 
 def testpanda():
     print("Testing all...")
     testcloud()
     testsites()
     testjobs()
+    testjobswithlabelswithlabels()
     
 if __name__=='__main__':
     testpanda()
