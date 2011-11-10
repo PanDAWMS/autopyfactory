@@ -460,7 +460,8 @@ class WMSQueue(threading.Thread):
         '''        
 
         self.log.debug("run: Starting" )
-
+        # give information gathering, and proxy generation enough time to perhaps have info
+        time.sleep(15)
         while not self.stopevent.isSet():
             try:
                 nsub = self.scheduler.calcSubmitNum()
@@ -481,7 +482,7 @@ class WMSQueue(threading.Thread):
         submit using this number
         '''
 
-        self.log.debug("__submitpilots: Starting")
+        self.log.debug("_submitpilots: Starting")
         # message for the monitor
         msg = 'Attempt to submit %d pilots for queue %s' %(nsub, self.siteid)
         self._monitor_note(msg)
@@ -493,7 +494,7 @@ class WMSQueue(threading.Thread):
 
         self.cyclesrun += 1
 
-        self.log.debug("__submitpilots: Leaving")
+        self.log.debug("_submitpilots: Leaving")
 
     # Monitor-releated methods
 

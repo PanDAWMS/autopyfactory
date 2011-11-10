@@ -68,12 +68,22 @@ class SchedPlugin(SchedInterface):
                 self.log.debug("sitedict class is %s" % sitedict.__class__ )
                 activated_jobs = sitedict['activated']
             except KeyError:
+                # This is OK--it just means no jobs in any state at the siteid. 
                 self.log.error("siteid: %s not present in jobs info from WMS" % siteid)
             activated_jobs = 0
             #activate_jobs = wmsinfo.jobs[siteid]['activated']            
            
-            pending_pilots = batchinfo.queues[self.wmsqueue.apfqueue].pending            
-            running_pilots = batchinfo.queues[self.wmsqueue.apfqueue].running
+            try:
+                pending_pilots = batchinfo.queues[self.wmsqueue.apfqueue].pending            
+            except KeyError:
+                                # This is OK--it just means no jobs. 
+                pass
+            
+            try:        
+                running_pilots = batchinfo.queues[self.wmsqueue.apfqueue].running
+            except KeyError:
+                # This is OK--it just means no jobs. 
+                pass
             #running_pilots = status.batch.get('2', 0)
             nbpilots = pending_pilots + running_pilots
 
