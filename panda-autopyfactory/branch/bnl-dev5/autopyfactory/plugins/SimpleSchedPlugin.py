@@ -30,18 +30,19 @@ class SchedPlugin(SchedInterface):
         self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
 
         self.default = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simple.default')
+        self.log.info('SchedPlugin: default value = %s' %self.default)
+
         self.maxpendingpilots = None
         self.maxpilotpercycle = None
 
         if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.simple.maxpendingpilots'):
             self.maxpendingpilots = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simple.maxpendingpilots')
-            self.log.debug('calcSubmitNum: there is a maxPendingPilots number setup to %s' %self.maxPendingPilots)
+            self.log.debug('SchedPlugin: there is a maxPendingPilots number setup to %s' %self.maxPendingPilots)
 
         if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.simple.maxpilotspercycle'):
             self.maxpilotspercycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simple.maxpilotspercycle')
-            self.log.debug('calcsubmitnum: there is a maxpilotspercycle number setup to %s' %maxpilotspercycle)
+            self.log.debug('SchedPlugin: there is a maxpilotspercycle number setup to %s' %maxpilotspercycle)
 
-        self.log.info('calcSubmitNum: default value = %s' %self.default)
         self.log.info("SchedPlugin: Object initialized.")
 
     def calcSubmitNum(self, status):
