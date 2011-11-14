@@ -18,6 +18,19 @@ class SchedPlugin(SchedInterface):
     def __init__(self, wmsqueue):
         self.wmsqueue = wmsqueue
         self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
+
+        self.default = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.default')
+        self.log.debug('SchedPlugin: there is a default number setup to %s' %self.default)
+
+        self.nqueue = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.nqueue')
+        self.log.debug('SchedPlugin: there is a default number setup to %s' %self.default)
+
+        self.maxpilotspercycle = None
+
+        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.simplenqueue.maxpilotspercycle'):
+            self.maxpilotspercycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.maxpilotspercycle')
+            self.log.debug('SchedPlugin: there is a maxpilotspercycle number setup to %s' %maxpilotspercycle)
+
         self.log.info("SchedPlugin: Object initialized.")
 
     def calcSubmitNum(self, status):
@@ -35,22 +48,20 @@ class SchedPlugin(SchedInterface):
         if not status:
             out = 0
         elif not status.valid():
-            out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.default')
+            out = self.default
             self.log.info('calcSubmitNum: status is not valid, returning default = %s' %out)
         else:
-            nqueue = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.nqueue')
             nbpilots = status.batch.get('1', 0)
             # '1' means pilots in Idle status
 
-            if nqueue > nbpilots:
-                    out = nqueue - nbpilots
+            if self.nqueue > nbpilots:
+                    out = self.nqueue - nbpilots
             else:
                     out = 0
 
-        # check if the config file has attribute maxPilotsPerCycle
-        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.simplenqueue.maxpilotspercycle'):
-            maxPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.maxpilotspercycle')
-            out = min(out, maxPilotsPerCycle)
+        # check if the config file has attribute maxpilotspercycle
+        if self.maxpilotspercycle:
+            out = min(out, self.maxpilotspercycle)
 
         self.log.debug('calcSubmitNum: Leaving returning %s' %out)
         return out
