@@ -18,6 +18,12 @@ class SchedPlugin(SchedInterface):
         def __init__(self, wmsqueue):
                 self.wmsqueue = wmsqueue                
                 self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
+                self.pilotspercycle = None
+
+                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.fixed.pilotspercycle'):
+                        self.pilotspercycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.fixed.pilotspercycle')
+
+                self.log.debug('calcSubmitNum: there is a fixedPilotsPerCycle number setup to %s' %out)
                 self.log.info("SchedPlugin: Object initialized.")
 
         def calcSubmitNum(self, status):
@@ -25,12 +31,11 @@ class SchedPlugin(SchedInterface):
                 returns always a fixed number of pilots
                 """
 
-                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.fixed.pilotspercycle'):
-                        out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.fixed.pilotspercycle')
-                        self.log.debug('calcSubmitNum: there is a fixedPilotsPerCycle number setup to %s' %out)
+                if self.pilotspercycle:
+                        out = self.pilotspercycle
                 else:
-                        self.log.debug('calcSubmitNum: there is not a fixedPilotsPerCycle, returning 0')
                         out = 0
+                        self.log.debug('calcSubmitNum: there is not a fixedPilotsPerCycle, returning 0')
 
                 return out
 
