@@ -20,6 +20,8 @@ class SchedPlugin(SchedInterface):
         self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
         self.max_jobs_torun = None
         self.max_pilots_per_cycle = None
+        self.min_pilots_per_cycle = None
+        self.max_pilots_pending = None
         
         # A default value is required. 
         self.default = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.default')    
@@ -116,6 +118,10 @@ class SchedPlugin(SchedInterface):
             if self.max_pilots_pending:
                 out = min(out, self.max_pilots_pending - pending_pilots) # this is to prevent having a negative number as solution
 
+            # Catch all to prevent negative numbers
+            if out < 0:
+                out = 0
+            
         self.log.debug('calcSubmitNum (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
                                                                                              pending_pilots, 
                                                                                              running_pilots, 
