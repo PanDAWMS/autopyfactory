@@ -25,22 +25,23 @@ class SchedPlugin(SchedInterface):
         
         # A default value is required. 
         self.default = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.default')    
+        self.log.debug('SchedPlugin: default = %s' %self.default)
         
         if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_jobs_torun'):
             self.max_jobs_torun = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_jobs_torun')
-            self.log.debug('calcSubmitNum: max_jobs_torun = %s' %self.max_jobs_torun)
+            self.log.debug('SchedPlugin: max_jobs_torun = %s' %self.max_jobs_torun)
  
         if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_per_cycle'):
             self.max_pilots_per_cycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_per_cycle')
-            self.log.debug('calcSubmitNum: max_pilots_per_cycle = %s' %self.max_pilots_per_cycle)
+            self.log.debug('SchedPlugin: max_pilots_per_cycle = %s' %self.max_pilots_per_cycle)
 
         if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.min_pilots_per_cycle'):
             self.min_pilots_per_cycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.min_pilots_per_cycle')
-            self.log.debug('calcSubmitNum: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %self.min_pilots_per_cycle)
+            self.log.debug('SchedPlugin: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %self.min_pilots_per_cycle)
         
         if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_pending'):
             self.max_pilots_pending = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_pending')
-            self.log.debug('calcSubmitNum: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %self.max_pilots_pending)   
+            self.log.debug('SchedPlugin: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %self.max_pilots_pending)   
 
         self.log.info("SchedPlugin: Object initialized.")
 
