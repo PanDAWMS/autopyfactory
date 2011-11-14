@@ -28,6 +28,20 @@ class SchedPlugin(SchedInterface):
     def __init__(self, wmsqueue):
         self.wmsqueue = wmsqueue                
         self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
+
+        self.default = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simple.default')
+        self.maxpendingpilots = None
+        self.maxpilotpercycle = None
+
+        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.simple.maxpendingpilots'):
+            self.maxpendingpilots = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simple.maxpendingpilots')
+            self.log.debug('calcSubmitNum: there is a maxPendingPilots number setup to %s' %self.maxPendingPilots)
+
+        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.simple.maxpilotspercycle'):
+            self.maxpilotspercycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simple.maxpilotspercycle')
+            self.log.debug('calcsubmitnum: there is a maxpilotspercycle number setup to %s' %maxpilotspercycle)
+
+        self.log.info('calcSubmitNum: default value = %s' %self.default)
         self.log.info("SchedPlugin: Object initialized.")
 
     def calcSubmitNum(self, status):
@@ -39,7 +53,7 @@ class SchedPlugin(SchedInterface):
                  no  -> return 0
                  yes -> 
                     is maxPendingPilots defined?
-                       yes -> return (minPilotsPerCycle - nbpilots) if needed
+                       yes -> return (maxPendingPilots - nbpilots) if needed
                     is maxPilotsPerCycle defined?
                     ## FIX THIS 
                        yes -> return min(nbjobs - nbpilots, maxPilotsPerCycle)
@@ -57,17 +71,12 @@ class SchedPlugin(SchedInterface):
         if not status:
             out = 0
         elif not status.valid():
-            out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simple.default')
+            out = self.default
             self.log.info('calcSubmitNum: status is not valid, returning default = %s' %out)
         else:
             nbjobs = wmsinfo.jobs[self.wmsqueue.apfqueue]['activated']                     
             pending_pilots = batchinfo[self.wmsqueue.apfqueue].pending
             running_pilots = batchinfo[self.wmsqueue.apfqueue].running
-            #nbjobs = status.jobs.get('activated', 0)
-            # '1' means pilots in Idle status
-            # '2' means pilots in Running status
-            #pending_pilots = status.batch.get('1', 0)
-            #running_pilots = status.batch.get('2', 0)
             nbpilots = pending_pilots
             
             # note: the following if-else algorithm can be written
@@ -83,17 +92,15 @@ class SchedPlugin(SchedInterface):
 
         # check if there is a maximum number of pending pilots 
         # and submit as many pilots as needed to complete that maximum
-        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.simple.maxpendingpilots'):
-            minPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simple.maxpendingpilots')
-            if maxPendingPilots > nbpilots:
-                self.log.debug('calcSubmitNum: there is a maxPendingPilots number setup to %s and it is being used' %maxPendingPilots)
-                out = maxPendingPilots - nbpilots
+        if self.maxpendingpilots:
+            if self.maxpendingpilots > nbpilots:
+                self.log.debug('calcsubmitnum: there is a maxpendingpilots number setup to %s and it is being used' %self.maxpendingpilots)
+                out = self.maxpendingpilots - nbpilots
                                 
-        # check if the config file has attribute maxPilotsPerCycle
-        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.simple.maxpilotspercycle'):
-            maxPilotsPerCycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simple.maxpilotspercycle')
-            self.log.debug('calcSubmitNum: there is a maxPilotsPerCycle number setup to %s' %maxPilotsPerCycle)
-            out = min(out, maxPilotsPerCycle)
+        # check if the config file has attribute maxpilotspercycle
+        if self. maxpilotspercycle:
+            self.log.debug('calcsubmitnum: there is a maxpilotspercycle number setup to %s' %self.maxpilotspercycle)
+            out = min(out, self.maxpilotspercycle)
 
         self.log.debug('calcSubmitNum (activated_jobs=%s; pending_pilots=%s) : Leaving returning %s' %(nbjobs, pending_pilots, out))
         return out
