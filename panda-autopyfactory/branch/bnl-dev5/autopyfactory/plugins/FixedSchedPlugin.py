@@ -22,8 +22,8 @@ class SchedPlugin(SchedInterface):
 
                 if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.fixed.pilotspercycle'):
                         self.pilotspercycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.fixed.pilotspercycle')
+                        self.log.debug('SchedPlugin: there is a fixedPilotsPerCycle number setup to %s' %self.pilotspercycle)
 
-                self.log.debug('calcSubmitNum: there is a fixedPilotsPerCycle number setup to %s' %out)
                 self.log.info("SchedPlugin: Object initialized.")
 
         def calcSubmitNum(self, status):
