@@ -523,8 +523,6 @@ f_exit(){
 #                           M A I N                                         # 
 # ------------------------------------------------------------------------- #  
 
-# notify the monitor
-./apf_monitor.sh rn
 
 f_init
 
@@ -570,12 +568,15 @@ if [ $rc -ne 0 ]; then
         f_exit $rc
 fi
 
+# notify the monitor just before execution
+./apf_monitor.sh rn
+
 # invoking the python wrapper
 f_build_pythonwrapper_opts
 f_invoke_wrapper $pythonwrapperopts
 rc=$?
 
-# notify the monitor
+# notify the monitor just after execution
 ./apf_monitor.sh ex $rc
 
 # exit
