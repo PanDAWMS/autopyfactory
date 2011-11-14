@@ -54,7 +54,6 @@ class CommandLine(object):
                                 self.error     = None
                                 self.status    = None
                                 self.pid       = None
-                                self.time      = None
 
                         def run(self):
                                 self.p = subprocess.Popen(self.program, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
@@ -94,7 +93,6 @@ class CommandLine(object):
                 self.error  = self.cmd.error
                 self.status = self.cmd.status
                 self.pid    = self.cmd.pid
-                self.time   = self.cmd.time
 
         def checkoutput(self):
 
@@ -108,9 +106,10 @@ class CommandLine(object):
 if __name__ == "__main__":
                 
         try:
-                cmd = CommandLine('ls -ltr /tmpp/', exception=ExecutionFailedException)
+                #cmd = CommandLine('ls -ltr /tmpp/', exception=ExecutionFailedException)
                 #cmd = CommandLine('ls -ltr /tmp/', exception=ExecutionFailedException)
-                #cmd = CommandLine('for i in a b c d e f g h; do echo $i; sleep 1; done', 2)
+                cmd = CommandLine('for i in a b c d e f g h; do echo $i; sleep 1; done', 2)
+                #cmd = CommandLine('for i in a b c d e f g h; do echo $i; sleep 1; done')
                 print '=================='
                 print cmd.output
                 print '------------------'
