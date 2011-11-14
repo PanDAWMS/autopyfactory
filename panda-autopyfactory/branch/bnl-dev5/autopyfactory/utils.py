@@ -19,7 +19,7 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
-ass TimeOutException(Exception):
+class TimeOutException(Exception):
        pass
 
 class ExecutionFailedException(Exception):
