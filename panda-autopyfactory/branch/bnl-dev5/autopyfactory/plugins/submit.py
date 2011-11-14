@@ -22,7 +22,7 @@
 import re
 import urllib
 
-from autopyfactory.utils import CommandLine
+from autopyfactory.utils import TimedCommand
 
 """
 Module with classes to handle the creation of the job description files
