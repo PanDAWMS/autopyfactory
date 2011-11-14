@@ -300,5 +300,5 @@ sched.activated.min_pilots_per_cycle = 0
 sched.activated.max_pilots_per_cycle = 10
 sched.activated.max_jobs_torun = 60
 
-batchsubmit.condorgt2.localqueue = short
+batchsubmit.condorgt2.queue = short
 
