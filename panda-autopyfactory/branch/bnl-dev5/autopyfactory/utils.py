@@ -26,7 +26,7 @@ class ExecutionFailedException(Exception):
        pass
 
 
-class CommandLine(object):
+class TimedCommand(object):
         """
         -----------------------------------------------------------------------
         class to run shell commands.
