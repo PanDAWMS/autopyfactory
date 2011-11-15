@@ -71,9 +71,12 @@ class SchedPlugin(SchedInterface):
         wmsinfo = self.wmsqueue.wmsstatus.getInfo(maxtime = self.wmsqueue.wmsstatusmaxtime)
         batchinfo = self.wmsqueue.batchstatus.getInfo(maxtime = self.wmsqueue.batchstatusmaxtime)
 
-        if wmsinfo is None or batchinfo is None:
-            self.log.warning("wsinfo or batchinfo is None!")
+        if wmsinfo is None:
+            self.log.warning("wsinfo is None!")
             out = self.default
+        elif batchinfo is None:
+            self.log.warning("batchinfo is None!")
+            out = self.default            
         elif not wmsinfo.valid() and batchinfo.valid():
             out = self.default
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
