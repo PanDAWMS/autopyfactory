@@ -32,8 +32,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.qcl = self.wmsqueue.factory.qcl
                 self.fcl = self.wmsqueue.factory.fcl
         
-                self.executable = self.qcl.get(self.apfqueue, 'executable'))
-                self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail'))
+                self.executable = self.qcl.get(self.apfqueue, 'executable')
+                self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
                 self.x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqueue,'proxy'))
                 self.factoryid = self.fcl.get('Factory', 'factoryId')
 
@@ -177,7 +177,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 arguments += ' --pandawrappertarballurl=%s ' %self.pandawrappertarballurl
                 if self.pandaloglevel:
                         arguments += ' --pandaloglevel=%s' %self.pandaloglevel
-                if self.arguments
+                if self.arguments:
                         arguments += self.arguments
                 self.JSD.add(arguments)
 
