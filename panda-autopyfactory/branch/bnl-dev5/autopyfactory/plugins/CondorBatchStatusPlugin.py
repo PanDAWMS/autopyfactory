@@ -480,6 +480,8 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                         qi.running += valct
         bsi.lasttime = int(time.time())
         self.log.debug('_map2info: Returning BatchStatusInfo: %s' % bsi)
+        for site in bsi.queues.keys():
+            self.log.debug('_map2info: Queue %s = %s' % (site, bsi.queues[site]))           
         return bsi
 
 

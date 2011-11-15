@@ -1028,8 +1028,9 @@ class BatchStatusInfo(object):
         #self.log.info('valid: Leaving with output %s.' %out)
         return out
 
-
-
+    def __str__(self):
+        s = "BatchstatusInfo containing %d queues" % len(self.queues)
+        return s
 
 
     def __len__(self):
@@ -1060,6 +1061,12 @@ class QueueInfo(object):
         self.done = 0
         self.unknown = 0
         self.error = 0
+
+    def __str__(self):
+        s = "QueueInfo: pending=%d, running=%d, suspended=%d" % (self.pending, 
+                                                                 self.running, 
+                                                                 self.suspended)
+        return s
 
 # --------------------------------------------------------------------------- 
 
