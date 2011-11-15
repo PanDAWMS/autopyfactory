@@ -168,6 +168,8 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     newinfo = self._map2info(aggdict)
                     self.log.info("Replacing old info with newly generated info.")
                     self.currentinfo = newinfo
+                else:
+                    self.log.warning("_update: condor_q did not return a string.")
             except Exception, e:
                 self.log.error("_update: Exception: %s" % str(e))
                 self.log.debug("Exception: %s" % traceback.format_exc())            
@@ -209,10 +211,15 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         self.log.debug('_update: it took %s seconds to perform the query' %delta)
         
         out = None
+        (out, err) = p.communicate()
         if rc == 0:
-             (out, err) = p.communicate()
+            self.log.debug('_querycondor: Leaving with OK return code.') 
+        else:
+            self.log.warning('_querycondor: Leaving with bad return code. rc=%s err=%s' %(rc, err ))
+            out = None
         self.log.debug('_querycondor: Leaving. Out is %s' % out)
         return out
+
 
 
     def _parseoutput(self, output):
