@@ -162,14 +162,11 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             
             try:
                 strout = self._querycondor()
-                if strout:
-                    outlist = self._parseoutput(strout)
-                    aggdict = self._aggregateinfo(outlist)
-                    newinfo = self._map2info(aggdict)
-                    self.log.info("Replacing old info with newly generated info.")
-                    self.currentinfo = newinfo
-                else:
-                    self.log.warning("_update: condor_q did not return a string.")
+                outlist = self._parseoutput(strout)
+                aggdict = self._aggregateinfo(outlist)
+                newinfo = self._map2info(aggdict)
+                self.log.info("Replacing old info with newly generated info.")
+                self.currentinfo = newinfo
             except Exception, e:
                 self.log.error("_update: Exception: %s" % str(e))
                 self.log.debug("Exception: %s" % traceback.format_exc())            
@@ -196,7 +193,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         querycmd += " -format ' GlobusStatus=%d\n' globusstatus"
         querycmd += " -xml"
 
-        self.log.debug('_update: Querying cmd = %s' %querycmd.replace('\n','\\n'))
+        self.log.debug('_querycondor: Querying cmd = %s' %querycmd.replace('\n','\\n'))
 
         # Run and time condor_q
         # XXXXXX FIXME
@@ -208,7 +205,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         rc = p.wait()
         delta = time.time() - before
-        self.log.debug('_update: it took %s seconds to perform the query' %delta)
+        self.log.debug('_querycondor: it took %s seconds to perform the query' %delta)
         
         out = None
         (out, err) = p.communicate()
