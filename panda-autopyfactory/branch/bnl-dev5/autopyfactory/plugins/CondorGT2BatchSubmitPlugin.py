@@ -34,9 +34,9 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.qcl = self.wmsqueue.factory.qcl
                 self.fcl = self.wmsqueue.factory.fcl
 
-                self.executable = self.qcl.get(self.apfqueue, 'executable'))
-                self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail'))
-                self.jdl = self.qcl.get(self.apfqueue, 'jdl')) 
+                self.executable = self.qcl.get(self.apfqueue, 'executable')
+                self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
+                self.jdl = self.qcl.get(self.apfqueue, 'jdl') 
 
                 self.queue = None
                 if self.qcl.has_option(self.apfqueue,'batchsubmit.condorgt2.queue'):
