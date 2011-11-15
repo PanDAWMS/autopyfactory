@@ -202,17 +202,16 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         # See http://stackoverflow.com/questions/1191374/subprocess-with-timeout
         #
         before = time.time()          
-        p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        rc = p.wait()
-        delta = time.time() - before
-        self.log.debug('_querycondor: it took %s seconds to perform the query' %delta)
-        
+        p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)     
         out = None
         (out, err) = p.communicate()
-        if rc == 0:
+        delta = time.time() - before
+        self.log.debug('_querycondor: it took %s seconds to perform the query' %delta)
+
+        if p.returncode == 0:
             self.log.debug('_querycondor: Leaving with OK return code.') 
         else:
-            self.log.warning('_querycondor: Leaving with bad return code. rc=%s err=%s' %(rc, err ))
+            self.log.warning('_querycondor: Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
             out = None
         self.log.debug('_querycondor: Leaving. Out is %s' % out)
         return out
