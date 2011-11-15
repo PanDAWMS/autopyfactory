@@ -31,6 +31,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.wmsqueue = wmsqueue
                 self.apfqueue = self.wmsqueue.apfqueue
                 self.factory = wmsqueue.factory
+                self.qcl = self.wmsqueue.factory.qcl
+                self.fcl = self.wmsqueue.factory.fcl
 
                 self.executable = self.qcl.get(self.apfqueue, 'executable'))
                 self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail'))
