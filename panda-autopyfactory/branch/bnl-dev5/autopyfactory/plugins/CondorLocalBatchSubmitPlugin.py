@@ -29,6 +29,50 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         def __init__(self, wmsqueue):
                 self.log = logging.getLogger("main.batchsubmitplugin[%s]" %wmsqueue.apfqueue)
                 self.apfqueue = wmsqueue.apfqueue
+                self.qcl = self.wmsqueue.factory.qcl
+                self.fcl = self.wmsqueue.factory.fcl
+        
+                self.executable = self.qcl.get(self.apfqueue, 'executable'))
+                self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail'))
+                self.x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqueue,'proxy'))
+                self.factoryid = self.fcl.get('Factory', 'factoryId')
+
+                self.monitorurl = None
+                if self.fcl.has_option('Factory', 'monitorURL'):
+                        self.monitorurl = self.fcl.get('Factory', 'monitorURL')
+
+                self.factoryuser = None
+                if self.fcl.has_option('Factory', 'factoryUser'):
+                        self.factoryuser = self.fcl.get('Factory', 'factoryUser')
+
+                self.environ = None
+                if self.qcl.has_option(self.apfqueue, 'batchsubmit.condorlocal.environ'):
+                        self.environ = self.qcl.get(self.apfqueue, 'batchsubmit.condorlocal.environ')
+
+                self.condor_attributes = None
+                if self.qcl.has_option(self.apfqueue, 'batchsubmit.condorlocal.condor_attributes'):
+                        self.condor_attributes = self.qcl.get(self.apfqueue, 'batchsubmit.condorlocal.condor_attributes')
+
+                self.nickname = self.qcl.get(self.apfqueue, 'nickname')
+
+                self.pandagrid = None
+                if self.qcl.has_option(self.apfqueue, 'executable.pandagrid'):
+                        self.pandagrid = self.qcl.get(self.apfqueue, 'executable.pandagrid')
+                
+                self.pandaserverurl = self.qcl.get(self.apfqueue, 'executable.pandaserverurl')
+                self.pandawrappertarballurl = self.qcl.get(self.apfqueue, 'executable.pandawrappertarballurl')
+                
+                self.pandaloglevel = None
+                if self.qcl.has_option(self.apfqueue, 'executable.pandaloglevel'):
+                        self.pandaloglevel = self.qcl.get(self.apfqueue, 'executable.pandaloglevel')
+                
+                self.arguments = None
+                if self.qcl.has_option(self.apfqueue, 'executable.arguments'):
+                        self.arguments = self.qcl.get(self.apfqueue, 'executable.arguments')
+
+
+
+
                 self.log.info('BatchSubmitPlugin: Object initialized.')
  
         def submitPilots(self, siteid, nbpilots, fcl, qcl):
@@ -89,20 +133,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
                 self.JSD.add("# Condor-C glidein pilot for panda")
 
-                self.JSD.add("executable=%s" % self.qcl.get(self.apfqueue, 'executable'))
-                self.JSD.add("transfer_executable = True")
-                self.JSD.add("should_transfer_files = YES")
-                self.JSD.add("when_to_transfer_output = ON_EXIT_OR_EVICT")
-
                 self.JSD.add("Dir=%s/" % self.logDir)
-                self.JSD.add("output=$(Dir)/$(Cluster).$(Process).out")
-                self.JSD.add("error=$(Dir)/$(Cluster).$(Process).err")
-                self.JSD.add("log=$(Dir)/$(Cluster).$(Process).log")
-                self.JSD.add("stream_output=False")
-                self.JSD.add("stream_error=False")
-                self.JSD.add("notification=Error")
-                self.JSD.add("notify_user=%s" % self.fcl.get('Factory', 'factoryAdminEmail'))
-                self.JSD.add("universe=vanilla")
+                self.JSD.add("notify_user=%s" % self.factoryAdminEmail)
 
                 # -- MATCH_APF_QUEUE --
                 # this token is very important, since it will be used by other plugins
@@ -110,53 +142,60 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add('+MATCH_APF_QUEUE="%s"' % self.apfqueue)
 
                 # -- proxy path --
-                if self.qcl.has_option(self.apfqueue, 'proxy'):
-                        x509userproxy = self.fcl.proxymanager.getProxyPath(self.qcl.get(self.apfqueue,'proxy'))
-                        self.JSD.add("x509userproxy=%s" % x509userproxy)
-
-                # -- stuffs -- 
-                self.JSD.add('periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)')
-                ####  # In job environment correct GTAG to URL for logs, JSID should be factoryId
+                if self.x509userproxy:
+                        self.JSD.add("x509userproxy=%s" % self.x509userproxy)
 
                 ### Environment
-                environment = 'environment = "PANDA_JSID=%s' % self.fcl.get('Factory', 'factoryId')
+                environment = 'environment = "PANDA_JSID=%s' % self.factoryid
                 environment += ' GTAG=%s/$(Cluster).$(Process).out' % self.logUrl
                 environment += ' APFCID=$(Cluster).$(Process)'
-                environment += ' APFFID=%s' % self.fcl.get('Factory', 'factoryId')
-                if self.fcl.has_option('Factory', 'monitorURL'):
-                        environment += ' APFMON=%s' % self.fcl.get('Factory', 'monitorURL')
+                environment += ' APFFID=%s' % self.factoryid
+                if self.monitorurl:
+                        environment += ' APFMON=%s' % self.monitorurl
                 environment += ' FACTORYQUEUE=%s' % self.apfqueue
-                if self.fcl.has_option('Factory', 'factoryUser'):
-                        environment += ' FACTORYUSER=%s' % self.fcl.get('Factory', 'factoryUser')
-                if self.qcl.has_option(self.apfqueue, 'batchsubmit.condorlocal.environ'):
-                        environ = self.qcl.get(self.apfqueue, 'batchsubmit.condorlocal.environ')
-                        if environ != 'None' and environ != '':
-                                environment += " " + environ
+                if self.factoryuser:
+                        environment += ' FACTORYUSER=%s' % self.factoryuser
+                if self.environ:
+                        if self.environ != 'None' and environ != '':
+                                environment += " " + self.environ
                 environment += '"'
                 self.JSD.add(environment)
 
                 # Adding condor attributes
-                if self.qcl.has_option(self.apfqueue, 'batchsubmit.condorlocal.condor_attributes'):
-                        condor_attributes = self.qcl.get(self.apfqueue, 'batchsubmit.condorlocal.condor_attributes')
+                if self.condor_attributes:
                         for attr in condor_attributes.split(','):
                                 self.JSD.add(attr)
 
-                # In case of Local submission, the env must be passed 
-                self.JSD.add('GetEnv = True')
-
-                # adding the arguments to the wrapper
+                # -- Executable and Arguments to the wrapper -- 
+                self.JSD.add("executable=%s" % self.executable)
                 arguments = 'arguments = '
                 arguments += ' --pandasite=%s ' %self.siteid
-                arguments += ' --pandaqueue=%s ' %self.qcl.get(self.apfqueue, 'nickname')
-                if self.qcl.has_option(self.apfqueue, 'executable.pandagrid'):
-                        arguments += ' --pandagrid=%s ' %self.qcl.get(self.apfqueue, 'executable.pandagrid')
-                arguments += ' --pandaserverurl=%s ' %self.qcl.get(self.apfqueue, 'executable.pandaserverurl')
-                arguments += ' --pandawrappertarballurl=%s ' %self.qcl.get(self.apfqueue, 'executable.pandawrappertarballurl')
-                if self.qcl.has_option(self.apfqueue, 'executable.pandaloglevel'):
-                        arguments += ' --pandaloglevel=%s' %self.qcl.get(self.apfqueue, 'executable.pandaloglevel')
-                if self.qcl.has_option(self.apfqueue, 'executable.arguments'):
-                        arguments += self.qcl.get(self.apfqueue, 'executable.arguments')
+                arguments += ' --pandaqueue=%s ' %self.nickname
+                if self.pandagrid:
+                        arguments += ' --pandagrid=%s ' %self.pandagrid
+                arguments += ' --pandaserverurl=%s ' %self.pandaserverurl
+                arguments += ' --pandawrappertarballurl=%s ' %self.pandawrappertarballurl
+                if self.pandaloglevel:
+                        arguments += ' --pandaloglevel=%s' %self.pandaloglevel
+                if self.arguments
+                        arguments += self.arguments
                 self.JSD.add(arguments)
+
+
+                # -- fixed stuffs -- 
+                # In case of Local submission, the env must be passed 
+                self.JSD.add("universe=vanilla")
+                self.JSD.add("output=$(Dir)/$(Cluster).$(Process).out")
+                self.JSD.add("error=$(Dir)/$(Cluster).$(Process).err")
+                self.JSD.add("log=$(Dir)/$(Cluster).$(Process).log")
+                self.JSD.add("stream_output=False")
+                self.JSD.add("stream_error=False")
+                self.JSD.add("notification=Error")
+                self.JSD.add("transfer_executable = True")
+                self.JSD.add("should_transfer_files = YES")
+                self.JSD.add("when_to_transfer_output = ON_EXIT_OR_EVICT")
+                self.JSD.add('GetEnv = True')
+                self.JSD.add('periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)')
 
                 # -- Number of pilots --
                 self.JSD.add("queue %d" % self.nbpilots)
