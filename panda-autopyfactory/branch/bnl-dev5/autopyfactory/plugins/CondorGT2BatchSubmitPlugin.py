@@ -129,7 +129,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add("# Condor-G glidein pilot for panda")
 
                 self.JSD.add("Dir=%s/" % self.logDir)
-                self.JSD.add("notify_user=%s" % self.factoryAdminEmail)
+                self.JSD.add("notify_user=%s" % self.factoryadminemail)
                 self.JSD.add('grid_resource=gt2 %s' % self.jdl) 
 
                 # -- MATCH_APF_QUEUE --
