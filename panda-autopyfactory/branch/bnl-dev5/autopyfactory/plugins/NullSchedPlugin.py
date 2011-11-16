@@ -14,16 +14,15 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 class SchedPlugin(SchedInterface):
-        '''       
-        Null plugin, returning always 0. 
-        The purpose is to have a plugin doing nothing when 
-        other features of APF have to be tested, but there is no
-        interest on submitting any actual pilot at all. 
-        '''       
- 
-        def __init__(self, wmsqueue):
-                self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
-                self.log.info("SchedPlugin: Object initialized.")
-
-        def calcSubmitNum(self, status):
-                return 0
+    '''       
+    Null plugin, returning always 0. 
+    The purpose is to have a plugin doing nothing when 
+    other features of APF have to be tested, but there is no
+    interest on submitting any actual pilot at all. 
+    '''       
+    def __init__(self, wmsqueue):
+            self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
+            self.log.info("SchedPlugin: Object initialized.")
+    
+    def calcSubmitNum(self):
+            return 0

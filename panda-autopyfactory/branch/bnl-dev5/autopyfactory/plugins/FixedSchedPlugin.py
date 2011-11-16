@@ -16,26 +16,25 @@ __status__ = "Production"
 class SchedPlugin(SchedInterface):
         
         def __init__(self, wmsqueue):
-                self.wmsqueue = wmsqueue                
-                self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
-                self.pilotspercycle = None
+            self.wmsqueue = wmsqueue                
+            self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
+            self.pilotspercycle = None
 
-                if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.fixed.pilotspercycle'):
-                        self.pilotspercycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.fixed.pilotspercycle')
-                        self.log.debug('SchedPlugin: there is a fixedPilotsPerCycle number setup to %s' %self.pilotspercycle)
+            if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.fixed.pilotspercycle'):
+                self.pilotspercycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.fixed.pilotspercycle')
+                self.log.debug('SchedPlugin: there is a fixedPilotsPerCycle number setup to %s' %self.pilotspercycle)
 
-                self.log.info("SchedPlugin: Object initialized.")
+            self.log.info("SchedPlugin: Object initialized.")
 
         def calcSubmitNum(self, status):
-                """ 
-                returns always a fixed number of pilots
-                """
+            """ 
+            returns always a fixed number of pilots
+            """
 
-                if self.pilotspercycle:
-                        out = self.pilotspercycle
-                else:
-                        out = 0
-                        self.log.debug('calcSubmitNum: there is not a fixedPilotsPerCycle, returning 0')
-
-                return out
+            if self.pilotspercycle:
+                out = self.pilotspercycle
+            else:
+                out = 0
+                self.log.debug('calcSubmitNum: there is not a fixedPilotsPerCycle, returning 0')
+            return out
 
