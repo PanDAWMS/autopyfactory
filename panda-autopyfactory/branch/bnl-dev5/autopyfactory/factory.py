@@ -53,6 +53,8 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
+major, minor, release, st, num = sys.version_info
+
 
 class FactoryCLI(object):
     """class to handle the command line invocation of APF. 
@@ -192,7 +194,10 @@ Jose Caballero <jcaballero@bnl.gov>
         if self.options.logfile == "stdout":
             logStream = logging.StreamHandler()
         elif self.options.logfile == 'syslog':
-            logStream = logging.handlers.SysLogHandler('/dev/log')
+            if minor == 7:  #FIXME, this is just temporary
+                    logStream = logging.SysLogHandler('/dev/log')
+            else:
+                    logStream = logging.handlers.SysLogHandler('/dev/log')
         else:
             lf = self.options.logfile
             logdir = os.path.dirname(lf)
