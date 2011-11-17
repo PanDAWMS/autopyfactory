@@ -29,8 +29,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
     def __init__(self, wmsqueue):
         self.log = logging.getLogger("main.batchsubmitplugin[%s]" %wmsqueue.apfqueue)
         self.apfqueue = wmsqueue.apfqueue
-        self.qcl = self.wmsqueue.factory.qcl
-        self.fcl = self.wmsqueue.factory.fcl
+        self.qcl = wmsqueue.factory.qcl
+        self.fcl = wmsqueue.factory.fcl
 
         self.executable = self.qcl.get(self.apfqueue, 'executable')
         self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
