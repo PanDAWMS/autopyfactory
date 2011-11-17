@@ -132,7 +132,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         self.JSD.add("# Condor-C glidein pilot for panda")
 
         self.JSD.add("Dir=%s/" % self.logDir)
-        self.JSD.add("notify_user=%s" % self.factoryAdminEmail)
+        self.JSD.add("notify_user=%s" % self.factoryadminemail)
 
         # -- MATCH_APF_QUEUE --
         # this token is very important, since it will be used by other plugins
