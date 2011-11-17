@@ -524,15 +524,14 @@ f_exit(){
 # ------------------------------------------------------------------------- # 
 
 f_monping() {
-    echo -n 'Monitor ping: '
     CMD="curl -fksS --connect-timeout 10 --max-time 20 ${APFMON}$1/$APFFID/$APFCID/$2"
-    echo $CMD
-    $CMD
+    echo "Monitor ping: $CMD"
+    out=`$CMD`
     if [ $? -eq 0 ]; then
-        echo
+        echo "Monitor ping: out=$out" 
     else
-        echo $?
-        #echo ARGS: ${APFMON}$1/$APFFID/$APFCID/$2
+        echo "Monitor ping: ERROR: out=$out"
+        echo "Monotor ping: http_proxy=$http_proxy"
     fi
 }
 
