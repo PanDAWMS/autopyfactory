@@ -39,29 +39,58 @@ class SchedPlugin(SchedInterface):
                 pending_pilots = 0
                 running_pilots = 0
 
-                if not status:
-                        out = 0
-                elif not status.valid():
-                        out = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.trivial.default')
-                        self.log.info('calcSubmitNum: status is not valid, returning default = %s' %out)
+                wmsinfo = self.wmsqueue.wmsstatus.getInfo(maxtime = self.wmsqueue.wmsstatusmaxtime)
+                batchinfo = self.wmsqueue.batchstatus.getInfo(maxtime = self.wmsqueue.batchstatusmaxtime)
+                
+                if wmsinfo is None:
+                    self.log.warning("wsinfo is None!")
+                    out = self.default
+                elif batchinfo is None:
+                    self.log.warning("batchinfo is None!")
+                    out = self.default
+                elif not wmsinfo.valid() and batchinfo.valid():
+                    out = self.default
+                    self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
                 else:
-                        nbjobs = status.jobs.get('activated', 0)
-                        # '1' means pilots in Idle status
-                        # '2' means pilots in Running status
-                        pending_pilots = status.batch.get('1', 0)
-                        running_pilots = status.batch.get('2', 0)
-                        nbpilots = pending_pilots + running_pilots
+                    # Carefully get wmsinfo, activated. 
+                    siteid = self.wmsqueue.siteid
+                    self.log.debug("Siteid is %s" % siteid)
+                    jobsinfo = wmsinfo.jobs
+                    self.log.debug("jobsinfo class is %s" % jobsinfo.__class__ )
+                    try:
+                        sitedict = jobsinfo[siteid]
+                        self.log.debug("sitedict class is %s" % sitedict.__class__ )
+                        activated_jobs = sitedict['activated']
+                    except KeyError:
+                        # This is OK--it just means no jobs in any state at the siteid. 
+                        self.log.error("siteid: %s not present in jobs info from WMS" % siteid)
+                        activated_jobs = 0
+                
+                    try:
+                        pending_pilots = batchinfo.queues[self.wmsqueue.apfqueue].pending
+                    except KeyError:
+                                        # This is OK--it just means no jobs. 
+                        pass
+                
+                    try:
+                        running_pilots = batchinfo.queues[self.wmsqueue.apfqueue].running
+                    except KeyError:
+                        # This is OK--it just means no jobs. 
+                        pass
+                
 
-                        # note: the following if-else algorithm can be written
-                        #       in a simpler way, but in this way is easier to 
-                        #       read and to understand what it does and why.
-                        if nbjobs == 0:
-                                out = 0
+                all_pilots = pending_pilots + running_pilots
+
+                # note: the following if-else algorithm can be written
+                #       in a simpler way, but in this way is easier to 
+                #       read and to understand what it does and why.
+                if activated_jobs == 0:
+                        out = 0
+                else:
+                        if activated_jobs > all_pilots:
+                                out = activated_jobs - all_pilots 
                         else:
-                                if nbjobs > nbpilots:
-                                        out = nbjobs - nbpilots
-                                else:
-                                        out = 0
+                                out = 0
 
-                self.log.debug('calcSubmitNum (activated_jobs=%s; pending_pilots=%s; running_pilots=%s): Leaving returning %s' %(nbjobs, pending_pilots, running_pilots, out))
+                self.log.debug('calcSubmitNum (activated_jobs=%s; pending_pilots=%s; running_pilots=%s): Leaving returning %s' %(activated_jobs, pending_pilots, running_pilots, out))
                 return out
