@@ -106,15 +106,29 @@ class BatchSubmitPlugin(BatchSubmitInterface):
     
     
     def __prepareExecutable(self):
+        '''
+        tries to create destination directory and 
+        copies the executable file inside
+        '''
+
         self.log.debug('__prepareExecutable: Starting.')
-        shutil.copy(self.executable, self.logDir) 
+
+        if not os.access(self.logDir, os.F_OK):
+            try:
+                os.makedirs(self.logDir)
+                self.log.debug('__writeJSDFile: Created directory %s', self.logDir)
+                shutil.copy(self.executable, self.logDir) 
+            except OSError, (errno, errMsg):
+                self.log.error('__writeJSDFile: Failed to create directory %s (error %d): %s', self.logDir, errno, errMsg)
+                self.log.error('__writeJSDFile: Cannot submit pilots for %s', self.siteid)
+                return
+
         self.log.debug('__prepareExecutable: Leaving.')
-    
     
     
     def __run(self):
         '''
-        Submit pilots
+        run jobs locally  
         '''
 
         self.log.debug('__run: Starting.')
