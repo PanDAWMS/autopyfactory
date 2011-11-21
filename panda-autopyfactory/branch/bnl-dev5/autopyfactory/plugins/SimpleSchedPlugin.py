@@ -45,7 +45,7 @@ class SchedPlugin(SchedInterface):
 
         self.log.info("SchedPlugin: Object initialized.")
 
-    def calcSubmitNum(self, status):
+    def calcSubmitNum(self):
         """ 
         is number of actived jobs == 0 ?
            yes -> return 0
@@ -61,7 +61,7 @@ class SchedPlugin(SchedInterface):
                        no  -> return (nbjobs - nbpilots)
         """
 
-        self.log.debug('calcSubmitNum: Starting with input %s' %status)
+        self.log.debug('calcSubmitNum: Starting')
 
         # giving an initial value to some variables
         # to prevent the logging from crashing
@@ -72,11 +72,15 @@ class SchedPlugin(SchedInterface):
         wmsinfo = self.wmsqueue.wmsstatus.getInfo(maxtime = self.wmsqueue.wmsstatusmaxtime)
         batchinfo = self.wmsqueue.batchstatus.getInfo(maxtime = self.wmsqueue.batchstatusmaxtime)
 
-        if not status:
-            out = 0
-        elif not status.valid():
+        if wmsinfo is None:
+            self.log.warning("wsinfo is None!")
             out = self.default
-            self.log.info('calcSubmitNum: status is not valid, returning default = %s' %out)
+        elif batchinfo is None:
+            self.log.warning("batchinfo is None!")
+            out = self.default
+        elif not wmsinfo.valid() and batchinfo.valid():
+            out = self.default
+            self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             nbjobs = wmsinfo.jobs[self.wmsqueue.apfqueue]['activated']                     
             pending_pilots = batchinfo[self.wmsqueue.apfqueue].pending
