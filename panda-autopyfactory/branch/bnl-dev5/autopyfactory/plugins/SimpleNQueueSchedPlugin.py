@@ -33,7 +33,7 @@ class SchedPlugin(SchedInterface):
 
         self.log.info("SchedPlugin: Object initialized.")
 
-    def calcSubmitNum(self, status):
+    def calcSubmitNum(self):
         """ 
         is nqueue > number of idle?
            no  -> return 0
@@ -43,25 +43,37 @@ class SchedPlugin(SchedInterface):
                  no  -> return (nqueue - nbpilots)
         """
 
-        self.log.debug('calcSubmitNum: Starting with input %s' %status)
+        self.log.debug('calcSubmitNum: Starting ')
 
-        if not status:
-            out = 0
-        elif not status.valid():
+
+
+        wmsinfo = self.wmsqueue.wmsstatus.getInfo(maxtime = self.wmsqueue.wmsstatusmaxtime)
+        batchinfo = self.wmsqueue.batchstatus.getInfo(maxtime = self.wmsqueue.batchstatusmaxtime)
+
+        if wmsinfo is None:
+            self.log.warning("wsinfo is None!")
             out = self.default
-            self.log.info('calcSubmitNum: status is not valid, returning default = %s' %out)
+        elif batchinfo is None:
+            self.log.warning("batchinfo is None!")
+            out = self.default
+        elif not wmsinfo.valid() and batchinfo.valid():
+            out = self.default
+            self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
-            nbpilots = status.batch.get('1', 0)
-            # '1' means pilots in Idle status
+            try:
+                pending_pilots = batchinfo.queues[self.wmsqueue.apfqueue].pending
+            except KeyError:
+                                # This is OK--it just means no jobs. 
+                pass
 
-            if self.nqueue > nbpilots:
-                    out = self.nqueue - nbpilots
+            if self.nqueue > pending_pilots:
+                    out = self.nqueue - pending_pilots 
             else:
                     out = 0
 
-        # check if the config file has attribute maxpilotspercycle
-        if self.maxpilotspercycle:
-            out = min(out, self.maxpilotspercycle)
+            # check if the config file has attribute maxpilotspercycle
+            if self.maxpilotspercycle:
+                out = min(out, self.maxpilotspercycle)
 
         self.log.debug('calcSubmitNum: Leaving returning %s' %out)
         return out
