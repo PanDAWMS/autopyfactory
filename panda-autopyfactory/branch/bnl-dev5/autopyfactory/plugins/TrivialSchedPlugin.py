@@ -20,7 +20,7 @@ class SchedPlugin(SchedInterface):
                 self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
                 self.log.info("SchedPlugin: Object initialized.")
 
-        def calcSubmitNum(self, status):
+        def calcSubmitNum(self):
                 """ 
                 is number of actived jobs == 0 ?
                         yes -> return 0
@@ -30,7 +30,7 @@ class SchedPlugin(SchedInterface):
                                         no -> return 0
                 """
 
-                self.log.debug('calcSubmitNum: Starting with input %s' %status)
+                self.log.debug('calcSubmitNum: Starting')
 
 
                 # giving an initial value to some variables
