@@ -261,7 +261,6 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         '''
         Client.getSiteSpecs(siteType='all')   ->
         
-        
         {
         'BNL_ATLAS_1': {   'accesscontrol': '',
                            'allowdirectaccess': False,
@@ -346,7 +345,6 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                            'statusmodtime': datetime.datetime(2011, 10, 18, 10, 45, 44),
                            'type': 'production',
                            'validatedreleases': ['True']},
-
         }
         
         '''
