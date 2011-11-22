@@ -108,7 +108,14 @@ class Monitor(threading.Thread):
         msg = "%s" % url
         self.log.debug(msg)
         self.buffer.seek(0)
-    
+   
+    def _new_signal(self, url, postdata):
+        
+        self.log.debug('_new_signal: url is %s and postdata is %s' %(url, postdata))
+        import urllib2
+        urllib2.urlopen(url, postdata)
+        self.log.debug('_new_signal: out is %s' %out.read())
+        
     def _parse(self, output):
         # return a list of condor job id
         try:
