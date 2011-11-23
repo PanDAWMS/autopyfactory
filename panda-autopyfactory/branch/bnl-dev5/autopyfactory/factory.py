@@ -960,6 +960,35 @@ class WMSStatusInfo(object):
 class CloudInfo(object):
     def __init__(self):
         pass
+
+#class CloudInfo(object):
+#    '''
+#    -----------------------------------------------------------------------
+#    Empty anonymous placeholder for attribute-based cloud information.
+#    One per cloud. 
+#    -----------------------------------------------------------------------
+#    '''
+#    def __init__(self):
+#        self.tier1 = None 
+#        self.status = None 
+#        self.fasttrack = None 
+#        self.transtimehi = None 
+#        self.name = None 
+#        self.weight = None 
+#        self.transtimelo = None 
+#        self.dest = None 
+#        self.countries = None 
+#        self.relocation = None 
+#        self.sites = None 
+#        self.server = None 
+#        self.waittime = None 
+#        self.source = None 
+#        self.tier1SE = None 
+#        self.pilotowners = None 
+#        self.mcshare = None 
+#        self.validation = None 
+#        self.nprestage = None
+
     
 class SiteInfo(object):
     def __init__(self):
