@@ -1042,6 +1042,26 @@ class JobInfo(object):
     def __init__(self):
         pass
 
+#class JobInfo(object):
+#    '''
+#    -----------------------------------------------------------------------
+#    Empty anonymous placeholder for attribute-based job information.
+#    One per siteid. 
+#    -----------------------------------------------------------------------
+#    '''
+#    def __init__(self):
+#        self.defined = 0
+#        self.activated = 0
+#        self.finished = 0
+#        self.assigned = 0
+#        self.failed = 0
+#        self.running = 0
+#        self.holding = 0
+#        self.cancelled = 0
+#        self.transferring = 0
+#        self.starting = 0
+#        self.sent = 0
+
 
 class BatchStatusInfo(object):
     '''
