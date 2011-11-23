@@ -977,7 +977,7 @@ class CloudInfo(object):
 #        self.log.info('CloudStatusInfo: Initializing object...')
 #        
 #        # clouds is a dictionary of CloudInfo objects
-#        self.clouds= {}
+#        self.clouds = {}
 #        self.lasttime = None
 #        self.log.info('CloudStatusInfo: Object Initialized')
 #
