@@ -8,6 +8,7 @@ import traceback
 from autopyfactory.factory import WMSStatusInterface
 from autopyfactory.factory import WMSStatusInfo
 from autopyfactory.factory import Singleton 
+import autopyfactory.utils as utils
 
 import userinterface.Client as Client
 
@@ -255,6 +256,29 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         else:
             self.log.error('Client.getCloudSpecs() failed')
         return out
+
+
+#    def _update_clouds(self):
+#        clouds_info = self._query_clouds()
+#        return self._parse_clouds_output(clouds_info)
+#
+#    def _query_clouds(self):
+#        clouds_err, all_clouds_config = Client.getCloudSpecs()
+#        if not clouds_err:
+#            return all_clouds_config
+#        else:
+#            return None
+#
+#    def _parse_clouds_output(self, info):
+#        if not info:
+#            return None
+#        # else...        
+#        csi = CloudStatusInfo()
+#        for cloud in info.keys():
+#            ci = CloudInfo()
+#            fill(ci, info[cloud])
+#            csi[cloud] = ci
+#        return csi
 
         
     def _updatesites(self):
