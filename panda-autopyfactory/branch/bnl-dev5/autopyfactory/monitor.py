@@ -83,7 +83,8 @@ class Monitor(threading.Thread):
         data = '&'.join(arglist)
         self._signal(self.furl, data)
 
-    def _signal(self, url, postdata):
+    #def _signal(self, url, postdata):
+    def old_signal(self, url, postdata):
         """
         handle posting of payload to URL
         """
@@ -109,7 +110,7 @@ class Monitor(threading.Thread):
         self.log.debug(msg)
         self.buffer.seek(0)
    
-    def _new_signal(self, url, postdata):
+    def _signal(self, url, postdata):
         
         self.log.debug('_new_signal: url is %s and postdata is %s' %(url, postdata))
         import urllib2
