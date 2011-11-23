@@ -961,6 +961,53 @@ class CloudInfo(object):
     def __init__(self):
         pass
 
+#class CloudStatusInfo(object):
+#    '''
+#    -----------------------------------------------------------------------
+#    Class to collect info from WMS Status Plugin related clouds
+#
+#    In a nutshell, the class is a dictionary of CloudInfo objects
+#    stored in self.clouds
+#    -----------------------------------------------------------------------
+#    Public Interface:
+#            valid()
+#    -----------------------------------------------------------------------
+#    '''
+#        self.log = logging.getLogger('main.cloudstatusinfo')
+#        self.log.info('CloudStatusInfo: Initializing object...')
+#        
+#        # clouds is a dictionary of CloudInfo objects
+#        self.clouds= {}
+#        self.lasttime = None
+#        self.log.info('CloudStatusInfo: Object Initialized')
+#
+#
+#    def valid(self):
+#        '''
+#        checks if all attributes have a valid value, or
+#        some of them is None and therefore the collected info 
+#        is not reliable
+#        '''
+#        self.log.info('valid: Starting.')
+#
+#        out = True  # default
+#        #if self.batch == None:
+#        #    out = False 
+#
+#        #self.log.info('valid: Leaving with output %s.' %out)
+#        return out
+#
+#    def __str__(self):
+#        s = "CloudStatusInfo containing %d clouds" % len(self.clouds)
+#        return s
+#
+#
+#    def __len__(self):
+#        '''
+#        Implement len() so debug can confirm number of CloudInfo objects in this CloudStatusInfo. 
+#        '''
+#        return len(self.clouds)
+
 #class CloudInfo(object):
 #    '''
 #    -----------------------------------------------------------------------
