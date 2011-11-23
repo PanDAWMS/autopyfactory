@@ -1050,6 +1050,8 @@ class JobInfo(object):
 #    -----------------------------------------------------------------------
 #    '''
 #    def __init__(self):
+#
+#        # aggregated values
 #        self.defined = 0
 #        self.activated = 0
 #        self.finished = 0
@@ -1061,6 +1063,19 @@ class JobInfo(object):
 #        self.transferring = 0
 #        self.starting = 0
 #        self.sent = 0
+#
+#        # values by labels
+#        self.defined_labels = None
+#        self.activated_labels = None
+#        self.finished_labels = None
+#        self.assigned_labels = None
+#        self.failed_labels = None
+#        self.running_labels = None
+#        self.holding_labels = None
+#        self.cancelled_labels = None
+#        self.transferring_labels = None
+#        self.starting_labels = None
+#        self.sent_labels = None
 
 
 class BatchStatusInfo(object):
