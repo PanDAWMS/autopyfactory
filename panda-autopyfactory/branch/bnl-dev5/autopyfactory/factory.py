@@ -975,6 +975,9 @@ class BatchStatusInfo(object):
     '''
     -----------------------------------------------------------------------
     Class to collect info from Batch Status Plugin 
+    
+    In a nutshell, the class is a dictionary of QueueInfo objects
+    stored in self.queues
     -----------------------------------------------------------------------
     Public Interface:
             valid()
@@ -1045,6 +1048,7 @@ class BatchStatusInfo(object):
 
 class QueueInfo(object):
     '''
+    -----------------------------------------------------------------------
      Empty anonymous placeholder for attribute-based queue information.
      One per queue. 
      
@@ -1055,7 +1059,7 @@ class QueueInfo(object):
             .done        
             .unknown           
             .error
-    
+    -----------------------------------------------------------------------
     '''
     def __init__(self):
         self.pending = 0
