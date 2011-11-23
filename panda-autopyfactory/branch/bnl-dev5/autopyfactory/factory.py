@@ -994,6 +994,49 @@ class SiteInfo(object):
     def __init__(self):
         pass
 
+#class SiteInfo(object):
+#    '''
+#    -----------------------------------------------------------------------
+#    Empty anonymous placeholder for attribute-based site information.
+#    One per site. 
+#    -----------------------------------------------------------------------
+#    '''
+#    def __init__(self):
+#        self.comment = None
+#        self.gatekeeper = None
+#        self.cloudlist = None
+#        self.defaulttoken = None
+#        self.priorityoffset = None
+#        self.cloud = None
+#        self.accesscontrol = None
+#        self.retry = None
+#        self.maxinputsize = None
+#        self.space = None
+#        self.sitename = None
+#        self.allowdirectaccess = None
+#        self.seprodpath = None
+#        self.ddm = None
+#        self.memory = None
+#        self.setokens = None
+#        self.type = None
+#        self.lfcregister = None
+#        self.status = None
+#        self.lfchost = None
+#        self.releases = None
+#        self.statusmodtime = None
+#        self.maxtime = None
+#        self.nickname = None
+#        self.dq2url = None
+#        self.copysetup = None
+#        self.cachedse = None
+#        self.cmtconfig = None
+#        self.allowedgroups = None
+#        self.queue = None
+#        self.localqueue = None
+#        self.glexec = None
+#        self.validatedreleases = None
+#        self.se = None
+
     
 class JobInfo(object):
     def __init__(self):
