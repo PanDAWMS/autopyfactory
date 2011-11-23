@@ -1,7 +1,4 @@
 #!/bin/env python
-#
-# AutoPyfactory batch plugin for Condor
-#
 
 import commands
 import logging
@@ -24,7 +21,8 @@ __status__ = "Production"
 
 class BatchSubmitPlugin(BatchSubmitInterface):
     '''
-    This class is expected to have separate instances for each PandaQueue object. 
+    This Submit Plugin simply executes a provided local executable. 
+    This class is expected to have separate instances for each WMSQueue object. 
     '''
     
     def __init__(self, wmsqueue):
