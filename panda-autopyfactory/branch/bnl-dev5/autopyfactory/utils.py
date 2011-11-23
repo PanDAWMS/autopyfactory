@@ -102,6 +102,25 @@ class TimedCommand(object):
                         if self.exception:
                                 raise self.exception
 
+def fill(object, dictionary):
+        '''
+        function to fill a object with info 
+        comming from a dictionary.
+
+        Each key of the dictionary is supposed 
+        to be one attribute in the object.
+
+        For example, if object is instance of class
+                class C():
+                        def __init__(self):
+                                self.x = ...
+                                self.y = ...
+        then, the dictionary should look like
+                d = {'x': ..., 'y':...}
+        '''
+        for k,v in dictionary.iteritems():
+                setattr(object, k, v)
+
 
 if __name__ == "__main__":
                 
