@@ -102,9 +102,9 @@ class TimedCommand(object):
                         if self.exception:
                                 raise self.exception
 
-def fill(object, dictionary):
+def fill(object, dictionary, mapping=None):
         '''
-        function to fill a object with info 
+        function to fill an object with info 
         comming from a dictionary.
 
         Each key of the dictionary is supposed 
@@ -117,9 +117,60 @@ def fill(object, dictionary):
                                 self.y = ...
         then, the dictionary should look like
                 d = {'x': ..., 'y':...}
+
+        In case the dictionary keys and object attributes
+        do not match, a dictionary mapping can be passed. 
+        For exmaple, the object is instance of class
+                class C():
+                        def __init__(self):
+                                self.x = ...
+                                self.y = ...
+        and the dictionary look like
+                d = {'a': ..., 'b':...}
+        then, the mapping must be like
+                mapping = {'a':'x', 'b':'y'}
         '''
         for k,v in dictionary.iteritems():
+                if mapping:
+                        k = mapping[k]
                 setattr(object, k, v)
+
+def add(object, dictionary, mapping=None):
+        '''
+        function to add values from a dictionary
+        to values already stored in an object.
+
+        Each key of the dictionary is supposed 
+        to be one attribute in the object.
+
+        For example, if object is instance of class
+                class C():
+                        def __init__(self):
+                                self.x = ...
+                                self.y = ...
+        then, the dictionary should look like
+                d = {'x': ..., 'y':...}
+
+        In case the dictionary keys and object attributes
+        do not match, a dictionary mapping can be passed. 
+        For exmaple, the object is instance of class
+                class C():
+                        def __init__(self):
+                                self.x = ...
+                                self.y = ...
+        and the dictionary look like
+                d = {'a': ..., 'b':...}
+        then, the mapping must be like
+                mapping = {'a':'x', 'b':'y'}
+        '''
+
+        for k,v in dictionary.iteritems():
+                if mapping:
+                        k = mapping[k]
+                current = object.__getattribute__(k)
+                new = current + v
+                setattr(object,k,new)
+
 
 
 if __name__ == "__main__":
