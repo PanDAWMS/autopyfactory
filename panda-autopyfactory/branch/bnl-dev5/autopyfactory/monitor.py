@@ -112,10 +112,13 @@ class Monitor(threading.Thread):
    
     def _signal(self, url, postdata):
         
-        self.log.debug('_new_signal: url is %s and postdata is %s' %(url, postdata))
+        self.log.debug('_signal: url is %s and postdata is %s' %(url, postdata))
         import urllib2
-        urllib2.urlopen(url, postdata)
-        self.log.debug('_new_signal: out is %s' %out.read())
+        try:
+            urllib2.urlopen(url, postdata)
+        except Exception, ex: 
+            self.log.error('_signal: urlopen() failed and raised exception %s' %ex)
+        self.log.debug('_signal: out is %s' %out.read())
         
     def _parse(self, output):
         # return a list of condor job id
