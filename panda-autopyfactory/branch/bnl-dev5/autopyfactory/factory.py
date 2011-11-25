@@ -961,6 +961,86 @@ class CloudInfo(object):
     def __init__(self):
         pass
 
+
+#class InfoBase(object):
+#        '''
+#        -----------------------------------------------------------------------
+#        Interface for all Info classes.
+#        The key thing is the class attribute valid. Each class inherited from
+#        InfoBase must give a list of values to valid. This list of values
+#        will be the list of attributes that that class will handle. 
+#        -----------------------------------------------------------------------
+#        Public Interface:
+#                reset()
+#                fill(dictionary, mappings=None, reset=True)
+#        -----------------------------------------------------------------------
+#        '''
+#        valid = []
+#        def __init__(self, default=0):
+#                self.__dict__['default']  = default
+#                self.reset()
+#
+#        def reset(self):
+#                '''
+#                gives an initial value to all attributes in the object.
+#                The entire list of attributes comes from the class attribute valid.
+#                The initial value was passed thru __init__()
+#                '''
+#                for x in self.__class__.valid:
+#                        self.__dict__[x] = self.default
+#
+#        def __setattr__(self, name, value):
+#                '''
+#                we override __setattr__ just to be sure that no attribute other
+#                than those listed in class attribute is given a value.
+#                '''
+#                if name in self.__class__.valid: 
+#                        self.__dict__[name] = value
+#
+#        def fill(self, dictionary, mappings=None, reset=True):
+#                '''
+#                method to fill object attributes with values comming from a dictionary.
+#
+#                Each key of the dictionary is supposed 
+#                to be one attribute in the object.
+#                
+#                For example, if object is instance of class
+#                        class C():
+#                                def __init__(self):
+#                                        self.x = ...
+#                                        self.y = ...
+#                then, the dictionary should look like
+#                        d = {'x': ..., 'y':...}
+#                
+#                In case the dictionary keys and object attributes
+#                do not match, a dictionary mapping can be passed. 
+#                For exmaple, the object is instance of class
+#                        class C():
+#                                def __init__(self):
+#                                        self.x = ...
+#                                        self.y = ...
+#                and the dictionary look like
+#                        d = {'a': ..., 'b':...}
+#                then, the mapping must be like
+#                        mapping = {'a':'x', 'b':'y'}
+#
+#                If reset is True, new values override whatever the attributes had.
+#                If reset is False, the new values are added to the previous value.
+#                '''
+#                usedk = []
+#                for k,v in dictionary.iteritems():
+#                        if mappings:
+#                                k = mappings[k]
+#                        if k not in usedk:
+#                                usedk.append(k)
+#                                if not reset:
+#                                        v = self.__dict__[k] + v
+#                        else:
+#                                v = self.__dict__[k] + v
+#                                
+#                        self.__dict__[k] = v
+
+
 #class CloudStatusInfo(object):
 #    '''
 #    -----------------------------------------------------------------------
