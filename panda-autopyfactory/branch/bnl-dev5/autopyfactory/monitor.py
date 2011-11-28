@@ -143,7 +143,7 @@ class Monitor(object):
             urllib2.urlopen(url, postdata)
         except Exception, ex: 
             self.log.error('_signal: urlopen() failed and raised exception %s' %ex)
-        self.log.debug('_signal: out is %s' %out.read())
+        self.log.debug('_signal: urlopen() OK.')
         
     def _parse(self, output):
         # return a list of condor job id
