@@ -68,6 +68,7 @@ class Monitor(object):
         self.version = config.get('Factory', 'versionTag')
         self.email = config.get('Factory','factoryAdminEmail')
         self.owner = config.get('Factory','factoryOwner')
+        self.baselogurl = config.get('Factory','baseLogDirUrl')
         
         self.crurl = self.monurl + 'c/'
         self.msgurl = self.monurl + 'm/'
@@ -99,6 +100,8 @@ class Monitor(object):
         attrlist.append("factoryOwner=%s" % self.owner)
         attrlist.append("versionTag=%s" % self.version)
         attrlist.append("factoryAdminEmail=%s" % self.email)
+        attrlist.append("baseLogDirUrl=%s" % self.baselogurl)
+                
         data = '&'.join(attrlist)        
         self._signal(self.furl, data)
              
