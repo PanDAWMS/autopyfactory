@@ -87,9 +87,9 @@ class Monitor(object):
         self.c.setopt(pycurl.TIMEOUT, 10)
         self.c.setopt(pycurl.FOLLOWLOCATION, 1)
         
-        if config.has_key('HTTPproxy'):
+        if config.has_option('Factory','HTTPproxy'):
                 self.c.setopt(pycurl.PROXY, args['HTTPproxy'])
-        if config.has_key('HTTPproxyport'):
+        if config.has_option('Factory','HTTPproxyport'):
                 self.c.setopt(pycurl.PROXYPORT, int(args['HTTPproxyport']))
 
         self.log.debug('Instantiated monitor')
