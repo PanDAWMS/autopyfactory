@@ -69,9 +69,9 @@ class Monitor(object):
         self.email = config.get('Factory','factoryAdminEmail')
         self.owner = config.get('Factory','factoryOwner')
         
-        self.crurl = monurl + 'c/'
-        self.msgurl = monurl + 'm/'
-        self.furl = monurl + 'h/'
+        self.crurl = self.monurl + 'c/'
+        self.msgurl = self.monurl + 'm/'
+        self.furl = self.monurl + 'h/'
         
         self.crlist = []
         self.msglist = []
