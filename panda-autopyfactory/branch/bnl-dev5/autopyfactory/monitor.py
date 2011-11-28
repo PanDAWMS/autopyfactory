@@ -39,49 +39,71 @@ __status__ = "Production"
 
 _CIDMATCH = re.compile('\*\* Proc (\d+\.\d+)', re.M)
 
-class Monitor(threading.Thread):
+class Monitor(object):
     """
     Notifies a monitoring webservice about condor jobs
     """
-    def __init__(self, **args):
+    def __init__(self, config):
+        '''
+        Config is a ConfigParser object with Monitor-specific atributes:
+            factoryAdminEmail = jcaballero@bnl.gov
+            factoryOwner = jcaballero@bnl.gov
+            factoryId = BNL-gridui11-jhover
+            factoryUser = apf
+            monitorURL =  http://apfmon.lancs.ac.uk/mon/
+            #HTTPproxy = http://proxy.sec.bnl.local
+            #HTTPproxyport = 3128
+            versionTag = 2.0.1
+        
+        Also sends initial ping to monitor server. 
+        
+        '''
         self.log = logging.getLogger('main.monitor')
         mainlevel = logging.getLogger('main').getEffectiveLevel()
         self.log.setLevel(mainlevel)
-
-        msg = "ARGS: %s" % str(args)
-        self.log.debug(msg)
-
-        try:
-            monurl = args['monitorURL']
-            self.fid = args['factoryId']
-        except:
-            raise
-
+        self.log.debug("Start...")
+    
+        self.monurl = config.get('Factory','monitorURL')
+        self.fid = config.get('Factory','factoryId')
+        self.version = config.get('Factory', 'versionTag')
+        self.email = config.get('Factory','factoryAdminEmail')
+        self.owner = config.get('Factory','factoryOwner')
+        
         self.crurl = monurl + 'c/'
         self.msgurl = monurl + 'm/'
         self.furl = monurl + 'h/'
+        
         self.crlist = []
         self.msglist = []
+        
         self.json = json.JSONEncoder()
         self.buffer = StringIO.StringIO()
+        
+        # Set up PyCurl
         self.c = pycurl.Curl()
         self.c.setopt(pycurl.WRITEFUNCTION, self.buffer.write)
         self.c.setopt(pycurl.SSL_VERIFYPEER, 0)
         self.c.setopt(pycurl.CONNECTTIMEOUT, 5)
         self.c.setopt(pycurl.TIMEOUT, 10)
         self.c.setopt(pycurl.FOLLOWLOCATION, 1)
-        #### BEGIN TEST ###
-        if args.has_key('HTTPproxy'):
+        
+        if config.has_key('HTTPproxy'):
                 self.c.setopt(pycurl.PROXY, args['HTTPproxy'])
-        if args.has_key('HTTPproxyport'):
+        if config.has_key('HTTPproxyport'):
                 self.c.setopt(pycurl.PROXYPORT, int(args['HTTPproxyport']))
-        #### END TEST ###
 
         self.log.debug('Instantiated monitor')
 
-        arglist = ["%s=%s" % (k, v) for k, v in args.items()]
-        data = '&'.join(arglist)
+        attrlist = []
+        attrlist.append("factoryId=%s" % self.fid)
+        attrlist.append("factoryOwner=%s" % self.owner)
+        attrlist.append("versionTag=%s" % self.version)
+        attrlist.append("factoryAdminEmail=%s" % self.email)
+        data = '&'.join(attrlist)        
         self._signal(self.furl, data)
+             
+        self.log.debug('Done.')
+
 
     #def _signal(self, url, postdata):
     def old_signal(self, url, postdata):
@@ -105,6 +127,9 @@ class Monitor(threading.Thread):
         except pycurl.error, e:
             msg = "PyCurl server problem:", e[1]
             self.log.warn(msg)
+        # Catch other errors, e.g. URLError. 
+        except Exception, e:
+            self.log.error("Caught exception: %s " % str(e))
         
         msg = "%s" % url
         self.log.debug(msg)

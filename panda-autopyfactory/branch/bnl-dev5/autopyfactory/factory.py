@@ -680,7 +680,7 @@ class WMSQueue(threading.Thread):
             self.log.info('Instantiating a monitor...')
             from autopyfactory.monitor import Monitor
             args = dict(self.fcl.items('Factory'))
-            self.monitor = Monitor(**args)
+            self.monitor = Monitor(self.fcl)
 
         # Condor logs cleaning
         self.clean = CleanCondorLogs(self)
