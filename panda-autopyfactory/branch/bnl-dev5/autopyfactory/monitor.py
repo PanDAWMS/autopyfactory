@@ -140,7 +140,8 @@ class Monitor(object):
         self.log.debug('_signal: url is %s and postdata is %s' %(url, postdata))
         import urllib2
         try:
-            urllib2.urlopen(url, postdata)
+            out = urllib2.urlopen(url, postdata)
+            self.log.debug('_signal: urlopen() output=%s' % out.read())
         except Exception, ex: 
             self.log.error('_signal: urlopen() failed and raised exception %s' %ex)
         self.log.debug('_signal: urlopen() OK.')
