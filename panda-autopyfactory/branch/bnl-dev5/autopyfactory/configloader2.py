@@ -88,7 +88,49 @@ class Config(SafeConfigParser, object):
                                         value is None
                         return value 
         
-
+        def  generic_get2(self, 
+                         section,                       # SafeConfigParser section 
+                         option,                        # option in the SafeConfigParser section
+                         convert=False,                 # decide if strings should be converted into python None, when possible
+                         mandatory=False,               # if the option is supposed to be there 
+                         mandatory_exception=None,      # exception to be raised if the option is mandatory but it is not there 
+                         log_function=None,             # log function to be used when everything goes OK
+                         log_message=None,              # message to be logged when everything goes OK
+                         failure_log_function=None,     # log function to be used when something was not OK 
+                         failure_message=None ):        # message to be logged when something was not OK 
+                '''
+                generic get() method for Config objects.
+                example of usage:
+                        x = generic_get2("Sec1", "x", convert=True, mandatory=True, mandatory_exception=NoMandatoryException, log.info, "x has a value", log.error, "x not found")
+                '''
+                has_option = config_object.has_option(section, option)
+        
+                if not has_option:
+                        if mandatory:
+                                if failure_log_function:
+                                        failure_log_function(failure_message)
+                                if mandatory_exception:
+                                        raise mandatory_exception
+                        else:
+                                return None
+                else:
+                        value = self.get(section, option)
+                        if log_function:
+                                log_function(log_message)
+                        if convert:
+                                try:
+                                        return int(value)
+                                except:
+                                        pass
+                                try:
+                                        return float(value)
+                                except:
+                                        pass
+                                if value == 'True': return True
+                                if value == 'False' : return False
+                                if value == 'None' : return None
+                                return value
+                        return value 
 
 
 
