@@ -38,6 +38,9 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
                 self.jdl = self.qcl.get(self.apfqueue, 'jdl') 
 
+                self.ami_id = self.qcl.get(self.apfqueue, 'batchsubmit.condorec2.ami_id')
+                self.instance_type  = self.qcl.get(self.apfqueue, 'batchsubmit.condorec2.instance_type')
+
                 self.queue = None
                 if self.qcl.has_option(self.apfqueue,'batchsubmit.condorec2.queue'):
                         self.queue = self.qcl.get(self.apfqueue, 'batchsubmit.condorec2.queue')
@@ -140,6 +143,10 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 # -- proxy path --
                 self.JSD.add("ec2_access_key_id=%s" % self.x509userproxy) 
                 self.JSD.add("ec2_secret_access_key=%s" % self.x509userproxy) 
+
+                # -- EC2 specific parameters --
+                self.JSD.add("ec2_ami_id=%s" % self.ami_id) 
+                self.JSD.add("ec2_instance_type=%s" % self.instance_type) 
                
                 # -- Environment -- 
                 environment = 'environment = "PANDA_JSID=%s' % self.factoryid
