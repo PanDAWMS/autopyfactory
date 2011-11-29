@@ -53,6 +53,8 @@
 # batchsubmit.condorgt2.queue
 # batchsubmit.condorlocal.condor_attributes
 # batchsubmit.condorlocal.environ
+# batchsubmit.condorec2.condor_attributes
+# batchsubmit.condorec2.environ
 #
 # executable
 # executable.arguments
