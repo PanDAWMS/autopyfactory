@@ -53,9 +53,9 @@ class Config(SafeConfigParser, object):
 
 
         def  generic_get(self, 
-                         get_function,                  # string representing the actual SafeConfigParser method:  "get", "getint", "getfloat", "getboolean"
                          section,                       # SafeConfigParser section 
                          option,                        # option in the SafeConfigParser section
+                         get_function='get',            # string representing the actual SafeConfigParser method:  "get", "getint", "getfloat", "getboolean"
                          convert=False,                 # decide if string "None" should be converted into python None
                          mandatory=False,               # if the option is supposed to be there 
                          mandatory_exception=None,      # exception to be raised if the option is mandatory but it is not there 
@@ -66,7 +66,7 @@ class Config(SafeConfigParser, object):
                 '''
                 generic get() method for Config objects.
                 example of usage:
-                        x = generic_get("getint", "x", convert=True, mandatory=True, mandatory_exception=NoMandatoryException, log.info, "x has a value", log.error, "x not found")
+                        x = generic_get("Sec1", "x", get_function='getint', convert=True, mandatory=True, mandatory_exception=NoMandatoryException, log.info, "x has a value", log.error, "x not found")
                 '''
                 has_option = config_object.has_option(section, option)
         
