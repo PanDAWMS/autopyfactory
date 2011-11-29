@@ -55,6 +55,8 @@
 # batchsubmit.condorlocal.environ
 # batchsubmit.condorec2.condor_attributes
 # batchsubmit.condorec2.environ
+# batchsubmit.condorec2.ami_id
+# batchsubmit.condorec2.instance_type
 #
 # executable
 # executable.arguments
@@ -215,6 +217,20 @@
 #               splitted by white spaces, 
 #               to be included in the condor attribute environment *verbatim*
 #               To be used by CondorLocal Batch Submit Plugin.
+#
+# batchsubmit.condorec2.condor_attributes = list of condor attributes, 
+#               splited by comma, 
+#               to be included in the condor submit file *verbatim*
+#
+# batchsubmit.condorec2.environ = list of environment variables, 
+#               splitted by white spaces, 
+#               to be included in the condor attribute environment *verbatim*
+#               To be used by CondorLocal Batch Submit Plugin.
+#
+# batchsubmit.condorec2.ami_id = identifier of the image, already stored 
+#               (either in S3 or EBS) and registered.
+#
+# batchsubmit.condorec2.instance_type = hardware configuration (default is m1.small)
 #
 # executable = the script which will be run by condor. 
 #
