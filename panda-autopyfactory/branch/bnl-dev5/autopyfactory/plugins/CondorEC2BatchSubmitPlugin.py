@@ -153,7 +153,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add("ec2_ami_id=%s" % self.ami_id) 
                 self.JSD.add("ec2_instance_type=%s" % self.instance_type) 
                 if self.user_data:
-                        self.JSD.add('ec2_user_data=%s' self.user_data)              
+                    self.JSD.add('ec2_user_data=%s' % self.user_data)              
 
                 # -- Environment -- 
                 environment = 'environment = "PANDA_JSID=%s' % self.factoryid
