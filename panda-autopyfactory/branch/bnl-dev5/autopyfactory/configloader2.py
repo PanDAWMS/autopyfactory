@@ -51,6 +51,48 @@ class Config(SafeConfigParser, object):
 
 
 
+
+        def  generic_get(self, 
+                         get_function,                  # string representing the actual SafeConfigParser method:  "get", "getint", "getfloat", "getboolean"
+                         section,                       # SafeConfigParser section 
+                         option,                        # option in the SafeConfigParser section
+                         convert=False,                 # decide if string "None" should be converted into python None
+                         mandatory=False,               # if the option is supposed to be there 
+                         mandatory_exception=None,      # exception to be raised if the option is mandatory but it is not there 
+                         log_function=None,             # log function to be used when everything goes OK
+                         log_message=None,              # message to be logged when everything goes OK
+                         failure_log_function,          # log function to be used when something was not OK 
+                         failure_message=None ):        # message to be logged when something was not OK 
+                '''
+                generic get() method for Config objects.
+                example of usage:
+                        x = generic_get("getint", "x", convert=True, mandatory=True, mandatory_exception=NoMandatoryException, log.info, "x has a value", log.error, "x not found")
+                '''
+                has_option = config_object.has_option(section, option)
+        
+                if not has_option:
+                        if mandatory:
+                                if failure_log_function:
+                                        failure_log_function(failure_message)
+                                if mandatory_exception:
+                                        raise mandatory_exception
+                        else:
+                                return None
+                else:
+                        get_f = getattr(config_object, get_function)
+                        value = get_f(section, option)
+                        if log_function:
+                                log_function(log_message)
+                        if convert:
+                                if value is "None":
+                                        value is None
+                        return value 
+        
+
+
+
+
+
         def __cloneallsections(self, config, override):
                 '''
                 clone all sections in config
@@ -99,30 +141,37 @@ class Config(SafeConfigParser, object):
 
 
 class ConfigManager:
+        '''
+        -----------------------------------------------------------------------
+        Class to create config files with info from different sources.
+        -----------------------------------------------------------------------
+        Public Interface:
+                getConfig(source)
+                getFromSchedConfig(site)
+        -----------------------------------------------------------------------
+        '''
 
+        def __init__(self):
+                pass
 
-        #
-        #
-        #       TO BE IMPLEMENTED
-        #
-        #
-
-
-        def __init__(self, source):
-                self.source = source
-
-        def __load(self, source):
+        def getConfig(self, source):
                 '''
-                inspects the format of the source, 
-                and decides which action to perform depending on
-                        - source is a path of a file
-                        - source is an URI
+                creates a Config object and returns it.
+                source points to the info to feed the object:
+                        - path to a phisical file on disk
+                        - an URL
                 '''
+
+                config = Config()
+
                 sourcetype = self.__getsourcetype(source)
                 if sourcetype == 'file':
-                        self.__loadfile(source)
+                        self.__loadfile(source, config)  # is this the best way to do it?
                 if sourcetype == 'uri':
-                        self.__loaduri(source)
+                        self.__loaduri(source, config)  # is this the best way to do it?
+
+                return config
+
         def __getsourcetype(self, source):
                 '''
                 determines if the source is a file on disk on an URI
@@ -134,15 +183,19 @@ class ConfigManager:
                                 sourcetype = 'uri'
                                 break
                 return sourcetype
-        def __loadfile(self, path):
+
+        def __loadfile(self, path, config):
                 '''
                 load a config file from disk
                 '''
                 f = open(path)
-                self.readfp(f)
-        def __loaduri(self, uri):
+                config.readfp(f)
+
+        def __loaduri(self, uri, config):
                 ''' 
                 load a config file from an URI
+                We should first download the info into a file on disk,
+                and them load that file into the Config object.
                 ''' 
                 opener = urllib2.build_opener()
                 urllib2.install_opener(opener)
@@ -150,8 +203,27 @@ class ConfigManager:
                 firstLine = uridata.readline().strip() 
                 #if firstLine[0] == "<":
                 #        raise FactoryConfigurationFailure("First response character was '<'. Proxy error?")
-                reader = urllib2.urlopen(hostsURI)  #FIXME
-                self.readfp(reader)
+                reader = urllib2.urlopen(hostsURI)  #FIXME 
+
+                config.readfp(reader) # FIXME: we should feed the Config object with info from a local file,
+                                      # never directly from the URL
+
+        def getFromSchedConfig(self, site):
+                '''
+                creates a Config object with info from SchedConfig
+                '''
+
+                config = Config()
+                self.__querySchedConfig(site, config) # is this the best way to do it?
+                return config
+
+        def __querySchedConfig(self, site, config):
+                '''
+                queries SchedConfig and feed config with retrieved info.
+                '''
+                pass   # TO BE IMPLEMENTED
+
+                
 
 
 ####################################################################################################
