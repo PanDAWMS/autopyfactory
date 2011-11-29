@@ -67,7 +67,7 @@ class Monitor(object):
         self.fid = config.get('Factory','factoryId')
         self.version = config.get('Factory', 'versionTag')
         self.email = config.get('Factory','factoryAdminEmail')
-        self.owner = config.get('Factory','factoryOwner')
+        self.owner = self.email
         self.baselogurl = config.get('Factory','baseLogDirUrl')
         
         self.crurl = self.monurl + 'c/'
