@@ -57,6 +57,7 @@
 # batchsubmit.condorec2.environ
 # batchsubmit.condorec2.ami_id
 # batchsubmit.condorec2.instance_type
+# batchsubmit.condorec2.user_data
 #
 # executable
 # executable.arguments
@@ -231,6 +232,8 @@
 #               (either in S3 or EBS) and registered.
 #
 # batchsubmit.condorec2.instance_type = hardware configuration (default is m1.small)
+#
+# batchsubmit.condorec2.user_data =  up to 16 Kbytes of text to contextualize the VM 
 #
 # executable = the script which will be run by condor. 
 #
