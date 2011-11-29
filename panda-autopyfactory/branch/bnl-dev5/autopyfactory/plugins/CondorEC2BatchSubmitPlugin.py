@@ -39,7 +39,12 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.jdl = self.qcl.get(self.apfqueue, 'jdl') 
 
                 self.ami_id = self.qcl.get(self.apfqueue, 'batchsubmit.condorec2.ami_id')
+
                 self.instance_type  = self.qcl.get(self.apfqueue, 'batchsubmit.condorec2.instance_type')
+
+                self.user_data = None        
+                if self.qcl.has_option(self.apfqueue, 'batchsubmit.condorec2.user_data'):
+                        self.user_data = self.fcl.get(self.apfqueue, 'batchsubmit.condorec2.user_data')
 
                 self.queue = None
                 if self.qcl.has_option(self.apfqueue,'batchsubmit.condorec2.queue'):
@@ -147,7 +152,9 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 # -- EC2 specific parameters --
                 self.JSD.add("ec2_ami_id=%s" % self.ami_id) 
                 self.JSD.add("ec2_instance_type=%s" % self.instance_type) 
-               
+                if self.user_data:
+                        self.JSD.add('ec2_user_data=%s' self.user_data)              
+
                 # -- Environment -- 
                 environment = 'environment = "PANDA_JSID=%s' % self.factoryid
                 environment += ' GTAG=%s/$(Cluster).$(Process).out' % self.logUrl
