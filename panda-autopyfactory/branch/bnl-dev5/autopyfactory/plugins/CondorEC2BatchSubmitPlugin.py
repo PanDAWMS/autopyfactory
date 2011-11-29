@@ -138,7 +138,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add('+MATCH_APF_QUEUE="%s"' % self.apfqueue)
 
                 # -- proxy path --
-                self.JSD.add("x509userproxy=%s" % self.x509userproxy) 
+                self.JSD.add("ec2_access_key_id=%s" % self.x509userproxy) 
+                self.JSD.add("ec2_secret_access_key=%s" % self.x509userproxy) 
                
                 # -- Environment -- 
                 environment = 'environment = "PANDA_JSID=%s' % self.factoryid
