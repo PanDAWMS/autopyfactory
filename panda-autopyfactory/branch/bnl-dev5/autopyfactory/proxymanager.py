@@ -116,7 +116,7 @@ class ProxyHandler(threading.Thread):
         # Handle objects
         self.stopevent = threading.Event()
 
-        self.log.debug("[%s] ProxyHandler initialized." % self.name)
+        self.log.info("[%s] ProxyHandler initialized." % self.name)
 
 
     def _generateProxy(self):

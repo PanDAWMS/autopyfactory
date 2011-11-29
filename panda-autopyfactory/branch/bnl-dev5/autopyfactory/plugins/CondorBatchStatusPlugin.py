@@ -42,7 +42,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             threading.Thread.__init__(self) # init the thread
             
             self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %wmsqueue.apfqueue)
-            self.log.info('BatchStatusPlugin: Initializing object...')
+            self.log.debug('BatchStatusPlugin: Initializing object...')
             self.stopevent = threading.Event()
 
             # to avoid the thread to be started more than once

@@ -39,7 +39,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
     def __init__(self, wmsqueue):
         self.wmsqueue = wmsqueue
         self.log = logging.getLogger("main.pandawmsstatusplugin[%s]" %wmsqueue.apfqueue)
-        self.log.info("WMSStatusPlugin: Initializing object...")
+        self.log.debug("WMSStatusPlugin: Initializing object...")
         self.wmsstatusmaxtime = 0
         if self.wmsqueue.fcl.has_option('Factory', 'wmsstatus.maxtime'):
             self.wmsstatusmaxtime = self.fcl.get('Factory', 'wmsstatus.maxtime')

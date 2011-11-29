@@ -39,7 +39,7 @@ class CleanCondorLogs(threading.Thread):
 
                 self.siteid = wmsqueue.siteid
                 self.log = logging.getLogger('main.cleancondorlogs[%s]' %self.siteid)
-                self.log.info('CleanCondorLogs: Initializing object...')
+                self.log.debug('CleanCondorLogs: Initializing object...')
         
                 self.fcl = wmsqueue.fcl
                 self.qcl = wmsqueue.qcl
@@ -78,7 +78,8 @@ class CleanCondorLogs(threading.Thread):
                 entries = self.__getentries()
                 for entry in entries:
                         self.__process_entry(entry)
-
+                        
+                self.log.info("cleanLogs: Processed %d directories." % len(entries))
                 self.log.debug("process: Leaving.")
 
         def __getentries(self):

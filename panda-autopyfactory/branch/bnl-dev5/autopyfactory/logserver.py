@@ -116,7 +116,7 @@ class LogServer(threading.Thread):
             
         self.httpd = SocketServer.TCPServer(("", self.port), self.handler)
         
-        self.log.debug("Initialized HTTP server. port=%d, root=%s, list = %s" % (self.port, self.docroot, self.list)) 
+        self.log.info("Initialized HTTP server. port=%d, root=%s, list = %s" % (self.port, self.docroot, self.list)) 
     
     def run(self):
         self.log.debug("Starting HTTP server")

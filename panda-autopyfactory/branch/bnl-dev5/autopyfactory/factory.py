@@ -365,7 +365,7 @@ class Factory(object):
         '''
 
         self.log = logging.getLogger('main.factory')
-        self.log.info('Factory: Initializing object...')
+        self.log.debug('Factory: Initializing object...')
 
         self.fcl = fcl
         
@@ -479,7 +479,7 @@ class WMSQueuesManager(object):
         '''
 
         self.log = logging.getLogger('main.wmsquuesmanager')
-        self.log.info('WMSQueuesManager: Initializing object...')
+        self.log.debug('WMSQueuesManager: Initializing object...')
 
         self.queues = {}
         self.factory = factory
@@ -641,7 +641,7 @@ class WMSQueue(threading.Thread):
 
         threading.Thread.__init__(self) # init the thread
         self.log = logging.getLogger('main.wmsqueue[%s]' %apfqueue)
-        self.log.info('WMSQueue: Initializing object...')
+        self.log.debug('WMSQueue: Initializing object...')
 
         self.stopevent = threading.Event()
 
@@ -913,7 +913,7 @@ class WMSStatusInfo(object):
         def __init__(self):
 
             self.log = logging.getLogger('main.wmsstatus')
-            self.log.info('Status: Initializing object...')
+            self.log.debug('Status: Initializing object...')
 
             self.cloud = None
             self.site = None
