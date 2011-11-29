@@ -98,8 +98,15 @@ class ConfigLoader(object):
                         self.qcl.get(section, item)
                 or
                         self.qcl.getboolean(section, item)
+                
+                                
+                
                 '''
-                return getattr(self.config, f)
+                a = getattr(self.config, f)
+                if isinstance(a,str):
+                    if a.lower() == 'none':
+                        a = None    
+                return a
 
         def _isURI(self, itempath):
                 '''

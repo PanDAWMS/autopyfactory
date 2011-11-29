@@ -35,7 +35,13 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
         self.executable = self.qcl.get(self.apfqueue, 'executable')
         self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
-        self.x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqueue,'proxy'))
+        self.proxy = self.qcl.get(self.apfqueue,'proxy')
+        if self.proxy:
+            self.x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqueue,'proxy'))
+            self.log.debug('self.proxy is %s . Loaded path from proxymanager: %s' % (self.proxy, self.x509userproxy))
+        else:
+            self.log.debug('self.proxy is None. No proxy configured.')
+        
         self.factoryid = self.fcl.get('Factory', 'factoryId')
 
         self.monitorurl = None
