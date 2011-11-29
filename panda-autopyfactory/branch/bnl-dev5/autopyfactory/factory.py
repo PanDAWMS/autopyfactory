@@ -784,7 +784,7 @@ class WMSQueue(threading.Thread):
 
         self.log.debug("_submitpilots: Starting")
         # message for the monitor
-        msg = 'Attempt to submit %d pilots for queue %s' %(nsub, self.siteid)
+        msg = 'Attempt to submit %d pilots for queue %s' %(nsub, self.apfqueue)
         self._monitor_note(msg)
 
         (status, output) = self.batchsubmit.submitPilots(self.siteid, nsub, self.fcl, self.qcl)
@@ -805,7 +805,7 @@ class WMSQueue(threading.Thread):
 
         self.log.debug("__monitor_shout: Starting.")
         if hasattr(self, 'monitor'):
-            self.monitor.shout(self.siteid, self.cyclesrun)
+            self.monitor.shout(self.apfqueue, self.cyclesrun)
         else:
             self.log.debug('__monitor_shout: no monitor instantiated')
         self.log.debug("__monitor_shout: Leaving.")
@@ -819,7 +819,7 @@ class WMSQueue(threading.Thread):
 
         if hasattr(self, 'monitor'):
             nick = self.qcl.get(self.apfqueue, 'nickname')
-            self.monitor.msg(nick, self.siteid, msg) # FIXME?
+            self.monitor.msg(nick, self.apfqueue, msg)
         else:
             self.log.debug('__monitor_note: no monitor instantiated')
                 
@@ -834,7 +834,7 @@ class WMSQueue(threading.Thread):
 
         if hasattr(self, 'monitor'):
             nick = self.qcl.get(self.apfqueue, 'nickname')
-            label = self.siteid #FIXME?
+            label = self.apfqueue
             self.monitor.notify(nick, label, output)
         else:
             self.log.debug('__monitor_notify: no monitor instantiated')
