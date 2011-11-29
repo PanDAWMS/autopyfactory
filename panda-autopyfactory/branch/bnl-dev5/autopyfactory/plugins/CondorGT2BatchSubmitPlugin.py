@@ -230,16 +230,14 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 '''
 
                 self.log.debug('__submit: Starting.')
-
-                self.log.info('Attempt to submit %d pilots for queue %s' %(self.nbpilots, self.siteid))
+                self.log.debug('Attempt to submit %d pilots for queue %s' %(self.nbpilots, self.siteid))
 
                 (exitStatus, output) = commands.getstatusoutput('condor_submit -verbose ' + self.jdlFile)
                 if exitStatus != 0:
                         self.log.error('condor_submit command for %s failed (status %d): %s', self.siteid, exitStatus, output)
                 else:
-                        self.log.info('condor_submit command for %s succeeded', self.siteid)
+                        self.log.info('condor_submit of %d pilots for %s succeeded', self.nbpilots, self.siteid)
                 st, out = exitStatus, output
-
 
                 self.log.debug('__submit: Leaving with output (%s, %s).' %(st, out))
                 return st, out

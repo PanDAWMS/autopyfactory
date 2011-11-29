@@ -381,7 +381,7 @@ class Factory(object):
             got_config = pconfig.read(pconfig_file)
             self.log.debug("Read config file %s, return value: %s" % (pconfig_file, got_config)) 
             self.proxymanager = ProxyManager(pconfig)
-            self.log.debug('ProxyManager initialized. Starting...')
+            self.log.info('ProxyManager initialized. Starting...')
             self.proxymanager.start()
             self.log.debug('ProxyManager thread started.')
         else:
@@ -402,7 +402,7 @@ class Factory(object):
                            docroot=logpath, index=lsidx
                            )
 
-            self.log.debug('LogServer initialized. Starting...')
+            self.log.info('LogServer initialized. Starting...')
             self.logserver.start()
             self.log.debug('LogServer thread started.')
         else:
@@ -519,7 +519,7 @@ class WMSQueuesManager(object):
         for q in self.queues.values():
             q.join()
             count += 1
-        self.log.info('join: %d queues joined' %count)
+        self.log.debug('join: %d queues joined' %count)
 
         self.log.debug("join: Leaving")
     
@@ -538,8 +538,8 @@ class WMSQueuesManager(object):
         for apfqueue in apfqueues:
             self._add(apfqueue)
             count += 1
-        self.log.info('_addqueues: %d queues in the config file' %count)
-
+        self.log.debug('_addqueues: %d queues in the config file' %count)
+        self.log.info('%d queues in the configuration.' %count)
         self.log.debug("_addqueues: Leaving")
 
     def _add(self, apfqueue):
@@ -554,10 +554,11 @@ class WMSQueuesManager(object):
             qobject = WMSQueue(apfqueue, self.factory)
             self.queues[apfqueue] = qobject
             qobject.start()
-            self.log.info('_add: %s enabled.' %apfqueue)
+            self.log.debug('_add: %s enabled.' %apfqueue)
+            self.log.info('Queue %s enabled.' %apfqueue)
         else:
-            self.log.info('_add: %s not enabled.' %apfqueue)
-
+            self.log.debug('_add: %s not enabled.' %apfqueue)
+            self.log.info('Queue %s not enabled.' %apfqueue)
         self.log.debug("_add: Leaving")
             
     def _delqueues(self, apfqueues):
@@ -573,7 +574,7 @@ class WMSQueuesManager(object):
             q.join()
             self.queues.pop(apfqueue)
             count += 1
-        self.log.info('_delqueues: %d queues joined and removed' %count)
+        self.log.debug('_delqueues: %d queues joined and removed' %count)
 
         self.log.debug("_delqueues: Leaving")
 
@@ -601,7 +602,7 @@ class WMSQueuesManager(object):
         for q in self.queues.values():
             q.refresh()
             count += 1
-        self.log.info('_refresh: %d queues refreshed' %count)
+        self.log.debug('_refresh: %d queues refreshed' %count)
 
         self.log.debug("_refresh: Leaving")
 
@@ -736,7 +737,7 @@ class WMSQueue(threading.Thread):
         schedclass = self.qcl.get(self.apfqueue, plugin_config_item)
         plugin_module_name = '%s%sPlugin' %(schedclass, plugin_prefix)
         
-        self.log.info("_getplugin: Attempting to import derived classname: autopyfactory.plugins.%s"
+        self.log.debug("_getplugin: Attempting to import derived classname: autopyfactory.plugins.%s"
                         % plugin_module_name)
 
         plugin_module = __import__("autopyfactory.plugins.%s" % plugin_module_name, 
@@ -745,7 +746,7 @@ class WMSQueue(threading.Thread):
                                    ["%s" % plugin_module_name])
         plugin_class = '%sPlugin' %plugin_prefix
 
-        self.log.info("_getplugin: Attempting to return plugin with classname %s" %plugin_class)
+        self.log.debug("_getplugin: Attempting to return plugin with classname %s" %plugin_class)
 
         self.log.debug("_getplugin: Leaving with plugin named %s" %plugin_class)
         return getattr(plugin_module, plugin_class)(*k, **kw)
@@ -850,7 +851,7 @@ class WMSQueue(threading.Thread):
 
         self.log.debug("__exitloop. Checking to see how many cycles to run.")
         if self.cycles and self.cyclesrun >= self.cycles:
-                self.log.info('__exitloop: stopping the thread because high cyclesrun')
+                self.log.debug('__exitloop: stopping the thread because high cyclesrun')
                 self.stopevent.set()                        
         self.log.debug("__exitloop. Incrementing cycles...")
 
@@ -872,8 +873,8 @@ class WMSQueue(threading.Thread):
         total_seconds = days*86400 + seconds
         average = total_seconds/self.cyclesrun
 
-        self.log.info('__reporttime: up %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
-        
+        self.log.debug('__reporttime: up %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
+        self.log.info('Up %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
         self.log.debug("__reporttime: Leaving")
 
     # End of run-related methods
@@ -893,7 +894,7 @@ class WMSQueue(threading.Thread):
         self.log.debug("join: Starting")
 
         self.stopevent.set()
-        self.log.info('Stopping thread...')
+        self.log.debug('Stopping thread...')
         threading.Thread.join(self, timeout)
 
         self.log.debug("join: Leaving")
@@ -927,7 +928,7 @@ class WMSStatusInfo(object):
             some of them is None and therefore the collected info 
             is not reliable
             '''
-            self.log.info('valid: Starting.')
+            self.log.debug('valid: Starting.')
 
             out = True  # default
             if self.cloud == None:
@@ -937,7 +938,7 @@ class WMSStatusInfo(object):
             if self.jobs == None:
                 out = False 
 
-            self.log.info('valid: Leaving with output %s.' %out)
+            self.log.debug('valid: Leaving with output %s.' %out)
             return out
 
         def __len__(self):
@@ -1245,7 +1246,7 @@ class BatchStatusInfo(object):
         '''
         
         self.log = logging.getLogger('main.batchstatus')
-        self.log.info('Status: Initializing object...')
+        self.log.debug('Status: Initializing object...')
         
         # queues is a dictionary of QueueInfo objects
         self.queues = {}
@@ -1259,7 +1260,7 @@ class BatchStatusInfo(object):
         some of them is None and therefore the collected info 
         is not reliable
         '''
-        self.log.info('valid: Starting.')
+        self.log.debug('valid: Starting.')
 
         out = True  # default
         #if self.batch == None:

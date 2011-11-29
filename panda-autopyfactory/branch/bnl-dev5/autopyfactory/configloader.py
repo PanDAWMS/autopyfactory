@@ -69,7 +69,7 @@ class ConfigLoader(object):
                 self.config = APFConfigParser()
                 # Maintain case sensitivity in keys
                 self.config.optionxform = str
-                self.log.debug('Reading config files: %s' % self.configFiles)
+                self.log.info('Reading config files: %s' % self.configFiles)
                 readConfigFiles = []
                 unreadConfigFiles = []
                 for f in self.configFiles:

@@ -82,7 +82,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         qcl is the QueueConfigLoader object
         '''
 
-        self.log.debug('submitPilots: Starting with inputs siteid=%s nbpilots=%s fcl=%s qcl=%s' %(siteid, nbpilots, fcl, qcl)) 
+        self.log.info('submitPilots: Starting with inputs siteid=%s nbpilots=%s fcl=%s qcl=%s' %(siteid, nbpilots, fcl, qcl)) 
 
         self.siteid = siteid 
         self.nbpilots = nbpilots
@@ -150,13 +150,13 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
 
         cmd = 'cd %s; ./%s %s; cd -' %(self.logDir, executable, arguments )
-        self.log.info('Attempt to submit command %s' %cmd)
+        self.log.debug('Attempt to submit command %s' %cmd)
 
         (exitStatus, output) = commands.getstatusoutput(cmd)
         if exitStatus != 0:
             self.log.error('local execution for %s failed (status %d): %s', self.siteid, exitStatus, output)
         else:
-            self.log.info('local execution for %s succeeded', self.siteid)
+            self.log.debug('local execution for %s succeeded', self.siteid)
         st, out = exitStatus, output
 
 

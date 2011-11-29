@@ -126,7 +126,7 @@ class SchedPlugin(SchedInterface):
             if out < 0:
                 out = 0
             
-        self.log.debug('calcSubmitNum (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
+        self.log.info('calcSubmitNum (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
                                                                                              pending_pilots, 
                                                                                              running_pilots, 
                                                                                              out))

@@ -64,7 +64,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         '''
         self.log.debug('getCloudInfo: Starting maxtime = %s' %maxtime)
         out = self.currentinfo.cloud
-        self.log.debug('getCloudInfo: Leaving. Cloud has %d entries' % len(out))
+        self.log.info('getCloudInfo: Cloud has %d entries' % len(out))
         return out 
             
     def getSiteInfo(self, maxtime=0):
@@ -77,7 +77,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
         out = self.currentinfo.site
 
-        self.log.debug('getSiteInfo: Leaving. Siteinfo has %d entries' %len(out))
+        self.log.info('getSiteInfo: Siteinfo has %d entries' %len(out))
         return out 
 
     def getJobsInfo(self, maxtime=0):
@@ -88,7 +88,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
          '''
          self.log.debug('getJobsInfo: Starting. maxtime = %s' %maxtime)
          out = self._getmaxtimeinfo('jobs', maxtime)
-         self.log.debug('getJobsInfo: Leaving. Jobs has %d entries.' %len(out))
+         self.log.info('getJobsInfo: Jobs has %d entries.' %len(out))
          return out
 
     def start(self):
@@ -133,7 +133,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
             if delta < maxtime:
                 out = getattr(self.currentinfo, infotype)
             else:
-                self.log.info("_getMaxtimeinfo: Info too old. Delta is %d maxtime is %d" % (delta, ))
+                self.log.info("_getMaxtimeinfo: Info too old. Delta is %d maxtime is %d" % (delta,maxtime))
         self.log.debug('_getmaxtimeinfo: Leaving.')        
 
     def _update(self):
@@ -250,6 +250,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         clouds_err, all_clouds_config = Client.getCloudSpecs()
         delta = time.time() - before
         self.log.debug('_updateclouds: it took %s seconds to perform the query' %delta)
+        self.log.info('_updateclouds: %s seconds to perform query' %delta)
         out = None
         if not clouds_err:
             out = all_clouds_config 
@@ -377,7 +378,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         sites_err, all_sites_config = Client.getSiteSpecs(siteType='all')
         delta = time.time() - before
         self.log.debug('_updateSites: it took %s seconds to perform the query' %delta)
-        
+        self.log.info('_updateSites: %s seconds to perform query' %delta)
         out = None
         if not sites_err:
             out = all_sites_config 
@@ -425,7 +426,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                     ) 
                                                                                    
         delta = time.time() - before
-        self.log.debug('_updateJobs: it took %s seconds to perform the query' %delta)
+        self.log.info('_updateJobs: %s seconds to perform query' %delta)
         out = None
         if not jobs_err:
             out = all_jobs_config

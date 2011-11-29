@@ -207,7 +207,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         (out, err) = p.communicate()
         delta = time.time() - before
         self.log.debug('_querycondor: it took %s seconds to perform the query' %delta)
-
+        self.log.info('Condor query: %s seconds to perform the query' %delta)
         if p.returncode == 0:
             self.log.debug('_querycondor: Leaving with OK return code.') 
         else:
@@ -251,7 +251,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             node_dict = self._node2dict(c)
             nodelist.append(node_dict)            
         self.log.debug('_parseoutput: Leaving and returning list of %d entries.' %len(nodelist))
-        
+        self.log.info('Got list of %d entries.' %len(nodelist))
         return nodelist
 
 
@@ -356,6 +356,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 except KeyError:
                     qdict[attrkey][attrval] = 1
         self.log.debug('_aggregateinfo: Returning dict with %d queues.' % len(queues))            
+        self.log.info('Aggregate: Created dict with %d queues.' % len(queues))
         return queues
 
     def _map2info(self, input):
