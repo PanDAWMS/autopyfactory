@@ -61,7 +61,7 @@ class Config(SafeConfigParser, object):
                          mandatory_exception=None,      # exception to be raised if the option is mandatory but it is not there 
                          log_function=None,             # log function to be used when everything goes OK
                          log_message=None,              # message to be logged when everything goes OK
-                         failure_log_function,          # log function to be used when something was not OK 
+                         failure_log_function=None,     # log function to be used when something was not OK 
                          failure_message=None ):        # message to be logged when something was not OK 
                 '''
                 generic get() method for Config objects.
