@@ -33,6 +33,21 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
+
+class APFConfigParser(SafeConfigParser):
+    '''
+    Introduces "None" -> None conversion. All else same as SafeConfigParser
+    
+    '''
+    def get(self, section, option, *args, **kwargs):
+        self.log = logging.getLogger('main.configloader')
+        v = SafeConfigParser.get(self, section, option, *args, **kwargs)
+        if isinstance(v, str):    
+            if v.lower() == 'none':
+                v = None
+                self.log.debug('Detected value of "None"; converted to None.')
+        return v
+                
 class ConfigLoader(object):
         '''
         Base class of configloader. Handles file/URI storage.
@@ -51,7 +66,7 @@ class ConfigLoader(object):
 
 
         def loadConfig(self):
-                self.config = SafeConfigParser()
+                self.config = APFConfigParser()
                 # Maintain case sensitivity in keys
                 self.config.optionxform = str
                 self.log.debug('Reading config files: %s' % self.configFiles)
@@ -102,11 +117,7 @@ class ConfigLoader(object):
                                 
                 
                 '''
-                a = getattr(self.config, f)
-                if isinstance(a,str):
-                    if a.lower() == 'none':
-                        a = None    
-                return a
+                return getattr(self.config, f)
 
         def _isURI(self, itempath):
                 '''

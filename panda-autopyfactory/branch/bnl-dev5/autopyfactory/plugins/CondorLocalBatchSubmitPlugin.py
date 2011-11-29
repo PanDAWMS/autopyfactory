@@ -38,7 +38,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         self.proxy = self.qcl.get(self.apfqueue,'proxy')
         if self.proxy:
             self.x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqueue,'proxy'))
-            self.log.debug('self.proxy is %s . Loaded path from proxymanager: %s' % (self.proxy, self.x509userproxy))
+            self.log.debug('self.proxy is %s. Loaded path from proxymanager: %s' % (self.proxy, self.x509userproxy))
         else:
             self.log.debug('self.proxy is None. No proxy configured.')
         
