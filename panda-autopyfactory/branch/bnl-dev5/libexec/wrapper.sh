@@ -464,6 +464,22 @@ f_build_pythonwrapper_opts(){
 
 }
 
+# ------------------------------------------------------------------------- # 
+#                           M O N I T O R                                   #
+# ------------------------------------------------------------------------- # 
+
+f_monping() {
+    CMD="curl -fksS --connect-timeout 10 --max-time 20 ${APFMON}$1/$APFFID/$APFCID/$2"
+    echo "Monitor ping: $CMD"
+    out=`$CMD`
+    if [ $? -eq 0 ]; then
+        echo "Monitor ping: out=$out" 
+    else
+        echo "Monitor ping: ERROR: out=$out"
+        echo "Monotor ping: http_proxy=$http_proxy"
+    fi
+}
+
 # ------------------------------------------------------------------------- #  
 #                     E X E C U T I O N                                     #
 # ------------------------------------------------------------------------- # 
@@ -516,25 +532,12 @@ f_exit(){
         rm -f $X509_USER_PROXY
         
         f_print_msg "exiting with RC = $RETVAL"
+
+        # notify the monitor just after execution
+        f_monping ex $rc
+
         exit $RETVAL
 }
-
-# ------------------------------------------------------------------------- # 
-#                           M O N I T O R                                   #
-# ------------------------------------------------------------------------- # 
-
-f_monping() {
-    CMD="curl -fksS --connect-timeout 10 --max-time 20 ${APFMON}$1/$APFFID/$APFCID/$2"
-    echo "Monitor ping: $CMD"
-    out=`$CMD`
-    if [ $? -eq 0 ]; then
-        echo "Monitor ping: out=$out" 
-    else
-        echo "Monitor ping: ERROR: out=$out"
-        echo "Monotor ping: http_proxy=$http_proxy"
-    fi
-}
-
 
 # ------------------------------------------------------------------------- #  
 #                           M A I N                                         # 
@@ -591,9 +594,6 @@ fi
 f_build_pythonwrapper_opts
 f_invoke_wrapper $pythonwrapperopts
 rc=$?
-
-# notify the monitor just after execution
-f_monping ex $rc
 
 # exit
 f_exit $rc
