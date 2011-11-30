@@ -201,7 +201,7 @@ f_check_program(){
         if [ $rc -ne 0 ]; then
                 f_print_error_msg "program $PROGRAM not installed or not in the PATH"
                 if [ "$2" == "FORCEQUIT" ]; then
-                        f_exit 10 #FIXME: RC=10 is just a temporary solution
+                        f_exit 1 #FIXME: RC=1 is just a temporary solution
                 fi
         fi
         return $rc 
