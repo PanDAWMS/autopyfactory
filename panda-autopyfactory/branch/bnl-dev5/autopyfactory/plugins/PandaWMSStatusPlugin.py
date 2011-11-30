@@ -407,11 +407,11 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                       'assigned': 170,
                       'cancelled': 1,
                       'failed': 15,
-             'finished': 114,
-             'holding': 9,
-             'running': 341,
-             'starting': 1,
-             'transferring': 16},
+                      'finished': 114,
+                      'holding': 9,
+                      'running': 341,
+                      'starting': 1,
+                      'transferring': 16},
         }
         '''
         
