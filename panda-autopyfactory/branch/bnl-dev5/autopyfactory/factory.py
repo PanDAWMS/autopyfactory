@@ -1209,6 +1209,25 @@ class SiteInfo(object):
 #        self.starting_labels = None
 #        self.sent_labels = None
 
+#class WMSJobsInfo(object)
+#    '''
+#    -----------------------------------------------------------------------
+#    Class to collect info from WMS Status Plugins 
+#    
+#    In a nutshell, the class is a dictionary of JobInfo objects
+#    stored in self.queues
+#    -----------------------------------------------------------------------
+#    Public Interface:
+#            valid()
+#    -----------------------------------------------------------------------
+#    '''
+#    def __init__(self):
+#
+#
+#    def valid(self):
+
+
+
 class JobInfo(object):
     '''
     Empty anonymous placeholder for attribute-based WMS job information.
@@ -1253,28 +1272,11 @@ class BatchStatusInfo(object):
     def __init__(self):
         '''
         Info for each queue is retrieved, set, and adjusted via APF queuename, e.g.
-            numrunning = info.BNL_ATLAS_1.running
-            info.BNL_ITB_1.pending = 17
-            info.BNL_ITB_1.finished += 1
+            numrunning = info.queues['BNL_ATLAS_1'].running
+            info.queues['BNL_ITB_1'].pending = 17
+            info.queues['BNL_ITB_1'].finished += 1
             
-        Primary attributes are:
-            pending            job is queued (somewhere) but not running yet.
-            running            job is currently active (run + stagein + stageout)
-            error              job has been reported to be in an error state
-            suspended          job is active, but held or suspended
-            done               job has completed
-            unknown            unknown or transient intermediate state
-            
-        Secondary attributes are:
-            transferring       stagein + stageout
-            stagein
-            stageout           
-            failed             (done - success)
-            success            (done - failed)
-            ?
-        
         Any alteration access updates the info.mtime attribute. 
-        
         '''
         
         self.log = logging.getLogger('main.batchstatus')
@@ -1319,13 +1321,21 @@ class QueueInfo(object):
      Empty anonymous placeholder for attribute-based queue information.
      One per queue. 
      
-     Makes sure that only valid attributes can be set.         
-            .pending          
-            .running           
-            .suspended  
-            .done        
-            .unknown           
-            .error
+        Primary attributes are:
+            pending            job is queued (somewhere) but not running yet.
+            running            job is currently active (run + stagein + stageout)
+            error              job has been reported to be in an error state
+            suspended          job is active, but held or suspended
+            done               job has completed
+            unknown            unknown or transient intermediate state
+
+        Secondary attributes are:
+            transferring       stagein + stageout
+            stagein
+            stageout           
+            failed             (done - success)
+            success            (done - failed)
+            ?
     -----------------------------------------------------------------------
     '''
     def __init__(self):
