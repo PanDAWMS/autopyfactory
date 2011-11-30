@@ -899,6 +899,10 @@ class WMSQueue(threading.Thread):
 
         self.log.debug("join: Leaving")
                  
+
+# ==============================================================================                                
+#                     INFO CLASSES 
+# ==============================================================================  
                             
 
 class WMSStatusInfo(object):
@@ -1205,6 +1209,34 @@ class JobInfo(object):
 #        self.starting_labels = None
 #        self.sent_labels = None
 
+class WMSJobInfo(object):
+    '''
+    Empty anonymous placeholder for attribute-based WMS job information.
+    One per WMS queue (for example, one per siteid in PanDA)
+
+    Attributes are:
+        - notready
+        - ready
+        - running
+        - done
+        - failed
+    '''
+    def __init__(self):
+        self.notready = 0
+        self.ready = 0
+        self.running = 0
+        self.done = 0
+        self.failed = 0
+
+    def __str__(self):
+        s = "WMSJobInfo: notready=%s, ready=%s, running=%s, done=%s, failed=%s" %(self.notready,
+                                                                                  self.ready,
+                                                                                  self.running,
+                                                                                  self.done,
+                                                                                  self.failed)
+        return s
+
+
 
 class BatchStatusInfo(object):
     '''
@@ -1310,7 +1342,10 @@ class QueueInfo(object):
                                                                  self.suspended)
         return s
 
-# --------------------------------------------------------------------------- 
+
+# ==============================================================================                                
+#                      INTERFACES & TEMPLATES
+# ==============================================================================  
 
 class Singleton(type):
     '''
@@ -1326,9 +1361,6 @@ class Singleton(type):
             cls.__instance = type.__call__(cls, *args,**kw)
         return cls.__instance
 
-# ==============================================================================                                
-#                      INTERFACES & TEMPLATES
-# ==============================================================================  
 
 class SchedInterface(object):
     '''
