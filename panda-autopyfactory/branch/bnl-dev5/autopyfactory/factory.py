@@ -1221,6 +1221,9 @@ class SiteInfo(object):
 #    Public Interface:
 #            valid()
 #    -----------------------------------------------------------------------
+#
+#               !!!!! Have I noticed that the code is 100% the same that BatchStatusInfo ???????
+#
 #    '''
 #    def __init__(self):
 #        '''
