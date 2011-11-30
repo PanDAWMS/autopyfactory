@@ -1225,17 +1225,17 @@ class SiteInfo(object):
 #    def __init__(self):
 #        '''
 #        Info for each queue is retrieved, set, and adjusted via APF queuename, e.g.
-#            numrunning = info.queues['BNL_ATLAS_1'].running
-#            info.queues['BNL_ITB_1'].pending = 17
-#            info.queues['BNL_ITB_1'].finished += 1
+#            numrunning = info.queues['BNL_ATLAS_1'].ready
+#            info.queues['BNL_ITB_1'].running = 17
+#            info.queues['BNL_ITB_1'].done += 1
 #            
 #        Any alteration access updates the info.mtime attribute. 
 #        '''
 #        
-#        self.log = logging.getLogger('main.batchstatus')
+#        self.log = logging.getLogger('main.wmsjobstatus')
 #        self.log.debug('Status: Initializing object...')
 #        
-#        # queues is a dictionary of QueueInfo objects
+#        # queues is a dictionary of JobInfo objects
 #        self.queues = {}
 #        self.lasttime = None
 #        self.log.info('Status: Object Initialized')
@@ -1257,13 +1257,13 @@ class SiteInfo(object):
 #        return out
 #
 #    def __str__(self):
-#        s = "BatchstatusInfo containing %d queues" % len(self.queues)
+#        s = "WMSJobStatusInfo containing %d queues" % len(self.queues)
 #        return s
 #
 #
 #    def __len__(self):
 #        '''
-#        Implement len() so debug can confirm number of queueInfo objects in this BatchStatusInfo. 
+#        Implement len() so debug can confirm number of JobInfo objects in this WMSJobStatusInfo. 
 #        '''
 #        return len(self.queues)
 #
