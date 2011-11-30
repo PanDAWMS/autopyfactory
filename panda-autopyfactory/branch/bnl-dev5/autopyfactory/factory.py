@@ -407,6 +407,8 @@ class Factory(object):
             self.log.debug('LogServer thread started.')
         else:
             self.log.info('LogServer disabled. Not running.')
+        
+        self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )
              
         self.log.info("Factory: Object initialized.")
 
