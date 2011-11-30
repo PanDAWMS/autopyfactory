@@ -1170,10 +1170,10 @@ class SiteInfo(object):
 #        self.se = None
 
     
-class JobInfo(object):
-    def __init__(self):
-        pass
-
+##class JobInfo(object):
+##    def __init__(self):
+##        pass
+  
 #class JobInfo(object):
 #    '''
 #    -----------------------------------------------------------------------
@@ -1209,7 +1209,7 @@ class JobInfo(object):
 #        self.starting_labels = None
 #        self.sent_labels = None
 
-class WMSJobInfo(object):
+class JobInfo(object):
     '''
     Empty anonymous placeholder for attribute-based WMS job information.
     One per WMS queue (for example, one per siteid in PanDA)
