@@ -1209,10 +1209,11 @@ class SiteInfo(object):
 #        self.starting_labels = None
 #        self.sent_labels = None
 
-#class WMSJobsInfo(object)
+
+#class WMSJobStatusInfo(object):
 #    '''
 #    -----------------------------------------------------------------------
-#    Class to collect info from WMS Status Plugins 
+#    Class to collect info from WMS Status Plugins
 #    
 #    In a nutshell, the class is a dictionary of JobInfo objects
 #    stored in self.queues
@@ -1222,10 +1223,50 @@ class SiteInfo(object):
 #    -----------------------------------------------------------------------
 #    '''
 #    def __init__(self):
+#        '''
+#        Info for each queue is retrieved, set, and adjusted via APF queuename, e.g.
+#            numrunning = info.queues['BNL_ATLAS_1'].running
+#            info.queues['BNL_ITB_1'].pending = 17
+#            info.queues['BNL_ITB_1'].finished += 1
+#            
+#        Any alteration access updates the info.mtime attribute. 
+#        '''
+#        
+#        self.log = logging.getLogger('main.batchstatus')
+#        self.log.debug('Status: Initializing object...')
+#        
+#        # queues is a dictionary of QueueInfo objects
+#        self.queues = {}
+#        self.lasttime = None
+#        self.log.info('Status: Object Initialized')
 #
 #
 #    def valid(self):
-
+#        '''
+#        checks if all attributes have a valid value, or
+#        some of them is None and therefore the collected info 
+#        is not reliable
+#        '''
+#        self.log.debug('valid: Starting.')
+#
+#        out = True  # default
+#        #if self.batch == None:
+#        #    out = False 
+#
+#        #self.log.info('valid: Leaving with output %s.' %out)
+#        return out
+#
+#    def __str__(self):
+#        s = "BatchstatusInfo containing %d queues" % len(self.queues)
+#        return s
+#
+#
+#    def __len__(self):
+#        '''
+#        Implement len() so debug can confirm number of queueInfo objects in this BatchStatusInfo. 
+#        '''
+#        return len(self.queues)
+#
 
 
 class JobInfo(object):
