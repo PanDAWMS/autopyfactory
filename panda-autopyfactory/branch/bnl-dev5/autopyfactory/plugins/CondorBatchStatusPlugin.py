@@ -59,8 +59,14 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             # variable to record when was last time info was updated
             # the info is recorded as seconds since epoch
             self.lasttime = 0
-
+            self._checkCondor()
             self.log.info('BatchStatusPlugin: Object initialized.')
+
+    def _checkCondor(self):
+        '''
+        Perform sanity check on condor environment
+        '''
+        pass
 
     def getInfo(self, maxtime=0):
             '''
