@@ -31,11 +31,8 @@ RPMRE=re.compile(RPMGLOB, re.IGNORECASE)
 class DeployManager(object):
     def __init__(self, repos):
         logging.basicConfig(level=logging.DEBUG)
-        logging.info('DeployManager initialized.')
+        logging.debug('DeployManager initialized.')
         self.repos = repos
-
-
-
     
     def getplatform(self):
         f = open('/etc/redhat-release','r')
@@ -47,7 +44,7 @@ class DeployManager(object):
     
     def build(self):
         cmd = 'python setup.py bdist_rpm'
-        logging.info("Running build command: %s" % cmd)
+        logging.info("Running build command: '%s'" % cmd)
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)     
         (out, err) = p.communicate()
         print(out)
@@ -85,7 +82,7 @@ class DeployManager(object):
                                           self.dist,
                                           self.distver,
                                           a ) 
-                    logging.debug("%s -> %s" % (src,dst))
+                    logging.info("%s -> %s" % (src,dst))
                     shutil.copy(src,dst)
     
     def regen(self):
@@ -93,7 +90,7 @@ class DeployManager(object):
         Regenerate repository metadata...
         '''
         cmd = REGENCMD
-        logging.info("Running regen command: %s" % cmd)
+        logging.info("Running regen command: '%s'" % cmd)
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)     
         (out, err) = p.communicate()
         print(out)
