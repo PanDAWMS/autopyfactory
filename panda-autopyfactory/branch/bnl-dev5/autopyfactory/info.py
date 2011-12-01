@@ -145,7 +145,7 @@ class BatchQueueInfo(BaseInfo):
         return s
 
 
-class WMSQueueInfo(object):
+class WMSQueueInfo(BaseInfo):
     '''
     -----------------------------------------------------------------------
     Empty anonymous placeholder for attribute-based WMS job information.
