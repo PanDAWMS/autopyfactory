@@ -64,7 +64,9 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
     def _checkCondor(self):
         '''
-        Perform sanity check on condor environment
+        Perform sanity check on condor environment.
+        Does condor_q exist?
+        Is Condor running?
         '''
         pass
 
