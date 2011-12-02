@@ -529,67 +529,67 @@ class WMSQueuesManager(object):
     #  private methods
     # ----------------------------------------------------------------------
 
-    def _addqueues(self, apfqueues):
+    def _addqueues(self, apfqnames):
         '''
         Creates new WMSQueue objects
         '''
 
-        self.log.debug("_addqueues: Starting with input %s" %apfqueues)
+        self.log.debug("_addqueues: Starting with input %s" %apfqnames)
 
         count = 0
-        for apfqueue in apfqueues:
-            self._add(apfqueue)
+        for apfqname in apfqnames:
+            self._add(apfqname)
             count += 1
         self.log.debug('_addqueues: %d queues in the config file' %count)
         self.log.info('%d queues in the configuration.' %count)
         self.log.debug("_addqueues: Leaving")
 
-    def _add(self, apfqueue):
+    def _add(self, apfqname):
         '''
         Creates a single new WMSQueue object and starts it
         '''
 
-        self.log.debug("_add: Starting with input %s" %apfqueue)
+        self.log.debug("_add: Starting with input %s" %apfqname)
 
-        enabled = self.factory.qcl.getboolean(apfqueue, 'enabled') 
+        enabled = self.factory.qcl.getboolean(apfqname, 'enabled') 
         if enabled:
-            qobject = WMSQueue(apfqueue, self.factory)
-            self.queues[apfqueue] = qobject
+            qobject = WMSQueue(apfqname, self.factory)
+            self.queues[apfqname] = qobject
             qobject.start()
-            self.log.debug('_add: %s enabled.' %apfqueue)
-            self.log.info('Queue %s enabled.' %apfqueue)
+            self.log.debug('_add: %s enabled.' %apfqname)
+            self.log.info('Queue %s enabled.' %apfqname)
         else:
-            self.log.debug('_add: %s not enabled.' %apfqueue)
-            self.log.info('Queue %s not enabled.' %apfqueue)
+            self.log.debug('_add: %s not enabled.' %apfqname)
+            self.log.info('Queue %s not enabled.' %apfqname)
         self.log.debug("_add: Leaving")
             
-    def _delqueues(self, apfqueues):
+    def _delqueues(self, apfqnames):
         '''
         Deletes WMSQueue objects
         '''
 
-        self.log.debug("_delqueues: Starting with input %s" %apfqueues)
+        self.log.debug("_delqueues: Starting with input %s" %apfqnames)
 
         count = 0
-        for apfqueue in apfqueues:
-            q = self.queues[apfqueue]
+        for apfqname in apfqnames:
+            q = self.queues[apfqname]
             q.join()
-            self.queues.pop(apfqueue)
+            self.queues.pop(apfqname)
             count += 1
         self.log.debug('_delqueues: %d queues joined and removed' %count)
 
         self.log.debug("_delqueues: Leaving")
 
-    def _del(self, apfqueue):
+    def _del(self, apfqname):
         '''
         Deletes a single queue object from the list and stops it.
         '''
 
-        self.log.debug("_del: Starting with input %s" %apfqueue)
+        self.log.debug("_del: Starting with input %s" %apfqname)
 
-        qobject = self._get(apfqueue)
+        qobject = self._get(apfqname)
         qname.join()
-        self.queues.pop(apfqueue)
+        self.queues.pop(apfqname)
 
         self.log.debug("_del: Leaving")
     
@@ -631,7 +631,7 @@ class WMSQueue(threading.Thread):
     -----------------------------------------------------------------------
     '''
     
-    def __init__(self, apfqueue, factory):
+    def __init__(self, apfqname, factory):
         '''
         siteid is the name of the section in the queueconfig, 
         i.e. the queue name, 
@@ -642,28 +642,28 @@ class WMSQueue(threading.Thread):
         self.inittime = datetime.datetime.now()
 
         threading.Thread.__init__(self) # init the thread
-        self.log = logging.getLogger('main.wmsqueue[%s]' %apfqueue)
+        self.log = logging.getLogger('main.wmsqueue[%s]' %apfqname)
         self.log.debug('WMSQueue: Initializing object...')
 
         self.stopevent = threading.Event()
 
-        # apfqueue is the APF queue name, i.e. the section heading in queues.conf
-        self.apfqueue = apfqueue
+        # apfqname is the APF queue name, i.e. the section heading in queues.conf
+        self.apfqname = apfqname
         #self.siteid = siteid          # Queue section designator from config
         self.factory = factory
         self.fcl = self.factory.fcl 
         self.qcl = self.factory.qcl 
 
-        if self.qcl.has_option(apfqueue, 'siteid'):
-            self.siteid = self.qcl.get(apfqueue, 'siteid')
+        if self.qcl.has_option(apfqname, 'siteid'):
+            self.siteid = self.qcl.get(apfqname, 'siteid')
         else:
             # if siteid is not in the specs, then
             # the very APF QUEUE name is the siteid, as default
-            self.siteid = apfqueue
-        self.nickname = self.qcl.get(apfqueue, 'nickname')
-        self.cloud = self.qcl.get(apfqueue, 'cloud')
+            self.siteid = apfqname
+        self.nickname = self.qcl.get(apfqname, 'nickname')
+        self.cloud = self.qcl.get(apfqname, 'cloud')
         self.cycles = self.fcl.get("Factory", 'cycles' )
-        self.sleep = int(self.qcl.get(apfqueue, 'wmsqueue.sleep'))
+        self.sleep = int(self.qcl.get(apfqname, 'wmsqueue.sleep'))
         self.cyclesrun = 0
         
         # Get status-related vars
@@ -736,7 +736,7 @@ class WMSQueue(threading.Thread):
 
         plugin_config_item = '%splugin' %action
         plugin_prefix = plugin_prefixes[action] 
-        schedclass = self.qcl.get(self.apfqueue, plugin_config_item)
+        schedclass = self.qcl.get(self.apfqname, plugin_config_item)
         plugin_module_name = '%s%sPlugin' %(schedclass, plugin_prefix)
         
         self.log.debug("_getplugin: Attempting to import derived classname: autopyfactory.plugins.%s"
@@ -786,7 +786,7 @@ class WMSQueue(threading.Thread):
 
         self.log.debug("_submitpilots: Starting")
         # message for the monitor
-        msg = 'Attempt to submit %d pilots for queue %s' %(nsub, self.apfqueue)
+        msg = 'Attempt to submit %d pilots for queue %s' %(nsub, self.apfqname)
         self._monitor_note(msg)
 
         (status, output) = self.batchsubmit.submitPilots(self.siteid, nsub, self.fcl, self.qcl)
@@ -807,7 +807,7 @@ class WMSQueue(threading.Thread):
 
         self.log.debug("__monitor_shout: Starting.")
         if hasattr(self, 'monitor'):
-            self.monitor.shout(self.apfqueue, self.cyclesrun)
+            self.monitor.shout(self.apfqname, self.cyclesrun)
         else:
             self.log.debug('__monitor_shout: no monitor instantiated')
         self.log.debug("__monitor_shout: Leaving.")
@@ -820,8 +820,8 @@ class WMSQueue(threading.Thread):
         self.log.debug('__monitor_note: Starting.')
 
         if hasattr(self, 'monitor'):
-            nick = self.qcl.get(self.apfqueue, 'nickname')
-            self.monitor.msg(nick, self.apfqueue, msg)
+            nick = self.qcl.get(self.apfqname, 'nickname')
+            self.monitor.msg(nick, self.apfqname, msg)
         else:
             self.log.debug('__monitor_note: no monitor instantiated')
                 
@@ -835,8 +835,8 @@ class WMSQueue(threading.Thread):
         self.log.debug('__monitor_notify: Starting.')
 
         if hasattr(self, 'monitor'):
-            nick = self.qcl.get(self.apfqueue, 'nickname')
-            label = self.apfqueue
+            nick = self.qcl.get(self.apfqname, 'nickname')
+            label = self.apfqname
             self.monitor.notify(nick, label, output)
         else:
             self.log.debug('__monitor_notify: no monitor instantiated')
