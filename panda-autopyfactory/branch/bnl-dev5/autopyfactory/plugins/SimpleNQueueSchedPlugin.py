@@ -15,20 +15,20 @@ __status__ = "Production"
 
 class SchedPlugin(SchedInterface):
     
-    def __init__(self, wmsqueue):
-        self.wmsqueue = wmsqueue
-        self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
+    def __init__(self, apfqueue):
+        self.apfqueue = apfqueue
+        self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
 
-        self.default = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.default')
+        self.default = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.simplenqueue.default')
         self.log.debug('SchedPlugin: there is a default number setup to %s' %self.default)
 
-        self.nqueue = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.nqueue')
+        self.nqueue = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.simplenqueue.nqueue')
         self.log.debug('SchedPlugin: there is a default number setup to %s' %self.default)
 
         self.maxpilotspercycle = None
 
-        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.simplenqueue.maxpilotspercycle'):
-            self.maxpilotspercycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.simplenqueue.maxpilotspercycle')
+        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.simplenqueue.maxpilotspercycle'):
+            self.maxpilotspercycle = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.simplenqueue.maxpilotspercycle')
             self.log.debug('SchedPlugin: there is a maxpilotspercycle number setup to %s' %maxpilotspercycle)
 
         self.log.info("SchedPlugin: Object initialized.")
@@ -47,8 +47,8 @@ class SchedPlugin(SchedInterface):
 
 
 
-        wmsinfo = self.wmsqueue.wmsstatus.getInfo(maxtime = self.wmsqueue.wmsstatusmaxtime)
-        batchinfo = self.wmsqueue.batchstatus.getInfo(maxtime = self.wmsqueue.batchstatusmaxtime)
+        wmsinfo = self.apfqueue.wmsstatus.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
+        batchinfo = self.apfqueue.batchstatus.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
 
         if wmsinfo is None:
             self.log.warning("wsinfo is None!")
@@ -61,7 +61,7 @@ class SchedPlugin(SchedInterface):
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             try:
-                pending_pilots = batchinfo.queues[self.wmsqueue.apfqueue].pending
+                pending_pilots = batchinfo.queues[self.apfqueue.apfqname].pending
             except KeyError:
                                 # This is OK--it just means no jobs. 
                 pass

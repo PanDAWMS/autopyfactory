@@ -26,18 +26,18 @@ class BatchSubmitPlugin(BatchSubmitInterface):
     This class is expected to have separate instances for each PandaQueue object. 
     '''
     
-    def __init__(self, wmsqueue):
-        self.log = logging.getLogger("main.batchsubmitplugin[%s]" %wmsqueue.apfqueue)
-        self.apfqueue = wmsqueue.apfqueue
-        self.factory = wmsqueue.factory
-        self.qcl = wmsqueue.factory.qcl
-        self.fcl = wmsqueue.factory.fcl
+    def __init__(self, apfqueue):
+        self.log = logging.getLogger("main.batchsubmitplugin[%s]" %apfqueue.apfqname)
+        self.apfqname = apfqueue.apfqname
+        self.factory = apfqueue.factory
+        self.qcl = apfqueue.factory.qcl
+        self.fcl = apfqueue.factory.fcl
 
-        self.executable = self.qcl.get(self.apfqueue, 'executable')
+        self.executable = self.qcl.get(self.apfqname, 'executable')
         self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
-        self.proxy = self.qcl.get(self.apfqueue,'proxy')
+        self.proxy = self.qcl.get(self.apfqname,'proxy')
         if self.proxy:
-            self.x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqueue,'proxy'))
+            self.x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqname,'proxy'))
             self.log.debug('self.proxy is %s. Loaded path from proxymanager: %s' % (self.proxy, self.x509userproxy))
         else:
             self.x509userproxy = None
@@ -54,29 +54,29 @@ class BatchSubmitPlugin(BatchSubmitInterface):
             self.factoryuser = self.fcl.get('Factory', 'factoryUser')
 
         self.environ = None
-        if self.qcl.has_option(self.apfqueue, 'batchsubmit.condorlocal.environ'):
-            self.environ = self.qcl.get(self.apfqueue, 'batchsubmit.condorlocal.environ')
+        if self.qcl.has_option(self.apfqname, 'batchsubmit.condorlocal.environ'):
+            self.environ = self.qcl.get(self.apfqname, 'batchsubmit.condorlocal.environ')
 
         self.condor_attributes = None
-        if self.qcl.has_option(self.apfqueue, 'batchsubmit.condorlocal.condor_attributes'):
-            self.condor_attributes = self.qcl.get(self.apfqueue, 'batchsubmit.condorlocal.condor_attributes')
+        if self.qcl.has_option(self.apfqname, 'batchsubmit.condorlocal.condor_attributes'):
+            self.condor_attributes = self.qcl.get(self.apfqname, 'batchsubmit.condorlocal.condor_attributes')
 
-        self.nickname = self.qcl.get(self.apfqueue, 'nickname')
+        self.nickname = self.qcl.get(self.apfqname, 'nickname')
 
         self.pandagrid = None
-        if self.qcl.has_option(self.apfqueue, 'executable.pandagrid'):
-            self.pandagrid = self.qcl.get(self.apfqueue, 'executable.pandagrid')
+        if self.qcl.has_option(self.apfqname, 'executable.pandagrid'):
+            self.pandagrid = self.qcl.get(self.apfqname, 'executable.pandagrid')
         
-        self.pandaserverurl = self.qcl.get(self.apfqueue, 'executable.pandaserverurl')
-        self.pandawrappertarballurl = self.qcl.get(self.apfqueue, 'executable.pandawrappertarballurl')
+        self.pandaserverurl = self.qcl.get(self.apfqname, 'executable.pandaserverurl')
+        self.pandawrappertarballurl = self.qcl.get(self.apfqname, 'executable.pandawrappertarballurl')
         
         self.pandaloglevel = None
-        if self.qcl.has_option(self.apfqueue, 'executable.pandaloglevel'):
-            self.pandaloglevel = self.qcl.get(self.apfqueue, 'executable.pandaloglevel')
+        if self.qcl.has_option(self.apfqname, 'executable.pandaloglevel'):
+            self.pandaloglevel = self.qcl.get(self.apfqname, 'executable.pandaloglevel')
         
         self.arguments = None
-        if self.qcl.has_option(self.apfqueue, 'executable.arguments'):
-            self.arguments = self.qcl.get(self.apfqueue, 'executable.arguments')
+        if self.qcl.has_option(self.apfqname, 'executable.arguments'):
+            self.arguments = self.qcl.get(self.apfqname, 'executable.arguments')
 
         self.log.info('BatchSubmitPlugin: Object initialized.')
     
@@ -97,7 +97,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
         #now = time.localtime()
         now = time.gmtime() # gmtime() is like localtime() but in UTC
-        self.logPath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2]) + self.apfqueue.translate(string.maketrans('/:','__'))
+        self.logPath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2]) + self.apfqname.translate(string.maketrans('/:','__'))
         self.logDir = self.fcl.get('Factory', 'baseLogDir') + self.logPath
         self.logUrl = self.fcl.get('Factory', 'baseLogDirUrl') + self.logPath
 
@@ -144,7 +144,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         # -- MATCH_APF_QUEUE --
         # this token is very important, since it will be used by other plugins
         # to identify this pilot from others when running condor_q
-        self.JSD.add('+MATCH_APF_QUEUE="%s"' % self.apfqueue)
+        self.JSD.add('+MATCH_APF_QUEUE="%s"' % self.apfqname)
 
         # -- proxy path --
         if self.x509userproxy:
@@ -157,7 +157,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         environment += ' APFFID=%s' % self.factoryid
         if self.monitorurl:
             environment += ' APFMON=%s' % self.monitorurl
-        environment += ' FACTORYQUEUE=%s' % self.apfqueue
+        environment += ' FACTORYQUEUE=%s' % self.apfqname
         if self.factoryuser:
             environment += ' FACTORYUSER=%s' % self.factoryuser
         if self.environ:

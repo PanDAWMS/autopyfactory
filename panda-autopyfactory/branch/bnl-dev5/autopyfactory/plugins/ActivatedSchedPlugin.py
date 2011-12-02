@@ -15,32 +15,32 @@ __status__ = "Production"
 
 class SchedPlugin(SchedInterface):
     
-    def __init__(self, wmsqueue):
-        self.wmsqueue = wmsqueue                
-        self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
+    def __init__(self, apfqueue):
+        self.apfqueue = apfqueue                
+        self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
         self.max_jobs_torun = None
         self.max_pilots_per_cycle = None
         self.min_pilots_per_cycle = None
         self.max_pilots_pending = None
         
         # A default value is required. 
-        self.default = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.default')    
+        self.default = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.default')    
         self.log.debug('SchedPlugin: default = %s' %self.default)
         
-        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_jobs_torun'):
-            self.max_jobs_torun = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_jobs_torun')
+        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun'):
+            self.max_jobs_torun = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun')
             self.log.debug('SchedPlugin: max_jobs_torun = %s' %self.max_jobs_torun)
  
-        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_per_cycle'):
-            self.max_pilots_per_cycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_per_cycle')
+        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.max_pilots_per_cycle'):
+            self.max_pilots_per_cycle = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.max_pilots_per_cycle')
             self.log.debug('SchedPlugin: max_pilots_per_cycle = %s' %self.max_pilots_per_cycle)
 
-        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.min_pilots_per_cycle'):
-            self.min_pilots_per_cycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.min_pilots_per_cycle')
+        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle'):
+            self.min_pilots_per_cycle = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle')
             self.log.debug('SchedPlugin: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %self.min_pilots_per_cycle)
         
-        if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_pending'):
-            self.max_pilots_pending = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.activated.max_pilots_pending')
+        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending'):
+            self.max_pilots_pending = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending')
             self.log.debug('SchedPlugin: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %self.max_pilots_pending)   
 
         self.log.info("SchedPlugin: Object initialized.")
@@ -68,8 +68,8 @@ class SchedPlugin(SchedInterface):
         pending_pilots = 0
         running_pilots = 0
 
-        wmsinfo = self.wmsqueue.wmsstatus.getInfo(maxtime = self.wmsqueue.wmsstatusmaxtime)
-        batchinfo = self.wmsqueue.batchstatus.getInfo(maxtime = self.wmsqueue.batchstatusmaxtime)
+        wmsinfo = self.apfqueue.wmsstatus.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
+        batchinfo = self.apfqueue.batchstatus.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
 
         if wmsinfo is None:
             self.log.warning("wsinfo is None!")
@@ -82,7 +82,7 @@ class SchedPlugin(SchedInterface):
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             # Carefully get wmsinfo, activated. 
-            siteid = self.wmsqueue.siteid
+            siteid = self.apfqueue.siteid
             self.log.debug("Siteid is %s" % siteid)
             jobsinfo = wmsinfo.jobs
             self.log.debug("jobsinfo class is %s" % jobsinfo.__class__ )
@@ -96,13 +96,13 @@ class SchedPlugin(SchedInterface):
                 activated_jobs = 0
            
             try:
-                pending_pilots = batchinfo.queues[self.wmsqueue.apfqueue].pending            
+                pending_pilots = batchinfo.queues[self.apfqueue.apfqname].pending            
             except KeyError:
                                 # This is OK--it just means no jobs. 
                 pass
             
             try:        
-                running_pilots = batchinfo.queues[self.wmsqueue.apfqueue].running
+                running_pilots = batchinfo.queues[self.apfqueue.apfqname].running
             except KeyError:
                 # This is OK--it just means no jobs. 
                 pass

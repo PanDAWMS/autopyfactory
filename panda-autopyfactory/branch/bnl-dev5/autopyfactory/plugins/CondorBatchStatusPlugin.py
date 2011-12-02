@@ -38,22 +38,22 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
     
     __metaclass__ = Singleton 
     
-    def __init__(self, wmsqueue):
+    def __init__(self, apfqueue):
             threading.Thread.__init__(self) # init the thread
             
-            self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %wmsqueue.apfqueue)
+            self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %apfqueue.apfqname)
             self.log.debug('BatchStatusPlugin: Initializing object...')
             self.stopevent = threading.Event()
 
             # to avoid the thread to be started more than once
             self.__started = False
 
-            self.wmsqueue = wmsqueue
-            self.fconfig = wmsqueue.fcl.config          
-            self.apfqueue = wmsqueue.apfqueue
-            self.condoruser = wmsqueue.fcl.get('Factory', 'factoryUser')
-            self.factoryid = wmsqueue.fcl.get('Factory', 'factoryId') 
-            self.sleeptime = self.wmsqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
+            self.apfqueue = apfqueue
+            self.fconfig = apfqueue.fcl.config          
+            self.apfqname = apfqueue.apfqname
+            self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
+            self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
+            self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
             self.currentinfo = None              
 
             # variable to record when was last time info was updated

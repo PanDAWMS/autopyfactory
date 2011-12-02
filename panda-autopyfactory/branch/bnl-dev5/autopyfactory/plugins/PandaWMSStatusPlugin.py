@@ -36,14 +36,14 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
     __metaclass__ = Singleton
 
-    def __init__(self, wmsqueue):
-        self.wmsqueue = wmsqueue
-        self.log = logging.getLogger("main.pandawmsstatusplugin[%s]" %wmsqueue.apfqueue)
+    def __init__(self, apfqueue):
+        self.apfqueue = apfqueue
+        self.log = logging.getLogger("main.pandawmsstatusplugin[%s]" %apfqueue.apfqname)
         self.log.debug("WMSStatusPlugin: Initializing object...")
         self.wmsstatusmaxtime = 0
-        if self.wmsqueue.fcl.has_option('Factory', 'wmsstatus.maxtime'):
+        if self.apfqueue.fcl.has_option('Factory', 'wmsstatus.maxtime'):
             self.wmsstatusmaxtime = self.fcl.get('Factory', 'wmsstatus.maxtime')
-        self.sleeptime = self.wmsqueue.fcl.getint('Factory', 'wmsstatus.panda.sleep')
+        self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.panda.sleep')
 
         # current WMSStatusIfno object
         self.currentinfo = None

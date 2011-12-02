@@ -15,13 +15,13 @@ __status__ = "Production"
 
 class SchedPlugin(SchedInterface):
         
-        def __init__(self, wmsqueue):
-            self.wmsqueue = wmsqueue                
-            self.log = logging.getLogger("main.schedplugin[%s]" %wmsqueue.apfqueue)
+        def __init__(self, apfqueue):
+            self.apfqueue = apfqueue                
+            self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
             self.pilotspercycle = None
 
-            if self.wmsqueue.qcl.has_option(self.wmsqueue.apfqueue, 'sched.fixed.pilotspercycle'):
-                self.pilotspercycle = self.wmsqueue.qcl.getint(self.wmsqueue.apfqueue, 'sched.fixed.pilotspercycle')
+            if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.fixed.pilotspercycle'):
+                self.pilotspercycle = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.fixed.pilotspercycle')
                 self.log.debug('SchedPlugin: there is a fixedPilotsPerCycle number setup to %s' %self.pilotspercycle)
 
             self.log.info("SchedPlugin: Object initialized.")
