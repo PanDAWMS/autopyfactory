@@ -1,5 +1,5 @@
 #
-# queues.conf  Configuration file for WMSQueue component of AutoPyFactory.
+# queues.conf  Configuration file for APFQueue component of AutoPyFactory.
 #
 
 ## Defaults for queues - these values are set when there is not an explicit value
@@ -158,7 +158,7 @@
 #
 # wmsstatusplugin = WMS Status Plugin.
 #
-# wmsqueue.sleep = sleep time between cycles in WMSQueue object.
+# wmsqueue.sleep = sleep time between cycles in APFQueue object.
 #               Value is in seconds.   
 #
 # batchstatusplugin = Batch Status Plugin.
