@@ -17,8 +17,8 @@ from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatu
 from autopyfactory.logserver import LogServer
 
 
-__author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
-__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010,2011 John Hover; 2011 Jose Caballero"
+__author__ = "Jose Caballero"
+__copyright__ = "2011 Jose Caballero"
 __credits__ = []
 __license__ = "GPL"
 __version__ = "2.0.0"
