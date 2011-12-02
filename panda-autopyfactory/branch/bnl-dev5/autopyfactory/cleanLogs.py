@@ -31,18 +31,18 @@ class CleanCondorLogs(threading.Thread):
                 the interface inherited from Thread `
         -----------------------------------------------------------------------
         '''
-        def __init__(self, wmsqueue):
+        def __init__(self, apfqueue):
                 '''
                 factory is a reference to the Factory object that created
                 the CleanCondorLogs instance
                 '''
 
-                self.siteid = wmsqueue.siteid
+                self.siteid = apfqueue.siteid
                 self.log = logging.getLogger('main.cleancondorlogs[%s]' %self.siteid)
                 self.log.debug('CleanCondorLogs: Initializing object...')
         
-                self.fcl = wmsqueue.fcl
-                self.qcl = wmsqueue.qcl
+                self.fcl = apfqueue.fcl
+                self.qcl = apfqueue.qcl
                 self.logDir = self.fcl.get('Factory', 'baseLogDir')
 
                 threading.Thread.__init__(self) # init the thread
