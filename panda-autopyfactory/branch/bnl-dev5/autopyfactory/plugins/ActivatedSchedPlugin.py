@@ -96,13 +96,19 @@ class SchedPlugin(SchedInterface):
                 activated_jobs = 0
            
             try:
-                pending_pilots = batchinfo.queues[self.apfqueue.apfqname].pending            
+                #
+                #pending_pilots = batchinfo.queues[self.apfqueue.apfqname].pending            
+                #
+                pending_pilots = batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
             except KeyError:
                                 # This is OK--it just means no jobs. 
                 pass
             
             try:        
-                running_pilots = batchinfo.queues[self.apfqueue.apfqname].running
+                #
+                #running_pilots = batchinfo.queues[self.apfqueue.apfqname].running
+                #
+                running_pilots = batchinfo[self.apfqueue.apfqname].running # using the new info objects
             except KeyError:
                 # This is OK--it just means no jobs. 
                 pass
