@@ -167,7 +167,7 @@ class WMSQueueInfo(BaseInfo):
 
     def __init__(self):
         # default value 0
-        super(WMSJobInfo, self).__init__(0)
+        super(WMSQueueInfo, self).__init__(0)
 
     def __str__(self):
         s = "WMSJobInfo: notready=%s, ready=%s, running=%s, done=%s, failed=%s" %(self.notready,
