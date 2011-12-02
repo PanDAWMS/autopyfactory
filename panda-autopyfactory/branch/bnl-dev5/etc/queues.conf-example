@@ -43,7 +43,7 @@
 # sched.trivial.default
 #
 # wmsstatusplugin
-# wmsqueue.sleep
+# apfqueue.sleep
 #
 # batchstatusplugin
 #
@@ -158,7 +158,7 @@
 #
 # wmsstatusplugin = WMS Status Plugin.
 #
-# wmsqueue.sleep = sleep time between cycles in APFQueue object.
+# apfqueue.sleep = sleep time between cycles in APFQueue object.
 #               Value is in seconds.   
 #
 # batchstatusplugin = Batch Status Plugin.
@@ -274,7 +274,7 @@ sched.activated.default = 0
 # proxy = atlas-usatlas
 proxy = None
 
-wmsqueue.sleep = 360
+apfqueue.sleep = 360
 
 executable = /usr/libexec/wrapper.sh
 executable.pandawrappertarballurl = http://dev.racf.bnl.gov/dist/wrapper/
