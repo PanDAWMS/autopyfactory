@@ -3,7 +3,7 @@ ChangeLog
 
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
-2011-09-19
+2011-12-02
 
 * Major refactorization to integrate BNL changes. Full object-oriented functional 
   plugin architecture, each running in a distinct thread. Allows for 
