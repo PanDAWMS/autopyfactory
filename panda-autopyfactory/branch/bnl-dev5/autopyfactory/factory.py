@@ -343,14 +343,14 @@ class Factory(object):
             2. launch a new thread per queue 
 
     Information about queues created and running is stored in a 
-    WMSQueuesManager object.
+    APFQueuesManager object.
 
     Actions are triggered by method update() 
     update() can be invoked at the beginning, from __init__,
     or when needed. For example, is an external SIGNAL is received.
     When it happens, update() does:
             1. calculates the new list of queues from the config file
-            2. updates the WMSQueuesManager object 
+            2. updates the APFQueuesManager object 
     -----------------------------------------------------------------------
     Public Interface:
             __init__(fcl)
@@ -387,8 +387,8 @@ class Factory(object):
         else:
             self.log.info("ProxyManager disabled.")
        
-        # WMS Queues Manager 
-        self.wmsmanager = WMSQueuesManager(self)
+        # APF Queues Manager 
+        self.wmsmanager = APFQueuesManager(self)
         
         # Set up LogServer
         ls = self.fcl.get('Factory', 'logserver.enabled')
@@ -443,7 +443,7 @@ class Factory(object):
 
     def update(self):
         '''
-        Method to update the status of the WMSQueuesManager object.
+        Method to update the status of the APFQueuesManager object.
         This method will be used every time the 
         status of the queues changes: 
                 - at the very beginning
@@ -464,10 +464,10 @@ class Factory(object):
 #                       QUEUES MANAGEMENT
 # ==============================================================================                                
 
-class WMSQueuesManager(object):
+class APFQueuesManager(object):
     '''
     -----------------------------------------------------------------------
-    Container with the list of WMSQueue objects.
+    Container with the list of APFQueue objects.
     -----------------------------------------------------------------------
     Public Interface:
             __init__(factory)
@@ -477,16 +477,16 @@ class WMSQueuesManager(object):
     '''
     def __init__(self, factory):
         '''
-        Initializes a container of WMSQueue objects
+        Initializes a container of APFQueue objects
         '''
 
-        self.log = logging.getLogger('main.wmsquuesmanager')
-        self.log.debug('WMSQueuesManager: Initializing object...')
+        self.log = logging.getLogger('main.apfquuesmanager')
+        self.log.debug('APFQueuesManager: Initializing object...')
 
         self.queues = {}
         self.factory = factory
 
-        self.log.info('WMSQueuesManager: Object initialized.')
+        self.log.info('APFQueuesManager: Object initialized.')
 
 # ----------------------------------------------------------------------
 #            Public Interface
@@ -511,7 +511,7 @@ class WMSQueuesManager(object):
 
     def join(self):
         '''
-        Joins all WMSQueue objects
+        Joins all APFQueue objects
         QUESTION: should the queues also be removed from self.queues ?
         '''
 
@@ -531,7 +531,7 @@ class WMSQueuesManager(object):
 
     def _addqueues(self, apfqnames):
         '''
-        Creates new WMSQueue objects
+        Creates new APFQueue objects
         '''
 
         self.log.debug("_addqueues: Starting with input %s" %apfqnames)
@@ -546,14 +546,14 @@ class WMSQueuesManager(object):
 
     def _add(self, apfqname):
         '''
-        Creates a single new WMSQueue object and starts it
+        Creates a single new APFQueue object and starts it
         '''
 
         self.log.debug("_add: Starting with input %s" %apfqname)
 
         enabled = self.factory.qcl.getboolean(apfqname, 'enabled') 
         if enabled:
-            qobject = WMSQueue(apfqname, self.factory)
+            qobject = APFQueue(apfqname, self.factory)
             self.queues[apfqname] = qobject
             qobject.start()
             self.log.debug('_add: %s enabled.' %apfqname)
@@ -565,7 +565,7 @@ class WMSQueuesManager(object):
             
     def _delqueues(self, apfqnames):
         '''
-        Deletes WMSQueue objects
+        Deletes APFQueue objects
         '''
 
         self.log.debug("_delqueues: Starting with input %s" %apfqnames)
@@ -595,7 +595,7 @@ class WMSQueuesManager(object):
     
     def _refresh(self):
         '''
-        Calls method refresh() for all WMSQueue objects
+        Calls method refresh() for all APFQueue objects
         '''
 
         self.log.debug("_refresh: Starting")
@@ -621,7 +621,7 @@ class WMSQueuesManager(object):
         return d1, d2
  
 
-class WMSQueue(threading.Thread):
+class APFQueue(threading.Thread):
     '''
     -----------------------------------------------------------------------
     Encapsulates all the functionality related to servicing each queue (i.e. siteid, i.e. site).
@@ -642,8 +642,8 @@ class WMSQueue(threading.Thread):
         self.inittime = datetime.datetime.now()
 
         threading.Thread.__init__(self) # init the thread
-        self.log = logging.getLogger('main.wmsqueue[%s]' %apfqname)
-        self.log.debug('WMSQueue: Initializing object...')
+        self.log = logging.getLogger('main.apfqueue[%s]' %apfqname)
+        self.log.debug('APFQueue: Initializing object...')
 
         self.stopevent = threading.Event()
 
@@ -663,7 +663,7 @@ class WMSQueue(threading.Thread):
         self.nickname = self.qcl.get(apfqname, 'nickname')
         self.cloud = self.qcl.get(apfqname, 'cloud')
         self.cycles = self.fcl.get("Factory", 'cycles' )
-        self.sleep = int(self.qcl.get(apfqname, 'wmsqueue.sleep'))
+        self.sleep = int(self.qcl.get(apfqname, 'apfqueue.sleep'))
         self.cyclesrun = 0
         
         # Get status-related vars
@@ -695,7 +695,7 @@ class WMSQueue(threading.Thread):
         self.wmsstatus = self._getplugin('wmsstatus', self)
         self.wmsstatus.start()                  # starts the thread
         self.batchsubmit = self._getplugin('batchsubmit', self)
-        self.log.info('WMSQueue: Object initialized.')
+        self.log.info('APFQueue: Object initialized.')
 
         
 
@@ -758,7 +758,7 @@ class WMSQueue(threading.Thread):
     def run(self):
         '''
         Method called by thread.start()
-        Main functional loop of this WMSQueue. 
+        Main functional loop of this APFQueue. 
         '''        
 
         self.log.debug("run: Starting" )
