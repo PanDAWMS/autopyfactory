@@ -15,6 +15,13 @@ from autopyfactory.factory import BatchStatusInfo
 from autopyfactory.factory import QueueInfo
 from autopyfactory.factory import Singleton 
 
+from autopyfactory.info import InfoContainer
+from autopyfactory.info import BatchQueueInfo
+from autopyfactory.info import globusstatus2info
+from autopyfactory.info import jobstatus2info
+
+
+
 
 __author__ = "John Hover, Jose Caballero"
 __copyright__ = "2011 John Hover, Jose Caballero"
@@ -433,68 +440,92 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             A BatchStatusInfo object which maps attribute counts to generic APF
             queue attribute counts. 
         '''
+
+
         self.log.debug('_map2info: Starting.')
-        bsi = BatchStatusInfo()
+        batchstatusinfo = InfoContainer('batch')
         for site in input.keys():
-            qi = QueueInfo()
-            bsi.queues[site] = qi
-            attrdict = input[site]
-            
-            # use finer-grained globus statuses in preference to local summaries. 
-            if 'globusstatus' in attrdict.keys():
-                valdict = attrdict['globusstatus']
-                for status in valdict.keys():
-                    valct = valdict[status]
-                    if status == '1':
-                        qi.pending += valct                        
-                    elif status == '2':
-                        qi.running += valct
-                    elif status == '4':
-                        # FAILED jobs are done
-                        qi.done += valct
-                    elif status == '8':
-                        # DONE jobs are done
-                        qi.done += valct
-                    elif status == '16':
-                        qi.suspended += valct
-                    elif status == '32':
-                        # UNSUBMITTED jobs are pending
-                        qi.pending += valct
-                    elif status == '64':
-                        # STAGE-IN jobs are running
-                        qi.running += valct
-                    elif status == '128':
-                        # STAGE-OUT jobs are running
-                        qi.running += valct                
-                
-            # must be a local-only job.
-            else:
-                valdict = attrdict['jobstatus']
-                for status in valdict.keys():
-                    valct = valdict[status]
-                    if status == '0':
-                        # Unexpanded jobs are pending
-                        qi.pending += valct                        
-                    elif status == '1':
-                        qi.pending += valct
-                    elif status == '2':
-                        qi.running += valct
-                    elif status == '3':
-                        # Removed jobs are done. 
-                        qi.done += valct
-                    elif status == '4':
-                        qi.done += valct
-                    elif status == '5':
-                        # Held jobs are suspended
-                        qi.suspended += valct
-                    elif status == '6':
-                        # Transferring jobs are running
-                        qi.running += valct
-        bsi.lasttime = int(time.time())
-        self.log.debug('_map2info: Returning BatchStatusInfo: %s' % bsi)
-        for site in bsi.queues.keys():
-            self.log.debug('_map2info: Queue %s = %s' % (site, bsi.queues[site]))           
-        return bsi
+                qi = BatchQueueInfo()
+                batchstatusinfo[site] = qi
+                attrdict = input[site]
+               
+                # use finer-grained globus statuses in preference to local summaries. 
+                if 'globusstatus' in attrdict.keys():
+                        valdict = attrdict['globusstatus']
+                        qi.fill(valdict, mappings=globusstatus2info)
+                # must be a local-only job.
+                else:
+                        valdict = attrdict['jobstatus']
+                        qi.fill(valdict, mappings=jobstatus2info)
+                        
+        batchstatusinfo.lasttime = int(time.time())
+        self.log.debug('_map2info: Returning BatchStatusInfo: %s' % batchstatusinfo)
+        for site in batchstatusinfo.keys():
+            self.log.debug('_map2info: Queue %s = %s' % (site, batchstatusinfo[site]))           
+        return batchstatusinfo
+
+#        self.log.debug('_map2info: Starting.')
+#        bsi = BatchStatusInfo()
+#        for site in input.keys():
+#            qi = QueueInfo()
+#            bsi.queues[site] = qi
+#            attrdict = input[site]
+#            
+#            # use finer-grained globus statuses in preference to local summaries. 
+#            if 'globusstatus' in attrdict.keys():
+#                valdict = attrdict['globusstatus']
+#                for status in valdict.keys():
+#                    valct = valdict[status]
+#                    if status == '1':
+#                        qi.pending += valct                        
+#                    elif status == '2':
+#                        qi.running += valct
+#                    elif status == '4':
+#                        # FAILED jobs are done
+#                        qi.done += valct
+#                    elif status == '8':
+#                        # DONE jobs are done
+#                        qi.done += valct
+#                    elif status == '16':
+#                        qi.suspended += valct
+#                    elif status == '32':
+#                        # UNSUBMITTED jobs are pending
+#                        qi.pending += valct
+#                    elif status == '64':
+#                        # STAGE-IN jobs are running
+#                        qi.running += valct
+#                    elif status == '128':
+#                        # STAGE-OUT jobs are running
+#                        qi.running += valct                
+#                
+#            # must be a local-only job.
+#            else:
+#                valdict = attrdict['jobstatus']
+#                for status in valdict.keys():
+#                    valct = valdict[status]
+#                    if status == '0':
+#                        # Unexpanded jobs are pending
+#                        qi.pending += valct                        
+#                    elif status == '1':
+#                        qi.pending += valct
+#                    elif status == '2':
+#                        qi.running += valct
+#                    elif status == '3':
+#                        # Removed jobs are done. 
+#                        qi.done += valct
+#                    elif status == '4':
+#                        qi.done += valct
+#                    elif status == '5':
+#                        # Held jobs are suspended
+#                        qi.suspended += valct
+#                    elif status == '6':
+#                        # Transferring jobs are running
+#                        qi.running += valct
+#        bsi.lasttime = int(time.time())
+#        self.log.debug('_map2info: Returning BatchStatusInfo: %s' % bsi)
+#        for site in bsi.queues.keys():
+#            self.log.debug('_map2info: Queue %s = %s' % (site, bsi.queues[site]))           
+#        return bsi
 
 
     def join(self, timeout=None):
