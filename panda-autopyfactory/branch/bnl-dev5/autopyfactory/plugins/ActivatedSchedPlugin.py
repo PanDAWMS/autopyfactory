@@ -41,7 +41,7 @@ class SchedPlugin(SchedInterface):
         
         if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending'):
             self.max_pilots_pending = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending')
-            self.log.debug('SchedPlugin: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %self.max_pilots_pending)   
+            self.log.debug('SchedPlugin: there is a MAX_PILOTS_PENDING number setup to %s' %self.max_pilots_pending)   
 
         self.log.info("SchedPlugin: Object initialized.")
 
