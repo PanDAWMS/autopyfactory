@@ -157,24 +157,26 @@ class WMSQueueInfo(BaseInfo):
         - running
         - done
         - failed
+        - unknown
    
     Note: eventually, a new class (or this one modified) will have 
           a valid list of attributes for statuses with labels (PanDA ProdSourceLabel)
 
     -----------------------------------------------------------------------
     '''
-    valid = ['notready', 'ready', 'running', 'done', 'failed']
+    valid = ['notready', 'ready', 'running', 'done', 'failed', 'unknown']
 
     def __init__(self):
         # default value 0
         super(WMSQueueInfo, self).__init__(0)
 
     def __str__(self):
-        s = "WMSJobInfo: notready=%s, ready=%s, running=%s, done=%s, failed=%s" %(self.notready,
+        s = "WMSJobInfo: notready=%s, ready=%s, running=%s, done=%s, failed=%s, unknown" %(self.notready,
                                                                                   self.ready,
                                                                                   self.running,
                                                                                   self.done,
-                                                                                  self.failed)
+                                                                                  self.failed,
+                                                                                  self.unknown)
         return s
 
 class CloudInfo(BaseInfo):
