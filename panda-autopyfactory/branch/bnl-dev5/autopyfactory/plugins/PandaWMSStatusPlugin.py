@@ -428,11 +428,59 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         delta = time.time() - before
         self.log.info('_updateJobs: %s seconds to perform query' %delta)
         out = None
-        if not jobs_err:
-            out = all_jobs_config
-        else:
-            self.log.error('Client.getJobStatisticsPerSite() failed.')
-        return out
+        ###if not jobs_err:
+        ###    out = all_jobs_config
+        ###else:
+        ###    self.log.error('Client.getJobStatisticsPerSite() failed.')
+        ###return out
+
+        if jobs_err:
+                self.log.error('Client.getJobStatisticsPerSite() failed.')
+                return None 
+                
+        self.jobsstatisticspersite2info = {'pending'     : 'notready',
+                                           'defined'     : 'notready',
+                                           'assigned'    : 'notready',
+                                           'waiting'     : 'notready',
+                                           'activated'   : 'ready',
+                                           'sent'        : 'running',
+                                           'running'     : 'running',
+                                           'holding'     : 'running',
+                                           'transferring': 'running',
+                                           'finished'    : 'done',
+                                           'failed'      : 'failed',
+                                           'cancelled'   : 'failed'}
+
+        wmsqueueinfo = InfoContainer('jobs')
+        for wmssite in all_jobs_config.keys():
+                qi = WMSQueueInfo()
+                wmsqueueinfo[wmssite] = qi
+                attrdict = all_jobs_config[wmssite]
+                qi.fill(attrdict, mappings=self.jobsstatisticspersite2info)
+        return wmsqueueinfo
+
+#         ----- this was used as a reference  -----
+###463         self.log.debug('_map2info: Starting.')
+###464         batchstatusinfo = InfoContainer('batch')
+###465         for site in input.keys():
+###466                 qi = BatchQueueInfo()
+###467                 batchstatusinfo[site] = qi
+###468                 attrdict = input[site]
+###469 
+###470                 # use finer-grained globus statuses in preference to local summaries. 
+###471                 if 'globusstatus' in attrdict.keys():
+###472                         valdict = attrdict['globusstatus']
+###473                         qi.fill(valdict, mappings=self.globusstatus2info)
+###474                 # must be a local-only job.
+###475                 else:
+###476                         valdict = attrdict['jobstatus']
+###477                         qi.fill(valdict, mappings=self.jobstatus2info)
+###478 
+###479         batchstatusinfo.lasttime = int(time.time())
+###480         self.log.debug('_map2info: Returning BatchStatusInfo: %s' % batchstatusinfo)
+###481         for site in batchstatusinfo.keys():
+###482             self.log.debug('_map2info: Queue %s = %s' % (site, batchstatusinfo[site]))
+###483         return batchstatusinfo
 
     def join(self,timeout=None):
             '''
