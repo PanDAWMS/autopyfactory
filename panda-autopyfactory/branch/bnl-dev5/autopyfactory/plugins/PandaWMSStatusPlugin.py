@@ -8,7 +8,11 @@ import traceback
 from autopyfactory.factory import WMSStatusInterface
 from autopyfactory.factory import WMSStatusInfo
 from autopyfactory.factory import Singleton 
+from autopyfactory.info import InfoContainer
+from autopyfactory.info import WMSQueueInfo
 import autopyfactory.utils as utils
+
+
 
 import userinterface.Client as Client
 
