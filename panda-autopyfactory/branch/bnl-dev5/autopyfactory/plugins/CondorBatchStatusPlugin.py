@@ -17,10 +17,6 @@ from autopyfactory.factory import Singleton
 
 from autopyfactory.info import InfoContainer
 from autopyfactory.info import BatchQueueInfo
-from autopyfactory.info import globusstatus2info
-from autopyfactory.info import jobstatus2info
-
-
 
 
 __author__ = "John Hover, Jose Caballero"
