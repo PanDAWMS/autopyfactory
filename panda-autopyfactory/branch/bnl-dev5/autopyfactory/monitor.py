@@ -11,6 +11,7 @@ import logging
 import re
 import threading
 import StringIO
+import urllib2
 
 try:
         import pycurl
@@ -141,7 +142,6 @@ class Monitor(object):
     def _signal(self, url, postdata):
         
         self.log.debug('_signal: url is %s and postdata is %s' %(url, postdata))
-        import urllib2
         try:
             out = urllib2.urlopen(url, postdata)
             self.log.debug('_signal: urlopen() output=%s' % out.read())
