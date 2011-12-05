@@ -89,7 +89,8 @@ class SchedPlugin(SchedInterface):
             try:
                 sitedict = jobsinfo[siteid]
                 self.log.debug("sitedict class is %s" % sitedict.__class__ )
-                activated_jobs = sitedict['activated']
+                #activated_jobs = sitedict['activated']
+                activated_jobs = sitedict.ready
             except KeyError:
                 # This is OK--it just means no jobs in any state at the siteid. 
                 self.log.error("siteid: %s not present in jobs info from WMS" % siteid)
