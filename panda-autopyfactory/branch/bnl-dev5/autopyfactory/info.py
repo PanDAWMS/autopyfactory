@@ -327,25 +327,3 @@ class WMSStatusInfo(object):
             if self.jobs is None:
                 length -= 1
             return length
-            
-# ============================================================================= 
-#                     M A P P I N G S 
-# ============================================================================= 
-
-globusstatus2info = {'1':   'pending',
-                     '2':   'running',
-                     '4':   'done',
-                     '8':   'done',
-                     '16':  'suspended',
-                     '32':  'pending',
-                     '64':  'running',
-                     '128': 'running'}
-
-jobstatus2info = {'0': 'pending',
-                  '1': 'pending',
-                  '2': 'running',
-                  '3': 'done',
-                  '4': 'done',
-                  '5': 'suspended',
-                  '6': 'running'}
-
