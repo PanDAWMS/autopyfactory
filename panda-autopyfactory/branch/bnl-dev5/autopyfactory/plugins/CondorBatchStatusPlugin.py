@@ -63,6 +63,28 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
             self.currentinfo = None              
 
+            # ================================================================
+            #                     M A P P I N G S 
+            # ================================================================
+            
+            self.globusstatus2info = {'1':   'pending',
+                                      '2':   'running',
+                                      '4':   'done',
+                                      '8':   'done',
+                                      '16':  'suspended',
+                                      '32':  'pending',
+                                      '64':  'running',
+                                      '128': 'running'}
+            
+            self.jobstatus2info = {'0': 'pending',
+                                   '1': 'pending',
+                                   '2': 'running',
+                                   '3': 'done',
+                                   '4': 'done',
+                                   '5': 'suspended',
+                                   '6': 'running'}
+
+
             # variable to record when was last time info was updated
             # the info is recorded as seconds since epoch
             self.lasttime = 0
@@ -452,11 +474,11 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 # use finer-grained globus statuses in preference to local summaries. 
                 if 'globusstatus' in attrdict.keys():
                         valdict = attrdict['globusstatus']
-                        qi.fill(valdict, mappings=globusstatus2info)
+                        qi.fill(valdict, mappings=self.globusstatus2info)
                 # must be a local-only job.
                 else:
                         valdict = attrdict['jobstatus']
-                        qi.fill(valdict, mappings=jobstatus2info)
+                        qi.fill(valdict, mappings=self.jobstatus2info)
                         
         batchstatusinfo.lasttime = int(time.time())
         self.log.debug('_map2info: Returning BatchStatusInfo: %s' % batchstatusinfo)
