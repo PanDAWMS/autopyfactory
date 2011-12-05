@@ -447,6 +447,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                                            'assigned'    : 'notready',
                                            'waiting'     : 'notready',
                                            'activated'   : 'ready',
+                                           'starting'    : 'running',
                                            'sent'        : 'running',
                                            'running'     : 'running',
                                            'holding'     : 'running',
