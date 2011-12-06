@@ -112,7 +112,7 @@ class SchedPlugin(SchedInterface):
             out = max(0, activated_jobs - all_pilots)
             
             if self.max_jobs_torun: 
-                out = min(out, self.max_jobs_torun - all_pilots) # this is to prevent having a negative number as solution
+                out = min(out, self.max_jobs_torun - all_pilots)
            
             if self.max_pilots_per_cycle:
                 out = min(out, self.max_pilots_per_cycle)
@@ -121,7 +121,7 @@ class SchedPlugin(SchedInterface):
                 out = max(out, self.min_pilots_per_cycle)
 
             if self.max_pilots_pending:
-                out = min(out, self.max_pilots_pending - pending_pilots) # this is to prevent having a negative number as solution
+                out = min(out, self.max_pilots_pending - pending_pilots)
 
             # Catch all to prevent negative numbers
             if out < 0:
