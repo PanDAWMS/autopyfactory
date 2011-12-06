@@ -189,8 +189,7 @@ class CloudInfo(BaseInfo):
     Once we decided which ones should stay we can clean up the valid list.
     -----------------------------------------------------------------------
     '''
-    #valid = ['tier1', 'status', 'fasttrack', 'transtimehi', 'name', 'weight', 'transtimelo', 'dest', 'countries', 'relocation', 'sites', 'server', 'waittime', 'source', 'tier1SE', 'pilotowners', 'mcshare', 'validation', 'nprestage']
-    valid = ['nqueue']
+    valid = ['tier1', 'status', 'fasttrack', 'transtimehi', 'name', 'weight', 'transtimelo', 'dest', 'countries', 'relocation', 'sites', 'server', 'waittime', 'source', 'tier1SE', 'pilotowners', 'mcshare', 'validation', 'nprestage']
 
     def __init__(self):
         # default value None
@@ -212,7 +211,8 @@ class SiteInfo(BaseInfo):
     -----------------------------------------------------------------------
     '''
 
-    valid = ['comment', 'gatekeeper', 'cloudlist', 'defaulttoken', 'priorityoffset', 'cloud', 'accesscontrol', 'retry', 'maxinputsize', 'space', 'sitename', 'allowdirectaccess', 'seprodpath', 'ddm', 'memory', 'setokens', 'type', 'lfcregister', 'status', 'lfchost', 'releases', 'statusmodtime', 'maxtime', 'nickname', 'dq2url', 'copysetup', 'cachedse', 'cmtconfig', 'allowedgroups', 'queue', 'localqueue', 'glexec', 'validatedreleases', 'se']
+    #valid = ['comment', 'gatekeeper', 'cloudlist', 'defaulttoken', 'priorityoffset', 'cloud', 'accesscontrol', 'retry', 'maxinputsize', 'space', 'sitename', 'allowdirectaccess', 'seprodpath', 'ddm', 'memory', 'setokens', 'type', 'lfcregister', 'status', 'lfchost', 'releases', 'statusmodtime', 'maxtime', 'nickname', 'dq2url', 'copysetup', 'cachedse', 'cmtconfig', 'allowedgroups', 'queue', 'localqueue', 'glexec', 'validatedreleases', 'se']
+    valid = ['nqueue']
 
     def __init__(self):
         # default value None
