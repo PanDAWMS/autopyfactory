@@ -61,7 +61,7 @@ class SchedPlugin(SchedInterface):
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             try:
-                pending_pilots = batchinfo.queues[self.apfqueue.apfqname].pending
+                pending_pilots = batchinfo[self.apfqueue.apfqname].pending 
             except KeyError:
                                 # This is OK--it just means no jobs. 
                 pass
