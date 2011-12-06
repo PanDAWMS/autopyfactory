@@ -189,7 +189,8 @@ class CloudInfo(BaseInfo):
     Once we decided which ones should stay we can clean up the valid list.
     -----------------------------------------------------------------------
     '''
-    valid = ['tier1', 'status', 'fasttrack', 'transtimehi', 'name', 'weight', 'transtimelo', 'dest', 'countries', 'relocation', 'sites', 'server', 'waittime', 'source', 'tier1SE', 'pilotowners', 'mcshare', 'validation', 'nprestage']
+    #valid = ['tier1', 'status', 'fasttrack', 'transtimehi', 'name', 'weight', 'transtimelo', 'dest', 'countries', 'relocation', 'sites', 'server', 'waittime', 'source', 'tier1SE', 'pilotowners', 'mcshare', 'validation', 'nprestage']
+    valid = ['nqueue']
 
     def __init__(self):
         # default value None
