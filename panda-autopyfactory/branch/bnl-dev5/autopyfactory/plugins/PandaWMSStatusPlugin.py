@@ -247,6 +247,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                       'waittime': 0,
                       'weight': 2}
             }            
+
         '''
 
         before = time.time()
@@ -262,30 +263,6 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
             self.log.error('Client.getCloudSpecs() failed')
         return out
 
-
-#    def _update_clouds(self):
-#        clouds_info = self._query_clouds()
-#        return self._parse_clouds_output(clouds_info)
-#
-#    def _query_clouds(self):
-#        clouds_err, all_clouds_config = Client.getCloudSpecs()
-#        if not clouds_err:
-#            return all_clouds_config
-#        else:
-#            return None
-#
-#    def _parse_clouds_output(self, info):
-#        if not info:
-#            return None
-#        # else...        
-#        csi = CloudStatusInfo()
-#        for cloud in info.keys():
-#            ci = CloudInfo()
-#            fill(ci, info[cloud])
-#            csi[cloud] = ci
-#        return csi
-
-        
     def _updatesites(self):
         '''
         Client.getSiteSpecs(siteType='all')   ->
@@ -376,6 +353,17 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                            'validatedreleases': ['True']},
         }
         
+        -------------------------------------------------------------------------------------------------------
+
+        $ curl --connect-timeout 20 --max-time 180 -sS 'http://panda.cern.ch:25980/server/pandamon/query?autopilot=queuedata&nickname=TEST2&pandasite=TEST2'
+        
+        (lp1
+        (dp2
+        S'gatekeeper'
+        p3
+        S'gridgk01.racf.bnl.gov' 
+            ...
+            ...
         '''
         before = time.time()
         # get Sites Specs
@@ -389,7 +377,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         else:
             self.log.error('Client.getSiteSpecs() failed.')
         return out     
-       
+ 
     def _updatejobs(self):
         '''
         
