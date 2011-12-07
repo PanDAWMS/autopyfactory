@@ -41,6 +41,7 @@ class BaseInfo(object):
         Public Interface:
                 reset()
                 fill(dictionary, mappings=None, reset=True)
+                dict()
         -----------------------------------------------------------------------
         '''
         valid = []
@@ -107,6 +108,16 @@ class BaseInfo(object):
                                 v = self.__dict__[k] + v
                                 
                         self.__dict__[k] = v
+
+        def dict(self):
+                '''
+                returns a dictionary with the stored info. 
+                Keys are the list of variables in valid.
+                '''
+                d = {}
+                for k in self.__class__.valid:
+                        d[k] = self.__dict__[k]
+                return d
 
 
 class BatchQueueInfo(BaseInfo):
