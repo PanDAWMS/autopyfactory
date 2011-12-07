@@ -56,16 +56,87 @@ class Config(SafeConfigParser, object):
                 merge(config, override=False)
         -----------------------------------------------------------------------
         '''
-        def merge(self, config, override=False):
+        def merge(self, config, override=None, includemissing=True):
                 '''
                 merge the current Config object 
                 with the content of another Config object.
+
+                override can have only 3 values: None(default), True or False
+                -- If the input override is None, 
+                   then the merge is done using the current override value
+                   that the current parser object may have. 
+                -- If the input override is True, 
+                   then the merge is done as if the current parser object had
+                   override = True.
+                -- If the input override is False, 
+                   then the merge is done as if the current parser object had
+                   override = False.
+                When the merge is done, values in the new parser objects
+                replace the values in the current parser object, unless override=True. 
+                If the current object has no override defined, 
+                and the input override is None, then the default is as override=False
+                (in order words, new values replace current values).
+
+                includemissing determines if attributes in the new config parser 
+                object that do not exist in the current one should be added or not.
                 '''
-                self.__cloneallsections(config, override)
+                self.__cloneallsections(config, override, includemissing)
+
+        def __cloneallsections(self, config, override, includemissing):
+                '''
+                clone all sections in config
+                '''
+
+                sections = config.sections()
+                for section in sections:
+                        if section not in self.sections(): 
+                                if includemissing:
+                                        self.__clonesection(section, config)
+                        else:
+                                self.__mergesection(section, config, override, includemissing)
+
+        def __clonesection(self, section, config):
+                ''' 
+                create a new section, and copy its content
+                ''' 
+                self.add_section(section)
+                for opt in config.options(section):
+                        value = config.get(section, opt)
+                        self.set(section, opt, value)
+
+        def __mergesection(self, section, config, override, includemissing):
+                '''
+                merge the content of a current Config object section
+                with the content of the same section 
+                from a different Config object
+                '''
+                
+                # determine the value of override.
+                if override:
+                        # if input option override is not None
+                        _override=override
+                else:
+                        # if input option override is None
+                        if self.has_option(section, 'override'):
+                                # if the current config parser object has override...
+                                _override = self.get(section, 'override')
+                        else:
+                                # when no one knows what to do...
+                                _override = False
+
+                for opt in config.options(section):
+                        value = config.get(section, opt)        
+                        if opt not in self.options(section):
+                                if includemissing:
+                                        self.set(section, opt, value)
+                        else:
+                                if not override:
+                                        self.set(section, opt, value)
 
 
 
 
+        # ---- possible implementations of a generic_get() method  ----
         def  generic_get(self, 
                          section,                       # SafeConfigParser section 
                          option,                        # option in the SafeConfigParser section
@@ -146,53 +217,6 @@ class Config(SafeConfigParser, object):
                                 return value
                         return value 
 
-
-
-
-        def __cloneallsections(self, config, override):
-                '''
-                clone all sections in config
-                '''
-
-                sections = config.sections()
-                for section in sections:
-                        if section not in self.sections(): 
-                                self.__clonesection(section, config)
-                        else:
-                                self.__mergesection(section, config, override)
-
-        def __clonesection(self, section, config):
-                ''' 
-                create a new section, and copy its content
-                ''' 
-                self.add_section(section)
-                for opt in config.options(section):
-                        value = config.get(section, opt)
-                        self.set(section, opt, value)
-
-        def __mergesection(self, section, config, override):
-                '''
-                merge the content of a current Config object section
-                with the content of the same section 
-                from a different Config object
-
-                We loop over all options in new Config object section.
-
-                If the option is NOT in the current object, 
-                we add it with the same value.
-
-                If the option is in the current object, 
-                we override its value with the new Config object value
-                if override is not True.
-                '''
-
-                for opt in config.options(section):
-                        value = config.get(section, opt)        
-                        if opt not in self.options(section):
-                                self.set(section, opt, value)
-                        else:
-                                if not override:
-                                        self.set(section, opt, value)
 
 
 
