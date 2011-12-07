@@ -304,27 +304,3 @@ class ConfigManager:
                 pass   # TO BE IMPLEMENTED
 
                 
-
-
-####################################################################################################
-        
-c1 = Config()
-c2 = Config()
-
-c1.readfp(open('cfg1'))
-c2.readfp(open('cfg2'))
-
-print c1.sections()
-print c2.sections()
-for o in c1.options('SEC12'):
-        print o, c1.get('SEC12', o)
-print
-for o in c2.options('SEC12'):
-        print o, c2.get('SEC12', o)
-print
-c1.merge(c2, True)
-print c1.sections()
-for o in c1.options('SEC12'):
-        print o, c1.get('SEC12', o)
-
-
