@@ -364,7 +364,35 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         S'gridgk01.racf.bnl.gov' 
             ...
             ...
-        '''
+
+        -------------------------------------------------------------------------------------------------------
+        
+        This is what APF 1.X is getting from SchedConfig:
+
+                http://pandaserver.cern.ch:25085/cache/schedconfig/ANALY_BNL_ATLAS_1-condor.factory.json
+                {
+                    "cloud": "US",
+                    "depthboost": null,
+                    "environ": "APP=/usatlas/OSG TMP=/tmp DATA=/usatlas/prodjob/share/",
+                    "glexec": null,
+                    "idlepilotsupression": null,
+                    "jdl": "ANALY_BNL_ATLAS_1-condor",
+                    "localqueue": null,
+                    "maxtime": 0,
+                    "memory": 0,
+                    "nickname": "ANALY_BNL_ATLAS_1-condor",
+                    "nqueue": 300,
+                    "pilotlimit": null,
+                    "proxy": "donothide",
+                    "queue": "gridgk05.racf.bnl.gov/jobmanager-condor",
+                    "site": "BNL",
+                    "siteid": "ANALY_BNL_ATLAS_1",
+                    "status": "online",
+                    "system": "osg",
+                    "transferringlimit": null
+                }
+                
+            '''
         before = time.time()
         # get Sites Specs
         sites_err, all_sites_config = Client.getSiteSpecs(siteType='all')
