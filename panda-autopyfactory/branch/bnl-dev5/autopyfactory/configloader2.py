@@ -130,7 +130,7 @@ class Config(SafeConfigParser, object):
                                 if includemissing:
                                         self.set(section, opt, value)
                         else:
-                                if not override:
+                                if not _override:
                                         self.set(section, opt, value)
 
 
