@@ -1,5 +1,7 @@
 #!/bin/bash 
 
+WRAPPERVERSION="0.9.1"
+
 # 
 # A generic panda wrapper with minimal functionalities
 #
@@ -102,6 +104,7 @@
 f_init(){
         f_print_line
         echo "=== Pilot wrapper running at"
+        echo "wrapper version: "$WRAPPERVERSION
         echo "date (UTC):  " `date --utc`
         echo "hostname:    " `hostname`
         echo "working dir: " `pwd`
