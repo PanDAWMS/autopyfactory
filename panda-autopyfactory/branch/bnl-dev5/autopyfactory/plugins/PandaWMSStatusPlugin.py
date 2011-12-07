@@ -5,15 +5,14 @@ import threading
 import time
 import traceback
 
+from urllib import urlopen
+
 from autopyfactory.factory import WMSStatusInterface
 from autopyfactory.factory import WMSStatusInfo
 from autopyfactory.factory import Singleton 
 from autopyfactory.info import InfoContainer
 from autopyfactory.info import WMSQueueInfo
 import autopyfactory.utils as utils
-
-
-
 import userinterface.Client as Client
 
 __author__ = "John Hover, Jose Caballero"
@@ -395,9 +394,11 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 
             '''
         before = time.time()
-        # get Sites Specs
+
+        # get Sites Specs from Client.py
         sites_err, all_sites_config = Client.getSiteSpecs(siteType='all')
         delta = time.time() - before
+
         self.log.debug('_updateSites: it took %s seconds to perform the query' %delta)
         self.log.info('_updateSites: %s seconds to perform query' %delta)
         out = None
