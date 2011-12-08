@@ -12,6 +12,8 @@ from autopyfactory.factory import WMSStatusInfo
 from autopyfactory.factory import Singleton 
 from autopyfactory.info import InfoContainer
 from autopyfactory.info import WMSQueueInfo
+from autopyfactory.info import SiteInfo
+from autopyfactory.info import CloudInfo
 import autopyfactory.utils as utils
 import userinterface.Client as Client
 
