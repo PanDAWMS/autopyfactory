@@ -288,19 +288,3 @@ class ConfigManager:
                 config.readfp(uridata) # FIXME: should we feed the Config object with info from a local file
                                       # instead of directly from the URL?
 
-        def getFromSchedConfig(self, site):
-                '''
-                creates a Config object with info from SchedConfig
-                '''
-
-                config = Config()
-                self.__querySchedConfig(site, config) # is this the best way to do it?
-                return config
-
-        def __querySchedConfig(self, site, config):
-                '''
-                queries SchedConfig and feed config with retrieved info.
-                '''
-                pass   # TO BE IMPLEMENTED
-
-                
