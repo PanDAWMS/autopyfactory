@@ -288,9 +288,9 @@ class ConfigManager:
                 firstLine = uridata.readline().strip() 
                 #if firstLine[0] == "<":
                 #        raise FactoryConfigurationFailure("First response character was '<'. Proxy error?")
-                reader = urllib2.urlopen(hostsURI)  #FIXME 
+                #reader = urllib2.urlopen(hostsURI)  #FIXME 
 
-                config.readfp(reader) # FIXME: should we feed the Config object with info from a local file
+                config.readfp(uridata) # FIXME: should we feed the Config object with info from a local file
                                       # instead of directly from the URL?
 
         def getFromSchedConfig(self, site):
