@@ -153,7 +153,7 @@ class Config(SafeConfigParser, object):
         #        example of usage:
         #                x = generic_get("Sec1", "x", get_function='getint', convert=True, mandatory=True, mandatory_exception=NoMandatoryException, log.info, "x has a value", log.error, "x not found")
         #        '''
-        #        has_option = config_object.has_option(section, option)
+        #        has_option = self.has_option(section, option)
         #
         #        if not has_option:
         #                if mandatory:
@@ -188,7 +188,7 @@ class Config(SafeConfigParser, object):
         #        example of usage:
         #                x = generic_get2("Sec1", "x", convert=True, mandatory=True, mandatory_exception=NoMandatoryException, log.info, "x has a value", log.error, "x not found")
         #        '''
-        #        has_option = config_object.has_option(section, option)
+        #        has_option = self.has_option(section, option)
         #
         #        if not has_option:
         #                if mandatory:
