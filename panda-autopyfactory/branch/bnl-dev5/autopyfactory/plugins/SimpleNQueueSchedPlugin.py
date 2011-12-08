@@ -29,22 +29,22 @@ class SchedPlugin(SchedInterface):
         self.log.debug('SchedPlugin: cloud is setup to %s' %self.cloud)
 
         self.status = None
-        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'status')
+        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'status'):
                 self.status = self.apfqueue.qcl.get(self.apfqueue.apfqname, 'status')
                 self.log.debug('SchedPlugin: there is a status value setup to %s' %self.status)
 
         self.depthboost = None
-        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.simplenqueue.depthboost')
+        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.simplenqueue.depthboost'):
                 self.depthboost = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.simplenqueue.depthboost')
                 self.log.debug('SchedPlugin: there is a depthboost number setup to %s' %self.depthboost)
 
         self.pilotlimit = None
-        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.simplenqueue.pilotlimit')
+        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.simplenqueue.pilotlimit'):
                 self.pilotlimit = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.simplenqueue.pilotlimit')
                 self.log.debug('SchedPlugin: there is a pilotlimit number setup to %s' %self.pilotlimit)
 
         self.transferringlimit = None
-        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.simplenqueue.transferringlimit')
+        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.simplenqueue.transferringlimit'):
                 self.transferringlimit = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.simplenqueue.transferringlimit')
                 self.log.debug('SchedPlugin: there is a transferringlimit number setup to %s' %self.transferringlimit)
 
