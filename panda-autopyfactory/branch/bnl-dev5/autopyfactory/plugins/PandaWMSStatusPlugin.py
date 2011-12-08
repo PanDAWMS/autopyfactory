@@ -256,11 +256,71 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         self.log.debug('_updateclouds: it took %s seconds to perform the query' %delta)
         self.log.info('_updateclouds: %s seconds to perform query' %delta)
         out = None
-        if not clouds_err:
-            out = all_clouds_config 
-        else:
+        #if not clouds_err:
+        #    out = all_clouds_config 
+        #else:
+        #    self.log.error('Client.getCloudSpecs() failed')
+        #return out
+        if clouds_err:
             self.log.error('Client.getCloudSpecs() failed')
-        return out
+        else:
+            cloudsinfo = InfoContainer('clouds')
+            for cloud in all_clouds_config.keys():
+                    ci = CloudInfo()
+                    cloudsinfo[cloud] = ci
+                    attrdict = all_clouds_config[cloud]
+                    ci.fill(attrdict)
+            return cloudsinfo
+                        
+    def _updatejobs(self):
+        '''
+        
+        Client.getJobStatisticsPerSite(
+                    countryGroup='',
+                    workingGroup='', 
+                    jobType='test,prod,managed,user,panda,ddm,rc_test'
+                    )  ->
+        
+        {   None: {   'activated': 0,
+                      'assigned': 0,
+                      'cancelled': 11632,
+                      'defined': 2196,
+                      'failed': 0,
+                      'finished': 0,
+                      'running': 0},
+           
+           'AGLT2': { 'activated': 495,
+                      'assigned': 170,
+                      'cancelled': 1,
+                      'failed': 15,
+                      'finished': 114,
+                      'holding': 9,
+                      'running': 341,
+                      'starting': 1,
+                      'transferring': 16},
+        }
+        '''
+        
+        
+        before = time.time()
+        # get Jobs Specs
+        #self.jobs_err, self.all_jobs_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='') 
+        jobs_err, all_jobs_config = Client.getJobStatisticsPerSite(
+                    countryGroup='',
+                    workingGroup='', 
+                    jobType='test,prod,managed,user,panda,ddm,rc_test'
+                    ) 
+                                                                                   
+        delta = time.time() - before
+        self.log.info('_updateJobs: %s seconds to perform query' %delta)
+        out = None
+        ###if not jobs_err:
+        ###    out = all_jobs_config
+        ###else:
+        ###    self.log.error('Client.getJobStatisticsPerSite() failed.')
+        ###return out
+        
+
 
     def _updatesites(self):
         '''
