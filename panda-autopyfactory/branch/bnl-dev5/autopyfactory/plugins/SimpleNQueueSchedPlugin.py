@@ -52,7 +52,7 @@ class SchedPlugin(SchedInterface):
         self.maxpilotspercycle = None
         if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.simplenqueue.maxpilotspercycle'):
             self.maxpilotspercycle = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.simplenqueue.maxpilotspercycle')
-            self.log.debug('SchedPlugin: there is a maxpilotspercycle number setup to %s' %maxpilotspercycle)
+            self.log.debug('SchedPlugin: there is a maxpilotspercycle number setup to %s' %self.maxpilotspercycle)
 
         self.log.info("SchedPlugin: Object initialized.")
 
