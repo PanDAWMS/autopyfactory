@@ -17,13 +17,15 @@
 #               VARIABLES
 # =========================================================================== 
 
+# override
+#
 # cloud
 # jdl
 # nickname
 # siteid
 # proxy
 # enabled
-# override
+# status
 #
 # cleanlogs.maxdays
 #
@@ -73,6 +75,11 @@
 # Description:
 # ---------------------------------------------------------------------------
 
+# override = determines if values from this config file have precedence over
+#               the same values comming from different sources of information.
+#               If True then schedconfig does not clobber configuration file values.
+#               Valid values are True|False.
+#
 # cloud = is the cloud this queue is in. You should set this to suppress pilot 
 #               submission when the cloud goes offline
 #               N.B. Panda clouds are UPPER CASE, e.g., UK
@@ -92,10 +99,7 @@
 #               or not. Allows to disable a queue without commenting out all the values. 
 #               Valid values are True|False.
 #
-# override = determines if values from this config file have precedence over
-#               the same values comming from different sources of information.
-#               If True then schedconfig does not clobber configuration file values.
-#               Valid values are True|False.
+# status = can be "test", "offline" or "online"
 #
 # cleanlogs.maxdays = maximum number of days the condor logs
 #               will be kept
@@ -273,6 +277,7 @@
 cloud = US
 country = US
 group = None
+status = online
 
 # plugins
 batchstatusplugin = Condor
