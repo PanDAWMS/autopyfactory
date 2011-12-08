@@ -272,11 +272,6 @@ class ConfigManager:
                 config.readfp(f)
 
         def __loaduri(self, uri, config):
-
-                #
-                #    NOTE : The code has bugs !!
-                #
-
                 ''' 
                 load a config file from an URI
                 We should first download the info into a file on disk,
