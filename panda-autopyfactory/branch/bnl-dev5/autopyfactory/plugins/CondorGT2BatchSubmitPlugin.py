@@ -36,7 +36,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
         self.executable = self.qcl.get(self.apfqname, 'executable')
         self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
-        self.jdl = self.qcl.get(self.apfqname, 'jdl') 
+        self.gridresource = self.qcl.get(self.apfqname, 'gridresource') 
 
         self.queue = None
         if self.qcl.has_option(self.apfqname,'batchsubmit.condorgt2.queue'):
@@ -137,7 +137,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
     
         self.JSD.add("Dir=%s/" % self.logDir)
         self.JSD.add("notify_user=%s" % self.factoryadminemail)
-        self.JSD.add('grid_resource=gt2 %s' % self.jdl) 
+        self.JSD.add('grid_resource=gt2 %s' % self.gridresource) 
     
         # -- MATCH_APF_QUEUE --
         # this token is very important, since it will be used by other plugins
