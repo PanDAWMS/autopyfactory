@@ -99,11 +99,11 @@ class SchedPlugin(SchedInterface):
                 cloudTestStatus = False
                 
             # Now normal queue submission algorithm begins
-            allpilots = batchinfo[self.apfqueue.apfqname].pending +
-                        batchinfo[self.apfqueue.apfqname].running +
-                        batchinfo[self.apfqueue.apfqname].done +
-                        batchinfo[self.apfqueue.apfqname].error +
-                        batchinfo[self.apfqueue.apfqname].unknown +
+            allpilots = batchinfo[self.apfqueue.apfqname].pending +\
+                        batchinfo[self.apfqueue.apfqname].running +\
+                        batchinfo[self.apfqueue.apfqname].done +\
+                        batchinfo[self.apfqueue.apfqname].error +\
+                        batchinfo[self.apfqueue.apfqname].unknown +\
                         batchinfo[self.apfqueue.apfqname].suspended
             inactivepilots = allpilots - batchinfo[self.apfqueue.apfqname].running
             ready = sitedict.ready
