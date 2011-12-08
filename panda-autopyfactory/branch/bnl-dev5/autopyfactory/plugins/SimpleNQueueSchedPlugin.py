@@ -17,6 +17,7 @@ class SchedPlugin(SchedInterface):
     
     def __init__(self, apfqueue):
         self.apfqueue = apfqueue
+        self.siteid = self.apfqueue.siteid
         self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
 
         self.default = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.simplenqueue.default')
@@ -81,16 +82,15 @@ class SchedPlugin(SchedInterface):
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             jobsinfo = wmsinfo.jobs
-            siteid = self.apfqueue.siteid
-            sitedict = jobsinfo[siteid]                
+            sitedict = jobsinfo[self.siteid]                
             cloudinfo = wmsinfo.cloud
             siteinfo = wmsinfo.site
             
             if cloudinfo[self.cloud].status == 'offline':
                 self.log.info('calcSubmitNum: cloud %s is offline - will not submit pilots' %self.cloud)
-            if siteinfo[siteid].status == 'offline':
+            if siteinfo[self.siteid].status == 'offline':
                 self.log.info('calcSubmitNum: site %s is offline - will not submit pilots' %self.siteid)
-            if siteinfo[siteid].status == 'error':
+            if siteinfo[self.siteid].status == 'error':
                 self.log.info('calcSubmitNum: site %s is in an error state - will not submit pilots' %self.siteid)
             if cloudinfo[self.cloud].status == 'test':
                 self.log.info('calcSubmitNum: cloud %s is in test mode' %self.cloud)
