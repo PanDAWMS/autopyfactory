@@ -394,7 +394,6 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 
             '''
         before = time.time()
-
         # get Sites Specs from Client.py
         sites_err, all_sites_config = Client.getSiteSpecs(siteType='all')
         delta = time.time() - before
@@ -402,12 +401,22 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         self.log.debug('_updateSites: it took %s seconds to perform the query' %delta)
         self.log.info('_updateSites: %s seconds to perform query' %delta)
         out = None
-        if not sites_err:
-            out = all_sites_config 
-        else:
+        #if not sites_err:
+        #    out = all_sites_config 
+        #else:
+        #    self.log.error('Client.getSiteSpecs() failed.')
+        #return out     
+        if sites_err:
             self.log.error('Client.getSiteSpecs() failed.')
-        return out     
- 
+        else:
+            sitesinfo = InfoContainer('sites')
+            for site in all_sites_config.keys():
+                    si = SiteInfo()
+                    sitesinfo[site] = si
+                    attrdict = all_sites_config[site]
+                    si.fill(attrdict)
+            return sitesinfo
+                        
     def _updatejobs(self):
         '''
         
