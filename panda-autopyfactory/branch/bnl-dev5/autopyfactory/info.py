@@ -222,8 +222,7 @@ class SiteInfo(BaseInfo):
     -----------------------------------------------------------------------
     '''
 
-    #valid = ['comment', 'gatekeeper', 'cloudlist', 'defaulttoken', 'priorityoffset', 'cloud', 'accesscontrol', 'retry', 'maxinputsize', 'space', 'sitename', 'allowdirectaccess', 'seprodpath', 'ddm', 'memory', 'setokens', 'type', 'lfcregister', 'status', 'lfchost', 'releases', 'statusmodtime', 'maxtime', 'nickname', 'dq2url', 'copysetup', 'cachedse', 'cmtconfig', 'allowedgroups', 'queue', 'localqueue', 'glexec', 'validatedreleases', 'se']
-    valid = ['nqueue']
+    valid = ['comment', 'gatekeeper', 'cloudlist', 'defaulttoken', 'priorityoffset', 'cloud', 'accesscontrol', 'retry', 'maxinputsize', 'space', 'sitename', 'allowdirectaccess', 'seprodpath', 'ddm', 'memory', 'setokens', 'type', 'lfcregister', 'status', 'lfchost', 'releases', 'statusmodtime', 'maxtime', 'nickname', 'dq2url', 'copysetup', 'cachedse', 'cmtconfig', 'allowedgroups', 'queue', 'localqueue', 'glexec', 'validatedreleases', 'se']
 
     def __init__(self):
         # default value None
