@@ -108,7 +108,7 @@ class SchedPlugin(SchedInterface):
             inactivepilots = allpilots - batchinfo[self.apfqueue.apfqname].running
             ready = sitedict.ready
 
-            if self.pilotlimit and alljobs > self.pilotlimit:
+            if self.pilotlimit and allpilots > self.pilotlimit:
                 self.log.info('calcSubmitNum: will not submit more pilots for apfqueue %s' %self.apfqueue.apfqname)       
 
             # FIXME: how to deal with transferring?
