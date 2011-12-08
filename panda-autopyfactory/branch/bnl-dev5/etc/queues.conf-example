@@ -20,7 +20,7 @@
 # override
 #
 # cloud
-# jdl
+# gridresource
 # nickname
 # siteid
 # proxy
@@ -84,7 +84,7 @@
 #               submission when the cloud goes offline
 #               N.B. Panda clouds are UPPER CASE, e.g., UK
 #
-# jdl = name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor)
+# gridresource = name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor)
 #               Used only for remte submission.
 #
 # nickname = PanDA queue name   
@@ -309,7 +309,7 @@ enabled = True
 [BNL_ITB_Test1]
 siteid = BNL_ITB_Test1
 nickname = BNL_ITB_Test1-condor
-jdl = gridtest01.racf.bnl.gov/jobmanager-condor
+gridresource = gridtest01.racf.bnl.gov/jobmanager-condor
 
 executable.pandagrid = OSG
 executable.arguments = -j false -k 600 -u panda 
@@ -327,7 +327,7 @@ batchsubmit.condorlocal.environ = OSG_GRID=/afs/usatlas/osg/wn-client/@sys/itb
 [ANALY_BNL_ATLAS_1]
 siteid = ANALY_BNL_ATLAS_1
 nickname = ANALY_BNL_ATLAS_1-condor
-jdl = gridgk05.racf.bnl.gov/jobmanager-condor
+gridresource = gridgk05.racf.bnl.gov/jobmanager-condor
 
 executable.pandagrid = OSG
 executable.pandaloglevel = debug
