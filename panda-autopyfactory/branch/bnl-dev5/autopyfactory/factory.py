@@ -1094,7 +1094,7 @@ class Singleton(type):
         return cls.__instance
 
 
-class Interface(object):
+class PluginInterface(object):
     '''
     -----------------------------------------------------------------------
     This interface implements a generic __init__() that forces each subclass
@@ -1108,8 +1108,8 @@ class Interface(object):
     '''
     def __init__(self, *k, **kw):
         classname = self.__class__.__name__
-        loggername = classname.lower()
-        self.log = logging.getLogger("main.%s" % loggername))
+        loggername = "main."%classname.lower()
+        self.log = logging.getLogger(loggername)
         self.valid = True
         try:
             self.initialize(*k, **kw)
