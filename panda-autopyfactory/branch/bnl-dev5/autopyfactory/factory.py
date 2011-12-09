@@ -1108,7 +1108,7 @@ class PluginInterface(object):
     '''
     def __init__(self, *k, **kw):
         classname = self.__class__.__name__
-        loggername = "main."%classname.lower()
+        loggername = "main.%s"%classname.lower()
         self.log = logging.getLogger(loggername)
         self.valid = True
         try:
