@@ -1094,6 +1094,40 @@ class Singleton(type):
         return cls.__instance
 
 
+class Interface(object):
+    '''
+    -----------------------------------------------------------------------
+    This interface implements a generic __init__() that forces each subclass
+    to implement a method initialize().
+
+    The advantage is that an attribute valid will be True or False based 
+    on how the initialization was done. In this way, the factory methods and
+    classes can decide what to do depending on whether the plugins were 
+    created properly or not.
+    -----------------------------------------------------------------------
+    '''
+    def __init__(self, *k, **kw):
+        classname = self.__class__.__name__
+        loggername = classname.lower()
+        self.log = logging.getLogger("main.%s" % loggername))
+        self.valid = True
+        try:
+            self.initialize(*k, **kw)
+        except Exception, ex:
+            self.valid = False
+            self.log.error('%s: Object not initialized properly. Captured exception %s' %(classname, ex))
+        self.log.info('%s: Object initialized.' %classname)
+
+    def initialize(self, *k, **kw):
+        '''
+        this is the method that every subclass must implement with 
+        the actual object initialization code.
+        It should raise an exception is something does not work
+        during the initialization. That exception is captured by __init__()
+        '''
+        raise NotImplementedError
+
+
 class SchedInterface(object):
     '''
     -----------------------------------------------------------------------
