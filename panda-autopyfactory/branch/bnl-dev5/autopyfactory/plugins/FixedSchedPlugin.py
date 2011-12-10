@@ -27,9 +27,6 @@ class SchedPlugin(SchedInterface):
 
             self.log.info("SchedPlugin: Object initialized.")
 
-        def getLogger(self):
-            return self.log
-
         def calcSubmitNum(self, status):
             """ 
             returns always a fixed number of pilots

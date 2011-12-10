@@ -41,7 +41,8 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
     
     __metaclass__ = Singleton 
     
-    def __init__(self, apfqueue):
+    #def __init__(self, apfqueue):
+    def initialize(self, apfqueue):
             threading.Thread.__init__(self) # init the thread
             
             self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %apfqueue.apfqname)

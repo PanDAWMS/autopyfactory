@@ -61,9 +61,6 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
         self.log.info('WMSStatusPlugin: Object initialized.')
 
-    def getLogger(self):
-        return self.log
-
     def getCloudInfo(self, maxtime=0):
         '''
         selects the entry corresponding to cloud

@@ -24,9 +24,6 @@ class SchedPlugin(SchedInterface):
     def initialize(self, apfqueue):
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
             self.log.info("SchedPlugin: Object initialized.")
-       
-    def getLogger(self):
-            return self.log
     
     def calcSubmitNum(self):
             return 0

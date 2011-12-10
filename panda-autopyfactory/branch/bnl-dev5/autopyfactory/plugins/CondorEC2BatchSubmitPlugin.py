@@ -90,9 +90,6 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
 
                 self.log.info('BatchSubmitPlugin: Object initialized.')
- 
-        def getLogger(self):
-                return self.log
 
         def submitPilots(self, siteid, nbpilots, fcl, qcl):
                 '''

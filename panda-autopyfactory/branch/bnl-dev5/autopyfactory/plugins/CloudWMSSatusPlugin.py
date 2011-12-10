@@ -79,9 +79,6 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self._checkCondor()
             self.log.info('BatchStatusPlugin: Object initialized.')
 
-    def getLogger(self):
-        return self.log
-
     def _checkCondor(self):
         '''
         Perform sanity check on condor environment.

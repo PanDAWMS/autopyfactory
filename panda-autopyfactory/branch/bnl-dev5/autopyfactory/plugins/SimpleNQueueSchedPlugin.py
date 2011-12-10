@@ -57,9 +57,6 @@ class SchedPlugin(SchedInterface):
 
         self.log.info("SchedPlugin: Object initialized.")
 
-    def getLogger(self):
-        return self.log
-
     def calcSubmitNum(self):
         """ 
         is nqueue > number of idle?

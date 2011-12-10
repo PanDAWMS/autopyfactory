@@ -46,9 +46,6 @@ class SchedPlugin(SchedInterface):
 
         self.log.info("SchedPlugin: Object initialized.")
 
-    def getLogger(self):
-        return self.log
-
     def calcSubmitNum(self):
         """ 
         By default, returns nb of Activated Jobs - nb of Pending Pilots

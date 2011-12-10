@@ -1124,9 +1124,11 @@ class PluginInterface(object):
 
     def getLogger(self):
         '''
-        this method return the internal logging object
+        This method returns the internal logging object.
+        By default we can assume it is self.log.
+        If not, the method must be overrided.
         '''
-        raise NotImplementedError
+        return self.log 
 
     def initialize(self, *k, **kw):
         '''
