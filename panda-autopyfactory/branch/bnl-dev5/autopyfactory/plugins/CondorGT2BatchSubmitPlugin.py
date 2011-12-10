@@ -26,7 +26,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
     This class is expected to have separate instances for each PandaQueue object. 
     '''
    
-    def __init__(self, apfqueue):
+    #def __init__(self, apfqueue):
+    def initialize(self, apfqueue):
         self.log = logging.getLogger("main.batchsubmitplugin[%s]" %apfqueue.apfqname)
         self.apfqueue = apfqueue
         self.apfqname = self.apfqueue.apfqname
@@ -81,6 +82,9 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         
         self._checkCondor()
         self.log.info('BatchSubmitPlugin: Object initialized.')
+
+    def getLogger(self):
+        return self.log
 
     def _checkCondor(self):
         '''

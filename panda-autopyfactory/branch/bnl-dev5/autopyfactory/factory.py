@@ -1107,16 +1107,26 @@ class PluginInterface(object):
     -----------------------------------------------------------------------
     '''
     def __init__(self, *k, **kw):
-        classname = self.__class__.__name__
-        loggername = "main.%s"%classname.lower()
-        self.log = logging.getLogger(loggername)
+        #classname = self.__class__.__name__
+        #loggername = "main.%s"%classname.lower()
+        #self.log = logging.getLogger(loggername)
         self.valid = True
         try:
             self.initialize(*k, **kw)
         except Exception, ex:
             self.valid = False
-            self.log.error('%s: Object not initialized properly. Captured exception %s' %(classname, ex))
-        self.log.info('%s: Object initialized.' %classname)
+            #self.log.error('%s: Object not initialized properly. Captured exception %s' %(classname, ex))
+            log = self.getLogger()
+            log.error('Object not initialized properly. Captured exception %s' %ex)
+        #self.log.info('%s: Object initialized.' %classname)
+        log = self.getLogger()
+        log.info('Object initialized.')
+
+    def getLogger(self):
+        '''
+        this method return the internal logging object
+        '''
+        raise NotImplementedError
 
     def initialize(self, *k, **kw):
         '''
@@ -1128,7 +1138,8 @@ class PluginInterface(object):
         raise NotImplementedError
 
 
-class SchedInterface(object):
+#class SchedInterface(object):
+class SchedInterface(PluginInterface):
     '''
     -----------------------------------------------------------------------
     Calculates the number of jobs to be submitted for a given queue. 
@@ -1143,7 +1154,8 @@ class SchedInterface(object):
         '''
         raise NotImplementedError
 
-class BatchStatusInterface(object):
+#class BatchStatusInterface(object):
+class BatchStatusInterface(PluginInterface):
     '''
     -----------------------------------------------------------------------
     Interacts with the underlying batch system to get job status. 
@@ -1163,7 +1175,8 @@ class BatchStatusInterface(object):
         raise NotImplementedError
 
 
-class WMSStatusInterface(object):
+#class WMSStatusInterface(object):
+class WMSStatusInterface(PluginInterface):
     '''
     -----------------------------------------------------------------------
     Interface for all WMSStatus plugins. 
@@ -1200,7 +1213,8 @@ class WMSStatusInterface(object):
         raise NotImplementedError
 
 
-class BatchSubmitInterface(object):
+#class BatchSubmitInterface(object):
+class BatchSubmitInterface(PluginInterface):
     '''
     -----------------------------------------------------------------------
     Interacts with underlying batch system to submit jobs. 

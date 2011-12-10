@@ -15,7 +15,8 @@ __status__ = "Production"
 
 class SchedPlugin(SchedInterface):
         
-        def __init__(self, apfqueue):
+        #def __init__(self, apfqueue):
+        def initialize(self, apfqueue):
             self.apfqueue = apfqueue                
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
             self.pilotspercycle = None
@@ -25,6 +26,9 @@ class SchedPlugin(SchedInterface):
                 self.log.debug('SchedPlugin: there is a fixedPilotsPerCycle number setup to %s' %self.pilotspercycle)
 
             self.log.info("SchedPlugin: Object initialized.")
+
+        def getLogger(self):
+            return self.log
 
         def calcSubmitNum(self, status):
             """ 

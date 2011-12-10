@@ -20,9 +20,13 @@ class SchedPlugin(SchedInterface):
     other features of APF have to be tested, but there is no
     interest on submitting any actual pilot at all. 
     '''       
-    def __init__(self, apfqueue):
+    #def __init__(self, apfqueue):
+    def initialize(self, apfqueue):
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
             self.log.info("SchedPlugin: Object initialized.")
+       
+    def getLogger(self):
+            return self.log
     
     def calcSubmitNum(self):
             return 0
