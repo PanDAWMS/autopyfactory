@@ -190,6 +190,9 @@ class WMSQueueInfo(BaseInfo):
                                                                                   self.unknown)
         return s
 
+    # property to return the total number of jobs, irrespective their state
+    total = property(lambda self: sum([self.__dict__[i] for i in self.valid]))
+
 class CloudInfo(BaseInfo):
     '''
     -----------------------------------------------------------------------
