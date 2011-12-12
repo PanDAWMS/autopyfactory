@@ -155,6 +155,9 @@ class BatchQueueInfo(BaseInfo):
                                                                  self.suspended)
         return s
 
+    # property to return the total number of pilots, irrespective their state
+    total = property(lambda self: sum([self.__dict__[i] for i in self.valid]))
+
 
 class WMSQueueInfo(BaseInfo):
     '''
