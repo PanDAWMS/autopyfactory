@@ -74,7 +74,7 @@ class factoryConfigLoader:
             # Non-login shell - you'd better set it yourself
             defaults = { 'Factory' : { 'condorUser' : 'unknown', }}
         defaults['Factory']['schedConfigPoll'] = '5'
-        defaults['Factory']['versionTag'] = 'development'
+        defaults['Factory']['versionTag'] = '1.3.1'
 
         defaults['QueueDefaults'] =  { 'status' : 'test',
                                        'nqueue' : '20',
@@ -99,6 +99,7 @@ class factoryConfigLoader:
                                        'site' : 'None',
                                        'siteid' : 'None',
                                        'nickname' : 'None',
+                                       'fairshare' : 'None',
                                        }
         if 'X509_USER_PROXY' in os.environ:
             defaults['QueueDefaults']['gridProxy'] = os.environ['X509_USER_PROXY']
