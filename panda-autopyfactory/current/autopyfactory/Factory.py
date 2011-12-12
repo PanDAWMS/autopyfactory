@@ -123,6 +123,25 @@ class factory:
             else:
                 cloudTestStatus = False
                 
+            prioritystats = None
+            if queueParameters['fairshare'] is not None:
+                match = re.match('.*priority<(\d+):(\d+).*', queueParameters['fairshare'])
+                if match:
+                    msg = "%s has 'fairshare' parameter, extracting priority info" % queue
+                    self.factoryMessages.debug(msg)
+                    priority = int(match.group(1))
+                    runlimit = int(match.group(2))
+                    msg = "Extracted min priority %d and runlimit %d from value %s" % (priority, runlimit, queueParameters['fairshare'])
+                    self.factoryMessages.debug(msg)
+                    error,jobstats = Client.getJobStatisticsPerSite(minPriority=priority)
+                    if error:
+                        msg = "Failed to getJobStatisticsPerSite(minPriority=%d)" % priority
+                        self.factoryMessages.warn(msg)
+                    else:
+                        msg = "Using prioritised jobstats: %s" % jobstats.get(queueParameters['siteid'])
+                        self.factoryMessages.debug(msg)
+                        prioritystats = jobstats.get(queueParameters['siteid'])
+                    
                 
             # Now normal queue submission algorithm begins
             if queueParameters['pilotlimit'] != None and queueParameters['pilotQueue']['total'] >= queueParameters['pilotlimit']:
@@ -136,6 +155,7 @@ class factory:
                 self.note(queue, msg)
                 continue
 
+
             if queueParameters['status'] == 'test' or cloudTestStatus == True:
                 # For test sites only ever have one pilot queued, but allow up to nqueue to run
                 if queueParameters['pilotQueue']['inactive'] > 0 or queueParameters['pilotQueue']['total'] > queueParameters['nqueue']:
@@ -147,23 +167,58 @@ class factory:
                     self.condorPilotSubmit(queue, cycleNumber, 1)
                 continue
 
+            # set depthboost
+            if queueParameters['depthboost'] == None:
+                self.factoryMessages.debug('Depth boost unset for queue %s - defaulting to 2' % queue)
+                depthboost = 2
+            else:
+                depthboost = queueParameters['depthboost']
+
+            # set throttles
+            clause1 = queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue']
+            clause2 = queueParameters['pandaStatus']['activated'] > queueParameters['pilotQueue']['inactive']
+            clause3 = queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue'] * depthboost
+
+            # number running with low priority
+            if prioritystats:
+                clause2 = prioritystats['activated'] > queueParameters['pilotQueue']['inactive']
+                lowprirunning = queueParameters['pandaStatus']['running'] - prioritystats['running']
+
+                if prioritystats['activated'] > 0:
+                    # we have high priority jobs activated
+                    if clause1 or (clause2 and clause3):
+                        msg = "%d activated with min priority %d. Submitting full load." % (prioritystats['activated'], priority)
+                        self.note(queue, msg)
+                        self.condorPilotSubmit(queue, cycleNumber, queueParameters['nqueue'])
+                    else:
+                        msg = "%d activated with min priority %d. Throttling, no extra pilots needed." % (prioritystats['activated'], priority)
+                        self.note(queue, msg)
+                    continue
+
+                if lowprirunning < runlimit:
+                    # we have low priority capacity
+                    if clause1 or (clause2 and clause3):
+                        msg = "%d low pri running < runlimit=%d. Submitting full load." % (lowprirunning, runlimit)
+                        self.note(queue, msg)
+                        self.condorPilotSubmit(queue, cycleNumber, queueParameters['nqueue'])
+                    else:
+                        msg = "%d low pri running < runlimit=%d. Throttling, no extra pilots needed." % (lowprirunning, runlimit)
+                        self.note(queue, msg)
+                    continue
+
+            # Get here means queue doesn't have fairshare set
             # Production site, online - look for activated jobs and ensure pilot queue is topped up, or
             # submit some idling pilots
             if queueParameters['pandaStatus']['activated'] > 0:
                 # Activated jobs at this site
-                if queueParameters['depthboost'] == None:
-                    self.factoryMessages.info('Depth boost unset for queue %s - defaulting to 2' % queue)
-                    depthboost = 2
-                else:
-                    depthboost = queueParameters['depthboost']
                 if queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue'] or \
                         (queueParameters['pandaStatus']['activated'] > queueParameters['pilotQueue']['inactive'] and \
                          queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue'] * depthboost):
-                    msg = '%d activated jobs, %d inactive pilots queued (< queue depth %d * depth boost %d). Will submit full pilot load.' % (queueParameters['pandaStatus']['activated'], queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
+                    msg = '%d activated, %d inactive pilots queued (< queue depth %d * depth boost %d). Will submit full pilot load.' % (queueParameters['pandaStatus']['activated'], queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
                     self.note(queue, msg)
                     self.condorPilotSubmit(queue, cycleNumber, queueParameters['nqueue'])
                 else:
-                    msg = '%d activated jobs, %d inactive pilots queued (>= queue depth %d * depth boost %d). No extra pilots needed.' % (queueParameters['pandaStatus']['activated'],queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
+                    msg = '%d activated, %d inactive pilots queued (>= queue depth %d * depth boost %d). No extra pilots needed.' % (queueParameters['pandaStatus']['activated'],queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
                     self.note(queue, msg)
                 continue
 
@@ -256,7 +311,7 @@ class factory:
         #print >>JDL, '+MATCH_queue="%s"' % self.config.queues[queue]['localqueue']
         print >>JDL, "x509userproxy=%s" % self.config.queues[queue]['gridProxy']
         print >>JDL, 'periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)'
-        print >>JDL, 'periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)'
+        print >>JDL, 'periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400) || ( CurrentTime - EnteredCurrentStatus ) > 864000'
         # In job environment correct GTAG to URL for logs, JSID should be factoryId
         print >>JDL, 'environment = "PANDA_JSID=%s' % self.config.config.get('Factory', 'factoryId'),
         print >>JDL, 'GTAG=%s/$(Cluster).$(Process).out' % logUrl,
