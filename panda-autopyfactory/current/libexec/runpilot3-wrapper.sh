@@ -150,19 +150,11 @@ function monping() {
 }
 
 function monpost() {
-    echo Monitor debug begin:
-    pwd
-    ls -l
-    echo Finding pandaJobData.out...
-    find -name pandaJobData.out
-
     # scrape PandaIDs from pilot log
     echo 'SCRAPE: '
-    find -name pilotlog.*
-    cat pilotlog.*
     find -name pilotlog.* -exec egrep ^PandaID= {} \; 
 
-    echo Monitor debug end:
+    echo 'END SCRAPE.'
 }
 
 function set_forced_env() {
