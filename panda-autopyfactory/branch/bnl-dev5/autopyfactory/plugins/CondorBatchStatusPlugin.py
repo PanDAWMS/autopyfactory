@@ -464,19 +464,19 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         self.log.debug('_map2info: Starting.')
         batchstatusinfo = InfoContainer('batch')
         for site in input.keys():
-                qi = BatchQueueInfo()
-                batchstatusinfo[site] = qi
-                attrdict = input[site]
-               
-                # use finer-grained globus statuses in preference to local summaries. 
-                if 'globusstatus' in attrdict.keys():
-                        valdict = attrdict['globusstatus']
-                        qi.fill(valdict, mappings=self.globusstatus2info)
-                # must be a local-only job.
-                else:
-                        valdict = attrdict['jobstatus']
-                        qi.fill(valdict, mappings=self.jobstatus2info)
-                        
+            qi = BatchQueueInfo()
+            batchstatusinfo[site] = qi
+            attrdict = input[site]
+            
+            # use finer-grained globus statuses in preference to local summaries. 
+            if 'globusstatus' in attrdict.keys():
+                valdict = attrdict['globusstatus']
+                qi.fill(valdict, mappings=self.globusstatus2info)
+            # must be a local-only job.
+            else:
+                valdict = attrdict['jobstatus']
+                qi.fill(valdict, mappings=self.jobstatus2info)
+                    
         batchstatusinfo.lasttime = int(time.time())
         self.log.debug('_map2info: Returning BatchStatusInfo: %s' % batchstatusinfo)
         for site in batchstatusinfo.keys():
