@@ -267,7 +267,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         if clouds_err:
             self.log.error('Client.getCloudSpecs() failed')
         else:
-            cloudsinfo = InfoContainer('clouds')
+            cloudsinfo = InfoContainer('clouds', CloudInfo())
             for cloud in all_clouds_config.keys():
                     ci = CloudInfo()
                     cloudsinfo[cloud] = ci
@@ -472,7 +472,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
         if sites_err:
             self.log.error('Client.getSiteSpecs() failed.')
         else:
-            sitesinfo = InfoContainer('sites')
+            sitesinfo = InfoContainer('sites', SiteInfo())
             for site in all_sites_config.keys():
                     si = SiteInfo()
                     sitesinfo[site] = si
@@ -546,7 +546,7 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
                                            'failed'      : 'failed',
                                            'cancelled'   : 'failed'}
 
-        wmsqueueinfo = InfoContainer('jobs')
+        wmsqueueinfo = InfoContainer('jobs', WMSQueueInfo())
         for wmssite in all_jobs_config.keys():
                 qi = WMSQueueInfo()
                 wmsqueueinfo[wmssite] = qi

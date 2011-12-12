@@ -462,7 +462,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
 
         self.log.debug('_map2info: Starting.')
-        batchstatusinfo = InfoContainer('batch')
+        batchstatusinfo = InfoContainer('batch', BatchQueueInfo())
         for site in input.keys():
             qi = BatchQueueInfo()
             batchstatusinfo[site] = qi

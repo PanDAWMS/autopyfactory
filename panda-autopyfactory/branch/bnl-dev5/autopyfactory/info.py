@@ -250,7 +250,7 @@ class InfoContainer(dict):
             valid()
     -----------------------------------------------------------------------
     '''
-    def __init__(self, infotype):
+    def __init__(self, infotype, default):
         '''
         Info for each info type is retrieved, set, and adjusted via the corresponding label
         For example, for a container of BatchQueueInfo objects:
@@ -268,12 +268,20 @@ class InfoContainer(dict):
         The type of info that the Container is going to store
         can be gently passed thru infotype variable.
 
+        default is a default object that will be used to
+        return something when someone asks for a key that
+        does not exist in the dictionary.
+        It is expected to be an empty instance
+        from whichever class the dictionary is storing objects.
+        For example, BatchQueueInfo() or WMSQueueInfo(), etc.
+
         Any alteration access updates the info.mtime attribute. 
         '''
         
         self.log = logging.getLogger('main.batchstatus')
         self.log.debug('Status: Initializing object...')
         self.type = infotype # this can be things like "BatchQueueInfo", "SiteInfo", "WMSQueueInfo"...
+        self.default = default
         self.lasttime = None
         self.log.info('Status: Object Initialized')
 
@@ -296,6 +304,18 @@ class InfoContainer(dict):
         s = "InfoContainer containing %d objects of type %s" % (self.__len__(), self.type)
         return s
 
+    def __getitem__(self, k):
+        '''
+        overrides the default __getitem__ 
+        to check if the key is one of the 
+        queues stored in the dictionary. 
+        If it is a new key, then it returns
+        self.default
+        '''
+        if k in self.keys():
+            return dict.__getitem__(self, k)
+        else:
+            return self.default
 
 class WMSStatusInfo(object):
         '''
