@@ -25,8 +25,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
     This class is expected to have separate instances for each APFQueue object. 
     '''
     
-    #def __init__(self, apfqueue):
-    def initialize(self, apfqueue):
+    def __init__(self, apfqueue):
+    #def initialize(self, apfqueue):
         self.log = logging.getLogger("main.batchsubmitplugin[%s]" %apfqueue.apfqname)
         self.apfqname = apfqueue.apfqname
         self.factory = apfqueue.factory

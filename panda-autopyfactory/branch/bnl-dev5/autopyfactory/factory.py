@@ -1140,8 +1140,8 @@ class PluginInterface(object):
         raise NotImplementedError
 
 
-#class SchedInterface(object):
-class SchedInterface(PluginInterface):
+class SchedInterface(object):
+#class SchedInterface(PluginInterface):
     '''
     -----------------------------------------------------------------------
     Calculates the number of jobs to be submitted for a given queue. 
@@ -1156,8 +1156,8 @@ class SchedInterface(PluginInterface):
         '''
         raise NotImplementedError
 
-#class BatchStatusInterface(object):
-class BatchStatusInterface(PluginInterface):
+class BatchStatusInterface(object):
+#class BatchStatusInterface(PluginInterface):
     '''
     -----------------------------------------------------------------------
     Interacts with the underlying batch system to get job status. 
@@ -1177,8 +1177,8 @@ class BatchStatusInterface(PluginInterface):
         raise NotImplementedError
 
 
-#class WMSStatusInterface(object):
-class WMSStatusInterface(PluginInterface):
+class WMSStatusInterface(object):
+#class WMSStatusInterface(PluginInterface):
     '''
     -----------------------------------------------------------------------
     Interface for all WMSStatus plugins. 
@@ -1215,8 +1215,8 @@ class WMSStatusInterface(PluginInterface):
         raise NotImplementedError
 
 
-#class BatchSubmitInterface(object):
-class BatchSubmitInterface(PluginInterface):
+class BatchSubmitInterface(object):
+#class BatchSubmitInterface(PluginInterface):
     '''
     -----------------------------------------------------------------------
     Interacts with underlying batch system to submit jobs. 

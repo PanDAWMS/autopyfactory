@@ -15,8 +15,8 @@ __status__ = "Production"
 
 class SchedPlugin(SchedInterface):
         
-        #def __init__(self, apfqueue):
-        def initialize(self, apfqueue):
+        def __init__(self, apfqueue):
+        #def initialize(self, apfqueue):
             self.apfqueue = apfqueue                
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
             self.pilotspercycle = None
