@@ -42,51 +42,58 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
     __metaclass__ = Singleton 
     
     def __init__(self, apfqueue):
-    #def initialize(self, apfqueue):
-            threading.Thread.__init__(self) # init the thread
-            
-            self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %apfqueue.apfqname)
-            self.log.debug('BatchStatusPlugin: Initializing object...')
-            self.stopevent = threading.Event()
 
-            # to avoid the thread to be started more than once
-            self.__started = False
+            self._valid = True
+            try:
+                threading.Thread.__init__(self) # init the thread
+                
+                self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %apfqueue.apfqname)
+                self.log.debug('BatchStatusPlugin: Initializing object...')
+                self.stopevent = threading.Event()
 
-            self.apfqueue = apfqueue
-            self.fconfig = apfqueue.fcl.config          
-            self.apfqname = apfqueue.apfqname
-            self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
-            self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
-            self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
-            self.currentinfo = None              
+                # to avoid the thread to be started more than once
+                self.__started = False
 
-            # ================================================================
-            #                     M A P P I N G S 
-            # ================================================================
-            
-            self.globusstatus2info = {'1':   'pending',
-                                      '2':   'running',
-                                      '4':   'done',
-                                      '8':   'done',
-                                      '16':  'suspended',
-                                      '32':  'pending',
-                                      '64':  'running',
-                                      '128': 'running'}
-            
-            self.jobstatus2info = {'0': 'pending',
-                                   '1': 'pending',
-                                   '2': 'running',
-                                   '3': 'done',
-                                   '4': 'done',
-                                   '5': 'suspended',
-                                   '6': 'running'}
+                self.apfqueue = apfqueue
+                self.fconfig = apfqueue.fcl.config          
+                self.apfqname = apfqueue.apfqname
+                self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
+                self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
+                self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
+                self.currentinfo = None              
+
+                # ================================================================
+                #                     M A P P I N G S 
+                # ================================================================
+                
+                self.globusstatus2info = {'1':   'pending',
+                                          '2':   'running',
+                                          '4':   'done',
+                                          '8':   'done',
+                                          '16':  'suspended',
+                                          '32':  'pending',
+                                          '64':  'running',
+                                          '128': 'running'}
+                
+                self.jobstatus2info = {'0': 'pending',
+                                       '1': 'pending',
+                                       '2': 'running',
+                                       '3': 'done',
+                                       '4': 'done',
+                                       '5': 'suspended',
+                                       '6': 'running'}
 
 
-            # variable to record when was last time info was updated
-            # the info is recorded as seconds since epoch
-            self.lasttime = 0
-            self._checkCondor()
-            self.log.info('BatchStatusPlugin: Object initialized.')
+                # variable to record when was last time info was updated
+                # the info is recorded as seconds since epoch
+                self.lasttime = 0
+                self._checkCondor()
+                self.log.info('BatchStatusPlugin: Object initialized.')
+            else:
+                self._valid = False
+
+    def valid(self):    
+        return self._valid 
 
     def _checkCondor(self):
         '''
