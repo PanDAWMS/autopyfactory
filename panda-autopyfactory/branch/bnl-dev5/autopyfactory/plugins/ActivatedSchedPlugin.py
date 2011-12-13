@@ -16,35 +16,41 @@ __status__ = "Production"
 class SchedPlugin(SchedInterface):
     
     def __init__(self, apfqueue):
-    #def initialize(self, apfqueue):
-        self.apfqueue = apfqueue                
-        self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
-        self.max_jobs_torun = None
-        self.max_pilots_per_cycle = None
-        self.min_pilots_per_cycle = None
-        self.max_pilots_pending = None
-        
-        # A default value is required. 
-        self.default = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.default')    
-        self.log.debug('SchedPlugin: default = %s' %self.default)
-        
-        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun'):
-            self.max_jobs_torun = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun')
-            self.log.debug('SchedPlugin: max_jobs_torun = %s' %self.max_jobs_torun)
+        self._valid = True
+        try:
+            self.apfqueue = apfqueue                
+            self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
+            self.max_jobs_torun = None
+            self.max_pilots_per_cycle = None
+            self.min_pilots_per_cycle = None
+            self.max_pilots_pending = None
+            
+            # A default value is required. 
+            self.default = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.default')    
+            self.log.debug('SchedPlugin: default = %s' %self.default)
+            
+            if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun'):
+                self.max_jobs_torun = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun')
+                self.log.debug('SchedPlugin: max_jobs_torun = %s' %self.max_jobs_torun)
  
-        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.max_pilots_per_cycle'):
-            self.max_pilots_per_cycle = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.max_pilots_per_cycle')
-            self.log.debug('SchedPlugin: max_pilots_per_cycle = %s' %self.max_pilots_per_cycle)
+            if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.max_pilots_per_cycle'):
+                self.max_pilots_per_cycle = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.max_pilots_per_cycle')
+                self.log.debug('SchedPlugin: max_pilots_per_cycle = %s' %self.max_pilots_per_cycle)
 
-        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle'):
-            self.min_pilots_per_cycle = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle')
-            self.log.debug('SchedPlugin: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %self.min_pilots_per_cycle)
-        
-        if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending'):
-            self.max_pilots_pending = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending')
-            self.log.debug('SchedPlugin: there is a MAX_PILOTS_PENDING number setup to %s' %self.max_pilots_pending)   
+            if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle'):
+                self.min_pilots_per_cycle = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle')
+                self.log.debug('SchedPlugin: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %self.min_pilots_per_cycle)
+            
+            if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending'):
+                self.max_pilots_pending = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending')
+                self.log.debug('SchedPlugin: there is a MAX_PILOTS_PENDING number setup to %s' %self.max_pilots_pending)   
 
-        self.log.info("SchedPlugin: Object initialized.")
+            self.log.info("SchedPlugin: Object initialized.")
+        except:
+            self._valid = False
+
+    def valid(self):
+        return self._valid
 
     def calcSubmitNum(self):
         """ 

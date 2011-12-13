@@ -16,16 +16,22 @@ __status__ = "Production"
 class SchedPlugin(SchedInterface):
         
         def __init__(self, apfqueue):
-        #def initialize(self, apfqueue):
-            self.apfqueue = apfqueue                
-            self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
-            self.pilotspercycle = None
+            self._valid = True
+            try:
+                self.apfqueue = apfqueue                
+                self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
+                self.pilotspercycle = None
 
-            if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.fixed.pilotspercycle'):
-                self.pilotspercycle = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.fixed.pilotspercycle')
-                self.log.debug('SchedPlugin: there is a fixedPilotsPerCycle number setup to %s' %self.pilotspercycle)
+                if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.fixed.pilotspercycle'):
+                    self.pilotspercycle = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.fixed.pilotspercycle')
+                    self.log.debug('SchedPlugin: there is a fixedPilotsPerCycle number setup to %s' %self.pilotspercycle)
 
-            self.log.info("SchedPlugin: Object initialized.")
+                self.log.info("SchedPlugin: Object initialized.")
+            except:
+                self._valid = False
+
+        def valid(self):
+            return self._valid
 
         def calcSubmitNum(self, status):
             """ 

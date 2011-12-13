@@ -42,7 +42,8 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
     __metaclass__ = Singleton 
     
     def __init__(self, apfqueue):
-    #def initialize(self, apfqueue):
+        self._valid = True
+        try:
             threading.Thread.__init__(self) # init the thread
             
             self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %apfqueue.apfqname)
@@ -72,12 +73,16 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                                    '5': 'failed',
                                    '6': 'running'}
 
-
             # variable to record when was last time info was updated
             # the info is recorded as seconds since epoch
             self.lasttime = 0
             self._checkCondor()
             self.log.info('BatchStatusPlugin: Object initialized.')
+        except:
+            self._valid = False
+
+    def valid(self):
+        return self._valid
 
     def _checkCondor(self):
         '''

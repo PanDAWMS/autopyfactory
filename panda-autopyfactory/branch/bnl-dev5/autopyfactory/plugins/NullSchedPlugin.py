@@ -21,9 +21,15 @@ class SchedPlugin(SchedInterface):
     interest on submitting any actual pilot at all. 
     '''       
     def __init__(self, apfqueue):
-    #def initialize(self, apfqueue):
+        self._valid = True
+        try:
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
             self.log.info("SchedPlugin: Object initialized.")
+        except:
+            self._valid = False
+
+    def valid(self):
+        return self._valid
     
     def calcSubmitNum(self):
-            return 0
+        return 0

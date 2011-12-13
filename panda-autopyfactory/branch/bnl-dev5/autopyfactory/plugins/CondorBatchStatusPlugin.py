@@ -89,7 +89,7 @@ class BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.lasttime = 0
                 self._checkCondor()
                 self.log.info('BatchStatusPlugin: Object initialized.')
-            else:
+            except:
                 self._valid = False
 
     def valid(self):    

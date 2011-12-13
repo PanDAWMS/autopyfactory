@@ -27,69 +27,74 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         '''
         
         def __init__(self, apfqueue):
-        #def initialize(self, apfqueue):
-                self.log = logging.getLogger("main.batchsubmitplugin[%s]" %apfqueue.apfqname)
-                self.apfqueue = apfqueue
-                self.apfqname = self.apfqueue.apfqname
-                self.factory = apfqueue.factory
-                self.qcl = self.apfqueue.factory.qcl
-                self.fcl = self.apfqueue.factory.fcl
+                self._valid = True
+                try:
+                        self.log = logging.getLogger("main.batchsubmitplugin[%s]" %apfqueue.apfqname)
+                        self.apfqueue = apfqueue
+                        self.apfqname = self.apfqueue.apfqname
+                        self.factory = apfqueue.factory
+                        self.qcl = self.apfqueue.factory.qcl
+                        self.fcl = self.apfqueue.factory.fcl
 
-                self.executable = self.qcl.get(self.apfqname, 'executable')
-                self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
-                self.gridresource = self.qcl.get(self.apfqname, 'gridresource') 
+                        self.executable = self.qcl.get(self.apfqname, 'executable')
+                        self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
+                        self.gridresource = self.qcl.get(self.apfqname, 'gridresource') 
 
-                self.ami_id = self.qcl.get(self.apfqname, 'batchsubmit.condorec2.ami_id')
+                        self.ami_id = self.qcl.get(self.apfqname, 'batchsubmit.condorec2.ami_id')
 
-                self.instance_type  = self.qcl.get(self.apfqname, 'batchsubmit.condorec2.instance_type')
+                        self.instance_type  = self.qcl.get(self.apfqname, 'batchsubmit.condorec2.instance_type')
 
-                self.user_data = None        
-                if self.qcl.has_option(self.apfqname, 'batchsubmit.condorec2.user_data'):
-                        self.user_data = self.fcl.get(self.apfqname, 'batchsubmit.condorec2.user_data')
+                        self.user_data = None        
+                        if self.qcl.has_option(self.apfqname, 'batchsubmit.condorec2.user_data'):
+                                self.user_data = self.fcl.get(self.apfqname, 'batchsubmit.condorec2.user_data')
 
-                self.queue = None
-                if self.qcl.has_option(self.apfqname,'batchsubmit.condorec2.queue'):
-                        self.queue = self.qcl.get(self.apfqname, 'batchsubmit.condorec2.queue')
+                        self.queue = None
+                        if self.qcl.has_option(self.apfqname,'batchsubmit.condorec2.queue'):
+                                self.queue = self.qcl.get(self.apfqname, 'batchsubmit.condorec2.queue')
 
-                self.x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqname,'proxy'))
+                        self.x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqname,'proxy'))
 
-                self.factoryid = self.fcl.get('Factory', 'factoryId')
+                        self.factoryid = self.fcl.get('Factory', 'factoryId')
 
-                self.monitorurl = None
-                if self.fcl.has_option('Factory', 'monitorURL'):
-                        self.monitorurl = self.fcl.get('Factory', 'monitorURL')
+                        self.monitorurl = None
+                        if self.fcl.has_option('Factory', 'monitorURL'):
+                                self.monitorurl = self.fcl.get('Factory', 'monitorURL')
 
-                self.factoryuser = None
-                if self.fcl.has_option('Factory', 'factoryUser'):
-                        self.factoryuser = self.fcl.get('Factory', 'factoryUser')
+                        self.factoryuser = None
+                        if self.fcl.has_option('Factory', 'factoryUser'):
+                                self.factoryuser = self.fcl.get('Factory', 'factoryUser')
 
-                self.environ = None
-                if self.qcl.has_option(self.apfqname, 'batchsubmit.condorec2.environ'):
-                        self.environ = self.qcl.get(self.apfqname, 'batchsubmit.condorec2.environ')
+                        self.environ = None
+                        if self.qcl.has_option(self.apfqname, 'batchsubmit.condorec2.environ'):
+                                self.environ = self.qcl.get(self.apfqname, 'batchsubmit.condorec2.environ')
 
-                self.condor_attributes = None
-                if self.qcl.has_option(self.apfqname, 'batchsubmit.condorec2.condor_attributes'):
-                        self.condor_attributes = self.qcl.get(self.apfqname, 'batchsubmit.condorec2.condor_attributes')
+                        self.condor_attributes = None
+                        if self.qcl.has_option(self.apfqname, 'batchsubmit.condorec2.condor_attributes'):
+                                self.condor_attributes = self.qcl.get(self.apfqname, 'batchsubmit.condorec2.condor_attributes')
 
-                self.nickname = self.qcl.get(self.apfqname, 'nickname')
+                        self.nickname = self.qcl.get(self.apfqname, 'nickname')
 
-                self.pandagrid = None
-                if self.qcl.has_option(self.apfqname, 'executable.pandagrid'):
-                        self.pandagrid = self.qcl.get(self.apfqname, 'executable.pandagrid')
+                        self.pandagrid = None
+                        if self.qcl.has_option(self.apfqname, 'executable.pandagrid'):
+                                self.pandagrid = self.qcl.get(self.apfqname, 'executable.pandagrid')
 
-                self.pandaserverurl = self.qcl.get(self.apfqname, 'executable.pandaserverurl') 
-                self.pandawrappertarballurl = self.qcl.get(self.apfqname, 'executable.pandawrappertarballurl')
+                        self.pandaserverurl = self.qcl.get(self.apfqname, 'executable.pandaserverurl') 
+                        self.pandawrappertarballurl = self.qcl.get(self.apfqname, 'executable.pandawrappertarballurl')
 
-                self.pandaloglevel = None
-                if self.qcl.has_option(self.apfqname, 'executable.pandaloglevel'):
-                        self.pandaloglevel = self.qcl.get(self.apfqname, 'executable.pandaloglevel')
+                        self.pandaloglevel = None
+                        if self.qcl.has_option(self.apfqname, 'executable.pandaloglevel'):
+                                self.pandaloglevel = self.qcl.get(self.apfqname, 'executable.pandaloglevel')
 
-                self.arguments = None
-                if self.qcl.has_option(self.apfqname, 'executable.arguments'):
-                        self.arguments = self.qcl.get(self.apfqname, 'executable.arguments')
+                        self.arguments = None
+                        if self.qcl.has_option(self.apfqname, 'executable.arguments'):
+                                self.arguments = self.qcl.get(self.apfqname, 'executable.arguments')
 
+                        self.log.info('BatchSubmitPlugin: Object initialized.')
+                except:
+                        self._valid = False
 
-                self.log.info('BatchSubmitPlugin: Object initialized.')
+        def valid(self):
+                return self._valid
 
         def submitPilots(self, siteid, nbpilots, fcl, qcl):
                 '''

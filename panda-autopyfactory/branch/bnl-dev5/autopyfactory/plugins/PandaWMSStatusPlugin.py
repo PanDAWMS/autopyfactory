@@ -42,24 +42,30 @@ class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
     __metaclass__ = Singleton
 
     def __init__(self, apfqueue):
-    #def initialize(self, apfqueue):
-        self.apfqueue = apfqueue
-        self.log = logging.getLogger("main.pandawmsstatusplugin[%s]" %apfqueue.apfqname)
-        self.log.debug("WMSStatusPlugin: Initializing object...")
-        self.wmsstatusmaxtime = 0
-        if self.apfqueue.fcl.has_option('Factory', 'wmsstatus.maxtime'):
-            self.wmsstatusmaxtime = self.fcl.get('Factory', 'wmsstatus.maxtime')
-        self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.panda.sleep')
+        self._valid = True
+        try:
+            self.apfqueue = apfqueue
+            self.log = logging.getLogger("main.pandawmsstatusplugin[%s]" %apfqueue.apfqname)
+            self.log.debug("WMSStatusPlugin: Initializing object...")
+            self.wmsstatusmaxtime = 0
+            if self.apfqueue.fcl.has_option('Factory', 'wmsstatus.maxtime'):
+                self.wmsstatusmaxtime = self.fcl.get('Factory', 'wmsstatus.maxtime')
+            self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.panda.sleep')
 
-        # current WMSStatusIfno object
-        self.currentinfo = None
+            # current WMSStatusIfno object
+            self.currentinfo = None
 
-        threading.Thread.__init__(self) # init the thread
-        self.stopevent = threading.Event()
-        # to avoid the thread to be started more than once
-        self._started = False 
+            threading.Thread.__init__(self) # init the thread
+            self.stopevent = threading.Event()
+            # to avoid the thread to be started more than once
+            self._started = False 
 
-        self.log.info('WMSStatusPlugin: Object initialized.')
+            self.log.info('WMSStatusPlugin: Object initialized.')
+        except:
+            self._valid = False
+
+    def valid(self):
+        return self._valid
 
     def getCloudInfo(self, maxtime=0):
         '''
