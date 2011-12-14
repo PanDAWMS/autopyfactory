@@ -4,15 +4,16 @@
   sharedscripts
   size 500M
   rotate 6
-  # we are going to sleep 3+3 seconds to let the TCP socket to close properly before restarting the apf service,
-  # otherwise it may happen that the factory resumes activities while the old TCP socket is still managing packages
-  # and everything blows out
+  # we are going to sleep 15+15 seconds to let the TCP socket close properly before restarting the apf service,
+  # otherwise it may happen that the factory resumes running while the old TCP socket is still receiving packets
+  # and problems can occur, or the listening port address will be rejected as busy. 
   prerotate
     [ -e /etc/init.d/factory ] && /etc/init.d/factory stop >/dev/null 2>&1 || true
-    sleep 30
+    sleep 15
   endscript
   postrotate
-    sleep 3
+    [ -e /etc/profile ] && . /etc/profile >/dev/null 2>&1 || true
+    sleep 15
     [ -e /etc/init.d/factory ] && /etc/init.d/factory start >/dev/null 2>&1 || true
   endscript
 }
