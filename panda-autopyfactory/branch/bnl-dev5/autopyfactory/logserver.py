@@ -113,13 +113,29 @@ class LogServer(threading.Thread):
             self.handler = MySimpleHTTPRequestHandler
         else:
             self.handler = MyNoListingHTTPRequestHandler
-            
-        self.httpd = SocketServer.TCPServer(("", self.port), self.handler)
-        
-        self.log.info("Initialized HTTP server. port=%d, root=%s, list = %s" % (self.port, self.docroot, self.list)) 
+        self.httpd = None
+        self.log.info("Initialized Logserver object")
+    
+    
+    
+    def _init_socketserver(self):
+        while not self.httpd:
+            try:
+                self.log.debug("Attempting to bind to socket for HTTP server on port %s" % self.port)
+                self.httpd = SocketServer.TCPServer(("", self.port), self.handler)
+                self.log.info("Initialized HTTP SocketServer port=%d, root=%s, list = %s" % (self.port, 
+                                                                                             self.docroot, 
+                                                                                             self.list)) 
+            except Exception, e:
+                self.log.warning("Socket server exception: %s" % str(e))
+                self.log.warning("Attempt to initialize HTTP server failed. Will wait 60s and try again.")         
+                time.sleep(60)
     
     def run(self):
-        self.log.debug("Starting HTTP server")
+        self.log.info("Initializing HTTP server...")
+        self._init_socketserver()
+        
+        
         os.chdir(self.docroot)
         self.log.debug("Changing working dir to %s"%  self.docroot)
         while True:
