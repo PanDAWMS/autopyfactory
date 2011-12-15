@@ -107,7 +107,7 @@ class LogServer(threading.Thread):
         self.log= logging.getLogger('main.logserver')
         self.docroot = docroot
         self.port = int(port)
-        self.list = list
+        self.index = index
         #self.handler = SimpleHTTPServer.SimpleHTTPRequestHandler
         if index:
             self.handler = MySimpleHTTPRequestHandler
@@ -123,9 +123,9 @@ class LogServer(threading.Thread):
             try:
                 self.log.debug("Attempting to bind to socket for HTTP server on port %s" % self.port)
                 self.httpd = SocketServer.TCPServer(("", self.port), self.handler)
-                self.log.info("Initialized HTTP SocketServer port=%d, root=%s, list = %s" % (self.port, 
+                self.log.info("Initialized HTTP SocketServer port=%d, root=%s, index = %s" % (self.port, 
                                                                                              self.docroot, 
-                                                                                             self.list)) 
+                                                                                             self.index)) 
             except Exception, e:
                 self.log.warning("Socket server exception: %s" % str(e))
                 self.log.warning("Attempt to initialize HTTP server failed. Will wait 60s and try again.")         
