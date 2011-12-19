@@ -6,5 +6,5 @@
 if id apf > /dev/null 2>&1; then
 	: # do nothing
 else
-    /usr/sbin/useradd --comment "AutoPyFactory service account" --shell /sbin/nologin apf
+    /usr/sbin/useradd --comment "AutoPyFactory service account" --shell /bin/bash apf
 fi 
