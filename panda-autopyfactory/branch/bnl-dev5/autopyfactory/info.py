@@ -104,7 +104,7 @@ class BaseInfo(object):
                 log = logging.getLogger('main.info')
                 log.error("fill(): Exception: %s" % str(e))
                 log.debug("Stack Trace: %s " % traceback.format_exc()) 
-                log.debug("k: %s v: %v dictionary: %s mappings: %s" % (k,v, dictionary, mappings))
+                log.debug("k: %s v: %s dictionary: %s mappings: %s" % (k,v, dictionary, mappings))
             
             if k not in usedk:
                 usedk.append(k)
