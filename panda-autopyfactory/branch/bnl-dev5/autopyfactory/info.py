@@ -152,6 +152,7 @@ class BatchQueueInfo(BaseInfo):
     def __init__(self):
         # default value 0
         super(BatchQueueInfo, self).__init__(0)
+        self.log = logging.getLogger('main.batchqueueinfo')
 
     def __str__(self):
         s = "BatchQueueInfo: pending=%d, running=%d, suspended=%d" % (self.pending, 
