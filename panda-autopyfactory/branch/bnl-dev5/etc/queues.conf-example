@@ -307,6 +307,7 @@ enabled = True
 # ====================================================================== 
 
 [BNL_ITB_Test1]
+enabled = False
 siteid = BNL_ITB_Test1
 nickname = BNL_ITB_Test1-condor
 gridresource = gridtest01.racf.bnl.gov/jobmanager-condor
@@ -314,7 +315,7 @@ gridresource = gridtest01.racf.bnl.gov/jobmanager-condor
 executable.pandagrid = OSG
 executable.arguments = -j false -k 600 -u panda 
 
-schedplugin = Trivial
+schedplugin = Activated
 
 batchsubmitplugin = CondorLocal
 batchsubmit.condorlocal.localqueue = OSG_ITB_Jose
@@ -322,9 +323,11 @@ batchsubmit.condorlocal.condor_attributes = +RACF_Group = "osgitb",+Experiment =
 batchsubmit.condorlocal.environ = OSG_GRID=/afs/usatlas/osg/wn-client/@sys/itb
 
 
+
 # ------------------------------------------------------------------------
 
 [ANALY_BNL_ATLAS_1]
+enabled = False
 siteid = ANALY_BNL_ATLAS_1
 nickname = ANALY_BNL_ATLAS_1-condor
 gridresource = gridgk05.racf.bnl.gov/jobmanager-condor
