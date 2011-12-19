@@ -101,9 +101,10 @@ class BaseInfo(object):
                 if mappings:
                     k = mappings[k]
             except KeyError, e:
-                self.log.error("fill(): Exception: %s" % str(e))
-                self.log.debug("Stack Trace: %s " % traceback.format_exc()) 
-                self.log.debug("k: %s v: %v dictionary: %s mappings: %s" % (k,v, dictionary, mappings))
+                log = logging.getLogger('main.info')
+                log.error("fill(): Exception: %s" % str(e))
+                log.debug("Stack Trace: %s " % traceback.format_exc()) 
+                log.debug("k: %s v: %v dictionary: %s mappings: %s" % (k,v, dictionary, mappings))
             
             if k not in usedk:
                 usedk.append(k)
@@ -152,7 +153,7 @@ class BatchQueueInfo(BaseInfo):
     def __init__(self):
         # default value 0
         super(BatchQueueInfo, self).__init__(0)
-        self.log = logging.getLogger('main.batchqueueinfo')
+        
 
     def __str__(self):
         s = "BatchQueueInfo: pending=%d, running=%d, suspended=%d" % (self.pending, 
