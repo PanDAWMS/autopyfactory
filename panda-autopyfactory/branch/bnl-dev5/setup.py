@@ -34,7 +34,8 @@ setup(
     url='https://twiki.cern.ch/twiki/bin/view/Atlas/PanDA',
     packages=['autopyfactory','autopyfactory.plugins'],
     scripts = [ # Utilities and main script
-               'bin/factory'],
+               'bin/factory',
+               'misc/apfqueue_status.sh'],
     
     data_files=[('/usr/libexec', ['libexec/runpilot3-wrapper.sh',
                                   'libexec/wrapper.sh',                                 
