@@ -193,9 +193,8 @@ class Config(SafeConfigParser, object):
 #                         convert=False,                 # decide if string "None" should be converted into python None
 #                         mandatory=False,               # if the option is supposed to be there
 #                         mandatory_exception=None,      # exception to be raised if the option is mandatory but it is not there
-#                         log_function=None,             # log function to be used when everything goes OK
+#                         loggger=None,                  # logger function 
 #                         log_message=None,              # message to be logged when everything goes OK
-#                         failure_log_function=None,     # log function to be used when something was not OK
 #                         failure_message=None ):        # message to be logged when something was not OK
 #                '''
 #                generic get() method for Config objects.
@@ -207,8 +206,8 @@ class Config(SafeConfigParser, object):
 #        
 #                if not has_option:
 #                        if mandatory:
-#                                if failure_log_function:
-#                                        failure_log_function(failure_message)
+#                                if logger:
+#                                        logger.error(failure_message)
 #                                if mandatory_exception:
 #                                        raise mandatory_exception
 #                        else:
@@ -216,11 +215,11 @@ class Config(SafeConfigParser, object):
 #                else:
 #                        get_f = getattr(config_object, get_function)
 #                        value = get_f(section, option)
-#                        if log_function:
-#                                log_function(log_message)
+#                        if logger:
+#                                logger.debug(log_message)
 #                        if convert:
 #                                if value is "None":
-#                                        value is None
+#                                        value = None
 #                        return value
 
 
