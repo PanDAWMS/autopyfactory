@@ -302,7 +302,7 @@ executable = /usr/libexec/wrapper.sh
 executable.pandawrappertarballurl = http://dev.racf.bnl.gov/dist/wrapper/
 executable.pandaserverurl = http://pandaserver.cern.ch:25080/cache/pilot
 
-batchsubmit.gramversion = gt2
+batchsubmit.gramversion = 2
 
 override = True
 enabled = True
