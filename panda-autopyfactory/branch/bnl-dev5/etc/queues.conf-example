@@ -53,9 +53,10 @@
 # batchstatusplugin
 #
 # batchsubmitplugin
-# batchsubmit.condorgt2.condor_attributes
-# batchsubmit.condorgt2.environ
-# batchsubmit.condorgt2.queue
+# batchsubmit.condorgram.condor_attributes
+# batchsubmit.condorgram.environ
+# batchsubmit.condorgram.queue
+# batchsubmit.condorgram.gramversion
 # batchsubmit.condorlocal.condor_attributes
 # batchsubmit.condorlocal.environ
 # batchsubmit.condorec2.condor_attributes
@@ -183,7 +184,7 @@
 #
 # batchsubmitplugin = Batch Submit Plugin.
 #
-# batchsubmit.condorgt2.condor_attributes = list of condor attributes, 
+# batchsubmit.condorgram.condor_attributes = list of condor attributes, 
 #               splited by comma, 
 #               to be included in the condor submit file *verbatim*
 #               e.g. +Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas"
@@ -202,16 +203,18 @@
 #                       periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
 #                       +Nonessential = True
 #
-#               To be used in CondorGT2 Batch Submit Plugin.
+#               To be used in CondorGRAM Batch Submit Plugin.
 #
-# batchsubmit.condorgt2.environ = list of environment variables, 
+# batchsubmit.condorgram.environ = list of environment variables, 
 #               splitted by white spaces, 
 #               to be included in the condor attribute environment *verbatim*
-#               To be used by CondorGT2 Batch Submit Plugin.
+#               To be used by CondorGRAM Batch Submit Plugin.
 #
-# batchsubmit.condorgt2.queue = local batch queue 
+# batchsubmit.condorgram.queue = local batch queue 
 #               to be included in the globusrsl directive.
-#               To be used by CondorGT2 Batch Submit Plugin.
+#               To be used by CondorGRAM Batch Submit Plugin.
+#
+# batchsubmit.condorgram.gramversion = version of the GRAM protocol, eg, 2, 5, ...
 #
 # batchsubmit.condorlocal.condor_attributes = list of condor attributes, 
 #               splited by comma, 
@@ -282,7 +285,7 @@ status = online
 # plugins
 batchstatusplugin = Condor
 wmsstatusplugin = Panda
-batchsubmitplugin = CondorGT2
+batchsubmitplugin = CondorGRAM
 schedplugin = Activated
 
 sched.trivial.default = 0
@@ -298,6 +301,8 @@ apfqueue.sleep = 360
 executable = /usr/libexec/wrapper.sh
 executable.pandawrappertarballurl = http://dev.racf.bnl.gov/dist/wrapper/
 executable.pandaserverurl = http://pandaserver.cern.ch:25080/cache/pilot
+
+batchsubmit.gramversion = gt2
 
 override = True
 enabled = True
@@ -343,5 +348,5 @@ sched.activated.min_pilots_per_cycle = 0
 sched.activated.max_pilots_per_cycle = 10
 sched.activated.max_jobs_torun = 60
 
-batchsubmit.condorgt2.queue = short
+batchsubmit.condorgram.queue = short
 
