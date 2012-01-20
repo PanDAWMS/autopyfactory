@@ -145,7 +145,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
     
         self.JSD.add("Dir=%s/" % self.logDir)
         self.JSD.add("notify_user=%s" % self.factoryadminemail)
-        self.JSD.add('grid_resource=%s %s' % (self.gramversion, self.gridresource)) 
+        self.JSD.add('grid_resource=gt%s %s' % (self.gramversion, self.gridresource)) 
     
         # -- MATCH_APF_QUEUE --
         # this token is very important, since it will be used by other plugins
