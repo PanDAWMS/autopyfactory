@@ -39,7 +39,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
             self.executable = self.qcl.get(self.apfqname, 'executable')
             self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
             self.gridresource = self.qcl.get(self.apfqname, 'gridresource') 
-            self.gramversion = self.qcl.get(self.apfqname, 'gramversion') 
+            self.gramversion = self.qcl.get(self.apfqname, 'batchsubmit.condorgram.gramversion') 
 
             self.queue = None
             if self.qcl.has_option(self.apfqname,'batchsubmit.condorgram.queue'):
