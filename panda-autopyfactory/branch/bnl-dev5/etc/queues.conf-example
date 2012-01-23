@@ -67,10 +67,10 @@
 #
 # executable
 # executable.arguments
-# executable.pandagrid
-# executable.pandaloglevel
-# executable.pandaserverurl
-# executable.pandawrappertarballurl
+# executable.wrappergrid
+# executable.wrapperloglevel
+# executable.wrapperserverurl
+# executable.wrappertarballurl
 
 # ---------------------------------------------------------------------------
 # Description:
@@ -260,17 +260,17 @@
 #
 # executable.arguments = input options to be passed verbatim to the executable script.
 #
-# executable.pandagrid = type of Grid Midleware (e.g. OSG).
-#               To be used by the 'new panda wrapper' distributed with AutoPyFactory.
+# executable.wrappergrid = type of Grid Midleware (e.g. OSG).
+#               To be used by the 'new wrapper' distributed with AutoPyFactory.
 #
-# executable.pandaloglevel = log level.
-#               To be used by the 'new panda wrapper' distributed with AutoPyFactory.
+# executable.wrapperloglevel = log level.
+#               To be used by the 'new wrapper' distributed with AutoPyFactory.
 #
-# executable.pandaserverurl =  base URL with the VO-specific pilot tarball
-#               To be used by the 'new panda wrapper' distributed with AutoPyFactory.
+# executable.wrapperserverurl =  base URL with the VO-specific pilot tarball
+#               To be used by the 'new wrapper' distributed with AutoPyFactory.
 #
-# executable.pandawrappertarballurl =  URL with the wrapper tar ball
-#               To be used by the 'new panda wrapper' distributed with AutoPyFactory.
+# executable.wrappertarballurl =  URL with the wrapper tar ball
+#               To be used by the 'new wrapper' distributed with AutoPyFactory.
 #
 # =========================================================================== 
 
@@ -299,8 +299,8 @@ proxy = None
 apfqueue.sleep = 360
 
 executable = /usr/libexec/wrapper.sh
-executable.pandawrappertarballurl = http://dev.racf.bnl.gov/dist/wrapper/
-executable.pandaserverurl = http://pandaserver.cern.ch:25080/cache/pilot
+executable.wrappertarballurl = http://dev.racf.bnl.gov/dist/wrapper/
+executable.wrapperserverurl = http://pandaserver.cern.ch:25080/cache/pilot
 
 batchsubmit.gramversion = 2
 
@@ -317,7 +317,7 @@ siteid = BNL_ITB_Test1
 nickname = BNL_ITB_Test1-condor
 gridresource = gridtest01.racf.bnl.gov/jobmanager-condor
 
-executable.pandagrid = OSG
+executable.wrappergrid = OSG
 executable.arguments = -j false -k 600 -u panda 
 
 schedplugin = Activated
@@ -337,8 +337,8 @@ siteid = ANALY_BNL_ATLAS_1
 nickname = ANALY_BNL_ATLAS_1-condor
 gridresource = gridgk05.racf.bnl.gov/jobmanager-condor
 
-executable.pandagrid = OSG
-executable.pandaloglevel = debug
+executable.wrappergrid = OSG
+executable.wrapperloglevel = debug
 executable.arguments = --script=pilot.py --libcode=pilotcode.tar.gz,pilotcode-rc.tar.gz --pilotsrcurl=http://panda.cern.ch:25880/cache -f false -m false --user user
 
 proxy = atlas-production
