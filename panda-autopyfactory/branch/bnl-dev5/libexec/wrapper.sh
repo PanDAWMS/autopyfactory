@@ -1,29 +1,33 @@
 #!/bin/bash 
 
-WRAPPERVERSION="0.9.1"
+WRAPPERVERSION="0.9.2"
 
 # 
-# A generic panda wrapper with minimal functionalities
+# A generic wrapper with minimal functionalities
 #
 # input options:
-#   - pandasite
-#   - pandaqueue
-#   - pandagrid
-#   - pandaproject
-#   - pandaserverurl
-#   - pandawrappertarballurl
-#   - pandaspecialcmd 
-#   - pandaplugin 
-#   - pandapilottype
-#   - pandaloglevel
+#   - wrappervo
+#   - wrapperwmsqueue
+#   - wrapperbatchqueue
+#   - wrappergrid
+#   - wrapperpurpose
+#   - wrapperserverurl
+#   - wrappertarballurl
+#   - wrapperspecialcmd 
+#   - wrapperplugin 
+#   - wrapperpilottype
+#   - wrapperloglevel
+#   - wrappermode
 #
 # where
 #
-#     - pandasite is the panda site
+#     - wrappervo is the VO
+#
+#     - wrapperwmsqueue is the wms queue (e.g. the panda siteid)
 #    
-#     - pandaqueue is the panda queue
+#     - wrapperbatchqueue is the batch queue (e.g. the panda queue)
 #    
-#     - pandagrid is the grid flavor, i.e. OSG or EGEE (or gLite). 
+#     - wrappergrid is the grid flavor, i.e. OSG or EGEE (or gLite). 
 #     The reason to include it as an input option,
 #     instead of letting the wrapper to discover by itself
 #     the current platform is to be able to distinguish
@@ -34,42 +38,44 @@ WRAPPERVERSION="0.9.1"
 #     
 #     (b) is a failure and should be reported, whereas (a) is fine.
 #    
-#     A reason to include pandagrid as an option in this very first wrapper
+#     A reason to include wrappergrid as an option in this very first wrapper
 #     is that for sites running condor as local batch system, 
 #     the $PATH environment variable is setup only after sourcing the 
 #     OSG setup file. And only with $PATH properly setup 
 #     is possible to perform actions as curl/wget 
 #     to download the rest of files, or python to execute them.
 #    
-#     - pandaproject will be the VO in almost all cases,
+#     - wrapperpurpose will be the VO in almost all cases,
 #     but not necessarily when several groups share
 #     the same VO. An example is VO OSG, shared by 
 #     CHARMM, Daya, OSG ITB testing group...
 #    
-#     - pandaserverurl is the url with the PanDA server instance
+#     - wrapperserverurl is the url with the PanDA server instance
 #    
-#     - pandawrappertarballurl is the base url with the wrapper tarball to be downloaded
+#     - wrappertarballurl is the base url with the wrapper tarball to be downloaded
 #    
-#     - pandaspecialcmd is special command to be performed, 
+#     - wrapperspecialcmd is special command to be performed, 
 #     for some specific reason, just after sourcing the Grid environment,
 #     but before doing anything else.
 #     This has been triggered by the need to execute command
 #          $ module load <module_name>
 #     at NERSC after sourcing the OSG grid environment. 
 #    
-#     - pandaplugin is the plug-in module with the code corresponding to the final wrapper flavor.
+#     - wrapperplugin is the plug-in module with the code corresponding to the final wrapper flavor.
 #    
-#     - pandapilottype is the actual  pilot code to be executed at the end.
+#     - wrapperpilottype is the actual  pilot code to be executed at the end.
 #
-#     - pandaloglevel is a flag to activate high verbosity mode.
+#     - wrapperloglevel is a flag to activate high verbosity mode.
 #     Accepted values are debug or info.  
+#     
+#     - wrappermode allows performing all steps but querying and running a real job.
 #
 # ----------------------------------------------------------------------------
 #
 # Note:
 #       before the input options are parsed, they must be re-tokenized
 #       so whitespaces as part of the value 
-#       (i.e. --pandaspecialcmd='module load osg')
+#       (i.e. --wrapperspecialcmd='module load osg')
 #       create no confussion and are not taken as they are splitting 
 #       different input options.
 #
@@ -307,29 +313,32 @@ f_usage(){
         echo
         echo "wrapper.sh Usage:" 
         echo
-        echo " ./wrapper.sh --pandasite=<site_name> --pandaqueue=<queue_name> \
-[--pandagrid=<grid_flavor> ] \
-[--pandaproject=<application_type>] \
-[--pandaserverurl=<panda_server_url>] \
-[--pandawrappertarballurl=<wrapper_tarball_url>] \
-[--pandaspecialcmd=<special_setup_command>] \
-[--pandaplugin=<plugin_name>]\
-[--pandapilottype=<pilot_type]\
-[--pandaloglevel=debug|info]"
+        echo " ./wrapper.sh --wrappervo=<vo> --wrapperwmsqueue=<site_name> --wrapperbatchqueue=<queue_name> \
+[--wrappergrid=<grid_flavor> ] \
+[--wrapperpurpose=<application_type>] \
+[--wrapperserverurl=<wms_server_url>] \
+[--wrappertarballurl=<wrapper_tarball_url>] \
+[--wrapperspecialcmd=<special_setup_command>] \
+[--wrapperplugin=<plugin_name>]\
+[--wrapperpilottype=<pilot_type]\
+[--wrapperloglevel=debug|info]\
+[--wrappermode=<operation mode>]"
 }
 
 f_parse_arguments(){
         # Function to parse the command line input options.
-        #         --pandasite=...
-        #         --pandaqueue=...
-        #         --pandagrid=...
-        #         --pandaproject=...
-        #         --pandaserverurl=...
-        #         --pandawrappertarballurl=...
-        #         --pandaspecialcmd=...
-        #         --pandaplugin=...
-        #         --pandapilottype=...
-        #         --pandaloglevel=...
+        #         --wrappervo=...
+        #         --wrapperwmsqueue=...
+        #         --wrapperbatchqueue=...
+        #         --wrappergrid=...
+        #         --wrapperpurpose=...
+        #         --wrapperserverurl=...
+        #         --wrappertarballurl=...
+        #         --wrapperspecialcmd=...
+        #         --wrapperplugin=...
+        #         --wrapperpilottype=...
+        #         --wrapperloglevel=...
+        #         --wrappermode
         # An error/warning message is displayed in case a different 
         # input option is passed
 
@@ -357,35 +366,41 @@ f_parse_arguments(){
                 case $WORD in
                         --*)  true ;
                                 case $WORD in
-                                        --pandasite=*) 
-                                                PANDASITE=${WORD/--pandasite=/}
+                                        --wrappervo=*) 
+                                                WRAPPERVO=${WORD/--wrappervo=/}
                                                 shift ;;
-                                        --pandaqueue=*) 
-                                                PANDAQUEUE=${WORD/--pandaqueue=/}
+                                        --wrapperwmsqueue=*) 
+                                                WRAPPERWMSQUEUE=${WORD/--wrapperwmsqueue=/}
                                                 shift ;;
-                                        --pandagrid=*)
-                                                PANDAGRID=${WORD/--pandagrid=/}
+                                        --wrapperbatchqueue=*) 
+                                                WRAPPERBATCHQUEUE=${WORD/--wrapperbatchqueue=/}
                                                 shift ;;
-                                        --pandaproject=*)
-                                                PANDAPROJECT=${WORD/--pandaproject=/}
+                                        --wrappergrid=*)
+                                                WRAPPERGRID=${WORD/--wrappergrid=/}
                                                 shift ;;
-                                        --pandaserverurl=*) 
-                                                PANDASERVERURL=${WORD/--pandaserverurl=/}
+                                        --wrapperpurpose=*)
+                                                WRAPPERPURPOSE=${WORD/--wrapperpurpose=/}
                                                 shift ;;
-                                        --pandawrappertarballurl=*) 
-                                                PANDAWRAPPERTARBALLURL=${WORD/--pandawrappertarballurl=/}
+                                        --wrapperserverurl=*) 
+                                                WRAPPERSERVERURL=${WORD/--wrapperserverurl=/}
                                                 shift ;;
-                                        --pandaspecialcmd=*) 
-                                                PANDASPECIALCMD=${WORD/--pandaspecialcmd=/}
+                                        --wrappertarballurl=*) 
+                                                WRAPPERTARBALLURL=${WORD/--wrappertarballurl=/}
                                                 shift ;;
-                                        --pandaplugin=*) 
-                                                PANDAPLUGIN=${WORD/--pandaplugin=/}
+                                        --wrapperspecialcmd=*) 
+                                                WRAPPERSPECIALCMD=${WORD/--wrapperspecialcmd=/}
                                                 shift ;;
-                                        --pandapilottype=*) 
-                                                PANDAPILOTTYPE=${WORD/--pandapilottype=/}
+                                        --wrapperplugin=*) 
+                                                WRAPPERPLUGIN=${WORD/--wrapperplugin=/}
                                                 shift ;;
-                                        --pandaloglevel=*) 
-                                                PANDALOGLEVEL=${WORD/--pandaloglevel=/}
+                                        --wrapperpilottype=*) 
+                                                WRAPPERPILOTTYPE=${WORD/--wrapperpilottype=/}
+                                                shift ;;
+                                        --wrapperloglevel=*) 
+                                                WRAPPERLOGLEVEL=${WORD/--wrapperloglevel=/}
+                                                shift ;;
+                                        --wrappermode=*)
+                                                WRAPPERMODE=${WORD/--wrappermode=/}
                                                 shift ;;
                                         *) unexpectedopts=${unexpectedopts}" "$WORD 
                                            shift ;;     
@@ -401,26 +416,27 @@ f_parse_arguments(){
 f_print_options(){
         # printing the input options
         f_print_msg "=== Wrapper input options:"
-        echo " panda site: "$PANDASITE
-        echo " panda queue: "$PANDAQUEUE
-        echo " grid flavor: "$PANDAGRID
-        echo " project: "$PANDAPROJECT
-        echo " server url: "$PANDASERVERURL
-        echo " code url: "$PANDAWRAPPERTARBALLURL
-        echo " special commands: "$PANDASPECIALCMD
-        echo " plugin module: "$PANDAPLUGIN
-        echo " pilot type: "$PANDAPILOTTYPE
-        echo " debug mode: "$PANDALOGLEVEL
+        echo " wrapper site: "$WRAPPERWMSQUEUE
+        echo " wrapper queue: "$WRAPPERBATCHQUEUE
+        echo " grid flavor: "$WRAPPERGRID
+        echo " purpose: "$WRAPPERPURPOSE
+        echo " server url: "$WRAPPERSERVERURL
+        echo " code url: "$WRAPPERTARBALLURL
+        echo " special commands: "$WRAPPERSPECIALCMD
+        echo " plugin module: "$WRAPPERPLUGIN
+        echo " pilot type: "$WRAPPERPILOTTYPE
+        echo " debug mode: "$WRAPPERLOGLEVEL
+        echo " operation mode: "$WRAPPERMODE
         if [ "$unexpectedopts" != "" ]; then
                 # warning message for unrecognized input options
                 f_print_warning_msg "Unrecognized input options"
                 echo $unexpectedopts
         fi
 
-        f_check_mandatory_option "SITE" $PANDASITE
-        f_check_mandatory_option "QUEUE" $PANDAQUEUE
-        f_check_mandatory_option "SERVER URL" $PANDASERVERURL
-        f_check_mandatory_option "CODE URL" $PANDAWRAPPERTARBALLURL
+        f_check_mandatory_option "SITE" $WRAPPERWMSQUEUE
+        f_check_mandatory_option "QUEUE" $WRAPPERBATCHQUEUE
+        f_check_mandatory_option "SERVER URL" $WRAPPERSERVERURL
+        f_check_mandatory_option "CODE URL" $WRAPPERTARBALLURL
 
 }
 
@@ -454,15 +470,17 @@ f_build_pythonwrapper_opts(){
         f_build_extra_opts
 
         pythonwrapperopts=""
-        pythonwrapperopts=${pythonwrapperopts}" --pandasite="$PANDASITE
-        pythonwrapperopts=${pythonwrapperopts}" --pandaqueue="$PANDAQUEUE
-        pythonwrapperopts=${pythonwrapperopts}" --pandagrid="$PANDAGRID
-        pythonwrapperopts=${pythonwrapperopts}" --pandaproject="$PANDAPROJECT
-        pythonwrapperopts=${pythonwrapperopts}" --pandaserverurl="$PANDASERVERURL
-        pythonwrapperopts=${pythonwrapperopts}" --pandawrappertarballurl="$PANDAWRAPPERTARBALLURL
-        pythonwrapperopts=${pythonwrapperopts}" --pandaplugin="$PANDAPLUGIN
-        pythonwrapperopts=${pythonwrapperopts}" --pandapilottype="$PANDAPILOTTYPE
-        pythonwrapperopts=${pythonwrapperopts}" --pandaloglevel="$PANDALOGLEVEL
+        pythonwrapperopts=${pythonwrapperopts}" --wrappervo="$WRAPPERVO
+        pythonwrapperopts=${pythonwrapperopts}" --wrapperwmsqueue="$WRAPPERWMSQUEUE
+        pythonwrapperopts=${pythonwrapperopts}" --wrapperbatchqueue="$WRAPPERBATCHQUEUE
+        pythonwrapperopts=${pythonwrapperopts}" --wrappergrid="$WRAPPERGRID
+        pythonwrapperopts=${pythonwrapperopts}" --wrapperpurpose="$WRAPPERPURPOSE
+        pythonwrapperopts=${pythonwrapperopts}" --wrapperserverurl="$WRAPPERSERVERURL
+        pythonwrapperopts=${pythonwrapperopts}" --wrappertarballurl="$WRAPPERTARBALLURL
+        pythonwrapperopts=${pythonwrapperopts}" --wrapperplugin="$WRAPPERPLUGIN
+        pythonwrapperopts=${pythonwrapperopts}" --wrapperpilottype="$WRAPPERPILOTTYPE
+        pythonwrapperopts=${pythonwrapperopts}" --wrapperloglevel="$WRAPPERLOGLEVEL
+        pythonwrapperopts=${pythonwrapperopts}" --wrappermode="$WRAPPERMODE
         pythonwrapperopts=${pythonwrapperopts}" "$extraopts
 
 }
@@ -490,12 +508,12 @@ f_monping() {
 f_download_wrapper_tarball(){
         # donwload a tarball with scripts in python
         # to complete the wrapper actions chain
-        f_print_msg "=== Dowloading the wrapper tarball from $PANDAWRAPPERTARBALLURL"
+        f_print_msg "=== Downloading the wrapper tarball from $RAPPERTARBALLURL"
 
         # URL is the base url. 
         # The name of the tarball (wrapper.tar.gz) must to be added.
         WRAPPERTARBALLNAME="wrapper.tar.gz"
-        WRAPPERURL=${PANDAWRAPPERTARBALLURL}/${WRAPPERTARBALLNAME}
+        WRAPPERURL=${WRAPPERTARBALLURL}/${WRAPPERTARBALLNAME}
 
         cmd="curl  --connect-timeout 20 --max-time 120 -s -S $WRAPPERURL -o $WRAPPERTARBALLNAME"
         $cmd
@@ -532,7 +550,6 @@ f_exit(){
         # FIXME: that should not be here !!
         #        it should be in a clean() method in the wrapper.py module
         rm -f job.out
-        rm -f $X509_USER_PROXY
         
         f_print_msg "exiting with RC = $RETVAL"
 
@@ -559,21 +576,21 @@ if [ $rc -ne 0 ]; then
 fi
 
 # --- setting up environment ---
-f_setup_grid $PANDAGRID
+f_setup_grid $WRAPPERGRID
 rc=$?
 if [ $rc -ne 0 ]; then
         f_exit $rc
 fi
 
 # --- setup special commands from schedconfig ---
-f_schedconfig_setup $PANDAQUEUE
+f_schedconfig_setup $WRAPPERBATCHQUEUE
 rc=$?
 if [ $rc -ne 0 ]; then
         f_exit $rc
 fi
 
 
-f_special_cmd $PANDASPECIALCMD
+f_special_cmd $WRAPPERSPECIALCMD
 rc=$?
 if [ $rc -ne 0 ]; then
         f_exit $rc
