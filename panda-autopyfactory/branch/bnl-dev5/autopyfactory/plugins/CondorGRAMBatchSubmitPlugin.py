@@ -96,6 +96,11 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         '''
         pass
 
+    def _checkCondorDaemon(self):
+        
+        status = commands.getoutput('/etc/init.d/condor status')
+        isrunning = status.lower().find('running') > 0
+        return isrunning
 
     def submitPilots(self, siteid, nbpilots, fcl, qcl):
         '''
@@ -106,7 +111,11 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         '''
     
         self.log.debug('submitPilots: Starting with inputs siteid=%s nbpilots=%s fcl=%s qcl=%s' %(siteid, nbpilots, fcl, qcl)) 
-    
+   
+        if not self._checkCondorDaemon():
+                self.log.info('submitPilots: condor daemon is not running. Doing nothing')
+                return None, None
+ 
         self.siteid = siteid 
         self.nbpilots = nbpilots
         self.fcl = fcl
