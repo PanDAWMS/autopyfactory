@@ -510,12 +510,9 @@ f_download_wrapper_tarball(){
         # to complete the wrapper actions chain
         f_print_msg "=== Downloading the wrapper tarball from $RAPPERTARBALLURL"
 
-        # URL is the base url. 
-        # The name of the tarball (wrapper.tar.gz) must to be added.
-        WRAPPERTARBALLNAME="wrapper.tar.gz"
-        WRAPPERURL=${WRAPPERTARBALLURL}/${WRAPPERTARBALLNAME}
+        WRAPPERTARBALLNAME=`/bin/basename $WRAPPERTARBALLURL`
 
-        cmd="curl  --connect-timeout 20 --max-time 120 -s -S $WRAPPERURL -o $WRAPPERTARBALLNAME"
+        cmd="curl  --connect-timeout 20 --max-time 120 -s -S $WRAPPERTARBALLURL -out $WRAPPERTARBALLNAME"
         $cmd
         rc=$?
         if [ $rc -eq 0 ]; then
@@ -526,7 +523,6 @@ f_download_wrapper_tarball(){
 f_untar_wrapper_tarball(){
         # untar the wrapper tarball and remove the original file
         f_print_msg "=== Untarring the wrapper tarball"
-        WRAPPERTARBALLNAME="wrapper.tar.gz"
         tar zxvf $WRAPPERTARBALLNAME
         rm $WRAPPERTARBALLNAME
         return $?
