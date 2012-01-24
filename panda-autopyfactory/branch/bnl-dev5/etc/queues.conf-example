@@ -299,7 +299,7 @@ proxy = None
 apfqueue.sleep = 360
 
 executable = /usr/libexec/wrapper.sh
-executable.wrappertarballurl = http://dev.racf.bnl.gov/dist/wrapper/
+executable.wrappertarballurl = http://dev.racf.bnl.gov/dist/wrapper/wrapper.tar.gz
 executable.wrapperserverurl = http://pandaserver.cern.ch:25080/cache/pilot
 
 batchsubmit.condorgram.gramversion = 2
