@@ -262,34 +262,6 @@ f_setup_osg(){
         return 0
 }
 
-f_schedconfig_setup(){
-        # special setup commands to be performed just after
-        # sourcing the grid environment, 
-        # but before doing anything else
-        # following instructions from SchedConfig
-
-        f_print_msg "checking schedconfig for specific setup commands" 
-
-        QUEUE=$1
-        envsetup=`curl  --connect-timeout 20 --max-time 60 "http://panda.cern.ch:25880/server/pandamon/query?tpmes=pilotpars&getpar=envsetup&queue=$QUEUE" -s -S`
-        if [ "${envsetup:0:13}" != "No data found" ]; then
-                if [ "$envsetup" != "" ]; then
-                        f_print_msg "schedconfig setup command found for queue $QUEUE"
-                        catsetup="`echo $envsetup | sed 's?source ?cat ?'`"
-                        lssetup="`echo $envsetup | sed 's?source ?ls -alL ?'`"
-                        echo "Setup command: '$envsetup'"
-                        echo "Listing: $lssetup"
-                        $lssetup
-                        echo "___________ setup content:"
-                        $catsetup
-                        echo "___________ running setup"
-                        $envsetup
-                        echo "Environment after setup command from SchedConfig:"
-                        f_check_env
-                fi
-        fi
-}
-
 f_special_cmd(){
         # special setup commands to be performed just after
         # sourcing the grid environment, 
@@ -508,7 +480,7 @@ f_monping() {
 f_download_wrapper_tarball(){
         # donwload a tarball with scripts in python
         # to complete the wrapper actions chain
-        f_print_msg "=== Downloading the wrapper tarball from $RAPPERTARBALLURL"
+        f_print_msg "=== Downloading the wrapper tarball from $WRAPPERTARBALLURL"
 
         WRAPPERTARBALLNAME=`/bin/basename $WRAPPERTARBALLURL`
 
@@ -577,14 +549,6 @@ rc=$?
 if [ $rc -ne 0 ]; then
         f_exit $rc
 fi
-
-# --- setup special commands from schedconfig ---
-f_schedconfig_setup $WRAPPERBATCHQUEUE
-rc=$?
-if [ $rc -ne 0 ]; then
-        f_exit $rc
-fi
-
 
 f_special_cmd $WRAPPERSPECIALCMD
 rc=$?
