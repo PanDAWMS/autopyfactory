@@ -512,7 +512,7 @@ f_download_wrapper_tarball(){
 
         WRAPPERTARBALLNAME=`/bin/basename $WRAPPERTARBALLURL`
 
-        cmd="curl  --connect-timeout 20 --max-time 120 -s -S $WRAPPERTARBALLURL -out $WRAPPERTARBALLNAME"
+        cmd="curl  --connect-timeout 20 --max-time 120 -s -S $WRAPPERTARBALLURL -o $WRAPPERTARBALLNAME"
         $cmd
         rc=$?
         if [ $rc -eq 0 ]; then
