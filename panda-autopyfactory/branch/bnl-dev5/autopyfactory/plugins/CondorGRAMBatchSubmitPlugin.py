@@ -70,6 +70,10 @@ class BatchSubmitPlugin(BatchSubmitInterface):
             self.wrappergrid = None
             if self.qcl.has_option(self.apfqname, 'executable.wrappergrid'):
                 self.wrappergrid = self.qcl.get(self.apfqname, 'executable.wrappergrid')
+
+            self.wrappervo = None
+            if self.qcl.has_option(self.apfqname, 'executable.wrappervo'):
+                self.wrappergrid = self.qcl.get(self.apfqname, 'executable.wrappervo')
             
             self.wrapperserverurl = self.qcl.get(self.apfqname, 'executable.wrapperserverurl') 
             self.wrappertarballurl = self.qcl.get(self.apfqname, 'executable.wrappertarballurl')
@@ -188,6 +192,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         # -- Executable and Arguments to the wrapper -- 
         self.JSD.add("executable=%s" % self.executable)
         arguments = 'arguments = '
+        if self.wrappervo:
+                arguments += ' --wrappervo=%s ' %self.wrappervo
         arguments += ' --wrapperwmsqueue=%s ' %self.siteid
         arguments += ' --wrapperbatchqueue=%s ' %self.nickname
         if self.wrappergrid:
