@@ -73,7 +73,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
             self.wrappervo = None
             if self.qcl.has_option(self.apfqname, 'executable.wrappervo'):
-                self.wrappergrid = self.qcl.get(self.apfqname, 'executable.wrappervo')
+                self.wrappervo = self.qcl.get(self.apfqname, 'executable.wrappervo')
             
             self.wrapperserverurl = self.qcl.get(self.apfqname, 'executable.wrapperserverurl') 
             self.wrappertarballurl = self.qcl.get(self.apfqname, 'executable.wrappertarballurl')
