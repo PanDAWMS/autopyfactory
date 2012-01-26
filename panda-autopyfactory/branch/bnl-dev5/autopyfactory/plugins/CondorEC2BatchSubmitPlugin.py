@@ -72,23 +72,23 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                         if self.qcl.has_option(self.apfqname, 'batchsubmit.condorec2.condor_attributes'):
                                 self.condor_attributes = self.qcl.get(self.apfqname, 'batchsubmit.condorec2.condor_attributes')
 
-                        self.nickname = self.qcl.get(self.apfqname, 'nickname')
-
-                        self.pandagrid = None
-                        if self.qcl.has_option(self.apfqname, 'executable.pandagrid'):
-                                self.pandagrid = self.qcl.get(self.apfqname, 'executable.pandagrid')
-
-                        self.pandaserverurl = self.qcl.get(self.apfqname, 'executable.pandaserverurl') 
-                        self.pandawrappertarballurl = self.qcl.get(self.apfqname, 'executable.pandawrappertarballurl')
-
-                        self.pandaloglevel = None
-                        if self.qcl.has_option(self.apfqname, 'executable.pandaloglevel'):
-                                self.pandaloglevel = self.qcl.get(self.apfqname, 'executable.pandaloglevel')
-
-                        self.arguments = None
-                        if self.qcl.has_option(self.apfqname, 'executable.arguments'):
-                                self.arguments = self.qcl.get(self.apfqname, 'executable.arguments')
-
+###                        self.nickname = self.qcl.get(self.apfqname, 'nickname')
+###
+###                        self.pandagrid = None
+###                        if self.qcl.has_option(self.apfqname, 'executable.pandagrid'):
+###                                self.pandagrid = self.qcl.get(self.apfqname, 'executable.pandagrid')
+###
+###                        self.pandaserverurl = self.qcl.get(self.apfqname, 'executable.pandaserverurl') 
+###                        self.pandawrappertarballurl = self.qcl.get(self.apfqname, 'executable.pandawrappertarballurl')
+###
+###                        self.pandaloglevel = None
+###                        if self.qcl.has_option(self.apfqname, 'executable.pandaloglevel'):
+###                                self.pandaloglevel = self.qcl.get(self.apfqname, 'executable.pandaloglevel')
+###
+###                        self.arguments = None
+###                        if self.qcl.has_option(self.apfqname, 'executable.arguments'):
+###                                self.arguments = self.qcl.get(self.apfqname, 'executable.arguments')
+###
                         self.log.info('BatchSubmitPlugin: Object initialized.')
                 except:
                         self._valid = False
@@ -142,9 +142,11 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
                 self.JSD.add("# Condor-G glidein pilot for panda")
 
-                self.JSD.add("Dir=%s/" % self.logDir)
-                self.JSD.add("notify_user=%s" % self.factoryadminemail)
+###                self.JSD.add("Dir=%s/" % self.logDir)
+###                self.JSD.add("notify_user=%s" % self.factoryadminemail)
+                self.JSD.add("universe=grid")
                 self.JSD.add('grid_resource=ec2 %s' % self.gridresource) 
+                self.JSD.add("executable=EC2_instance_%s" %self.ami_id)
 
                 # -- MATCH_APF_QUEUE --
                 # this token is very important, since it will be used by other plugins
@@ -177,47 +179,47 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 environment += '"'
                 self.JSD.add(environment)
 
-                # -- Condor attributes -- 
-                if self.condor_attributes:
-                        for attr in self.condor_attributes.split(','):
-                                self.JSD.add(attr)
-
-                # -- Executable and Arguments to the wrapper -- 
-                self.JSD.add("executable=%s" % self.executable)
-                arguments = 'arguments = '
-                arguments += ' --pandasite=%s ' %self.siteid
-                arguments += ' --pandaqueue=%s ' %self.nickname
-                if self.pandagrid:
-                        arguments += ' --pandagrid=%s ' %self.pandagrid
-                arguments += ' --pandaserverurl=%s ' %self.pandaserverurl 
-                arguments += ' --pandawrappertarballurl=%s ' %self.pandawrappertarballurl
-                if self.pandaloglevel:
-                        arguments += ' --pandaloglevel=%s' %self.pandaloglevel
-                if self.arguments:
-                        arguments += ' ' + self.arguments
-                self.JSD.add(arguments)
-
-                # -- globusrsl -- 
-                globusrsl = "globusrsl=(jobtype=single)"
-                if self.queue:
-                        globusrsl += "(queue=%s)" % self.queue
-                self.JSD.add(globusrsl)
-
-                # -- fixed stuffs -- 
-                self.JSD.add("universe=grid")
-                self.JSD.add("output=$(Dir)/$(Cluster).$(Process).out")
-                self.JSD.add("error=$(Dir)/$(Cluster).$(Process).err")
-                self.JSD.add("log=$(Dir)/$(Cluster).$(Process).log")
-                self.JSD.add("stream_output=False")
-                self.JSD.add("stream_error=False")
-                self.JSD.add("notification=Error")
-                self.JSD.add("transfer_executable = True")
-                self.JSD.add("should_transfer_files = YES")
-                self.JSD.add("when_to_transfer_output = ON_EXIT_OR_EVICT")
-                self.JSD.add('periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)')
-                self.JSD.add('periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)')
-                self.JSD.add('+Nonessential = True')
-                self.JSD.add('copy_to_spool = false')
+###                # -- Condor attributes -- 
+###                if self.condor_attributes:
+###                        for attr in self.condor_attributes.split(','):
+###                                self.JSD.add(attr)
+###
+###                # -- Executable and Arguments to the wrapper -- 
+###                self.JSD.add("executable=%s" % self.executable)
+###                arguments = 'arguments = '
+###                arguments += ' --pandasite=%s ' %self.siteid
+###                arguments += ' --pandaqueue=%s ' %self.nickname
+###                if self.pandagrid:
+###                        arguments += ' --pandagrid=%s ' %self.pandagrid
+###                arguments += ' --pandaserverurl=%s ' %self.pandaserverurl 
+###                arguments += ' --pandawrappertarballurl=%s ' %self.pandawrappertarballurl
+###                if self.pandaloglevel:
+###                        arguments += ' --pandaloglevel=%s' %self.pandaloglevel
+###                if self.arguments:
+###                        arguments += ' ' + self.arguments
+###                self.JSD.add(arguments)
+###
+###                # -- globusrsl -- 
+###                globusrsl = "globusrsl=(jobtype=single)"
+###                if self.queue:
+###                        globusrsl += "(queue=%s)" % self.queue
+###                self.JSD.add(globusrsl)
+###
+###                # -- fixed stuffs -- 
+###                self.JSD.add("universe=grid")
+###                self.JSD.add("output=$(Dir)/$(Cluster).$(Process).out")
+###                self.JSD.add("error=$(Dir)/$(Cluster).$(Process).err")
+###                self.JSD.add("log=$(Dir)/$(Cluster).$(Process).log")
+###                self.JSD.add("stream_output=False")
+###                self.JSD.add("stream_error=False")
+###                self.JSD.add("notification=Error")
+###                self.JSD.add("transfer_executable = True")
+###                self.JSD.add("should_transfer_files = YES")
+###                self.JSD.add("when_to_transfer_output = ON_EXIT_OR_EVICT")
+###                self.JSD.add('periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)')
+###                self.JSD.add('periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)')
+###                self.JSD.add('+Nonessential = True')
+###                self.JSD.add('copy_to_spool = false')
 
                 # -- Number of pilots --
                 self.JSD.add("queue %d" % self.nbpilots)
