@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-WRAPPERVERSION="0.9.2"
+WRAPPERVERSION="0.9.3"
 
 # 
 # A generic wrapper with minimal functionalities
