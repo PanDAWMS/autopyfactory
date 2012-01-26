@@ -67,10 +67,16 @@
 #
 # executable
 # executable.arguments
+# executable.wrappervo
 # executable.wrappergrid
-# executable.wrapperloglevel
+# executable.wrapperpurpose
 # executable.wrapperserverurl
 # executable.wrappertarballurl
+# executable.wrapperspecialcmd
+# executable.wrapperplugin
+# executable.wrapperpilottype
+# executable.wrapperloglevel
+# executable.wrappermode
 
 # ---------------------------------------------------------------------------
 # Description:
@@ -260,6 +266,34 @@
 #
 # executable.arguments = input options to be passed verbatim to the executable script.
 #
+# executable.wrappervo = VO
+#               To be used by the 'new wrapper' distributed with AutoPyFactory.
+#
+# executable.wrapperpurpose = specific purpose for the job, if needed (e.g. testing, prod, analysis)
+#               To be used by the 'new wrapper' distributed with AutoPyFactory.
+#
+# executable.specialcmd = is special command to be performed, 
+#               for some specific reason, just after sourcing the Grid environment,
+#               but before doing anything else.
+#               This has been triggered by the need to execute command
+#                    $ module load <module_name>
+#               at NERSC after sourcing the OSG grid environment. 
+#               To be used by the 'new wrapper' distributed with AutoPyFactory.
+#
+# executable.wrapperplugin = is the plug-in module with the code corresponding 
+#               to the final wrapper flavor, in case its value is different that
+#               the one provided by the wrapper config files.
+#               To be used by the 'new wrapper' distributed with AutoPyFactory.
+#
+# executable.wrappperpilottype = is the actual  pilot code to be executed at the end,
+#               in case its value is different that the one provided 
+#               by the wrapper config files.        
+#               To be used by the 'new wrapper' distributed with AutoPyFactory.
+#
+# executable.wrappermode = specifies a particular mode of operation
+#               (e.g. test)
+#               To be used by the 'new wrapper' distributed with AutoPyFactory.
+#
 # executable.wrappergrid = type of Grid Midleware (e.g. OSG).
 #               To be used by the 'new wrapper' distributed with AutoPyFactory.
 #
@@ -299,8 +333,10 @@ proxy = None
 apfqueue.sleep = 360
 
 executable = /usr/libexec/wrapper.sh
+executable = wrappervo = ATLAS
 executable.wrappertarballurl = http://dev.racf.bnl.gov/dist/wrapper/wrapper.tar.gz
 executable.wrapperserverurl = http://pandaserver.cern.ch:25080/cache/pilot
+executable.wrapperloglevel = debug
 
 batchsubmit.condorgram.gramversion = 2
 
