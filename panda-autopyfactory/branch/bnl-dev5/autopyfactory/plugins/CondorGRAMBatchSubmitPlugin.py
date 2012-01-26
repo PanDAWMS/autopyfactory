@@ -82,6 +82,10 @@ class BatchSubmitPlugin(BatchSubmitInterface):
             if self.qcl.has_option(self.apfqname, 'executable.wrapperloglevel'):
                 self.wrapperloglevel = self.qcl.get(self.apfqname, 'executable.wrapperloglevel')
             
+            self.wrappermode = None
+            if self.qcl.has_option(self.apfqname, 'executable.wrappermode'):
+                self.wrappermode = self.qcl.get(self.apfqname, 'executable.wrappermode')
+            
             self.arguments = None
             if self.qcl.has_option(self.apfqname, 'executable.arguments'):
                 self.arguments = self.qcl.get(self.apfqname, 'executable.arguments')
@@ -202,6 +206,8 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         arguments += ' --wrappertarballurl=%s ' %self.wrappertarballurl
         if self.wrapperloglevel:
              arguments += ' --wrapperloglevel=%s' %self.wrapperloglevel
+        if self.wrappermode:
+             arguments += ' --wrappermode=%s' %self.wrappermode
         if self.arguments:
              arguments += ' ' + self.arguments
         self.JSD.add(arguments)
