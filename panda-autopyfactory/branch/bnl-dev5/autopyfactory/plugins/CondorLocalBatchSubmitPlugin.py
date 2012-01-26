@@ -10,6 +10,7 @@ import string
 import time
 
 from autopyfactory.factory import BatchSubmitInterface
+import autopyfactory.utils as utils
 import submit 
 
 __author__ = "John Hover, Jose Caballero"
@@ -104,6 +105,10 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         '''
 
         self.log.debug('submitPilots: Starting with inputs siteid=%s nbpilots=%s fcl=%s qcl=%s' %(siteid, nbpilots, fcl, qcl)) 
+
+        if not utils.checkDaemon('condor'):
+                self.log.info('submitPilots: condor daemon is not running. Doing nothing')
+                return None, None
 
         self.siteid = siteid 
         self.nbpilots = nbpilots
