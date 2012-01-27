@@ -109,6 +109,7 @@ class LogServer(threading.Thread):
         self.docroot = docroot
         self.port = int(port)
         self.index = index
+        self.stopevent = threading.Event()
         #self.handler = SimpleHTTPServer.SimpleHTTPRequestHandler
         if index:
             self.handler = MySimpleHTTPRequestHandler
@@ -139,12 +140,21 @@ class LogServer(threading.Thread):
         
         os.chdir(self.docroot)
         self.log.debug("Changing working dir to %s"%  self.docroot)
-        while True:
+        while not self.stopevent.is_set():
             try:
                 self.httpd.serve_forever()
             except Exception, e:
                 self.log.error("HTTP Server threw exception: %s" % str(e))
 
+    def join(self,timeout=None):
+            '''
+            Stop the thread. Overriding this method required to handle Ctrl-C from console.
+            '''        
+            self.stopevent.set()
+            self.log.info('Stopping thread...')
+            threading.Thread.join(self, timeout)
+
+                
 
 # simple main for testing during development                
 if __name__ == "__main__":

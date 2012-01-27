@@ -52,7 +52,7 @@ class ProxyManager(threading.Thread):
             ph.start()
         
         try:
-            while True:
+            while not self.stopevent.isSet():
                 #self.log.debug('Checking for interrupt.')
                 time.sleep(3)                  
         except (KeyboardInterrupt): 
@@ -76,8 +76,19 @@ class ProxyManager(threading.Thread):
             if h.name == name:
                 return h._getProxyPath()
         return None
-        
 
+    def join(self,timeout=None):
+            '''
+            Stop the thread. Overriding this method required to handle Ctrl-C from console.
+            '''
+            self.log.info('Stopping all handlers...')
+            for h in self.handlers:
+                h.join()
+            self.log.info('All handlers stopped.')            
+            self.stopevent.set()
+            self.log.info('Stopping thread...')
+            threading.Thread.join(self, timeout)
+        
 class ProxyHandler(threading.Thread):
     '''
     Checks, creates, and renews a VOMS proxy.    

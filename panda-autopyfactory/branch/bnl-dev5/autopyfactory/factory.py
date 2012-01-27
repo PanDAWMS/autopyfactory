@@ -312,8 +312,7 @@ Jose Caballero <jcaballero@bnl.gov>
             f = Factory(self.fc)
             f.mainLoop()
         except KeyboardInterrupt:
-            self.log.info('Caught keyboard interrupt - exiting')
-            
+            self.log.info('Caught keyboard interrupt - exitting')
             sys.exit(0)
         except FactoryConfigurationFailure, errMsg:
             self.log.error('Factory configuration failure: %s', errMsg)
@@ -438,10 +437,7 @@ class Factory(object):
                         
         except (KeyboardInterrupt): 
             logging.info("Shutdown via Ctrl-C or -INT signal.")
-            logging.debug(" Shutting down all threads...")
-            self.log.info("Joining all Queue threads...")
-            self.wmsmanager.join()
-            self.log.info("All Queue threads joined. Exitting.")
+            self.shutdown()
             raise
             
         self.log.debug("mainLoop: Leaving.")
@@ -464,6 +460,30 @@ class Factory(object):
 
         self.log.debug("update: Leaving")
 
+    def shutdown(self):
+        '''
+        Method to cleanly shut down all factory activity, joining threads, etc. 
+                
+        '''
+        logging.debug(" Shutting down all Queue threads...")
+        self.log.info("Joining all Queue threads...")
+        self.wmsmanager.join()
+        self.log.info("All Queue threads joined.")
+        if self.fcl.get('Factory', 'proxymanager.enabled'):
+            self.log.info("Shutting down Proxymanager...")
+            self.proxymanager.join()
+            self.log.info("Proxymanager stopped.")
+        if self.fcl.get('Factory', 'logserver.enabled'):
+            self.log.info("Shutting down Logserver...")
+            self.logserver.join()
+            self.log.info("Logserver stopped.")            
+                            
+            
+            
+
+            
+            
+            
 
 # ==============================================================================                                
 #                       QUEUES MANAGEMENT
