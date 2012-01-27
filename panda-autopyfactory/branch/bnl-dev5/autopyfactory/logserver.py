@@ -152,6 +152,7 @@ class LogServer(threading.Thread):
             '''        
             self.stopevent.set()
             self.log.info('Stopping thread...')
+            httpd.socket.shutdown()
             threading.Thread.join(self, timeout)
 
                 
