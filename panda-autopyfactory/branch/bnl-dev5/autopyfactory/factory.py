@@ -313,10 +313,14 @@ Jose Caballero <jcaballero@bnl.gov>
             f.mainLoop()
         except KeyboardInterrupt:
             self.log.info('Caught keyboard interrupt - exiting')
+            
+            sys.exit(0)
         except FactoryConfigurationFailure, errMsg:
             self.log.error('Factory configuration failure: %s', errMsg)
+            sys.exit(0)
         except ImportError, errorMsg:
             self.log.error('Failed to import necessary python module: %s' % errorMsg)
+            sys.exit(0)
         except:
             # TODO - make this a logger.exception() call
             self.log.error('''Unexpected exception! \
@@ -438,7 +442,8 @@ class Factory(object):
             self.log.info("Joining all Queue threads...")
             self.wmsmanager.join()
             self.log.info("All Queue threads joined. Exitting.")
-
+            raise
+            
         self.log.debug("mainLoop: Leaving.")
 
     def update(self):
