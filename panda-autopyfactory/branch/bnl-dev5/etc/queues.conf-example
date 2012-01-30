@@ -64,6 +64,8 @@
 # batchsubmit.condorec2.ami_id
 # batchsubmit.condorec2.instance_type
 # batchsubmit.condorec2.user_data
+# batchsubmit.condorec2.access_key
+# batchsubmit.condorec2.secret_key
 #
 # executable
 # executable.arguments
@@ -261,6 +263,10 @@
 # batchsubmit.condorec2.instance_type = hardware configuration (default is m1.small)
 #
 # batchsubmit.condorec2.user_data =  up to 16 Kbytes of text to contextualize the VM 
+#
+# batchsubmit.condorec2.access_key = path to file with the EC2 Access Key ID
+#
+# batchsubmit.condorec2.secret_key = path to file with the EC2 Secret Access Key
 #
 # executable = the script which will be run by condor. 
 #
