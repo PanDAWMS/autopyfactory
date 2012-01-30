@@ -52,7 +52,9 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                         if self.qcl.has_option(self.apfqname,'batchsubmit.condorec2.queue'):
                                 self.queue = self.qcl.get(self.apfqname, 'batchsubmit.condorec2.queue')
 
-                        self.x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqname,'proxy'))
+                        #self.x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqname,'proxy'))
+                        self.access_key_id = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqname,'batchsubmit.condorec2.access_key_id'))
+                        self.secret_access_key = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqname,'batchsubmit.condorec2.secret_access_key'))
 
                         self.factoryid = self.fcl.get('Factory', 'factoryId')
 
@@ -154,8 +156,10 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add('+MATCH_APF_QUEUE="%s"' % self.apfqname)
 
                 # -- proxy path --
-                self.JSD.add("ec2_access_key_id=%s" % self.x509userproxy) 
-                self.JSD.add("ec2_secret_access_key=%s" % self.x509userproxy) 
+                #self.JSD.add("ec2_access_key_id=%s" % self.x509userproxy) 
+                #self.JSD.add("ec2_secret_access_key=%s" % self.x509userproxy) 
+                self.JSD.add("ec2_access_key_id=%s" % self.access_key_id) 
+                self.JSD.add("ec2_secret_access_key=%s" % self.secret_access_key) 
 
                 # -- EC2 specific parameters --
                 self.JSD.add("ec2_ami_id=%s" % self.ami_id) 
