@@ -46,7 +46,7 @@ home_data_files=[('libexec', ['libexec/runpilot3-wrapper.sh',
                 ]
 
 def choose_data_files():
-    #print(sys.argv)
+    print(sys.argv)
     if 'bdist_rpm' in sys.argv:
         return rpm_data_files
     elif 'install' in sys.argv:
