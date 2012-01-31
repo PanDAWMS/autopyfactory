@@ -11,3 +11,8 @@ Prerequisites:
    -- Condor (Condor-G)
    -- Panda Client library 
    -- simplejson
+   
+   
+Unlike the root/RPM install, you must add ~/lib/python to your PYTHONPATH:
+
+  export PYTHONPATH=~/lib/python:$PYTHONPATH

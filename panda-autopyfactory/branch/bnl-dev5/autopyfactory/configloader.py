@@ -86,6 +86,7 @@ class ConfigLoader(object):
                         else:
                                 self.log.debug('%s is not URI, file?:' % f)
                                 try:
+                                        f = os.path.expanduser(f)
                                         fp = open(f)
                                         self.config.readfp(fp)
                                         readConfigFiles.append(f)
@@ -229,7 +230,7 @@ class FactoryConfigLoader(ConfigLoader):
                                         }
                 for section in mustHave.keys():
                         if not self.config.has_section(section):
-                                raise FactoryConfigurationFailure, 'Config files %s have no section %s (mandatory).' % (self.configFiles, section)
+                                raise FactoryConfigurationFailure, 'Config files %s have no section [%s] (mandatory).' % (self.configFiles, section)
                         for option in mustHave[section]:
                                 if not self.config.has_option(section, option):
                                         raise FactoryConfigurationFailure, 'Config files %s have no option %s in section %s (mandatory).' % (self.configFiles, option, section)

@@ -94,9 +94,10 @@ class MySimpleHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
 class MyNoListingHTTPRequestHandler(MySimpleHTTPRequestHandler):
     
-        def list_directory(self, path):
-            return None
+    def list_directory(self, path):
+        return None
         
+
 
 class LogServer(threading.Thread):
     
@@ -152,7 +153,7 @@ class LogServer(threading.Thread):
             '''        
             self.stopevent.set()
             self.log.info('Stopping thread...')
-            httpd.socket.shutdown()
+            self.httpd.shutdown()
             threading.Thread.join(self, timeout)
 
                 
