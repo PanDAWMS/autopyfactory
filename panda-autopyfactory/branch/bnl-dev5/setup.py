@@ -33,17 +33,16 @@ rpm_data_files=[  ('/usr/libexec', ['libexec/runpilot3-wrapper.sh',
                                 ]),                                        
                 ]
 
-install_data_files=[('libexec', ['libexec/runpilot3-wrapper.sh',
+home_data_files=[('libexec', ['libexec/runpilot3-wrapper.sh',
                                   'libexec/wrapper.sh',                                 
-                                  ]),
+                                 ]),
                 ('etc', [ 'etc/factory.conf-example',
                           'etc/queues.conf-example',
                           'etc/proxy.conf-example',
                           'etc/factory.sysconfig-example'
                              ]),
                 ('etc', ['etc/factory',
-                                ]),
-                                      
+                                ]),      
                 ]
 
 def choose_data_files():
@@ -51,7 +50,7 @@ def choose_data_files():
     if 'bdist_rpm' in sys.argv:
         return rpm_data_files
     elif 'install' in sys.argv:
-        return install_data_files
+        return home_data_files
     
        
 # setup for distutils
