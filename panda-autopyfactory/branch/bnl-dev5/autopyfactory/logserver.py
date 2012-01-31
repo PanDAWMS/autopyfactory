@@ -140,7 +140,7 @@ class LogServer(threading.Thread):
         
         os.chdir(self.docroot)
         self.log.debug("Changing working dir to %s"%  self.docroot)
-        while not self.stopevent.is_set():
+        while not self.stopevent.isSet():
             try:
                 self.httpd.serve_forever()
             except Exception, e:
