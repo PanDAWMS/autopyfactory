@@ -49,10 +49,10 @@ def choose_data_files():
     #print(sys.argv)
     if 'bdist_rpm' in sys.argv:
         return rpm_data_files
-    elif '--install' in sys.argv and not '--home' in sys.argv:
-        return rpm_data_files
     elif '--home' in sys.argv and 'install' in sys.argv:
         return home_data_files
+    else:
+        return rpm_data_files
     
        
 # setup for distutils
