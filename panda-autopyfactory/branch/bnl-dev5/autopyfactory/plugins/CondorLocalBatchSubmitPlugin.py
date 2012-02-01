@@ -203,9 +203,9 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         arguments += ' --wrapperserverurl=%s ' %self.wrapperserverurl
         arguments += ' --wrappertarballurl=%s ' %self.wrappertarballurl
         if self.wrapperloglevel:
-            arguments += ' --wrapperloglevel=%s' %self.wrapperloglevel
+            arguments += ' --wrapperloglevel=%s ' %self.wrapperloglevel
         if self.wrappermode:
-            arguments += ' --wrappermode=%s' %self.wrappermode
+            arguments += ' --wrappermode=%s ' %self.wrappermode
         if self.arguments:
             arguments += self.arguments
         self.JSD.add(arguments)
