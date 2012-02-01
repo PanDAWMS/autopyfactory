@@ -223,7 +223,10 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         self.JSD.add("transfer_executable = True")
         self.JSD.add("should_transfer_files = YES")
         self.JSD.add("when_to_transfer_output = ON_EXIT_OR_EVICT")
-        self.JSD.add('GetEnv = True')
+        #
+        # getenv should be false. If portions of the submit environment need to be migrated, 
+        # use the Environment = attributes. These will override WN-local env vars.         
+        #self.JSD.add('GetEnv = True')
         self.JSD.add('periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)')
 
         # -- Number of pilots --
