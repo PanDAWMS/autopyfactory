@@ -188,7 +188,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
         # Adding condor attributes
         if self.condor_attributes:
-            for attr in condor_attributes.split(','):
+            for attr in self.condor_attributes.split(','):
                 self.JSD.add(attr)
 
         # -- Executable and Arguments to the wrapper -- 
