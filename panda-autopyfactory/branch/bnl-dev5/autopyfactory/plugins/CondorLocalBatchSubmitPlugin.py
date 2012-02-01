@@ -221,11 +221,9 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         self.JSD.add("stream_error=False")
         self.JSD.add("notification=Error")
         self.JSD.add("transfer_executable = True")
-        #
-        # Since these are pilots, we don't want all the output. We only want .out .err and .log. 
-        # 
-        self.JSD.add("should_transfer_files = NO")
-        #self.JSD.add("when_to_transfer_output = ON_EXIT_OR_EVICT")
+        self.JSD.add("should_transfer_files = YES")
+        self.JSD.add("transfer_output_files = pilotlog.out")
+        self.JSD.add("when_to_transfer_output = ON_EXIT_OR_EVICT")
         #
         # getenv should be false. If portions of the submit environment need to be migrated, 
         # use the Environment = attributes. These will override WN-local env vars.         
