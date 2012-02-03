@@ -166,7 +166,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
     
         self.JSD.add("Dir=%s/" % self.logDir)
         self.JSD.add("notify_user=%s" % self.factoryadminemail)
-        self.JSD.add('grid_resource=cream %s' % (self.gridresource)) 
+        self.JSD.add('grid_resource=cream %s:%d/ce-cream/services/CREAM2 %s %s' % (self.gridresource, self.port, self.batch, self.queue)) 
     
         # -- MATCH_APF_QUEUE --
         # this token is very important, since it will be used by other plugins
