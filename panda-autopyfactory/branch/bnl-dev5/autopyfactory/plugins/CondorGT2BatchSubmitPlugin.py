@@ -165,7 +165,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         if self.factoryuser:
             environment += ' FACTORYUSER=%s' % self.factoryuser
         if self.environ:
-            if self.environ != 'None' and environ != '':
+            if self.environ != 'None' and self.environ != '':
                 environment += " " + self.environ 
         environment += '"'
         self.JSD.add(environment)
