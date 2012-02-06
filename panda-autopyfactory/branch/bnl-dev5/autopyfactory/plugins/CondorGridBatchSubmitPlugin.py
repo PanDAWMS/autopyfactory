@@ -39,9 +39,14 @@ class BatchSubmitPlugin(BatchSubmitInterface):
 
             self.executable = self.qcl.get(self.apfqname, 'executable')
             self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
-            self.gridresource = self.qcl.get(self.apfqname, 'gridresource') 
+            
+            self.gridresource = self.qcl.get(self.apfqname, 'batchsubmitplugin.condorgrid.gridresource') 
             self.gktype = self.qcl.get(self.apfqname, 'batchsumit.condorgrid.gktype')
-            self.gramversion = self.qcl.get(self.apfqname, 'batchsubmit.condorgrid.gramversion') 
+            if self.gktype == 'gram':
+                self.gramversion = self.qcl.get(self.apfqname, 'batchsubmit.condorgram.gramversion') 
+            if self.gktype == 'cream':
+                self.creamport = self.qcl.get(self.apfqname, 'batchsubmit.condorcream.port')  
+                self.creambatch = self.qcl.get(self.apfqname, 'batchsubmit.condorcream.batch')  
 
             self.queue = None
             if self.qcl.has_option(self.apfqname,'batchsubmit.condorgrid.queue'):
@@ -171,7 +176,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         if self.gktype == "gram":
                 self.JSD.add('grid_resource=gt%s %s' % (self.gramversion, self.gridresource))
         if self.gktype == "cream":
-                self.JSD.add('grid_resource=cream %s:%d/ce-cream/services/CREAM2 %s %s' % (self.gridresource, self.port, self.batch, self.queue)) 
+                self.JSD.add('grid_resource=cream %s:%d/ce-cream/services/CREAM2 %s %s' % (self.gridresource, self.creamport, self.creambatch, self.queue)) 
     
         # -- MATCH_APF_QUEUE --
         # this token is very important, since it will be used by other plugins
