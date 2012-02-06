@@ -43,10 +43,10 @@ class BatchSubmitPlugin(BatchSubmitInterface):
             self.gridresource = self.qcl.get(self.apfqname, 'batchsubmitplugin.condorgrid.gridresource') 
             self.gktype = self.qcl.get(self.apfqname, 'batchsumit.condorgrid.gktype')
             if self.gktype == 'gram':
-                self.gramversion = self.qcl.get(self.apfqname, 'batchsubmit.condorgram.gramversion') 
+                self.gramversion = self.qcl.get(self.apfqname, 'batchsubmit.condorgrid.gramversion') 
             if self.gktype == 'cream':
-                self.creamport = self.qcl.get(self.apfqname, 'batchsubmit.condorcream.port')  
-                self.creambatch = self.qcl.get(self.apfqname, 'batchsubmit.condorcream.batch')  
+                self.creamport = self.qcl.get(self.apfqname, 'batchsubmit.condorgrid.creamport')  
+                self.creambatch = self.qcl.get(self.apfqname, 'batchsubmit.condorgrid.creambatch')  
 
             self.queue = None
             if self.qcl.has_option(self.apfqname,'batchsubmit.condorgrid.queue'):
