@@ -57,7 +57,7 @@
 # batchsubmit.condorgrid.queue
 # batchsubmit.condorgrid.gridresource
 # batchsubmit.condorgrid.gktype
-# batchsubmit.condorgram.gramversion
+# batchsubmit.condorgrid.gramversion
 # batchsubmit.condorlocal.condor_attributes
 # batchsubmit.condorlocal.environ
 # batchsubmit.condorec2.condor_attributes
@@ -228,7 +228,7 @@
 #               -- "gram": for gk2, gk4, gk5 (default)
 #               -- "cream"
 #
-# batchsubmit.condorgram.gramversion = version of the GRAM protocol, eg, 2, 5, ...
+# batchsubmit.condorgrid.gramversion = version of the GRAM protocol, eg, 2, 5, ...
 #               Used only for remote submission when the gktype is gram
 #
 # batchsubmit.condorlocal.condor_attributes = list of condor attributes, 
@@ -352,7 +352,7 @@ executable.wrapperserverurl = http://pandaserver.cern.ch:25080/cache/pilot
 executable.wrapperloglevel = debug
 
 batchsubmit.condorgrid.gktype = gram
-batchsubmit.condorgram.gramversion = 2
+batchsubmit.condorgrid.gramversion = 2
 
 override = True
 enabled = True
