@@ -20,7 +20,6 @@
 # override
 #
 # cloud
-# gridresource
 # nickname
 # siteid
 # proxy
@@ -53,11 +52,12 @@
 # batchstatusplugin
 #
 # batchsubmitplugin
-# batchsubmit.condorgrid.gktype
 # batchsubmit.condorgrid.condor_attributes
 # batchsubmit.condorgrid.environ
 # batchsubmit.condorgrid.queue
-# batchsubmit.condorgrid.gramversion
+# batchsubmit.condorgrid.gktype
+# batchsubmit.condorgram.gramversion
+# batchsubmit.condorgram.gridresource
 # batchsubmit.condorlocal.condor_attributes
 # batchsubmit.condorlocal.environ
 # batchsubmit.condorec2.condor_attributes
@@ -93,9 +93,6 @@
 # cloud = is the cloud this queue is in. You should set this to suppress pilot 
 #               submission when the cloud goes offline
 #               N.B. Panda clouds are UPPER CASE, e.g., UK
-#
-# gridresource = name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor)
-#               Used only for remte submission.
 #
 # nickname = PanDA queue name   
 #
@@ -228,7 +225,10 @@
 #               to be included in the globusrsl directive.
 #               To be used by CondorGRAM Batch Submit Plugin.
 #
-# batchsubmit.condorgrid.gramversion = version of the GRAM protocol, eg, 2, 5, ...
+# batchsubmit.condorgram.gramversion = version of the GRAM protocol, eg, 2, 5, ...
+#
+# batchsubmit.condorgram.gridresource = name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor)
+#               Used only for remote submission when the gktype is gram
 #
 # batchsubmit.condorlocal.condor_attributes = list of condor attributes, 
 #               splited by comma, 
@@ -351,7 +351,7 @@ executable.wrapperserverurl = http://pandaserver.cern.ch:25080/cache/pilot
 executable.wrapperloglevel = debug
 
 batchsubmit.condorgrid.gktype = gram
-batchsubmit.condorgrid.gramversion = 2
+batchsubmit.condorgram.gramversion = 2
 
 override = True
 enabled = True
