@@ -211,26 +211,27 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         self.JSD.add("executable=%s" % self.executable)
         arguments = 'arguments = '
         if self.wrappervo:
-                arguments += ' --wrappervo=%s ' %self.wrappervo
+            arguments += ' --wrappervo=%s ' %self.wrappervo
         arguments += ' --wrapperwmsqueue=%s ' %self.siteid
         arguments += ' --wrapperbatchqueue=%s ' %self.nickname
         if self.wrappergrid:
-             arguments += ' --wrappergrid=%s ' %self.wrappergrid
+            arguments += ' --wrappergrid=%s ' %self.wrappergrid
         arguments += ' --wrapperserverurl=%s ' %self.wrapperserverurl 
         arguments += ' --wrappertarballurl=%s ' %self.wrappertarballurl
         if self.wrapperloglevel:
-             arguments += ' --wrapperloglevel=%s ' %self.wrapperloglevel
+            arguments += ' --wrapperloglevel=%s ' %self.wrapperloglevel
         if self.wrappermode:
-             arguments += ' --wrappermode=%s ' %self.wrappermode
+            arguments += ' --wrappermode=%s ' %self.wrappermode
         if self.arguments:
-             arguments += ' ' + self.arguments
+            arguments += ' ' + self.arguments
         self.JSD.add(arguments)
     
         # -- globusrsl -- 
-        globusrsl = "globusrsl=(jobtype=single)"
-        if self.queue:
-             globusrsl += "(queue=%s)" % self.queue
-        self.JSD.add(globusrsl)
+        if self.gktype == 'gram':
+            globusrsl = "globusrsl=(jobtype=single)"
+            if self.queue:
+                 globusrsl += "(queue=%s)" % self.queue
+            self.JSD.add(globusrsl)
     
         # -- fixed stuffs -- 
         self.JSD.add("universe=grid")
