@@ -115,6 +115,7 @@ f_init(){
         echo "hostname:    " `hostname`
         echo "working dir: " `pwd`
         echo "user:        " `id`
+        getent passwd `whoami`
 }
 
 f_print_line(){
