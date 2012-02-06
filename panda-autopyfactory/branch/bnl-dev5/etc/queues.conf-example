@@ -55,9 +55,9 @@
 # batchsubmit.condorgrid.condor_attributes
 # batchsubmit.condorgrid.environ
 # batchsubmit.condorgrid.queue
+# batchsubmit.condorgrid.gridresource
 # batchsubmit.condorgrid.gktype
 # batchsubmit.condorgram.gramversion
-# batchsubmit.condorgram.gridresource
 # batchsubmit.condorlocal.condor_attributes
 # batchsubmit.condorlocal.environ
 # batchsubmit.condorec2.condor_attributes
@@ -190,11 +190,6 @@
 #
 # batchsubmitplugin = Batch Submit Plugin.
 #
-# batchsubmit.condorgrid.gktype = type of gatekeeper. 
-#               Valid options are 
-#               -- "gram": for gk2, gk4, gk5 (default)
-#               -- "cream"
-#
 # batchsubmit.condorgrid.condor_attributes = list of condor attributes, 
 #               splited by comma, 
 #               to be included in the condor submit file *verbatim*
@@ -225,9 +220,15 @@
 #               to be included in the globusrsl directive.
 #               To be used by CondorGRAM Batch Submit Plugin.
 #
-# batchsubmit.condorgram.gramversion = version of the GRAM protocol, eg, 2, 5, ...
+# batchsubmit.condorgrid.gridresource = name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor)
+#               Used only for remote submission when the gktype is gram
 #
-# batchsubmit.condorgram.gridresource = name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor)
+# batchsubmit.condorgrid.gktype = type of gatekeeper. 
+#               Valid options are 
+#               -- "gram": for gk2, gk4, gk5 (default)
+#               -- "cream"
+#
+# batchsubmit.condorgram.gramversion = version of the GRAM protocol, eg, 2, 5, ...
 #               Used only for remote submission when the gktype is gram
 #
 # batchsubmit.condorlocal.condor_attributes = list of condor attributes, 
@@ -364,7 +365,7 @@ enabled = True
 enabled = False
 siteid = BNL_ITB_Test1
 nickname = BNL_ITB_Test1-condor
-gridresource = gridtest01.racf.bnl.gov/jobmanager-condor
+batchsubmit.condorgrid.gridresource = gridtest01.racf.bnl.gov/jobmanager-condor
 
 executable.wrappergrid = OSG
 executable.arguments = -j false -k 600 -u panda 
@@ -384,7 +385,7 @@ batchsubmit.condorlocal.environ = OSG_GRID=/afs/usatlas/osg/wn-client/@sys/itb
 enabled = False
 siteid = ANALY_BNL_ATLAS_1
 nickname = ANALY_BNL_ATLAS_1-condor
-gridresource = gridgk05.racf.bnl.gov/jobmanager-condor
+batchsubmit.condorgrid.gridresource = gridgk05.racf.bnl.gov/jobmanager-condor
 
 executable.wrappergrid = OSG
 executable.wrapperloglevel = debug
