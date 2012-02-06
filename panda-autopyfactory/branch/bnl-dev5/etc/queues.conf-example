@@ -53,10 +53,11 @@
 # batchstatusplugin
 #
 # batchsubmitplugin
-# batchsubmit.condorgram.condor_attributes
-# batchsubmit.condorgram.environ
-# batchsubmit.condorgram.queue
-# batchsubmit.condorgram.gramversion
+# batchsubmit.condorgrid.gktype
+# batchsubmit.condorgrid.condor_attributes
+# batchsubmit.condorgrid.environ
+# batchsubmit.condorgrid.queue
+# batchsubmit.condorgrid.gramversion
 # batchsubmit.condorlocal.condor_attributes
 # batchsubmit.condorlocal.environ
 # batchsubmit.condorec2.condor_attributes
@@ -192,7 +193,12 @@
 #
 # batchsubmitplugin = Batch Submit Plugin.
 #
-# batchsubmit.condorgram.condor_attributes = list of condor attributes, 
+# batchsubmit.condorgrid.gktype = type of gatekeeper. 
+#               Valid options are 
+#               -- "gram": for gk2, gk4, gk5 (default)
+#               -- "cream"
+#
+# batchsubmit.condorgrid.condor_attributes = list of condor attributes, 
 #               splited by comma, 
 #               to be included in the condor submit file *verbatim*
 #               e.g. +Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas"
@@ -213,16 +219,16 @@
 #
 #               To be used in CondorGRAM Batch Submit Plugin.
 #
-# batchsubmit.condorgram.environ = list of environment variables, 
+# batchsubmit.condorgrid.environ = list of environment variables, 
 #               splitted by white spaces, 
 #               to be included in the condor attribute environment *verbatim*
 #               To be used by CondorGRAM Batch Submit Plugin.
 #
-# batchsubmit.condorgram.queue = local batch queue 
+# batchsubmit.condorgrid.queue = local batch queue 
 #               to be included in the globusrsl directive.
 #               To be used by CondorGRAM Batch Submit Plugin.
 #
-# batchsubmit.condorgram.gramversion = version of the GRAM protocol, eg, 2, 5, ...
+# batchsubmit.condorgrid.gramversion = version of the GRAM protocol, eg, 2, 5, ...
 #
 # batchsubmit.condorlocal.condor_attributes = list of condor attributes, 
 #               splited by comma, 
@@ -344,7 +350,8 @@ executable.wrappertarballurl = http://dev.racf.bnl.gov/dist/wrapper/wrapper.tar.
 executable.wrapperserverurl = http://pandaserver.cern.ch:25080/cache/pilot
 executable.wrapperloglevel = debug
 
-batchsubmit.condorgram.gramversion = 2
+batchsubmit.condorgrid.gktype = gram
+batchsubmit.condorgrid.gramversion = 2
 
 override = True
 enabled = True
@@ -390,5 +397,5 @@ sched.activated.min_pilots_per_cycle = 0
 sched.activated.max_pilots_per_cycle = 10
 sched.activated.max_jobs_torun = 60
 
-batchsubmit.condorgram.queue = short
+batchsubmit.condorgrid.queue = short
 
