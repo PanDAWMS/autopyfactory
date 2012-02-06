@@ -41,11 +41,11 @@ class BatchSubmitPlugin(BatchSubmitInterface):
             self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
             self.gridresource = self.qcl.get(self.apfqname, 'gridresource') 
             self.gktype = self.qcl.get(self.apfqname, 'gktype')
-            self.gramversion = self.qcl.get(self.apfqname, 'batchsubmit.condorgram.gramversion') 
+            self.gramversion = self.qcl.get(self.apfqname, 'batchsubmit.condorgrid.gramversion') 
 
             self.queue = None
-            if self.qcl.has_option(self.apfqname,'batchsubmit.condorgram.queue'):
-                self.queue = self.qcl.get(self.apfqname, 'batchsubmit.condorgram.queue')
+            if self.qcl.has_option(self.apfqname,'batchsubmit.condorgrid.queue'):
+                self.queue = self.qcl.get(self.apfqname, 'batchsubmit.condorgrid.queue')
 
             self.x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqname,'proxy'))
 
@@ -60,12 +60,12 @@ class BatchSubmitPlugin(BatchSubmitInterface):
                 self.factoryuser = self.fcl.get('Factory', 'factoryUser')
             
             self.environ = None
-            if self.qcl.has_option(self.apfqname, 'batchsubmit.condorgram.environ'):
-                self.environ = self.qcl.get(self.apfqname, 'batchsubmit.condorgram.environ')
+            if self.qcl.has_option(self.apfqname, 'batchsubmit.condorgrid.environ'):
+                self.environ = self.qcl.get(self.apfqname, 'batchsubmit.condorgrid.environ')
             
             self.condor_attributes = None
-            if self.qcl.has_option(self.apfqname, 'batchsubmit.condorgram.condor_attributes'):
-                self.condor_attributes = self.qcl.get(self.apfqname, 'batchsubmit.condorgram.condor_attributes')
+            if self.qcl.has_option(self.apfqname, 'batchsubmit.condorgrid.condor_attributes'):
+                self.condor_attributes = self.qcl.get(self.apfqname, 'batchsubmit.condorgrid.condor_attributes')
             
             self.nickname = self.qcl.get(self.apfqname, 'nickname')
             
@@ -168,7 +168,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
         self.JSD.add("Dir=%s/" % self.logDir)
         self.JSD.add("notify_user=%s" % self.factoryadminemail)
 
-        if self.gktype == "gt":
+        if self.gktype == "gram":
                 self.JSD.add('grid_resource=gt%s %s' % (self.gramversion, self.gridresource))
         if self.gktype == "cream":
                 self.JSD.add('grid_resource=cream %s:%d/ce-cream/services/CREAM2 %s %s' % (self.gridresource, self.port, self.batch, self.queue)) 
