@@ -223,7 +223,6 @@
 #               To be used by CondorGRAM Batch Submit Plugin.
 #
 # batchsubmit.condorgrid.gridresource = name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor)
-#               Used only for remote submission when the gktype is gram
 #
 # batchsubmit.condorgrid.gktype = type of gatekeeper. 
 #               Valid options are 
@@ -231,13 +230,13 @@
 #               -- "cream"
 #
 # batchsubmit.condorgrid.gramversion = version of the GRAM protocol, eg, 2, 5, ...
-#               Used only for remote submission when the gktype is gram
+#               Used when the gktype is gram
 #
 # batchsubmit.condorgrid.creamport = port number.
-#               Used only for remote submission when the gktype is cream
+#               Used when the gktype is cream
 #
 # batchsubmit.condorgrid.creambatch = local batch system (pbs, sge...)
-#               Used only for remote submission when the gktype is cream
+#               Used when the gktype is cream
 #
 # batchsubmit.condorlocal.condor_attributes = list of condor attributes, 
 #               splited by comma, 
