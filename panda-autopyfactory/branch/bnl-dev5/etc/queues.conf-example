@@ -339,7 +339,7 @@ status = online
 # plugins
 batchstatusplugin = Condor
 wmsstatusplugin = Panda
-batchsubmitplugin = CondorGRAM
+batchsubmitplugin = CondorGrid
 schedplugin = Activated
 
 sched.trivial.default = 0
