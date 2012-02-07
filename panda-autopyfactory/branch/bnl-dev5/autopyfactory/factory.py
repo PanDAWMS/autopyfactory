@@ -1253,9 +1253,11 @@ class BatchSubmitInterface(object):
         '''
         Finishes the creation of the JSD file
         '''
+        pass
 
    def writeJSD(self):
         '''
         Writes on file the content of the JSD file
         '''
+        pass
 
