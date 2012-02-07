@@ -745,9 +745,7 @@ class APFQueue(threading.Thread):
                    For example: SimpleSchedPlugin, CondorBatchStatusPlugin
                 3. The plugin module is imported, using __import__
                 4. The plugin class is retrieved. 
-                   The name of the class is supposed to have format
-                   <prefix>Plugin
-                   For example: SchedPlugin(), BatchStatusPlugin()
+                   The name of the class is the same as the name of the module
         '''
 
         self.log.debug("__getplugin: Starting with inputs %s and %s" %( k, kw))
@@ -771,10 +769,10 @@ class APFQueue(threading.Thread):
                                    globals(), 
                                    locals(),
                                    ["%s" % plugin_module_name])
-        plugin_class = '%sPlugin' %plugin_prefix
+
+        plugin_class = plugin_module_name  #  the name of the class is the name of the module
 
         self.log.debug("_getplugin: Attempting to return plugin with classname %s" %plugin_class)
-
         self.log.debug("_getplugin: Leaving with plugin named %s" %plugin_class)
         return getattr(plugin_module, plugin_class)(*k, **kw)
 
@@ -1119,60 +1117,14 @@ class Singleton(type):
         return cls.__instance
 
 
-class PluginInterface(object):
-    '''
-    -----------------------------------------------------------------------
-    This interface implements a generic __init__() that forces each subclass
-    to implement a method initialize().
-
-    The advantage is that an attribute valid will be True or False based 
-    on how the initialization was done. In this way, the factory methods and
-    classes can decide what to do depending on whether the plugins were 
-    created properly or not.
-    -----------------------------------------------------------------------
-    '''
-    def __init__(self, *k, **kw):
-        #classname = self.__class__.__name__
-        #loggername = "main.%s"%classname.lower()
-        #self.log = logging.getLogger(loggername)
-        self.valid = True
-        try:
-            self.initialize(*k, **kw)
-        except Exception, ex:
-            self.valid = False
-            #self.log.error('%s: Object not initialized properly. Captured exception %s' %(classname, ex))
-            log = self.getLogger()
-            log.error('Object not initialized properly. Captured exception %s' %ex)
-        #self.log.info('%s: Object initialized.' %classname)
-        log = self.getLogger()
-        log.info('Object initialized.')
-
-    def getLogger(self):
-        '''
-        This method returns the internal logging object.
-        By default we can assume it is self.log.
-        If not, the method must be overrided.
-        '''
-        return self.log 
-
-    def initialize(self, *k, **kw):
-        '''
-        this is the method that every subclass must implement with 
-        the actual object initialization code.
-        It should raise an exception is something does not work
-        during the initialization. That exception is captured by __init__()
-        '''
-        raise NotImplementedError
-
-
 class SchedInterface(object):
-#class SchedInterface(PluginInterface):
     '''
     -----------------------------------------------------------------------
     Calculates the number of jobs to be submitted for a given queue. 
     -----------------------------------------------------------------------
     Public Interface:
             calcSubmitNum()
+            valid()
     -----------------------------------------------------------------------
     '''
     def calcSubmitNum(self):
@@ -1181,8 +1133,13 @@ class SchedInterface(object):
         '''
         raise NotImplementedError
 
+    def valid(self):
+        '''
+        Says if the object has been initialized properly
+        '''
+        raise NotImplementedError
+
 class BatchStatusInterface(object):
-#class BatchStatusInterface(PluginInterface):
     '''
     -----------------------------------------------------------------------
     Interacts with the underlying batch system to get job status. 
@@ -1190,6 +1147,7 @@ class BatchStatusInterface(object):
     -----------------------------------------------------------------------
     Public Interface:
             getInfo()
+            valid()
     
     Returns BatchStatusInfo object
      
@@ -1201,9 +1159,13 @@ class BatchStatusInterface(object):
         '''
         raise NotImplementedError
 
+    def valid(self):
+        '''
+        Says if the object has been initialized properly
+        '''
+        raise NotImplementedError
 
 class WMSStatusInterface(object):
-#class WMSStatusInterface(PluginInterface):
     '''
     -----------------------------------------------------------------------
     Interface for all WMSStatus plugins. 
@@ -1213,6 +1175,7 @@ class WMSStatusInterface(object):
             getCloudInfo()
             getSiteInfo()
             getJobsInfo()
+            valid()
     -----------------------------------------------------------------------
     '''
     def getCloudInfo(self, cloud, maxtime=0):
@@ -1239,9 +1202,13 @@ class WMSStatusInterface(object):
         '''
         raise NotImplementedError
 
+    def valid(self):
+        '''
+        Says if the object has been initialized properly
+        '''
+        raise NotImplementedError
 
 class BatchSubmitInterface(object):
-#class BatchSubmitInterface(PluginInterface):
     '''
     -----------------------------------------------------------------------
     Interacts with underlying batch system to submit jobs. 
@@ -1249,6 +1216,7 @@ class BatchSubmitInterface(object):
     -----------------------------------------------------------------------
     Public Interface:
             submitPilots(number)
+            valid()
     -----------------------------------------------------------------------
     '''
     def submitPilots(self, queue, number, fcl, qcl):
@@ -1257,3 +1225,8 @@ class BatchSubmitInterface(object):
         '''
         raise NotImplementedError
 
+    def valid(self):
+        '''
+        Says if the object has been initialized properly
+        '''
+        raise NotImplementedError
