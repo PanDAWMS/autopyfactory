@@ -219,8 +219,8 @@
 #               To be used by CondorGRAM Batch Submit Plugin.
 #
 # batchsubmit.condorgrid.queue = local batch queue 
-#               to be included in the globusrsl directive.
-#               To be used by CondorGRAM Batch Submit Plugin.
+#               to be included in the globusrsl directive, in case gktype is "gram"
+#               or in the grid_resource line in case of "cream"
 #
 # batchsubmit.condorgrid.gridresource = name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor)
 #
