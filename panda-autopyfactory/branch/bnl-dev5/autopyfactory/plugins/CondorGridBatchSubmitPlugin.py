@@ -40,7 +40,7 @@ class BatchSubmitPlugin(BatchSubmitInterface):
             self.executable = self.qcl.get(self.apfqname, 'executable')
             self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
             
-            self.gridresource = self.qcl.get(self.apfqname, 'batchsubmitplugin.condorgrid.gridresource') 
+            self.gridresource = self.qcl.get(self.apfqname, 'batchsubmit.condorgrid.gridresource') 
             self.gktype = self.qcl.get(self.apfqname, 'batchsumit.condorgrid.gktype')
             if self.gktype == 'gram':
                 self.gramversion = self.qcl.get(self.apfqname, 'batchsubmit.condorgrid.gramversion') 
