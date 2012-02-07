@@ -27,7 +27,7 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 
-class WMSStatusPlugin(threading.Thread, WMSStatusInterface):
+class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
     '''
     -----------------------------------------------------------------------
     PanDA-flavored version of WMSStatus class.

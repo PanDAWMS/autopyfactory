@@ -19,7 +19,7 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
-class BatchSubmitPlugin(BatchSubmitInterface):
+class ExecSubmitPlugin(BatchSubmitInterface):
     '''
     This Submit Plugin simply executes a provided local executable. 
     This class is expected to have separate instances for each APFQueue object. 

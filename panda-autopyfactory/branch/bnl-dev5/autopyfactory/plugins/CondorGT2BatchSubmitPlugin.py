@@ -21,7 +21,7 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
-class BatchSubmitPlugin(BatchSubmitInterface):
+class CondorGT2BatchSubmitPlugin(BatchSubmitInterface):
     '''
     This class is expected to have separate instances for each PandaQueue object. 
     '''

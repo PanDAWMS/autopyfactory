@@ -13,7 +13,7 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
-class SchedPlugin(SchedInterface):
+class FixedSchedPlugin(SchedInterface):
         
         def __init__(self, apfqueue):
             self._valid = True
