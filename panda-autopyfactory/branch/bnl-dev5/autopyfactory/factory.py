@@ -1217,6 +1217,10 @@ class BatchSubmitInterface(object):
     Public Interface:
             submitPilots(number)
             valid()
+            initJSD()
+            addJSD()
+            finalizeJSD()
+            writeJSD()
     -----------------------------------------------------------------------
     '''
     def submitPilots(self, queue, number, fcl, qcl):
@@ -1230,3 +1234,28 @@ class BatchSubmitInterface(object):
         Says if the object has been initialized properly
         '''
         raise NotImplementedError
+
+   def initJSD(self):
+        '''
+        Initializes the JSD file
+        '''
+        raise NotImplementedError
+
+
+   def addJSD(self):
+        '''
+        Adds content to the JSD file
+        '''
+        raise NotImplementedError
+
+
+   def finalizeJSD(self):
+        '''
+        Finishes the creation of the JSD file
+        '''
+
+   def writeJSD(self):
+        '''
+        Writes on file the content of the JSD file
+        '''
+
