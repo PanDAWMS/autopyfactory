@@ -134,14 +134,33 @@ class Config(SafeConfigParser, object):
                                 if not _override:
                                         self.set(section, opt, value)
 
-
         def clone(self):
                 '''
                 makes an exact copy of the object
                 '''
                 return copy.deepcopy(self)
-                
 
+        def filterkeys(self, pattern, newpattern):
+                '''
+                it changes, for all sections, part of the name of the keys.
+                For example, with inputs like 'condorgt2' and 'condorgram'
+                it changes variables like 
+                        submit.condorgt2.environ
+                for
+                        submit.condorgram.environ
+
+                NOTE: we need to be careful to avoid replacing things by mistake
+                So it is better to pass the longer possible patterns.
+                '''
+
+                for section in self.sections():
+                        for key in self.options(section):
+                                if key.find(pattern) > -1:
+                                        value = self.get(section, key)
+                                        newkey = key.replace(pattern, newpattern)
+                                        self.remove_option(section, key)
+                                        self.set(section, newkey, value)
+                                
         # This is just a wish...        
         def  generic_get(self, 
                          section,                       # SafeConfigParser section 
