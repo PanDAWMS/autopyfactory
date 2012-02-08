@@ -8,6 +8,7 @@
 '''
 
 
+import copy
 import logging
 
 from ConfigParser import SafeConfigParser, NoSectionError
@@ -132,7 +133,16 @@ class Config(SafeConfigParser, object):
                         else:
                                 if not _override:
                                         self.set(section, opt, value)
-        
+
+
+        def clone(self):
+                '''
+                makes an exact copy of the object
+                '''
+                return copy.deepcopy(self)
+                
+
+        # This is just a wish...        
         def  generic_get(self, 
                          section,                       # SafeConfigParser section 
                          option,                        # option in the SafeConfigParser section
