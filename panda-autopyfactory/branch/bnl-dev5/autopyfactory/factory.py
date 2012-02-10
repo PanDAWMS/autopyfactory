@@ -1235,27 +1235,27 @@ class BatchSubmitInterface(object):
         '''
         raise NotImplementedError
 
-   def initJSD(self):
+    def initJSD(self):
         '''
         Initializes the JSD file
         '''
         raise NotImplementedError
 
 
-   def addJSD(self):
+    def addJSD(self):
         '''
         Adds content to the JSD file
         '''
         raise NotImplementedError
 
 
-   def finalizeJSD(self):
+    def finalizeJSD(self):
         '''
         Finishes the creation of the JSD file
         '''
         raise NotImplementedError
 
-   def writeJSD(self):
+    def writeJSD(self):
         '''
         Writes on file the content of the JSD file
         '''
