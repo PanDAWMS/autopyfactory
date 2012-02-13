@@ -160,6 +160,10 @@ class Config(SafeConfigParser, object):
                                         newkey = key.replace(pattern, newpattern)
                                         self.remove_option(section, key)
                                         self.set(section, newkey, value)
+
+                # we return self to be able to do this
+                #   newconfig = config.clone().filterkeys('a', 'b')
+                return self
                                 
         # This is just a wish...        
         def  generic_get(self, 
