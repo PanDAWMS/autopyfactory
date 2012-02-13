@@ -300,9 +300,9 @@ class ConfigManager:
 
                 sourcetype = self.__getsourcetype(source)
                 if sourcetype == 'file':
-                        return self.__dataFromFile(source, config)  # is this the best way to do it?
+                        return self.__dataFromFile(source, source)  # is this the best way to do it?
                 if sourcetype == 'uri':
-                        return self.__dataFromURI(source, config)  # is this the best way to do it?
+                        return self.__dataFromURI(source, source)  # is this the best way to do it?
 
         def __getsourcetype(self, source):
                 '''
