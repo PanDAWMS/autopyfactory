@@ -273,16 +273,36 @@ class ConfigManager:
                         - path to a phisical file on disk
                         - an URL
                 '''
-
+        
                 config = Config()
+       
+                for src in source.split(','):
+                        newconfig = self.__getConfig(src)
+                        config.merge(newconfig)
+ 
+                return config
+
+
+        def __getConfig(self, source):
+                '''
+                returns a new ConfigParser object 
+                '''
+               
+                data = self.__getContent(source) 
+                tmpconfig = Config()
+                tmpconfig.readfp(data)
+                return tmpconfig
+
+        def __getContent(self, source):
+                '''
+                returns the content to feed a new ConfigParser object
+                '''
 
                 sourcetype = self.__getsourcetype(source)
                 if sourcetype == 'file':
-                        self.__loadfile(source, config)  # is this the best way to do it?
+                        return self.__dataFromFile(source, config)  # is this the best way to do it?
                 if sourcetype == 'uri':
-                        self.__loaduri(source, config)  # is this the best way to do it?
-
-                return config
+                        return self.__dataFromURI(source, config)  # is this the best way to do it?
 
         def __getsourcetype(self, source):
                 '''
@@ -296,24 +316,60 @@ class ConfigManager:
                                 break
                 return sourcetype
 
-        def __loadfile(self, path, config):
+        def __dataFromFile(self, path):
                 '''
-                load a config file from disk
+                gets the content of an config object from  a file
                 '''
                 f = open(path)
-                config.readfp(f)
-
-        def __loaduri(self, uri, config):
+                return f
+        
+        def __dataFromURI(self, uri, config):
                 ''' 
-                load a config file from an URI
-                We should first download the info into a file on disk,
-                and them load that file into the Config object.
+                gets the content of an config object from an URI.
                 ''' 
                 opener = urllib2.build_opener()
                 urllib2.install_opener(opener)
                 uridata = urllib2.urlopen(uri)
-                firstLine = uridata.readline().strip() 
+                #firstLine = uridata.readline().strip() 
                 #if firstLine[0] == "<":
                 #        raise FactoryConfigurationFailure("First response character was '<'. Proxy error?")
-                config.readfp(uridata)
+                return uridata
+
+        #def getConfig(self, source):
+        #        '''
+        #        creates a Config object and returns it.
+        #        source points to the info to feed the object:
+        #                - path to a phisical file on disk
+        #                - an URL
+        #        '''
+        #
+        #        config = Config()
+        #
+        #        sourcetype = self.__getsourcetype(source)
+        #        if sourcetype == 'file':
+        #                self.__loadfile(source, config)  # is this the best way to do it?
+        #        if sourcetype == 'uri':
+        #                self.__loaduri(source, config)  # is this the best way to do it?
+        #
+        #        return config
+        #def __loadfile(self, path, config):
+        #        '''
+        #        load a config file from disk
+        #        '''
+        #        f = open(path)
+        #        config.readfp(f)
+        #
+        #def __loaduri(self, uri, config):
+        #        ''' 
+        #        load a config file from an URI
+        #        We should first download the info into a file on disk,
+        #        and them load that file into the Config object.
+        #        ''' 
+        #        opener = urllib2.build_opener()
+        #        urllib2.install_opener(opener)
+        #        uridata = urllib2.urlopen(uri)
+        #        firstLine = uridata.readline().strip() 
+        #        #if firstLine[0] == "<":
+        #        #        raise FactoryConfigurationFailure("First response character was '<'. Proxy error?")
+        #        config.readfp(uridata)
 
