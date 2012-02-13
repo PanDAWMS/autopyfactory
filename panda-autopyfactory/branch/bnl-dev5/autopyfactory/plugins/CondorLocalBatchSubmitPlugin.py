@@ -3,7 +3,7 @@
 # AutoPyfactory batch plugin for Condor
 #
 
-from CondorBatchSubmitPlugin import CondorBatchSubmitPlugin 
+from CondorBaseBatchSubmitPlugin import CondorBaseBatchSubmitPlugin 
 import jsd 
 
 __author__ = "John Hover, Jose Caballero"
