@@ -55,7 +55,6 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.__started = False
 
                 self.apfqueue = apfqueue
-                self.fconfig = apfqueue.fcl.config          
                 self.apfqname = apfqueue.apfqname
                 self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
                 self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
