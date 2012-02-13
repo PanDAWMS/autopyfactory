@@ -297,9 +297,9 @@ Jose Caballero <jcaballero@bnl.gov>
         if self.options.confFiles != None:
             self.fcl = ConfigManager().getConfig(self.options.confFiles)
         
-        self.fcl.config.set("Factory","cyclesToDo", str(self.options.cyclesToDo))
-        self.fcl.config.set("Factory", "sleepTime", str(self.options.sleepTime))
-        self.fcl.config.set("Factory", "confFiles", ','.join(self.options.confFiles))
+        self.fcl.set("Factory","cyclesToDo", str(self.options.cyclesToDo))
+        self.fcl.set("Factory", "sleepTime", str(self.options.sleepTime))
+        self.fcl.set("Factory", "confFiles", ','.join(self.options.confFiles))
            
     def mainloop(self):
         """Create Factory and enter main loop
