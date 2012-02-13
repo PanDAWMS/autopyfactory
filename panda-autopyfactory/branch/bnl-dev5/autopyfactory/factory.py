@@ -38,7 +38,8 @@ from optparse import OptionParser
 from ConfigParser import ConfigParser
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
-from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
+#from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
+from autopyfactory.configloader2 import Config, ConfigManager
 from autopyfactory.cleanLogs import CleanCondorLogs
 from autopyfactory.logserver import LogServer
 from autopyfactory.proxymanager import ProxyManager
@@ -66,7 +67,7 @@ class FactoryCLI(object):
         self.options = None 
         self.args = None
         self.log = None
-        self.fc = None
+        self.fcl = None
     
     def parseopts(self):
         parser = OptionParser(usage='''%prog [OPTIONS]
@@ -294,11 +295,12 @@ Jose Caballero <jcaballero@bnl.gov>
         """Create config, add in options...
         """
         if self.options.confFiles != None:
-            self.fc = FactoryConfigLoader(self.options.confFiles)
+            #self.fcl = FactoryConfigLoader(self.options.confFiles)
+            self.fcl = ConfigManager().getConfig(self.options.confFiles)
         
-        self.fc.config.set("Factory","cyclesToDo", str(self.options.cyclesToDo))
-        self.fc.config.set("Factory", "sleepTime", str(self.options.sleepTime))
-        self.fc.config.set("Factory", "confFiles", ','.join(self.options.confFiles))
+        self.fcl.config.set("Factory","cyclesToDo", str(self.options.cyclesToDo))
+        self.fcl.config.set("Factory", "sleepTime", str(self.options.sleepTime))
+        self.fcl.config.set("Factory", "confFiles", ','.join(self.options.confFiles))
            
     def mainloop(self):
         """Create Factory and enter main loop
@@ -309,7 +311,7 @@ Jose Caballero <jcaballero@bnl.gov>
         try:
             self.log.info('Creating Factory and entering main loop...')
 
-            f = Factory(self.fc)
+            f = Factory(self.fcl)
             f.mainLoop()
         except KeyboardInterrupt:
             self.log.info('Caught keyboard interrupt - exitting')
@@ -373,7 +375,8 @@ class Factory(object):
         self.fcl = fcl
         
         self.log.info("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
-        self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
+        #self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
+        self.qcl = ConfigManager().getConfig(fcl.get('Factory', 'queueConf'))
       
         # Handle ProxyManager
         usepman = fcl.get('Factory', 'proxymanager.enabled')
@@ -812,7 +815,7 @@ class APFQueue(threading.Thread):
         msg = 'Attempt to submit %d pilots for queue %s' %(nsub, self.apfqname)
         self._monitor_note(msg)
 
-        (status, output) = self.batchsubmit.submitPilots(self.siteid, nsub, self.fcl, self.qcl)
+        (status, output) = self.batchsubmit.submit(nsub)
         if output:
             if status == 0:
                 self._monitor_notify(output)
@@ -1215,15 +1218,13 @@ class BatchSubmitInterface(object):
     It should be instantiated one per queue. 
     -----------------------------------------------------------------------
     Public Interface:
-            submitPilots(number)
+            submit(number)
             valid()
-            initJSD()
             addJSD()
-            finalizeJSD()
             writeJSD()
     -----------------------------------------------------------------------
     '''
-    def submitPilots(self, queue, number, fcl, qcl):
+    def submit(self, n):
         '''
         Method to submit pilots 
         '''
@@ -1235,26 +1236,12 @@ class BatchSubmitInterface(object):
         '''
         raise NotImplementedError
 
-    def initJSD(self):
-        '''
-        Initializes the JSD file
-        '''
-        raise NotImplementedError
-
-
     def addJSD(self):
         '''
         Adds content to the JSD file
         '''
         raise NotImplementedError
-
-
-    def finalizeJSD(self):
-        '''
-        Finishes the creation of the JSD file
-        '''
-        raise NotImplementedError
-
+        
     def writeJSD(self):
         '''
         Writes on file the content of the JSD file
