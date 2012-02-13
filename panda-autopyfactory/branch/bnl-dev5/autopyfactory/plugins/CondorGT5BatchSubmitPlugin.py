@@ -15,7 +15,7 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
-class CondorGT2BatchSubmitPlugin(CondorGRAMBatchSubmitPlugin):
+class CondorGT5BatchSubmitPlugin(CondorGRAMBatchSubmitPlugin):
     '''
     This class is expected to have separate instances for each PandaQueue object. 
     '''
@@ -30,26 +30,26 @@ class CondorGT2BatchSubmitPlugin(CondorGRAMBatchSubmitPlugin):
             qcl = apfqueue.factory.qcl
 
         # we rename the queue config variables to pass a new config object to parent class
-        newqcl = qcl.clone().filterkeys('batchsubmit.condorgt2', 'batchsubmit.condorgram')
-        super(CondorGT2BatchSubmitPlugin, self).__init__(apfqueue, newqcl) 
+        newqcl = qcl.clone().filterkeys(qcl, 'batchsubmit.condorgt5', 'batchsubmit.condorgram')
+        super(CondorGT5BatchSubmitPlugin, self).__init__(apfqueue, newqcl) 
 
         # Get from the config object the specific variables that apply to this class
         try:
-            self.gridresource = qcl.get(self.apfqname, 'batchsubmit.condorgt2.gridresource') 
+            self.gridresource = qcl.get(self.apfqname, 'batchsubmit.condorgt5.gridresource') 
         except:
             self._valid = False
 
-        self.log.info('CondorGT2BatchSubmitPlugin: Object initialized.')
+        self.log.info('CondorGT5BatchSubmitPlugin: Object initialized.')
 
     def _addJSD(self):
         '''
         add things to the JSD file
         '''
 
-        self.log.debug('CondorGT2BatchSubmitPlugin.addJSD: Starting.')
+        self.log.debug('CondorGT5BatchSubmitPlugin.addJSD: Starting.')
 
-        super(CondorGT2BatchSubmitPlugin, self)._addJSD()
-        self.JSD.add('grid_resource=gt2 %s' % self.gridresource) 
+        super(CondorGT5BatchSubmitPlugin, self)._addJSD()
+        self.JSD.add('grid_resource=gt5 %s' % self.gridresource) 
 
-        self.log.debug('CondorGT2BatchSubmitPlugin.addJSD: Leaving.')
+        self.log.debug('CondorGT5BatchSubmitPlugin.addJSD: Leaving.')
 
