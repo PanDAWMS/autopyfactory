@@ -323,7 +323,7 @@ class ConfigManager:
                 f = open(path)
                 return f
         
-        def __dataFromURI(self, uri, config):
+        def __dataFromURI(self, uri):
                 ''' 
                 gets the content of an config object from an URI.
                 ''' 
