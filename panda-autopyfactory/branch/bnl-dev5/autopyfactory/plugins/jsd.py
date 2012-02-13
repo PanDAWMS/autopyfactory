@@ -19,6 +19,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import os
 import re
 import urllib
 
@@ -111,6 +112,9 @@ class JSDDirective(object):
         #                self.directive = None
 
         def __init__(self, value=None):
+
+                self.log = logging.getLogger("main.jsddirective")
+
                 if not value:
                         self.directive = None
                 else:
@@ -119,6 +123,7 @@ class JSDDirective(object):
                         else:
                                 self.directive = value
 
+                self.log.info('JSDDirective: Object initialized.')
 
         def replace(self, value):
                 """
@@ -127,10 +132,14 @@ class JSDDirective(object):
                 First we check the directive is really a template, 
                 and then we modify its value.
                 """
+                self.log.debug('replace: Starting.') 
+
                 if not self.isvalid():
                         tokens = self.directive.split('@@')
                         tokens[1] = value
                         self.directive = ''.join(tokens)
+
+                self.log.debug('replace: Leving.') 
 
         def __str__(self):
                 if self.isvalid():
@@ -150,9 +159,12 @@ class JSDDirective(object):
                         <something>@@<something>@@<something>
                 """
 
+                self.log.debug('isvalid: Starting.') 
+
                 pattern = '^.*@@.+@@.*$'
 
                 if re.match(pattern, self.directive):
+                        self.log.info('isvalid: %s is not valid' %self.directive)
                         return False
                 return True
 
@@ -232,6 +244,9 @@ class JSDFile(object):
 
         def __init__(self, templatefile=None, templateurl=None, templatejsd=None):
 
+
+                self.log = logging.getLogger("main.jsdfile")
+
                 self.listofdirectives = []
 
                 if templatefile:
@@ -246,6 +261,8 @@ class JSDFile(object):
                         # Another object is passed as input.
                         # All its attributes are copied. 
                         self.__clonejsd(templatejsd)
+
+                self.log.info('JSDFile: Object initialized.')
 
         def __clonetemplatefromfile(self, templatefile):
                 """
@@ -281,13 +298,17 @@ class JSDFile(object):
 
 
         def add(self, directive):
+                self.log.debug('add: Starting.')
                 self.listofdirectives.append(JSDDirective(directive))
+                self.log.debug('add: Leaving.')
 
         def replace(self, template):
                 """
                 template is a dictionary with a list of pairs
                 (key, value) used to complete each directive
                 """
+
+                self.log.debug('replace: Starting.')
 
                 for directive in self.listofdirectives:
                         key = directive.gettemplate()
@@ -296,19 +317,46 @@ class JSDFile(object):
                                 if value: # the key is in the template 
                                         directive.replace(value) 
 
-        def write(self, path):
+                self.log.debug('replace: Leaving.')
+
+        def write(self, path, filename):
+                '''
+                Dumps the whole content of the JSDFile object into a disk file
+                '''
+            
+                self.log.debug('writeJSD: Starting.')
+            
+                if not os.access(path, os.F_OK):
+                    try:
+                        os.makedirs(path)
+                        self.log.debug('writeJSD: Created directory %s', path)
+                    except OSError, (errno, errMsg):
+                        self.log.error('writeJSD: Failed to create directory %s (error %d): %s', path, errno, errMsg)
+                        return
+                jsdfilename = path + filename
+                self._dump(jsdfilename)
+                self.log.debug('writeJSD: the submit file content is\n %s ' %self)
+            
+                self.log.debug('writeJSD: Leaving.')
+
+        def _dump(self, jsdfilename):
                 """
                 calls __str__ and prints out the result in a file
                 """
+        
+                self.log.debug('_dump: Starting.')
 
                 if self.isvalid():
                         jsdcontent = self.__str__()
                         if jsdcontent:
-                                jsdfile = open(path, 'w')
+                                jsdfile = open(jsdfilename, 'w')
                                 print >> jsdfile, jsdcontent
                                 jsdfile.close()
                 else:
+                        self.log.error('_dump: the content of JSD is not valid')
                         raise JSDFileException()
+
+                self.log.debug('_dump: Leaving.')
 
         def __str__(self):
                 """
@@ -330,6 +378,7 @@ class JSDFile(object):
                                 return False
                 return True
 
+# ==============================================================================    
 
 if __name__ == '__main__':
 
