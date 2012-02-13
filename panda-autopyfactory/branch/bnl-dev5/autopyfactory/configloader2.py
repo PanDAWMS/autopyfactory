@@ -270,52 +270,52 @@ class ConfigManager:
         def __init__(self):
                 pass
 
-        def getConfig(self, source):
+        def getConfig(self, sources):
                 '''
                 creates a Config object and returns it.
-                source points to the info to feed the object:
+                sources points to the info to feed the object:
                         - path to a phisical file on disk
                         - an URL
                 '''
         
                 config = Config()
        
-                for src in source.split(','):
+                for src in sources.split(','):
                         newconfig = self.__getConfig(src)
                         config.merge(newconfig)
  
                 return config
 
 
-        def __getConfig(self, source):
+        def __getConfig(self, src):
                 '''
                 returns a new ConfigParser object 
                 '''
                
-                data = self.__getContent(source) 
+                data = self.__getContent(src) 
                 tmpconfig = Config()
                 tmpconfig.readfp(data)
                 return tmpconfig
 
-        def __getContent(self, source):
+        def __getContent(self, src):
                 '''
                 returns the content to feed a new ConfigParser object
                 '''
 
-                sourcetype = self.__getsourcetype(source)
+                sourcetype = self.__getsourcetype(src)
                 if sourcetype == 'file':
-                        return self.__dataFromFile(source)
+                        return self.__dataFromFile(src)
                 if sourcetype == 'uri':
-                        return self.__dataFromURI(source)
+                        return self.__dataFromURI(src)
 
-        def __getsourcetype(self, source):
+        def __getsourcetype(self, src):
                 '''
                 determines if the source is a file on disk on an URI
                 '''
                 sourcetype = 'file'  # default
                 uritokens = ['file://', 'http://']
                 for token in uritokens:
-                        if source.startswith(token):
+                        if src.startswith(token):
                                 sourcetype = 'uri'
                                 break
                 return sourcetype
@@ -338,42 +338,3 @@ class ConfigManager:
                 #if firstLine[0] == "<":
                 #        raise FactoryConfigurationFailure("First response character was '<'. Proxy error?")
                 return uridata
-
-        #def getConfig(self, source):
-        #        '''
-        #        creates a Config object and returns it.
-        #        source points to the info to feed the object:
-        #                - path to a phisical file on disk
-        #                - an URL
-        #        '''
-        #
-        #        config = Config()
-        #
-        #        sourcetype = self.__getsourcetype(source)
-        #        if sourcetype == 'file':
-        #                self.__loadfile(source, config)  # is this the best way to do it?
-        #        if sourcetype == 'uri':
-        #                self.__loaduri(source, config)  # is this the best way to do it?
-        #
-        #        return config
-        #def __loadfile(self, path, config):
-        #        '''
-        #        load a config file from disk
-        #        '''
-        #        f = open(path)
-        #        config.readfp(f)
-        #
-        #def __loaduri(self, uri, config):
-        #        ''' 
-        #        load a config file from an URI
-        #        We should first download the info into a file on disk,
-        #        and them load that file into the Config object.
-        #        ''' 
-        #        opener = urllib2.build_opener()
-        #        urllib2.install_opener(opener)
-        #        uridata = urllib2.urlopen(uri)
-        #        firstLine = uridata.readline().strip() 
-        #        #if firstLine[0] == "<":
-        #        #        raise FactoryConfigurationFailure("First response character was '<'. Proxy error?")
-        #        config.readfp(uridata)
-
