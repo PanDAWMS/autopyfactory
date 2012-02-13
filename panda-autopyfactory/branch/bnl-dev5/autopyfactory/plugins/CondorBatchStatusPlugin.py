@@ -14,9 +14,10 @@ from autopyfactory.factory import BatchStatusInterface
 from autopyfactory.factory import BatchStatusInfo
 from autopyfactory.factory import QueueInfo
 from autopyfactory.factory import Singleton 
-
 from autopyfactory.info import InfoContainer
 from autopyfactory.info import BatchQueueInfo
+
+import autopyfactory.utils as utils
 
 
 __author__ = "John Hover, Jose Caballero"
@@ -199,17 +200,20 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             '''
 
             self.log.debug('_update: Starting.')
-            
-            try:
-                strout = self._querycondor()
-                outlist = self._parseoutput(strout)
-                aggdict = self._aggregateinfo(outlist)
-                newinfo = self._map2info(aggdict)
-                self.log.info("Replacing old info with newly generated info.")
-                self.currentinfo = newinfo
-            except Exception, e:
-                self.log.error("_update: Exception: %s" % str(e))
-                self.log.debug("Exception: %s" % traceback.format_exc())            
+           
+            if not utils.checkDaemon('condor'):
+                self.log.info('_update: condor daemon is not running. Doing nothing')
+            else:
+                try:
+                    strout = self._querycondor()
+                    outlist = self._parseoutput(strout)
+                    aggdict = self._aggregateinfo(outlist)
+                    newinfo = self._map2info(aggdict)
+                    self.log.info("Replacing old info with newly generated info.")
+                    self.currentinfo = newinfo
+                except Exception, e:
+                    self.log.error("_update: Exception: %s" % str(e))
+                    self.log.debug("Exception: %s" % traceback.format_exc())            
 
             self.log.debug('__update: Leaving.')
 
