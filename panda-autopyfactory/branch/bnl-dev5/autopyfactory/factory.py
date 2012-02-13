@@ -456,7 +456,7 @@ class Factory(object):
 
         self.log.debug("update: Starting")
 
-        newqueues = self.qcl.config.sections()
+        newqueues = self.qcl.sections()
         self.wmsmanager.update(newqueues) 
 
         self.log.debug("update: Leaving")
