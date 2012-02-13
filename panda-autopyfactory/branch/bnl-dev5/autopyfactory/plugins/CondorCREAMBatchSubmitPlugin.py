@@ -31,7 +31,7 @@ class CondorCREAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
             qcl = apfqueue.factory.qcl
 
         # we rename the queue config variables to pass a new config object to parent class
-        newqcl = qcl.clone().filterkeys(qcl, 'batchsubmit.condorcream', 'batchsubmit.condorce')
+        newqcl = qcl.clone().filterkeys('batchsubmit.condorcream', 'batchsubmit.condorce')
         super(CondorCREAMBatchSubmitPlugin, self).__init__(apfqueue, newqcl) 
 
         try:

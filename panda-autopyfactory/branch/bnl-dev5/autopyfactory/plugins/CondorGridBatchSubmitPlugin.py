@@ -23,7 +23,7 @@ class CondorGridBatchSubmitPlugin(CondorBaseBatchSubmitPlugin):
     def __init__(self, apfqueue, qcl):
 
         # we rename the queue config variables to pass a new config object to parent class
-        newqcl = qcl.clone().filterkeys(qcl, 'batchsubmit.condorgrid', 'batchsubmit.condorbase')
+        newqcl = qcl.clone().filterkeys('batchsubmit.condorgrid', 'batchsubmit.condorbase')
         super(CondorGridBatchSubmitPlugin, self).__init__(apfqueue, newqcl) 
 
         self.log.info('CondorGridBatchSubmitPlugin: Object initialized.')

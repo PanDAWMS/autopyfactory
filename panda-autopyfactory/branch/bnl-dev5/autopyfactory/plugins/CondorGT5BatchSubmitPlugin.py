@@ -30,7 +30,7 @@ class CondorGT5BatchSubmitPlugin(CondorGRAMBatchSubmitPlugin):
             qcl = apfqueue.factory.qcl
 
         # we rename the queue config variables to pass a new config object to parent class
-        newqcl = qcl.clone().filterkeys(qcl, 'batchsubmit.condorgt5', 'batchsubmit.condorgram')
+        newqcl = qcl.clone().filterkeys('batchsubmit.condorgt5', 'batchsubmit.condorgram')
         super(CondorGT5BatchSubmitPlugin, self).__init__(apfqueue, newqcl) 
 
         # Get from the config object the specific variables that apply to this class
