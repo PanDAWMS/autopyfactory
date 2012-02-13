@@ -238,6 +238,7 @@
 #  --------------------------------------------------------------------
 
 # batchsubmitplugin = Batch Submit Plugin.
+#               Currently available options are: CondorGT2, CondorGT5, CondorLocal, CondorEC2, CondorCREAM.
 
 #  --------------------------------------------------------------------
 #       Configuration when batchsubmitplugin is condorgt2
