@@ -140,7 +140,7 @@ Jose Caballero <jcaballero@bnl.gov>
                           help="If run as root, drop privileges to USER")
         (self.options, self.args) = parser.parse_args()
 
-        self.options.confFiles = self.options.confFiles.split(',')
+        #self.options.confFiles = self.options.confFiles.split(',')
 
     def setuplogging(self):
         """ 
@@ -295,7 +295,6 @@ Jose Caballero <jcaballero@bnl.gov>
         """Create config, add in options...
         """
         if self.options.confFiles != None:
-            #self.fcl = FactoryConfigLoader(self.options.confFiles)
             self.fcl = ConfigManager().getConfig(self.options.confFiles)
         
         self.fcl.config.set("Factory","cyclesToDo", str(self.options.cyclesToDo))
@@ -375,7 +374,6 @@ class Factory(object):
         self.fcl = fcl
         
         self.log.info("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
-        #self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
         self.qcl = ConfigManager().getConfig(fcl.get('Factory', 'queueConf'))
       
         # Handle ProxyManager
