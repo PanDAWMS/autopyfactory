@@ -261,9 +261,6 @@
 #                       stream_error=False
 #                       notification=Error
 #                       copy_to_spool = false
-#                       periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)
-#                       periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
-#                       +Nonessential = True
 #
 # batchsubmit.condorgt2.environ = list of environment variables, 
 #               splitted by white spaces, 
@@ -292,9 +289,6 @@
 #                       stream_error=False
 #                       notification=Error
 #                       copy_to_spool = false
-#                       periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)
-#                       periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
-#                       +Nonessential = True
 #
 # batchsubmit.condorgt5.environ = list of environment variables, 
 #               splitted by white spaces, 
@@ -323,9 +317,6 @@
 #                       stream_error=False
 #                       notification=Error
 #                       copy_to_spool = false
-#                       periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)
-#                       periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
-#                       +Nonessential = True
 #
 # batchsubmit.condorcream.environ = list of environment variables, 
 #               splitted by white spaces, 
