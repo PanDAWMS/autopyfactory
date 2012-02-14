@@ -265,6 +265,8 @@
 # batchsubmit.condorgt2.environ = list of environment variables, 
 #               splitted by white spaces, 
 #               to be included in the condor attribute environment *verbatim*
+#               Therefore, the format should be env1=var1 env2=var2 envN=varN
+#               split by whitespaces.
 #
 # batchsubmit.condorgt2.queue = queue within the local batch system (e.g. short)
 
@@ -293,6 +295,8 @@
 # batchsubmit.condorgt5.environ = list of environment variables, 
 #               splitted by white spaces, 
 #               to be included in the condor attribute environment *verbatim*
+#               Therefore, the format should be env1=var1 env2=var2 envN=varN
+#               split by whitespaces.
 #
 # batchsubmit.condorgt5.queue = queue within the local batch system (e.g. short)
 
@@ -321,6 +325,8 @@
 # batchsubmit.condorcream.environ = list of environment variables, 
 #               splitted by white spaces, 
 #               to be included in the condor attribute environment *verbatim*
+#               Therefore, the format should be env1=var1 env2=var2 envN=varN
+#               split by whitespaces.
 #
 # batchsubmit.condorcream.queue = queue within the local batch system (e.g. short)
 #
@@ -341,6 +347,8 @@
 # batchsubmit.condorec2.environ = list of environment variables, 
 #               splitted by white spaces, 
 #               to be included in the condor attribute environment *verbatim*
+#               Therefore, the format should be env1=var1 env2=var2 envN=varN
+#               split by whitespaces.
 #
 # batchsubmit.condorec2.ami_id = identifier for the VM image, 
 #               previously registered in one of Amazon's storage service (S3 or EBS)
@@ -381,6 +389,8 @@
 #               splitted by white spaces, 
 #               to be included in the condor attribute environment *verbatim*
 #               To be used by CondorLocal Batch Submit Plugin.
+#               Therefore, the format should be env1=var1 env2=var2 envN=varN
+#               split by whitespaces.
 #
 
 #  --------------------------------------------------------------------
