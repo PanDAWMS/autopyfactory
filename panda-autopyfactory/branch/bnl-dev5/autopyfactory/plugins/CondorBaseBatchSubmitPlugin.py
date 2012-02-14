@@ -115,25 +115,26 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         n is the number of pilots to be submitted 
         '''
 
-        self.log.debug('submitPilots: Preparing to submit %s pilots' %n)
+        self.log.debug('submit: Preparing to submit %s pilots' %n)
 
         if not utils.checkDaemon('condor'):
-                self.log.info('submitPilots: condor daemon is not running. Doing nothing')
+                self.log.info('submit: condor daemon is not running. Doing nothing')
                 return None, None
 
         if n != 0:
             self._addJSD()
             self._finishJSD(n)
-            self._writeJSD()
-            st, output = self.__submit(n) 
+            jsdfile = self._writeJSD()
+            if jdsfile:
+                st, output = self.__submit(n, jsdfile) 
+            else:
+                self.log.info('submit: jdsfile has no value. Doing nothing')
+                st, output = (None, None)
         else:
             st, output = (None, None)
 
-        self.log.debug('submitPilots: Leaving with output (%s, %s).' %(st, output))
+        self.log.debug('submit: Leaving with output (%s, %s).' %(st, output))
         return st, output
-    
-    
-    
     
     def _addJSD(self):
 
@@ -206,7 +207,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         
         self.log.debug('addJSD: Leaving.')
     
-    def __submit(self, n):
+    def __submit(self, n, jsdfile):
         '''
         Submit pilots
         '''
@@ -215,7 +216,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
 
         self.log.info('Attempt to submit %d pilots for queue %s' %(n, self.siteid))
 
-        (exitStatus, output) = commands.getstatusoutput('condor_submit -verbose ' + self.jdlFile)
+        (exitStatus, output) = commands.getstatusoutput('condor_submit -verbose ' + jsdfile)
         if exitStatus != 0:
             self.log.error('condor_submit command for %s failed (status %d): %s', self.siteid, exitStatus, output)
         else:
@@ -242,5 +243,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
     
         self.log.debug('writeJSD: Starting.')
         self.log.debug('writeJSD: the submit file content is\n %s ' %self.JSD)
-        self.JSD.write(self.logDir, 'submit.jdl')
+        out = self.JSD.write(self.logDir, 'submit.jdl')
         self.log.debug('writeJSD: Leaving.')
+        return out
