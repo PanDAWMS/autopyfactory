@@ -128,7 +128,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             if jsdfile:
                 st, output = self.__submit(n, jsdfile) 
             else:
-                self.log.info('submit: jdsfile has no value. Doing nothing')
+                self.log.info('submit: jsdfile has no value. Doing nothing')
                 st, output = (None, None)
         else:
             st, output = (None, None)
