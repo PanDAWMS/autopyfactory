@@ -26,7 +26,7 @@ try:
 except ImportError, err:
         # Not critical (yet) - try simplejson
         log = logging.getLogger('main.monitor')
-        log.warning('json package not installed. Trying to import simplejson as json')
+        log.debug('json package not installed. Trying to import simplejson as json')
         import simplejson as json
 
 __author__ = "Peter Love, Jose Caballero"
@@ -130,7 +130,7 @@ class Monitor(object):
         
         except pycurl.error, e:
             msg = "PyCurl server problem:", e[1]
-            self.log.warn(msg)
+            self.log.debug(msg)
         # Catch other errors, e.g. URLError. 
         except Exception, e:
             self.log.error("Caught exception: %s " % str(e))
