@@ -337,8 +337,8 @@ class JSDFile(object):
                 jsdfilename = os.path.join(path, filename)
                 self._dump(jsdfilename)
                 self.log.debug('writeJSD: the submit file content is\n %s ' %self)
-            
                 self.log.debug('writeJSD: Leaving.')
+                return jsdfilename
 
         def _dump(self, jsdfilename):
                 """
