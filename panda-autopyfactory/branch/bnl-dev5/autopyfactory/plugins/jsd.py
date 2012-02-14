@@ -334,7 +334,7 @@ class JSDFile(object):
                     except OSError, (errno, errMsg):
                         self.log.error('writeJSD: Failed to create directory %s (error %d): %s', path, errno, errMsg)
                         return
-                jsdfilename = path + filename
+                jsdfilename = os.path.join(path, filename)
                 self._dump(jsdfilename)
                 self.log.debug('writeJSD: the submit file content is\n %s ' %self)
             
