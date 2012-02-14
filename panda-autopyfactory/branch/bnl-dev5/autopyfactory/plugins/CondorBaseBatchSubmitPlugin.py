@@ -125,7 +125,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             self._addJSD()
             self._finishJSD(n)
             jsdfile = self._writeJSD()
-            if jdsfile:
+            if jsdfile:
                 st, output = self.__submit(n, jsdfile) 
             else:
                 self.log.info('submit: jdsfile has no value. Doing nothing')
