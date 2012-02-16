@@ -680,8 +680,8 @@ class APFQueue(threading.Thread):
         self.fcl = self.factory.fcl 
         self.qcl = self.factory.qcl 
 
-        if self.qcl.has_option(apfqname, 'siteid'):
-            self.siteid = self.qcl.get(apfqname, 'siteid')
+        if self.qcl.has_option(apfqname, 'wmsqueue'):
+            self.siteid = self.qcl.get(apfqname, 'wmsqueue')
         else:
             # if siteid is not in the specs, then
             # the very APF QUEUE name is the siteid, as default
