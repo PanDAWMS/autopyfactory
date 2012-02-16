@@ -16,6 +16,7 @@ __status__ = "Production"
 class SimpleNQueueSchedPlugin(SchedInterface):
     
     def __init__(self, apfqueue):
+        self.id = 'simplenqueue'
         self._valid = True
         try:
             self.apfqueue = apfqueue

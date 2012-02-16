@@ -22,6 +22,8 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         
         def __init__(self, apfqueue, qcl=None):
 
+                self.id = 'condorec2'
+
                 # Chosing the queue config object, depending on 
                 # it was an input option or not.
                 #       If it was passed as input option, then that is the config object. 

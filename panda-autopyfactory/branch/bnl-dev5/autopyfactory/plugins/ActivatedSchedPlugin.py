@@ -16,6 +16,8 @@ __status__ = "Production"
 class ActivatedSchedPlugin(SchedInterface):
     
     def __init__(self, apfqueue):
+
+        self.id = 'activated'
         self._valid = True
         try:
             self.apfqueue = apfqueue                
