@@ -1140,6 +1140,7 @@ class SchedInterface(object):
         '''
         raise NotImplementedError
 
+
 class BatchStatusInterface(object):
     '''
     -----------------------------------------------------------------------
@@ -1208,6 +1209,30 @@ class WMSStatusInterface(object):
         Says if the object has been initialized properly
         '''
         raise NotImplementedError
+
+
+class ConfigInterface(object):
+    '''
+    -----------------------------------------------------------------------
+    Returns info to complete the queues config objects
+    -----------------------------------------------------------------------
+    Public Interface:
+            getInfo()
+            valid()
+    -----------------------------------------------------------------------
+    '''
+    def getInfo(self, batchqueue)
+        '''
+        returns info 
+        '''
+        raise NotImplementedError
+
+    def valid(self):
+        '''
+        Says if the object has been initialized properly
+        '''
+        raise NotImplementedError
+
 
 class BatchSubmitInterface(object):
     '''
