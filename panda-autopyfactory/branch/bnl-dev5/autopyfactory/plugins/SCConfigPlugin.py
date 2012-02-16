@@ -1,16 +1,13 @@
 #! /usr/bin/env python
 
 import logging
-import time
-import traceback
 
 from urllib import urlopen
 
+from autopyfactory.factory import ConfigInterface
 #from autopyfactory.factory import WMSStatusInterface
 #from autopyfactory.factory import WMSStatusInfo
 #from autopyfactory.info import InfoContainer
-import autopyfactory.utils as utils
-import userinterface.Client as Client
 
 __author__ = "John Hover, Jose Caballero"
 __copyright__ = "2011 John Hover, Jose Caballero"
@@ -61,9 +58,8 @@ class SCConfigPlugin(ConfigInterface):
         try:
                 import json as json
         except ImportError, err:
-                log.warning('_getschedconfig: json package not installed. Trying to import simplejson as json')
-            import simplejson as json
-
+                self.log.warning('_getschedconfig: json package not installed. Trying to import simplejson as json')
+                import simplejson as json
 
         try:
                 url = 'http://pandaserver.cern.ch:25080/cache/schedconfig/%s.factory.json' % self.batchqueue
