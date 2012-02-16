@@ -26,10 +26,13 @@
 # enabled
 # status
 # apfqueue.sleep
+# autofill
 #
 # cleanlogs.maxdays
 #
 # wmsstatusplugin
+#
+# configplugin
 #
 # batchstatusplugin
 #
@@ -124,6 +127,9 @@
 # apfqueue.sleep = sleep time between cycles in APFQueue object.
 #               Value is in seconds.   
 #
+# autofill = says if the info from this filled should be completed
+#               with info from a ConfigPlugin object
+#
 # cleanlogs.maxdays = maximum number of days the condor logs
 #               will be kept
 
@@ -132,6 +138,13 @@
 #  --------------------------------------------------------------------
 
 # wmsstatusplugin = WMS Status Plugin.
+
+#  --------------------------------------------------------------------
+#       Config Plugin variables 
+#  --------------------------------------------------------------------
+
+# configplugin = Config Plugin. 
+#               Optional
 
 #  --------------------------------------------------------------------
 #       Batch Status Plugin variables 
@@ -450,6 +463,7 @@ cloud = US
 country = US
 group = None
 status = online
+autofill = false
 
 # plugins
 batchstatusplugin = Condor
