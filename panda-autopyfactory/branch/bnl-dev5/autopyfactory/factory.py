@@ -686,7 +686,7 @@ class APFQueue(threading.Thread):
             # if siteid is not in the specs, then
             # the very APF QUEUE name is the siteid, as default
             self.siteid = apfqname
-        self.nickname = self.qcl.get(apfqname, 'nickname')
+        self.nickname = self.qcl.get(apfqname, 'batchqueue')
         self.cloud = self.qcl.get(apfqname, 'cloud')
         self.cycles = self.fcl.get("Factory", 'cycles' )
         self.sleep = int(self.qcl.get(apfqname, 'apfqueue.sleep'))
@@ -844,7 +844,7 @@ class APFQueue(threading.Thread):
         self.log.debug('__monitor_note: Starting.')
 
         if hasattr(self, 'monitor'):
-            nick = self.qcl.get(self.apfqname, 'nickname')
+            nick = self.qcl.get(self.apfqname, 'batchqueue')
             self.monitor.msg(nick, self.apfqname, msg)
         else:
             self.log.debug('__monitor_note: no monitor instantiated')
@@ -859,7 +859,7 @@ class APFQueue(threading.Thread):
         self.log.debug('__monitor_notify: Starting.')
 
         if hasattr(self, 'monitor'):
-            nick = self.qcl.get(self.apfqname, 'nickname')
+            nick = self.qcl.get(self.apfqname, 'batchqueue')
             label = self.apfqname
             self.monitor.notify(nick, label, output)
         else:
