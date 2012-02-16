@@ -21,7 +21,7 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 
-class SCConfigPlugin(ConfigInterface):
+class PandaConfigPlugin(ConfigInterface):
     '''
     -----------------------------------------------------------------------
     -----------------------------------------------------------------------
