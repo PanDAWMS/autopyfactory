@@ -20,8 +20,8 @@
 # override
 #
 # cloud
-# nickname
-# siteid
+# batchqueue 
+# wmsqueue 
 # proxy
 # enabled
 # status
@@ -110,9 +110,11 @@
 #               submission when the cloud goes offline
 #               N.B. Panda clouds are UPPER CASE, e.g., UK
 #
-# nickname = PanDA queue name   
+# batchqueue = the Batch system related queue name. 
+#               E.g. the PanDA queue name (formerly called nickname)
 #
-# siteid = PanDA siteid name
+# wmsqueue = the WMS system queue name. 
+#               E.g. the PanDA siteid name
 #
 # proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
 #               (See etc/proxy.conf)
@@ -487,7 +489,6 @@ executable.wrappertarballurl = http://dev.racf.bnl.gov/dist/wrapper/wrapper.tar.
 executable.wrapperserverurl = http://pandaserver.cern.ch:25080/cache/pilot
 executable.wrapperloglevel = debug
 
-
 override = True
 enabled = True
 
@@ -495,30 +496,10 @@ enabled = True
 #               Individual queue configurations
 # ====================================================================== 
 
-[BNL_ITB_Test1]
-enabled = False
-siteid = BNL_ITB_Test1
-nickname = BNL_ITB_Test1-condor
-batchsubmit.condorgt2.gridresource = gridtest01.racf.bnl.gov/jobmanager-condor
-
-executable.wrappergrid = OSG
-executable.arguments = -j false -k 600 -u panda 
-
-schedplugin = Activated
-
-batchsubmitplugin = CondorLocal
-batchsubmit.condorlocal.localqueue = OSG_ITB_Jose
-batchsubmit.condorlocal.condor_attributes = +RACF_Group = "osgitb",+Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas"
-batchsubmit.condorlocal.environ = OSG_GRID=/afs/usatlas/osg/wn-client/@sys/itb
-
-
-
-# ------------------------------------------------------------------------
-
 [ANALY_BNL_ATLAS_1]
 enabled = False
-siteid = ANALY_BNL_ATLAS_1
-nickname = ANALY_BNL_ATLAS_1-condor
+wmsqueue = ANALY_BNL_ATLAS_1
+batchname = ANALY_BNL_ATLAS_1-condor
 batchsubmit.condorgt2.gridresource = gridgk05.racf.bnl.gov/jobmanager-condor
 
 executable.wrappergrid = OSG
