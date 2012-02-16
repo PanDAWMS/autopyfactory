@@ -686,7 +686,7 @@ class APFQueue(threading.Thread):
             # if siteid is not in the specs, then
             # the very APF QUEUE name is the siteid, as default
             self.siteid = apfqname
-        self.nickname = self.qcl.get(apfqname, 'batchqueue')
+        self.batchqueue = self.qcl.get(apfqname, 'batchqueue')
         self.cloud = self.qcl.get(apfqname, 'cloud')
         self.cycles = self.fcl.get("Factory", 'cycles' )
         self.sleep = int(self.qcl.get(apfqname, 'apfqueue.sleep'))
