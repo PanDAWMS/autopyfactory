@@ -47,7 +47,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         self.logUrl = self.fcl.get('Factory', 'baseLogDirUrl') + logPath
 
         try:
-            self.siteid = qcl.get(self.apfqname, 'siteid')
+            self.siteid = qcl.get(self.apfqname, 'wmsqueue')
 
             self.executable = qcl.get(self.apfqname, 'executable')
             self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
