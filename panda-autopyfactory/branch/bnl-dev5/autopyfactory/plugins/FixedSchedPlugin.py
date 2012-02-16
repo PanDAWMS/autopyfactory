@@ -14,9 +14,9 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 class FixedSchedPlugin(SchedInterface):
+        id = 'fixed'    
         
         def __init__(self, apfqueue):
-            self.id = 'fixed'    
             self._valid = True
             try:
                 self.apfqueue = apfqueue                

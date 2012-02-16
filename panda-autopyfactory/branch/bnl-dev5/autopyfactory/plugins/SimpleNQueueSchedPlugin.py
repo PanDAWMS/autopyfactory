@@ -14,9 +14,9 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 class SimpleNQueueSchedPlugin(SchedInterface):
+    id = 'simplenqueue'
     
     def __init__(self, apfqueue):
-        self.id = 'simplenqueue'
         self._valid = True
         try:
             self.apfqueue = apfqueue

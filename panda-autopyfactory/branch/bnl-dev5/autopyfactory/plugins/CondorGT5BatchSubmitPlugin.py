@@ -16,13 +16,13 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 class CondorGT5BatchSubmitPlugin(CondorGRAMBatchSubmitPlugin):
+    id = 'condorgt5'        
     '''
     This class is expected to have separate instances for each PandaQueue object. 
     '''
    
     def __init__(self, apfqueue, qcl=None):
 
-        self.id = 'condorgt5'        
 
         # Chosing the queue config object, depending on 
         # it was an input option or not.
