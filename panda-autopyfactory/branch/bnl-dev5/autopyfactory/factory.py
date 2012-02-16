@@ -1221,7 +1221,7 @@ class ConfigInterface(object):
             valid()
     -----------------------------------------------------------------------
     '''
-    def getConfig(self, batchqueue)
+    def getConfig(self, batchqueue):
         '''
         returns info 
         '''
