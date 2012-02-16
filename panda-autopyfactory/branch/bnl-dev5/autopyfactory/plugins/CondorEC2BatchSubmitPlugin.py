@@ -43,7 +43,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
                         self.user_data = None        
                         if qcl.has_option(self.apfqname, 'batchsubmit.condorec2.user_data'):
                                 self.user_data = qcl.get(self.apfqname, 'batchsubmit.condorec2.user_data')
-                        #self.x509userproxy = self.factory.proxymanager.getProxyPath(qcl.get(self.apfqname,'proxy'))
+                        #self.x509userproxy = self.factory.proxymanager.getProxyPath(qcl.get(self.apfqname,'batchsubmit.condorec2.proxy'))
                         self.access_key_id = qcl.get(self.apfqname,'batchsubmit.condorec2.access_key_id')
                         self.secret_access_key = qcl.get(self.apfqname,'batchsubmit.condorec2.secret_access_key')
 
