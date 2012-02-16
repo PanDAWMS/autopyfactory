@@ -55,7 +55,7 @@ class ExecSubmitPlugin(BatchSubmitInterface):
             if self.qcl.has_option(self.apfqname, 'batchsubmit.condorlocal.condor_attributes'):
                 self.condor_attributes = self.qcl.get(self.apfqname, 'batchsubmit.condorlocal.condor_attributes')
 
-            self.nickname = self.qcl.get(self.apfqname, 'nickname')
+            self.batchqueue = self.qcl.get(self.apfqname, 'batchqueue')
 
             self.pandagrid = None
             if self.qcl.has_option(self.apfqname, 'executable.pandagrid'):
@@ -143,7 +143,7 @@ class ExecSubmitPlugin(BatchSubmitInterface):
         # --- argumetns ---
         arguments = 'arguments = '
         arguments += ' --pandasite=%s ' %self.siteid
-        arguments += ' --pandaqueue=%s ' %self.nickname
+        arguments += ' --pandaqueue=%s ' %self.batchqueue
         if self.pandagrid:
                 arguments += ' --pandagrid=%s ' %self.pandagrid
         arguments += ' --pandaserverurl=%s ' %self.pandaserverurl

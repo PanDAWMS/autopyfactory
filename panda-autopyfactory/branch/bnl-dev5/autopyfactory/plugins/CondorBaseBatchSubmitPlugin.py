@@ -78,7 +78,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             if qcl.has_option(self.apfqname, 'batchsubmit.condorbase.condor_attributes'):
                 self.condor_attributes = qcl.get(self.apfqname, 'batchsubmit.condorbase.condor_attributes')
 
-            self.nickname = qcl.get(self.apfqname, 'nickname')
+            self.batchqueue = qcl.get(self.apfqname, 'batchqueue')
 
             self.wrappergrid = None
             if qcl.has_option(self.apfqname, 'executable.wrappergrid'):
@@ -179,7 +179,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         if self.wrappervo:
             arguments += ' --wrappervo=%s ' %self.wrappervo
         arguments += ' --wrapperwmsqueue=%s ' %self.siteid
-        arguments += ' --wrapperbatchqueue=%s ' %self.nickname
+        arguments += ' --wrapperbatchqueue=%s ' %self.batchqueue
         if self.wrappergrid:
             arguments += ' --wrappergrid=%s ' %self.wrappergrid
         arguments += ' --wrapperserverurl=%s ' %self.wrapperserverurl
