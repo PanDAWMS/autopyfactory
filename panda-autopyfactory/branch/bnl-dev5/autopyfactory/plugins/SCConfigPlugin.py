@@ -5,6 +5,8 @@ import logging
 from urllib import urlopen
 
 from autopyfactory.factory import ConfigInterface
+from autopyfactory.configloader2 import Config, ConfigManager
+
 #from autopyfactory.factory import WMSStatusInterface
 #from autopyfactory.factory import WMSStatusInfo
 #from autopyfactory.info import InfoContainer
@@ -87,9 +89,14 @@ class SCConfigPlugin(ConfigInterface):
         except IOError, (errno, errmsg):
                 self.log.error('_getschedconfig: %s for queue %s, downloading from %s' % (errmsg, self.batchqueue, url))
 
-    #def getCloudInfo(self, maxtime=0):
-    #    '''
-    #    '''
-    #
-    #    self.log.debug('scconfigplugin: Starting maxtime = %s' %maxtime)
-    #    self.log.info('scconfigplugin: Cloud has %d entries' % len(out))
+    def getConfig(self):
+        '''
+        returns a Config object with the info we are interested in
+        '''
+
+        conf = Config()
+        conf.add_section(self.apfqname)
+        conf.set(self.apfqname, 'batchsubmit.gridresource', self.gridresource)
+        conf.set(self.apfqname, 'batchsubmit.queue', self.queue)
+  
+        return conf 
