@@ -22,7 +22,6 @@
 # cloud
 # batchqueue 
 # wmsqueue 
-# proxy
 # enabled
 # status
 # apfqueue.sleep
@@ -59,16 +58,19 @@
 # batchsubmit.condorgt2.condor_attributes
 # batchsubmit.condorgt2.environ
 # batchsubmit.condorgt2.queue
+# batchsubmit.condorgt2.proxy
 # batchsubmit.condorgt5.gridresource
 # batchsubmit.condorgt5.condor_attributes
 # batchsubmit.condorgt5.environ
 # batchsubmit.condorgt5.queue
+# batchsubmit.condorgt5.proxy
 # batchsubmit.condorcream.gridresource
 # batchsubmit.condorcream.condor_attributes
 # batchsubmit.condorcream.environ
 # batchsubmit.condorcream.queue
 # batchsubmit.condorcream.port
 # batchsubmit.condorcream.batch
+# batchsubmit.condorcream.proxy
 # batchsubmit.condorec2.gridresource
 # batchsubmit.condorec2.condor_attributes
 # batchsubmit.condorec2.environ
@@ -77,8 +79,10 @@
 # batchsubmit.condorec2.user_data
 # batchsubmit.condorec2.access_key_id
 # batchsubmit.condorec2.secret_access_key
+# batchsubmit.condorec2.proxy
 # batchsubmit.condorlocal.condor_attributes
 # batchsubmit.condorlocal.environ
+# batchsubmit.condorlocal.proxy
 #
 # executable
 # executable.arguments
@@ -115,10 +119,6 @@
 #
 # wmsqueue = the WMS system queue name. 
 #               E.g. the PanDA siteid name
-#
-# proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
-#               (See etc/proxy.conf)
-#               None if no automatic proxy renewal is desired.
 #
 # enabled = determines if each queue section must be used by AutoPyFactory
 #               or not. Allows to disable a queue without commenting out all the values. 
@@ -284,6 +284,10 @@
 #               split by whitespaces.
 #
 # batchsubmit.condorgt2.queue = queue within the local batch system (e.g. short)
+#
+# batchsubmit.condorgt2.proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
+#               (See etc/proxy.conf)
+#               None if no automatic proxy renewal is desired.
 
 #  --------------------------------------------------------------------
 #       Configuration when batchsubmitplugin is condorgt5
@@ -314,6 +318,10 @@
 #               split by whitespaces.
 #
 # batchsubmit.condorgt5.queue = queue within the local batch system (e.g. short)
+#
+# batchsubmit.condorgt5.proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
+#               (See etc/proxy.conf)
+#               None if no automatic proxy renewal is desired.
 
 #  --------------------------------------------------------------------
 #       Configuration when batchsubmitplugin is condorcream
@@ -348,6 +356,10 @@
 # batchsubmit.condorcream.port = port number.
 #
 # batchsubmit.condorcream.batch = local batch system (pbs, sge...)
+#
+# batchsubmit.condorcream.proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
+#               (See etc/proxy.conf)
+#               None if no automatic proxy renewal is desired.
 
 #  --------------------------------------------------------------------
 #       Configuration when batchsubmitplugin is condorec2
@@ -376,6 +388,10 @@
 # batchsubmit.condorec2.access_key_id = path to file with the EC2 Access Key ID
 #
 # batchsubmit.condorec2.secret_access_key = path to file with the EC2 Secret Access Key
+#
+# batchsubmit.condorec2.proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
+#               (See etc/proxy.conf)
+#               None if no automatic proxy renewal is desired.
 
 #  --------------------------------------------------------------------
 #       Configuration when batchsubmitplugin is condorlocal
@@ -406,6 +422,10 @@
 #               To be used by CondorLocal Batch Submit Plugin.
 #               Therefore, the format should be env1=var1 env2=var2 envN=varN
 #               split by whitespaces.
+#
+# batchsubmit.condorlocal.proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
+#               (See etc/proxy.conf)
+#               None if no automatic proxy renewal is desired.
 #
 
 #  --------------------------------------------------------------------
@@ -479,7 +499,11 @@ sched.simplenqueue.default = 0
 sched.activated.default = 0
 
 # proxy = atlas-usatlas
-proxy = None
+batchsubmit.condorgt2.proxy = None
+batchsubmit.condorgt5.proxy = None
+batchsubmit.condorcream.proxy = None
+batchsubmit.condorec2.proxy = None
+batchsubmit.condorlocal.proxy = None
 
 apfqueue.sleep = 360
 
@@ -498,21 +522,21 @@ enabled = True
 
 [ANALY_BNL_ATLAS_1]
 enabled = False
+
 wmsqueue = ANALY_BNL_ATLAS_1
 batchname = ANALY_BNL_ATLAS_1-condor
+
 batchsubmit.condorgt2.gridresource = gridgk05.racf.bnl.gov/jobmanager-condor
+batchsubmit.condorgt2.queue = short
+batchsubmit.condorgt2.condor_attributes = periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
+batchsubmit.condorgt2.proxy = atlas-production
+
+sched.activated.min_pilots_per_cycle = 0
+sched.activated.max_pilots_per_cycle = 10
+sched.activated.max_jobs_torun = 60
 
 executable.wrappergrid = OSG
 executable.wrapperloglevel = debug
 executable.arguments = --script=pilot.py --libcode=pilotcode.tar.gz,pilotcode-rc.tar.gz --pilotsrcurl=http://panda.cern.ch:25880/cache -f false -m false --user user
 
-proxy = atlas-production
-
-schedplugin = Activated
-sched.activated.min_pilots_per_cycle = 0
-sched.activated.max_pilots_per_cycle = 10
-sched.activated.max_jobs_torun = 60
-
-batchsubmit.condorgt2.queue = short
-batchsubmit.condorgt2.condor_attributes = periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
 
