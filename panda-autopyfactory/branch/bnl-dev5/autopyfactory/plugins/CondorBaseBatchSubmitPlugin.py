@@ -50,9 +50,10 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
 
             self.x509userproxy = None
-            proxy = qcl.get(self.apfqname,'batchsubmit.condorbase.proxy')
-            if proxy:
-                self.x509userproxy = self.factory.proxymanager.getProxyPath(qcl.get(self.apfqname,'batchsubmit.condorbase.proxy'))
+            if qcl.has_option(self.apfqname,'batchsubmit.condorbase.proxy'):
+                proxy = qcl.get(self.apfqname,'batchsubmit.condorbase.proxy')
+                #self.x509userproxy = self.factory.proxymanager.getProxyPath(qcl.get(self.apfqname,'batchsubmit.condorbase.proxy'))
+                self.x509userproxy = self.factory.proxymanager.getProxyPath(proxy)
                 self.log.debug('proxy is %s. Loaded path from proxymanager: %s' % (proxy, self.x509userproxy))
             else:
                 self.log.debug('proxy is None. No proxy configured.')

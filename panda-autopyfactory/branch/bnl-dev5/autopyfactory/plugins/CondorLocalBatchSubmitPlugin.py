@@ -37,13 +37,13 @@ class CondorLocalBatchSubmitPlugin(CondorBaseBatchSubmitPlugin):
 
         try:
             self.executable = qcl.get(self.apfqname, 'executable')
-            self.proxy = qcl.get(self.apfqname,'batchsubmit.condorlocal.proxy')
-            if self.proxy:
-                self.x509userproxy = self.factory.proxymanager.getProxyPath(qcl.get(self.apfqname,'batchsubmit.condorlocal.proxy'))
-                self.log.debug('CondorLocalBatchSubmitPlugin. self.proxy is %s. Loaded path from proxymanager: %s' % (self.proxy, self.x509userproxy))
-            else:
-                self.x509userproxy = None
-                self.log.debug('CondorLocalBatchSubmitPlugin. self.proxy is None. No proxy configured.')
+            #self.proxy = qcl.get(self.apfqname,'batchsubmit.condorlocal.proxy')
+            #if self.proxy:
+            #    self.x509userproxy = self.factory.proxymanager.getProxyPath(qcl.get(self.apfqname,'batchsubmit.condorlocal.proxy'))
+            #    self.log.debug('CondorLocalBatchSubmitPlugin. self.proxy is %s. Loaded path from proxymanager: %s' % (self.proxy, self.x509userproxy))
+            #else:
+            #    self.x509userproxy = None
+            #    self.log.debug('CondorLocalBatchSubmitPlugin. self.proxy is None. No proxy configured.')
             
             self.log.info('CondorLocalBatchSubmitPlugin: Object initialized.')
         except:
@@ -56,9 +56,9 @@ class CondorLocalBatchSubmitPlugin(CondorBaseBatchSubmitPlugin):
 
         super(CondorLocalBatchSubmitPlugin, self)._addJSD()
 
-        # -- proxy path --
-        if self.x509userproxy:
-            self.JSD.add("x509userproxy=%s" % self.x509userproxy)
+        ## -- proxy path --
+        #if self.x509userproxy:
+        #    self.JSD.add("x509userproxy=%s" % self.x509userproxy)
 
         # -- fixed stuffs -- 
         self.JSD.add("universe=vanilla")

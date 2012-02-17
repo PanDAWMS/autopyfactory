@@ -27,7 +27,7 @@ class CondorCEBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         super(CondorCEBatchSubmitPlugin, self).__init__(apfqueue, newqcl) 
 
         try:
-            self.x509userproxy = self.factory.proxymanager.getProxyPath(qcl.get(self.apfqname,'proxy'))
+            #self.x509userproxy = self.factory.proxymanager.getProxyPath(qcl.get(self.apfqname,'proxy'))
             self.log.info('CondorCEBatchSubmitPlugin: Object initialized.')
         except:
             self._valid = False
@@ -39,8 +39,8 @@ class CondorCEBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
    
         super(CondorCEBatchSubmitPlugin, self)._addJSD() 
     
-        # -- proxy path --
-        self.JSD.add("x509userproxy=%s" % self.x509userproxy) 
+        ## -- proxy path --
+        #self.JSD.add("x509userproxy=%s" % self.x509userproxy) 
        
         # -- fixed stuffs -- 
         self.JSD.add('periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)')
