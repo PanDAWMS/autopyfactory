@@ -103,8 +103,8 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             # If we arrived to here without problems, we are ready
             # to start creating the JSD file
             # JSDFile object where we will write the content condor submission file
-            self.JSD = jsd.JSDFile()
-            self._add()  # note this is going to call 
+            ###self.JSD = jsd.JSDFile()
+            ###self._add()  # note this is going to call 
                              # the actual plugin (CondorGT2, CondorCREAM...) _add() method
 
             self.log.info('BatchSubmitPlugin: Object initialized.')
@@ -127,9 +127,12 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
 
         if n != 0:
 
-            ###self._addJSD()
-            tmpJSD = self._finishJSD(n)
-            jsdfile = self._writeJSD(tmpJSD)
+            self.JSD = jsd.JSDFile()
+            self._addJSD()
+            #tmpJSD = self._finishJSD(n)
+            self._finishJSD(n)
+            #jsdfile = self._writeJSD(tmpJSD)
+            jsdfile = self._writeJSD()
             if jsdfile:
                 st, output = self.__submit(n, jsdfile) 
             else:
@@ -238,10 +241,11 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         '''
         self.log.debug('finishJSD: Starting.')
         self.log.debug('finishJSD: adding queue line with %d jobs' %n)
-        tmpJSD = self.JSD.clone()
-        tmpJSD.add("queue %d" %n)
+        #tmpJSD = self.JSD.clone()
+        #tmpJSD.add("queue %d" %n)
+        self.JSD.add("queue %d" %n)
         self.log.debug('finishJSD: Leaving.')
-        return tmpJSD
+        #return tmpJSD
 
     def _writeJSD(self, tmpjsd):
         '''
@@ -249,9 +253,9 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         '''
     
         self.log.debug('writeJSD: Starting.')
-        #self.log.debug('writeJSD: the submit file content is\n %s ' %self.JSD)
-        self.log.debug('writeJSD: the submit file content is\n %s ' %tmpjsd)
-        #out = self.JSD.write(self.logDir, 'submit.jdl')
-        out = tmpjsd.write(self.logDir, 'submit.jdl')
+        self.log.debug('writeJSD: the submit file content is\n %s ' %self.JSD)
+        #self.log.debug('writeJSD: the submit file content is\n %s ' %tmpjsd)
+        out = self.JSD.write(self.logDir, 'submit.jdl')
+        #out = tmpjsd.write(self.logDir, 'submit.jdl')
         self.log.debug('writeJSD: Leaving.')
-        return out
+        #return out
