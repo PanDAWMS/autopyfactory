@@ -721,9 +721,8 @@ class APFQueue(threading.Thread):
         self.wmsstatus = self._getplugin('wmsstatus', self)
         self.wmsstatus.start()                  # starts the thread
         self.batchsubmit = self._getplugin('batchsubmit', self)
-        self.log.info('APFQueue: Object initialized.')
 
-        
+        self.log.info('APFQueue: Object initialized.')
 
     def _getplugin(self, action, *k, **kw):
         '''
