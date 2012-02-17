@@ -89,16 +89,17 @@ class PandaConfigPlugin(ConfigInterface):
         except IOError, (errno, errmsg):
                 self.log.error('_getschedconfig: %s for queue %s, downloading from %s' % (errmsg, self.batchqueue, url))
 
-    def getConfig(self):
+    def getConfig(self, id):
         '''
         returns a Config object with the info we are interested in
+        id is the string that identifies a given class (e.g. condorgt2, condorcream...)
         '''
 
         conf = Config()
         conf.add_section(self.apfqname)
         if self.gridresource:
-                conf.set(self.apfqname, 'batchsubmit.gridresource', self.gridresource)
+                conf.set(self.apfqname, 'batchsubmit.%s.gridresource' %id, self.gridresource)
         if self.queue:
-                conf.set(self.apfqname, 'batchsubmit.queue', self.queue)
+                conf.set(self.apfqname, 'batchsubmit.%s.queue' %id, self.queue)
   
         return conf 
