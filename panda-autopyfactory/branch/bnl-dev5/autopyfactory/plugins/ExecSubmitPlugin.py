@@ -57,16 +57,21 @@ class ExecSubmitPlugin(BatchSubmitInterface):
 
             self.batchqueue = self.qcl.get(self.apfqname, 'batchqueue')
 
-            self.pandagrid = None
-            if self.qcl.has_option(self.apfqname, 'executable.pandagrid'):
-                self.pandagrid = self.qcl.get(self.apfqname, 'executable.pandagrid')
+            self.wrappergrid = None
+            if self.qcl.has_option(self.apfqname, 'executable.wrappergrid'):
+                self.wrappergrid = self.qcl.get(self.apfqname, 'executable.wrappergrid')
             
-            self.pandaserverurl = self.qcl.get(self.apfqname, 'executable.pandaserverurl')
-            self.pandawrappertarballurl = self.qcl.get(self.apfqname, 'executable.pandawrappertarballurl')
+            self.wrapperserverurl = None
+            if self.qcl.has_option(self.apfqname, 'executable.wrapperserverurl'):
+                    self.wrapperserverurl = self.qcl.get(self.apfqname, 'executable.wrapperserverurl')
+
+            self.wrappertarballurl = None
+            if self.qcl.has_option(self.apfqname, 'executable.wrappertarballurl'):
+                    self.wrappertarballurl = self.qcl.get(self.apfqname, 'executable.wrappertarballurl')
             
-            self.pandaloglevel = None
-            if self.qcl.has_option(self.apfqname, 'executable.pandaloglevel'):
-                self.pandaloglevel = self.qcl.get(self.apfqname, 'executable.pandaloglevel')
+            self.wrapperloglevel = None
+            if self.qcl.has_option(self.apfqname, 'executable.wrapperloglevel'):
+                self.wrapperloglevel = self.qcl.get(self.apfqname, 'executable.wrapperloglevel')
             
             self.arguments = None
             if self.qcl.has_option(self.apfqname, 'executable.arguments'):
@@ -142,14 +147,14 @@ class ExecSubmitPlugin(BatchSubmitInterface):
 
         # --- argumetns ---
         arguments = 'arguments = '
-        arguments += ' --pandasite=%s ' %self.siteid
-        arguments += ' --pandaqueue=%s ' %self.batchqueue
-        if self.pandagrid:
-                arguments += ' --pandagrid=%s ' %self.pandagrid
-        arguments += ' --pandaserverurl=%s ' %self.pandaserverurl
-        arguments += ' --pandawrappertarballurl=%s ' %self.pandawrappertarballurl
-        if self.pandaloglevel:
-                arguments += ' --pandaloglevel=%s' %self.pandaloglevel
+        arguments += ' --wrappersite=%s ' %self.siteid
+        arguments += ' --wrapperqueue=%s ' %self.batchqueue
+        if self.wrappergrid:
+                arguments += ' --wrappergrid=%s ' %self.wrappergrid
+        arguments += ' --wrapperserverurl=%s ' %self.wrapperserverurl
+        arguments += ' --wrappertarballurl=%s ' %self.wrappertarballurl
+        if self.wrapperloglevel:
+                arguments += ' --wrapperloglevel=%s' %self.wrapperloglevel
         if self.arguments:
                 arguments += ' ' + self.arguments
 
