@@ -367,6 +367,12 @@ class JSDFile(object):
                 out = '\n'.join([dir() for dir in self.listofdirectives])
                 return out
 
+        def clone(self):
+                '''
+                makes an exact copy of the object
+                '''
+                return copy.deepcopy(self)
+
         def isvalid(self):
                 """
                 loops over all directives in self.listofdirectives
