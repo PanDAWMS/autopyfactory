@@ -102,6 +102,9 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         if qcl.has_option(self.apfqname, 'executable.arguments'):
             self.arguments = qcl.get(self.apfqname, 'executable.arguments')
 
+    def valid(self):
+        return self._valid
+
     def submit(self, n):
         '''
         n is the number of pilots to be submitted 
