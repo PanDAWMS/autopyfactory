@@ -702,7 +702,8 @@ class APFQueue(threading.Thread):
             self.wmsstatusmaxtime = self.fcl.get('Factory', 'wmsstatus.maxtime')
         
         # Handle sched plugin
-        self.scheduler = self._getplugin('sched', self)
+        self.scheduler_cls = self._getplugin('sched')
+        self.scheduler = self.scheduler_cls(self)
 
         # Monitor
         if self.fcl.has_option('Factory', 'monitorURL'):
@@ -716,15 +717,18 @@ class APFQueue(threading.Thread):
         self.clean.start()
 
         # Handle status and submit batch plugins. 
-        self.batchstatus = self._getplugin('batchstatus', self)
+        self.batchstatus_cls = self._getplugin('batchstatus')
+        self.batchstatus = self.batchstatus_cls(self)
         self.batchstatus.start()                # starts the thread
-        self.wmsstatus = self._getplugin('wmsstatus', self)
+        self.wmsstatus_cls = self._getplugin('wmsstatus')
+        self.wmsstatus = self.wmsstatus_cls(self)
         self.wmsstatus.start()                  # starts the thread
-        self.batchsubmit = self._getplugin('batchsubmit', self)
+        self.batchsubmit_cls = self._getplugin('batchsubmit')
+        self.batchsubmit = self.batchsubmit_cls(self)
 
         self.log.info('APFQueue: Object initialized.')
 
-    def _getplugin(self, action, *k, **kw):
+    def _getplugin(self, action):
         '''
         Generic private method to find out the specific plugin
         to be used for this queue, depending on the action.
@@ -748,7 +752,7 @@ class APFQueue(threading.Thread):
                    The name of the class is the same as the name of the module
         '''
 
-        self.log.debug("__getplugin: Starting with inputs %s and %s" %( k, kw))
+        self.log.debug("__getplugin: Starting for action %s" %action)
 
         plugin_prefixes = {
                 'sched' : 'Sched',
@@ -774,7 +778,7 @@ class APFQueue(threading.Thread):
 
         self.log.debug("_getplugin: Attempting to return plugin with classname %s" %plugin_class)
         self.log.debug("_getplugin: Leaving with plugin named %s" %plugin_class)
-        return getattr(plugin_module, plugin_class)(*k, **kw)
+        return getattr(plugin_module, plugin_class)
 
 # Run methods
 
