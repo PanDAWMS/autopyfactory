@@ -17,41 +17,40 @@ __status__ = "Production"
 
 class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         id = 'condorec2'
-        '''
-        This class is expected to have separate instances for each PandaQueue object. 
-        '''
         
-        def __init__(self, apfqueue, qcl=None):
+        def __init__(self, apfqueue):
 
+                super(CondorEC2BatchSubmitPlugin, self).__init__(apfqueue)
+                self.log.info('CondorEC2BatchSubmitPlugin: Object initialized.')
+
+        def _readconfig(self, qcl=None):
+                '''
+                read the config file
+                '''
 
                 # Chosing the queue config object, depending on 
-                # it was an input option or not.
-                #       If it was passed as input option, then that is the config object. 
-                #       If not, then it is extracted from the apfqueue object
                 if not qcl:
-                    qcl = apfqueue.factory.qcl
+                    qcl = self.apfqueue.factory.qcl
 
                 # we rename the queue config variables to pass a new config object to parent class
                 newqcl = qcl.clone().filterkeys('batchsubmit.condorec2', 'batchsubmit.condorgrid')
-                super(CondorEC2BatchSubmitPlugin, self).__init__(apfqueue, newqcl)
+                super(CondorEC2BatchSubmitPlugin, self)._readconfig(newqcl)
 
-                try:
-                        self.gridresource = qcl.get(self.apfqname, 'batchsubmit.condorec2.gridresource') 
+                self.gridresource = qcl.get(self.apfqname, 'batchsubmit.condorec2.gridresource') 
 
-                        self.ami_id = qcl.get(self.apfqname, 'batchsubmit.condorec2.ami_id')
-                        self.instance_type  = qcl.get(self.apfqname, 'batchsubmit.condorec2.instance_type')
-                        self.user_data = None        
-                        if qcl.has_option(self.apfqname, 'batchsubmit.condorec2.user_data'):
-                                self.user_data = qcl.get(self.apfqname, 'batchsubmit.condorec2.user_data')
-                        #self.x509userproxy = self.factory.proxymanager.getProxyPath(qcl.get(self.apfqname,'batchsubmit.condorec2.proxy'))
-                        self.access_key_id = qcl.get(self.apfqname,'batchsubmit.condorec2.access_key_id')
-                        self.secret_access_key = qcl.get(self.apfqname,'batchsubmit.condorec2.secret_access_key')
+                self.ami_id = qcl.get(self.apfqname, 'batchsubmit.condorec2.ami_id')
+                self.instance_type  = qcl.get(self.apfqname, 'batchsubmit.condorec2.instance_type')
+                self.user_data = None        
+                if qcl.has_option(self.apfqname, 'batchsubmit.condorec2.user_data'):
+                        self.user_data = qcl.get(self.apfqname, 'batchsubmit.condorec2.user_data')
+                self.access_key_id = qcl.get(self.apfqname,'batchsubmit.condorec2.access_key_id')
+                self.secret_access_key = qcl.get(self.apfqname,'batchsubmit.condorec2.secret_access_key')
 
-                        self.log.info('CondorEC2BatchSubmitPlugin: Object initialized.')
-                except:         
-                        self._valid = False
 
         def _addJSD(self):
+                '''
+                add things to the JSD object
+                '''
 
                 self.log.debug('CondorEC2BatchSubmitPlugin.addJSD: Starting.')
 

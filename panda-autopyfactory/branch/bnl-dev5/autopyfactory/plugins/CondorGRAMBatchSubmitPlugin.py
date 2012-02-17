@@ -16,27 +16,29 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
-    '''
-    This class is expected to have separate instances for each PandaQueue object. 
-    '''
    
-    def __init__(self, apfqueue, qcl):
+    def __init__(self, apfqueue):
+
+        super(CondorGRAMBatchSubmitPlugin, self).__init__(apfqueue) 
+        self.log.info('CondorGRAMBatchSubmitPlugin: Object initialized.')
+  
+    def _readconfig(self, qcl):
+        '''
+        read the config loader object
+        '''
 
         # we rename the queue config variables to pass a new config object to parent class
         newqcl = qcl.clone().filterkeys('batchsubmit.condorgram', 'batchsubmit.condorce')
-        super(CondorGRAMBatchSubmitPlugin, self).__init__(apfqueue, newqcl) 
+        super(CondorGRAMBatchSubmitPlugin, self)._readconfig(newqcl) 
 
-        try:
-            self.queue = None
-            if qcl.has_option(self.apfqname,'batchsubmit.condorgram.queue'):
-                self.queue = qcl.get(self.apfqname, 'batchsubmit.condorgram.queue')
-
-            self.log.info('CondorGRAMBatchSubmitPlugin: Object initialized.')
-        except:
-            self._valid = False
-   
-
+        self.queue = None
+        if qcl.has_option(self.apfqname,'batchsubmit.condorgram.queue'):
+            self.queue = qcl.get(self.apfqname, 'batchsubmit.condorgram.queue')
+         
     def _addJSD(self):
+        '''
+        add things to the JSD object 
+        '''
     
         self.log.debug('CondorGRAMBatchSubmitPlugin.addJSD: Starting.')
    

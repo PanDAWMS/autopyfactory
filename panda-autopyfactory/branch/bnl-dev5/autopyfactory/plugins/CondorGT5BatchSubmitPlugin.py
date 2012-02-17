@@ -16,36 +16,33 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 class CondorGT5BatchSubmitPlugin(CondorGRAMBatchSubmitPlugin):
-    id = 'condorgt5'        
+    id = 'condorgt5'
     '''
     This class is expected to have separate instances for each PandaQueue object. 
     '''
    
-    def __init__(self, apfqueue, qcl=None):
+    def __init__(self, apfqueue):
 
+        super(CondorGT5BatchSubmitPlugin, self).__init__(apfqueue) 
+        self.log.info('CondorGT5BatchSubmitPlugin: Object initialized.')
 
+    def _readconfig(self, qcl=None):
+        ''' 
+        read the config loader object
+        ''' 
         # Chosing the queue config object, depending on 
-        # it was an input option or not.
-        #       If it was passed as input option, then that is the config object. 
-        #       If not, then it is extracted from the apfqueue object
         if not qcl:
-            qcl = apfqueue.factory.qcl
+            qcl = self.apfqueue.factory.qcl
 
         # we rename the queue config variables to pass a new config object to parent class
-        newqcl = qcl.clone().filterkeys('batchsubmit.condorgt5', 'batchsubmit.condorgram')
-        super(CondorGT5BatchSubmitPlugin, self).__init__(apfqueue, newqcl) 
+        newqcl = self.qcl.clone().filterkeys('batchsubmit.condorgt5', 'batchsubmit.condorgram')
+        super(CondorGT5BatchSubmitPlugin, self)._readconfig(newqcl)
 
-        # Get from the config object the specific variables that apply to this class
-        try:
-            self.gridresource = qcl.get(self.apfqname, 'batchsubmit.condorgt5.gridresource') 
-        except:
-            self._valid = False
-
-        self.log.info('CondorGT5BatchSubmitPlugin: Object initialized.')
+        self.gridresource = qcl.get(self.apfqname, 'batchsubmit.condorgt5.gridresource') 
 
     def _addJSD(self):
         '''
-        add things to the JSD file
+        add things to the JSD object
         '''
 
         self.log.debug('CondorGT5BatchSubmitPlugin.addJSD: Starting.')

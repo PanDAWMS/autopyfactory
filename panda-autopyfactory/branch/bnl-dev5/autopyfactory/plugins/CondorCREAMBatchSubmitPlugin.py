@@ -22,35 +22,35 @@ class CondorCREAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
     This class is expected to have separate instances for each PandaQueue object. 
     '''
    
-    def __init__(self, apfqueue, qcl=None):
+    def __init__(self, apfqueue):
 
+        super(CondorCREAMBatchSubmitPlugin, self).__init__(apfqueue) 
+        self.log.info('CondorCREAMBatchSubmitPlugin: Object initialized.')
+
+    def _readconfig(self, qcl=None):
+        ''' 
+        read the config loader object
+        ''' 
 
         # Chosing the queue config object, depending on 
-        # it was an input option or not.
-        #       If it was passed as input option, then that is the config object. 
-        #       If not, then it is extracted from the apfqueue object
         if not qcl:
-            qcl = apfqueue.factory.qcl
+            qcl = self.apfqueue.factory.qcl
 
         # we rename the queue config variables to pass a new config object to parent class
         newqcl = qcl.clone().filterkeys('batchsubmit.condorcream', 'batchsubmit.condorce')
-        super(CondorCREAMBatchSubmitPlugin, self).__init__(apfqueue, newqcl) 
+        super(CondorCREAMBatchSubmitPlugin, self)._readconfig(newqcl) 
 
-        try:
-
-            self.gridresource = qcl.get(self.apfqname, 'batchsubmit.condorcream.gridresource') 
-            self.creamport = qcl.getint(self.apfqname, 'batchsubmit.condorcream.port')  
-            self.creambatch = qcl.get(self.apfqname, 'batchsubmit.condorcream.batch')  
-            self.queue = None
-            if qcl.has_option(self.apfqname,'batchsubmit.condorcream.queue'):
-                self.queue = qcl.get(self.apfqname, 'batchsubmit.condorcream.queue')
-            
-            self.log.info('CondorCREAMBatchSubmitPlugin: Object initialized.')
-        except:
-            self._valid = False
-   
+        self.gridresource = qcl.get(self.apfqname, 'batchsubmit.condorcream.gridresource') 
+        self.creamport = qcl.getint(self.apfqname, 'batchsubmit.condorcream.port')  
+        self.creambatch = qcl.get(self.apfqname, 'batchsubmit.condorcream.batch')  
+        self.queue = None
+        if qcl.has_option(self.apfqname,'batchsubmit.condorcream.queue'):
+            self.queue = qcl.get(self.apfqname, 'batchsubmit.condorcream.queue')
 
     def _addJSD(self):
+        '''
+        add things to the JSD object
+        '''
     
         self.log.debug('CondorCREAMBatchSubmitPlugin.addJSD: Starting.')
     

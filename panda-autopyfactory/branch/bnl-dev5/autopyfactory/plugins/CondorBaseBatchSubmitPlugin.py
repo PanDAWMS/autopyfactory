@@ -23,96 +23,85 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
-    '''
-    This class is expected to have separate instances for each PandaQueue object. 
-    '''
     
-    def __init__(self, apfqueue, qcl):
+    def __init__(self, apfqueue):
 
         self._valid = True
         self.log = logging.getLogger("main.batchsubmitplugin[%s]" %apfqueue.apfqname)
 
+        self.apfqueue = apfqueue
         self.apfqname = apfqueue.apfqname
         self.factory = apfqueue.factory
         self.fcl = apfqueue.factory.fcl
 
-        # calculating the directory path from where to submit jobs
-        now = time.gmtime() # gmtime() is like localtime() but in UTC
-        timePath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2])
-        logPath = timePath + self.apfqname.translate(string.maketrans('/:','__'))
-        self.logDir = self.fcl.get('Factory', 'baseLogDir') + logPath
-        self.logUrl = self.fcl.get('Factory', 'baseLogDirUrl') + logPath
+        self.log.info('BatchSubmitPlugin: Object initialized.')
 
-        try:
-            self.siteid = qcl.get(self.apfqname, 'wmsqueue')
+    def _readconfig(self, qcl):
+        '''
+        read the config loader object
+        '''
 
-            self.executable = qcl.get(self.apfqname, 'executable')
-            self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
+        self.siteid = qcl.get(self.apfqname, 'wmsqueue')
 
-            self.x509userproxy = None
-            if qcl.has_option(self.apfqname,'batchsubmit.condorbase.proxy'):
-                proxy = qcl.get(self.apfqname,'batchsubmit.condorbase.proxy')
-                #self.x509userproxy = self.factory.proxymanager.getProxyPath(qcl.get(self.apfqname,'batchsubmit.condorbase.proxy'))
-                self.x509userproxy = self.factory.proxymanager.getProxyPath(proxy)
-                self.log.debug('proxy is %s. Loaded path from proxymanager: %s' % (proxy, self.x509userproxy))
-            else:
-                self.log.debug('proxy is None. No proxy configured.')
-            
-            self.factoryid = self.fcl.get('Factory', 'factoryId')
+        self.executable = qcl.get(self.apfqname, 'executable')
+        self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
 
-            self.monitorurl = None
-            if self.fcl.has_option('Factory', 'monitorURL'):
-                self.monitorurl = self.fcl.get('Factory', 'monitorURL')
+        self.x509userproxy = None
+        if qcl.has_option(self.apfqname,'batchsubmit.condorbase.proxy'):
+            proxy = qcl.get(self.apfqname,'batchsubmit.condorbase.proxy')
+            self.x509userproxy = self.factory.proxymanager.getProxyPath(proxy)
+            self.log.debug('proxy is %s. Loaded path from proxymanager: %s' % (proxy, self.x509userproxy))
+        else:
+            self.log.debug('proxy is None. No proxy configured.')
+        
+        self.factoryid = self.fcl.get('Factory', 'factoryId')
 
-            self.factoryuser = None
-            if self.fcl.has_option('Factory', 'factoryUser'):
-                self.factoryuser = self.fcl.get('Factory', 'factoryUser')
+        self.monitorurl = None
+        if self.fcl.has_option('Factory', 'monitorURL'):
+            self.monitorurl = self.fcl.get('Factory', 'monitorURL')
 
-            self.environ = None
-            if qcl.has_option(self.apfqname, 'batchsubmit.condorbase.environ'):
-                self.environ = qcl.get(self.apfqname, 'batchsubmit.condorbase.environ')
+        self.factoryuser = None
+        if self.fcl.has_option('Factory', 'factoryUser'):
+            self.factoryuser = self.fcl.get('Factory', 'factoryUser')
 
-            self.condor_attributes = None
-            if qcl.has_option(self.apfqname, 'batchsubmit.condorbase.condor_attributes'):
-                self.condor_attributes = qcl.get(self.apfqname, 'batchsubmit.condorbase.condor_attributes')
+        self.environ = None
+        if qcl.has_option(self.apfqname, 'batchsubmit.condorbase.environ'):
+            self.environ = qcl.get(self.apfqname, 'batchsubmit.condorbase.environ')
 
-            self.batchqueue = qcl.get(self.apfqname, 'batchqueue')
+        self.condor_attributes = None
+        if qcl.has_option(self.apfqname, 'batchsubmit.condorbase.condor_attributes'):
+            self.condor_attributes = qcl.get(self.apfqname, 'batchsubmit.condorbase.condor_attributes')
 
-            self.wrappergrid = None
-            if qcl.has_option(self.apfqname, 'executable.wrappergrid'):
-                self.wrappergrid = qcl.get(self.apfqname, 'executable.wrappergrid')
+        self.batchqueue = qcl.get(self.apfqname, 'batchqueue')
 
-            self.wrappervo = None
-            if qcl.has_option(self.apfqname, 'executable.wrappervo'):
-                self.wrappervo = qcl.get(self.apfqname, 'executable.wrappervo')
-            
-            self.wrapperserverurl = None
-            if qcl.has_option(self.apfqname, 'executable.wrapperserverurl'):
-                    self.wrapperserverurl = qcl.get(self.apfqname, 'executable.wrapperserverurl')
+        self.wrappergrid = None
+        if qcl.has_option(self.apfqname, 'executable.wrappergrid'):
+            self.wrappergrid = qcl.get(self.apfqname, 'executable.wrappergrid')
 
-            self.wrappertarballurl = None
-            if qcl.has_option(self.apfqname, 'executable.wrappertarballurl'):
-                    self.wrappertarballurl = qcl.get(self.apfqname, 'executable.wrappertarballurl')
-            
-            self.wrapperloglevel = None
-            if qcl.has_option(self.apfqname, 'executable.wrapperloglevel'):
-                self.wrapperloglevel = qcl.get(self.apfqname, 'executable.wrapperloglevel')
-            
-            self.wrappermode = None
-            if qcl.has_option(self.apfqname, 'executable.wrappermode'):
-                self.wrappermode = qcl.get(self.apfqname, 'executable.wrappermode')
-            
-            self.arguments = None
-            if qcl.has_option(self.apfqname, 'executable.arguments'):
-                self.arguments = qcl.get(self.apfqname, 'executable.arguments')
+        self.wrappervo = None
+        if qcl.has_option(self.apfqname, 'executable.wrappervo'):
+            self.wrappervo = qcl.get(self.apfqname, 'executable.wrappervo')
+        
+        self.wrapperserverurl = None
+        if qcl.has_option(self.apfqname, 'executable.wrapperserverurl'):
+                self.wrapperserverurl = qcl.get(self.apfqname, 'executable.wrapperserverurl')
 
-            self.log.info('BatchSubmitPlugin: Object initialized.')
-        except:
-            self._valid = False
+        self.wrappertarballurl = None
+        if qcl.has_option(self.apfqname, 'executable.wrappertarballurl'):
+                self.wrappertarballurl = qcl.get(self.apfqname, 'executable.wrappertarballurl')
+        
+        self.wrapperloglevel = None
+        if qcl.has_option(self.apfqname, 'executable.wrapperloglevel'):
+            self.wrapperloglevel = qcl.get(self.apfqname, 'executable.wrapperloglevel')
+        
+        self.wrappermode = None
+        if qcl.has_option(self.apfqname, 'executable.wrappermode'):
+            self.wrappermode = qcl.get(self.apfqname, 'executable.wrappermode')
+        
+        self.arguments = None
+        if qcl.has_option(self.apfqname, 'executable.arguments'):
+            self.arguments = qcl.get(self.apfqname, 'executable.arguments')
 
-    def valid(self):
-        return self._valid
-    
     def submit(self, n):
         '''
         n is the number of pilots to be submitted 
@@ -126,6 +115,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
 
         if n != 0:
             self.JSD = jsd.JSDFile()
+            self._readconfig()
             self._addJSD()
             self._finishJSD(n)
             jsdfile = self._writeJSD()
@@ -246,6 +236,14 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
     
         self.log.debug('writeJSD: Starting.')
         self.log.debug('writeJSD: the submit file content is\n %s ' %self.JSD)
+
+        # calculating the directory path from where to submit jobs
+        now = time.gmtime() # gmtime() is like localtime() but in UTC
+        timePath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2])
+        logPath = timePath + self.apfqname.translate(string.maketrans('/:','__'))
+        self.logDir = self.fcl.get('Factory', 'baseLogDir') + logPath
+        self.logUrl = self.fcl.get('Factory', 'baseLogDirUrl') + logPath
+
         out = self.JSD.write(self.logDir, 'submit.jdl')
         self.log.debug('writeJSD: Leaving.')
         return out

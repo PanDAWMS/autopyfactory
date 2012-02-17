@@ -16,32 +16,30 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 class CondorCEBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
-    '''
-    This class is expected to have separate instances for each PandaQueue object. 
-    '''
    
     def __init__(self, apfqueue, qcl):
 
+        super(CondorCEBatchSubmitPlugin, self).__init__(apfqueue) 
+        self.log.info('CondorCEBatchSubmitPlugin: Object initialized.')
+   
+    def _readconfig(self, qcl):
+        '''
+        read the config loader object 
+        '''
+
         # we rename the queue config variables to pass a new config object to parent class
         newqcl = qcl.clone().filterkeys('batchsubmit.condorce', 'batchsubmit.condorgrid')
-        super(CondorCEBatchSubmitPlugin, self).__init__(apfqueue, newqcl) 
-
-        try:
-            #self.x509userproxy = self.factory.proxymanager.getProxyPath(qcl.get(self.apfqname,'proxy'))
-            self.log.info('CondorCEBatchSubmitPlugin: Object initialized.')
-        except:
-            self._valid = False
-   
+        super(CondorCEBatchSubmitPlugin, self)._readconfig(newqcl)
 
     def _addJSD(self):
-    
+        '''   
+        add things to the JSD object
+        '''   
+ 
         self.log.debug('CondorCEBatchSubmitPlugin.addJSD: Starting.')
    
         super(CondorCEBatchSubmitPlugin, self)._addJSD() 
     
-        ## -- proxy path --
-        #self.JSD.add("x509userproxy=%s" % self.x509userproxy) 
-       
         # -- fixed stuffs -- 
         self.JSD.add('periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)')
         self.JSD.add('periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)')
