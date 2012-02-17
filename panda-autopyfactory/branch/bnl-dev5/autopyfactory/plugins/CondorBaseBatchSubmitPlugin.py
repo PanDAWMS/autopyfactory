@@ -86,8 +86,13 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             if qcl.has_option(self.apfqname, 'executable.wrappervo'):
                 self.wrappervo = qcl.get(self.apfqname, 'executable.wrappervo')
             
-            self.wrapperserverurl = qcl.get(self.apfqname, 'executable.wrapperserverurl')
-            self.wrappertarballurl = qcl.get(self.apfqname, 'executable.wrappertarballurl')
+            self.wrapperserverurl = None
+            if qcl.has_option(self.apfqname, 'executable.wrapperserverurl'):
+                    self.wrapperserverurl = qcl.get(self.apfqname, 'executable.wrapperserverurl')
+
+            self.wrappertarballurl = None
+            if qcl.has_option(self.apfqname, 'executable.wrappertarballurl'):
+                    self.wrappertarballurl = qcl.get(self.apfqname, 'executable.wrappertarballurl')
             
             self.wrapperloglevel = None
             if qcl.has_option(self.apfqname, 'executable.wrapperloglevel'):
@@ -100,13 +105,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             self.arguments = None
             if qcl.has_option(self.apfqname, 'executable.arguments'):
                 self.arguments = qcl.get(self.apfqname, 'executable.arguments')
-
-            # If we arrived to here without problems, we are ready
-            # to start creating the JSD file
-            # JSDFile object where we will write the content condor submission file
-            ###self.JSD = jsd.JSDFile()
-            ###self._add()  # note this is going to call 
-                             # the actual plugin (CondorGT2, CondorCREAM...) _add() method
 
             self.log.info('BatchSubmitPlugin: Object initialized.')
         except:
@@ -129,9 +127,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         if n != 0:
             self.JSD = jsd.JSDFile()
             self._addJSD()
-            #tmpJSD = self._finishJSD(n)
             self._finishJSD(n)
-            #jsdfile = self._writeJSD(tmpJSD)
             jsdfile = self._writeJSD()
             if jsdfile:
                 st, output = self.__submit(n, jsdfile) 
@@ -202,7 +198,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
 
 
         # -- fixed stuffs -- 
-        # In case of Local submission, the env must be passed 
         self.JSD.add("output=$(Dir)/$(Cluster).$(Process).out")
         self.JSD.add("error=$(Dir)/$(Cluster).$(Process).err")
         self.JSD.add("log=$(Dir)/$(Cluster).$(Process).log")
@@ -241,13 +236,9 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         '''
         self.log.debug('finishJSD: Starting.')
         self.log.debug('finishJSD: adding queue line with %d jobs' %n)
-        #tmpJSD = self.JSD.clone()
-        #tmpJSD.add("queue %d" %n)
         self.JSD.add("queue %d" %n)
         self.log.debug('finishJSD: Leaving.')
-        #return tmpJSD
 
-    #def _writeJSD(self, tmpjsd):
     def _writeJSD(self):
         '''
         Dumps the whole content of the JSDFile object into a disk file
@@ -255,8 +246,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
     
         self.log.debug('writeJSD: Starting.')
         self.log.debug('writeJSD: the submit file content is\n %s ' %self.JSD)
-        #self.log.debug('writeJSD: the submit file content is\n %s ' %tmpjsd)
         out = self.JSD.write(self.logDir, 'submit.jdl')
-        #out = tmpjsd.write(self.logDir, 'submit.jdl')
         self.log.debug('writeJSD: Leaving.')
         return out
