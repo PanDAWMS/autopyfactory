@@ -96,7 +96,9 @@ class PandaConfigPlugin(ConfigInterface):
 
         conf = Config()
         conf.add_section(self.apfqname)
-        conf.set(self.apfqname, 'batchsubmit.gridresource', self.gridresource)
-        conf.set(self.apfqname, 'batchsubmit.queue', self.queue)
+        if self.gridresource:
+                conf.set(self.apfqname, 'batchsubmit.gridresource', self.gridresource)
+        if self.queue:
+                conf.set(self.apfqname, 'batchsubmit.queue', self.queue)
   
         return conf 
