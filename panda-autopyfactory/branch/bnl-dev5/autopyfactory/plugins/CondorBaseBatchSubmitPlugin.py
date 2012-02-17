@@ -247,7 +247,8 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         self.log.debug('finishJSD: Leaving.')
         #return tmpJSD
 
-    def _writeJSD(self, tmpjsd):
+    #def _writeJSD(self, tmpjsd):
+    def _writeJSD(self):
         '''
         Dumps the whole content of the JSDFile object into a disk file
         '''
