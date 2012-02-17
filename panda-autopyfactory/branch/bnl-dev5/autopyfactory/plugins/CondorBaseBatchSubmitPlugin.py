@@ -126,7 +126,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
                 return None, None
 
         if n != 0:
-
             self.JSD = jsd.JSDFile()
             self._addJSD()
             #tmpJSD = self._finishJSD(n)
@@ -259,4 +258,4 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         out = self.JSD.write(self.logDir, 'submit.jdl')
         #out = tmpjsd.write(self.logDir, 'submit.jdl')
         self.log.debug('writeJSD: Leaving.')
-        #return out
+        return out
