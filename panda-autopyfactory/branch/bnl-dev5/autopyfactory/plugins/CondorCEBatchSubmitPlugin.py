@@ -17,7 +17,7 @@ __status__ = "Production"
 
 class CondorCEBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
    
-    def __init__(self, apfqueue, qcl):
+    def __init__(self, apfqueue):
 
         super(CondorCEBatchSubmitPlugin, self).__init__(apfqueue) 
         self.log.info('CondorCEBatchSubmitPlugin: Object initialized.')
