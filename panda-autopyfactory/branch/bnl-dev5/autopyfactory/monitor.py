@@ -33,7 +33,7 @@ __author__ = "Peter Love, Jose Caballero"
 __copyright__ = "2010,2011 Peter Love; 2011 Jose Caballero"
 __credits__ = []
 __license__ = "GPL"
-__version__ = "2.0.0"
+__version__ = "2.1.0"
 __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
@@ -54,7 +54,7 @@ class Monitor(object):
             monitorURL =  http://apfmon.lancs.ac.uk/mon/
             #HTTPproxy = http://proxy.sec.bnl.local
             #HTTPproxyport = 3128
-            versionTag = 2.0.1
+            versionTag = 2.1.0
         
         Also sends initial ping to monitor server. 
         
