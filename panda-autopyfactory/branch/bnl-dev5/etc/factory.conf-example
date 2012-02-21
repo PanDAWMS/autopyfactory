@@ -95,7 +95,7 @@
 factoryAdminEmail = neo@matrix.net
 factoryId = BNL-gridui11-jhover
 factoryUser = apf
-versionTag = 2.0.1
+versionTag = 2.1.0
 
 monitorURL =  http://apfmon.lancs.ac.uk/mon/
 
