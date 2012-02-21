@@ -165,95 +165,94 @@ class Config(SafeConfigParser, object):
                 #   newconfig = config.clone().filterkeys('a', 'b')
                 return self
                                 
-        # This is just a wish...        
+
+
         def  generic_get(self, 
-                         section,                       # SafeConfigParser section 
+                         section,                       # SafeConfigParser section
                          option,                        # option in the SafeConfigParser section
-                         convert=False,                 # decide if strings should be converted into python None, when possible
-                         mandatory=False,               # if the option is supposed to be there 
-                         mandatory_exception=None,      # exception to be raised if the option is mandatory but it is not there 
-                         log_function=None,             # log function to be used when everything goes OK
-                         log_message=None,              # message to be logged when everything goes OK
-                         failure_log_function=None,     # log function to be used when something was not OK 
-                         failure_message=None):         # message to be logged when something was not OK 
+                         get_function='get',            # string representing the actual SafeConfigParser method:  "get", "getint", "getfloat", "getboolean"
+                         convert_to_None=False,         # decide if strings "None", "Null" or ""  should be converted into python None
+                         mandatory=False,               # if the option is supposed to be there
+                         default_value=None,            # default value to be returned with variable is not mandatory and is not in the config file
+                         mandatory_exception=None,      # exception to be raised if the option is mandatory but it is not there
+                         loggger=None):                 # logger function 
                 '''
                 generic get() method for Config objects.
                 example of usage:
-                        x = generic_get2("Sec1", "x", convert=True, mandatory=True, mandatory_exception=NoMandatoryException, log.info, "x has a value", log.error, "x not found")
-
-                If convert is True, it tries to return the actual 
-                python object represented by the string. 
-                Possibilities are tried in this order:
-                     -- an integer
-                     -- a float
-                     -- a boolean
-                     -- None
+                        x = generic_get("Sec1", "x", get_function='getint', convert=True, mandatory=True, mandatory_exception=NoMandatoryException, logger=self.log)
                 '''
-                has_option = self.has_option(section, option)
+        
+                has_option = config_object.has_option(section, option)
         
                 if not has_option:
                         if mandatory:
-                                if failure_log_function:
-                                        failure_log_function(failure_message)
+                                if logger:
+                                        logger.error('generic_get: option %s is not present in section %s' %(option, section))
                                 if mandatory_exception:
                                         raise mandatory_exception
                         else:
-                                return None
+                                return default_value
                 else:
-                        value = self.get(section, option)
-                        if log_function:
-                                log_function(log_message)
-                        if convert:
-                                try:
-                                        return int(value)
-                                except:
-                                        pass
-                                try:
-                                        return float(value)
-                                except:
-                                        pass
-                                if value == 'True': return True
-                                if value == 'False' : return False
-                                if value == 'None' : return None
-                                return value
-                        return value 
+                        get_f = getattr(config_object, get_function)
+                        value = get_f(section, option)
+                        if logger:
+                                logger.debug('generic_get: option %s in section %s has value %s' %(option, section, value))
+                        if convert_to_None:
+                                if value.lower() in ['none', 'null', '']:
+                                        value = None
+                        return value
 
-
-#        def  generic_get(self, 
-#                         section,                       # SafeConfigParser section
-#                         option,                        # option in the SafeConfigParser section
-#                         get_function='get',            # string representing the actual SafeConfigParser method:  "get", "getint", "getfloat", "getboolean"
-#                         convert=False,                 # decide if string "None" should be converted into python None
-#                         mandatory=False,               # if the option is supposed to be there
-#                         mandatory_exception=None,      # exception to be raised if the option is mandatory but it is not there
-#                         loggger=None,                  # logger function 
-#                         log_message=None,              # message to be logged when everything goes OK
-#                         failure_message=None ):        # message to be logged when something was not OK
-#                '''
-#                generic get() method for Config objects.
-#                example of usage:
-#                        x = generic_get("Sec1", "x", get_function='getint', convert=True, mandatory=True, mandatory_exception=NoMandatoryException, log.info, "x has a value", log.error, "x not found")
-#                '''
-#        
-#                has_option = config_object.has_option(section, option)
-#        
-#                if not has_option:
-#                        if mandatory:
-#                                if logger:
-#                                        logger.error(failure_message)
-#                                if mandatory_exception:
-#                                        raise mandatory_exception
-#                        else:
-#                                return None
-#                else:
-#                        get_f = getattr(config_object, get_function)
-#                        value = get_f(section, option)
-#                        if logger:
-#                                logger.debug(log_message)
-#                        if convert:
-#                                if value is "None":
-#                                        value = None
-#                        return value
+        ###def  generic_get(self, 
+        ###                 section,                       # SafeConfigParser section 
+        ###                 option,                        # option in the SafeConfigParser section
+        ###                 convert=False,                 # decide if strings should be converted into python None, when possible
+        ###                 mandatory=False,               # if the option is supposed to be there 
+        ###                 mandatory_exception=None,      # exception to be raised if the option is mandatory but it is not there 
+        ###                 log_function=None,             # log function to be used when everything goes OK
+        ###                 log_message=None,              # message to be logged when everything goes OK
+        ###                 failure_log_function=None,     # log function to be used when something was not OK 
+        ###                 failure_message=None):         # message to be logged when something was not OK 
+        ###        '''
+        ###        generic get() method for Config objects.
+        ###        example of usage:
+        ###                x = generic_get2("Sec1", "x", convert=True, mandatory=True, mandatory_exception=NoMandatoryException, log.info, "x has a value", log.error, "x not found")
+        ###
+        ###        If convert is True, it tries to return the actual 
+        ###        python object represented by the string. 
+        ###        Possibilities are tried in this order:
+        ###             -- an integer
+        ###             -- a float
+        ###             -- a boolean
+        ###             -- None
+        ###        '''
+        ###        has_option = self.has_option(section, option)
+        ###
+        ###        if not has_option:
+        ###                if mandatory:
+        ###                        if failure_log_function:
+        ###                                failure_log_function(failure_message)
+        ###                        if mandatory_exception:
+        ###                                raise mandatory_exception
+        ###                else:
+        ###                        return None
+        ###        else:
+        ###                value = self.get(section, option)
+        ###                if log_function:
+        ###                        log_function(log_message)
+        ###                if convert:
+        ###                        try:
+        ###                                return int(value)
+        ###                        except:
+        ###                                pass
+        ###                        try:
+        ###                                return float(value)
+        ###                        except:
+        ###                                pass
+        ###                        if value == 'True': return True
+        ###                        if value == 'False' : return False
+        ###                        if value == 'None' : return None
+        ###                        return value
+        ###                return value 
 
 
 class ConfigManager:
