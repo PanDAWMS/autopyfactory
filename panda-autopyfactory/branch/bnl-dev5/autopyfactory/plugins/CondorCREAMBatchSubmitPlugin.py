@@ -40,12 +40,6 @@ class CondorCREAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         newqcl = qcl.clone().filterkeys('batchsubmit.condorcream', 'batchsubmit.condorce')
         super(CondorCREAMBatchSubmitPlugin, self)._readconfig(newqcl) 
 
-        #self.gridresource = qcl.get(self.apfqname, 'batchsubmit.condorcream.gridresource') 
-        #self.creamport = qcl.getint(self.apfqname, 'batchsubmit.condorcream.port')  
-        #self.creambatch = qcl.get(self.apfqname, 'batchsubmit.condorcream.batch')  
-        #self.queue = None
-        #if qcl.has_option(self.apfqname,'batchsubmit.condorcream.queue'):
-        #    self.queue = qcl.get(self.apfqname, 'batchsubmit.condorcream.queue')
         self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.gridresource', logger=self.log) 
         self.creamport = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.port', 'getint', logger=self.log)  
         self.creambatch = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.batch', logger=self.log)  
