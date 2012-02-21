@@ -82,9 +82,13 @@ class PandaConfigPlugin(ConfigInterface):
                         factoryData[k] = v
                         
                         if k == 'localqueue':
-                                self.queue = v
+                                if v:
+                                        self.log.info('_getschedconfig: SchedConfig key is localqueue and value is not None')
+                                        self.queue = v
                         if k == 'queue':
-                                self.gridresource = v
+                                if v:
+                                        self.log.info('_getschedconfig: SchedConfig key is queue and value is not None')
+                                        self.gridresource = v
 
                 self.log.debug('_getschedconfig: Converted to: %s' % factoryData)
         except ValueError, err:
