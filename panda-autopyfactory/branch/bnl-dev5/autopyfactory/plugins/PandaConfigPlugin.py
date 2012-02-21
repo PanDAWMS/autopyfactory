@@ -45,6 +45,8 @@ class PandaConfigPlugin(ConfigInterface):
             # temporary draft solution
             self.gridresource = None 
             self.queue = None 
+            self.environ = None 
+
             self._getschedconfig() 
 
             self.log.info('scconfigplugin: Object initialized.')
@@ -89,6 +91,10 @@ class PandaConfigPlugin(ConfigInterface):
                                 if v:
                                         self.log.info('_getschedconfig: SchedConfig key is queue and value is not None')
                                         self.gridresource = v
+                        if k == 'environ':
+                                if v:
+                                        self.log.info('_getschedconfig: SchedConfig key is environ and value is not None')
+                                        self.environ = v
 
                 self.log.debug('_getschedconfig: Converted to: %s' % factoryData)
         except ValueError, err:
@@ -111,6 +117,8 @@ class PandaConfigPlugin(ConfigInterface):
                 conf.set(self.apfqname, 'batchsubmit.%s.gridresource' %id, self.gridresource)
         if self.queue:
                 conf.set(self.apfqname, 'batchsubmit.%s.queue' %id, self.queue)
+        if self.environ:
+                conf.set(self.apfqname, 'batchsubmit.%s.environ' %id, self.environ)
   
         self.log.debug('getConfig: Leaving')
         return conf 
