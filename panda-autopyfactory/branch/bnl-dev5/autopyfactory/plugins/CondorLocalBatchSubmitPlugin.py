@@ -26,7 +26,7 @@ class CondorLocalBatchSubmitPlugin(CondorBaseBatchSubmitPlugin):
         super(CondorLocalBatchSubmitPlugin, self).__init__(apfqueue) 
         self.log.info('CondorLocalBatchSubmitPlugin: Object initialized.')
 
-   def _readconfig(self, qcl=None):
+    def _readconfig(self, qcl=None):
         '''
         read the config loader object
         '''
