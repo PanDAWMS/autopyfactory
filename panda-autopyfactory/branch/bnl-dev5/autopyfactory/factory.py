@@ -703,7 +703,7 @@ class APFQueue(threading.Thread):
         
         # Handle sched plugin
         self.scheduler_cls = self._getplugin('sched')
-        self.scheduler = self.scheduler_cls(self)
+        self.scheduler_plugin = self.scheduler_cls(self)
 
         # Monitor
         if self.fcl.has_option('Factory', 'monitorURL'):
@@ -718,13 +718,19 @@ class APFQueue(threading.Thread):
 
         # Handle status and submit batch plugins. 
         self.batchstatus_cls = self._getplugin('batchstatus')
-        self.batchstatus = self.batchstatus_cls(self)
-        self.batchstatus.start()                # starts the thread
+        self.batchstatus_plugin = self.batchstatus_cls(self)
+        self.batchstatus_plugin.start()                # starts the thread
         self.wmsstatus_cls = self._getplugin('wmsstatus')
-        self.wmsstatus = self.wmsstatus_cls(self)
-        self.wmsstatus.start()                  # starts the thread
+        self.wmsstatus_plugin = self.wmsstatus_cls(self)
+        self.wmsstatus_plugin.start()                  # starts the thread
         self.batchsubmit_cls = self._getplugin('batchsubmit')
-        self.batchsubmit = self.batchsubmit_cls(self)
+        self.batchsubmit_plugin = self.batchsubmit_cls(self)
+
+        # Handle config plugin, if needed
+        self.config_cls = self._getplugin('config')
+        if self.config_cls:
+                # Note it could be None
+                self.config_plugin = self.config_cls(self)
 
         self.log.info('APFQueue: Object initialized.')
 
@@ -737,6 +743,7 @@ class APFQueue(threading.Thread):
                 - batchstatus
                 - wmsstatus
                 - batchsubmit
+                - config
         *k and *kw are inputs for the plugin class __init__() method
 
         Steps taken are:
@@ -758,12 +765,18 @@ class APFQueue(threading.Thread):
                 'sched' : 'Sched',
                 'wmsstatus': 'WMSStatus',
                 'batchstatus': 'BatchStatus',
-                'batchsubmit': 'BatchSubmit'
+                'batchsubmit': 'BatchSubmit',
+                'config': 'Config'
         }
 
         plugin_config_item = '%splugin' %action
         plugin_prefix = plugin_prefixes[action] 
-        schedclass = self.qcl.get(self.apfqname, plugin_config_item)
+
+        if self.qcl.has_option(self.apfqname, plugin_config_item):
+                schedclass = self.qcl.get(self.apfqname, plugin_config_item)
+        else:
+                return None
+
         plugin_module_name = '%s%sPlugin' %(schedclass, plugin_prefix)
         
         self.log.debug("_getplugin: Attempting to import derived classname: autopyfactory.plugins.%s"
@@ -793,7 +806,8 @@ class APFQueue(threading.Thread):
         time.sleep(15)
         while not self.stopevent.isSet():
             try:
-                nsub = self.scheduler.calcSubmitNum()
+                self._autofill()
+                nsub = self.scheduler_plugin.calcSubmitNum()
                 self._submitpilots(nsub)
                 self._monitor_shout()
                 self._exitloop()
@@ -805,6 +819,16 @@ class APFQueue(threading.Thread):
 
         self.log.debug("run: Leaving")
 
+    def _autofill(self):
+        '''
+        checks if the config loader needs to be autofilled
+        with info coming from a Config Plugin.
+        '''
+        if self.qcl.get(self.apfqname, 'autofill'):
+                id = self.batchsubmit_cls.id
+                newqcl = self.config_plugin.getConfig(id)
+                override = self.qcl.get(self.apfqname, 'override')
+                self.qcl.merge(newqcl, override) 
 
     def _submitpilots(self, nsub):
         '''
@@ -816,7 +840,7 @@ class APFQueue(threading.Thread):
         msg = 'Attempt to submit %d pilots for queue %s' %(nsub, self.apfqname)
         self._monitor_note(msg)
 
-        (status, output) = self.batchsubmit.submit(nsub)
+        (status, output) = self.batchsubmit_plugin.submit(nsub)
         if output:
             if status == 0:
                 self._monitor_notify(output)
