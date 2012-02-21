@@ -34,7 +34,7 @@ class ActivatedSchedPlugin(SchedInterface):
             self.max_jobs_torun = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun', 'getint', logger=self.log)
             self.max_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_pilots_per_cycle', 'getint', logger=self.log)
             self.min_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle', 'getint', logger=self.log)
-            self.max_pilots_pending = self.apfqueue.qcl.generi_get(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending', 'getint', logger=self.log)
+            self.max_pilots_pending = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending', 'getint', logger=self.log)
 
             self.log.info("SchedPlugin: Object initialized.")
         except:
