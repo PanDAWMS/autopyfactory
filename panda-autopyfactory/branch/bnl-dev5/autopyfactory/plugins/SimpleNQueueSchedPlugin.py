@@ -76,8 +76,8 @@ class SimpleNQueueSchedPlugin(SchedInterface):
 
         self.log.debug('calcSubmitNum: Starting ')
 
-        wmsinfo = self.apfqueue.wmsstatus.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
-        batchinfo = self.apfqueue.batchstatus.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
+        wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
+        batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
 
         if wmsinfo is None:
             self.log.warning("wsinfo is None!")
