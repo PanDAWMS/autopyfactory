@@ -36,15 +36,13 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
                 newqcl = qcl.clone().filterkeys('batchsubmit.condorec2', 'batchsubmit.condorgrid')
                 super(CondorEC2BatchSubmitPlugin, self)._readconfig(newqcl)
 
-                self.gridresource = qcl.get(self.apfqname, 'batchsubmit.condorec2.gridresource') 
+                self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.gridresource', logger=self.log) 
 
-                self.ami_id = qcl.get(self.apfqname, 'batchsubmit.condorec2.ami_id')
-                self.instance_type  = qcl.get(self.apfqname, 'batchsubmit.condorec2.instance_type')
-                self.user_data = None        
-                if qcl.has_option(self.apfqname, 'batchsubmit.condorec2.user_data'):
-                        self.user_data = qcl.get(self.apfqname, 'batchsubmit.condorec2.user_data')
-                self.access_key_id = qcl.get(self.apfqname,'batchsubmit.condorec2.access_key_id')
-                self.secret_access_key = qcl.get(self.apfqname,'batchsubmit.condorec2.secret_access_key')
+                self.ami_id = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.ami_id', logger=self.log)
+                self.instance_type  = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.instance_type', logger=self.log)
+                self.user_data = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.user_data', logger=self.log)
+                self.access_key_id = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.access_key_id', logger=self.log)
+                self.secret_access_key = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.secret_access_key', logger=self.log)
 
 
         def _addJSD(self):
