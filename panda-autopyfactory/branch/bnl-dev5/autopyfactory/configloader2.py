@@ -182,7 +182,7 @@ class Config(SafeConfigParser, object):
                         x = generic_get("Sec1", "x", get_function='getint', convert=True, mandatory=True, mandatory_exception=NoMandatoryException, logger=self.log)
                 '''
         
-                has_option = config_object.has_option(section, option)
+                has_option = self.has_option(section, option)
         
                 if not has_option:
                         if mandatory:
@@ -193,7 +193,7 @@ class Config(SafeConfigParser, object):
                         else:
                                 return default_value
                 else:
-                        get_f = getattr(config_object, get_function)
+                        get_f = getattr(self, get_function)
                         value = get_f(section, option)
                         if logger:
                                 logger.debug('generic_get: option %s in section %s has value %s' %(option, section, value))
