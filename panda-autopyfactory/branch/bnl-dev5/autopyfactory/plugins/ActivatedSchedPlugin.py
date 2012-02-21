@@ -28,7 +28,7 @@ class ActivatedSchedPlugin(SchedInterface):
             self.max_pilots_pending = None
             
             # A default value is required. 
-            self.default = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.default')    
+            self.default = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.default', 'getint', logger=self.log)    
             self.log.debug('SchedPlugin: default = %s' %self.default)
             
             self.max_jobs_torun = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun', 'getint', logger=self.log)
