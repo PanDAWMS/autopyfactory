@@ -47,8 +47,6 @@ class PandaConfigPlugin(ConfigInterface):
             self.queue = None 
             self.environ = None 
 
-            self._getschedconfig() 
-
             self.log.info('scconfigplugin: Object initialized.')
         except:
             self._valid = False
@@ -111,6 +109,9 @@ class PandaConfigPlugin(ConfigInterface):
         '''
 
         self.log.debug('getConfig: Leaving')
+
+        self._getschedconfig() 
+
         conf = Config()
         conf.add_section(self.apfqname)
         if self.gridresource:
