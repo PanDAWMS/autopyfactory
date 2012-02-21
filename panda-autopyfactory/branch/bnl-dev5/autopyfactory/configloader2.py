@@ -175,7 +175,7 @@ class Config(SafeConfigParser, object):
                          mandatory=False,               # if the option is supposed to be there
                          default_value=None,            # default value to be returned with variable is not mandatory and is not in the config file
                          mandatory_exception=None,      # exception to be raised if the option is mandatory but it is not there
-                         loggger=None):                 # logger function 
+                         logger=None):                  # logger function 
                 '''
                 generic get() method for Config objects.
                 example of usage:
