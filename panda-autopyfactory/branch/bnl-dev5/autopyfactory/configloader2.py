@@ -47,6 +47,13 @@ def dict2config(section, dic):
         return c
 
 
+class ConfigException(Exception):
+        def __init__(self, option, section):
+                self.msg = 'option %s in section %s was supposed to be mandatory, but it is not present' %(option, section)
+        def __str_(self):
+                return self.msg 
+
+
 class Config(SafeConfigParser, object):
         '''
         -----------------------------------------------------------------------
@@ -174,7 +181,6 @@ class Config(SafeConfigParser, object):
                          convert_to_None=False,         # decide if strings "None", "Null" or ""  should be converted into python None
                          mandatory=False,               # if the option is supposed to be there
                          default_value=None,            # default value to be returned with variable is not mandatory and is not in the config file
-                         mandatory_exception=None,      # exception to be raised if the option is mandatory but it is not there
                          logger=None):                  # logger function 
                 '''
                 generic get() method for Config objects.
@@ -188,8 +194,7 @@ class Config(SafeConfigParser, object):
                         if mandatory:
                                 if logger:
                                         logger.error('generic_get: option %s is not present in section %s' %(option, section))
-                                if mandatory_exception:
-                                        raise mandatory_exception
+                                raise ConfigException(option, value)
                         else:
                                 return default_value
                 else:
