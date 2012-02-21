@@ -56,7 +56,10 @@ class PandaConfigPlugin(ConfigInterface):
 
     def _getschedconfig(self):
         ''' 
+        queries PanDA Sched Config for batchqueue info
         ''' 
+        self.log.debug('_getschedconfig: Starting')
+
         try:
                 import json as json
         except ImportError, err:
@@ -89,12 +92,15 @@ class PandaConfigPlugin(ConfigInterface):
         except IOError, (errno, errmsg):
                 self.log.error('_getschedconfig: %s for queue %s, downloading from %s' % (errmsg, self.batchqueue, url))
 
+        self.log.debug('_getschedconfig: Leaving')
+
     def getConfig(self, id):
         '''
         returns a Config object with the info we are interested in
         id is the string that identifies a given class (e.g. condorgt2, condorcream...)
         '''
 
+        self.log.debug('getConfig: Leaving')
         conf = Config()
         conf.add_section(self.apfqname)
         if self.gridresource:
@@ -102,4 +108,5 @@ class PandaConfigPlugin(ConfigInterface):
         if self.queue:
                 conf.set(self.apfqname, 'batchsubmit.%s.queue' %id, self.queue)
   
+        self.log.debug('getConfig: Leaving')
         return conf 
