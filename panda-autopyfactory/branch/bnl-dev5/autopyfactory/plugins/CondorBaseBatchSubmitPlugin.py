@@ -34,6 +34,13 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         self.factory = apfqueue.factory
         self.fcl = apfqueue.factory.fcl
 
+        # calculating the directory path from where to submit jobs
+        now = time.gmtime() # gmtime() is like localtime() but in UTC
+        timePath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2])
+        logPath = timePath + self.apfqname.translate(string.maketrans('/:','__'))
+        self.logDir = self.fcl.get('Factory', 'baseLogDir') + logPath
+        self.logUrl = self.fcl.get('Factory', 'baseLogDirUrl') + logPath
+
         self.log.info('BatchSubmitPlugin: Object initialized.')
 
     def _readconfig(self, qcl):
@@ -240,12 +247,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         self.log.debug('writeJSD: Starting.')
         self.log.debug('writeJSD: the submit file content is\n %s ' %self.JSD)
 
-        # calculating the directory path from where to submit jobs
-        now = time.gmtime() # gmtime() is like localtime() but in UTC
-        timePath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2])
-        logPath = timePath + self.apfqname.translate(string.maketrans('/:','__'))
-        self.logDir = self.fcl.get('Factory', 'baseLogDir') + logPath
-        self.logUrl = self.fcl.get('Factory', 'baseLogDirUrl') + logPath
 
         out = self.JSD.write(self.logDir, 'submit.jdl')
         self.log.debug('writeJSD: Leaving.')
