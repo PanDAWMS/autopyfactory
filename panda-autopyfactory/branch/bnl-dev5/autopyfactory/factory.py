@@ -829,8 +829,7 @@ class APFQueue(threading.Thread):
                 self.log.info('_autofill: is True, proceeding to query config plugin and merge')
                 id = self.batchsubmit_cls.id
                 newqcl = self.config_plugin.getConfig(id)
-                override = self.qcl.get(self.apfqname, 'override')
-                self.qcl.merge(newqcl, override) 
+                self.qcl.merge(newqcl) 
         self.log.debug('_autofill: Leaving')
 
     def _submitpilots(self, nsub):
