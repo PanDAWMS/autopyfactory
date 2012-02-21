@@ -824,7 +824,7 @@ class APFQueue(threading.Thread):
         checks if the config loader needs to be autofilled
         with info coming from a Config Plugin.
         '''
-        if self.qcl.get(self.apfqname, 'autofill'):
+        if self.qcl.getboolean(self.apfqname, 'autofill'):
                 id = self.batchsubmit_cls.id
                 newqcl = self.config_plugin.getConfig(id)
                 override = self.qcl.get(self.apfqname, 'override')
