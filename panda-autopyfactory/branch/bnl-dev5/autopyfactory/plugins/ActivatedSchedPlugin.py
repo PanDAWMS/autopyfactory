@@ -31,21 +31,25 @@ class ActivatedSchedPlugin(SchedInterface):
             self.default = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.default')    
             self.log.debug('SchedPlugin: default = %s' %self.default)
             
-            if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun'):
-                self.max_jobs_torun = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun')
-                self.log.debug('SchedPlugin: max_jobs_torun = %s' %self.max_jobs_torun)
+            #if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun'):
+            #    self.max_jobs_torun = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun')
+            #    self.log.debug('SchedPlugin: max_jobs_torun = %s' %self.max_jobs_torun)
+            self.max_jobs_torun = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun', 'getint', logger=self.log)
  
-            if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.max_pilots_per_cycle'):
-                self.max_pilots_per_cycle = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.max_pilots_per_cycle')
-                self.log.debug('SchedPlugin: max_pilots_per_cycle = %s' %self.max_pilots_per_cycle)
+            #if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.max_pilots_per_cycle'):
+            #    self.max_pilots_per_cycle = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.max_pilots_per_cycle')
+            #    self.log.debug('SchedPlugin: max_pilots_per_cycle = %s' %self.max_pilots_per_cycle)
+            self.max_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_pilots_per_cycle', 'getint', logger=self.log)
 
-            if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle'):
-                self.min_pilots_per_cycle = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle')
-                self.log.debug('SchedPlugin: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %self.min_pilots_per_cycle)
+            #if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle'):
+            #    self.min_pilots_per_cycle = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle')
+            #    self.log.debug('SchedPlugin: there is a MIN_PILOTS_PER_CYCLE number setup to %s' %self.min_pilots_per_cycle)
+            self.min_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle', 'getint', logger=self.log)
             
-            if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending'):
-                self.max_pilots_pending = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending')
-                self.log.debug('SchedPlugin: there is a MAX_PILOTS_PENDING number setup to %s' %self.max_pilots_pending)   
+            #if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending'):
+            #    self.max_pilots_pending = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending')
+            #    self.log.debug('SchedPlugin: there is a MAX_PILOTS_PENDING number setup to %s' %self.max_pilots_pending)   
+            self.max_pilots_pending = self.apfqueue.qcl.generi_get(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending', 'getint', logger=self.log)
 
             self.log.info("SchedPlugin: Object initialized.")
         except:
