@@ -246,8 +246,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
     
         self.log.debug('writeJSD: Starting.')
         self.log.debug('writeJSD: the submit file content is\n %s ' %self.JSD)
-
-
         out = self.JSD.write(self.logDir, 'submit.jdl')
         self.log.debug('writeJSD: Leaving.')
         return out
