@@ -50,8 +50,10 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
 
         self.siteid = qcl.get(self.apfqname, 'wmsqueue')
 
-        self.executable = qcl.get(self.apfqname, 'executable')
-        self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
+        #self.executable = qcl.get(self.apfqname, 'executable')
+        self.executable = qcl.generic_get(self.apfqname, 'executable', logger=self.log)
+        #self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
+        self.factoryadminemail = self.fcl.generic_get('Factory', 'factoryAdminEmail', logger=self.log)
 
         self.x509userproxy = None
         if qcl.has_option(self.apfqname,'batchsubmit.condorbase.proxy'):
@@ -61,53 +63,66 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         else:
             self.log.debug('proxy is None. No proxy configured.')
         
-        self.factoryid = self.fcl.get('Factory', 'factoryId')
+        #self.factoryid = self.fcl.get('Factory', 'factoryId')
+        self.factoryid = self.fcl.generic_get('Factory', 'factoryId', logger=self.log)
 
-        self.monitorurl = None
-        if self.fcl.has_option('Factory', 'monitorURL'):
-            self.monitorurl = self.fcl.get('Factory', 'monitorURL')
+        #self.monitorurl = None
+        #if self.fcl.has_option('Factory', 'monitorURL'):
+        #    self.monitorurl = self.fcl.get('Factory', 'monitorURL')
+        self.monitorurl = self.fcl.generic_get('Factory', 'monitorURL', logger=self.log)
 
-        self.factoryuser = None
-        if self.fcl.has_option('Factory', 'factoryUser'):
-            self.factoryuser = self.fcl.get('Factory', 'factoryUser')
+        #self.factoryuser = None
+        #if self.fcl.has_option('Factory', 'factoryUser'):
+        #    self.factoryuser = self.fcl.get('Factory', 'factoryUser')
+        self.factoryuser = self.fcl.generic_get('Factory', 'factoryUser', logger=self.log)
 
-        self.environ = None
-        if qcl.has_option(self.apfqname, 'batchsubmit.condorbase.environ'):
-            self.environ = qcl.get(self.apfqname, 'batchsubmit.condorbase.environ')
+        #self.environ = None
+        #if qcl.has_option(self.apfqname, 'batchsubmit.condorbase.environ'):
+        #    self.environ = qcl.get(self.apfqname, 'batchsubmit.condorbase.environ')
+        self.environ = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.environ', logger=self.log)
 
-        self.condor_attributes = None
-        if qcl.has_option(self.apfqname, 'batchsubmit.condorbase.condor_attributes'):
-            self.condor_attributes = qcl.get(self.apfqname, 'batchsubmit.condorbase.condor_attributes')
+        #self.condor_attributes = None
+        #if qcl.has_option(self.apfqname, 'batchsubmit.condorbase.condor_attributes'):
+        #    self.condor_attributes = qcl.get(self.apfqname, 'batchsubmit.condorbase.condor_attributes')
+        self.condor_attributes = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.condor_attributes', logger=self.log)
 
-        self.batchqueue = qcl.get(self.apfqname, 'batchqueue')
+        #self.batchqueue = qcl.get(self.apfqname, 'batchqueue')
+        self.batchqueue = qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
 
-        self.wrappergrid = None
-        if qcl.has_option(self.apfqname, 'executable.wrappergrid'):
-            self.wrappergrid = qcl.get(self.apfqname, 'executable.wrappergrid')
+        #self.wrappergrid = None
+        #if qcl.has_option(self.apfqname, 'executable.wrappergrid'):
+        #    self.wrappergrid = qcl.get(self.apfqname, 'executable.wrappergrid')
+        self.wrappergrid = qcl.generic_get(self.apfqname, 'executable.wrappergrid', logger=self.log)
 
-        self.wrappervo = None
-        if qcl.has_option(self.apfqname, 'executable.wrappervo'):
-            self.wrappervo = qcl.get(self.apfqname, 'executable.wrappervo')
+        #self.wrappervo = None
+        #if qcl.has_option(self.apfqname, 'executable.wrappervo'):
+        #    self.wrappervo = qcl.get(self.apfqname, 'executable.wrappervo')
+        self.wrappervo = qcl.generic_get(self.apfqname, 'executable.wrappervo', logger=self.log)
         
-        self.wrapperserverurl = None
-        if qcl.has_option(self.apfqname, 'executable.wrapperserverurl'):
-                self.wrapperserverurl = qcl.get(self.apfqname, 'executable.wrapperserverurl')
+        #self.wrapperserverurl = None
+        #if qcl.has_option(self.apfqname, 'executable.wrapperserverurl'):
+        #        self.wrapperserverurl = qcl.get(self.apfqname, 'executable.wrapperserverurl')
+        self.wrapperserverurl = qcl.generic_get(self.apfqname, 'executable.wrapperserverurl', logger=self.log)
 
-        self.wrappertarballurl = None
-        if qcl.has_option(self.apfqname, 'executable.wrappertarballurl'):
-                self.wrappertarballurl = qcl.get(self.apfqname, 'executable.wrappertarballurl')
+        #self.wrappertarballurl = None
+        #if qcl.has_option(self.apfqname, 'executable.wrappertarballurl'):
+        #        self.wrappertarballurl = qcl.get(self.apfqname, 'executable.wrappertarballurl')
+        self.wrappertarballurl = qcl.generic_get(self.apfqname, 'executable.wrappertarballurl', logger=self.log)
         
-        self.wrapperloglevel = None
-        if qcl.has_option(self.apfqname, 'executable.wrapperloglevel'):
-            self.wrapperloglevel = qcl.get(self.apfqname, 'executable.wrapperloglevel')
+        #self.wrapperloglevel = None
+        #if qcl.has_option(self.apfqname, 'executable.wrapperloglevel'):
+        #    self.wrapperloglevel = qcl.get(self.apfqname, 'executable.wrapperloglevel')
+        self.wrapperloglevel = qcl.generic_get(self.apfqname, 'executable.wrapperloglevel', logger=self.log)
         
-        self.wrappermode = None
-        if qcl.has_option(self.apfqname, 'executable.wrappermode'):
-            self.wrappermode = qcl.get(self.apfqname, 'executable.wrappermode')
+        #self.wrappermode = None
+        #if qcl.has_option(self.apfqname, 'executable.wrappermode'):
+        #    self.wrappermode = qcl.get(self.apfqname, 'executable.wrappermode')
+        self.wrappermode = qcl.generic_get(self.apfqname, 'executable.wrappermode', logger=self.log)
         
-        self.arguments = None
-        if qcl.has_option(self.apfqname, 'executable.arguments'):
-            self.arguments = qcl.get(self.apfqname, 'executable.arguments')
+        #self.arguments = None
+        #if qcl.has_option(self.apfqname, 'executable.arguments'):
+        #    self.arguments = qcl.get(self.apfqname, 'executable.arguments')
+        self.arguments = qcl.generic_get(self.apfqname, 'executable.arguments', logger=self.log)
 
     def valid(self):
         return self._valid

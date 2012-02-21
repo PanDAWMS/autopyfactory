@@ -38,7 +38,8 @@ class CondorGT5BatchSubmitPlugin(CondorGRAMBatchSubmitPlugin):
         newqcl = qcl.clone().filterkeys('batchsubmit.condorgt5', 'batchsubmit.condorgram')
         super(CondorGT5BatchSubmitPlugin, self)._readconfig(newqcl)
 
-        self.gridresource = qcl.get(self.apfqname, 'batchsubmit.condorgt5.gridresource') 
+        #self.gridresource = qcl.get(self.apfqname, 'batchsubmit.condorgt5.gridresource') 
+        self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorgt5.gridresource', logger=self.log) 
 
     def _addJSD(self):
         '''
