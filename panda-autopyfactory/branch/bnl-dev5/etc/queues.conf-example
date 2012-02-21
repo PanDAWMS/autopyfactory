@@ -146,7 +146,8 @@
 #  --------------------------------------------------------------------
 
 # configplugin = Config Plugin. 
-#               Optional
+#               Optional.
+#               E.g. Panda.
 
 #  --------------------------------------------------------------------
 #       Batch Status Plugin variables 
