@@ -25,7 +25,7 @@ __status__ = "Production"
 
 
 class SchedConfigInfo(BaseInfo):
-    valid = ['queue', 'gridresource', 'environ']
+    valid = ['batchsubmit.queue', 'batchsubmit.gridresource', 'batchsubmit.environ']
  
     def __init__(self):
         super(SchedConfigInfo, self).__init__(None) 
@@ -79,6 +79,7 @@ class PandaConfigPlugin(ConfigInterface):
         self._getschedconfig() 
 
         conf = self.scinfo.getConfig(self.apfqname) 
+        conf.filterkeys('batchsubmit', 'batchsubmit.%s' %id)
        
  
         self.log.debug('getConfig: Leaving')
