@@ -4,6 +4,7 @@ import logging
 
 from urllib import urlopen
 
+from autopyfactory.info import BaseInfo 
 from autopyfactory.factory import ConfigInterface
 from autopyfactory.configloader2 import Config, ConfigManager
 
@@ -21,6 +22,15 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 
+
+
+class SchedConfigInfo(BaseInfo):
+    valid = ['queue', 'gridresource', 'environ']
+ 
+    def __init__(self):
+        super(SchedConfigInfo, self).__init__(None) 
+
+
 class PandaConfigPlugin(ConfigInterface):
     '''
     -----------------------------------------------------------------------
@@ -33,6 +43,13 @@ class PandaConfigPlugin(ConfigInterface):
 
     def __init__(self, apfqueue):
         self._valid = True
+
+        self.mapping = {
+                'localqueue': 'queue',
+                'queue': 'gridresource',
+                'environ': 'environ',
+                }
+
         try:
 
             self.apfqname = apfqueue.apfqname
@@ -42,10 +59,9 @@ class PandaConfigPlugin(ConfigInterface):
             self.qcl = apfqueue.factory.qcl
             self.batchqueue = self.qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
 
-            # temporary draft solution
-            self.gridresource = None 
-            self.queue = None 
-            self.environ = None 
+
+            self.scinfo = SchedConfigInfo()
+
 
             self.log.info('scconfigplugin: Object initialized.')
         except:
@@ -53,6 +69,21 @@ class PandaConfigPlugin(ConfigInterface):
 
     def valid(self):
         return self._valid
+
+    def getConfig(self, id):
+        '''
+        returns a Config object with the info we are interested in
+        id is the string that identifies a given class (e.g. condorgt2, condorcream...)
+        '''
+
+        self.log.debug('getConfig: Leaving')
+
+        self._getschedconfig() 
+
+        conf = self.scinfo.getConfig(self.apfqname) 
+ 
+        self.log.debug('getConfig: Leaving')
+        return conf 
 
     def _getschedconfig(self):
         ''' 
@@ -80,19 +111,11 @@ class PandaConfigPlugin(ConfigInterface):
                         if isinstance(v, unicode):
                                 v = v.encode('utf-8')
                         factoryData[k] = v
-                        
-                        if k == 'localqueue':
-                                if v:
-                                        self.log.info('_getschedconfig: SchedConfig key is localqueue and value is not None')
-                                        self.queue = v
-                        if k == 'queue':
-                                if v:
-                                        self.log.info('_getschedconfig: SchedConfig key is queue and value is not None')
-                                        self.gridresource = v
-                        if k == 'environ':
-                                if v:
-                                        self.log.info('_getschedconfig: SchedConfig key is environ and value is not None')
-                                        self.environ = v
+                
+
+                self.scinfo()
+                self.scinfo.fill(factoryData, self.mappings)
+        
 
                 self.log.debug('_getschedconfig: Converted to: %s' % factoryData)
         except ValueError, err:
@@ -102,24 +125,3 @@ class PandaConfigPlugin(ConfigInterface):
 
         self.log.debug('_getschedconfig: Leaving')
 
-    def getConfig(self, id):
-        '''
-        returns a Config object with the info we are interested in
-        id is the string that identifies a given class (e.g. condorgt2, condorcream...)
-        '''
-
-        self.log.debug('getConfig: Leaving')
-
-        self._getschedconfig() 
-
-        conf = Config()
-        conf.add_section(self.apfqname)
-        if self.gridresource:
-                conf.set(self.apfqname, 'batchsubmit.%s.gridresource' %id, self.gridresource)
-        if self.queue:
-                conf.set(self.apfqname, 'batchsubmit.%s.queue' %id, self.queue)
-        if self.environ:
-                conf.set(self.apfqname, 'batchsubmit.%s.environ' %id, self.environ)
-  
-        self.log.debug('getConfig: Leaving')
-        return conf 
