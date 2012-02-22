@@ -40,7 +40,7 @@ class PandaConfigPlugin(ConfigInterface):
             self.log.debug("scconfigplugin: Initializing object...")
 
             self.qcl = apfqueue.factory.qcl
-            self.batchqueue = self.qcl.get(self.apfqname, 'batchqueue')
+            self.batchqueue = self.qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
 
             # temporary draft solution
             self.gridresource = None 

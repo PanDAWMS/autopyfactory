@@ -23,39 +23,14 @@ class SimpleNQueueSchedPlugin(SchedInterface):
             self.siteid = self.apfqueue.siteid
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
 
-            self.default = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.simplenqueue.default')
-            self.log.debug('SchedPlugin: there is a default number setup to %s' %self.default)
-
-            self.nqueue = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.simplenqueue.nqueue')
-            self.log.debug('SchedPlugin: there is a nqueue number setup to %s' %self.nqueue)
-
-            self.cloud = self.apfqueue.qcl.get(self.apfqueue.apfqname, 'cloud')
-            self.log.debug('SchedPlugin: cloud is setup to %s' %self.cloud)
-
-            self.status = None
-            if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'status'):
-                    self.status = self.apfqueue.qcl.get(self.apfqueue.apfqname, 'status')
-                    self.log.debug('SchedPlugin: there is a status value setup to %s' %self.status)
-
-            self.depthboost = None
-            if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.simplenqueue.depthboost'):
-                    self.depthboost = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.simplenqueue.depthboost')
-                    self.log.debug('SchedPlugin: there is a depthboost number setup to %s' %self.depthboost)
-
-            self.pilotlimit = None
-            if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.simplenqueue.pilotlimit'):
-                    self.pilotlimit = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.simplenqueue.pilotlimit')
-                    self.log.debug('SchedPlugin: there is a pilotlimit number setup to %s' %self.pilotlimit)
-
-            self.transferringlimit = None
-            if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.simplenqueue.transferringlimit'):
-                    self.transferringlimit = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.simplenqueue.transferringlimit')
-                    self.log.debug('SchedPlugin: there is a transferringlimit number setup to %s' %self.transferringlimit)
-
-            self.maxpilotspercycle = None
-            if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.simplenqueue.maxpilotspercycle'):
-                self.maxpilotspercycle = self.apfqueue.qcl.getint(self.apfqueue.apfqname, 'sched.simplenqueue.maxpilotspercycle')
-                self.log.debug('SchedPlugin: there is a maxpilotspercycle number setup to %s' %self.maxpilotspercycle)
+            self.default = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.simplenqueue.default', 'getint', logger=self.log)
+            self.nqueue = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.simplenqueue.nqueue', 'getint', logger=self.log)
+            self.cloud = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'cloud', logger=self.log)
+            self.status = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'status', logger=self.log)
+            self.depthboost = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.simplenqueue.depthboost', 'getint', logger=self.log)
+            self.pilotlimit = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.simplenqueue.pilotlimit', 'getint', logger=self.log)
+            self.transferringlimit = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.simplenqueue.transferringlimit', 'getint', logger=self.log)
+            self.maxpilotspercycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.simplenqueue.maxpilotspercycle', 'getint', logger=self.log)
 
             self.log.info("SchedPlugin: Object initialized.")
         except:

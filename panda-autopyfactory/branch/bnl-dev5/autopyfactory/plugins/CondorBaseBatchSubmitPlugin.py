@@ -38,8 +38,8 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         now = time.gmtime() # gmtime() is like localtime() but in UTC
         timePath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2])
         logPath = timePath + self.apfqname.translate(string.maketrans('/:','__'))
-        self.logDir = self.fcl.get('Factory', 'baseLogDir') + logPath
-        self.logUrl = self.fcl.get('Factory', 'baseLogDirUrl') + logPath
+        self.logDir = self.fcl.generic_get('Factory', 'baseLogDir', logger=self.log) + logPath
+        self.logUrl = self.fcl.generic_get('Factory', 'baseLogDirUrl', logger=self.log) + logPath
 
         self.log.info('BatchSubmitPlugin: Object initialized.')
 
@@ -48,7 +48,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         read the config loader object
         '''
 
-        self.siteid = qcl.get(self.apfqname, 'wmsqueue')
+        self.siteid = qcl.generic_get(self.apfqname, 'wmsqueue', logger=self.log)
 
         self.executable = qcl.generic_get(self.apfqname, 'executable', logger=self.log)
         self.factoryadminemail = self.fcl.generic_get('Factory', 'factoryAdminEmail', logger=self.log)

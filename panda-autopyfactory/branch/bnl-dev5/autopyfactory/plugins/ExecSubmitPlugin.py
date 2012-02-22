@@ -34,48 +34,20 @@ class ExecSubmitPlugin(BatchSubmitInterface):
             self.qcl = apfqueue.factory.qcl
             self.fcl = apfqueue.factory.fcl
 
-            self.executable = self.qcl.get(self.apfqname, 'executable')
-            self.factoryadminemail = self.fcl.get('Factory', 'factoryAdminEmail')
+            self.executable = self.qcl.generic_get(self.apfqname, 'executable', logger=self.log)
+            self.factoryadminemail = self.fcl.generic_get('Factory', 'factoryAdminEmail', logger=self.log)
             self.x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqname,'proxy'))
-            self.factoryid = self.fcl.get('Factory', 'factoryId')
-
-            self.monitorurl = None
-            if self.fcl.has_option('Factory', 'monitorURL'):
-                self.monitorurl = self.fcl.get('Factory', 'monitorURL')
-
-            self.factoryuser = None
-            if self.fcl.has_option('Factory', 'factoryUser'):
-                self.factoryuser = self.fcl.get('Factory', 'factoryUser')
-
-            self.environ = None
-            if self.qcl.has_option(self.apfqname, 'batchsubmit.condorlocal.environ'):
-                self.environ = self.qcl.get(self.apfqname, 'batchsubmit.condorlocal.environ')
-
-            self.condor_attributes = None
-            if self.qcl.has_option(self.apfqname, 'batchsubmit.condorlocal.condor_attributes'):
-                self.condor_attributes = self.qcl.get(self.apfqname, 'batchsubmit.condorlocal.condor_attributes')
-
-            self.batchqueue = self.qcl.get(self.apfqname, 'batchqueue')
-
-            self.wrappergrid = None
-            if self.qcl.has_option(self.apfqname, 'executable.wrappergrid'):
-                self.wrappergrid = self.qcl.get(self.apfqname, 'executable.wrappergrid')
-            
-            self.wrapperserverurl = None
-            if self.qcl.has_option(self.apfqname, 'executable.wrapperserverurl'):
-                    self.wrapperserverurl = self.qcl.get(self.apfqname, 'executable.wrapperserverurl')
-
-            self.wrappertarballurl = None
-            if self.qcl.has_option(self.apfqname, 'executable.wrappertarballurl'):
-                    self.wrappertarballurl = self.qcl.get(self.apfqname, 'executable.wrappertarballurl')
-            
-            self.wrapperloglevel = None
-            if self.qcl.has_option(self.apfqname, 'executable.wrapperloglevel'):
-                self.wrapperloglevel = self.qcl.get(self.apfqname, 'executable.wrapperloglevel')
-            
-            self.arguments = None
-            if self.qcl.has_option(self.apfqname, 'executable.arguments'):
-                self.arguments = self.qcl.get(self.apfqname, 'executable.arguments')
+            self.factoryid = self.fcl.generic_get('Factory', 'factoryId', logger=self)
+            self.monitorurl = self.fcl.generic_get('Factory', 'monitorURL', logger=self.log)
+            self.factoryuser = self.fcl.generic_get('Factory', 'factoryUser', logger=self.log)
+            self.environ = self.qcl.generic_get(self.apfqname, 'batchsubmit.condorlocal.environ', logger=self.log)
+            self.condor_attributes = self.qcl.generic_get(self.apfqname, 'batchsubmit.condorlocal.condor_attributes', logger=self.log)
+            self.batchqueue = self.qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
+            self.wrappergrid = self.qcl.generic_get(self.apfqname, 'executable.wrappergrid', logger=self.log)
+            self.wrapperserverurl = self.qcl.generic_get(self.apfqname, 'executable.wrapperserverurl', logger=self.log)
+            self.wrappertarballurl = self.qcl.generic_get(self.apfqname, 'executable.wrappertarballurl', logger=self.log)
+            self.wrapperloglevel = self.qcl.generic_get(self.apfqname, 'executable.wrapperloglevel', logger=self.log)
+            self.arguments = self.qcl.generic_get(self.apfqname, 'executable.arguments', logger=self.log)
 
             self.log.info('BatchSubmitPlugin: Object initialized.')
         except:
