@@ -135,7 +135,8 @@ class BaseInfo(object):
         conf.add_section(section)
         dic = self.dict()
         for k,v in dic.iteritems():
-                conf.set(section, k ,v)
+                if v != None:
+                        conf.set(section, k ,v)
         return conf
 
 
