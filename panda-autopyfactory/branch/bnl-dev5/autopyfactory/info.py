@@ -100,7 +100,8 @@ class BaseInfo(object):
         for k,v in dictionary.iteritems():
             try:
                 if mappings:
-                    k = mappings[k]
+                    if mappings.has_key(k):
+                        k = mappings[k]
             except KeyError, e:
                 log = logging.getLogger('main.info')
                 log.error("fill(): Exception: %s" % str(e))
