@@ -45,9 +45,9 @@ class PandaConfigPlugin(ConfigInterface):
         self._valid = True
 
         self.mapping = {
-                'localqueue': 'queue',
-                'queue': 'gridresource',
-                'environ': 'environ',
+                'localqueue': 'batchsubmit.queue',
+                'queue': 'batchsubmit.gridresource',
+                'environ': 'batchsubmit.environ',
                 }
 
         try:
@@ -59,9 +59,7 @@ class PandaConfigPlugin(ConfigInterface):
             self.qcl = apfqueue.factory.qcl
             self.batchqueue = self.qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
 
-
             self.scinfo = SchedConfigInfo()
-
 
             self.log.info('scconfigplugin: Object initialized.')
         except:
@@ -112,7 +110,8 @@ class PandaConfigPlugin(ConfigInterface):
                         if isinstance(v, unicode):
                                 v = v.encode('utf-8')
                         v = str(v)
-                        factoryData[k] = v
+                        if v != 'None':
+                                factoryData[k] = v
                 
                 self.scinfo.fill(factoryData, self.mapping)
         
