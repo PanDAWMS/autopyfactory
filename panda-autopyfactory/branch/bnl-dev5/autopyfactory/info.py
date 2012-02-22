@@ -14,6 +14,7 @@ import sys
 from pprint import pprint
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
+from autopyfactory.configloader2 import Config
 from autopyfactory.logserver import LogServer
 
 __author__ = "Jose Caballero"
@@ -123,6 +124,18 @@ class BaseInfo(object):
         for k in self.__class__.valid:
             d[k] = self.__dict__[k]
         return d
+
+    def getConfig(self, section):
+        '''
+        converts the internal dictionary into 
+        a Config object
+        '''
+        conf = Config()
+        conf.add_section(section)
+        dic = self.dict()
+        for k,v in dic.iteritems():
+                conf.set(section, k ,v)
+        return conf
 
 
 class BatchQueueInfo(BaseInfo):
