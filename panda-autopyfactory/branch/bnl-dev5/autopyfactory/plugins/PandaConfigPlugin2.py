@@ -81,6 +81,7 @@ class PandaConfigPlugin(ConfigInterface):
         self._getschedconfig() 
 
         conf = self.scinfo.getConfig(self.apfqname) 
+       
  
         self.log.debug('getConfig: Leaving')
         return conf 
@@ -110,6 +111,7 @@ class PandaConfigPlugin(ConfigInterface):
                                 k = k.encode('utf-8')
                         if isinstance(v, unicode):
                                 v = v.encode('utf-8')
+                        v = str(v)
                         factoryData[k] = v
                 
                 self.scinfo.fill(factoryData, self.mapping)
