@@ -112,9 +112,7 @@ class PandaConfigPlugin(ConfigInterface):
                                 v = v.encode('utf-8')
                         factoryData[k] = v
                 
-
-                self.scinfo()
-                self.scinfo.fill(factoryData, self.mappings)
+                self.scinfo.fill(factoryData, self.mapping)
         
 
                 self.log.debug('_getschedconfig: Converted to: %s' % factoryData)
