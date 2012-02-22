@@ -80,7 +80,6 @@ class PandaConfigPlugin(ConfigInterface):
 
         conf = self.scinfo.getConfig(self.apfqname) 
         conf.filterkeys('batchsubmit', 'batchsubmit.%s' %id)
-       
  
         self.log.debug('getConfig: Leaving')
         return conf 
