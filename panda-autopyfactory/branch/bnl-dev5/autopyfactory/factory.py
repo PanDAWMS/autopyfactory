@@ -680,26 +680,15 @@ class APFQueue(threading.Thread):
         self.fcl = self.factory.fcl 
         self.qcl = self.factory.qcl 
 
-        if self.qcl.has_option(apfqname, 'wmsqueue'):
-            self.siteid = self.qcl.get(apfqname, 'wmsqueue')
-        else:
-            # if siteid is not in the specs, then
-            # the very APF QUEUE name is the siteid, as default
-            self.siteid = apfqname
-        self.batchqueue = self.qcl.get(apfqname, 'batchqueue')
-        self.cloud = self.qcl.get(apfqname, 'cloud')
-        self.cycles = self.fcl.get("Factory", 'cycles' )
-        self.sleep = int(self.qcl.get(apfqname, 'apfqueue.sleep'))
+        self.siteid = self.qcl.generic_get(apfqname, 'wmsqueue', default_value=apfqname, logger=self.log)
+        self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue', logger=self.log)
+        self.cloud = self.qcl.generic_get(apfqname, 'cloud', logger=self.log)
+        self.cycles = self.fcl.generic_get("Factory", 'cycles', logger=self.log )
+        self.sleep = self.qcl.generic_get(apfqname, 'apfqueue.sleep', 'getint', logger=self.log)
         self.cyclesrun = 0
         
-        # Get status-related vars
-        self.batchstatusmaxtime = 0
-        if self.fcl.has_option('Factory', 'batchstatus.maxtime'):
-            self.batchstatusmaxtime = self.fcl.get('Factory', 'batchstatus.maxtime')
-
-        self.wmsstatusmaxtime = 0
-        if self.fcl.has_option('Factory', 'wmsstatus.maxtime'):
-            self.wmsstatusmaxtime = self.fcl.get('Factory', 'wmsstatus.maxtime')
+        self.batchstatusmaxtime = self.fcl.generic_get('Factory', 'batchstatus.maxtime', default_value=0, logger=self.log)
+        self.wmsstatusmaxtime = self.fcl.generic_get('Factory', 'wmsstatus.maxtime', default_value=0, logger=self.log)
 
         self._startmonitor()
         self._condorlogclean()

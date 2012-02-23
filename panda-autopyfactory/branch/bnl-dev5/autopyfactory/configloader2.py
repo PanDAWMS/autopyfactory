@@ -179,9 +179,11 @@ class Config(SafeConfigParser, object):
                 if not has_option:
                         if mandatory:
                                 if logger:
-                                        logger.error('generic_get: option %s is not present in section %s' %(option, section))
+                                        logger.error('generic_get: option %s is not present in section %s. Will raise an exception.' %(option, section))
                                 raise ConfigException(option, section)
                         else:
+                                if logger:
+                                        logger.info('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
                                 return default_value
                 else:
                         get_f = getattr(self, get_function)
