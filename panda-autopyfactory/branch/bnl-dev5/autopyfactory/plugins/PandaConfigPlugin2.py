@@ -68,7 +68,7 @@ class PandaConfigPlugin(ConfigInterface):
     def valid(self):
         return self._valid
 
-    def getConfig(self, id):
+    def getConfig(self):
         '''
         returns a Config object with the info we are interested in
         id is the string that identifies a given class (e.g. condorgt2, condorcream...)
@@ -79,7 +79,7 @@ class PandaConfigPlugin(ConfigInterface):
         self._getschedconfig() 
 
         conf = self.scinfo.getConfig(self.apfqname) 
-        conf.filterkeys('batchsubmit', 'batchsubmit.%s' %id)
+        ###conf.filterkeys('batchsubmit', 'batchsubmit.%s' %id)
  
         self.log.debug('getConfig: Leaving')
         return conf 

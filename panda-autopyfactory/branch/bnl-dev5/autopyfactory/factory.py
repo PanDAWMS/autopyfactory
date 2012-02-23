@@ -828,7 +828,8 @@ class APFQueue(threading.Thread):
         if self.qcl.getboolean(self.apfqname, 'autofill'):
                 self.log.info('_autofill: is True, proceeding to query config plugin and merge')
                 id = self.batchsubmit_cls.id
-                newqcl = self.config_plugin.getConfig(id)
+                newqcl = self.config_plugin.getConfig()
+                newqcl.filterkeys('batchsubmit', 'batchsubmit.%s' %id)
                 self.qcl.merge(newqcl) 
         self.log.debug('_autofill: Leaving')
 
@@ -1250,7 +1251,7 @@ class ConfigInterface(object):
             valid()
     -----------------------------------------------------------------------
     '''
-    def getConfig(self, id):
+    def getConfig(self):
         '''
         returns info 
         '''
