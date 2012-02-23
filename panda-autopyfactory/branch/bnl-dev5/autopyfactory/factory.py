@@ -700,21 +700,42 @@ class APFQueue(threading.Thread):
         self.wmsstatusmaxtime = 0
         if self.fcl.has_option('Factory', 'wmsstatus.maxtime'):
             self.wmsstatusmaxtime = self.fcl.get('Factory', 'wmsstatus.maxtime')
-        
-        # Handle sched plugin
-        self.scheduler_cls = self._getplugin('sched')
-        self.scheduler_plugin = self.scheduler_cls(self)
 
-        # Monitor
+        self._startmonitor()
+        self._condorlogclean()
+        self._plugins()
+
+        self.log.info('APFQueue: Object initialized.')
+
+    def _startmonitor(self):
+
+        self.log.debug('_startmonitor: Starting')
+
         if self.fcl.has_option('Factory', 'monitorURL'):
             self.log.info('Instantiating a monitor...')
             from autopyfactory.monitor import Monitor
             args = dict(self.fcl.items('Factory'))
             self.monitor = Monitor(self.fcl)
 
-        # Condor logs cleaning
+        self.log.debug('_startmonitor: Leaving')
+
+    def _condorlogclean(self):
+
+        self.log.debug('_condorlogclean: Starting')
         self.clean = CleanCondorLogs(self)
         self.clean.start()
+        self.log.debug('_condorlogclean: Leaving')
+
+    def _plugins(self):
+        '''
+        auxiliar method just to instantiate the plugin objects
+        '''
+       
+        self.log.debug('_plugins: Starting')
+ 
+        # Handle sched plugin
+        self.scheduler_cls = self._getplugin('sched')
+        self.scheduler_plugin = self.scheduler_cls(self)
 
         # Handle status and submit batch plugins. 
         self.batchstatus_cls = self._getplugin('batchstatus')
@@ -732,7 +753,7 @@ class APFQueue(threading.Thread):
                 # Note it could be None
                 self.config_plugin = self.config_cls(self)
 
-        self.log.info('APFQueue: Object initialized.')
+        self.log.debug('_plugins: Leaving')
 
     def _getplugin(self, action):
         '''
@@ -759,7 +780,7 @@ class APFQueue(threading.Thread):
                    The name of the class is the same as the name of the module
         '''
 
-        self.log.debug("__getplugin: Starting for action %s" %action)
+        self.log.debug("_getplugin: Starting for action %s" %action)
 
         plugin_prefixes = {
                 'sched' : 'Sched',
