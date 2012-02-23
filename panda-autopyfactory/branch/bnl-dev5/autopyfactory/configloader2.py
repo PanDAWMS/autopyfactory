@@ -33,20 +33,6 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 
-
-
-def dict2config(section, dic):
-        '''
-        converts a dictionary into a SafeConfigParser object.    
-        section is the name of the unique Section in the parser object.
-        '''
-        c = SafeConfigParser()
-        c.add_section(section)
-        for k,v in dic.iteritems():
-                c.set(section, k ,v)
-        return c
-
-
 class ConfigException(Exception):
         def __init__(self, option, section):
                 self.msg = 'option %s in section %s was supposed to be mandatory, but it is not present' %(option, section)
