@@ -36,9 +36,15 @@ class CondorGT2BatchSubmitPlugin(CondorGRAMBatchSubmitPlugin):
 
         # we rename the queue config variables to pass a new config object to parent class
         newqcl = qcl.clone().filterkeys('batchsubmit.condorgt2', 'batchsubmit.condorgram')
-        super(CondorGT2BatchSubmitPlugin, self)._readconfig(newqcl)
+        valid = super(CondorGT2BatchSubmitPlugin, self)._readconfig(newqcl)
+        if not valid:
+                return False
+        try:
+                self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorgt2.gridresource', logger=self.log) 
+                return True
+        except:
+                return False
 
-        self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorgt2.gridresource', logger=self.log) 
 
     def _addJSD(self):
         '''

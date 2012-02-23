@@ -29,7 +29,8 @@ class CondorCEBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
 
         # we rename the queue config variables to pass a new config object to parent class
         newqcl = qcl.clone().filterkeys('batchsubmit.condorce', 'batchsubmit.condorgrid')
-        super(CondorCEBatchSubmitPlugin, self)._readconfig(newqcl)
+        valid = super(CondorCEBatchSubmitPlugin, self)._readconfig(newqcl)
+        return valid
 
     def _addJSD(self):
         '''   

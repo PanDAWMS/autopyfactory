@@ -38,12 +38,17 @@ class CondorCREAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
 
         # we rename the queue config variables to pass a new config object to parent class
         newqcl = qcl.clone().filterkeys('batchsubmit.condorcream', 'batchsubmit.condorce')
-        super(CondorCREAMBatchSubmitPlugin, self)._readconfig(newqcl) 
-
-        self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.gridresource', logger=self.log) 
-        self.creamport = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.port', 'getint', logger=self.log)  
-        self.creambatch = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.batch', logger=self.log)  
-        self.queue = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.queue', logger=self.log)
+        valid = super(CondorCREAMBatchSubmitPlugin, self)._readconfig(newqcl) 
+        if not valid:
+                return False
+        try:
+                self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.gridresource', logger=self.log) 
+                self.creamport = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.port', 'getint', logger=self.log)  
+                self.creambatch = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.batch', logger=self.log)  
+                self.queue = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.queue', logger=self.log)
+                return True
+        except:
+                return False
 
     def _addJSD(self):
         '''

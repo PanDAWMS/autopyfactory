@@ -34,15 +34,19 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
 
                 # we rename the queue config variables to pass a new config object to parent class
                 newqcl = qcl.clone().filterkeys('batchsubmit.condorec2', 'batchsubmit.condorgrid')
-                super(CondorEC2BatchSubmitPlugin, self)._readconfig(newqcl)
-
-                self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.gridresource', logger=self.log) 
-
-                self.ami_id = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.ami_id', logger=self.log)
-                self.instance_type  = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.instance_type', logger=self.log)
-                self.user_data = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.user_data', logger=self.log)
-                self.access_key_id = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.access_key_id', logger=self.log)
-                self.secret_access_key = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.secret_access_key', logger=self.log)
+                valid = super(CondorEC2BatchSubmitPlugin, self)._readconfig(newqcl)
+                if not valid:
+                        return False
+                try:
+                        self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.gridresource', logger=self.log) 
+                        self.ami_id = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.ami_id', logger=self.log)
+                        self.instance_type  = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.instance_type', logger=self.log)
+                        self.user_data = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.user_data', logger=self.log)
+                        self.access_key_id = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.access_key_id', logger=self.log)
+                        self.secret_access_key = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.secret_access_key', logger=self.log)
+                        return True
+                except:
+                        return False
 
 
         def _addJSD(self):
