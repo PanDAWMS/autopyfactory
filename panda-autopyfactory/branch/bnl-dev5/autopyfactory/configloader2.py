@@ -65,7 +65,7 @@ class Config(SafeConfigParser, object):
                 -- If the input override is False, 
                    then the merge is done as if the current parser object had
                    override = False.
-                When the merge is done, values in the new parser objects
+                When the merge is being done, values in the new parser objects
                 replace the values in the current parser object, unless override=True. 
                 If the current object has no override defined, 
                 and the input override is None, then the default is as override=False
