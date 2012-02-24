@@ -34,12 +34,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         self.factory = apfqueue.factory
         self.fcl = apfqueue.factory.fcl
 
-        # calculating the directory path from where to submit jobs
-        now = time.gmtime() # gmtime() is like localtime() but in UTC
-        timePath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2])
-        logPath = timePath + self.apfqname.translate(string.maketrans('/:','__'))
-        self.logDir = self.fcl.generic_get('Factory', 'baseLogDir', logger=self.log) + logPath
-        self.logUrl = self.fcl.generic_get('Factory', 'baseLogDirUrl', logger=self.log) + logPath
 
         self.log.info('BatchSubmitPlugin: Object initialized.')
 
@@ -96,6 +90,9 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
                 return None, None
 
         if n != 0:
+
+            self._calculateDateDir()
+
             self.JSD = jsd.JSDFile()
             valid = self._readconfig()
             if not valid:
@@ -116,7 +113,19 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
 
         self.log.debug('submit: Leaving with output (%s, %s).' %(st, output))
         return st, output
-    
+   
+    def _calculateDateDir(self):
+        '''
+        a new directory is created for each day. 
+        Here we calculate it.
+        '''
+
+        now = time.gmtime() # gmtime() is like localtime() but in UTC
+        timePath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2])
+        logPath = timePath + self.apfqname.translate(string.maketrans('/:','__'))
+        self.logDir = self.fcl.generic_get('Factory', 'baseLogDir', logger=self.log) + logPath
+        self.logUrl = self.fcl.generic_get('Factory', 'baseLogDirUrl', logger=self.log) + logPath
+ 
     def _addJSD(self):
 
         self.log.debug('addJSD: Starting.')
