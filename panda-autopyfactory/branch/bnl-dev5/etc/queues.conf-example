@@ -439,6 +439,7 @@
 #
 # executable.wrappervo = VO
 #               To be used by the 'new wrapper' distributed with AutoPyFactory.
+#               Mandatory
 #
 # executable.wrapperpurpose = specific purpose for the job, if needed (e.g. testing, prod, analysis)
 #               To be used by the 'new wrapper' distributed with AutoPyFactory.
