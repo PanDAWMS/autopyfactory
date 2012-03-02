@@ -10,6 +10,7 @@
 
 import copy
 import logging
+import os
 
 from ConfigParser import SafeConfigParser, NoSectionError
 from urllib import urlopen
