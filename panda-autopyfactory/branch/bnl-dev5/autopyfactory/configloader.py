@@ -245,7 +245,7 @@ class ConfigManager:
        data = self.__getContent(src) 
        tmpconfig = Config()
        tmpconfig.readfp(data)
-       tmpconfig.fixvalues()
+       tmpconfig.fixpathvalues()
        return tmpconfig
 
    def __getContent(self, src):
