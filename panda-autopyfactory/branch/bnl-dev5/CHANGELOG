@@ -3,6 +3,21 @@ ChangeLog
 
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
+
+2012-03-09
+
+* Refined running as user rather than from RPM. 'setup.py install --home' does a user-based 
+  setup. 
+
+* Added an external queue configuration information plugin mechanism to enable plugin-based 
+  auto-fill/overriding of config information. 
+
+* Consolidated all plugins into hierarchical inheritance tree, to eliminate duplicated code 
+  (especially the Condor plugins). 
+  
+* This release is the 'Sleeper Service' v. 2.1.0
+  http://en.wikipedia.org/wiki/GSV_Sleeper_Service
+
 2011-12-02
 
 * Major refactorization to integrate BNL changes. Full object-oriented functional 
@@ -37,9 +52,9 @@ $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
 * Added copy of Jose's generic top-level wrapper to libexec/.  
 
-* IMPORTANT: For various reasons, it was very difficult to maintain the ability to automatically reload
-  configs by detecting file mtime changes. So for now simply restart if you change a file. This feature 
-  can be re-enabled soon. 
+* IMPORTANT: For various reasons, it was very difficult to maintain the ability to automatically
+  reload configs by detecting file mtime changes. So for now simply restart if you change a file.
+  This feature  can be re-enabled soon. 
 
 * This release is "The Clockmaker". v2.0.0
   http://en.wikipedia.org/wiki/List_of_Revelation_Space_characters#The_Clockmaker
