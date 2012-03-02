@@ -134,7 +134,10 @@ Jose Caballero <jcaballero@bnl.gov>
                           action="store", 
                           help="Send logging output to LOGFILE or SYSLOG or stdout [default <syslog>]")
         parser.add_option("--runas", dest="runAs", 
-                          default="apf",
+                          #
+                          # By default
+                          #
+                          default=pwd.getpwuid(os.getuid())[0],
                           action="store", 
                           metavar="USERNAME", 
                           help="If run as root, drop privileges to USER")
