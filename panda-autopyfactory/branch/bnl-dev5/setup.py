@@ -47,13 +47,26 @@ home_data_files=[('libexec', ['libexec/runpilot3-wrapper.sh',
 
 def choose_data_files():
     #print(sys.argv)
+    rpminstall = True
+    userinstall = False
+     
     if 'bdist_rpm' in sys.argv:
+        rpminstall = True
+
+    elif 'install' in sys.argv:
+        # check for --home as substring in other args
+        for a in sys.argv:
+            if a.lower().startswith('--home'):
+                rpminstall = False
+                userinstall = True
+                
+    if rpminstall:
         return rpm_data_files
-    elif '--home' in sys.argv and 'install' in sys.argv:
+    elif userinstall:
         return home_data_files
     else:
+        # Something probably went wrong, so punt
         return rpm_data_files
-    
        
 # setup for distutils
 setup(
