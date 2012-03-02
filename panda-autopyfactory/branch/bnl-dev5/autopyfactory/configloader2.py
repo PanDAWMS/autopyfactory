@@ -157,7 +157,19 @@ class Config(SafeConfigParser, object):
                 # we return self to be able to do this
                 #   newconfig = config.clone().filterkeys('a', 'b')
                 return self
-                                
+        
+        def fixpathvalues(self):
+                for section in self.sections():
+                    for key in self.options(section):
+                                        value = self.get(section, key)
+                                        if value.startswith('~'):
+                                            self.set(section,key,os.path.expanduser(value))
+
+                # we return self to be able to do this
+                #   newconfig = config.clone().filterkeys('a', 'b')
+                return self
+            
+                                    
 
 
         def  generic_get(self, 
@@ -235,6 +247,7 @@ class ConfigManager:
                 data = self.__getContent(src) 
                 tmpconfig = Config()
                 tmpconfig.readfp(data)
+                tmpconfig.fixpathvalues()
                 return tmpconfig
 
         def __getContent(self, src):
