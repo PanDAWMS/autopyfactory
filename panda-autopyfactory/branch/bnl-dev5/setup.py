@@ -54,7 +54,6 @@ def choose_data_files():
         rpminstall = True
 
     elif 'install' in sys.argv:
-        # check for --home as substring in other args
         for a in sys.argv:
             if a.lower().startswith('--home'):
                 rpminstall = False

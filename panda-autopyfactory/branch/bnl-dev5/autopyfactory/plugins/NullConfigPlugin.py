@@ -3,7 +3,7 @@
 import logging
 
 from autopyfactory.factory import ConfigInterface
-from autopyfactory.configloader2 import Config, ConfigManager
+from autopyfactory.configloader import Config, ConfigManager
 
 
 __author__ = "John Hover, Jose Caballero"

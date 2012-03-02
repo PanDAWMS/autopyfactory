@@ -8,21 +8,20 @@
 '''
 
 
+import copy
 import logging
-import os
-import re
-import sys
 
 from ConfigParser import SafeConfigParser, NoSectionError
 from urllib import urlopen
+import urllib2
 
-from autopyfactory.apfexceptions import FactoryConfigurationFailure
-
-try:
-        import json as json
-except ImportError, err:
-        # Not critical (yet) - try simplejson
-        import simplejson as json
+####from autopyfactory.apfexceptions import FactoryConfigurationFailure
+####
+####try:
+####        import json as json
+####except ImportError, err:
+####        # Not critical (yet) - try simplejson
+####        import simplejson as json
 
 __author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
 __copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010,2011 John Hover; 2011 Jose Caballero"
@@ -34,301 +33,259 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 
-class APFConfigParser(SafeConfigParser):
+class ConfigException(Exception):
+    def __init__(self, option, section):
+        self.msg = 'option %s in section %s was supposed to be mandatory, but it is not present' %(option, section)
+    def __str_(self):
+        return self.msg 
+
+
+class Config(SafeConfigParser, object):
     '''
-    Introduces "None" -> None conversion. All else same as SafeConfigParser
-    
+    -----------------------------------------------------------------------
+    Class to handle config files. 
+    -----------------------------------------------------------------------
+    Public Interface:
+            The interface inherited from SafeConfigParser.
+            merge(config, override=False)
+    -----------------------------------------------------------------------
     '''
-    def get(self, section, option, *args, **kwargs):
-        self.log = logging.getLogger('main.configloader')
-        v = SafeConfigParser.get(self, section, option, *args, **kwargs)
-        if isinstance(v, str):    
-            if v.lower() == 'none':
-                v = None
-                self.log.debug('Detected value of "None"; converted to None.')
-        return v
-                
-class ConfigLoader(object):
+    def merge(self, config, override=None, includemissing=True):
         '''
-        Base class of configloader. Handles file/URI storage.
+        merge the current Config object 
+        with the content of another Config object.
+
+        override can have only 3 values: None(default), True or False
+        -- If the input override is None, 
+           then the merge is done using the current override value
+           that the current parser object may have. 
+        -- If the input override is True, 
+           then the merge is done as if the current parser object had
+           override = True.
+        -- If the input override is False, 
+           then the merge is done as if the current parser object had
+           override = False.
+        When the merge is being done, values in the new parser objects
+        replace the values in the current parser object, unless override=True. 
+        If the current object has no override defined, 
+        and the input override is None, then the default is as override=False
+        (in order words, new values replace current values).
+
+        includemissing determines if attributes in the new config parser 
+        object that do not exist in the current one should be added or not.
+        '''
+        self.__cloneallsections(config, override, includemissing)
+    
+    def __cloneallsections(self, config, override, includemissing):
+        '''
+        clone all sections in config
+        '''
+
+        sections = config.sections()
+        for section in sections:
+            if section not in self.sections(): 
+                if includemissing:
+                    self.__clonesection(section, config)
+            else:
+                self.__mergesection(section, config, override, includemissing)
+    
+    def __clonesection(self, section, config):
+        ''' 
+        create a new section, and copy its content
+        ''' 
+        self.add_section(section)
+        for opt in config.options(section):
+            value = config.get(section, opt)
+            self.set(section, opt, value)
+    
+    def __mergesection(self, section, config, override, includemissing):
+        '''
+        merge the content of a current Config object section
+        with the content of the same section 
+        from a different Config object
         '''
         
-        def __init__(self, configFiles, loglevel=logging.DEBUG):
-                self.log = logging.getLogger('main.configloader')
-                if isinstance(configFiles, list):
-                                self.configFiles = configFiles
-                else:
-                                # configFiles is a string
-                                self.configFiles = [configFiles]
+        # determine the value of override.
+        if override:
+            # if input option override is not None
+            _override=override
+        else:
+            # if input option override is None
+            if self.has_option(section, 'override'):
+                # if the current config parser object has override...
+                _override = self.get(section, 'override')
+            else:
+                # when no one knows what to do...
+                _override = False
 
-                self.loadConfig()
-                self.configFileMtime = {}
-
-
-        def loadConfig(self):
-                self.config = APFConfigParser()
-                # Maintain case sensitivity in keys
-                self.config.optionxform = str
-                self.log.info('Reading config files: %s' % self.configFiles)
-                readConfigFiles = []
-                unreadConfigFiles = []
-                for f in self.configFiles:
-                        self.log.debug('Reading file/URI: %s' % f)
-                        if self._isURI(f):
-                                self.log.debug('%s is a URI...' % f)
-                                fp = self._convertURItoReader(f)
-                                try:
-                                        self.config.readfp(fp)
-                                        readConfigFiles.append(f)
-                                except Exception, e:
-                                        self.log.debug("ERROR: %s Unable to read config file %s" % (e,f))
-                                        unreadConfigFiles.append(f)
-                        else:
-                                self.log.debug('%s is not URI, file?:' % f)
-                                try:
-                                        f = os.path.expanduser(f)
-                                        fp = open(f)
-                                        self.config.readfp(fp)
-                                        readConfigFiles.append(f)
-                                except Exception, e:
-                                        self.log.error("Unable to read file %s , Error: %s" % (f,e))
-                                        unreadConfigFiles.append(f)
-                self.log.debug('Successfully read config files %s' % readConfigFiles)
-                        
-                if len(unreadConfigFiles) > 0:
-                        self.log.warn('Failed to read config files %s' % unreadConfigFiles)
-
-                self._checkMandatoryValues()
-                configDefaults = self._configurationDefaults()
-
-                for section, defaultDict in configDefaults.iteritems():
-                        for k, v in defaultDict.iteritems():
-                                if not self.config.has_option(section, k):
-                                        self.config.set(section, k, v)
-                                        self.log.debug('Set default value for %s in section %s to "%s".' % (k, section, v))
-
-        def __getattr__(self, f):
-                '''
-                We recover all functionalities from ConfigParser class.
-                For example, now we can call from factory
-                        self.qcl.get(section, item)
-                or
-                        self.qcl.getboolean(section, item)
-                
-                                
-                
-                '''
-                return getattr(self.config, f)
-
-        def _isURI(self, itempath):
-                '''
-                Tests to see if given path is a URI or filename. file:// http:// 
-                (No https:// yet).           
-                '''
-                self.log.debug("Checking if %s is a URI..." % itempath)
-                isuri = False
-                itempath = itempath.strip()
-                head = itempath[:7].lower()
-                if head == "file://" or head == "http://":
-                        isuri = True
-                        self.log.debug("%s is a URI!" % itempath)
-                if head == "https:/":
-                        raise FactoryConfigurationFailure, "https:// URIs not supported yet."
-                return isuri
-                
-        def _convertURItoReader(self, uri):
-                '''
-                Takes a URI string, opens it, and returns a filelike object of its contents.                
-                '''
-                self.log.debug("Converting URI %s to reader..." % uri)                
-                uri = uri.strip()
-                head = uri[:7].lower()
-                if head == "file://": 
-                        filepath = uri[7:]
-                        self.log.debug("File URI detected. Opening file path %s" % filepath)
-                        try:
-                                reader = open(filepath)        
-                        except IOError:
-                                self.log.error("File path %s not openable." % filepath)
-                                raise FactoryConfigurationFailure, "File URI %s does not exist or not readable" % uri  
-                elif head == "http://":
-                        try:
-                                opener = urllib2.build_opener()
-                                urllib2.install_opener( opener )
-                                uridata = urllib2.urlopen( uri )
-                                firstLine = uridata.readline().strip()
-                                if firstLine[0] == "<":
-                                        raise FactoryConfigurationFailure("First response character was '<'. Proxy error?")
-                                reader = urllib2.urlopen( hostsURI )
-                        except Exception:  
-                                errMsg = "Couldn't find URI %s (use file://... or http://... format)" % uri
-                                raise FactoryConfigurationFailure(errMsg)
-                self.log.debug("Success. Returning reader." )
-                return reader
-
-        def _pythonify(self, myDict):
-                '''
-                Set special string values to appropriate python objects in a configuration dictionary
-                '''
-                for k, v in myDict.iteritems():
-                        if v == 'None' or v == '':
-                                myDict[k] = None
-                        elif v == 'False':
-                                myDict[k] = False
-                        elif v == 'True':
-                                myDict[k] = True
-                        elif isinstance(v, str) and v.isdigit():
-                                myDict[k] = int(v)
-
-        def getConfigParser(self, section):     
-                """
-                creates a new SafeConfigParser object
-                with the content of a given section.
-                Then it can be used like this:
-                        newcp = getConfigParser(section)
-                        for i in newcp.items( newcp.sections()[0] ):
-                                print i
-                """
-                newCP = SafeConfigParser()
-                newCP.add_section(section)
-                for item in self.config.items(section):
-                        newCP.set(section, *item)
-                return newCP
-
-
-class FactoryConfigLoader(ConfigLoader):
+        for opt in config.options(section):
+            value = config.get(section, opt)        
+            if opt not in self.options(section):
+                if includemissing:
+                    self.set(section, opt, value)
+            else:
+                if not _override:
+                    self.set(section, opt, value)
+    
+    def clone(self):
         '''
-        ConfigLoader for factory instance parameters.
+        makes an exact copy of the object
         '''
-        def loadConfig(self):
-                super(FactoryConfigLoader, self).loadConfig()
-                # Little bit of sanity...
-                #if not os.path.isfile(self.config.get('Pilots', 'executable')):
-                #        raise FactoryConfigurationFailure, 'Pilot executable %s does not seem to be a readable file.' % self.config.get('Pilots', 'executable')
-
-
-        def _statConfigs(self):
-                '''
-                Finally, stat the conf file(s) so we can tell if they changed
-                '''
-                try:
-                        self.configFileMtime = dict()
-                        for confFile in self.configFiles:
-                                self.configFileMtime[confFile] = os.stat(confFile).st_mtime
-                except OSError, (errno, errMsg):
-                        # This should never happen - we've just read the file after all,
-                        # but belt 'n' braces...
-                        raise FactoryConfigurationFailure, "Failed to stat config file %s to get modification time: %s\nDid you try to configure from a non-existent or unreadable file?" % (self.configFile, errMsg)
-
-
-        def _checkMandatoryValues(self):
-                '''
-                Check we have a sane configuration
-                '''
-                mustHave = {'Factory' : ('factoryAdminEmail', 'factoryId'),
-                            'Factory' : ('baseLogDir', 'baseLogDirUrl',)
-                                        }
-                for section in mustHave.keys():
-                        if not self.config.has_section(section):
-                                raise FactoryConfigurationFailure, 'Config files %s have no section [%s] (mandatory).' % (self.configFiles, section)
-                        for option in mustHave[section]:
-                                if not self.config.has_option(section, option):
-                                        raise FactoryConfigurationFailure, 'Config files %s have no option %s in section %s (mandatory).' % (self.configFiles, option, section)
-
-        def _configurationDefaults(self):
-                '''
-                Define default configuration parameters for autopyfactory instances
-                '''
-                defaults = {}
-                try:
-                        defaults = { 'Factory' : { 'condorUser' : os.environ['USER'], }}
-                except KeyError:
-                        # Non-login shell - you'd better set it yourself
-                        defaults = { 'Factory' : { 'condorUser' : 'unknown', }}
-                defaults['Factory']['schedConfigPoll'] = '5'
-                return defaults
-
-
-class QueueConfigLoader(ConfigLoader):
+        return copy.deepcopy(self)
+    
+    def filterkeys(self, pattern, newpattern):
         '''
-        ConfigLoader for queue-related parameters with one QueueConfigLoader per queue. 
-        Since queue config sources can be URI, we have to check whether they are 'stat'-able or not. 
+        it changes, for all sections, part of the name of the keys.
+        For example, with inputs like 'condorgt2' and 'condorgram'
+        it changes variables like 
+                submit.condorgt2.environ
+        for
+                submit.condorgram.environ
 
-        This object now just handles loading queue configuration from files/URIs.
-        Information from the Panda server and handling of override=True done elsewhere.  
+        NOTE: we need to be careful to avoid replacing things by mistake
+        So it is better to pass the longer possible patterns.
         '''
-        def loadConfig(self):
-                super(QueueConfigLoader, self).loadConfig()
-                # List of field names to update to their new schedconfig values (Oracle column names 
-                # are case insensitive, so used lowercase here)
-                deprecatedKeys = {'pilotDepth' : 'nqueue',
-                                                  'pilotDepthBoost' : 'depthboost',
-                                                  'idlePilotSuppression' : 'idlepilotsuppression',
-                                                  'pilotLimit' : 'pilotlimit',
-                                                  'transferringLimit' : 'transferringlimit',
-                                                  'env': 'environ',
-                                                  'jdl' : 'queue',
-                                                  }
 
-        def _checkMandatoryValues(self):
-                '''
-                Check we have a sane configuration
-                '''
-                mustHave = {
-                                        #'Factory' : ('factoryAdminEmail', 'factoryId'),
-                                        #'Pilots' : ('executable', 'baseLogDir', 'baseLogDirUrl',),
-                                        #'QueueDefaults' : () 
-                                        }
-                for section in mustHave.keys():
-                        if not self.config.has_section(section):
-                                raise FactoryConfigurationFailure, 'Configuration files %s have no section %s (mandatory).' % (self.configFiles, section)
-                        for option in mustHave[section]:
-                                if not self.config.has_option(section, option):
-                                        raise FactoryConfigurationFailure, 'Configuration files %s have no option %s in section %s (mandatory).' % (self.configFiles, option, section)
+        for section in self.sections():
+            for key in self.options(section):
+                if key.find(pattern) > -1:
+                    value = self.get(section, key)
+                    newkey = key.replace(pattern, newpattern)
+                    self.remove_option(section, key)
+                    self.set(section, newkey, value)
 
-        def _validateQueue(self, queue):
-                '''
-                Perform final validation of queue configuration
-                '''
-                # If the queue has siteid=None it should be suppressed
-                if self.queues[queue]['siteid'] == None:
-                        self.configMessages.error('Queue %s has siteid=None and will be ignored. Update the queue if you really want to use it.' % queue)
-                        self.queues[queue]['status'] = 'error'
+        # we return self to be able to do this
+        #   newconfig = config.clone().filterkeys('a', 'b')
+        return self
+    
+    def fixpathvalues(self):
+        '''
+        looks for values that are likely pathnames beginning with "~". 
+        converts them to the full path using expanduser()
+        '''
+        for section in self.sections():
+            for key in self.options(section):
+                value = self.get(section, key)
+                if value.startswith('~'):
+                    self.set(section,key,os.path.expanduser(value))
+        
+    
+    def  generic_get(self, 
+                     section,                       # SafeConfigParser section
+                     option,                        # option in the SafeConfigParser section
+                     get_function='get',            # string representing the actual SafeConfigParser method:  "get", "getint", "getfloat", "getboolean"
+                     convert_to_None=False,         # decide if strings "None", "Null" or ""  should be converted into python None
+                     mandatory=False,               # if the option is supposed to be there
+                     default_value=None,            # default value to be returned with variable is not mandatory and is not in the config file
+                     logger=None):                  # logger function 
+        '''
+        generic get() method for Config objects.
+        example of usage:
+                x = generic_get("Sec1", "x", get_function='getint', convert=True, mandatory=True, mandatory_exception=NoMandatoryException, logger=self.log)
+        '''
 
-        def _configurationDefaults(self):
-                '''
-                Defaults for the queues.conf file are handled via the standard [DEFAULTS] 
-                ConfigParser approach, so we don't have to specify here. 
-                '''
-                
-                defaults = {}
-                return defaults
-                  
-        def _loadQueueData(self, queue):
-                '''
-                
-                '''
-                queueDataUrl = 'http://pandaserver.cern.ch:25080/cache/schedconfig/%s.factory.json' % queue
-                try:
-                        handle = urlopen(queueDataUrl)
-                        jsonData = json.load(handle, 'utf-8')
-                        handle.close()
-                        self.log.debug('JSON returned: %s' % jsonData)
-                        factoryData = {}
-                        # json always gives back unicode strings (eh?) - convert unicode to utf-8
-                        for k, v in jsonData.iteritems():
-                                if isinstance(k, unicode):
-                                        k = k.encode('utf-8')
-                                if isinstance(v, unicode):
-                                        v = v.encode('utf-8')
-                                factoryData[k] = v
-                        self.log.debug('Converted to: %s' % factoryData)
-                except ValueError, err:
-                        self.log.error('%s for queue %s, downloading from %s' % (err, queue, queueDataUrl))
-                        return None
-                except IOError, (errno, errmsg):
-                        self.log.error('%s for queue %s, downloading from %s' % (errmsg, queue, queueDataUrl))
-                        return None
+        has_option = self.has_option(section, option)
 
-                return factoryData                
+        if not has_option:
+            if mandatory:
+                if logger:
+                    logger.error('generic_get: option %s is not present in section %s. Will raise an exception.' %(option, section))
+                raise ConfigException(option, section)
+            else:
+                if logger:
+                    logger.info('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
+                return default_value
+        else:
+            get_f = getattr(self, get_function)
+            value = get_f(section, option)
+            if logger:
+                logger.debug('generic_get: option %s in section %s has value %s' %(option, section, value))
+            if convert_to_None:
+                if value.lower() in ['none', 'null', '']:
+                    value = None
+            return value
 
+
+class ConfigManager:
+   '''
+   -----------------------------------------------------------------------
+   Class to create config files with info from different sources.
+   -----------------------------------------------------------------------
+   Public Interface:
+           getConfig(source)
+           getFromSchedConfig(site)
+   -----------------------------------------------------------------------
+   '''
+
+   def __init__(self):
+           pass
+
+   def getConfig(self, sources):
+         '''
+         creates a Config object and returns it.
+         sources points to the info to feed the object:
+                 - path to a phisical file on disk
+                 - an URL
+         '''
+ 
+         config = Config()
+
+         for src in sources.split(','):
+             newconfig = self.__getConfig(src)
+             config.merge(newconfig)
+
+         return config
+
+
+   def __getConfig(self, src):
+       '''
+       returns a new ConfigParser object 
+       '''
+      
+       data = self.__getContent(src) 
+       tmpconfig = Config()
+       tmpconfig.readfp(data)
+       tmpconfig.fixvalues()
+       return tmpconfig
+
+   def __getContent(self, src):
+       '''
+       returns the content to feed a new ConfigParser object
+       '''
+
+       sourcetype = self.__getsourcetype(src)
+       if sourcetype == 'file':
+               return self.__dataFromFile(src)
+       if sourcetype == 'uri':
+               return self.__dataFromURI(src)
+
+   def __getsourcetype(self, src):
+       '''
+       determines if the source is a file on disk on an URI
+       '''
+       sourcetype = 'file'  # default
+       uritokens = ['file://', 'http://']
+       for token in uritokens:
+           if src.startswith(token):
+               sourcetype = 'uri'
+               break
+       return sourcetype
+
+   def __dataFromFile(self, path):
+       '''
+       gets the content of an config object from  a file
+       '''
+       f = open(path)
+       return f
+   
+   def __dataFromURI(self, uri):
+       ''' 
+       gets the content of an config object from an URI.
+       ''' 
+       opener = urllib2.build_opener()
+       urllib2.install_opener(opener)
+       uridata = urllib2.urlopen(uri)
+       #firstLine = uridata.readline().strip() 
+       #if firstLine[0] == "<":
+       #        raise FactoryConfigurationFailure("First response character was '<'. Proxy error?")
+       return uridata

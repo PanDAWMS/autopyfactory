@@ -39,7 +39,7 @@ from ConfigParser import ConfigParser
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 #from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
-from autopyfactory.configloader2 import Config, ConfigManager
+from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.cleanLogs import CleanCondorLogs
 from autopyfactory.logserver import LogServer
 from autopyfactory.proxymanager import ProxyManager

@@ -14,7 +14,7 @@ import sys
 from pprint import pprint
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
-from autopyfactory.configloader2 import Config
+from autopyfactory.configloader import Config
 from autopyfactory.logserver import LogServer
 
 __author__ = "Jose Caballero"

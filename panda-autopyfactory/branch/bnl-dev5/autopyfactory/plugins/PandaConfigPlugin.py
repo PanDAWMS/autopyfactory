@@ -6,7 +6,7 @@ from urllib import urlopen
 
 from autopyfactory.info import BaseInfo 
 from autopyfactory.factory import ConfigInterface
-from autopyfactory.configloader2 import Config, ConfigManager
+from autopyfactory.configloader import Config, ConfigManager
 
 #from autopyfactory.factory import WMSStatusInterface
 #from autopyfactory.factory import WMSStatusInfo

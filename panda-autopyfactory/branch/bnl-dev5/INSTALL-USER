@@ -1,18 +1,40 @@
 AutoPyFactory INSTALL-USER
 
-User installation assumes that APF will be installed in the users home directory using the 
+User installation assumes that APF will be installed in the user's home directory using the 
 standard Python distutils setup commands. It assumes that pre-requisites have already
 been installed and properly configured, either within the user's home directory or on
 the general system. 
 
+Software Prerequisites
+----------------------------------------------------------------------
+* Python 2.4 or above:
+	-- Comes default with RHEL 5+ and most current operating systems.    
+ 	 
+* python-simplejson:
+	-- Available in stock RHEL 5+. yum install python-simplejson
+    -- http://pypi.python.org/pypi/simplejson/
+    
+* python-pycurl:
+	-- Available in stock RHEL 5+. yum install python-pycurl
+       (We will work to eliminate this prerequisite by using pure Python urllib.) 
+    -- http://pycurl.sourceforge.net/download/
 
-Prerequisites:
-   -- Python  
-   -- Condor (Condor-G)
-   -- Panda Client library 
-   -- simplejson
-   
-   
-Unlike the root/RPM install, you must add ~/lib/python to your PYTHONPATH:
+* voms-proxy-* tools:
+	-- Available in stock RHEL 5+. yum install voms-clients
+	-- Or install the OSG client
+     
+* Condor 7.6 or above:
+	-- http://research.cs.wisc.edu/condor/      
+      
+* Panda Client userinterface Python library:
 
-  export PYTHONPATH=~/lib/python:$PYTHONPATH
+    mkdir ~/lib/python
+	cd ~/lib/python
+    svn co http://svnweb.cern.ch/guest/panda/panda-server/current/pandaserver/userinterface
+
+Installation
+-----------------------------------------------------------------------
+
+-- Unlike the root/RPM install, you must add ~/lib/python to your PYTHONPATH. 
+      
+      export PYTHONPATH=~/lib/python:$PYTHONPATH
