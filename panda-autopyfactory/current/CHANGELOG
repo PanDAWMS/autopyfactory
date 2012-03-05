@@ -3,6 +3,13 @@ ChangeLog
 
 $Id$
 
+2012-03-05
+
+* test-site logic tweaked to submit more pilots
+
+* This release is a patched version of "Patches in the Sky", bumped to v1.3.2
+
+
 2011-12-12
 
 * added fairshare submission logic
