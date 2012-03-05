@@ -6,8 +6,8 @@ $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
 2012-03-09
 
-* Refined running as user rather than from RPM. 'setup.py install --home' does a user-based 
-  setup. 
+* Refined running as user rather than from RPM. 'setup.py install --home=/path/to/home' does a
+  user-based setup. All libs are in ~/lib/python, configs and init script in ~/etc/, and so on.
 
 * Added an external queue configuration information plugin mechanism to enable plugin-based 
   auto-fill/overriding of config information. 
