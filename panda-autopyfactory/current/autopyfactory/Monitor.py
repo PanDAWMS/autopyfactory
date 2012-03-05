@@ -36,6 +36,7 @@ class Monitor:
 
         self.crurl = monurl + 'c/'
         self.msgurl = monurl + 'm/'
+        self.jsonurl = monurl + 'jmsg/'
         self.furl = monurl + 'h/'
         self.crlist = []
         self.msglist = []
@@ -131,6 +132,15 @@ class Monitor:
 
         self.msglist = []
         self.crlist = []
+
+    def jsonmsg(self, blob):
+        """
+        Send a JSON encoded message to the Monitor
+        """
+
+        jsondata = self.json.encode(blob)
+        self._signal(self.jsonurl, jsondata)
+
 
     def sendmq(self):
         """
