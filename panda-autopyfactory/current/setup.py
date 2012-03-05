@@ -3,7 +3,7 @@
 # Setup prog for autopyfactory
 #
 #
-release_version='1.3.1'
+release_version='1.3.2'
 
 import re
 import sys
@@ -15,8 +15,8 @@ from distutils.command.install_data import install_data as install_data_org
         
 # setup for distutils
 setup(
-    name="panda-autopyfactory",
-#    name="panda-autopyfactory-py25",
+#    name="panda-autopyfactory",
+    name="panda-autopyfactory-py25",
     version=release_version,
     description='panda-autopyfactory package',
     long_description='''This package contains autopyfactory''',
