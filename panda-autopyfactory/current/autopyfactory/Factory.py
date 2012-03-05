@@ -157,14 +157,27 @@ class factory:
 
 
             if queueParameters['status'] == 'test' or cloudTestStatus == True:
-                # For test sites only ever have one pilot queued, but allow up to nqueue to run
-                if queueParameters['pilotQueue']['inactive'] > 0 or queueParameters['pilotQueue']['total'] > queueParameters['nqueue']:
-                    msg = 'test site has %d pilots, %d queued. Doing nothing.' % (queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
+                # For test sites, allow 1 pilot queued, but allow up to nqueue to run
+                ninactive = queueParameters['pilotQueue']['inactive']
+                ntotal = queueParameters['pilotQueue']['total']
+                nqueue = queueParameters['nqueue']
+
+                if ninactive > 0:
+                    msg = 'test site has %d pilots, %d queued. Doing nothing.' % (ntotal,nqueued)
                     self.note(queue, msg)
-                else:
-                    msg = 'test site has %d pilots, %d queued. Will submit 1 testing pilot.' % (queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
+                    continue
+
+                if ntotal > nqueue:
+                    msg = 'test site has %d pilots, %d queued. Will submit 1 pilot.' % (ntotal,ninactive)
                     self.note(queue, msg)
                     self.condorPilotSubmit(queue, cycleNumber, 1)
+
+
+                else:
+                    msg = 'test site has %d pilots, %d queued. Will submit 12 pilots.' % (ntotal,ninactive)
+                    self.note(queue, msg)
+                    self.condorPilotSubmit(queue, cycleNumber, 12)
+                
                 continue
 
             # set depthboost
