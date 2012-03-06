@@ -507,6 +507,9 @@ batchsubmit.condorcream.proxy = None
 batchsubmit.condorec2.proxy = None
 batchsubmit.condorlocal.proxy = None
 
+batchsubmit.condorgt2.condor_attributes = periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30),periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
+
+
 apfqueue.sleep = 360
 
 executable = /usr/libexec/wrapper.sh
