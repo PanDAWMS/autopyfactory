@@ -3,6 +3,12 @@
 # Quick-and-dirty script to generate APF 2.x configuration files from 1.3 configuration. 
 #
 #
+import sys
+from ConfigParser import ConfigParser
+DEBUG=False
+
+
+
 
 FACTORY_DEFAULT = '''
 [Factory]
@@ -57,8 +63,8 @@ autofill = True
 batchstatusplugin = Condor
 wmsstatusplugin = Panda
 configplugin = Panda
-batchsubmitplugin = CondorGT2
-# batchsubmitplugin = CondorCREAM
+#batchsubmitplugin = CondorGT2
+batchsubmitplugin = CondorCREAM
 schedplugin = Activated
 proxy = atlas-production
 
@@ -81,15 +87,60 @@ override = False
 
 '''
 
-usage = ''' migrate-config.py <oldconfig>
-            creates APF config files (factory, queues, proxy) based on v1.3 factory.conf
+usage = ''' migrate-config.py <old-factory.conf>
+  Creates APF config files (factory, queues, proxy) based on v1.3 factory.conf
 '''
 
+SPECIAL_SECTIONS = ['Factory','Pilots','QueueDefaults']
 
-import sys
 
-if len(sys.argv) < 2:
-    print(usage)
+def generate_configs(filename):
+    '''
+    -- Reads in factory.conf into configparser
+    -- pulls out all Queudefaults and puts in queues.conf DEFAULTS
+    -- pulls out Factory and Pilots and merges into factory.conf
+    -- reads all other sections and translates to queues.conf sections. 
+       
+    '''
+
+    cp = ConfigParser()
+    cp.read(filename)
+    
+    # Handle factory.conf
+    fc = open('factory.conf-new','w')
+    fc.write(FACTORY_DEFAULT)
+    
+    #
+       
+    #for s in cp.sections():
+    #    fc.write('[%s]' % s)
+    #    for k in cp.items(s):
+    #        fc.write("%s = %s" % (k, cp.get(s,k)))
+    fc.close()
+     
+    fq = open('queues.conf-new', 'w')
+    fp = open('proxy.conf-new','w')
+      
+    fq.write(QUEUES_DEFAULT)
+    fq.close()
+    
+    fp.write(PROXY_DEFAULT)
+    fp.close()
+
+if __name__ == '__main__':
+
+    if len(sys.argv) < 2:
+        print(usage)
+    elif sys.argv[1] == "-h" or sys.argv[1] == "--help":
+        print(usage)
+    else:
+        try:
+            infile = sys.argv[1]
+            generate_configs(infile)
+        except:
+            print("ERROR: Something wrong with input file: '%s'" % infile)
+    
+    
 
 
 
