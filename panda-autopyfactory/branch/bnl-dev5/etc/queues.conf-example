@@ -497,6 +497,7 @@ autofill = false
 # plugins
 batchstatusplugin = Condor
 wmsstatusplugin = Panda
+configplugin = Panda
 batchsubmitplugin = CondorGT2
 schedplugin = Activated
 
