@@ -34,6 +34,7 @@ class ActivatedSchedPlugin(SchedInterface):
             self.max_jobs_torun = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun', 'getint', logger=self.log)
             self.max_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_pilots_per_cycle', 'getint', logger=self.log)
             self.min_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle', 'getint', logger=self.log)
+            self.min_pilots_pending = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.min_pilots_pending', 'getint', logger=self.log)
             self.max_pilots_pending = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending', 'getint', logger=self.log)
 
             self.log.info("SchedPlugin: Object initialized.")
@@ -111,6 +112,9 @@ class ActivatedSchedPlugin(SchedInterface):
             
             if self.max_jobs_torun: 
                 out = min(out, self.max_jobs_torun - all_pilots)
+
+            if self.min_pilots_pending:
+                out = max(out, self.min_pilots_pending - pending_pilots)
            
             if self.max_pilots_per_cycle:
                 out = min(out, self.max_pilots_per_cycle)
@@ -120,6 +124,7 @@ class ActivatedSchedPlugin(SchedInterface):
 
             if self.max_pilots_pending:
                 out = min(out, self.max_pilots_pending - pending_pilots)
+
 
             # Catch all to prevent negative numbers
             if out < 0:
