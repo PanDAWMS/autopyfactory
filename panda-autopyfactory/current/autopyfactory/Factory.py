@@ -163,7 +163,7 @@ class factory:
                 nqueue = queueParameters['nqueue']
 
                 if ninactive > 0:
-                    msg = 'test site has %d pilots, %d queued. Doing nothing.' % (ntotal,nqueued)
+                    msg = 'test site has %d pilots, %d queued. Doing nothing.' % (ntotal,nqueue)
                     self.note(queue, msg)
                     continue
 
