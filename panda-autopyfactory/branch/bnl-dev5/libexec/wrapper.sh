@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-WRAPPERVERSION="0.9.3"
+WRAPPERVERSION="0.9.4"
 
 # 
 # A generic wrapper with minimal functionalities
@@ -465,14 +465,26 @@ f_build_pythonwrapper_opts(){
 f_monping() {
     CMD="curl -fksS --connect-timeout 10 --max-time 20 ${APFMON}$1/$APFFID/$APFCID/$2"
     echo "Monitor ping: $CMD"
-    out=`$CMD`
-    if [ $? -eq 0 ]; then
-        echo "Monitor ping: out=$out" 
-    else
-        echo "Monitor ping: ERROR: out=$out"
-        echo "Monotor ping: http_proxy=$http_proxy"
-    fi
+
+    NTRIALS=0
+    MAXTRIALS=3
+    DELAY=30
+    while [ $NTRIALS -lt "$MAXTRIALS" ] ; do 
+        out=`$CMD`
+        if [ $? -eq 0 ]; then
+            echo "Monitor ping: out=$out" 
+            NTRIALS="$MAXTRIALS"
+        else
+            echo "Monitor ping: ERROR: out=$out"
+            echo "Monotor ping: http_proxy=$http_proxy"
+            echo $NTRIALS
+            NTRIALS=$(($NTRIALS+1))
+            sleep $DELAY
+        fi
+    done
 }
+
+
 
 # ------------------------------------------------------------------------- #  
 #                     E X E C U T I O N                                     #
