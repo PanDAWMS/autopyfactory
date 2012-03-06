@@ -40,6 +40,7 @@
 # sched.activated.max_jobs_torun
 # sched.activated.max_pilots_per_cycle
 # sched.activated.min_pilots_per_cycle
+# sched.activated.min_pilots_pending
 # sched.activated.max_pilots_pending
 # sched.fixed.pilotspercycle
 # sched.simple.default
@@ -182,6 +183,10 @@
 #
 # sched.activated.min_pilots_per_cycle = minimum number of pilots
 #               to be submitted per cycle.
+#               To be used in Activated Scheduler Plugin.
+#
+# sched.activated.min_pilots_pending = minimum number of pilots
+#               to be idle on queue waiting to start execution.
 #               To be used in Activated Scheduler Plugin.
 #
 # sched.activated.max_pilots_pending = maximum number of pilots
