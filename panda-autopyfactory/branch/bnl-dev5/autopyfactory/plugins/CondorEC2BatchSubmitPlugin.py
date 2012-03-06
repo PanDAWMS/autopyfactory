@@ -56,8 +56,6 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
 
                 self.log.debug('CondorEC2BatchSubmitPlugin.addJSD: Starting.')
 
-                super(CondorEC2BatchSubmitPlugin, self)._addJSD()
-
                 self.JSD.add('grid_resource=ec2 %s' % self.gridresource) 
 
                 # -- proxy path --
@@ -71,6 +69,8 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
                 self.JSD.add("ec2_instance_type=%s" % self.instance_type) 
                 if self.user_data:
                     self.JSD.add('ec2_user_data=%s' % self.user_data)              
+
+                super(CondorEC2BatchSubmitPlugin, self)._addJSD()
 
                 self.log.debug('CondorEC2BatchSubmitPlugin.addJSD: Leaving.')
 

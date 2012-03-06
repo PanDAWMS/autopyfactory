@@ -47,10 +47,9 @@ class CondorLocalBatchSubmitPlugin(CondorBaseBatchSubmitPlugin):
 
         self.log.debug('CondorLocalBatchSubmitPlugin.addJSD: Starting.')
 
-        super(CondorLocalBatchSubmitPlugin, self)._addJSD()
-
         self.JSD.add("universe=vanilla")
         self.JSD.add('periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)')
+        super(CondorLocalBatchSubmitPlugin, self)._addJSD()
 
         self.log.debug('CondorLocalBatchSubmitPlugin.addJSD: Leaving.')
     

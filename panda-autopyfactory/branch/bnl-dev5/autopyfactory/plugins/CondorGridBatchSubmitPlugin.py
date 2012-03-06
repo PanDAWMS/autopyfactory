@@ -39,9 +39,8 @@ class CondorGridBatchSubmitPlugin(CondorBaseBatchSubmitPlugin):
  
         self.log.debug('CondorGridBatchSubmitPlugin.addJSD: Starting.')
    
-        super(CondorGridBatchSubmitPlugin, self)._addJSD()
-
         self.JSD.add("universe=grid")
+        super(CondorGridBatchSubmitPlugin, self)._addJSD()
     
         self.log.debug('CondorGridBatchSubmitPlugin.addJSD: Leaving.')
     

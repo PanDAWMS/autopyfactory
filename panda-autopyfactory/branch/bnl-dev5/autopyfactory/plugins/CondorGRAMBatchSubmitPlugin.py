@@ -45,8 +45,6 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
     
         self.log.debug('CondorGRAMBatchSubmitPlugin.addJSD: Starting.')
    
-        super(CondorGRAMBatchSubmitPlugin, self)._addJSD() 
-    
         # -- globusrsl -- 
         globusrsl = "globusrsl=(jobtype=single)"
         if self.queue:
@@ -55,6 +53,8 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
 
         # -- fixed stuffs --
         self.JSD.add('copy_to_spool = false')
+
+        super(CondorGRAMBatchSubmitPlugin, self)._addJSD() 
     
         self.log.debug('CondorGRAMBatchSubmitPlugin.addJSD: Leaving.')
     

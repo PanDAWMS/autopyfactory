@@ -57,9 +57,8 @@ class CondorCREAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
     
         self.log.debug('CondorCREAMBatchSubmitPlugin.addJSD: Starting.')
     
-        super(CondorCREAMBatchSubmitPlugin, self)._addJSD() 
-
         self.JSD.add('grid_resource=cream %s:%d/ce-cream/services/CREAM2 %s %s' % (self.gridresource, self.creamport, self.creambatch, self.queue)) 
+        super(CondorCREAMBatchSubmitPlugin, self)._addJSD() 
     
         self.log.debug('CondorCREAMBatchSubmitPlugin.addJSD: Leaving.')
 
