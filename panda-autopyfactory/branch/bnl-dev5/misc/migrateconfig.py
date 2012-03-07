@@ -1,6 +1,7 @@
 #!/bin/env python
 #
-# Quick-and-dirty script to generate APF 2.x configuration files from 1.3 configuration. 
+# Quick-and-dirty script to generate APF 2.x configuration files from 1.3 
+# configuration. 
 #
 #
 import sys
