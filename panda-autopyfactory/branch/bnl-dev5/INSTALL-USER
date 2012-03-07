@@ -60,14 +60,32 @@ Configuration
        cp queues.conf-example queues.conf
        cp proxy.conf-example proxy.conf
        cp factory.sysconfig-example factory.sysconfig
-       
-       
-       
+
+Notable issues for initial installation or upgrades:
+
+-- Be aware that the factoryId in factory.conf will be what your factory appears under on the 
+   APF monitor. Once chosen, it will be awkward to change it. See
+       http://apfmon.lancs.ac.uk/mon/
+
+-- The integrated proxy management (proxy.conf) and log serving (logserver.* variables in 
+   factory.conf) are new with 2.X. Be sure you understand them before moving beyond testing.
+ 
+-- Because of the way gatekeepers cache job executables, changing the file used as a job wrapper
+   does not necessarily trigger an update of that filename on site gatekeepers. The only way to
+   guarantee a re-send of a wrapper file is to rename it (or make a unique symlink) and change 
+   the executable var in queues.conf e.g.,
+        executable = /usr/libexec/wrapper ->  executable/libexec/wrapper-0.9.4.sh 
+   We intend to look into this issue to hide it from the factory administrator, but for now it
+   is an unavoidable problem. 
+
+              
 2) Start the factory, and trace the log files to determine if behavior is as expected:
 
        cd $HOME/etc
        ./factory start
        tail -f ~/var/log/apf.log
+       
+  
        
        
       

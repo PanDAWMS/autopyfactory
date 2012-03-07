@@ -5,22 +5,22 @@
 #
 import sys
 from ConfigParser import ConfigParser
-DEBUG=False
-
+DEBUG=True
 
 
 
 FACTORY_DEFAULT = '''
 [Factory]
-factoryAdminEmail = neo@matrix.net
-factoryId = CHANGEME
+# factoryId = SITE-host-admin
 factoryUser = apf
 versionTag = 2.1.0
 
 monitorURL =  http://apfmon.lancs.ac.uk/mon/
 
 queueConf = file:///etc/apf/queues.conf
+#queueConf = file:///home/apf/etc/queues.conf
 proxyConf = /etc/apf/proxy.conf
+#proxyConf = ~/etc/proxy.conf
 proxymanager.enabled = True
 
 cycles = None
@@ -29,14 +29,15 @@ factory.sleep=30
 wmsstatus.panda.sleep = 50
 batchstatus.condor.sleep = 50
 
-baseLogDir = /home/apf/factory/logs
-baseLogDirUrl = http://my.host.domain:25880
-baseLogHttpPort = 25880 
+# baseLogDir = /home/apf/factory/logs
+# baseLogDirUrl = http://my.host.domain:25880
+# baseLogHttpPort = 25880 
 
 logserver.enabled = True
 logserver.index = True
 
 '''
+
 
 PROXY_DEFAULT = '''
 [DEFAULT]
@@ -54,6 +55,7 @@ vorole = atlas:/atlas/Role=production
 proxyfile = /tmp/prodProxy
 '''
 
+
 QUEUES_DEFAULT = '''
 [DEFAULT]
 enabled = True
@@ -64,6 +66,7 @@ batchstatusplugin = Condor
 wmsstatusplugin = Panda
 configplugin = Panda
 #batchsubmitplugin = CondorGT2
+#batchsubmitplugin = CondorGT5
 batchsubmitplugin = CondorCREAM
 schedplugin = Activated
 proxy = atlas-production
@@ -85,9 +88,28 @@ executable.wrapperloglevel = debug
 
 override = False
 
+
 '''
 
-usage = ''' migrate-config.py <old-factory.conf>
+
+#
+# In old factory.conf, [QUEUENAME] should map to wmsqueeu
+# 
+
+FACTORY_MAPPINGS = { 'factoryowner' : 'factoryAdminEmail',
+             'baselogdir' : 'baseLogDir',
+             'baselogdirurl' : 'baseLogDirUrl',
+            }
+
+QUEUE_MAPPINGS =  { 'nickname' : 'batchqueue',
+             'localqueue' : 'batchsubmit.condorcream.queue',
+             'queue' : 'batchsubmit.condorcream.gridresource',
+             'special-par' : 'batchsubmit.condorcream.queue',
+             'siteid' : 'wmsqueue',
+             'environ' : 'batchsubmit.condorcream.environ'
+            }
+
+USAGE = ''' migrate-config.py <old-factory.conf>
   Creates APF config files (factory, queues, proxy) based on v1.3 factory.conf
 '''
 
@@ -102,37 +124,100 @@ def generate_configs(filename):
     -- reads all other sections and translates to queues.conf sections. 
        
     '''
-
-    cp = ConfigParser()
-    cp.read(filename)
+    if DEBUG: print("Reading %s" % filename)
+    fccp = ConfigParser()
+    fccp.read(filename)
+    if DEBUG: print("Made configparser from %s" % filename)
     
-    # Handle factory.conf
+    factory = {}
+    if fccp.has_section('Factory'):
+        if DEBUG: print("Input config has Factory section...")
+        for (k,v) in fccp.items('Factory'):
+            factory[k] = v
+            if DEBUG: print("item: %s = %s" % (k,v))
+
+    pilots = {}
+    if fccp.has_section('Pilots'):
+        if DEBUG: print("Input config has Pilots section...")
+        for (k,v) in fccp.items('Pilots'):
+            pilots[k] = v
+            if DEBUG: print("item: %s = %s" % (k,v))    
+    
+    qdefaults = {}
+    if fccp.has_section('QueueDefaults'):
+        if DEBUG: print("Input config has QueueDefaults section...")
+        items = fccp.items("QueueDefaults")
+        if DEBUG: print("QueueDefault section has %d items" % len(items))
+        for (k,v) in fccp.items('QueueDefaults'):
+            qdefaults[k] = v
+            if DEBUG: print("item: %s = %s" % (k,v))
+    
+    
+     
+    # Start factory.conf
     fc = open('factory.conf-new','w')
     fc.write(FACTORY_DEFAULT)
-    
-    #
-       
-    #for s in cp.sections():
-    #    fc.write('[%s]' % s)
-    #    for k in cp.items(s):
-    #        fc.write("%s = %s" % (k, cp.get(s,k)))
-    fc.close()
-     
+
+    # Start queues.conf
     fq = open('queues.conf-new', 'w')
-    fp = open('proxy.conf-new','w')
-      
     fq.write(QUEUES_DEFAULT)
-    fq.close()
-    
+
+    # Start, and finish, proxy.conf
+    fp = open('proxy.conf-new','w')    
     fp.write(PROXY_DEFAULT)
-    fp.close()
+    fp.close()    
+    
+    # Handle inbound config
+    
+    
+    for s in fccp.sections():
+        if s == 'Factory':
+            if DEBUG: print("Handling Factory section...")
+            for (k,v) in fccp.items(s):
+                if DEBUG: print("Handling key '%s'..." % k)
+                if k in FACTORY_MAPPINGS.keys():
+                    fc.write("%s = %s\n" % ( FACTORY_MAPPINGS[k], v))
+                    if DEBUG: print("Adding '%s = %s' ..." %  ( FACTORY_MAPPINGS[k], v ))
+            
+        elif s == 'Pilots':
+            if DEBUG: print("Handling Pilots section...")
+            for (k,v) in fccp.items(s):
+                if DEBUG: print("Handling key '%s'..." % k)
+                if k in FACTORY_MAPPINGS.keys():
+                    fc.write("%s = %s\n" % ( FACTORY_MAPPINGS[k], v))
+                    if DEBUG: print("Adding '%s = %s' ..." %  ( FACTORY_MAPPINGS[k], v ))
+             
+        elif s == 'QueueDefaults':
+            if DEBUG: print("Handling Queuedefaults section...")
+             
+        else:
+            if DEBUG: print("Handling [%s] section..." % s)
+            fq.write("\n[%s]\n" % s)
+            fq.write("wmsqueue = %s\n" % s)
+            for (k,v) in fccp.items(s):
+                if DEBUG: print("Handling key '%s'..." % k)
+                if k in QUEUE_MAPPINGS.keys():
+                    fq.write("%s = %s\n" % ( QUEUE_MAPPINGS[k], v))
+                    if DEBUG: print("Adding '%s = %s' ..." %  ( QUEUE_MAPPINGS[k], v ))
+                
+    
+    
+    
+     
+     
+     
+    fc.close()
+    fq.close()
+
+
+
 
 if __name__ == '__main__':
 
     if len(sys.argv) < 2:
-        print(usage)
+        print(USAGE)
     elif sys.argv[1] == "-h" or sys.argv[1] == "--help":
-        print(usage)
+        print(USAGE)
     else:
         try:
             infile = sys.argv[1]
