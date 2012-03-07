@@ -477,8 +477,8 @@ f_monping() {
         else
             echo "Monitor ping: ERROR: out=$out"
             echo "Monotor ping: http_proxy=$http_proxy"
-            echo $NTRIALS
             NTRIALS=$(($NTRIALS+1))
+            echo "Trial number=$NTRIALS"
             sleep $DELAY
         fi
     done
