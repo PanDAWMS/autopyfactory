@@ -14,20 +14,20 @@ import StringIO
 import urllib2
 
 try:
-        import pycurl
+    import pycurl
 except ImportError:
-        log = logging.getLogger('main.monitor')
-        log.error('module pycurl is not installed. Aborting.')
-        import sys
-        sys.exit()
+    log = logging.getLogger('main.monitor')
+    log.error('module pycurl is not installed. Aborting.')
+    import sys
+    sys.exit()
 
 try:
-        import json as json
+    import json as json
 except ImportError, err:
-        # Not critical (yet) - try simplejson
-        log = logging.getLogger('main.monitor')
-        log.debug('json package not installed. Trying to import simplejson as json')
-        import simplejson as json
+    # Not critical (yet) - try simplejson
+    log = logging.getLogger('main.monitor')
+    log.debug('json package not installed. Trying to import simplejson as json')
+    import simplejson as json
 
 __author__ = "Peter Love, Jose Caballero"
 __copyright__ = "2010,2011 Peter Love; 2011 Jose Caballero"
@@ -90,9 +90,9 @@ class Monitor(object):
         self.c.setopt(pycurl.FOLLOWLOCATION, 1)
         
         if config.has_option('Factory','HTTPproxy'):
-                self.c.setopt(pycurl.PROXY, args['HTTPproxy'])
+            self.c.setopt(pycurl.PROXY, args['HTTPproxy'])
         if config.has_option('Factory','HTTPproxyport'):
-                self.c.setopt(pycurl.PROXYPORT, int(args['HTTPproxyport']))
+            self.c.setopt(pycurl.PROXYPORT, int(args['HTTPproxyport']))
 
         self.log.debug('Instantiated monitor')
 

@@ -44,53 +44,53 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     
     def __init__(self, apfqueue):
 
-            self._valid = True
-            try:
-                threading.Thread.__init__(self) # init the thread
-                
-                self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %apfqueue.apfqname)
-                self.log.debug('BatchStatusPlugin: Initializing object...')
-                self.stopevent = threading.Event()
+        self._valid = True
+        try:
+            threading.Thread.__init__(self) # init the thread
+            
+            self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %apfqueue.apfqname)
+            self.log.debug('BatchStatusPlugin: Initializing object...')
+            self.stopevent = threading.Event()
 
-                # to avoid the thread to be started more than once
-                self.__started = False
+            # to avoid the thread to be started more than once
+            self.__started = False
 
-                self.apfqueue = apfqueue
-                self.apfqname = apfqueue.apfqname
-                self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
-                self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
-                self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
-                self.currentinfo = None              
+            self.apfqueue = apfqueue
+            self.apfqname = apfqueue.apfqname
+            self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
+            self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
+            self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
+            self.currentinfo = None              
 
-                # ================================================================
-                #                     M A P P I N G S 
-                # ================================================================
-                
-                self.globusstatus2info = {'1':   'pending',
-                                          '2':   'running',
-                                          '4':   'done',
-                                          '8':   'done',
-                                          '16':  'suspended',
-                                          '32':  'pending',
-                                          '64':  'running',
-                                          '128': 'running'}
-                
-                self.jobstatus2info = {'0': 'pending',
-                                       '1': 'pending',
-                                       '2': 'running',
-                                       '3': 'done',
-                                       '4': 'done',
-                                       '5': 'suspended',
-                                       '6': 'running'}
+            # ================================================================
+            #                     M A P P I N G S 
+            # ================================================================
+            
+            self.globusstatus2info = {'1':   'pending',
+                                      '2':   'running',
+                                      '4':   'done',
+                                      '8':   'done',
+                                      '16':  'suspended',
+                                      '32':  'pending',
+                                      '64':  'running',
+                                      '128': 'running'}
+            
+            self.jobstatus2info = {'0': 'pending',
+                                   '1': 'pending',
+                                   '2': 'running',
+                                   '3': 'done',
+                                   '4': 'done',
+                                   '5': 'suspended',
+                                   '6': 'running'}
 
 
-                # variable to record when was last time info was updated
-                # the info is recorded as seconds since epoch
-                self.lasttime = 0
-                self._checkCondor()
-                self.log.info('BatchStatusPlugin: Object initialized.')
-            except:
-                self._valid = False
+            # variable to record when was last time info was updated
+            # the info is recorded as seconds since epoch
+            self.lasttime = 0
+            self._checkCondor()
+            self.log.info('BatchStatusPlugin: Object initialized.')
+        except:
+            self._valid = False
 
     def valid(self):    
         return self._valid 
@@ -104,118 +104,118 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         pass
 
     def getInfo(self, maxtime=0):
-            '''
-            Returns a BatchStatusInfo object populated by the analysis 
-            over the output of a condor_q command
+        '''
+        Returns a BatchStatusInfo object populated by the analysis 
+        over the output of a condor_q command
 
-            Optionally, a maxtime parameter can be passed.
-            In that case, if the info recorded is older than that maxtime,
-            None is returned, as we understand that info is too old and 
-            not reliable anymore.
-            '''           
-            self.log.debug('getInfo: Starting with maxtime=%s' % maxtime)
-            
-            if self.currentinfo is None:
-                self.log.debug('getInfo: Not initialized yet. Returning None.')
-                return None
-            elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
-                self.log.debug('getInfo: Info too old. Leaving and returning None.')
-                return None
-            else:                    
-                self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentinfo))
-                return self.currentinfo
+        Optionally, a maxtime parameter can be passed.
+        In that case, if the info recorded is older than that maxtime,
+        None is returned, as we understand that info is too old and 
+        not reliable anymore.
+        '''           
+        self.log.debug('getInfo: Starting with maxtime=%s' % maxtime)
+        
+        if self.currentinfo is None:
+            self.log.debug('getInfo: Not initialized yet. Returning None.')
+            return None
+        elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
+            self.log.debug('getInfo: Info too old. Leaving and returning None.')
+            return None
+        else:                    
+            self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentinfo))
+            return self.currentinfo
 
 
     def start(self):
-            '''
-            We override method start() to prevent the thread
-            to be started more than once
-            '''
+        '''
+        We override method start() to prevent the thread
+        to be started more than once
+        '''
 
-            self.log.debug('start: Starting')
+        self.log.debug('start: Starting')
 
-            if not self.__started:
-                    self.log.debug("Creating Condor batch status thread...")
-                    self.__started = True
-                    threading.Thread.start(self)
+        if not self.__started:
+                self.log.debug("Creating Condor batch status thread...")
+                self.__started = True
+                threading.Thread.start(self)
 
-            self.log.debug('start: Leaving.')
+        self.log.debug('start: Leaving.')
 
     def run(self):
-            '''
-            Main loop
-            '''
+        '''
+        Main loop
+        '''
 
-            self.log.debug('run: Starting')
-            while not self.stopevent.isSet():
-                try:
-                    self._update()
-                except Exception, e:
-                    self.log.error("Main loop caught exception: %s " % str(e))
-                self.log.debug("Sleeping for %d seconds..." % self.sleeptime)
-                time.sleep(self.sleeptime)
-            self.log.debug('run: Leaving')
+        self.log.debug('run: Starting')
+        while not self.stopevent.isSet():
+            try:
+                self._update()
+            except Exception, e:
+                self.log.error("Main loop caught exception: %s " % str(e))
+            self.log.debug("Sleeping for %d seconds..." % self.sleeptime)
+            time.sleep(self.sleeptime)
+        self.log.debug('run: Leaving')
 
     def _update(self):
-            '''        
-            Query Condor for job status, validate ?, and populate BatchStatusInfo object.
-            Condor-G query template example:
-            
-            condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
-                     -format 'jobStatus=%d ' jobStatus 
-                     -format 'globusStatus=%d ' GlobusStatus 
-                     -format 'gkUrl=%s' MATCH_gatekeeper_url
-                     -format '-%s ' MATCH_queue 
-                     -format '%s\n' Environment
+        '''        
+        Query Condor for job status, validate ?, and populate BatchStatusInfo object.
+        Condor-G query template example:
+        
+        condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
+                 -format 'jobStatus=%d ' jobStatus 
+                 -format 'globusStatus=%d ' GlobusStatus 
+                 -format 'gkUrl=%s' MATCH_gatekeeper_url
+                 -format '-%s ' MATCH_queue 
+                 -format '%s\n' Environment
 
-            NOTE: using a single backslash in the final part of the 
-                  condor_q command '\n' only works with the 
-                  latest versions of condor. 
-                  With older versions, there are two options:
-                          - using 4 backslashes '\\\\n'
-                          - using a raw string and two backslashes '\\n'
+        NOTE: using a single backslash in the final part of the 
+              condor_q command '\n' only works with the 
+              latest versions of condor. 
+              With older versions, there are two options:
+                      - using 4 backslashes '\\\\n'
+                      - using a raw string and two backslashes '\\n'
 
-            The JobStatus code indicates the current Condor status of the job.
-            
-                    Value   Status                            
-                    0       U - Unexpanded (the job has never run)    
-                    1       I - Idle                                  
-                    2       R - Running                               
-                    3       X - Removed                              
-                    4       C -Completed                            
-                    5       H - Held                                 
-                    6       > - Transferring Output
+        The JobStatus code indicates the current Condor status of the job.
+        
+                Value   Status                            
+                0       U - Unexpanded (the job has never run)    
+                1       I - Idle                                  
+                2       R - Running                               
+                3       X - Removed                              
+                4       C -Completed                            
+                5       H - Held                                 
+                6       > - Transferring Output
 
-            The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
-            
-                    Value   Status
-                    1       PENDING 
-                    2       ACTIVE 
-                    4       FAILED 
-                    8       DONE 
-                    16      SUSPENDED 
-                    32      UNSUBMITTED 
-                    64      STAGE_IN 
-                    128     STAGE_OUT 
-            '''
+        The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
+        
+                Value   Status
+                1       PENDING 
+                2       ACTIVE 
+                4       FAILED 
+                8       DONE 
+                16      SUSPENDED 
+                32      UNSUBMITTED 
+                64      STAGE_IN 
+                128     STAGE_OUT 
+        '''
 
-            self.log.debug('_update: Starting.')
-           
-            if not utils.checkDaemon('condor'):
-                self.log.info('_update: condor daemon is not running. Doing nothing')
-            else:
-                try:
-                    strout = self._querycondor()
-                    outlist = self._parseoutput(strout)
-                    aggdict = self._aggregateinfo(outlist)
-                    newinfo = self._map2info(aggdict)
-                    self.log.info("Replacing old info with newly generated info.")
-                    self.currentinfo = newinfo
-                except Exception, e:
-                    self.log.error("_update: Exception: %s" % str(e))
-                    self.log.debug("Exception: %s" % traceback.format_exc())            
+        self.log.debug('_update: Starting.')
+       
+        if not utils.checkDaemon('condor'):
+            self.log.info('_update: condor daemon is not running. Doing nothing')
+        else:
+            try:
+                strout = self._querycondor()
+                outlist = self._parseoutput(strout)
+                aggdict = self._aggregateinfo(outlist)
+                newinfo = self._map2info(aggdict)
+                self.log.info("Replacing old info with newly generated info.")
+                self.currentinfo = newinfo
+            except Exception, e:
+                self.log.error("_update: Exception: %s" % str(e))
+                self.log.debug("Exception: %s" % traceback.format_exc())            
 
-            self.log.debug('__update: Leaving.')
+        self.log.debug('__update: Leaving.')
 
     def _querycondor(self):
         '''

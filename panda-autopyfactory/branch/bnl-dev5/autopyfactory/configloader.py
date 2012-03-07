@@ -208,85 +208,85 @@ class Config(SafeConfigParser, object):
 
 
 class ConfigManager:
-   '''
-   -----------------------------------------------------------------------
-   Class to create config files with info from different sources.
-   -----------------------------------------------------------------------
-   Public Interface:
-           getConfig(source)
-           getFromSchedConfig(site)
-   -----------------------------------------------------------------------
-   '''
+    '''
+    -----------------------------------------------------------------------
+    Class to create config files with info from different sources.
+    -----------------------------------------------------------------------
+    Public Interface:
+            getConfig(source)
+            getFromSchedConfig(site)
+    -----------------------------------------------------------------------
+    '''
 
-   def __init__(self):
-           pass
+    def __init__(self):
+        pass
 
-   def getConfig(self, sources):
-         '''
-         creates a Config object and returns it.
-         sources points to the info to feed the object:
-                 - path to a phisical file on disk
-                 - an URL
-         '''
+    def getConfig(self, sources):
+        '''
+        creates a Config object and returns it.
+        sources points to the info to feed the object:
+                - path to a phisical file on disk
+                - an URL
+        '''
  
-         config = Config()
+        config = Config()
 
-         for src in sources.split(','):
-             newconfig = self.__getConfig(src)
-             config.merge(newconfig)
+        for src in sources.split(','):
+            newconfig = self.__getConfig(src)
+            config.merge(newconfig)
 
-         return config
+        return config
 
 
-   def __getConfig(self, src):
-       '''
-       returns a new ConfigParser object 
-       '''
-      
-       data = self.__getContent(src) 
-       tmpconfig = Config()
-       tmpconfig.readfp(data)
-       tmpconfig.fixpathvalues()
-       return tmpconfig
+    def __getConfig(self, src):
+        '''
+        returns a new ConfigParser object 
+        '''
+       
+        data = self.__getContent(src) 
+        tmpconfig = Config()
+        tmpconfig.readfp(data)
+        tmpconfig.fixpathvalues()
+        return tmpconfig
 
-   def __getContent(self, src):
-       '''
-       returns the content to feed a new ConfigParser object
-       '''
+    def __getContent(self, src):
+        '''
+        returns the content to feed a new ConfigParser object
+        '''
 
-       sourcetype = self.__getsourcetype(src)
-       if sourcetype == 'file':
-               return self.__dataFromFile(src)
-       if sourcetype == 'uri':
-               return self.__dataFromURI(src)
+        sourcetype = self.__getsourcetype(src)
+        if sourcetype == 'file':
+            return self.__dataFromFile(src)
+        if sourcetype == 'uri':
+            return self.__dataFromURI(src)
 
-   def __getsourcetype(self, src):
-       '''
-       determines if the source is a file on disk on an URI
-       '''
-       sourcetype = 'file'  # default
-       uritokens = ['file://', 'http://']
-       for token in uritokens:
-           if src.startswith(token):
-               sourcetype = 'uri'
-               break
-       return sourcetype
+    def __getsourcetype(self, src):
+        '''
+        determines if the source is a file on disk on an URI
+        '''
+        sourcetype = 'file'  # default
+        uritokens = ['file://', 'http://']
+        for token in uritokens:
+            if src.startswith(token):
+                sourcetype = 'uri'
+                break
+        return sourcetype
 
-   def __dataFromFile(self, path):
-       '''
-       gets the content of an config object from  a file
-       '''
-       f = open(path)
-       return f
-   
-   def __dataFromURI(self, uri):
-       ''' 
-       gets the content of an config object from an URI.
-       ''' 
-       opener = urllib2.build_opener()
-       urllib2.install_opener(opener)
-       uridata = urllib2.urlopen(uri)
-       #firstLine = uridata.readline().strip() 
-       #if firstLine[0] == "<":
-       #        raise FactoryConfigurationFailure("First response character was '<'. Proxy error?")
-       return uridata
+    def __dataFromFile(self, path):
+        '''
+        gets the content of an config object from  a file
+        '''
+        f = open(path)
+        return f
+    
+    def __dataFromURI(self, uri):
+        ''' 
+        gets the content of an config object from an URI.
+        ''' 
+        opener = urllib2.build_opener()
+        urllib2.install_opener(opener)
+        uridata = urllib2.urlopen(uri)
+        #firstLine = uridata.readline().strip() 
+        #if firstLine[0] == "<":
+        #        raise FactoryConfigurationFailure("First response character was '<'. Proxy error?")
+        return uridata

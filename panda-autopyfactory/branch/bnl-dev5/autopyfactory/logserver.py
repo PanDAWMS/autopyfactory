@@ -148,13 +148,13 @@ class LogServer(threading.Thread):
                 self.log.error("HTTP Server threw exception: %s" % str(e))
 
     def join(self,timeout=None):
-            '''
-            Stop the thread. Overriding this method required to handle Ctrl-C from console.
-            '''        
-            self.stopevent.set()
-            self.log.info('Stopping thread...')
-            self.httpd.shutdown()
-            threading.Thread.join(self, timeout)
+        '''
+        Stop the thread. Overriding this method required to handle Ctrl-C from console.
+        '''        
+        self.stopevent.set()
+        self.log.info('Stopping thread...')
+        self.httpd.shutdown()
+        threading.Thread.join(self, timeout)
 
                 
 

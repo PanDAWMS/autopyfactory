@@ -561,32 +561,32 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         return wmsqueueinfo
 
     def join(self,timeout=None):
-            '''
-            stops the thread.
-            '''
-            self.log.debug('join: Starting with input %s' %timeout)
-            self.stopevent.set()
-            threading.Thread.join(self, timeout)
-            self.log.debug('join: Leaving.')
+        '''
+        stops the thread.
+        '''
+        self.log.debug('join: Starting with input %s' %timeout)
+        self.stopevent.set()
+        threading.Thread.join(self, timeout)
+        self.log.debug('join: Leaving.')
 
 
     def getInfo(self, maxtime=0):
-            '''
-            Returns current WMSStatusInfo object
+        '''
+        Returns current WMSStatusInfo object
 
-            Optionally, and maxtime parameter can be passed.
-            In that case, if the info recorded is older than that maxtime,
-            None is returned, 
-            
-            '''
-            self.log.debug('get: Starting with inputs maxtime=%s' % maxtime)
-            if self.currentinfo is None:
-                self.log.debug('getInfo: Info not initialized. Return None.')
-                return None    
-            elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
-                self.log.debug('getInfo: Info is too old. Maxtime = %d. Returning None' % maxtime)
-                return None    
-            else:
-                self.log.debug('getInfo: Leaving. Returning info with %d items' %len(self.currentinfo))
-                return self.currentinfo
+        Optionally, and maxtime parameter can be passed.
+        In that case, if the info recorded is older than that maxtime,
+        None is returned, 
+        
+        '''
+        self.log.debug('get: Starting with inputs maxtime=%s' % maxtime)
+        if self.currentinfo is None:
+            self.log.debug('getInfo: Info not initialized. Return None.')
+            return None    
+        elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
+            self.log.debug('getInfo: Info is too old. Maxtime = %d. Returning None' % maxtime)
+            return None    
+        else:
+            self.log.debug('getInfo: Leaving. Returning info with %d items' %len(self.currentinfo))
+            return self.currentinfo
             

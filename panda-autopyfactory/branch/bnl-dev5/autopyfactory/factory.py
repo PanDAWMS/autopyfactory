@@ -975,54 +975,54 @@ class APFQueue(threading.Thread):
                             
 
 class WMSStatusInfo(object):
+    '''
+    -----------------------------------------------------------------------
+    Class to collect info from WMS Status Plugin 
+    -----------------------------------------------------------------------
+    Public Interface:
+            valid()
+    -----------------------------------------------------------------------
+    '''
+    def __init__(self):
+
+        self.log = logging.getLogger('main.wmsstatus')
+        self.log.debug('Status: Initializing object...')
+
+        self.cloud = None
+        self.site = None
+        self.jobs = None
+        self.lasttime = None
+
+        self.log.info('Status: Object Initialized')
+
+    def valid(self):
         '''
-        -----------------------------------------------------------------------
-        Class to collect info from WMS Status Plugin 
-        -----------------------------------------------------------------------
-        Public Interface:
-                valid()
-        -----------------------------------------------------------------------
+        checks if all attributes have a valid value, or
+        some of them is None and therefore the collected info 
+        is not reliable
         '''
-        def __init__(self):
+        self.log.debug('valid: Starting.')
 
-            self.log = logging.getLogger('main.wmsstatus')
-            self.log.debug('Status: Initializing object...')
+        out = True  # default
+        if self.cloud == None:
+            out = False 
+        if self.site == None:
+            out = False 
+        if self.jobs == None:
+            out = False 
 
-            self.cloud = None
-            self.site = None
-            self.jobs = None
-            self.lasttime = None
+        self.log.debug('valid: Leaving with output %s.' %out)
+        return out
 
-            self.log.info('Status: Object Initialized')
-
-        def valid(self):
-            '''
-            checks if all attributes have a valid value, or
-            some of them is None and therefore the collected info 
-            is not reliable
-            '''
-            self.log.debug('valid: Starting.')
-
-            out = True  # default
-            if self.cloud == None:
-                out = False 
-            if self.site == None:
-                out = False 
-            if self.jobs == None:
-                out = False 
-
-            self.log.debug('valid: Leaving with output %s.' %out)
-            return out
-
-        def __len__(self):
-            length = 3
-            if self.cloud is None:
-                length -= 1
-            if self.site is None:
-                length -= 1
-            if self.jobs is None:
-                length -= 1
-            return length
+    def __len__(self):
+        length = 3
+        if self.cloud is None:
+            length -= 1
+        if self.site is None:
+            length -= 1
+        if self.jobs is None:
+            length -= 1
+        return length
             
 
 

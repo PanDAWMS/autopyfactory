@@ -40,15 +40,16 @@ class CondorCREAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         newqcl = qcl.clone().filterkeys('batchsubmit.condorcream', 'batchsubmit.condorce')
         valid = super(CondorCREAMBatchSubmitPlugin, self)._readconfig(newqcl) 
         if not valid:
-                return False
+            return False
         try:
-                self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.gridresource', logger=self.log) 
-                self.creamport = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.port', 'getint', logger=self.log)  
-                self.creambatch = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.batch', logger=self.log)  
-                self.queue = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.queue', logger=self.log)
-                return True
+            self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.gridresource', logger=self.log) 
+            self.creamport = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.port', 'getint', logger=self.log)  
+            self.creambatch = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.batch', logger=self.log)  
+            self.queue = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.queue', logger=self.log)
+            return True
         except:
-                return False
+            return False
+            
 
     def _addJSD(self):
         '''

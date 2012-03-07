@@ -31,12 +31,12 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         newqcl = qcl.clone().filterkeys('batchsubmit.condorgram', 'batchsubmit.condorce')
         valid = super(CondorGRAMBatchSubmitPlugin, self)._readconfig(newqcl) 
         if not valid:
-                return False
+            return False
         try:
-                self.queue = qcl.generic_get(self.apfqname, 'batchsubmit.condorgram.queue', logger=self.log)
-                return True
+            self.queue = qcl.generic_get(self.apfqname, 'batchsubmit.condorgram.queue', logger=self.log)
+            return True
         except:
-                return False
+            return False
          
     def _addJSD(self):
         '''

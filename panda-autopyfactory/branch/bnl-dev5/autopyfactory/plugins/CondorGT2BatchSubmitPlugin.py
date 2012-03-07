@@ -38,12 +38,12 @@ class CondorGT2BatchSubmitPlugin(CondorGRAMBatchSubmitPlugin):
         newqcl = qcl.clone().filterkeys('batchsubmit.condorgt2', 'batchsubmit.condorgram')
         valid = super(CondorGT2BatchSubmitPlugin, self)._readconfig(newqcl)
         if not valid:
-                return False
+            return False
         try:
-                self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorgt2.gridresource', logger=self.log) 
-                return True
+            self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorgt2.gridresource', logger=self.log) 
+            return True
         except:
-                return False
+            return False
 
 
     def _addJSD(self):

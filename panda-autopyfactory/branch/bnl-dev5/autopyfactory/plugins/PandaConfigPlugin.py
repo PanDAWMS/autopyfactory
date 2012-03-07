@@ -91,36 +91,36 @@ class PandaConfigPlugin(ConfigInterface):
         self.log.debug('_getschedconfig: Starting')
 
         try:
-                import json as json
+            import json as json
         except ImportError, err:
-                self.log.warning('_getschedconfig: json package not installed. Trying to import simplejson as json')
-                import simplejson as json
+            self.log.warning('_getschedconfig: json package not installed. Trying to import simplejson as json')
+            import simplejson as json
 
         try:
-                url = 'http://pandaserver.cern.ch:25080/cache/schedconfig/%s.factory.json' % self.batchqueue
-                handle = urlopen(url)
-                jsonData = json.load(handle, 'utf-8')
-                handle.close()
-                self.log.info('_getschedconfig: JSON returned: %s' % jsonData)
-                factoryData = {}
-                # json always gives back unicode strings (eh?) - convert unicode to utf-8
-                for k, v in jsonData.iteritems():
-                        if isinstance(k, unicode):
-                                k = k.encode('utf-8')
-                        if isinstance(v, unicode):
-                                v = v.encode('utf-8')
-                        v = str(v)
-                        if v != 'None':
-                                factoryData[k] = v
-                
-                self.scinfo.fill(factoryData, self.mapping)
+            url = 'http://pandaserver.cern.ch:25080/cache/schedconfig/%s.factory.json' % self.batchqueue
+            handle = urlopen(url)
+            jsonData = json.load(handle, 'utf-8')
+            handle.close()
+            self.log.info('_getschedconfig: JSON returned: %s' % jsonData)
+            factoryData = {}
+            # json always gives back unicode strings (eh?) - convert unicode to utf-8
+            for k, v in jsonData.iteritems():
+                if isinstance(k, unicode):
+                    k = k.encode('utf-8')
+                if isinstance(v, unicode):
+                    v = v.encode('utf-8')
+                v = str(v)
+                if v != 'None':
+                    factoryData[k] = v
+            
+            self.scinfo.fill(factoryData, self.mapping)
         
 
-                self.log.debug('_getschedconfig: Converted to: %s' % factoryData)
+            self.log.debug('_getschedconfig: Converted to: %s' % factoryData)
         except ValueError, err:
-                self.log.error('_getschedconfig: %s for queue %s, downloading from %s' % (err, self.batchqueue, url))
+            self.log.error('_getschedconfig: %s for queue %s, downloading from %s' % (err, self.batchqueue, url))
         except IOError, (errno, errmsg):
-                self.log.error('_getschedconfig: %s for queue %s, downloading from %s' % (errmsg, self.batchqueue, url))
+            self.log.error('_getschedconfig: %s for queue %s, downloading from %s' % (errmsg, self.batchqueue, url))
 
         self.log.debug('_getschedconfig: Leaving')
 
