@@ -5,7 +5,7 @@
 #
 import sys
 from ConfigParser import ConfigParser
-DEBUG=True
+DEBUG=False
 
 
 
@@ -86,11 +86,9 @@ executable.wrappertarballurl = http://dev.racf.bnl.gov/dist/wrapper/wrapper.tar.
 executable.wrapperserverurl = http://pandaserver.cern.ch:25080/cache/pilot
 executable.wrapperloglevel = debug
 
-override = False
-
+override = True
 
 '''
-
 
 #
 # In old factory.conf, [QUEUENAME] should map to wmsqueue
@@ -111,9 +109,10 @@ QUEUE_MAPPINGS =  { 'nickname' : 'batchqueue',
 
 USAGE = ''' migrate-config.py <old-factory.conf>
   Creates APF config files (factory, queues, proxy) based on v1.3 factory.conf
+  NOTE: Assumes CEs are CREAM CEs. 
+  
+  
 '''
-
-SPECIAL_SECTIONS = ['Factory','Pilots','QueueDefaults']
 
 
 def generate_configs(filename):
