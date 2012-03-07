@@ -81,11 +81,17 @@ batchsubmit.condorgt2.condor_attributes = periodic_hold=GlobusResourceUnavailabl
 
 apfqueue.sleep = 360
 
+sched.activated.min_pilots_per_cycle = 0
+sched.activated.max_jobs_torun = 500
+sched.activated.max_pilots_per_cycle = 50
+sched.activated.max_pilots_pending = 50
+
 executable = /usr/libexec/wrapper.sh
 executable.wrappervo = ATLAS
 executable.wrappertarballurl = http://dev.racf.bnl.gov/dist/wrapper/wrapper.tar.gz
 executable.wrapperserverurl = http://pandaserver.cern.ch:25080/cache/pilot
 executable.wrapperloglevel = debug
+executable.arguments = --script=pilot.py --libcode=pilotcode.tar.gz,pilotcode-rc.tar.gz --pilotsrcurl=http://panda.cern.ch:25880/cache -f false -m false --user user
 
 override = True
 
@@ -219,8 +225,13 @@ if __name__ == '__main__':
     elif sys.argv[1] == "-h" or sys.argv[1] == "--help":
         print(USAGE)
     else:
+        if "-d" in sys.argv or "--debug" in sys.argv: DEBUG=True
         try:
-            infile = sys.argv[1]
+            for a in sys.argv[1:]:
+                if a.startswith("-"):
+                    pass
+                else:
+                    infile = a
             generate_configs(infile)
         except:
             print("ERROR: Something wrong with input file: '%s'" % infile)
