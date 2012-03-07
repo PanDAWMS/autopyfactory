@@ -93,7 +93,7 @@ override = False
 
 
 #
-# In old factory.conf, [QUEUENAME] should map to wmsqueeu
+# In old factory.conf, [QUEUENAME] should map to wmsqueue
 # 
 
 FACTORY_MAPPINGS = { 'factoryowner' : 'factoryAdminEmail',
