@@ -6,6 +6,11 @@ $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
 2012-03-09
 
+* Added specific Submit plugin for Cloud.
+
+* Configuration objects handled as python native ConfigParser objects instead of custom
+  APF objects.
+
 * Refined running as user rather than from RPM. 'setup.py install --home=/path/to/home' does a
   user-based setup. All libs are in ~/lib/python, configs and init script in ~/etc/, and so on.
 
