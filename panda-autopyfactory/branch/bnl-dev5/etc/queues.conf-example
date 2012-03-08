@@ -438,10 +438,20 @@
 #       Executable variables 
 #  --------------------------------------------------------------------
 
-# executable = the script which will be run by condor. 
+# executable = path to the script which will be run by condor. 
+#              The executable can be anything, however, 
+#              two possible executables are distributed with AutoPyFactory:
+#
+#                       - libexec/wrapper.sh 
+#                       - libexec/runpilot3-wrapper.sh 
 #
 # executable.arguments = input options to be passed verbatim to the executable script.
 #
+#                --------------------------------------------------------------------
+#                 NOTE: The following executable.* variables are supported only 
+#                       when executable is wrapper.sh
+#                --------------------------------------------------------------------
+# 
 # executable.wrappervo = VO
 #               To be used by the 'new wrapper' distributed with AutoPyFactory.
 #               Mandatory
