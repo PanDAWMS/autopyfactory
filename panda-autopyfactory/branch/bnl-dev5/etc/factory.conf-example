@@ -72,7 +72,7 @@
 #
 # proxyConf = path to the configuration file for automatic proxy management
 #
-# proxymanager.enabled = to determine is automatic proxy management is used or not.
+# proxymanager.enabled = to determine if automatic proxy management is used or not.
 #               Accepted values are True|False
 #
 # queueConf = path to the configuration file for APF queues.
