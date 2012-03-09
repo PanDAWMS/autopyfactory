@@ -13,6 +13,8 @@ import threading
 import StringIO
 import urllib2
 
+from autopyfactory.factory import Singleton
+
 try:
     import pycurl
 except ImportError:
@@ -41,6 +43,9 @@ __status__ = "Production"
 _CIDMATCH = re.compile('\*\* Proc (\d+\.\d+)', re.M)
 
 class Monitor(object):
+
+    __metaclass__ = Singleton
+
     """
     Notifies a monitoring webservice about condor jobs
     """
