@@ -107,7 +107,8 @@ class ActivatedSchedPlugin(SchedInterface):
                 # This is OK--it just means no jobs. 
                 pass
 
-            all_pilots = pending_pilots + running_pilots
+            #all_pilots = pending_pilots + running_pilots
+            all_pilots = pending_pilots
             out = max(0, activated_jobs - all_pilots)
             
             if self.max_jobs_torun: 
