@@ -33,6 +33,7 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         if not valid:
             return False
         try:
+            self.jobtype = qcl.generic_get(self.apfqname, 'batchsubmit.condorgram.jobtype', logger=self.log)
             self.queue = qcl.generic_get(self.apfqname, 'batchsubmit.condorgram.queue', logger=self.log)
             return True
         except:
@@ -46,7 +47,7 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         self.log.debug('CondorGRAMBatchSubmitPlugin.addJSD: Starting.')
    
         # -- globusrsl -- 
-        globusrsl = "globusrsl=(jobtype=single)"
+        globusrsl = "globusrsl=(jobtype=%s)" %self.jobtype
         if self.queue:
              globusrsl += "(queue=%s)" % self.queue
         self.JSD.add(globusrsl)
