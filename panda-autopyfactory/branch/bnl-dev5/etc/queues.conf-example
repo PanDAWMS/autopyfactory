@@ -58,16 +58,19 @@
 # batchsubmit.condorgt2.gridresource
 # batchsubmit.condorgt2.condor_attributes
 # batchsubmit.condorgt2.environ
+# batchsubmit.condorgt2.jobtype
 # batchsubmit.condorgt2.queue
 # batchsubmit.condorgt2.proxy
 # batchsubmit.condorgt5.gridresource
 # batchsubmit.condorgt5.condor_attributes
 # batchsubmit.condorgt5.environ
+# batchsubmit.condorgt5.jobtype
 # batchsubmit.condorgt5.queue
 # batchsubmit.condorgt5.proxy
 # batchsubmit.condorcream.gridresource
 # batchsubmit.condorcream.condor_attributes
 # batchsubmit.condorcream.environ
+# batchsubmit.condorcream.jobtype
 # batchsubmit.condorcream.queue
 # batchsubmit.condorcream.port
 # batchsubmit.condorcream.batch
@@ -289,6 +292,8 @@
 #               Therefore, the format should be env1=var1 env2=var2 envN=varN
 #               split by whitespaces.
 #
+# batchsubmit.condorgt2.jobtype = type of job for the globusrsl directive 
+#
 # batchsubmit.condorgt2.queue = queue within the local batch system (e.g. short)
 #
 # batchsubmit.condorgt2.proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
@@ -323,6 +328,8 @@
 #               Therefore, the format should be env1=var1 env2=var2 envN=varN
 #               split by whitespaces.
 #
+# batchsubmit.condorgt5.jobtype = type of job for the globusrsl directive 
+#
 # batchsubmit.condorgt5.queue = queue within the local batch system (e.g. short)
 #
 # batchsubmit.condorgt5.proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
@@ -356,6 +363,8 @@
 #               to be included in the condor attribute environment *verbatim*
 #               Therefore, the format should be env1=var1 env2=var2 envN=varN
 #               split by whitespaces.
+#
+# batchsubmit.condorcream.jobtype = type of job for the globusrsl directive 
 #
 # batchsubmit.condorcream.queue = queue within the local batch system (e.g. short)
 #
@@ -522,6 +531,11 @@ batchsubmit.condorgt5.proxy = None
 batchsubmit.condorcream.proxy = None
 batchsubmit.condorec2.proxy = None
 batchsubmit.condorlocal.proxy = None
+
+# jobtype defaults to "single"
+batchsubmit.condorgt2.jobtype = single
+batchsubmit.condorgt5.jobtype = single
+batchsubmit.condorcream.jobtype = single
 
 batchsubmit.condorgt2.condor_attributes = periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30),periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
 
