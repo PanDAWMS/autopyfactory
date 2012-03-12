@@ -398,8 +398,8 @@ class Factory(object):
         self.wmsmanager = APFQueuesManager(self)
         
         # Set up LogServer
-        ls = self.fcl.get('Factory', 'logserver.enabled')
-        lsidx = self.fcl.get('Factory','logserver.index')
+        ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean', logger=self.log)
+        lsidx = self.fcl.generic_get('Factory','logserver.index', 'getboolean', logger=self.log)
         if ls:
             logpath = self.fcl.get('Factory', 'baseLogDir')
             if not os.path.exists(logpath):
