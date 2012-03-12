@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-WRAPPERVERSION="0.9.4"
+WRAPPERVERSION="0.9.5"
 
 # 
 # A generic wrapper with minimal functionalities
@@ -505,6 +505,15 @@ f_download_wrapper_tarball(){
         fi
         return $rc
 }
+
+f_check_tarball(){
+        # check the downloaded file is really a tarball
+        f_print_msg "=== checking the wrapper tarball is a tarball"
+        checkfile=`file $WRAPPERTARBALLNAME`
+        [[ "$checkfile" =~ "gzip compressed data" ]]
+        return $? 
+}
+
 f_untar_wrapper_tarball(){
         # untar the wrapper tarball and remove the original file
         f_print_msg "=== Untarring the wrapper tarball"
@@ -512,6 +521,7 @@ f_untar_wrapper_tarball(){
         rm $WRAPPERTARBALLNAME
         return $?
 }
+
 f_invoke_wrapper(){
         f_print_msg "=== Executing wrapper.py ..." 
         WRAPPERNAME="wrapper.py"
@@ -577,6 +587,14 @@ rc=$?
 if [ $rc -ne 0 ]; then
         f_exit $rc
 fi
+
+# --- check the wrapper tarball is really a tarball ---
+f_check_tarball
+rc=$?
+if [ $rc -ne 0 ]; then
+        f_exit $rc
+fi
+
 f_untar_wrapper_tarball
 rc=$?
 if [ $rc -ne 0 ]; then
