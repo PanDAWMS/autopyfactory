@@ -280,8 +280,12 @@ class ConfigManager:
         '''
         gets the content of an config object from  a file
         '''
-        f = open(path)
-        return f
+        try:
+            f = open(path)
+            return f
+        except:
+            # most probably the file does not exist
+            return None
     
     def __dataFromURI(self, uri):
         ''' 
