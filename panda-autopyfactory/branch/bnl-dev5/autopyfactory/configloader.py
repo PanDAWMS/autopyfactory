@@ -233,7 +233,8 @@ class ConfigManager:
 
         for src in sources.split(','):
             newconfig = self.__getConfig(src)
-            config.merge(newconfig)
+            if newconfig:
+                    config.merge(newconfig)
 
         return config
 
@@ -244,10 +245,13 @@ class ConfigManager:
         '''
        
         data = self.__getContent(src) 
-        tmpconfig = Config()
-        tmpconfig.readfp(data)
-        tmpconfig.fixpathvalues()
-        return tmpconfig
+        if data:
+            tmpconfig = Config()
+            tmpconfig.readfp(data)
+            tmpconfig.fixpathvalues()
+            return tmpconfig
+        else:
+            return None
 
     def __getContent(self, src):
         '''
@@ -285,8 +289,13 @@ class ConfigManager:
         ''' 
         opener = urllib2.build_opener()
         urllib2.install_opener(opener)
-        uridata = urllib2.urlopen(uri)
-        #firstLine = uridata.readline().strip() 
-        #if firstLine[0] == "<":
-        #        raise FactoryConfigurationFailure("First response character was '<'. Proxy error?")
-        return uridata
+        try:
+            uridata = urllib2.urlopen(uri)
+            return uridata
+        except:
+            # most probably the URL does not exist                
+            return None
+
+
+
+    
