@@ -33,7 +33,7 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         if not valid:
             return False
         try:
-            self.jobtype = qcl.generic_get(self.apfqname, 'batchsubmit.condorgram.jobtype', logger=self.log)
+            self.jobtype = qcl.generic_get(self.apfqname, 'batchsubmit.condorgram.jobtype', default_value='single', logger=self.log)
             self.queue = qcl.generic_get(self.apfqname, 'batchsubmit.condorgram.queue', logger=self.log)
             return True
         except:
