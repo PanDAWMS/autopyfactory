@@ -4,7 +4,16 @@ ChangeLog
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
 
-2012-03-09
+2012-03-13
+
+
+* Made Monitor object a singleton, to avoid repeated timeout delays (during queue initialization) 
+  when APF monitor is unresponsive. Now there is a single attempt when single Monitor is initialized. 
+
+* Move to wrapper 0.9.4, which 
+
+* Fixed logic problem in Activated plugin. Now correctly assuming that Running jobs are no longer
+  Activated. 
 
 * Added specific Submit plugin for Cloud.
 
