@@ -92,79 +92,88 @@ class ActivatedSchedPlugin(SchedInterface):
                 out = self._calc_online()
             if sitestatus == 'test':
                 out = self._calc_test()
+            if sitestatus == 'offline':
+                out = self._calc_offline()
             return out
 
     def _calc_online(self):
-            '''
-            algorithm when wmssite is in online mode
-            '''
+        '''
+        algorithm when wmssite is in online mode
+        '''
         
-            # initial default values. 
+        # initial default values. 
+        activated_jobs = 0
+        pending_pilots = 0
+        running_pilots = 0
+
+        jobsinfo = self.wmsinfo.jobs
+        self.log.debug("jobsinfo class is %s" % jobsinfo.__class__ )
+
+        try:
+            sitedict = jobsinfo[self.siteid]
+            self.log.debug("sitedict class is %s" % sitedict.__class__ )
+            #activated_jobs = sitedict['activated']
+            activated_jobs = sitedict.ready
+        except KeyError:
+            # This is OK--it just means no jobs in any state at the siteid. 
+            self.log.error("siteid: %s not present in jobs info from WMS" % self.siteid)
             activated_jobs = 0
-            pending_pilots = 0
-            running_pilots = 0
+        try:
+            pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
+        except KeyError:
+                            # This is OK--it just means no jobs. 
+            pass
+        try:        
+            running_pilots = self.batchinfo[self.apfqueue.apfqname].running # using the new info objects
+        except KeyError:
+            # This is OK--it just means no jobs. 
+            pass
 
-            jobsinfo = self.wmsinfo.jobs
-            self.log.debug("jobsinfo class is %s" % jobsinfo.__class__ )
+        all_pilots = pending_pilots + running_pilots
 
-            try:
-                sitedict = jobsinfo[self.siteid]
-                self.log.debug("sitedict class is %s" % sitedict.__class__ )
-                #activated_jobs = sitedict['activated']
-                activated_jobs = sitedict.ready
-            except KeyError:
-                # This is OK--it just means no jobs in any state at the siteid. 
-                self.log.error("siteid: %s not present in jobs info from WMS" % self.siteid)
-                activated_jobs = 0
-            try:
-                pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
-            except KeyError:
-                                # This is OK--it just means no jobs. 
-                pass
-            try:        
-                running_pilots = self.batchinfo[self.apfqueue.apfqname].running # using the new info objects
-            except KeyError:
-                # This is OK--it just means no jobs. 
-                pass
+        out = max(0, activated_jobs - pending_pilots)
+        
+        if self.max_jobs_torun: 
+            out = min(out, self.max_jobs_torun - all_pilots)
 
-            all_pilots = pending_pilots + running_pilots
+        if self.min_pilots_pending:
+            out = max(out, self.min_pilots_pending - pending_pilots)
+        
+        if self.max_pilots_per_cycle:
+            out = min(out, self.max_pilots_per_cycle)
 
-            out = max(0, activated_jobs - pending_pilots)
-            
-            if self.max_jobs_torun: 
-                out = min(out, self.max_jobs_torun - all_pilots)
+        if self.min_pilots_per_cycle:
+            out = max(out, self.min_pilots_per_cycle)
 
-            if self.min_pilots_pending:
-                out = max(out, self.min_pilots_pending - pending_pilots)
-           
-            if self.max_pilots_per_cycle:
-                out = min(out, self.max_pilots_per_cycle)
+        if self.max_pilots_pending:
+            out = min(out, self.max_pilots_pending - pending_pilots)
 
-            if self.min_pilots_per_cycle:
-                out = max(out, self.min_pilots_per_cycle)
-
-            if self.max_pilots_pending:
-                out = min(out, self.max_pilots_pending - pending_pilots)
-
-            # Catch all to prevent negative numbers
-            if out < 0:
-                out = 0
-            
-            self.log.info('_calc_online (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
-                                                                                             pending_pilots, 
-                                                                                             running_pilots, 
-                                                                                             out))
-            return out
+        # Catch all to prevent negative numbers
+        if out < 0:
+            out = 0
+        
+        self.log.info('_calc_online (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
+                                                                                         pending_pilots, 
+                                                                                         running_pilots, 
+                                                                                         out))
+        return out
 
     def _calc_test(self):
-            '''
-            algorithm when wmssite is in test mode
-            '''
+        '''
+        algorithm when wmssite is in test mode
+        '''
 
-            if self.testmode:
-                self.log.info('_calc_test: testmode is enabled, returning default %s' %self.pilots_in_test_mode)
-                return self.pilots_in_test_mode
-            else:
-                self.log.info('_calc_test: testmode is not enabled. Calling the normal online algorithm')
-                return self._calc_online()
+        if self.testmode:
+            self.log.info('_calc_test: testmode is enabled, returning default %s' %self.pilots_in_test_mode)
+            return self.pilots_in_test_mode
+        else:
+            self.log.info('_calc_test: testmode is not enabled. Calling the normal online algorithm')
+            return self._calc_online()
             
+    def _calc_offline(self):
+        '''
+        algorithm when wmssite is in offline mode
+        '''
+        # default, just return 0
+        return 0 
+
