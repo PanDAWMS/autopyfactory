@@ -80,11 +80,11 @@ class ActivatedSchedPlugin(SchedInterface):
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             # Carefully get wmsinfo, activated. 
-            siteid = self.apfqueue.siteid
-            self.log.debug("Siteid is %s" % siteid)
+            self.siteid = self.apfqueue.siteid
+            self.log.debug("Siteid is %s" % self.siteid)
 
             siteinfo = self.wmsinfo.site
-            sitestatus = siteinfo[siteid].status
+            sitestatus = siteinfo[self.siteid].status
             self.log.debug('calcSubmitNum: site status is %s' %sitestatus)
 
             # choosing algorithm 
@@ -108,13 +108,13 @@ class ActivatedSchedPlugin(SchedInterface):
             self.log.debug("jobsinfo class is %s" % jobsinfo.__class__ )
 
             try:
-                sitedict = jobsinfo[siteid]
+                sitedict = jobsinfo[self.siteid]
                 self.log.debug("sitedict class is %s" % sitedict.__class__ )
                 #activated_jobs = sitedict['activated']
                 activated_jobs = sitedict.ready
             except KeyError:
                 # This is OK--it just means no jobs in any state at the siteid. 
-                self.log.error("siteid: %s not present in jobs info from WMS" % siteid)
+                self.log.error("siteid: %s not present in jobs info from WMS" % self.siteid)
                 activated_jobs = 0
             try:
                 pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
