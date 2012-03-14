@@ -36,6 +36,9 @@ class ActivatedSchedPlugin(SchedInterface):
             self.min_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle', 'getint', logger=self.log)
             self.min_pilots_pending = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.min_pilots_pending', 'getint', logger=self.log)
             self.max_pilots_pending = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending', 'getint', logger=self.log)
+            # testmode vars
+            self.testmode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.allowed', 'getboolean', logger=self.log)
+            self.pilots_in_test_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.pilots', 'getint', default_value=0, logger=self.log)
 
             self.log.info("SchedPlugin: Object initialized.")
         except:
@@ -62,29 +65,48 @@ class ActivatedSchedPlugin(SchedInterface):
         """
         self.log.debug('calcSubmitNum: Starting.')
 
-        # initial default values. 
-        activated_jobs = 0
-        pending_pilots = 0
-        running_pilots = 0
 
-        wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
-        batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
+        self.wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
+        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
 
-        if wmsinfo is None:
+        if self.wmsinfo is None:
             self.log.warning("wsinfo is None!")
             out = self.default
-        elif batchinfo is None:
-            self.log.warning("batchinfo is None!")
+        elif self.batchinfo is None:
+            self.log.warning("self.batchinfo is None!")
             out = self.default            
-        elif not wmsinfo.valid() and batchinfo.valid():
+        elif not self.wmsinfo.valid() and self.batchinfo.valid():
             out = self.default
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             # Carefully get wmsinfo, activated. 
             siteid = self.apfqueue.siteid
             self.log.debug("Siteid is %s" % siteid)
-            jobsinfo = wmsinfo.jobs
+
+            siteinfo = self.wmsinfo.site
+            sitestatus = siteinfo[siteid].status
+            self.log.debug('calcSubmitNum: site status is %s' %sitestatus))
+
+            # choosing algorithm 
+            if sitestatus == 'online':
+                out = self._calc_online()
+            if sitestatus == 'test':
+                out = self._calc_test()
+            return out
+
+    def _calc_online(self):
+            '''
+            algorithm when wmssite is in online mode
+            '''
+        
+            # initial default values. 
+            activated_jobs = 0
+            pending_pilots = 0
+            running_pilots = 0
+
+            jobsinfo = self.wmsinfo.jobs
             self.log.debug("jobsinfo class is %s" % jobsinfo.__class__ )
+
             try:
                 sitedict = jobsinfo[siteid]
                 self.log.debug("sitedict class is %s" % sitedict.__class__ )
@@ -94,15 +116,13 @@ class ActivatedSchedPlugin(SchedInterface):
                 # This is OK--it just means no jobs in any state at the siteid. 
                 self.log.error("siteid: %s not present in jobs info from WMS" % siteid)
                 activated_jobs = 0
-           
             try:
-                pending_pilots = batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
+                pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
             except KeyError:
                                 # This is OK--it just means no jobs. 
                 pass
-            
             try:        
-                running_pilots = batchinfo[self.apfqueue.apfqname].running # using the new info objects
+                running_pilots = self.batchinfo[self.apfqueue.apfqname].running # using the new info objects
             except KeyError:
                 # This is OK--it just means no jobs. 
                 pass
@@ -126,13 +146,24 @@ class ActivatedSchedPlugin(SchedInterface):
             if self.max_pilots_pending:
                 out = min(out, self.max_pilots_pending - pending_pilots)
 
-
             # Catch all to prevent negative numbers
             if out < 0:
                 out = 0
             
-        self.log.info('calcSubmitNum (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
+        self.log.info('_calc_online (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
                                                                                              pending_pilots, 
                                                                                              running_pilots, 
-                                                                                             out))
-        return out
+            return out                                                                                out))
+
+    def _calc_test(self):
+            '''
+            algorithm when wmssite is in test mode
+            '''
+
+            if self.testmode:
+                self.log.info('_calc_test: testmode is enabled, returning default %s' %self.pilots_in_test_mode)
+                reuturn self.pilots_in_test_mode
+            else:
+                self.log.info('_calc_test: testmode is not enabled. Calling the normal online algorithm')
+                return self._calc_online()
+            
