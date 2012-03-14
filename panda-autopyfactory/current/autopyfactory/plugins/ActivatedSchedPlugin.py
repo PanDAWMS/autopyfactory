@@ -153,7 +153,8 @@ class ActivatedSchedPlugin(SchedInterface):
             self.log.info('_calc_online (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
                                                                                              pending_pilots, 
                                                                                              running_pilots, 
-            return out                                                                                out))
+                                                                                             out))
+            return out
 
     def _calc_test(self):
             '''
