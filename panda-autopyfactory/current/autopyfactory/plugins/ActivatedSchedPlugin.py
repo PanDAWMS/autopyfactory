@@ -163,7 +163,7 @@ class ActivatedSchedPlugin(SchedInterface):
 
             if self.testmode:
                 self.log.info('_calc_test: testmode is enabled, returning default %s' %self.pilots_in_test_mode)
-                reuturn self.pilots_in_test_mode
+                return self.pilots_in_test_mode
             else:
                 self.log.info('_calc_test: testmode is not enabled. Calling the normal online algorithm')
                 return self._calc_online()
