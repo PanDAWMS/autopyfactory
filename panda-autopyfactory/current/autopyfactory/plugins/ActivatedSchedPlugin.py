@@ -150,7 +150,7 @@ class ActivatedSchedPlugin(SchedInterface):
             if out < 0:
                 out = 0
             
-        self.log.info('_calc_online (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
+            self.log.info('_calc_online (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
                                                                                              pending_pilots, 
                                                                                              running_pilots, 
             return out                                                                                out))
