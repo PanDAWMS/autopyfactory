@@ -85,7 +85,7 @@ class ActivatedSchedPlugin(SchedInterface):
 
             siteinfo = self.wmsinfo.site
             sitestatus = siteinfo[siteid].status
-            self.log.debug('calcSubmitNum: site status is %s' %sitestatus))
+            self.log.debug('calcSubmitNum: site status is %s' %sitestatus)
 
             # choosing algorithm 
             if sitestatus == 'online':
