@@ -485,10 +485,10 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
                     attrdict = all_sites_config[site]
                     si.fill(attrdict)
             return sitesinfo
+
                         
     def _updatejobs(self):
         '''
-        
         Client.getJobStatisticsPerSite(
                     countryGroup='',
                     workingGroup='', 
