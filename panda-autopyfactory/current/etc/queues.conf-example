@@ -42,6 +42,8 @@
 # sched.activated.min_pilots_per_cycle
 # sched.activated.min_pilots_pending
 # sched.activated.max_pilots_pending
+# sched.activated.testmode.enabled
+# sched.activated.testmode.pilots
 # sched.fixed.pilotspercycle
 # sched.simple.default
 # sched.simple.maxpendingpilots
@@ -195,6 +197,15 @@
 # sched.activated.max_pilots_pending = maximum number of pilots
 #               to be idle on queue waiting to start execution.
 #               To be used in Activated Scheduler Plugin.
+#
+# sched.activated.testmode.enabled = Boolean variable to trigger
+#               special mode of operation when the wmssite is in
+#               in status = test
+#
+# sched.activated.testmode.pilots = number of pilots to submit
+#               when the wmssite is in status = test
+#               and sched.activated.testmode.enabled is True
+#
 
 #  --------------------------------------------------------------------
 #       Configuration when schedplugin is Fixed
@@ -524,6 +535,9 @@ sched.trivial.default = 0
 sched.simple.default = 0
 sched.simplenqueue.default = 0
 sched.activated.default = 0
+# defaults for testmode
+sched.activated.testmode.enabled = True
+sched.activated.testmode.pilots = 5
 
 # proxy = atlas-usatlas
 batchsubmit.condorgt2.proxy = None
