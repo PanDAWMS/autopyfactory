@@ -845,8 +845,7 @@ class APFQueue(threading.Thread):
                 newqcl = self.config_plugin.getConfig()
                 newqcl.filterkeys('batchsubmit', 'batchsubmit.%s' %id)
                 self.qcl.merge(newqcl) 
-    
-        self.log.debug('_autofill: new configuration:\n%s' %self.qcl.getSection(self.apfqname).getContent())
+                self.log.debug('_autofill: new configuration:\n%s' %self.qcl.getSection(self.apfqname).getContent())
 
         self.log.debug('_autofill: Leaving')
 
