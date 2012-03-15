@@ -566,7 +566,7 @@ apfqueue.sleep = 360
 
 # The following are valid for wrapper.sh
 executable = /usr/libexec/wrapper.sh
-executable.defaultarguments = --wrappergrid = %(grid)s --wrapperwmsqueue=%(wmsqueue)s --wrapperbatchqueue=%(batchqueue)s --wrappervo = %(vo)s --wrappertarballurl = http://dev.racf.bnl.gov/dist/wrapper/wrapper.tar.gz --wrapperserverurl = http://pandaserver.cern.ch:25080/cache/pilot --wrapperloglevel = debug
+executable.defaultarguments = --wrappergrid=%(grid)s --wrapperwmsqueue=%(wmsqueue)s --wrapperbatchqueue=%(batchqueue)s --wrappervo=%(vo)s --wrappertarballurl=http://dev.racf.bnl.gov/dist/wrapper/wrapper.tar.gz --wrapperserverurl=http://pandaserver.cern.ch:25080/cache/pilot --wrapperloglevel=debug
 
 # The following are valid for runpilot3.sh
 # executable = /usr/libexec/runpilot3.sh
