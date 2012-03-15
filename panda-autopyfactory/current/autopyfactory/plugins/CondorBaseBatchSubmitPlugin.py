@@ -164,24 +164,25 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
                 self.JSD.add(attr)
 
         # -- Executable and Arguments to the wrapper -- 
+        #self.JSD.add("executable=%s" % self.executable)
+        #arguments = 'arguments = '
+        #if self.wrappervo:
+        #    arguments += ' --wrappervo=%s ' %self.wrappervo
+        #arguments += ' --wrapperwmsqueue=%s ' %self.siteid
+        #arguments += ' --wrapperbatchqueue=%s ' %self.batchqueue
+        #if self.wrappergrid:
+        #    arguments += ' --wrappergrid=%s ' %self.wrappergrid
+        #arguments += ' --wrapperserverurl=%s ' %self.wrapperserverurl
+        #arguments += ' --wrappertarballurl=%s ' %self.wrappertarballurl
+        #if self.wrapperloglevel:
+        #    arguments += ' --wrapperloglevel=%s ' %self.wrapperloglevel
+        #if self.wrappermode:
+        #    arguments += ' --wrappermode=%s ' %self.wrappermode
+        #if self.arguments:
+        #    arguments += self.arguments
+        #self.JSD.add(arguments)
         self.JSD.add("executable=%s" % self.executable)
-        arguments = 'arguments = '
-        if self.wrappervo:
-            arguments += ' --wrappervo=%s ' %self.wrappervo
-        arguments += ' --wrapperwmsqueue=%s ' %self.siteid
-        arguments += ' --wrapperbatchqueue=%s ' %self.batchqueue
-        if self.wrappergrid:
-            arguments += ' --wrappergrid=%s ' %self.wrappergrid
-        arguments += ' --wrapperserverurl=%s ' %self.wrapperserverurl
-        arguments += ' --wrappertarballurl=%s ' %self.wrappertarballurl
-        if self.wrapperloglevel:
-            arguments += ' --wrapperloglevel=%s ' %self.wrapperloglevel
-        if self.wrappermode:
-            arguments += ' --wrappermode=%s ' %self.wrappermode
-        if self.arguments:
-            arguments += self.arguments
-        self.JSD.add(arguments)
-
+        self.JSD.add('arguments=%s' % self.arguments)
 
         # -- fixed stuffs -- 
         self.JSD.add("output=$(Dir)/$(Cluster).$(Process).out")
