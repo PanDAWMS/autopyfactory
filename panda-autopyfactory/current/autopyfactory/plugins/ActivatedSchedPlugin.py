@@ -22,6 +22,10 @@ class ActivatedSchedPlugin(SchedInterface):
         try:
             self.apfqueue = apfqueue                
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
+
+            self.wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
+            self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
+
             self.max_jobs_torun = None
             self.max_pilots_per_cycle = None
             self.min_pilots_per_cycle = None
@@ -65,10 +69,6 @@ class ActivatedSchedPlugin(SchedInterface):
         """
         self.log.debug('calcSubmitNum: Starting.')
 
-
-        self.wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
-        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
-
         if self.wmsinfo is None:
             self.log.warning("wsinfo is None!")
             out = self.default
@@ -87,7 +87,15 @@ class ActivatedSchedPlugin(SchedInterface):
             sitestatus = siteinfo[self.siteid].status
             self.log.debug('calcSubmitNum: site status is %s' %sitestatus)
 
+            cloud = siteinfo[self.siteid].cloud
+            cloudinfo = self.wmsinfo.cloud
+            cloudstatus = cloudinfo[cloud].status
+            self.log.debug('calcSubmitNum: cloud %s status is %s' %(cloud, cloudstatus))
+
             # choosing algorithm 
+            if cloudstatus == 'offline':
+                return self._calc_offline()
+
             if sitestatus == 'online':
                 out = self._calc_online()
             if sitestatus == 'test':
