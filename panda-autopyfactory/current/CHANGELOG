@@ -6,6 +6,10 @@ $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
 2012-03-13
 
+* Added grid and vo queue attributes, and added executable.defaultarguments and executable.arguments 
+  interpolation. These changes were to support wrapper.sh, runpilot3.sh, and arbitrary executables in 
+  a general way. This feature uses standard Python ConfigParser interpolation. See
+     http://docs.python.org/library/configparser.html
 
 * Made Monitor object a singleton, to avoid repeated timeout delays (during queue initialization) 
   when APF monitor is unresponsive. Now there is a single attempt when single Monitor is initialized. 
