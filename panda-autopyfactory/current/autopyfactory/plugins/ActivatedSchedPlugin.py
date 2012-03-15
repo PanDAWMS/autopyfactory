@@ -23,9 +23,6 @@ class ActivatedSchedPlugin(SchedInterface):
             self.apfqueue = apfqueue                
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
 
-            self.wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
-            self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
-
             self.max_jobs_torun = None
             self.max_pilots_per_cycle = None
             self.min_pilots_per_cycle = None
@@ -68,6 +65,9 @@ class ActivatedSchedPlugin(SchedInterface):
         to be submitted.
         """
         self.log.debug('calcSubmitNum: Starting.')
+
+        self.wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
+        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
 
         if self.wmsinfo is None:
             self.log.warning("wsinfo is None!")
