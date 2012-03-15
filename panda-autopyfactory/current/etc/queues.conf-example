@@ -557,7 +557,7 @@ batchsubmit.condorgt2.condor_attributes = periodic_hold=GlobusResourceUnavailabl
 apfqueue.sleep = 360
 
 executable = /usr/libexec/wrapper.sh
-executable = wrappervo = ATLAS
+executable.wrappervo = ATLAS
 executable.wrappertarballurl = http://dev.racf.bnl.gov/dist/wrapper/wrapper.tar.gz
 executable.wrapperserverurl = http://pandaserver.cern.ch:25080/cache/pilot
 executable.wrapperloglevel = debug
