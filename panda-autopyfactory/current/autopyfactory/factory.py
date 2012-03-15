@@ -678,11 +678,12 @@ class APFQueue(threading.Thread):
 
         # apfqname is the APF queue name, i.e. the section heading in queues.conf
         self.apfqname = apfqname
-        #self.siteid = siteid          # Queue section designator from config
         self.factory = factory
         self.fcl = self.factory.fcl 
         self.qcl = self.factory.qcl 
 
+        self.log.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(apfqname).getContent())
+    
         self.siteid = self.qcl.generic_get(apfqname, 'wmsqueue', default_value=apfqname, logger=self.log)
         self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue', logger=self.log)
         self.cloud = self.qcl.generic_get(apfqname, 'cloud', logger=self.log)
@@ -844,6 +845,9 @@ class APFQueue(threading.Thread):
                 newqcl = self.config_plugin.getConfig()
                 newqcl.filterkeys('batchsubmit', 'batchsubmit.%s' %id)
                 self.qcl.merge(newqcl) 
+    
+        self.log.debug('_autofill: new configuration:\n%s' %self.qcl.getSection(self.apfqname).getContent())
+
         self.log.debug('_autofill: Leaving')
 
     def _submitpilots(self, nsub):
