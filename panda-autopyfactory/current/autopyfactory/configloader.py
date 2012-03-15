@@ -170,7 +170,6 @@ class Config(SafeConfigParser, object):
                 if value.startswith('~'):
                     self.set(section,key,os.path.expanduser(value))
         
-    
     def  generic_get(self, 
                      section,                       # SafeConfigParser section
                      option,                        # option in the SafeConfigParser section
@@ -205,6 +204,37 @@ class Config(SafeConfigParser, object):
                 if value.lower() in ['none', 'null', '']:
                     value = None
             return value
+
+    def getSection(self, section):
+        '''
+        creates and returns a new Config object, 
+        with the content of a single section
+        '''
+
+        conf = Config()
+        if self.has_section(section):
+                conf.add_section(section)
+                for item in self.items(section):
+                    conf.set(section, item[0], item[1])
+        return conf
+
+    def getContent(self):
+        '''
+        returns the content of the config object in a single string
+        '''
+        str = ''
+        for section in self.sections():
+            str += self._getsectioncontent(section)
+        return str
+
+    def _getsectioncontent(self, section):
+        '''
+        returns the content of a given sections in a single string
+        '''
+        str = '[%s]\n' %section
+        for item in self.items(section):
+            str += '%s = %s\n' %item
+        return str
 
 
 class ConfigManager:
