@@ -65,12 +65,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             self.environ = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.environ', logger=self.log)
             self.condor_attributes = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.condor_attributes', logger=self.log)
             self.batchqueue = qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
-            self.wrappergrid = qcl.generic_get(self.apfqname, 'executable.wrappergrid', logger=self.log)
-            self.wrappervo = qcl.generic_get(self.apfqname, 'executable.wrappervo', logger=self.log)
-            self.wrapperserverurl = qcl.generic_get(self.apfqname, 'executable.wrapperserverurl', logger=self.log)
-            self.wrappertarballurl = qcl.generic_get(self.apfqname, 'executable.wrappertarballurl', logger=self.log)
-            self.wrapperloglevel = qcl.generic_get(self.apfqname, 'executable.wrapperloglevel', logger=self.log)
-            self.wrappermode = qcl.generic_get(self.apfqname, 'executable.wrappermode', logger=self.log)
             self.arguments = qcl.generic_get(self.apfqname, 'executable.arguments', logger=self.log)
 
             return True
@@ -163,24 +157,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             for attr in self.condor_attributes.split(','):
                 self.JSD.add(attr)
 
-        # -- Executable and Arguments to the wrapper -- 
-        #self.JSD.add("executable=%s" % self.executable)
-        #arguments = 'arguments = '
-        #if self.wrappervo:
-        #    arguments += ' --wrappervo=%s ' %self.wrappervo
-        #arguments += ' --wrapperwmsqueue=%s ' %self.siteid
-        #arguments += ' --wrapperbatchqueue=%s ' %self.batchqueue
-        #if self.wrappergrid:
-        #    arguments += ' --wrappergrid=%s ' %self.wrappergrid
-        #arguments += ' --wrapperserverurl=%s ' %self.wrapperserverurl
-        #arguments += ' --wrappertarballurl=%s ' %self.wrappertarballurl
-        #if self.wrapperloglevel:
-        #    arguments += ' --wrapperloglevel=%s ' %self.wrapperloglevel
-        #if self.wrappermode:
-        #    arguments += ' --wrappermode=%s ' %self.wrappermode
-        #if self.arguments:
-        #    arguments += self.arguments
-        #self.JSD.add(arguments)
         self.JSD.add("executable=%s" % self.executable)
         self.JSD.add('arguments=%s' % self.arguments)
 
