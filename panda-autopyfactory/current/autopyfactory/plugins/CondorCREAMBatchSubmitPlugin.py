@@ -43,9 +43,9 @@ class CondorCREAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
             return False
         try:
             self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.gridresource', logger=self.log) 
-            self.creamport = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.port', 'getint', logger=self.log)  
-            self.creambatch = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.batch', logger=self.log)  
-            self.queue = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.queue', logger=self.log)
+            ##self.creamport = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.port', 'getint', logger=self.log)  
+            ##self.creambatch = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.batch', logger=self.log)  
+            ##self.queue = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.queue', logger=self.log)
             return True
         except:
             return False
@@ -58,7 +58,8 @@ class CondorCREAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
     
         self.log.debug('CondorCREAMBatchSubmitPlugin.addJSD: Starting.')
     
-        self.JSD.add('grid_resource=cream %s:%d/ce-cream/services/CREAM2 %s %s' % (self.gridresource, self.creamport, self.creambatch, self.queue)) 
+        ##self.JSD.add('grid_resource=cream %s:%d/ce-cream/services/CREAM2 %s %s' % (self.gridresource, self.creamport, self.creambatch, self.queue)) 
+        self.JSD.add('grid_resource=cream %s' %self.gridresource) 
         super(CondorCREAMBatchSubmitPlugin, self)._addJSD() 
     
         self.log.debug('CondorCREAMBatchSubmitPlugin.addJSD: Leaving.')
