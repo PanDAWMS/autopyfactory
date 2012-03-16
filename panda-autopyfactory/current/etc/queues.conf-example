@@ -71,6 +71,7 @@
 # batchsubmit.condorgt5.jobtype
 # batchsubmit.condorgt5.queue
 # batchsubmit.condorgt5.proxy
+# batchsubmit.condorcream.webservice
 # batchsubmit.condorcream.gridresource
 # batchsubmit.condorcream.condor_attributes
 # batchsubmit.condorcream.environ
@@ -347,7 +348,7 @@
 #       Configuration when batchsubmitplugin is condorcream
 #  --------------------------------------------------------------------
 
-# batchsubmit.condorcream.gridresource = web service address (e.g. ce04.esc.qmul.ac.uk:8443/ce-cream/services/CREAM2)
+# batchsubmit.condorcream.webservice = web service address (e.g. ce04.esc.qmul.ac.uk:8443/ce-cream/services/CREAM2)
 #
 # batchsubmit.condorcream.condor_attributes = list of condor attributes, 
 #               splited by comma, 
@@ -378,6 +379,9 @@
 # batchsubmit.condorcream.port = port number.
 #
 # batchsubmit.condorcream.batch = local batch system (pbs, sge...)
+#
+# batchsubmit.condorcream.gridresource = grid resource, built from other vars using interpolation:
+#               batchsubmit.condorcream.gridresource = %(batchsubmit.condorcream.gridresource)s:%(batchsubmit.condorcream.port)s/ce-cream/services/CREAM2 %(batchsubmit.condorcream.batch)s %(batchsubmit.condorcream.queue)s
 #
 # batchsubmit.condorcream.proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
 #               (See etc/proxy.conf)
