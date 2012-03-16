@@ -43,10 +43,6 @@ class ExecSubmitPlugin(BatchSubmitInterface):
             self.environ = self.qcl.generic_get(self.apfqname, 'batchsubmit.condorlocal.environ', logger=self.log)
             self.condor_attributes = self.qcl.generic_get(self.apfqname, 'batchsubmit.condorlocal.condor_attributes', logger=self.log)
             self.batchqueue = self.qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
-            self.wrappergrid = self.qcl.generic_get(self.apfqname, 'executable.wrappergrid', logger=self.log)
-            self.wrapperserverurl = self.qcl.generic_get(self.apfqname, 'executable.wrapperserverurl', logger=self.log)
-            self.wrappertarballurl = self.qcl.generic_get(self.apfqname, 'executable.wrappertarballurl', logger=self.log)
-            self.wrapperloglevel = self.qcl.generic_get(self.apfqname, 'executable.wrapperloglevel', logger=self.log)
             self.arguments = self.qcl.generic_get(self.apfqname, 'executable.arguments', logger=self.log)
 
             self.log.info('BatchSubmitPlugin: Object initialized.')
@@ -118,19 +114,7 @@ class ExecSubmitPlugin(BatchSubmitInterface):
         executable = os.path.basename(self.executable)
 
         # --- argumetns ---
-        arguments = 'arguments = '
-        arguments += ' --wrappersite=%s ' %self.siteid
-        arguments += ' --wrapperqueue=%s ' %self.batchqueue
-        if self.wrappergrid:
-                arguments += ' --wrappergrid=%s ' %self.wrappergrid
-        arguments += ' --wrapperserverurl=%s ' %self.wrapperserverurl
-        arguments += ' --wrappertarballurl=%s ' %self.wrappertarballurl
-        if self.wrapperloglevel:
-                arguments += ' --wrapperloglevel=%s' %self.wrapperloglevel
-        if self.arguments:
-                arguments += ' ' + self.arguments
-
-
+        arguments = 'arguments = %s' %self.arguments
         cmd = 'cd %s; ./%s %s; cd -' %(self.logDir, executable, arguments )
         self.log.info('Attempt to submit command %s' %cmd)
 
