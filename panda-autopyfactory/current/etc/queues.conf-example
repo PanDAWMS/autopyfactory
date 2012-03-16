@@ -381,7 +381,7 @@
 # batchsubmit.condorcream.batch = local batch system (pbs, sge...)
 #
 # batchsubmit.condorcream.gridresource = grid resource, built from other vars using interpolation:
-#               batchsubmit.condorcream.gridresource = %(batchsubmit.condorcream.gridresource)s:%(batchsubmit.condorcream.port)s/ce-cream/services/CREAM2 %(batchsubmit.condorcream.batch)s %(batchsubmit.condorcream.queue)s
+#               batchsubmit.condorcream.gridresource = %(batchsubmit.condorcream.webservice)s:%(batchsubmit.condorcream.port)s/ce-cream/services/CREAM2 %(batchsubmit.condorcream.batch)s %(batchsubmit.condorcream.queue)s
 #
 # batchsubmit.condorcream.proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
 #               (See etc/proxy.conf)
