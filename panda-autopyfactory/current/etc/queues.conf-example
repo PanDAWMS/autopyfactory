@@ -94,16 +94,6 @@
 #
 # executable
 # executable.arguments
-# executable.wrappervo
-# executable.wrappergrid
-# executable.wrapperpurpose
-# executable.wrapperserverurl
-# executable.wrappertarballurl
-# executable.wrapperspecialcmd
-# executable.wrapperplugin
-# executable.wrapperpilottype
-# executable.wrapperloglevel
-# executable.wrappermode
 
 # =========================================================================== 
 #               DESCRIPTION 
@@ -472,52 +462,28 @@
 #                       - libexec/runpilot3-wrapper.sh 
 #
 # executable.arguments = input options to be passed verbatim to the executable script.
+#               This variable can be built making use of an auxiliar variable
+#               called executable.defaultarguments
+#               This proposed ancilla works as a template, and its content is
+#               created on the fly from the value of other variables.
+#               This mechanism is called "interpolation", docs can be found here:
 #
-#                --------------------------------------------------------------------
-#                 NOTE: The following executable.* variables are supported only 
-#                       when executable is wrapper.sh
-#                --------------------------------------------------------------------
+#                   http://docs.python.org/library/configparser.html
+#
+#               These are two examples of this type of templates 
+#               (included in the DEFAULTS block):
+#
+#                   executable.defaultarguments = --wrappergrid=%(grid)s \
+#                               --wrapperwmsqueue=%(wmsqueue)s \
+#                               --wrapperbatchqueue=%(batchqueue)s \
+#                               --wrappervo=%(vo)s \
+#                               --wrappertarballurl=http://dev.racf.bnl.gov/dist/wrapper/wrapper.tar.gz \
+#                               --wrapperserverurl=http://pandaserver.cern.ch:25080/cache/pilot \
+#                               --wrapperloglevel=debug
 # 
-# executable.wrappervo = VO
-#               To be used by the 'new wrapper' distributed with AutoPyFactory.
-#               Mandatory
-#
-# executable.wrapperpurpose = specific purpose for the job, if needed (e.g. testing, prod, analysis)
-#               To be used by the 'new wrapper' distributed with AutoPyFactory.
-#
-# executable.specialcmd = is special command to be performed, 
-#               for some specific reason, just after sourcing the Grid environment,
-#               but before doing anything else.
-#               This has been triggered by the need to execute command
-#                    $ module load <module_name>
-#               at NERSC after sourcing the OSG grid environment. 
-#               To be used by the 'new wrapper' distributed with AutoPyFactory.
-#
-# executable.wrapperplugin = is the plug-in module with the code corresponding 
-#               to the final wrapper flavor, in case its value is different that
-#               the one provided by the wrapper config files.
-#               To be used by the 'new wrapper' distributed with AutoPyFactory.
-#
-# executable.wrappperpilottype = is the actual  pilot code to be executed at the end,
-#               in case its value is different that the one provided 
-#               by the wrapper config files.        
-#               To be used by the 'new wrapper' distributed with AutoPyFactory.
-#
-# executable.wrappermode = specifies a particular mode of operation
-#               (e.g. test)
-#               To be used by the 'new wrapper' distributed with AutoPyFactory.
-#
-# executable.wrappergrid = type of Grid Midleware (e.g. OSG).
-#               To be used by the 'new wrapper' distributed with AutoPyFactory.
-#
-# executable.wrapperloglevel = log level.
-#               To be used by the 'new wrapper' distributed with AutoPyFactory.
-#
-# executable.wrapperserverurl =  base URL with the VO-specific pilot tarball
-#               To be used by the 'new wrapper' distributed with AutoPyFactory.
-#
-# executable.wrappertarballurl =  URL with the wrapper tar ball
-#               To be used by the 'new wrapper' distributed with AutoPyFactory.
+#                   executable.defaultarguments =  -s %(wmsqueue)s \
+#                               -h %(batchqueue)s -p 25443 \
+#                               -w https://pandaserver.cern.ch  -j false  -k 0  -u user
 #
 # =========================================================================== 
 
@@ -560,7 +526,6 @@ batchsubmit.condorgt5.jobtype = single
 batchsubmit.condorcream.jobtype = single
 
 batchsubmit.condorgt2.condor_attributes = periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30),periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
-
 
 apfqueue.sleep = 360
 
