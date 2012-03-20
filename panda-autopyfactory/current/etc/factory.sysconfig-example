@@ -25,4 +25,4 @@ OPTIONS="--debug --sleep=60 --runas=apf --log=/var/log/apf/apf.log"
 # Use this to provide voms-proxy-* on the path if it is not pre-setup by
 # default. 
 #
-GRIDSETUP=/opt/osg-client/setup.sh
+# GRIDSETUP=/opt/osg-client/setup.sh
