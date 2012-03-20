@@ -96,12 +96,15 @@ class ActivatedSchedPlugin(SchedInterface):
             if cloudstatus == 'offline':
                 return self._calc_offline()
 
-            if sitestatus == 'online':
-                out = self._calc_online()
+            #if sitestatus == 'online':
+            #    out = self._calc_online()
             if sitestatus == 'test':
                 out = self._calc_test()
-            if sitestatus == 'offline':
+            elif sitestatus == 'offline':
                 out = self._calc_offline()
+            else:
+                # default
+                out = self._calc_online()
             return out
 
     def _calc_online(self):
