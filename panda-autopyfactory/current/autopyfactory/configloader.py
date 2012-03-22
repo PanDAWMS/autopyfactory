@@ -170,16 +170,19 @@ class Config(SafeConfigParser, object):
                 if value.startswith('~'):
                     self.set(section,key,os.path.expanduser(value))
         
-    def  generic_get(self, 
-                     section,                       # SafeConfigParser section
-                     option,                        # option in the SafeConfigParser section
-                     get_function='get',            # string representing the actual SafeConfigParser method:  "get", "getint", "getfloat", "getboolean"
-                     convert_to_None=False,         # decide if strings "None", "Null" or ""  should be converted into python None
-                     mandatory=False,               # if the option is supposed to be there
-                     default_value=None,            # default value to be returned with variable is not mandatory and is not in the config file
-                     logger=None):                  # logger function 
+    def generic_get(self, section, option, get_function='get', convert_to_None=False, mandatory=False, default_value=None, logger=None):      
         '''
         generic get() method for Config objects.
+        Inputs options are:
+
+           section          is the  SafeConfigParser section
+           option           is the option in the SafeConfigParser section
+           get_function     is the string representing the actual SafeConfigParser method:  "get", "getint", "getfloat", "getboolean"
+           convert_to_None  decides if strings "None", "Null" or ""  should be converted into python None
+           mandatory        says if the option is supposed to be there
+           default_value    is the default value to be returned with variable is not mandatory and is not in the config file
+           logger           is the logger function 
+
         example of usage:
                 x = generic_get("Sec1", "x", get_function='getint', convert=True, mandatory=True, mandatory_exception=NoMandatoryException, logger=self.log)
         '''
