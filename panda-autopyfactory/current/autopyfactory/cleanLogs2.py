@@ -82,9 +82,6 @@ class CleanLogs(threading.Thread):
         self.log.info("cleanLogs: Processed %d directories." % len(dirs))
         self.log.debug("process: Leaving.")
 
-
-
-
     def __getdirs(self):
         '''
         get the list of subdirectories underneath 'baseLogDir'
@@ -109,8 +106,6 @@ class CleanLogs(threading.Thread):
         self.log.debug("__getentries: Leaving with output %s." %entries) 
         return entries
 
-
-
     def __processdir(self, dir):
         ''' 
         processes each directory.
@@ -118,13 +113,9 @@ class CleanLogs(threading.Thread):
         ''' 
 
         self.log.debug("__processdir: Starting with input %s." %dir)
-
         self.__delsubdirs(dir)
         self.__deldir(dir)
-
         self.log.debug("__processdir: Leaving.")
-
-
 
     def __delsubdirs(self, dir):
         '''
@@ -204,11 +195,6 @@ class CleanLogs(threading.Thread):
             self.queues_keepdays[apfqname] = keepdays
 
         self.log.debug("__getkeepdays: Leaving ")
-
-
-
-
-
 
     def __sleep(self):
         '''
