@@ -68,6 +68,16 @@ class CleanCondorLogs(threading.Thread):
         
         self.log.debug('run: Leaving.')
 
+    def __wait_random(self): 
+        '''
+        wait a random time to prevent all queues to start
+        deleting at the same time. In particular, just after
+        APF is turned on.
+        '''
+        # wait some random time
+        randomsleep = int(random.uniform(0,30) * 60)         
+        time.sleep(randomsleep)
+
     def __process(self):
         '''
         loops over all directories to perform cleaning actions
@@ -133,14 +143,14 @@ class CleanCondorLogs(threading.Thread):
             entrypath = os.path.join(self.logDir, entry, self.siteid)
             # entrypath should look like  <logDir>/2011-08-12/BNL_ITB/
             if os.path.exists(entrypath):
-                self.log.info("__process_entry: Deleting %s..." % entrypath)
+                self.log.info("__process_entry: Deleting %s ..." % entrypath)
                 shutil.rmtree(entrypath)
 
         # now, try to remove the parent directory        
         try:
             entrypath = os.path.join(self.logDir, entry)
             # entrypath should look like  <logDir>/2011-08-12/
-            self.log.info("__process_entry: Deleting %s..." % entrypath)
+            self.log.info("__process_entry: Trying to delete %s ..." % entrypath)
             os.rmdir(entrypath)     
         except:
             # it only works if the directoy is empty. 
@@ -171,13 +181,4 @@ class CleanCondorLogs(threading.Thread):
         time.sleep(sleeptime) 
 
            
-    def __wait_random(self): 
-        '''
-        wait a random time to prevent all queues to start
-        deleting at the same time. In particular, just after
-        APF is turned on.
-        '''
-        # wait some random time
-        randomsleep = int(random.uniform(0,30) * 60)         
-        time.sleep(randomsleep)
 
