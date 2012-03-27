@@ -54,7 +54,6 @@ class CleanLogs(threading.Thread):
         '''
         Main loop
         '''
-
         self.log.debug('run: Starting.')
 
         while True:
@@ -73,14 +72,14 @@ class CleanLogs(threading.Thread):
         loops over all directories to perform cleaning actions
         '''
 
-        self.log.debug("process: Starting.")
+        self.log.debug("__process: Starting.")
         
         dirs = self.__getdirs()
         for dir in dirs:
             self.__processdir(dir)
+        self.log.info("__process: Processed %d directories." % len(dirs))
             
-        self.log.info("cleanLogs: Processed %d directories." % len(dirs))
-        self.log.debug("process: Leaving.")
+        self.log.debug("__process: Leaving.")
 
     def __getdirs(self):
         '''
@@ -88,12 +87,12 @@ class CleanLogs(threading.Thread):
         Each dir looks like <logDir>/2011-08-12/
         '''
 
-        self.log.debug("__getentries: Starting.")
+        self.log.debug("__getdirs: Starting.")
 
         if not os.access(self.logDir, os.F_OK):
-            self.log.warning('__getentries: Base log directory %s does not exist - nothing to do',
+            self.log.warning('__getdirs: Base log directory %s does not exist - nothing to do',
                       self.logDir)
-            self.log.warning("__getentries: Leaving with no output.") 
+            self.log.warning("__getdirs: Leaving with no output.") 
             return []
         # else (==the base directory exists)
         dirs = os.listdir(self.logDir)
@@ -103,7 +102,7 @@ class CleanLogs(threading.Thread):
         logDirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")
         dirs = [os.path.join(self.logDir, d) for d in dirs if logDirRe.match(d)]
 
-        self.log.debug("__getentries: Leaving with output %s." %entries) 
+        self.log.debug("__getdirs: Leaving with output %s." %entries) 
         return entries
 
     def __processdir(self, dir):
@@ -175,10 +174,13 @@ class CleanLogs(threading.Thread):
         try to remove the directory dir
         dir should look like  <logDir>/2011-08-12/
         '''
+
+        self.log.debug('__deldir: Starting with dir=%s.' %dir)
         if os.listdir(dir) == []:
             # the dir is empty 
-            self.log.info("__deldir: deleting %s ..." % dir)
+            self.log.info("__deldir: dir %s is empty. We can delete it" % dir)
             os.rmdir(dir)     
+        self.log.debug('__deldir: Leaving.')
 
     def __getkeepdays(self):
         '''
