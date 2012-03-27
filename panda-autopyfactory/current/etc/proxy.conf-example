@@ -53,4 +53,4 @@ proxyfile = /tmp/prodProxy
 #proxyfile = /tmp/analProxy
 
 #[osgvo]
-#vomsRole = osg:/osg
+#vorole = osg:/osg

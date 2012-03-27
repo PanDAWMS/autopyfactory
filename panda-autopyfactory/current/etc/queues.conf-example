@@ -552,7 +552,7 @@ enabled = True
 enabled = False
 
 wmsqueue = ANALY_BNL_ATLAS_1
-batchname = ANALY_BNL_ATLAS_1-condor
+batchqueue = ANALY_BNL_ATLAS_1-condor
 
 batchsubmit.condorgt2.gridresource = gridgk05.racf.bnl.gov/jobmanager-condor
 batchsubmit.condorgt2.queue = short
