@@ -37,8 +37,8 @@ class CleanCondorLogs(threading.Thread):
         the CleanCondorLogs instance
         '''
 
-        self.siteid = apfqueue.siteid
-        self.log = logging.getLogger('main.cleancondorlogs[%s]' %self.siteid)
+        self.apfqname = apfqueue.apfqname
+        self.log = logging.getLogger('main.cleancondorlogs[%s]' %self.apfqname)
         self.log.debug('CleanCondorLogs: Initializing object...')
     
         self.fcl = apfqueue.fcl
@@ -140,7 +140,7 @@ class CleanCondorLogs(threading.Thread):
 
         if deltaT.days > maxdays:
             self.log.info("__process_entry: Entry %s is %d days old" % (entry, deltaT.days))
-            entrypath = os.path.join(self.logDir, entry, self.siteid)
+            entrypath = os.path.join(self.logDir, entry, self.apfqname)
             # entrypath should look like  <logDir>/2011-08-12/BNL_ITB/
             if os.path.exists(entrypath):
                 self.log.info("__process_entry: Deleting %s ..." % entrypath)
@@ -166,7 +166,7 @@ class CleanCondorLogs(threading.Thread):
 
         self.log.debug("__getmaxdays: Starting.")
 
-        maxdays = self.qcl.generic_get(self.siteid, 'cleanlogs.maxdays', 'getint', default_value=7)
+        maxdays = self.qcl.generic_get(self.apfqname, 'cleanlogs.maxdays', 'getint', default_value=7)
 
         self.log.debug("__getmaxdays: Leaving with output %s." %maxdays)
         return maxdays
