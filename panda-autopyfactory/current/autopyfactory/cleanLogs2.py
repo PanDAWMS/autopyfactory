@@ -132,11 +132,14 @@ class CleanLogs(threading.Thread):
         dir looks like <logDir>/2011-08-12
         '''
 
+        self.log.debug('__delsubdirs: Starting for dir=%s.' %dir)
+
         delta_t = self.__delta_t(dir)
         subdirs = os.listdir(dir)
         for subdir in subdirs:
             self.__delsubdir(dir, subdir, delta_t)
 
+        self.log.debug('__delsubdir: Leaving.')
 
     def __delsubdir(self, dir, subdir, delta_t):
         '''
@@ -144,17 +147,17 @@ class CleanLogs(threading.Thread):
         dir looks like <logDir>/2011-08-12
         '''
 
+        self.log.debug('__delsubdir: Starting with inputs dir=%s, subdir=%s, delta_t=%s' %(dir, subdir, delta_t))
+
         keep_days = self.queues_keepdays.get(subdir, self.factory_keepdays) 
         if delta_t.days > keep_days:
             path = os.join(dir, subdir)
             self.log.info("__delsubdir: Entry %s is %d days old" % (path, delta_t.days))
             if os.path.exists(path):
-                self.log.info("__processdir: Deleting %s ..." % path)
+                self.log.info("__delsubdir: Deleting %s ..." % path)
                 shutil.rmtree(path)
 
-
-
-
+        self.log.debug('__delsubdir: Leaving.')
 
     def __delta_t(self, dir):
         '''
@@ -176,23 +179,15 @@ class CleanLogs(threading.Thread):
         self.log.debug("__delta_t: Leaving with delta_t = %s" %delta_t)
         return delta_t
 
-
-
     def __deldir(self, dir):
         '''
         try to remove the directory dir
         dir should look like  <logDir>/2011-08-12/
         '''
-        try:
-            self.log.info("__deldir: Trying to delete %s ..." % dir)
+        if os.listdir(dir) == []:
+            # the dir is empty 
+            self.log.info("__deldir: deleting %s ..." % dir)
             os.rmdir(dir)     
-        except:
-            # it only works if the directoy is empty. 
-            pass
-        
-
-
-
 
     def __getkeepdays(self):
         '''
