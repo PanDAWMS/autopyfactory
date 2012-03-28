@@ -241,10 +241,10 @@ class Dir(object):
     class to manage each parent directory.
     The parent directory looks like <logDir>/2011-08-12/ 
     '''
-    dirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")
 
     def __new__(self, basedir, dir):
-        if Dir.dirRe.match(dir):
+        dirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")
+        if dirRe.match(dir):
             return super(Dir, cls).__new__(cls) 
 
     def __init__(self, basedir, dir):
@@ -267,10 +267,6 @@ class Dir(object):
         returns a datetime object with the creation time.
         Creation time is calculated from the self.dir itself.
         '''
-        #match = Dir.dirRe.match(self.dir)
-        #creation_t = datetime.date(int(match.group(1)), 
-        #                           int(match.group(2)), 
-        #                           int(match.group(3)))
         fields = self.dir.split('-')
         creation_t = datetime.date(int(fields[0]),
                                    int(fields[1]),
