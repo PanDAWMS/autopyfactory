@@ -62,7 +62,7 @@ class CleanLogs(threading.Thread):
                     self.__process()
                     self.__sleep()
             except Exception, e:
-                self.log.error("Main loop caught exception: %s " % str(e))
+                self.log.error("run: Main loop caught exception: %s " % str(e))
         
         self.log.debug('run: Leaving.')
 
