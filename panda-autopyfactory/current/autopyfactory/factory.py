@@ -39,7 +39,8 @@ from ConfigParser import ConfigParser
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.configloader import Config, ConfigManager
-from autopyfactory.cleanLogs import CleanCondorLogs
+#from autopyfactory.cleanLogs import CleanCondorLogs
+from autopyfactory.cleanLogs2 import CleanLogs
 from autopyfactory.logserver import LogServer
 from autopyfactory.proxymanager import ProxyManager
 
@@ -431,6 +432,7 @@ class Factory(object):
         self.log.info("Starting all Queue threads...")
 
         self.update()
+        self.__cleanlogs()
         
         try:
             while True:
@@ -463,11 +465,21 @@ class Factory(object):
 
         self.log.debug("update: Leaving")
 
+    def __cleanlogs(self):
+        '''
+        starts the thread that will clean the condor logs files
+        '''
+
+        self.log.debug('__cleanlogs: Starting')
+        self.clean = CleanLogs(self)
+        self.clean.start()
+        self.log.debug('__cleanlogs: Leaving')
+
     def shutdown(self):
         '''
         Method to cleanly shut down all factory activity, joining threads, etc. 
-                
         '''
+
         logging.debug(" Shutting down all Queue threads...")
         self.log.info("Joining all Queue threads...")
         self.wmsmanager.join()
@@ -710,13 +722,6 @@ class APFQueue(threading.Thread):
             self.monitor = Monitor(self.fcl)
 
         self.log.debug('_startmonitor: Leaving')
-
-    def _condorlogclean(self):
-
-        self.log.debug('_condorlogclean: Starting')
-        self.clean = CleanCondorLogs(self)
-        self.clean.start()
-        self.log.debug('_condorlogclean: Leaving')
 
     def _plugins(self):
         '''
