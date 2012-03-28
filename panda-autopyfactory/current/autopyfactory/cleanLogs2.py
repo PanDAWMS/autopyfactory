@@ -278,8 +278,19 @@ class Dir(object):
                                    int(match.group(3)))
         return creation_t
 
-   def subdirs(self):
+    def subdirs(self):
         ''' 
         returns the list of subdirs 
         ''' 
         return os.listdir(path)
+
+    def del(self):
+        '''
+        try to remove the directory dir
+        dir should look like  <logDir>/2011-08-12/
+        '''
+
+        if self.empty(): 
+            os.rmdir(self.path)     
+
+
