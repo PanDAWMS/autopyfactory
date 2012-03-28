@@ -73,7 +73,8 @@ class CleanLogs(threading.Thread):
 
         self.log.debug("__process: Starting.")
 
-        for dir in DirMgr(self.logDir):
+        dirmgr = DirMgr(self.logDir)
+        for dir in dirmgr.dirs:
             self.__processdir(dir)
         self.log.info("__process: Processed %d directories." % len(dirs))
             
