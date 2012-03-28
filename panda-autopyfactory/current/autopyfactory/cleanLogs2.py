@@ -267,10 +267,14 @@ class Dir(object):
         returns a datetime object with the creation time.
         Creation time is calculated from the self.dir itself.
         '''
-        match = Dir.dirRe.match(self.dir)
-        creation_t = datetime.date(int(match.group(1)), 
-                                   int(match.group(2)), 
-                                   int(match.group(3)))
+        #match = Dir.dirRe.match(self.dir)
+        #creation_t = datetime.date(int(match.group(1)), 
+        #                           int(match.group(2)), 
+        #                           int(match.group(3)))
+        fields = self.dir.split('-')
+        creation_t = datetime.date(int(fields[0]),
+                                   int(fields[1]),
+                                   int(fields[2]))
         return creation_t
 
 
