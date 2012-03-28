@@ -166,7 +166,8 @@ class CleanCondorLogs(threading.Thread):
 
         self.log.debug("__getmaxdays: Starting.")
 
-        maxdays = self.qcl.generic_get(self.apfqname, 'cleanlogs.maxdays', 'getint', default_value=7)
+        #maxdays = self.qcl.generic_get(self.apfqname, 'cleanlogs.maxdays', 'getint', default_value=7)
+        maxdays = self.qcl.generic_get(self.apfqname, 'cleanlogs.keepdays', 'getint')
 
         self.log.debug("__getmaxdays: Leaving with output %s." %maxdays)
         return maxdays
