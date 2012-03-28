@@ -72,7 +72,6 @@ class CleanLogs(threading.Thread):
         '''
 
         self.log.debug("__process: Starting.")
-        
 
         for dir in DirMgr(self.logDir):
             self.__processdir(dir)
@@ -88,8 +87,6 @@ class CleanLogs(threading.Thread):
         ''' 
 
         self.log.debug("__processdir: Starting with input %s." %dir)
-
-        #dir.rm_subdirs(self.keepdays)
 
         self.keepdays = KeepDays(self.fcl, self.qcl)
         dir.rm(self.keepdays)
@@ -112,16 +109,26 @@ class CleanLogs(threading.Thread):
 class KeepDays(object):
 
     def __init__(self, fcl, qcl):
+
+        self.log = logging.getLogger('main.keepdays')
+
         self.fcl = fcl
         self.qcl = qcl
         self.__inspect()
+        
+        self.log.info('KeepDays: Object initialized.')
 
     def __inspect(self):
+
+        self.log.debug('__inspect: Starting.')
+
         self.factory_keepdays = self.fcl.generic_get('factory', 'cleanlogs.keepdays', 'getint')
         self.queues_keepdays = {}
         for apfqname in self.qcl.sections():
             keepdays = self.qcl.generic_get(apfqname, 'cleanlogs.keepdays', 'getint')
             self.queues_keepdays[apfqname] = keepdays
+
+        self.log.debug('__inspect: Leaving.')
 
     def get(self, apfqname):
         return self.queues_keepdays.get(apfqname, self.factory_keepdays) 
@@ -132,15 +139,20 @@ class DirMgr(object):
     class to create a list of Dir objects
     '''
     def __init__(self, basedir):
+
+        self.log = logging.getLogger('main.DirMgr')
+
         self.basedir = basedir
         self.dirs = self.getdirs() 
+
+        self.log.info('DirMgr: Object initialized.')
 
     def getdirs(self):
  
         if not os.access(self.basedir, os.F_OK):
-            #self.log.warning('__getdirs: Base log directory %s does not exist - nothing to do',
-            #          self.basedir)
-            #self.log.warning("__getdirs: Leaving with no output.") 
+            self.log.warning('getdirs: Base log directory %s does not exist - nothing to do',
+                      self.basedir)
+            self.log.warning("getdirs: Leaving with no output.") 
             return []
         # else (==the base directory exists)
         dirs = []
@@ -149,6 +161,7 @@ class DirMgr(object):
             if dir_obj:
                 dirs.append(dir_obj)
 
+        self.log.debug('getdirs: Leaving return %s dirs' %len(dirs))
         return dirs
                 
            
@@ -169,11 +182,15 @@ class Dir(object):
         dir is like 2011-08-12
         '''
 
+        self.log = logging.getLogger('main.dir')
+
         self.basedir = basedir
         self.dir = dir
         self.path = os.path.join(basedir, dir)
         self.creation_t = self.creation_t() 
         self.delta_t = self.delta_t() 
+
+        self.log.info('Dir: Object initialized.')
 
     def empty(self):
         return os.listdir(self.path) == []
@@ -204,11 +221,20 @@ class Dir(object):
         return subdirs 
 
     def rm(self, keepdays):
+        '''
+        tries to delete the entire subtree.
+        First orders each subdir to delete itself.
+        After that, if Dir is empty, 
+        it deletes itself.
+        '''
+
+        self.log.debug('rm: Starting.')
 
         self.rm_subdirs(keepdays)
-
         if self.empty(): 
             os.rmdir(self.path)     
+
+        self.log.debug('rm: Leaving.')
 
     def rm_subdirs(self, keepdays):
         '''
@@ -216,8 +242,12 @@ class Dir(object):
         keepdays is a KeepDays object
         '''
         
+        self.log.debug('rm_subdirs: Starting.')
+
         for subdir in self.subdirs():
             subdir.rm(keepdays)
+
+        self.log.debug('rm_subdirs: Leaving.')
 
 
 class SubDir(object):
@@ -230,14 +260,27 @@ class SubDir(object):
         parent is a Dir object
         subdir is the APFQname
         '''
+
+        self.log = logging.getLogger('main.subdir')
+
         self.parent = parent
         self.subdir = subdir
         self.path = os.path.join(parent.path, subdir)
 
-    def rm(self, keepdays):
+        self.log.info('SubDir: Object initialized.')
 
-        delta_t = self.parent.delta_t.days
-        if delta_t > keepdays.get(self.subdir):
+    def rm(self, keepdays):
+        ''' 
+        tries to delete a subdirectory,
+        but only if the timing of the parent is older than
+        what keepdays object has to say about it
+        ''' 
+        self.log.debug('rm: Starting.')
+
+        delta_days = self.parent.delta_t.days
+        if delta_days > keepdays.get(self.subdir):
             if os.path.exists(self.path):
-                #self.log.info("__delsubdir: Deleting %s ..." % path)
+                self.log.info("rm: Deleting subdirectory %s ..." % self.path)
                 shutil.rmtree(self.path)
+
+        self.log.debug('rm: Leaving.')
