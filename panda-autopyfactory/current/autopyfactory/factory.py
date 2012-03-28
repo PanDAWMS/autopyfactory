@@ -706,7 +706,6 @@ class APFQueue(threading.Thread):
         self.wmsstatusmaxtime = self.fcl.generic_get('Factory', 'wmsstatus.maxtime', default_value=0, logger=self.log)
 
         self._startmonitor()
-        self._condorlogclean()
         self._plugins()
 
         self.log.info('APFQueue: Object initialized.')
