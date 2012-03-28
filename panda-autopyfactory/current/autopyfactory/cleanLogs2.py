@@ -304,4 +304,4 @@ class SubDir(object):
         self.path = os.path.join(parent.path, subdir)
 
     def del(self):
-        os.rmdir(self.path)
+        os.rmtree(self.path)
