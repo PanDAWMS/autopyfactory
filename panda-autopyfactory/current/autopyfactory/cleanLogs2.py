@@ -122,7 +122,7 @@ class KeepDays(object):
 
         self.log.debug('__inspect: Starting.')
 
-        self.factory_keepdays = self.fcl.generic_get('factory', 'cleanlogs.keepdays', 'getint')
+        self.factory_keepdays = self.fcl.generic_get('Factory', 'cleanlogs.keepdays', 'getint')
         self.queues_keepdays = {}
         for apfqname in self.qcl.sections():
             keepdays = self.qcl.generic_get(apfqname, 'cleanlogs.keepdays', 'getint')
