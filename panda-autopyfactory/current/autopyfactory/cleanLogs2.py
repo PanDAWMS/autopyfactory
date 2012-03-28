@@ -222,9 +222,9 @@ class DirMgr(object):
     def getdirs(self):
  
         if not os.access(self.basedir, os.F_OK):
-            self.log.warning('__getdirs: Base log directory %s does not exist - nothing to do',
-                      self.basedir)
-            self.log.warning("__getdirs: Leaving with no output.") 
+            #self.log.warning('__getdirs: Base log directory %s does not exist - nothing to do',
+            #          self.basedir)
+            #self.log.warning("__getdirs: Leaving with no output.") 
             return []
         # else (==the base directory exists)
         dirs = []
@@ -235,7 +235,6 @@ class DirMgr(object):
 
         return dirs
                 
- 
            
 class Dir(object):
     '''
@@ -245,10 +244,8 @@ class Dir(object):
     dirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")
 
     def __new__(self, basedir, dir):
-        if dirRe.match(dir):
+        if Dir.dirRe.match(dir):
             return super(Dir, cls).__new__(cls) 
-        else:
-            return None
 
     def __init__(self, basedir, dir):
         '''
@@ -272,7 +269,7 @@ class Dir(object):
         returns a datetime object with the creation time.
         Creation time is calculated from the self.dir itself.
         '''
-        match = dirRe.match(self.dir)
+        match = Dir.dirRe.match(self.dir)
         creation_t = datetime.date(int(match.group(1)), 
                                    int(match.group(2)), 
                                    int(match.group(3)))
@@ -286,10 +283,7 @@ class Dir(object):
 
     def del(self):
         '''
-        try to remove the directory dir
-        dir should look like  <logDir>/2011-08-12/
         '''
-
         if self.empty(): 
             os.rmdir(self.path)     
 
