@@ -502,6 +502,8 @@ group = None
 status = online
 autofill = false
 
+cleanlogs.keepdays = 7
+
 # plugins
 batchstatusplugin = Condor
 wmsstatusplugin = Panda
