@@ -478,11 +478,11 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             batchstatusinfo[site] = qi
             attrdict = input[site]
             
-            # use finer-grained globus statuses in preference to local summaries. 
+            # use finer-grained globus statuses in preference to local summaries, if they exist. 
             if 'globusstatus' in attrdict.keys():
                 valdict = attrdict['globusstatus']
                 qi.fill(valdict, mappings=self.globusstatus2info)
-            # must be a local-only job.
+            # must be a local-only job or other. 
             else:
                 valdict = attrdict['jobstatus']
                 qi.fill(valdict, mappings=self.jobstatus2info)
