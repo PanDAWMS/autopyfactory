@@ -12,6 +12,7 @@
 # batchstatus.condor.sleep
 # batchstatus.maxtime
 # cycles
+# cleanlogs.keepdays
 # factoryId
 # factoryAdminEmail
 # factory.sleep
@@ -48,6 +49,14 @@
 #
 # cycles = maximum number of times the queues will loop. 
 #               None means forever.
+#
+# cleanlogs.keepdays = maximum number of days the condor logs
+#               will be kept, in case they are placed in a subdirectory
+#               for an APFQueue that is not being currently managed by 
+#               AutoPyFactory.
+#               For example, an apfqueue that has been created and used for a short
+#               amount of time, and it does not exist anymore.
+#               Still the created logs have to be cleaned at some point...
 #
 # factoryId = Name that the factory instance will have in the APF web monitor. 
 #               Make factoryId something descriptive and unique for your factory,
@@ -106,6 +115,7 @@ proxyConf = /etc/apf/proxy.conf
 proxymanager.enabled = True
 
 cycles = None
+cleanlogs.keepdays = 14
 
 factory.sleep=30
 wmsstatus.panda.sleep = 50
