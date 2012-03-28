@@ -29,7 +29,7 @@
 # apfqueue.sleep
 # autofill
 #
-# cleanlogs.maxdays
+# cleanlogs.keepdays
 #
 # wmsstatusplugin
 #
@@ -135,7 +135,7 @@
 # autofill = says if the info from this filled should be completed
 #               with info from a ConfigPlugin object
 #
-# cleanlogs.maxdays = maximum number of days the condor logs
+# cleanlogs.keepdays = maximum number of days the condor logs
 #               will be kept
 
 #  --------------------------------------------------------------------
