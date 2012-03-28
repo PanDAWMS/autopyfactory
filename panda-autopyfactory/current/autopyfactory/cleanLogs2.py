@@ -257,11 +257,9 @@ class Dir(object):
         self.dir = dir
         self.path = os.path.join(basedir, dir)
         self.creation_t = self.creation_t() 
+        self.delta_t = self.delta_t() 
 
     def empty(self):
-        '''
-        checks if the parent directory is empty
-        '''
         return os.listdir(self.path) == []
 
     def creation_t(self):
@@ -275,16 +273,35 @@ class Dir(object):
                                    int(match.group(3)))
         return creation_t
 
+
+    def delta_t(self):
+        current_t = datetime.date.today()
+        return current_t - self.creation_t 
+
     def subdirs(self):
         ''' 
         returns the list of subdirs 
         ''' 
-        return os.listdir(path)
+        #return os.listdir(path)
+        subdirs = []
+        for subdir in os.listdir(self.path):
+            subdirs.append(SubDir(self, subdir)
+        return subdirs
 
     def del(self):
-        '''
-        '''
         if self.empty(): 
             os.rmdir(self.path)     
 
 
+class SubDir(object):
+    '''
+    class to handle each subdirectory.
+    Subdirs look like <logDir>/2011-08-11/ANALY_BNL/
+    '''
+    def __init__(self, parent, subdir):
+        self.parent = parent
+        self.subdir = subdir
+        self.path = os.path.join(parent.path, subdir)
+
+    def del(self):
+        os.rmdir(self.path)
