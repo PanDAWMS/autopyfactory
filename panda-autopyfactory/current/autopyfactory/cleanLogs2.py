@@ -227,13 +227,14 @@ class DirMgr(object):
             self.log.warning("__getdirs: Leaving with no output.") 
             return []
         # else (==the base directory exists)
-        dirs = os.listdir(self.basedir)
-        # we only consider dirs looking like <logDir>/2011-08-12/
-        #   -- we need to insert <logDir> at the beginning
-        #   -- there is a file called robot.txt which does not match
-        logDirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")
-        dirs = [os.path.join(self.logDir, d) for d in dirs if logDirRe.match(d)]
-      
+        dirs = []
+        for d in os.listdir(self.basedir)
+            dir_obj = Dir(self.basedir, d)
+            if dir_obj:
+                dirs.append(dir_obj)
+
+        return dirs
+                
  
            
 class Dir(object):
@@ -241,13 +242,19 @@ class Dir(object):
     class to manage each parent directory.
     The parent directory looks like <logDir>/2011-08-12/ 
     '''
+    dirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")
+
+    def __new__(self, basedir, dir):
+        if dirRe.match(dir):
+            return super(Dir, cls).__new__(cls) 
+        else:
+            return None
 
     def __init__(self, basedir, dir):
         '''
         basedir is <logDir>
         dir is like 2011-08-12
         '''
-        self.dirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")
 
         self.basedir = basedir
         self.dir = dir
@@ -265,7 +272,7 @@ class Dir(object):
         returns a datetime object with the creation time.
         Creation time is calculated from the self.dir itself.
         '''
-        match = self.dirRe.match(self.dir)
+        match = dirRe.match(self.dir)
         creation_t = datetime.date(int(match.group(1)), 
                                    int(match.group(2)), 
                                    int(match.group(3)))
