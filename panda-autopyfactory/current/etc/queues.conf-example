@@ -59,18 +59,21 @@
 # sched.trivial.default
 #
 # batchsubmitplugin
+# batchsubmit.condorgt2.submitargs
 # batchsubmit.condorgt2.gridresource
 # batchsubmit.condorgt2.condor_attributes
 # batchsubmit.condorgt2.environ
 # batchsubmit.condorgt2.jobtype
 # batchsubmit.condorgt2.queue
 # batchsubmit.condorgt2.proxy
+# batchsubmit.condorgt5.submitargs
 # batchsubmit.condorgt5.gridresource
 # batchsubmit.condorgt5.condor_attributes
 # batchsubmit.condorgt5.environ
 # batchsubmit.condorgt5.jobtype
 # batchsubmit.condorgt5.queue
 # batchsubmit.condorgt5.proxy
+# batchsubmit.condorcream.submitargs
 # batchsubmit.condorcream.webservice
 # batchsubmit.condorcream.gridresource
 # batchsubmit.condorcream.condor_attributes
@@ -80,6 +83,7 @@
 # batchsubmit.condorcream.port
 # batchsubmit.condorcream.batch
 # batchsubmit.condorcream.proxy
+# batchsubmit.condorec2.submitargs
 # batchsubmit.condorec2.gridresource
 # batchsubmit.condorec2.condor_attributes
 # batchsubmit.condorec2.environ
@@ -89,6 +93,7 @@
 # batchsubmit.condorec2.access_key_id
 # batchsubmit.condorec2.secret_access_key
 # batchsubmit.condorec2.proxy
+# batchsubmit.condorlocal.submitargs
 # batchsubmit.condorlocal.condor_attributes
 # batchsubmit.condorlocal.environ
 # batchsubmit.condorlocal.proxy
@@ -278,6 +283,13 @@
 
 # batchsubmit.condorgt2.gridresource = name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor)
 #
+# batchsubmit.condorgt2.submitargs = list of command line input options
+#               to be included in the submission command *verbatim*
+#               e.g. 
+#                   batchsubmit.condorgt2.submitargs = -remote my_schedd 
+#               will drive into a command like
+#                   condor_submit -remote my_schedd submit.jdl
+#
 # batchsubmit.condorgt2.condor_attributes = list of condor attributes, 
 #               splited by comma, 
 #               to be included in the condor submit file *verbatim*
@@ -314,6 +326,13 @@
 
 # batchsubmit.condorgt5.gridresource = name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor)
 #
+# batchsubmit.condorgt5.submitargs = list of command line input options
+#               to be included in the submission command *verbatim*
+#               e.g. 
+#                   batchsubmit.condorgt2.submitargs = -remote my_schedd 
+#               will drive into a command like
+#                   condor_submit -remote my_schedd submit.jdl
+#
 # batchsubmit.condorgt5.condor_attributes = list of condor attributes, 
 #               splited by comma, 
 #               to be included in the condor submit file *verbatim*
@@ -349,6 +368,13 @@
 #  --------------------------------------------------------------------
 
 # batchsubmit.condorcream.webservice = web service address (e.g. ce04.esc.qmul.ac.uk:8443/ce-cream/services/CREAM2)
+#
+# batchsubmit.condorcream.submitargs = list of command line input options
+#               to be included in the submission command *verbatim*
+#               e.g. 
+#                   batchsubmit.condorgt2.submitargs = -remote my_schedd 
+#               will drive into a command like
+#                   condor_submit -remote my_schedd submit.jdl
 #
 # batchsubmit.condorcream.condor_attributes = list of condor attributes, 
 #               splited by comma, 
@@ -393,6 +419,13 @@
 
 # batchsubmit.condorec2.gridresource = ec2 service's URL (e.g. https://ec2.amazonaws.com/ )
 #
+# batchsubmit.condorec2.submitargs = list of command line input options
+#               to be included in the submission command *verbatim*
+#               e.g. 
+#                   batchsubmit.condorgt2.submitargs = -remote my_schedd 
+#               will drive into a command like
+#                   condor_submit -remote my_schedd submit.jdl
+#
 # batchsubmit.condorec2.condor_attributes list of condor attributes, 
 #               splited by comma, 
 #               to be included in the condor submit file *verbatim*
@@ -423,6 +456,13 @@
 #       Configuration when batchsubmitplugin is condorlocal
 #  --------------------------------------------------------------------
 
+# batchsubmit.condorlocal.submitargs = list of command line input options
+#               to be included in the submission command *verbatim*
+#               e.g. 
+#                   batchsubmit.condorgt2.submitargs = -remote my_schedd 
+#               will drive into a command like
+#                   condor_submit -remote my_schedd submit.jdl
+#
 # batchsubmit.condorlocal.condor_attributes = list of condor attributes, 
 #               splited by comma, 
 #               to be included in the condor submit file *verbatim*
