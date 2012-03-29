@@ -78,7 +78,6 @@
 # batchsubmit.condorcream.gridresource
 # batchsubmit.condorcream.condor_attributes
 # batchsubmit.condorcream.environ
-# batchsubmit.condorcream.jobtype
 # batchsubmit.condorcream.queue
 # batchsubmit.condorcream.port
 # batchsubmit.condorcream.batch
@@ -397,8 +396,6 @@
 #               to be included in the condor attribute environment *verbatim*
 #               Therefore, the format should be env1=var1 env2=var2 envN=varN
 #               split by whitespaces.
-#
-# batchsubmit.condorcream.jobtype = type of job for the globusrsl directive 
 #
 # batchsubmit.condorcream.queue = queue within the local batch system (e.g. short)
 #
