@@ -63,22 +63,86 @@
 # batchsubmit.condorgt2.gridresource
 # batchsubmit.condorgt2.condor_attributes
 # batchsubmit.condorgt2.environ
-# batchsubmit.condorgt2.jobtype
-# batchsubmit.condorgt2.queue
 # batchsubmit.condorgt2.proxy
+
+# rsl.gram2.arguments
+# rsl.gram2.count
+# rsl.gram2.directory
+# rsl.gram2.dryRun
+# rsl.gram2.environment
+# rsl.gram2.executable
+# rsl.gram2.gramMyJob
+# rsl.gram2.hostCount
+# rsl.gram2.jobType
+# rsl.gram2.maxCpuTime
+# rsl.gram2.maxMemory
+# rsl.gram2.maxTime
+# rsl.gram2.maxWallTime
+# rsl.gram2.minMemory
+# rsl.gram2.project
+# rsl.gram2.queue
+# rsl.gram2.remote_io_url
+# rsl.gram2.restart
+# rsl.gram2.save_state
+# rsl.gram2.stderr
+# rsl.gram2.stderr_position
+# rsl.gram2.stdin
+# rsl.gram2.stdout
+# rsl.gram2.stdout_position
+# rsl.gram2.two_phase
+# batchsubmit.condorgt2.globusrsl
+
 # batchsubmit.condorgt5.submitargs
 # batchsubmit.condorgt5.gridresource
 # batchsubmit.condorgt5.condor_attributes
 # batchsubmit.condorgt5.environ
-# batchsubmit.condorgt5.jobtype
-# batchsubmit.condorgt5.queue
 # batchsubmit.condorgt5.proxy
+
+# rsl.gram5.arguments
+# rsl.gram5.count
+# rsl.gram5.directory
+# rsl.gram5.dry_run
+# rsl.gram5.environment
+# rsl.gram5.executable
+# rsl.gram5.file_clean_up
+# rsl.gram5.file_stage_in
+# rsl.gram5.file_stage_in_shared
+# rsl.gram5.file_stage_out
+# rsl.gram5.gass_cache
+# rsl.gram5.gram_my_job
+# rsl.gram5.host_count
+# rsl.gram5.job_type
+# rsl.gram5.library_path
+# rsl.gram5.loglevel
+# rsl.gram5.logpattern
+# rsl.gram5.max_cpu_time
+# rsl.gram5.max_memory
+# rsl.gram5.max_time
+# rsl.gram5.max_wall_time
+# rsl.gram5.min_memory
+# rsl.gram5.project
+# rsl.gram5.proxy_timeout
+# rsl.gram5.queue
+# rsl.gram5.remote_io_url
+# rsl.gram5.restart
+# rsl.gram5.rsl_substitution
+# rsl.gram5.savejobdescription
+# rsl.gram5.save_state
+# rsl.gram5.scratch_dir
+# rsl.gram5.stderr
+# rsl.gram5.stderr_position
+# rsl.gram5.stdin
+# rsl.gram5.stdout
+# rsl.gram5.stdout_position
+# rsl.gram5.two_phase
+# rsl.gram5.username
+# batchsubmit.condorgt5.globusrsl
+
 # batchsubmit.condorcream.submitargs
 # batchsubmit.condorcream.webservice
 # batchsubmit.condorcream.gridresource
 # batchsubmit.condorcream.condor_attributes
 # batchsubmit.condorcream.environ
-# batchsubmit.condorcream.jobtype
 # batchsubmit.condorcream.queue
 # batchsubmit.condorcream.port
 # batchsubmit.condorcream.batch
@@ -312,13 +376,54 @@
 #               Therefore, the format should be env1=var1 env2=var2 envN=varN
 #               split by whitespaces.
 #
-# batchsubmit.condorgt2.jobtype = type of job for the globusrsl directive 
-#
-# batchsubmit.condorgt2.queue = queue within the local batch system (e.g. short)
-#
 # batchsubmit.condorgt2.proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
 #               (See etc/proxy.conf)
 #               None if no automatic proxy renewal is desired.
+#
+
+#  --------------------------------------------------------------------
+#               The following are GRAM2 RSL variables. 
+#               They are just used to build batchsubmit.condorgt5.globusrsl 
+#               (if needed)
+#               The globusrsl directive in the condor submission file looks like
+#
+#                   globusrsl=(jobtype=single)(queue=short)
+#
+#               Documentation can be found here:
+#
+#                       http://www.globus.org/toolkit/docs/2.4/gram/gram_rsl_parameters.html
+#
+#  --------------------------------------------------------------------
+#
+# rsl.gram2.arguments
+# rsl.gram2.count
+# rsl.gram2.directory
+# rsl.gram2.dryRun
+# rsl.gram2.environment
+# rsl.gram2.executable
+# rsl.gram2.gramMyJob
+# rsl.gram2.hostCount
+# rsl.gram2.jobType
+# rsl.gram2.maxCpuTime
+# rsl.gram2.maxMemory
+# rsl.gram2.maxTime
+# rsl.gram2.maxWallTime
+# rsl.gram2.minMemory
+# rsl.gram2.project
+# rsl.gram2.queue
+# rsl.gram2.remote_io_url
+# rsl.gram2.restart
+# rsl.gram2.save_state
+# rsl.gram2.stderr
+# rsl.gram2.stderr_position
+# rsl.gram2.stdin
+# rsl.gram2.stdout
+# rsl.gram2.stdout_position
+# rsl.gram2.two_phase
+#
+# batchsubmit.condorgt2.globusrsl = GRAM RSL directive.
+#               built from other vars using interpolation
+
 
 #  --------------------------------------------------------------------
 #       Configuration when batchsubmitplugin is condorgt5
@@ -355,13 +460,65 @@
 #               Therefore, the format should be env1=var1 env2=var2 envN=varN
 #               split by whitespaces.
 #
-# batchsubmit.condorgt5.jobtype = type of job for the globusrsl directive 
-#
-# batchsubmit.condorgt5.queue = queue within the local batch system (e.g. short)
-#
 # batchsubmit.condorgt5.proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
 #               (See etc/proxy.conf)
 #               None if no automatic proxy renewal is desired.
+
+#  --------------------------------------------------------------------
+#               The following are GRAM2 RSL variables. 
+#               They are just used to build batchsubmit.condorgt5.globusrsl 
+#               (if needed)
+#               The globusrsl directive in the condor submission file looks like
+#
+#                   globusrsl=(jobtype=single)(queue=short)
+#
+#               Documentation can be found here:
+#
+#                      http://www.globus.org/toolkit/docs/5.2/5.2.0/gram5/user/#gram5-user-rsl 
+#
+#  --------------------------------------------------------------------
+#
+# rsl.gram5.arguments
+# rsl.gram5.count
+# rsl.gram5.directory
+# rsl.gram5.dry_run
+# rsl.gram5.environment
+# rsl.gram5.executable
+# rsl.gram5.file_clean_up
+# rsl.gram5.file_stage_in
+# rsl.gram5.file_stage_in_shared
+# rsl.gram5.file_stage_out
+# rsl.gram5.gass_cache
+# rsl.gram5.gram_my_job
+# rsl.gram5.host_count
+# rsl.gram5.job_type
+# rsl.gram5.library_path
+# rsl.gram5.loglevel
+# rsl.gram5.logpattern
+# rsl.gram5.max_cpu_time
+# rsl.gram5.max_memory
+# rsl.gram5.max_time
+# rsl.gram5.max_wall_time
+# rsl.gram5.min_memory
+# rsl.gram5.project
+# rsl.gram5.proxy_timeout
+# rsl.gram5.queue
+# rsl.gram5.remote_io_url
+# rsl.gram5.restart
+# rsl.gram5.rsl_substitution
+# rsl.gram5.savejobdescription
+# rsl.gram5.save_state
+# rsl.gram5.scratch_dir
+# rsl.gram5.stderr
+# rsl.gram5.stderr_position
+# rsl.gram5.stdin
+# rsl.gram5.stdout
+# rsl.gram5.stdout_position
+# rsl.gram5.two_phase
+# rsl.gram5.username
+#
+# batchsubmit.condorgt5.globusrsl = GRAM RSL directive.
+#               built from other vars using interpolation
 
 #  --------------------------------------------------------------------
 #       Configuration when batchsubmitplugin is condorcream
@@ -397,8 +554,6 @@
 #               to be included in the condor attribute environment *verbatim*
 #               Therefore, the format should be env1=var1 env2=var2 envN=varN
 #               split by whitespaces.
-#
-# batchsubmit.condorcream.jobtype = type of job for the globusrsl directive 
 #
 # batchsubmit.condorcream.queue = queue within the local batch system (e.g. short)
 #
@@ -566,10 +721,80 @@ batchsubmit.condorcream.proxy = None
 batchsubmit.condorec2.proxy = None
 batchsubmit.condorlocal.proxy = None
 
-# jobtype defaults to "single"
-batchsubmit.condorgt2.jobtype = single
-batchsubmit.condorgt5.jobtype = single
-batchsubmit.condorcream.jobtype = single
+# gram and globusrsl
+# globusrsl directives are constructed from the gram variables using interpolation.
+# Add (or remove) as many fields as needed, 
+# using the regular interpolation format %(<whatever>)s
+# Only two are used by default, just as an example.
+# Also, custom made field can be added if needed.
+
+#rsl.gram2.arguments
+#rsl.gram2.count
+#rsl.gram2.directory
+#rsl.gram2.dryRun
+#rsl.gram2.environment
+#rsl.gram2.executable
+#rsl.gram2.gramMyJob
+#rsl.gram2.hostCount
+rsl.gram2.jobType = single
+#rsl.gram2.maxCpuTime
+#rsl.gram2.maxMemory
+#rsl.gram2.maxTime
+#rsl.gram2.maxWallTime
+#rsl.gram2.minMemory
+#rsl.gram2.project
+rsl.gram2.queue = short
+#rsl.gram2.remote_io_url
+#rsl.gram2.restart
+#rsl.gram2.save_state
+#rsl.gram2.stderr
+#rsl.gram2.stderr_position
+#rsl.gram2.stdin
+#rsl.gram2.stdout
+#rsl.gram2.stdout_position
+#rsl.gram2.two_phase
+batchsubmit.condorgt2.globusrsl = (%(rsl.gram2.jobType)s)(%(rsl.gram2.queue)s)
+
+#rsl.gram5.arguments
+#rsl.gram5.count
+#rsl.gram5.directory
+#rsl.gram5.dry_run
+#rsl.gram5.environment
+#rsl.gram5.executable
+#rsl.gram5.file_clean_up
+#rsl.gram5.file_stage_in
+#rsl.gram5.file_stage_in_shared
+#rsl.gram5.file_stage_out
+#rsl.gram5.gass_cache
+#rsl.gram5.gram_my_job
+#rsl.gram5.host_count
+rsl.gram5.job_type = single
+#rsl.gram5.library_path
+#rsl.gram5.loglevel
+#rsl.gram5.logpattern
+#rsl.gram5.max_cpu_time
+#rsl.gram5.max_memory
+#rsl.gram5.max_time
+#rsl.gram5.max_wall_time
+#rsl.gram5.min_memory
+#rsl.gram5.project
+#rsl.gram5.proxy_timeout
+rsl.gram5.queue = single
+#rsl.gram5.remote_io_url
+#rsl.gram5.restart
+#rsl.gram5.rsl_substitution
+#rsl.gram5.savejobdescription
+#rsl.gram5.save_state
+#rsl.gram5.scratch_dir
+#rsl.gram5.stderr
+#rsl.gram5.stderr_position
+#rsl.gram5.stdin
+#rsl.gram5.stdout
+#rsl.gram5.stdout_position
+#rsl.gram5.two_phase
+#rsl.gram5.username
+batchsubmit.condorgt5.globusrsl = (%(rsl.gram5.job_type)s)(%(rsl.gram5.queue)s)
+
 
 batchsubmit.condorgt2.condor_attributes = periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30),periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
 
