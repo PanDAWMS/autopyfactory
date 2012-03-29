@@ -46,7 +46,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         '''
 
         try:
-            self.siteid = qcl.generic_get(self.apfqname, 'wmsqueue', logger=self.log)
+            self.wmsqueue = qcl.generic_get(self.apfqname, 'wmsqueue', logger=self.log)
 
             self.executable = qcl.generic_get(self.apfqname, 'executable', logger=self.log)
             self.factoryadminemail = self.fcl.generic_get('Factory', 'factoryAdminEmail', logger=self.log)
@@ -62,6 +62,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             self.factoryid = self.fcl.generic_get('Factory', 'factoryId', logger=self.log)
             self.monitorurl = self.fcl.generic_get('Factory', 'monitorURL', logger=self.log)
             self.factoryuser = self.fcl.generic_get('Factory', 'factoryUser', logger=self.log)
+            self.submitargs = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.submitargs', logger=self.log)
             self.environ = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.environ', logger=self.log)
             self.condor_attributes = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.condor_attributes', logger=self.log)
             self.batchqueue = qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
@@ -180,13 +181,19 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
 
         self.log.debug('__submit: Starting.')
 
-        self.log.info('Attempt to submit %d pilots for queue %s' %(n, self.siteid))
+        self.log.info('Attempt to submit %d pilots for queue %s' %(n, self.wmsqueue))
 
-        (exitStatus, output) = commands.getstatusoutput('condor_submit -verbose ' + jsdfile)
+        cmd = 'condor_submit '
+        if self.submitargs:
+            cmd += self.submitargs
+        cmd += ' ' + jsdfile
+        self.log.info('__submit: command = %s' %cmd)
+
+        (exitStatus, output) = commands.getstatusoutput(cmd)
         if exitStatus != 0:
-            self.log.error('condor_submit command for %s failed (status %d): %s', self.siteid, exitStatus, output)
+            self.log.error('__submit: condor_submit command for %s failed (status %d): %s', self.wmsqueue, exitStatus, output)
         else:
-            self.log.info('condor_submit command for %s succeeded', self.siteid)
+            self.log.info('__submit: condor_submit command for %s succeeded', self.wmsqueue)
         st, out = exitStatus, output
 
 
