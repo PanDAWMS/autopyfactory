@@ -566,7 +566,6 @@ batchsubmit.condorlocal.proxy = None
 # jobtype defaults to "single"
 batchsubmit.condorgt2.jobtype = single
 batchsubmit.condorgt5.jobtype = single
-batchsubmit.condorcream.jobtype = single
 
 batchsubmit.condorgt2.condor_attributes = periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30),periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
 
