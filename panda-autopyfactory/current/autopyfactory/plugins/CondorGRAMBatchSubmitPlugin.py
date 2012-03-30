@@ -38,7 +38,7 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         except:
             return False
 
-    def _globusrsl(self):
+    def _globusrsl(self, qcl):
         '''
         tries to build globusrsl line.
         Entries have been renamed by the subplugins (e.g. CondorGT2), with new patterns:
