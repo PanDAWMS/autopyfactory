@@ -33,7 +33,7 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         if not valid:
             return False
         try:
-            self.globus = self._globusrsl()
+            self.globus = self._globusrsl(qcl)
             return True
         except:
             return False
@@ -57,15 +57,15 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
                 opt != 'batchsubmit.condorgram.gram.globusrsladd':
                     optlist.append(opt)
         
-        globusrsl = q.generic_get(self.apfqname, 'batchsubmit.condorgram.gram.globusrsl', logger=self.log)
-        globusrsladd = q.generic_get(self.apfqname, 'batchsubmit.condorgram.gram.globusrsladd', logger=self.log)
+        globusrsl = qcl.generic_get(self.apfqname, 'batchsubmit.condorgram.gram.globusrsl', logger=self.log)
+        globusrsladd = qcl.generic_get(self.apfqname, 'batchsubmit.condorgram.gram.globusrsladd', logger=self.log)
 
         if globusrsl:
             globus = globusrsl
         else:
                 for opt in optlist:
                     key = opt.split('batchsubmit.condorgram.gram.')[1]
-                    value = q.generic_get(self.apfqname, opt, logger=self.log)
+                    value = qcl.generic_get(self.apfqname, opt, logger=self.log)
                     if value != "":
                             globus += '(%s=%s)' %(key, value)
         
