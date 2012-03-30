@@ -48,7 +48,7 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         '''
         self.log.debug('_globusrsl: Starting.')
 
-        globus = None
+        globus = "" 
 
         optlist = []
         for opt in qcl.options(self.apfqname):
