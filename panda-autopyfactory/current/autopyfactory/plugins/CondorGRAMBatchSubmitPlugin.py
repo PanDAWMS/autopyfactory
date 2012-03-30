@@ -33,11 +33,45 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         if not valid:
             return False
         try:
-            self.jobtype = qcl.generic_get(self.apfqname, 'batchsubmit.condorgram.jobtype', default_value='single', logger=self.log)
-            self.queue = qcl.generic_get(self.apfqname, 'batchsubmit.condorgram.queue', logger=self.log)
+            self.globus = self._globusrsl()
             return True
         except:
             return False
+
+    def _globusrsl(self):
+        '''
+        tries to build globusrsl line.
+        Entries have been renamed by the subplugins (e.g. CondorGT2), with new patterns:
+            -- batchsubmit.condorgram.gram.XYZ
+            -- batchsubmit.condorgram.gram.globusrsl
+            -- batchsubmit.condorgram.gram.globusrsladd
+        '''
+
+        self.globus = None
+
+        optlist = []
+        for opt in qcl.options(self.apfqname):
+            if opt.startswith('batchsubmit.condorgram.gram.') and\
+                opt != 'batchsubmit.condorgram.gram.globusrsl' and\
+                opt != 'batchsubmit.condorgram.gram.globusrsladd':
+                    optlist.append(opt)
+        
+        globusrsl = q.generic_get(self.apfqname, 'batchsubmit.condorgram.gram.globusrsl')
+        globusrsladd = q.generic_get(self.apfqname, 'batchsubmit.condorgram.gram.globusrsladd')
+
+        if globusrsl:
+            globus = globusrsl
+        else:
+                for opt in lopts:
+                    key = opt.split('batchsubmit.condorgram.gram.')[1]
+                    value = q.generic_get(self.apfqname, opt)
+                    if value != "":
+                            globus += '(%s=%s)' %(key, value)
+        
+        if globusrsladd:
+            globus += globusrsladd
+        
+        return globus
          
     def _addJSD(self):
         '''
@@ -47,10 +81,12 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         self.log.debug('CondorGRAMBatchSubmitPlugin.addJSD: Starting.')
    
         # -- globusrsl -- 
-        globusrsl = "globusrsl=(jobtype=%s)" %self.jobtype
-        if self.queue:
-             globusrsl += "(queue=%s)" % self.queue
-        self.JSD.add(globusrsl)
+        if self.globus:
+            self.JSD.add('globusrsl=%s' %self.globus)
+        ###globusrsl = "globusrsl=(jobtype=%s)" %self.jobtype
+        ###if self.queue:
+        ###     globusrsl += "(queue=%s)" % self.queue
+        ###self.JSD.add(globusrsl)
 
         # -- fixed stuffs --
         self.JSD.add('copy_to_spool = false')
