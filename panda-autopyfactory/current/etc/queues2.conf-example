@@ -90,8 +90,8 @@
 # globusrsl.gram2.stdout
 # globusrsl.gram2.stdout_position
 # globusrsl.gram2.two_phase
-# batchsubmit.condorgt2.globusrsl
-# batchsubmit.condorgt2.globusrsladd
+# globusrsl.gram2.globusrsl
+# globusrsl.gram2.globusrsladd
 
 # batchsubmit.condorgt5.submitargs
 # batchsubmit.condorgt5.gridresource
@@ -137,8 +137,8 @@
 # globusrsl.gram5.stdout_position
 # globusrsl.gram5.two_phase
 # globusrsl.gram5.username
-# batchsubmit.condorgt5.globusrsl
-# batchsubmit.condorgt5.globusrsladd
+# globusrsl.gram5.globusrsl
+# globusrsl.gram5.globusrsladd
 
 # batchsubmit.condorcream.submitargs
 # batchsubmit.condorcream.webservice
@@ -422,17 +422,17 @@
 # globusrsl.gram2.stdout_position
 # globusrsl.gram2.two_phase
 #
-# batchsubmit.condorgt2.globusrsl = GRAM RSL directive.
+# globusrsl.gram2.globusrsl = GRAM RSL directive.
 #               If this variable is not setup, then it will be built
 #               programmatically from all non empty globusrsl.gram2.XYZ variables.
 #               If this variable is setup, then its value
 #               will be taken *verbatim*, and all possible values
 #               for globusrsl.gram2.XYZ variables will be ignored. 
 #
-# batchsubmit.condorgt2.globusrsladd = custom fields to be added
+# globusrsl.gram2.globusrsladd = custom fields to be added
 #               *verbatim* to the GRAM RSL directive,
 #               after it has been built either from 
-#               batchsubmit.condorgt2.globusrsl value
+#               globusrsl.gram2.globusrsl value
 #               or from all globusrsl.gram2.XYZ variables.
 #               e.g. (condorsubmit=('+AccountingGroup' '\"group_atlastest.usatlas1\"')('+Requirements' 'True'))
 
@@ -528,17 +528,17 @@
 # globusrsl.gram5.two_phase
 # globusrsl.gram5.username
 #
-# batchsubmit.condorgt5.globusrsl = GRAM RSL directive.
+# globusrsl.gram5.globusrsl = GRAM RSL directive.
 #               If this variable is not setup, then it will be built
 #               programmatically from all non empty globusrsl.gram5.XYZ variables.
 #               If this variable is setup, then its value
 #               will be taken *verbatim*, and all possible values
 #               for globusrsl.gram5.XYZ variables will be ignored. 
 #
-# batchsubmit.condorgt5.globusrsladd = custom fields to be added
+# globusrsl.gram5.globusrsladd = custom fields to be added
 #               *verbatim* to the GRAM RSL directive,
 #               after it has been built either from 
-#               batchsubmit.condorgt5.globusrsl value
+#               globusrsl.gram5.globusrsl value
 #               or from all globusrsl.gram5.XYZ variables.
 #               e.g. (condorsubmit=('+AccountingGroup' '\"group_atlastest.usatlas1\"')('+Requirements' 'True'))
 #
