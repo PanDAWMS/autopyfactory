@@ -4,7 +4,9 @@ ChangeLog
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
 
-2012-03-13
+2012-03-30
+
+* Refactored scheduler log cleanup. Now handled in a separate thread, one for entire factory. 
 
 * Added grid and vo queue attributes, and added executable.defaultarguments and executable.arguments 
   interpolation. These changes were to support wrapper.sh, runpilot3.sh, and arbitrary executables in 
@@ -14,7 +16,8 @@ $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 * Made Monitor object a singleton, to avoid repeated timeout delays (during queue initialization) 
   when APF monitor is unresponsive. Now there is a single attempt when single Monitor is initialized. 
 
-* Move to wrapper 0.9.4, which 
+* Move to wrapper 0.9.5, which checks that retrieved tarball is indeed a tarball (and not an HTML error message
+  from a misbehaving HTTP proxy.  
 
 * Fixed logic problem in Activated plugin. Now correctly assuming that Running jobs are no longer
   Activated. 

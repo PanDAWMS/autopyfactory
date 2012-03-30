@@ -3,7 +3,9 @@
 # Quick and dirty local status script
 # Assumes default queues.conf, and that you're using Condor-G for everything. 
 #
-#!/bin/bash
+# John Hover <jhover@bnl.gov>
+#
+#
 apfqueues=`cat /etc/apf/queues.conf | grep "^\[" | tr -d '[]' | grep -v DEFAULT | sort | tr "\n" " "`
 date=`date`
 echo $date
