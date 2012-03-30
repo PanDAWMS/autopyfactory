@@ -14,10 +14,10 @@ import shutil
 import threading
 import time
 
-class CleanCondorLogs(threading.Thread):
+class CleanLogs(threading.Thread):
     '''
     -----------------------------------------------------------------------
-    Class to handle the condor log files removal.
+    Class to handle the log files removal.
     There are several possibilities to decide which files 
     have to be deleted is:
         - basic algorithm is just to remove files older than some 
@@ -31,146 +31,70 @@ class CleanCondorLogs(threading.Thread):
         the interface inherited from Thread `
     -----------------------------------------------------------------------
     '''
-    def __init__(self, apfqueue):
+    def __init__(self, factory):
         '''
         factory is a reference to the Factory object that created
-        the CleanCondorLogs instance
+        the CleanLogs instance
         '''
 
-        self.apfqname = apfqueue.apfqname
-        self.log = logging.getLogger('main.cleancondorlogs[%s]' %self.apfqname)
-        self.log.debug('CleanCondorLogs: Initializing object...')
+        self.log = logging.getLogger('main.cleanlogs')
+        self.log.debug('CleanLogs: Initializing object...')
     
-        self.fcl = apfqueue.fcl
-        self.qcl = apfqueue.qcl
+        self.factory = factory
+        self.fcl = factory.fcl
+        self.qcl = factory.qcl
         self.logDir = self.fcl.get('Factory', 'baseLogDir')
 
         threading.Thread.__init__(self) # init the thread
         self.stopevent = threading.Event()
 
-        self.log.info('CleanCondorLogs: Object initialized.')
+        self.log.info('CleanLogs: Object initialized.')
 
     def run(self):
         '''
         Main loop
         '''
-
         self.log.debug('run: Starting.')
 
         while True:
             try:
                 while not self.stopevent.isSet():
-                    self.__wait_random()
                     self.__process()
                     self.__sleep()
             except Exception, e:
-                self.log.error("Main loop caught exception: %s " % str(e))
+                self.log.error("run: Main loop caught exception: %s " % str(e))
         
         self.log.debug('run: Leaving.')
-
-    def __wait_random(self): 
-        '''
-        wait a random time to prevent all queues to start
-        deleting at the same time. In particular, just after
-        APF is turned on.
-        '''
-        # wait some random time
-        randomsleep = int(random.uniform(0,30) * 60)         
-        time.sleep(randomsleep)
 
     def __process(self):
         '''
         loops over all directories to perform cleaning actions
         '''
 
-        self.log.debug("process: Starting.")
-        
-        entries = self.__getentries()
-        for entry in entries:
-            self.__process_entry(entry)
+        self.log.debug("__process: Starting.")
+
+        dirmgr = DirMgr(self.logDir)
+        dirs = dirmgr.dirs
+        for dir in dirs:
+            self.__processdir(dir)
+        self.log.info("__process: Processed %d directories." % len(dirs))
             
-        self.log.info("cleanLogs: Processed %d directories." % len(entries))
-        self.log.debug("process: Leaving.")
+        self.log.debug("__process: Leaving.")
 
-    def __getentries(self):
-        '''
-        get the list of subdirectories underneath 'baseLogDir'
-        '''
 
-        self.log.debug("__getentries: Starting.")
-
-        if not os.access(self.logDir, os.F_OK):
-            self.log.warning('__getentries: Base log directory %s does not exist - nothing to do',
-                      self.logDir)
-            self.log.warning("__getentries: Leaving with no output.") 
-            return []
-       
-        # if the base directory exists...  
-
-        entries = os.listdir(self.logDir)
-        # sort directories by name (== by creation date)
-        entries.sort()
-
-        self.log.debug("__getentries: Leaving with output %s." %entries) 
-        return entries
-
-    def __process_entry(self, entry):
+    def __processdir(self, dir):
         ''' 
-        processes each directory
+        processes each directory.
+        dir is a Dir object
         ''' 
 
-        self.log.debug("__process_entry: Starting with input %s." %entry)
+        self.log.debug("__processdir: Starting with input %s." %dir)
 
-        logDirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")  # i.e. 2011-08-12
-        logDirMatch = logDirRe.match(entry)
-        if not logDirMatch:
-            # there is an entry robot.txt, which does not match the date format
-            self.log.debug('__process_entry: ignoring entry %s' %entry)
-            return 
+        self.keepdays = KeepDays(self.fcl, self.qcl)
+        dir.rm(self.keepdays)
 
-        then = datetime.date(int(logDirMatch.group(1)), 
-                     int(logDirMatch.group(2)), 
-                     int(logDirMatch.group(3)))
-        # then is the time of the directory, recreated from its name
-        now = datetime.date.today()
-        deltaT = now - then
+        self.log.debug("__processdir: Leaving.")
 
-        # how many days before we delete?
-        maxdays = self.__getmaxdays() 
-
-        if deltaT.days > maxdays:
-            self.log.info("__process_entry: Entry %s is %d days old" % (entry, deltaT.days))
-            entrypath = os.path.join(self.logDir, entry, self.apfqname)
-            # entrypath should look like  <logDir>/2011-08-12/BNL_ITB/
-            if os.path.exists(entrypath):
-                self.log.info("__process_entry: Deleting %s ..." % entrypath)
-                shutil.rmtree(entrypath)
-
-        # now, try to remove the parent directory        
-        try:
-            entrypath = os.path.join(self.logDir, entry)
-            # entrypath should look like  <logDir>/2011-08-12/
-            self.log.info("__process_entry: Trying to delete %s ..." % entrypath)
-            os.rmdir(entrypath)     
-        except:
-            # it only works if the directoy is empty. 
-            pass
-
-        self.log.debug("__process_entry: Leaving.")
-
-    def __getmaxdays(self):
-        '''
-        determines how old (in term of nb of days) 
-        can logs be w/o being removed
-        '''
-
-        self.log.debug("__getmaxdays: Starting.")
-
-        #maxdays = self.qcl.generic_get(self.apfqname, 'cleanlogs.maxdays', 'getint', default_value=7)
-        maxdays = self.qcl.generic_get(self.apfqname, 'cleanlogs.keepdays', 'getint')
-
-        self.log.debug("__getmaxdays: Leaving with output %s." %maxdays)
-        return maxdays
 
     def __sleep(self):
         '''
@@ -181,5 +105,184 @@ class CleanCondorLogs(threading.Thread):
         sleeptime = 24 * 60 * 60 
         time.sleep(sleeptime) 
 
-           
 
+# =============================================================
+
+class KeepDays(object):
+
+    def __init__(self, fcl, qcl):
+
+        self.log = logging.getLogger('main.keepdays')
+
+        self.fcl = fcl
+        self.qcl = qcl
+        self.__inspect()
+        
+        self.log.info('KeepDays: Object initialized.')
+
+    def __inspect(self):
+
+        self.log.debug('__inspect: Starting.')
+
+        self.factory_keepdays = self.fcl.generic_get('Factory', 'cleanlogs.keepdays', 'getint')
+        self.queues_keepdays = {}
+        for apfqname in self.qcl.sections():
+            keepdays = self.qcl.generic_get(apfqname, 'cleanlogs.keepdays', 'getint')
+            self.queues_keepdays[apfqname] = keepdays
+
+        self.log.debug('__inspect: Leaving.')
+
+    def get(self, apfqname):
+        return self.queues_keepdays.get(apfqname, self.factory_keepdays) 
+  
+
+class DirMgr(object):
+    '''
+    class to create a list of Dir objects
+    '''
+    def __init__(self, basedir):
+
+        self.log = logging.getLogger('main.DirMgr')
+
+        self.basedir = basedir
+        self.dirs = self.getdirs() 
+
+        self.log.info('DirMgr: Object initialized.')
+
+    def getdirs(self):
+ 
+        if not os.access(self.basedir, os.F_OK):
+            self.log.warning('getdirs: Base log directory %s does not exist - nothing to do',
+                      self.basedir)
+            self.log.warning("getdirs: Leaving with no output.") 
+            return []
+        # else (==the base directory exists)
+        dirs = []
+        for d in os.listdir(self.basedir):
+            dir_obj = Dir(self.basedir, d)
+            if dir_obj:
+                dirs.append(dir_obj)
+
+        self.log.debug('getdirs: Leaving return %s dirs' %len(dirs))
+        return dirs
+                
+           
+class Dir(object):
+    '''
+    class to manage each parent directory.
+    The parent directory looks like <logDir>/2011-08-12/ 
+    '''
+
+    def __new__(cls, basedir, dir):
+        dirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")
+        if dirRe.match(dir):
+            return super(Dir, cls).__new__(cls) 
+
+    def __init__(self, basedir, dir):
+        '''
+        basedir is <logDir>
+        dir is like 2011-08-12
+        '''
+
+        self.log = logging.getLogger('main.dir')
+
+        self.basedir = basedir
+        self.dir = dir
+        self.path = os.path.join(basedir, dir)
+        self.creation_t = self.creation_t() 
+        self.delta_t = self.delta_t() 
+
+        self.log.info('Dir: Object initialized.')
+
+    def empty(self):
+        return os.listdir(self.path) == []
+
+    def creation_t(self):
+        '''
+        returns a datetime object with the creation time.
+        Creation time is calculated from the self.dir itself.
+        '''
+        fields = self.dir.split('-')
+        creation_t = datetime.date(int(fields[0]),
+                                   int(fields[1]),
+                                   int(fields[2]))
+        return creation_t
+
+
+    def delta_t(self):
+        current_t = datetime.date.today()
+        return current_t - self.creation_t 
+
+    def subdirs(self):
+        ''' 
+        returns the list of subdirs 
+        ''' 
+        subdirs = []
+        for subdir in os.listdir(self.path):
+            subdirs.append(SubDir(self, subdir))
+        return subdirs 
+
+    def rm(self, keepdays):
+        '''
+        tries to delete the entire subtree.
+        First orders each subdir to delete itself.
+        After that, if Dir is empty, 
+        it deletes itself.
+        '''
+
+        self.log.debug('rm: Starting.')
+
+        self.rm_subdirs(keepdays)
+        if self.empty(): 
+            os.rmdir(self.path)     
+
+        self.log.debug('rm: Leaving.')
+
+    def rm_subdirs(self, keepdays):
+        '''
+        tries to remove as many subdirs as possible
+        keepdays is a KeepDays object
+        '''
+        
+        self.log.debug('rm_subdirs: Starting.')
+
+        for subdir in self.subdirs():
+            subdir.rm(keepdays)
+
+        self.log.debug('rm_subdirs: Leaving.')
+
+
+class SubDir(object):
+    '''
+    class to handle each subdirectory.
+    Subdirs look like <logDir>/2011-08-11/ANALY_BNL/
+    '''
+    def __init__(self, parent, subdir):
+        '''
+        parent is a Dir object
+        subdir is the APFQname
+        '''
+
+        self.log = logging.getLogger('main.subdir')
+
+        self.parent = parent
+        self.subdir = subdir
+        self.path = os.path.join(parent.path, subdir)
+
+        self.log.info('SubDir: Object initialized.')
+
+    def rm(self, keepdays):
+        ''' 
+        tries to delete a subdirectory,
+        but only if the timing of the parent is older than
+        what keepdays object has to say about it
+        ''' 
+        self.log.debug('rm: Starting.')
+
+        delta_days = self.parent.delta_t.days
+        if delta_days > keepdays.get(self.subdir):
+            if os.path.exists(self.path):
+                self.log.info("rm: Deleting subdirectory %s ..." % self.path)
+                shutil.rmtree(self.path)
+
+        self.log.debug('rm: Leaving.')
