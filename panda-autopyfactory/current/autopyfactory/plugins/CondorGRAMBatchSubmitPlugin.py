@@ -57,15 +57,15 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
                 opt != 'batchsubmit.condorgram.gram.globusrsladd':
                     optlist.append(opt)
         
-        globusrsl = q.generic_get(self.apfqname, 'batchsubmit.condorgram.gram.globusrsl')
-        globusrsladd = q.generic_get(self.apfqname, 'batchsubmit.condorgram.gram.globusrsladd')
+        globusrsl = q.generic_get(self.apfqname, 'batchsubmit.condorgram.gram.globusrsl', logger=self.log)
+        globusrsladd = q.generic_get(self.apfqname, 'batchsubmit.condorgram.gram.globusrsladd', logger=self.log)
 
         if globusrsl:
             globus = globusrsl
         else:
-                for opt in lopts:
+                for opt in optlist:
                     key = opt.split('batchsubmit.condorgram.gram.')[1]
-                    value = q.generic_get(self.apfqname, opt)
+                    value = q.generic_get(self.apfqname, opt, logger=self.log)
                     if value != "":
                             globus += '(%s=%s)' %(key, value)
         
