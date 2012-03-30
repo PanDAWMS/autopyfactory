@@ -65,31 +65,31 @@
 # batchsubmit.condorgt2.environ
 # batchsubmit.condorgt2.proxy
 
-# rsl.gram2.arguments
-# rsl.gram2.count
-# rsl.gram2.directory
-# rsl.gram2.dryRun
-# rsl.gram2.environment
-# rsl.gram2.executable
-# rsl.gram2.gramMyJob
-# rsl.gram2.hostCount
-# rsl.gram2.jobType
-# rsl.gram2.maxCpuTime
-# rsl.gram2.maxMemory
-# rsl.gram2.maxTime
-# rsl.gram2.maxWallTime
-# rsl.gram2.minMemory
-# rsl.gram2.project
-# rsl.gram2.queue
-# rsl.gram2.remote_io_url
-# rsl.gram2.restart
-# rsl.gram2.save_state
-# rsl.gram2.stderr
-# rsl.gram2.stderr_position
-# rsl.gram2.stdin
-# rsl.gram2.stdout
-# rsl.gram2.stdout_position
-# rsl.gram2.two_phase
+# globusrsl.gram2.arguments
+# globusrsl.gram2.count
+# globusrsl.gram2.directory
+# globusrsl.gram2.dryRun
+# globusrsl.gram2.environment
+# globusrsl.gram2.executable
+# globusrsl.gram2.gramMyJob
+# globusrsl.gram2.hostCount
+# globusrsl.gram2.jobType
+# globusrsl.gram2.maxCpuTime
+# globusrsl.gram2.maxMemory
+# globusrsl.gram2.maxTime
+# globusrsl.gram2.maxWallTime
+# globusrsl.gram2.minMemory
+# globusrsl.gram2.project
+# globusrsl.gram2.queue
+# globusrsl.gram2.remote_io_url
+# globusrsl.gram2.restart
+# globusrsl.gram2.save_state
+# globusrsl.gram2.stderr
+# globusrsl.gram2.stderr_position
+# globusrsl.gram2.stdin
+# globusrsl.gram2.stdout
+# globusrsl.gram2.stdout_position
+# globusrsl.gram2.two_phase
 # batchsubmit.condorgt2.globusrsl
 # batchsubmit.condorgt2.globusrsladd
 
@@ -99,44 +99,44 @@
 # batchsubmit.condorgt5.environ
 # batchsubmit.condorgt5.proxy
 
-# rsl.gram5.arguments
-# rsl.gram5.count
-# rsl.gram5.directory
-# rsl.gram5.dry_run
-# rsl.gram5.environment
-# rsl.gram5.executable
-# rsl.gram5.file_clean_up
-# rsl.gram5.file_stage_in
-# rsl.gram5.file_stage_in_shared
-# rsl.gram5.file_stage_out
-# rsl.gram5.gass_cache
-# rsl.gram5.gram_my_job
-# rsl.gram5.host_count
-# rsl.gram5.job_type
-# rsl.gram5.library_path
-# rsl.gram5.loglevel
-# rsl.gram5.logpattern
-# rsl.gram5.max_cpu_time
-# rsl.gram5.max_memory
-# rsl.gram5.max_time
-# rsl.gram5.max_wall_time
-# rsl.gram5.min_memory
-# rsl.gram5.project
-# rsl.gram5.proxy_timeout
-# rsl.gram5.queue
-# rsl.gram5.remote_io_url
-# rsl.gram5.restart
-# rsl.gram5.rsl_substitution
-# rsl.gram5.savejobdescription
-# rsl.gram5.save_state
-# rsl.gram5.scratch_dir
-# rsl.gram5.stderr
-# rsl.gram5.stderr_position
-# rsl.gram5.stdin
-# rsl.gram5.stdout
-# rsl.gram5.stdout_position
-# rsl.gram5.two_phase
-# rsl.gram5.username
+# globusrsl.gram5.arguments
+# globusrsl.gram5.count
+# globusrsl.gram5.directory
+# globusrsl.gram5.dry_run
+# globusrsl.gram5.environment
+# globusrsl.gram5.executable
+# globusrsl.gram5.file_clean_up
+# globusrsl.gram5.file_stage_in
+# globusrsl.gram5.file_stage_in_shared
+# globusrsl.gram5.file_stage_out
+# globusrsl.gram5.gass_cache
+# globusrsl.gram5.gram_my_job
+# globusrsl.gram5.host_count
+# globusrsl.gram5.job_type
+# globusrsl.gram5.library_path
+# globusrsl.gram5.loglevel
+# globusrsl.gram5.logpattern
+# globusrsl.gram5.max_cpu_time
+# globusrsl.gram5.max_memory
+# globusrsl.gram5.max_time
+# globusrsl.gram5.max_wall_time
+# globusrsl.gram5.min_memory
+# globusrsl.gram5.project
+# globusrsl.gram5.proxy_timeout
+# globusrsl.gram5.queue
+# globusrsl.gram5.remote_io_url
+# globusrsl.gram5.restart
+# globusrsl.gram5.rsl_substitution
+# globusrsl.gram5.savejobdescription
+# globusrsl.gram5.save_state
+# globusrsl.gram5.scratch_dir
+# globusrsl.gram5.stderr
+# globusrsl.gram5.stderr_position
+# globusrsl.gram5.stdin
+# globusrsl.gram5.stdout
+# globusrsl.gram5.stdout_position
+# globusrsl.gram5.two_phase
+# globusrsl.gram5.username
 # batchsubmit.condorgt5.globusrsl
 # batchsubmit.condorgt5.globusrsladd
 
@@ -384,6 +384,7 @@
 #
 
 #  --------------------------------------------------------------------
+#
 #               The following are GRAM2 RSL variables. 
 #               They are just used to build batchsubmit.condorgt2.globusrsl 
 #               (if needed)
@@ -395,46 +396,44 @@
 #
 #                       http://www.globus.org/toolkit/docs/2.4/gram/gram_rsl_parameters.html
 #
-#  --------------------------------------------------------------------
-#
-# rsl.gram2.arguments
-# rsl.gram2.count
-# rsl.gram2.directory
-# rsl.gram2.dryRun
-# rsl.gram2.environment
-# rsl.gram2.executable
-# rsl.gram2.gramMyJob
-# rsl.gram2.hostCount
-# rsl.gram2.jobType
-# rsl.gram2.maxCpuTime
-# rsl.gram2.maxMemory
-# rsl.gram2.maxTime
-# rsl.gram2.maxWallTime
-# rsl.gram2.minMemory
-# rsl.gram2.project
-# rsl.gram2.queue
-# rsl.gram2.remote_io_url
-# rsl.gram2.restart
-# rsl.gram2.save_state
-# rsl.gram2.stderr
-# rsl.gram2.stderr_position
-# rsl.gram2.stdin
-# rsl.gram2.stdout
-# rsl.gram2.stdout_position
-# rsl.gram2.two_phase
+# globusrsl.gram2.arguments
+# globusrsl.gram2.count
+# globusrsl.gram2.directory
+# globusrsl.gram2.dryRun
+# globusrsl.gram2.environment
+# globusrsl.gram2.executable
+# globusrsl.gram2.gramMyJob
+# globusrsl.gram2.hostCount
+# globusrsl.gram2.jobType
+# globusrsl.gram2.maxCpuTime
+# globusrsl.gram2.maxMemory
+# globusrsl.gram2.maxTime
+# globusrsl.gram2.maxWallTime
+# globusrsl.gram2.minMemory
+# globusrsl.gram2.project
+# globusrsl.gram2.queue
+# globusrsl.gram2.remote_io_url
+# globusrsl.gram2.restart
+# globusrsl.gram2.save_state
+# globusrsl.gram2.stderr
+# globusrsl.gram2.stderr_position
+# globusrsl.gram2.stdin
+# globusrsl.gram2.stdout
+# globusrsl.gram2.stdout_position
+# globusrsl.gram2.two_phase
 #
 # batchsubmit.condorgt2.globusrsl = GRAM RSL directive.
 #               If this variable is not setup, then it will be built
-#               programmatically from all non empty rsl.gram2.XYZ variables.
+#               programmatically from all non empty globusrsl.gram2.XYZ variables.
 #               If this variable is setup, then its value
 #               will be taken *verbatim*, and all possible values
-#               for rsl.gram2.XYZ variables will be ignored. 
+#               for globusrsl.gram2.XYZ variables will be ignored. 
 #
 # batchsubmit.condorgt2.globusrsladd = custom fields to be added
 #               *verbatim* to the GRAM RSL directive,
 #               after it has been built either from 
 #               batchsubmit.condorgt2.globusrsl value
-#               or from all rsl.gram2.XYZ variables.
+#               or from all globusrsl.gram2.XYZ variables.
 #               e.g. (condorsubmit=('+AccountingGroup' '\"group_atlastest.usatlas1\"')('+Requirements' 'True'))
 
 
@@ -478,6 +477,7 @@
 #               None if no automatic proxy renewal is desired.
 
 #  --------------------------------------------------------------------
+#
 #               The following are GRAM5 RSL variables. 
 #               They are just used to build batchsubmit.condorgt5.globusrsl 
 #               (if needed)
@@ -489,59 +489,57 @@
 #
 #                      http://www.globus.org/toolkit/docs/5.2/5.2.0/gram5/user/#gram5-user-rsl 
 #
-#  --------------------------------------------------------------------
-#
-# rsl.gram5.arguments
-# rsl.gram5.count
-# rsl.gram5.directory
-# rsl.gram5.dry_run
-# rsl.gram5.environment
-# rsl.gram5.executable
-# rsl.gram5.file_clean_up
-# rsl.gram5.file_stage_in
-# rsl.gram5.file_stage_in_shared
-# rsl.gram5.file_stage_out
-# rsl.gram5.gass_cache
-# rsl.gram5.gram_my_job
-# rsl.gram5.host_count
-# rsl.gram5.job_type
-# rsl.gram5.library_path
-# rsl.gram5.loglevel
-# rsl.gram5.logpattern
-# rsl.gram5.max_cpu_time
-# rsl.gram5.max_memory
-# rsl.gram5.max_time
-# rsl.gram5.max_wall_time
-# rsl.gram5.min_memory
-# rsl.gram5.project
-# rsl.gram5.proxy_timeout
-# rsl.gram5.queue
-# rsl.gram5.remote_io_url
-# rsl.gram5.restart
-# rsl.gram5.rsl_substitution
-# rsl.gram5.savejobdescription
-# rsl.gram5.save_state
-# rsl.gram5.scratch_dir
-# rsl.gram5.stderr
-# rsl.gram5.stderr_position
-# rsl.gram5.stdin
-# rsl.gram5.stdout
-# rsl.gram5.stdout_position
-# rsl.gram5.two_phase
-# rsl.gram5.username
+# globusrsl.gram5.arguments
+# globusrsl.gram5.count
+# globusrsl.gram5.directory
+# globusrsl.gram5.dry_run
+# globusrsl.gram5.environment
+# globusrsl.gram5.executable
+# globusrsl.gram5.file_clean_up
+# globusrsl.gram5.file_stage_in
+# globusrsl.gram5.file_stage_in_shared
+# globusrsl.gram5.file_stage_out
+# globusrsl.gram5.gass_cache
+# globusrsl.gram5.gram_my_job
+# globusrsl.gram5.host_count
+# globusrsl.gram5.job_type
+# globusrsl.gram5.library_path
+# globusrsl.gram5.loglevel
+# globusrsl.gram5.logpattern
+# globusrsl.gram5.max_cpu_time
+# globusrsl.gram5.max_memory
+# globusrsl.gram5.max_time
+# globusrsl.gram5.max_wall_time
+# globusrsl.gram5.min_memory
+# globusrsl.gram5.project
+# globusrsl.gram5.proxy_timeout
+# globusrsl.gram5.queue
+# globusrsl.gram5.remote_io_url
+# globusrsl.gram5.restart
+# globusrsl.gram5.rsl_substitution
+# globusrsl.gram5.savejobdescription
+# globusrsl.gram5.save_state
+# globusrsl.gram5.scratch_dir
+# globusrsl.gram5.stderr
+# globusrsl.gram5.stderr_position
+# globusrsl.gram5.stdin
+# globusrsl.gram5.stdout
+# globusrsl.gram5.stdout_position
+# globusrsl.gram5.two_phase
+# globusrsl.gram5.username
 #
 # batchsubmit.condorgt5.globusrsl = GRAM RSL directive.
 #               If this variable is not setup, then it will be built
-#               programmatically from all non empty rsl.gram5.XYZ variables.
+#               programmatically from all non empty globusrsl.gram5.XYZ variables.
 #               If this variable is setup, then its value
 #               will be taken *verbatim*, and all possible values
-#               for rsl.gram5.XYZ variables will be ignored. 
+#               for globusrsl.gram5.XYZ variables will be ignored. 
 #
 # batchsubmit.condorgt5.globusrsladd = custom fields to be added
 #               *verbatim* to the GRAM RSL directive,
 #               after it has been built either from 
 #               batchsubmit.condorgt5.globusrsl value
-#               or from all rsl.gram5.XYZ variables.
+#               or from all globusrsl.gram5.XYZ variables.
 #               e.g. (condorsubmit=('+AccountingGroup' '\"group_atlastest.usatlas1\"')('+Requirements' 'True'))
 #
 
@@ -749,70 +747,70 @@ batchsubmit.condorlocal.proxy = None
 # gram and globusrsl
 #   jobtype and queue are given a default value.
 
-rsl.gram2.arguments = ""
-rsl.gram2.count = ""
-rsl.gram2.directory = ""
-rsl.gram2.dryRun = ""
-rsl.gram2.environment = ""
-rsl.gram2.executable = ""
-rsl.gram2.gramMyJob = ""
-rsl.gram2.hostCount = ""
-rsl.gram2.jobType = single
-rsl.gram2.maxCpuTime = ""
-rsl.gram2.maxMemory = ""  
-rsl.gram2.maxTime = ""
-rsl.gram2.maxWallTime = ""
-rsl.gram2.minMemory = "" 
-rsl.gram2.project = ""
-rsl.gram2.queue = short
-rsl.gram2.remote_io_url = ""
-rsl.gram2.restart = ""
-rsl.gram2.save_state = ""
-rsl.gram2.stderr = ""
-rsl.gram2.stderr_position = ""
-rsl.gram2.stdin = ""
-rsl.gram2.stdout = ""
-rsl.gram2.stdout_position = ""
-rsl.gram2.two_phase = ""
+globusrsl.gram2.arguments = ""
+globusrsl.gram2.count = ""
+globusrsl.gram2.directory = ""
+globusrsl.gram2.dryRun = ""
+globusrsl.gram2.environment = ""
+globusrsl.gram2.executable = ""
+globusrsl.gram2.gramMyJob = ""
+globusrsl.gram2.hostCount = ""
+globusrsl.gram2.jobType = single
+globusrsl.gram2.maxCpuTime = ""
+globusrsl.gram2.maxMemory = ""  
+globusrsl.gram2.maxTime = ""
+globusrsl.gram2.maxWallTime = ""
+globusrsl.gram2.minMemory = "" 
+globusrsl.gram2.project = ""
+globusrsl.gram2.queue = short
+globusrsl.gram2.remote_io_url = ""
+globusrsl.gram2.restart = ""
+globusrsl.gram2.save_state = ""
+globusrsl.gram2.stderr = ""
+globusrsl.gram2.stderr_position = ""
+globusrsl.gram2.stdin = ""
+globusrsl.gram2.stdout = ""
+globusrsl.gram2.stdout_position = ""
+globusrsl.gram2.two_phase = ""
 
-rsl.gram5.arguments = ""
-rsl.gram5.count = ""
-rsl.gram5.directory = ""
-rsl.gram5.dry_run = ""
-rsl.gram5.environment = ""
-rsl.gram5.executable = ""
-rsl.gram5.file_clean_up = ""
-rsl.gram5.file_stage_in = ""
-rsl.gram5.file_stage_in_shared = ""
-rsl.gram5.file_stage_out = ""
-rsl.gram5.gass_cache = ""
-rsl.gram5.gram_my_job = ""
-rsl.gram5.host_count = ""
-rsl.gram5.job_type = single
-rsl.gram5.library_path = ""
-rsl.gram5.loglevel = ""
-rsl.gram5.logpattern = ""
-rsl.gram5.max_cpu_time = ""
-rsl.gram5.max_memory = ""
-rsl.gram5.max_time = ""
-rsl.gram5.max_wall_time = ""
-rsl.gram5.min_memory = ""
-rsl.gram5.project = ""
-rsl.gram5.proxy_timeout = ""
-rsl.gram5.queue = single
-rsl.gram5.remote_io_url = ""
-rsl.gram5.restart = ""
-rsl.gram5.rsl_substitution = ""
-rsl.gram5.savejobdescription = ""
-rsl.gram5.save_state = ""
-rsl.gram5.scratch_dir = ""
-rsl.gram5.stderr = ""
-rsl.gram5.stderr_position = ""
-rsl.gram5.stdin = ""
-rsl.gram5.stdout = ""
-rsl.gram5.stdout_position = ""
-rsl.gram5.two_phase = ""
-rsl.gram5.username = ""
+globusrsl.gram5.arguments = ""
+globusrsl.gram5.count = ""
+globusrsl.gram5.directory = ""
+globusrsl.gram5.dry_run = ""
+globusrsl.gram5.environment = ""
+globusrsl.gram5.executable = ""
+globusrsl.gram5.file_clean_up = ""
+globusrsl.gram5.file_stage_in = ""
+globusrsl.gram5.file_stage_in_shared = ""
+globusrsl.gram5.file_stage_out = ""
+globusrsl.gram5.gass_cache = ""
+globusrsl.gram5.gram_my_job = ""
+globusrsl.gram5.host_count = ""
+globusrsl.gram5.job_type = single
+globusrsl.gram5.library_path = ""
+globusrsl.gram5.loglevel = ""
+globusrsl.gram5.logpattern = ""
+globusrsl.gram5.max_cpu_time = ""
+globusrsl.gram5.max_memory = ""
+globusrsl.gram5.max_time = ""
+globusrsl.gram5.max_wall_time = ""
+globusrsl.gram5.min_memory = ""
+globusrsl.gram5.project = ""
+globusrsl.gram5.proxy_timeout = ""
+globusrsl.gram5.queue = single
+globusrsl.gram5.remote_io_url = ""
+globusrsl.gram5.restart = ""
+globusrsl.gram5.rsl_substitution = ""
+globusrsl.gram5.savejobdescription = ""
+globusrsl.gram5.save_state = ""
+globusrsl.gram5.scratch_dir = ""
+globusrsl.gram5.stderr = ""
+globusrsl.gram5.stderr_position = ""
+globusrsl.gram5.stdin = ""
+globusrsl.gram5.stdout = ""
+globusrsl.gram5.stdout_position = ""
+globusrsl.gram5.two_phase = ""
+globusrsl.gram5.username = ""
 
 
 batchsubmit.condorgt2.condor_attributes = periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30),periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
