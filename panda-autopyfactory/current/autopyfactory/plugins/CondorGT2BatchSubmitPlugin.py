@@ -35,7 +35,7 @@ class CondorGT2BatchSubmitPlugin(CondorGRAMBatchSubmitPlugin):
             qcl = self.apfqueue.factory.qcl
 
         # we rename the queue config variables to pass a new config object to parent class
-        newqcl = qcl.clone().filterkeys('batchsubmit.condorgt2', 'batchsubmit.condorgram')
+        newqcl = qcl.clone().filterkeys('batchsubmit.condorgt2', 'batchsubmit.condorgram').filterkeys('globusrsl.gram2', 'batchsubmit.condorgram.gram')
         valid = super(CondorGT2BatchSubmitPlugin, self)._readconfig(newqcl)
         if not valid:
             return False
