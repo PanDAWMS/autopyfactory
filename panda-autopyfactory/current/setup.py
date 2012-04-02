@@ -26,7 +26,6 @@ rpm_data_files=[  ('/usr/libexec', ['libexec/runpilot3-wrapper.sh',
                               'etc/queues.conf-example',
                               'etc/proxy.conf-example',
                               'etc/factory.sysconfig-example',
-                              'misc/apfqueue-status.py'
                              ]),
                   ('/etc/init.d', ['etc/factory',
                                 ]),
