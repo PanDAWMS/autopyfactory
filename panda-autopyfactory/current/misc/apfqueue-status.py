@@ -217,7 +217,9 @@ def printtable(queuetable):
     print('-----------------------------------------------------------------')
     
     sitewidth = 28
-    for s in queuetable.keys():
+    ks = queuetable.keys()
+    ks.sort()
+    for s in ks:
         sitename = s
         # format sitename
         w = len(sitename)
