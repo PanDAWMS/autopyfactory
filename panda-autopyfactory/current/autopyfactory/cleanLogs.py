@@ -88,7 +88,7 @@ class CleanLogs(threading.Thread):
         dir is a Dir object
         ''' 
 
-        self.log.debug("__processdir: Starting with input %s." %dir)
+        self.log.debug("__processdir: Starting with input %s." %dir.dir)
 
         self.keepdays = KeepDays(self.fcl, self.qcl)
         dir.rm(self.keepdays)
@@ -230,13 +230,13 @@ class Dir(object):
         it deletes itself.
         '''
 
-        self.log.debug('rm: Starting.')
+        self.log.debug('rm for dir %s: Starting.' %self.dir)
 
         self.rm_subdirs(keepdays)
         if self.empty(): 
             os.rmdir(self.path)     
 
-        self.log.debug('rm: Leaving.')
+        self.log.debug('rm for dir %s: Leaving.' %self.dir)
 
     def rm_subdirs(self, keepdays):
         '''
@@ -277,7 +277,7 @@ class SubDir(object):
         but only if the timing of the parent is older than
         what keepdays object has to say about it
         ''' 
-        self.log.debug('rm: Starting.')
+        self.log.debug('rm for subdir %s: Starting.' %self.subdir)
 
         delta_days = self.parent.delta_t.days
         days = keepdays.get(self.subdir):
@@ -289,4 +289,4 @@ class SubDir(object):
                     self.log.info("rm: Deleting subdirectory %s ..." % self.path)
                     shutil.rmtree(self.path)
 
-        self.log.debug('rm: Leaving.')
+        self.log.debug('rm for subdir %s: Leaving.' %self.subdir)
