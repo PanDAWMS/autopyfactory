@@ -82,6 +82,7 @@ setup(
     packages=['autopyfactory','autopyfactory.plugins'],
     scripts = [ # Utilities and main script
                'bin/factory',
+               'misc/apfqueue-status',
               ],
     
     data_files = choose_data_files()
