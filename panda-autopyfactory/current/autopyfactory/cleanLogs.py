@@ -280,7 +280,7 @@ class SubDir(object):
         self.log.debug('rm for subdir %s: Starting.' %self.subdir)
 
         delta_days = self.parent.delta_t.days
-        days = keepdays.get(self.subdir):
+        days = keepdays.get(self.subdir)
         if not days:
             self.log.info("there is not keepdays defined for subdir: %s and no default value either. Doing nothing." %self.subdir)
         else:
