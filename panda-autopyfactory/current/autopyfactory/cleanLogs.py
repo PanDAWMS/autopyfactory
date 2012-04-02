@@ -280,9 +280,13 @@ class SubDir(object):
         self.log.debug('rm: Starting.')
 
         delta_days = self.parent.delta_t.days
-        if delta_days > keepdays.get(self.subdir):
-            if os.path.exists(self.path):
-                self.log.info("rm: Deleting subdirectory %s ..." % self.path)
-                shutil.rmtree(self.path)
+        days = keepdays.get(self.subdir):
+        if not days:
+            self.log.info("there is not keepdays defined for subdir: %s and no default value either. Doing nothing." %self.subdir)
+        else:
+            if delta_days > keepdays.get(self.subdir):
+                if os.path.exists(self.path):
+                    self.log.info("rm: Deleting subdirectory %s ..." % self.path)
+                    shutil.rmtree(self.path)
 
         self.log.debug('rm: Leaving.')
