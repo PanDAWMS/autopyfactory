@@ -1,34 +1,41 @@
 #!/bin/env python
 #
-#
-#
+# Slightly less quick-and-dirty script to output queue statuses in easy table format. 
+# 
+# 
+
+import logging
+import subprocess
+import time
+import datetime
+import xml.dom.minidom
 
 
+#########################################################################
 # Constants
+#########################################################################
 
-GRAM2STATUS = {'1':   'pending',
-               '2':   'running',
-               '4':   'done',
-               '8':   'done',
-               '16':  'suspended',
-               '32':  'pending',
-               '64':  'running',
-               '128': 'running'}
+defaultloglevel = logging.WARN
+
+GRAM2STATUS = {'1':   'PENDING',
+               '2':   'ACTIVE',
+               '4':   'FAILED',
+               '8':   'DONE',
+               '16':  'SUSP',
+               '32':  'UNSUB',
+               '64':  'STAGE_IN',
+               '128': 'STAGE_OUT'}
             
-CONDOR2STATUS = {'0': 'pending',
-                 '1': 'pending',
-                 '2': 'running',
-                 '3': 'done',
-                 '4': 'done',
-                 '5': 'suspended',
-                 '6': 'running'}
-#
-
-# UNSUB=$unsub    PENDING=$pending    STAGE_IN=$stagein    ACTIVE=$running    STAGE_OUT=$stageout
-
-
-
+CONDOR2STATUS = {'0': 'UNSUB',
+                 '1': 'IDLE',
+                 '2': 'RUNNING',
+                 '3': 'REMOVED',
+                 '4': 'COMPLETE',
+                 '5': 'HELD',
+                 '6': 'ERROR'}
+#########################################################################
 # Functions
+#########################################################################
 def listnodesfromxml(xmldoc, tag):
 	return xmldoc.getElementsByTagName(tag)
 
@@ -170,12 +177,19 @@ def map2table(aggdict):
                                     'ACTIVE': 0, 
                                     'FAILED' : 0 , 
                                     'DONE': 0,
-                                    'SUSPENDED': 0,
-                                    'UNSUBMITTED' : 0,
+                                    'SUSP': 0,
+                                    'UNSUB' : 0,
                                     'STAGE_IN' : 0,
                                     'STAGE_OUT' : 0,                               
                                     }}
             # fill in values here
+            sd = sitedict['globusstatus']
+            for status in sd.keys():
+                try:
+                    qi['globusstatus'][GRAM2STATUS[status]] += sd[status]
+                except KeyError:
+                    log.warn("Got globusstatus of %s" % status)
+        
             queuetable[site] = qi
         else:
             qi = { 'jobstatus' : {  'UNSUB': 0 , 
@@ -187,11 +201,21 @@ def map2table(aggdict):
                                     'ERROR' : 0,                              
                                   }}
             # fill in values
+            sd = sitedict['jobstatus']
+            for status in sd.keys():
+                try:
+                    qi['jobstatus'][CONDOR2STATUS[status]] += sd[status]
+                except KeyError:
+                    log.warn("Got jobstatus of %s" % status)
+            
             queuetable[site] = qi              
     return queuetable
      
     
 def printtable(queuetable):
+    print(datetime.datetime.now().strftime("%a %b %d %H:%M:%S %Y"))
+    print('-----------------------------------------------------------------')
+    
     sitewidth = 28
     for s in queuetable.keys():
         sitename = s
@@ -200,7 +224,7 @@ def printtable(queuetable):
         add = sitewidth - w
         sitename = sitename + (' ' * add)
                 
-        print('\n%s \t' % sitename ),
+        print('%s \t' % sitename ),
         qi = queuetable[s]
         if 'globusstatus' in qi.keys():
             t = qi['globusstatus']
@@ -208,18 +232,16 @@ def printtable(queuetable):
             t = qi['jobstatus']
             
         for k in t.keys():
-            print("%s = %s " %(k,t[k])),
+            print("%s = %s\t" %(k,t[k])),
+        print("\n"),
         
 # Script
 
-import logging
-import subprocess
-import time
-import xml.dom.minidom
+
 
 logging.basicConfig()
 log=logging.getLogger()
-log.setLevel(logging.DEBUG)
+log.setLevel(defaultloglevel)
 
 
 log.info("APF queue status:")
