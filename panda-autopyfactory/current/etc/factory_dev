@@ -22,13 +22,22 @@
 # Description: Submit PANDA pilots. 
 ### END INIT INFO
 
+f_factdir(){
+  OLD_DIR=$PWD
+  DIRPATH=`dirname $0`
+  cd $DIRPATH
+  FACTDIR=$PWD
+  cd $OLD_DIR 
+}
+
+
 # Source function library.
 . /etc/rc.d/init.d/functions
 
 # Determine usage context (root means RPM, non-root means home directory) and set
 # paths accordingly.  
 
-FACTORYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+f_factdir
 
 if [ `id -u` = 0 ]; then
   SYSCONF=/etc/sysconfig/factory.sysconfig
@@ -39,7 +48,7 @@ else
   SYSCONF=$HOME/etc/factory.sysconfig
   ETCDIR=$HOME/etc
   PIDFILE=$HOME/var/run/factory.pid
-  if [ "$FACTORYDIR" == "/etc/init.d" ]; then 
+  if [ "$FACTDIR" == "/etc/init.d" ]; then 
     BINDIR=/usr/bin
   else
     BINDIR=$HOME/bin
