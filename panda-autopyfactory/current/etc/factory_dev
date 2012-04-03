@@ -43,6 +43,7 @@ else
     BINDIR=/usr/bin
   else
     BINDIR=$HOME/bin
+  fi
 fi
 
 CONFFILE=$ETCDIR/factory.conf
