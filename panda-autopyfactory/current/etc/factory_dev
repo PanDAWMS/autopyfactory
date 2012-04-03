@@ -28,6 +28,8 @@
 # Determine usage context (root means RPM, non-root means home directory) and set
 # paths accordingly.  
 
+FACTORYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 if [ `id -u` = 0 ]; then
   SYSCONF=/etc/sysconfig/factory.sysconfig
   BINDIR=/usr/bin
@@ -35,9 +37,12 @@ if [ `id -u` = 0 ]; then
   PIDFILE=/var/run/factory.pid
 else
   SYSCONF=$HOME/etc/factory.sysconfig
-  BINDIR=$HOME/bin
   ETCDIR=$HOME/etc
   PIDFILE=$HOME/var/run/factory.pid
+  if [ "$FACTORYDIR" == "/etc/init.d" ]; then 
+    BINDIR=/usr/bin
+  else
+    BINDIR=$HOME/bin
 fi
 
 CONFFILE=$ETCDIR/factory.conf
