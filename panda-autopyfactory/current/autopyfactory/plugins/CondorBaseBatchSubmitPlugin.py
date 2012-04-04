@@ -67,7 +67,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             self.batchqueue = qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
             self.arguments = qcl.generic_get(self.apfqname, 'executable.arguments', logger=self.log)
             self.condor_attributes = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.condor_attributes', logger=self.log)
-            self.extra_condor_attributes = [opt.replace('batchsubmit.condorbase.condor_attributes.',''),qcl.generic_get(self.apfqname, opt, logger=self.log)) for opt in qcl.options(self.apfqname) if opt.startswith('batchsubmit.condorbase.condor_attributes.','')]  # Note the . at the end of the pattern !!
+            self.extra_condor_attributes = [(opt.replace('batchsubmit.condorbase.condor_attributes.',''),qcl.generic_get(self.apfqname, opt, logger=self.log)) for opt in qcl.options(self.apfqname) if opt.startswith('batchsubmit.condorbase.condor_attributes.','')]  # Note the . at the end of the pattern !!
 
             return True
         except:
