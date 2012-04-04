@@ -192,7 +192,7 @@ class Dir(object):
         self.creation_t = self.creation_t() 
         self.delta_t = self.delta_t() 
 
-        self.log.info('Dir: Object initialized.')
+        self.log.info('Dir: Object initialized for dir %s.' %self.dir)
 
     def empty(self):
         return os.listdir(self.path) == []
@@ -269,7 +269,7 @@ class SubDir(object):
         self.subdir = subdir
         self.path = os.path.join(parent.path, subdir)
 
-        self.log.info('SubDir: Object initialized.')
+        self.log.info('SubDir: Object initialized for subdir %s.'%self.subdir)
 
     def rm(self, keepdays):
         ''' 
