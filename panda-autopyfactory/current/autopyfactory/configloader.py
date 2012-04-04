@@ -263,6 +263,7 @@ class ConfigManager:
         '''
  
         config = Config()
+        config.optionxform = str
 
         for src in sources.split(','):
             newconfig = self.__getConfig(src)
