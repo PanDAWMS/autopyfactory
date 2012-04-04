@@ -67,7 +67,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             self.batchqueue = qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
             self.arguments = qcl.generic_get(self.apfqname, 'executable.arguments', logger=self.log)
             self.condor_attributes = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.condor_attributes', logger=self.log)
-            self.extra_condor_attributes = [(opt.replace('batchsubmit.condorbase.condor_attributes.',''),qcl.generic_get(self.apfqname, opt, logger=self.log)) for opt in qcl.options(self.apfqname) if opt.startswith('batchsubmit.condorbase.condor_attributes.','')]  # Note the . at the end of the pattern !!
+            #self.extra_condor_attributes = [(opt.replace('batchsubmit.condorbase.condor_attributes.',''),qcl.generic_get(self.apfqname, opt, logger=self.log)) for opt in qcl.options(self.apfqname) if opt.startswith('batchsubmit.condorbase.condor_attributes.','')]  # Note the . at the end of the pattern !!
 
             return True
         except:
@@ -159,13 +159,11 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             for attr in self.condor_attributes.split(','):
                 self.JSD.add(attr)
 
-        for item in self.extra_condor_attributes:
-            if item[1] == "":
-                    self.JSD.add(item[0])
-            else:
-                    self.JSD.add('%s = %s' %item)
-
-
+        #for item in self.extra_condor_attributes:
+        #    if item[1] == "":
+        #            self.JSD.add(item[0])
+        #    else:
+        #            self.JSD.add('%s = %s' %item)
 
         self.JSD.add("executable=%s" % self.executable)
         self.JSD.add('arguments=%s' % self.arguments)
