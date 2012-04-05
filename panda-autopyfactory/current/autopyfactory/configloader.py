@@ -51,6 +51,10 @@ class Config(SafeConfigParser, object):
             merge(config, override=False)
     -----------------------------------------------------------------------
     '''
+    def __init__(self):
+        self.optionxform = str
+        super(Config, self).__init__()
+
     def merge(self, config, override=None, includemissing=True):
         '''
         merge the current Config object 
