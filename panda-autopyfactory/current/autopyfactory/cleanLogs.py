@@ -234,6 +234,7 @@ class Dir(object):
 
         self.rm_subdirs(keepdays)
         if self.empty(): 
+            self.log.info('rm: Deleting directory: %s' %self.dir)
             os.rmdir(self.path)     
 
         self.log.debug('rm for dir %s: Leaving.' %self.dir)
