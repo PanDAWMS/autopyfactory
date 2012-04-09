@@ -1167,6 +1167,25 @@ class Singleton(type):
         return cls.__instance
 
 
+class CondorSingleton(type):
+    '''
+    -----------------------------------------------------------------------
+    Ancillary class to be used as metaclass to make other classes Singleton.
+    This particular implementation is for CondorBatchStatusPlugin.
+    It allow to create different instances, one per schedd.
+    Each instance is a singleton. 
+    -----------------------------------------------------------------------
+    '''
+    def __init__(cls, name, bases, dct):
+        cls.__instance = {} 
+        type.__init__(cls, name, bases, dct)
+    def __call__(cls, *args, **kw): 
+        schedd = kw['schedd']
+        if schedd not in cls.__instance.keys():
+            cls.__instance[schedd] = type.__call__(cls, *args,**kw)
+        return cls.__instance[schedd]
+
+
 class SchedInterface(object):
     '''
     -----------------------------------------------------------------------
