@@ -6,6 +6,7 @@
 import commands
 import logging
 import os
+import re
 import string
 import time
 
@@ -158,8 +159,9 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
 
         # Adding condor attributes
         if self.condor_attributes:
-            for attr in self.condor_attributes.split(','):
+            for attr in self.__parse_condor_attribute(self.condor_attributes):
                 self.JSD.add(attr)
+
         for item in self.extra_condor_attributes:
             self.JSD.add('%s = %s' %item)
 
@@ -178,7 +180,54 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         self.JSD.add("when_to_transfer_output = ON_EXIT_OR_EVICT")
         
         self.log.debug('addJSD: Leaving.')
-    
+   
+    def __parse_condor_attribute(self, s):
+        '''
+        auxiliar method to help spliting the string
+        usign the comma as splitting character.
+        The trick here is what to do when the comma is preceded 
+        by one or more \
+        Sometimes the user wants the comma to be taken literally 
+        instead of as an splitting char. In that case, the comma
+        can be escaped with a \.
+        And the \ can be escaped with another \ in case the user
+        wants the \ to be literal. 
+        '''
+        p = re.compile(r"(\\)+,")  # regex matching for 1 or more \ followed by a ,
+                                   # the backslash appears twice, but it means a single \
+        m = re.finditer(p, s)      # searching for all ocurrencies 
+
+        # now we create a list of pairs (x,y) where 
+        #   x is the index of the first char matching the regexp: the first \ in our case.
+        #   y is the index of the last char matching the regexp: the , in our case
+        l = [(i.start(), i.end()) for i in m] 
+       
+        # we reverse the list, to start processing it from the end to the beginning.
+        # In this way, each manipulation will not change the rest of indexes. 
+        l.reverse()
+        for i in l:
+            nb_slashes = i[1] - i[0] - 1
+            nb_real_slashes = nb_slashes / 2
+            # each pair \\ actually has to be translated as \
+        
+            if nb_slashes % 2 == 0:
+                # even nb of slashes
+                # => nb/2 real slashes, and comma is splitting char
+                s = s[:i[0]] + '\\'* nb_real_slashes + "," + s[i[1]:]
+            else:
+                # odd nb of slashes
+                # => (nb-1)/2 real slashes, and comma is literal 
+                s = s[:i[0]] + '\\'* nb_real_slashes + "APF_LITERAL_COMMA" + s[i[1]:]
+        
+        fields = []
+        for field in s.split(','):
+                # we change back the fake string APF_LITERAL_COMMA by an actual ,
+                field = field.replace('APF_LITERAL_COMMA', ',')
+                fields.append(field)
+        
+        return fields
+
+ 
     def __submit(self, n, jsdfile):
         '''
         Submit pilots
