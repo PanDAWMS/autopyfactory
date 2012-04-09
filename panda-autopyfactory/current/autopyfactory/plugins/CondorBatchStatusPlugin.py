@@ -40,7 +40,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     -----------------------------------------------------------------------
     '''
     
-    __metaclass__ = Singleton 
+    __metaclass__ = CondorSingleton 
     
     def __init__(self, apfqueue):
 
