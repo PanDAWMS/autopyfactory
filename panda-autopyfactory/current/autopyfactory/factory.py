@@ -1180,7 +1180,7 @@ class CondorSingleton(type):
         cls.__instance = {} 
         type.__init__(cls, name, bases, dct)
     def __call__(cls, *args, **kw): 
-        schedd = kw['schedd']
+        schedd = kw.get('schedd', 'localschedd')
         if schedd not in cls.__instance.keys():
             cls.__instance[schedd] = type.__call__(cls, *args,**kw)
         return cls.__instance[schedd]
