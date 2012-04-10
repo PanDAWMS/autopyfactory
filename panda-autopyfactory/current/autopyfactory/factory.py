@@ -734,6 +734,7 @@ class APFQueue(threading.Thread):
         self.scheduler_plugin = self.scheduler_cls(self)
 
         # Handle batch status plugin. 
+        schedd = ''
         if self.qcl.generic_get(self.apfqname, 'batchstatusplugin') == 'Condor': 
                 schedd_name = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.schedd_name', default_value = 'localschedd', logger=self.log)
                 schedd_port = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.schedd_port', default_value = '', logger=self.log)
