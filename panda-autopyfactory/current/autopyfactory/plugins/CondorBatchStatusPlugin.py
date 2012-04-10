@@ -48,7 +48,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         try:
             threading.Thread.__init__(self) # init the thread
             
-            self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %apfqueue.apfqname)
+            self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s with schedd %s]" %(apfqueue.apfqname, kw['schedd']))
             self.log.debug('BatchStatusPlugin: Initializing object...')
             self.stopevent = threading.Event()
 
