@@ -733,13 +733,21 @@ class APFQueue(threading.Thread):
         self.scheduler_cls = self._getplugin('sched')
         self.scheduler_plugin = self.scheduler_cls(self)
 
-        # Handle status and submit batch plugins. 
+        # Handle batch status plugin. 
+        if self.qcl.generic_get(self.apfqueue, 'batchstatusplugin') == 'Condor': 
+                schedd_name = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.schedd_name', default_value = 'localschedd', logger=self.log)
+                schedd_port = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.schedd_port', default_value = '', logger=self.log)
+                schedd = '%s:%s' %(schedd_name, schedd_port)
         self.batchstatus_cls = self._getplugin('batchstatus')
-        self.batchstatus_plugin = self.batchstatus_cls(self)
+        self.batchstatus_plugin = self.batchstatus_cls(self, schedd=schedd)
         self.batchstatus_plugin.start()                # starts the thread
+
+        # Handle wms status plugin. 
         self.wmsstatus_cls = self._getplugin('wmsstatus')
         self.wmsstatus_plugin = self.wmsstatus_cls(self)
         self.wmsstatus_plugin.start()                  # starts the thread
+
+        # Handle submit plugin. 
         self.batchsubmit_cls = self._getplugin('batchsubmit')
         self.batchsubmit_plugin = self.batchsubmit_cls(self)
 
