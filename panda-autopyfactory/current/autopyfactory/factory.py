@@ -770,7 +770,6 @@ class APFQueue(threading.Thread):
                 - wmsstatus
                 - batchsubmit
                 - config
-        *k and *kw are inputs for the plugin class __init__() method
 
         Steps taken are:
                 1. The name of the item in the config file is calculated.
