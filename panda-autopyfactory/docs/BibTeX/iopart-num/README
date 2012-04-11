@@ -1,0 +1,28 @@
+iopart-num -- BibTeX style for IOP journals
+
+--------------------------------
+
+The iopart-num BibTeX style is intended for use with Institute of
+Physics Publishing journals, including Journal of Physics.  A numeric
+citation style with Harvard-like formatting is provided, based upon
+the specification in "How to prepare and submit an article for
+publication in an IOP journal using LaTeX2e" by Graham Douglas (2005).
+
+The style is compatible with, but does not require, the iopart
+document class.  It is also compatible with, but does not require,
+the natbib package.  
+
+The distribution contains the BibTeX style file (iopart-num.bst), the
+source files for the documentation (iopart-num.tex and
+iopart-num.bib), and a PDF file of the documentation (iopart-num.pdf).
+
+--------------------------------
+
+Mark A. Caprio, Yale University
+December 21, 2006
+Version 2.0
+
+This material is subject to the LaTeX Project Public License.  See
+http://www.ctan.org/tex-archive/help/Catalogue/licenses.lppl.html for
+the details of that license.
+
