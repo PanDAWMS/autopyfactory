@@ -734,11 +734,12 @@ class APFQueue(threading.Thread):
         self.scheduler_plugin = self.scheduler_cls(self)
 
         # Handle batch status plugin. 
-        schedd = ''
+        condor_q_id = 'local'
         if self.qcl.generic_get(self.apfqname, 'batchstatusplugin') == 'Condor': 
-                schedd = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.schedd_name', default_value = 'localschedd', logger=self.log)
+            queryargs = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs', logger=self.log)
+            condor_q_id = self.__queryargs2condorqid(queryargs)    
         self.batchstatus_cls = self._getplugin('batchstatus')
-        self.batchstatus_plugin = self.batchstatus_cls(self, schedd=schedd)
+        self.batchstatus_plugin = self.batchstatus_cls(self, condor_q_id=condor_q_id)
         self.batchstatus_plugin.start()                # starts the thread
 
         # Handle wms status plugin. 
@@ -757,6 +758,27 @@ class APFQueue(threading.Thread):
                 self.config_plugin = self.config_cls(self)
 
         self.log.debug('_plugins: Leaving')
+
+    def __queryargs2condorqid(self, queryargs):
+        """
+        method to get the name for the condor_q singleton,
+        based on the combination of the values from 
+        -name and -pool input options.
+        The entire list of input options come from the queues conf file,
+        and it is recorded in queryargs. 
+        """
+        l = queryargs.split()  # convert the string into a list
+                               # e.g.  ['-name', 'foo', '-pool', 'bar'....]
+
+        name = ''
+        pool = ''
+        
+        if '-name' in l:
+            name = l[l.index('-name') + 1]
+        if '-pool' in l:
+            pool = l[l.index('-pool') + 1]
+
+        return '%s:%s' %(name, pool)
 
     def _getplugin(self, action):
         '''
@@ -1186,10 +1208,10 @@ class CondorSingleton(type):
         cls.__instance = {} 
         type.__init__(cls, name, bases, dct)
     def __call__(cls, *args, **kw): 
-        schedd = kw.get('schedd', 'localschedd')
-        if schedd not in cls.__instance.keys():
-            cls.__instance[schedd] = type.__call__(cls, *args,**kw)
-        return cls.__instance[schedd]
+        condor_q_id = kw.get('condor_q_id', 'local')
+        if condor_q_id not in cls.__instance.keys():
+            cls.__instance[condor_q_id] = type.__call__(cls, *args,**kw)
+        return cls.__instance[condor_q_id]
 
 
 class SchedInterface(object):
