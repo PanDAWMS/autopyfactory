@@ -36,7 +36,7 @@
 # configplugin
 #
 # batchstatusplugin
-# batchstatus.condor.schedd_name
+# batchstatus.condor.queryargs
 #
 # schedplugin
 # sched.activated.default
@@ -230,11 +230,9 @@
 
 # batchstatusplugin = Batch Status Plugin.
 #
-# batchstatus.condor.schedd_name = name of the schedd used to submit condor jobs
-#               and to query them. It will be used as value of input -remote
-#               in condor_q commands. 
-#               A different thread will be created per schedd. 
-#
+# batchstatus.condor.queryargs = list of command line input options
+#               to be included in the query command *verbatim*. E.g. 
+#               batchstatus.condor.query = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]>
 
 #  --------------------------------------------------------------------
 #       Sched Plugin variables 
