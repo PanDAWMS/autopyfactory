@@ -722,42 +722,54 @@ class APFQueue(threading.Thread):
 
         self.log.debug('_startmonitor: Leaving')
 
+# ---------- get the plug-ins : begin  ---------------
+
     def _plugins(self):
         '''
-        auxiliar method just to instantiate the plugin objects
+         method just to instantiate the plugin objects
         '''
-       
         self.log.debug('_plugins: Starting')
+
+        self._sched_plugin()
+        self._batch_status_plugin()
+        self._wms_status_plugin()
+        self._submit_plugin()
+        self._config_plugin()
+
+        self.log.debug('_plugins: Leaving')
  
-        # Handle sched plugin
+    def _sched_plugin(self):
+
         self.scheduler_cls = self._getplugin('sched')
         self.scheduler_plugin = self.scheduler_cls(self)
 
-        # Handle batch status plugin. 
+    def _batch_status_plugin(self):
+
         condor_q_id = 'local'
         if self.qcl.generic_get(self.apfqname, 'batchstatusplugin') == 'Condor': 
             queryargs = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs', logger=self.log)
             condor_q_id = self.__queryargs2condorqid(queryargs)    
         self.batchstatus_cls = self._getplugin('batchstatus')
         self.batchstatus_plugin = self.batchstatus_cls(self, condor_q_id=condor_q_id)
-        self.batchstatus_plugin.start()                # starts the thread
+        self.batchstatus_plugin.start() # starts the thread
 
-        # Handle wms status plugin. 
+    def _wms_status_plugin(self):
+
         self.wmsstatus_cls = self._getplugin('wmsstatus')
         self.wmsstatus_plugin = self.wmsstatus_cls(self)
-        self.wmsstatus_plugin.start()                  # starts the thread
+        self.wmsstatus_plugin.start()   # starts the thread
 
-        # Handle submit plugin. 
+    def _submit_plugin(self):
+
         self.batchsubmit_cls = self._getplugin('batchsubmit')
         self.batchsubmit_plugin = self.batchsubmit_cls(self)
 
-        # Handle config plugin, if needed
+    def _config_plugin(self):
+
         self.config_cls = self._getplugin('config')
         if self.config_cls:
                 # Note it could be None
                 self.config_plugin = self.config_cls(self)
-
-        self.log.debug('_plugins: Leaving')
 
     def __queryargs2condorqid(self, queryargs):
         """
@@ -837,6 +849,8 @@ class APFQueue(threading.Thread):
         self.log.debug("_getplugin: Attempting to return plugin with classname %s" %plugin_class)
         self.log.debug("_getplugin: Leaving with plugin named %s" %plugin_class)
         return getattr(plugin_module, plugin_class)
+
+# ---------- get the plug-ins : end ---------------
 
 # Run methods
 
