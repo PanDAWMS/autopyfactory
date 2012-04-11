@@ -60,6 +60,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
             self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
+            self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs', logger=self.log) 
             self.currentinfo = None              
 
             # ================================================================
@@ -225,6 +226,10 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
         self.log.debug('_querycondor: Starting.')
         querycmd = "condor_q"
+
+        # verbatim input options from the queues config file
+        if self.queryargs:
+            querycmd += ' ' + self.queryargs
         
         # removing temporarily (?) Environment from the query 
         #querycmd += " -format ' %s\n' Environment"
