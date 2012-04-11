@@ -37,7 +37,6 @@
 #
 # batchstatusplugin
 # batchstatus.condor.schedd_name
-# batchstatus.condor.schedd_port
 #
 # schedplugin
 # sched.activated.default
@@ -236,7 +235,6 @@
 #               in condor_q commands. 
 #               A different thread will be created per schedd. 
 #
-# batchstatus.condor.schedd_port = port of the schedd.
 
 #  --------------------------------------------------------------------
 #       Sched Plugin variables 
