@@ -729,7 +729,7 @@ class APFQueue(threading.Thread):
         self.log.debug('_plugins: Starting')
 
         pd = PluginDispatcher(self)
-        self.scheduler_plugin = pd.getscheplugin()
+        self.scheduler_plugin = pd.getschedplugin()
         self.wmsstatus_plugin = pd.getwmsstatusplugin()
         self.batchsubmit_plugin = pd.getsubmitplugin()
         self.batchstatus_plugin = pd.getbatchstatusplugin()
@@ -924,7 +924,7 @@ class PluginDispatcher(object):
 
         self.log.info('PluginDispatcher: Object initialized.')
 
-    def getscheplugin(self):
+    def getschedplugin(self):
 
         self.scheduler_cls = self._getplugin('sched')
         self.scheduler_plugin = self.scheduler_cls(self.apfqueue)
