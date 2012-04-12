@@ -84,11 +84,12 @@ FixedSchedPlugin always submits a fixed number of jobs. Etc.
 
 It is the component in charge of submitting new jobs (or pilots), 
 based on the decision made by the Sched Plug-in. 
-Examples are CondorGT2BatchSubmitPlugin, CondorGT5BatchSubmitPlugin, CondorLocalBatchSubmitPlugin, CondorCREAMBatchSubmitPlugin, and CondorEC2BatchSubmitPlugin.
+Examples are CondorGT2BatchSubmitPlugin, CondorGT5BatchSubmitPlugin, CondorLocalBatchSubmitPlugin, CondorCREAMBatchSubmitPlugin, 
+and CondorEC2BatchSubmitPlugin.
 
 \subsubsection{Configuration Plug-in} 
 
-a plug-in to retrieve extra configuration files. 
+A plug-in to retrieve extra configuration files and merge them with the local configuration file.
 E.g PandaConfigPlugin queries SchedConfig. 
 
 \subsection{Usage}
