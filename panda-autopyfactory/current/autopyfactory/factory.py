@@ -936,7 +936,8 @@ class PluginDispatcher(object):
         condor_q_id = 'local'
         if self.qcl.generic_get(self.apfqname, 'batchstatusplugin') == 'Condor': 
             queryargs = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs', logger=self.log)
-            condor_q_id = self.__queryargs2condorqid(queryargs)    
+            if queryargs:
+                    condor_q_id = self.__queryargs2condorqid(queryargs)    
         self.batchstatus_cls = self._getplugin('batchstatus')
         self.batchstatus_plugin = self.batchstatus_cls(self.apfqueue, condor_q_id=condor_q_id)
         self.batchstatus_plugin.start() # starts the thread
