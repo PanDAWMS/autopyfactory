@@ -722,136 +722,22 @@ class APFQueue(threading.Thread):
 
         self.log.debug('_startmonitor: Leaving')
 
-# ---------- get the plug-ins : begin  ---------------
-
     def _plugins(self):
         '''
          method just to instantiate the plugin objects
         '''
         self.log.debug('_plugins: Starting')
 
-        self._sched_plugin()
-        self._batch_status_plugin()
-        self._wms_status_plugin()
-        self._submit_plugin()
-        self._config_plugin()
+
+        pd = PluginDispatcher(self)
+        self.scheduler_plugin = pd.getscheplugin()
+        self.wmsstatus_plugin = pd.getwmsstatusplugin()
+        self.batchsubmit_plugin = pd.getsubmitplugin()
+        self.batchstatus_plugin = pd.getbatchstatusplugin()
+        self.config_plugin = pd.getconfigplugin()
 
         self.log.debug('_plugins: Leaving')
  
-    def _sched_plugin(self):
-
-        self.scheduler_cls = self._getplugin('sched')
-        self.scheduler_plugin = self.scheduler_cls(self)
-
-    def _batch_status_plugin(self):
-
-        condor_q_id = 'local'
-        if self.qcl.generic_get(self.apfqname, 'batchstatusplugin') == 'Condor': 
-            queryargs = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs', logger=self.log)
-            condor_q_id = self.__queryargs2condorqid(queryargs)    
-        self.batchstatus_cls = self._getplugin('batchstatus')
-        self.batchstatus_plugin = self.batchstatus_cls(self, condor_q_id=condor_q_id)
-        self.batchstatus_plugin.start() # starts the thread
-
-    def _wms_status_plugin(self):
-
-        self.wmsstatus_cls = self._getplugin('wmsstatus')
-        self.wmsstatus_plugin = self.wmsstatus_cls(self)
-        self.wmsstatus_plugin.start()   # starts the thread
-
-    def _submit_plugin(self):
-
-        self.batchsubmit_cls = self._getplugin('batchsubmit')
-        self.batchsubmit_plugin = self.batchsubmit_cls(self)
-
-    def _config_plugin(self):
-
-        self.config_cls = self._getplugin('config')
-        if self.config_cls:
-                # Note it could be None
-                self.config_plugin = self.config_cls(self)
-
-    def __queryargs2condorqid(self, queryargs):
-        """
-        method to get the name for the condor_q singleton,
-        based on the combination of the values from 
-        -name and -pool input options.
-        The entire list of input options come from the queues conf file,
-        and it is recorded in queryargs. 
-        """
-        l = queryargs.split()  # convert the string into a list
-                               # e.g.  ['-name', 'foo', '-pool', 'bar'....]
-
-        name = ''
-        pool = ''
-        
-        if '-name' in l:
-            name = l[l.index('-name') + 1]
-        if '-pool' in l:
-            pool = l[l.index('-pool') + 1]
-
-        return '%s:%s' %(name, pool)
-
-    def _getplugin(self, action):
-        '''
-        Generic private method to find out the specific plugin
-        to be used for this queue, depending on the action.
-        Action can be:
-                - sched
-                - batchstatus
-                - wmsstatus
-                - batchsubmit
-                - config
-
-        Steps taken are:
-                1. The name of the item in the config file is calculated.
-                   It is supposed to have format <action>plugin.
-                   For example:  schedplugin, batchstatusplugin, ...
-                2. The name of the plugin module is calculated.
-                   It is supposed to have format <config item><prefix>Plugin.
-                   The prefix is taken from a map.
-                   For example: SimpleSchedPlugin, CondorBatchStatusPlugin
-                3. The plugin module is imported, using __import__
-                4. The plugin class is retrieved. 
-                   The name of the class is the same as the name of the module
-        '''
-
-        self.log.debug("_getplugin: Starting for action %s" %action)
-
-        plugin_prefixes = {
-                'sched' : 'Sched',
-                'wmsstatus': 'WMSStatus',
-                'batchstatus': 'BatchStatus',
-                'batchsubmit': 'BatchSubmit',
-                'config': 'Config'
-        }
-
-        plugin_config_item = '%splugin' %action
-        plugin_prefix = plugin_prefixes[action] 
-
-        if self.qcl.has_option(self.apfqname, plugin_config_item):
-                schedclass = self.qcl.get(self.apfqname, plugin_config_item)
-        else:
-                return None
-
-        plugin_module_name = '%s%sPlugin' %(schedclass, plugin_prefix)
-        
-        self.log.debug("_getplugin: Attempting to import derived classname: autopyfactory.plugins.%s"
-                        % plugin_module_name)
-
-        plugin_module = __import__("autopyfactory.plugins.%s" % plugin_module_name, 
-                                   globals(), 
-                                   locals(),
-                                   ["%s" % plugin_module_name])
-
-        plugin_class = plugin_module_name  #  the name of the class is the name of the module
-
-        self.log.debug("_getplugin: Attempting to return plugin with classname %s" %plugin_class)
-        self.log.debug("_getplugin: Leaving with plugin named %s" %plugin_class)
-        return getattr(plugin_module, plugin_class)
-
-# ---------- get the plug-ins : end ---------------
-
 # Run methods
 
     def run(self):
@@ -1016,6 +902,154 @@ class APFQueue(threading.Thread):
 
         self.log.debug("join: Leaving")
                  
+
+# ==============================================================================                                
+#                     PLUGIN CLASS 
+# ==============================================================================  
+
+class PluginDispatcher(object):
+    '''
+    class to create a deliver, on request, the different plug-ins.
+    Does not really implement any generic API, each plugin has different characteristics.
+    It is just to take all the code out of the APFQueue class. 
+    '''
+
+    def __init__(self, apfqueue):
+
+        self.log = logging.getLogger('main.plugindispatcher')
+
+        self.apfqueue = apfqueue
+        self.qcl = apfqueue.qcl
+        self.fcl = apfqueue.fcl
+        self.apfqname = apfqueue.apfqname
+
+        self.log.info('PluginDispatcher: Object initialized.')
+
+    def getscheplugin(self):
+
+        self.scheduler_cls = self._getplugin('sched')
+        self.scheduler_plugin = self.scheduler_cls(self)
+
+        return self.scheduler_plugin
+
+    def getbatchstatusplugin(self):
+
+        condor_q_id = 'local'
+        if self.qcl.generic_get(self.apfqname, 'batchstatusplugin') == 'Condor': 
+            queryargs = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs', logger=self.log)
+            condor_q_id = self.__queryargs2condorqid(queryargs)    
+        self.batchstatus_cls = self._getplugin('batchstatus')
+        self.batchstatus_plugin = self.batchstatus_cls(self, condor_q_id=condor_q_id)
+        self.batchstatus_plugin.start() # starts the thread
+        
+        return self.batchstatus_plugin
+
+    def getwmsstatusplugin(self):
+
+        self.wmsstatus_cls = self._getplugin('wmsstatus')
+        self.wmsstatus_plugin = self.wmsstatus_cls(self)
+        self.wmsstatus_plugin.start()   # starts the thread
+
+        return self.wmsstatus_plugin
+
+    def getsubmitplugin(self):
+
+        self.batchsubmit_cls = self._getplugin('batchsubmit')
+        self.batchsubmit_plugin = self.batchsubmit_cls(self)
+
+        return self.batchsubmit_plugin
+
+    def getconfigplugin(self):
+
+        self.config_cls = self._getplugin('config')
+        if self.config_cls:
+            # Note it could be None
+            self.config_plugin = self.config_cls(self)
+            return self.config_plugin
+        else:
+            return None    
+
+    def __queryargs2condorqid(self, queryargs):
+        """
+        method to get the name for the condor_q singleton,
+        based on the combination of the values from 
+        -name and -pool input options.
+        The entire list of input options come from the queues conf file,
+        and it is recorded in queryargs. 
+        """
+        l = queryargs.split()  # convert the string into a list
+                               # e.g.  ['-name', 'foo', '-pool', 'bar'....]
+
+        name = ''
+        pool = ''
+        
+        if '-name' in l:
+            name = l[l.index('-name') + 1]
+        if '-pool' in l:
+            pool = l[l.index('-pool') + 1]
+
+        return '%s:%s' %(name, pool)
+
+    def _getplugin(self, action):
+        '''
+        Generic private method to find out the specific plugin
+        to be used for this queue, depending on the action.
+        Action can be:
+                - sched
+                - batchstatus
+                - wmsstatus
+                - batchsubmit
+                - config
+
+        Steps taken are:
+                1. The name of the item in the config file is calculated.
+                   It is supposed to have format <action>plugin.
+                   For example:  schedplugin, batchstatusplugin, ...
+                2. The name of the plugin module is calculated.
+                   It is supposed to have format <config item><prefix>Plugin.
+                   The prefix is taken from a map.
+                   For example: SimpleSchedPlugin, CondorBatchStatusPlugin
+                3. The plugin module is imported, using __import__
+                4. The plugin class is retrieved. 
+                   The name of the class is the same as the name of the module
+        '''
+
+        self.log.debug("_getplugin: Starting for action %s" %action)
+
+        plugin_prefixes = {
+                'sched' : 'Sched',
+                'wmsstatus': 'WMSStatus',
+                'batchstatus': 'BatchStatus',
+                'batchsubmit': 'BatchSubmit',
+                'config': 'Config'
+        }
+
+        plugin_config_item = '%splugin' %action
+        plugin_prefix = plugin_prefixes[action] 
+
+        if self.qcl.has_option(self.apfqname, plugin_config_item):
+                schedclass = self.qcl.get(self.apfqname, plugin_config_item)
+        else:
+                return None
+
+        plugin_module_name = '%s%sPlugin' %(schedclass, plugin_prefix)
+        
+        self.log.debug("_getplugin: Attempting to import derived classname: autopyfactory.plugins.%s"
+                        % plugin_module_name)
+
+        plugin_module = __import__("autopyfactory.plugins.%s" % plugin_module_name, 
+                                   globals(), 
+                                   locals(),
+                                   ["%s" % plugin_module_name])
+
+        plugin_class = plugin_module_name  #  the name of the class is the name of the module
+
+        self.log.debug("_getplugin: Attempting to return plugin with classname %s" %plugin_class)
+        self.log.debug("_getplugin: Leaving with plugin named %s" %plugin_class)
+        return getattr(plugin_module, plugin_class)
+
+
+
 
 # ==============================================================================                                
 #                     INFO CLASSES 
