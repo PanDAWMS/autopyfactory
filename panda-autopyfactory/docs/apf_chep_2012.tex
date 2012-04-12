@@ -92,6 +92,92 @@ and CondorEC2BatchSubmitPlugin.
 A plug-in to retrieve extra configuration files and merge them with the local configuration file.
 E.g PandaConfigPlugin queries SchedConfig. 
 
+~
+
+~
+
+This table should be placed somewhere in the document:
+
+
+Primary attributes:
+
+~
+
+\begin{table}
+\begin{tabular}{|c|l|}
+\hline
+\hline
+Name & Description\tabularnewline
+\hline
+\hline
+\multicolumn{2}{|c|}{Primary} \\
+\hline
+\hline
+pending      &     job is queued (somewhere) but not running yet.      \\ \hline 
+running      &     job is currently active (run + stagein + stageout)  \\ \hline
+error        &     job has been reported to be in an error state       \\ \hline
+suspended    &     job is active, but held or suspended                \\ \hline
+done         &     job has completed                                   \\ \hline
+unknown      &     unknown or transient intermediate state             \\ \hline
+\hline
+\hline
+\multicolumn{2}{|c|}{Secondary} \\
+\hline
+\hline
+transferring  &     stagein + stageout  \\ \hline
+stagein       &                         \\ \hline
+stageout      &                         \\ \hline
+failed        &     (done - success)    \\ \hline
+success       &     (done - failed)     \\ \hline
+\end{tabular}\caption{Job status, primary and secondary attributes}
+\label{job secondary status}
+\end{table}
+
+
+
+\begin{table}
+\begin{tabular}{|c|l|}
+\hline
+\hline
+Name & Description\tabularnewline
+\hline
+\hline
+notready &     job created in the WMS service, but not ready yet for execution\\ \hline
+ready    &     job ready to be picked up and start execution                  \\ \hline
+running  &     job is currently running                                       \\ \hline
+done     &     job has finished with success                                  \\ \hline
+failed   &     job has finished with no success                               \\ \hline
+\end{tabular}\caption{Job status in the WMS service}
+\label{wms job status}
+\end{table}
+
+
+
+\begin{table}
+\begin{tabular}{|l|l|l|}
+\hline
+\multicolumn{3}{|c|}{Translation} \\
+\hline
+\hline
+APF         &      Condor-C/Local      &        Condor-G/Globus \\ \hline 
+\hline
+\hline
+pending     &      Unexp + Idle        &        PENDING         \\ \hline 
+running     &      Running             &        RUNNING         \\ \hline 
+suspended   &      Held                &        SUSPENDED       \\ \hline 
+done        &      Completed           &        DONE            \\ \hline
+unknown     &                          &                        \\ \hline    
+error       &                          &                        \\ \hline
+\end{tabular}\caption{Translation}
+\label{translation}
+\end{table}
+
+
+
+
+
+
+
 \subsection{Usage}
 
 The normal usage will make use of one of set of 4 plug-ins, each per category, per workflow (called APFQueue). 
