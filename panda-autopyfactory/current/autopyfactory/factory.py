@@ -927,7 +927,7 @@ class PluginDispatcher(object):
     def getscheplugin(self):
 
         self.scheduler_cls = self._getplugin('sched')
-        self.scheduler_plugin = self.scheduler_cls(self)
+        self.scheduler_plugin = self.scheduler_cls(self.apfqueue)
 
         return self.scheduler_plugin
 
@@ -938,7 +938,7 @@ class PluginDispatcher(object):
             queryargs = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs', logger=self.log)
             condor_q_id = self.__queryargs2condorqid(queryargs)    
         self.batchstatus_cls = self._getplugin('batchstatus')
-        self.batchstatus_plugin = self.batchstatus_cls(self, condor_q_id=condor_q_id)
+        self.batchstatus_plugin = self.batchstatus_cls(self.apfqueue, condor_q_id=condor_q_id)
         self.batchstatus_plugin.start() # starts the thread
         
         return self.batchstatus_plugin
@@ -946,7 +946,7 @@ class PluginDispatcher(object):
     def getwmsstatusplugin(self):
 
         self.wmsstatus_cls = self._getplugin('wmsstatus')
-        self.wmsstatus_plugin = self.wmsstatus_cls(self)
+        self.wmsstatus_plugin = self.wmsstatus_cls(self.apfqueue)
         self.wmsstatus_plugin.start()   # starts the thread
 
         return self.wmsstatus_plugin
@@ -954,7 +954,7 @@ class PluginDispatcher(object):
     def getsubmitplugin(self):
 
         self.batchsubmit_cls = self._getplugin('batchsubmit')
-        self.batchsubmit_plugin = self.batchsubmit_cls(self)
+        self.batchsubmit_plugin = self.batchsubmit_cls(self.apfqueue)
 
         return self.batchsubmit_plugin
 
@@ -963,7 +963,7 @@ class PluginDispatcher(object):
         self.config_cls = self._getplugin('config')
         if self.config_cls:
             # Note it could be None
-            self.config_plugin = self.config_cls(self)
+            self.config_plugin = self.config_cls(self.apfqueue)
             return self.config_plugin
         else:
             return None    
