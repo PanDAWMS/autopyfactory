@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-WRAPPERVERSION="0.9.5"
+WRAPPERVERSION="0.9.6"
 
 # 
 # A generic wrapper with minimal functionalities
@@ -493,15 +493,43 @@ f_monping() {
 f_download_wrapper_tarball(){
         # donwload a tarball with scripts in python
         # to complete the wrapper actions chain
+        # The address string (WRAPPERTARBALLURL) can actually be a list of comma-split URLs.
+        # This function splits that strings and tries them one by one. 
+
         f_print_msg "=== Downloading the wrapper tarball from $WRAPPERTARBALLURL"
 
-        WRAPPERTARBALLNAME=`/bin/basename $WRAPPERTARBALLURL`
+        arr=$(echo $WRAPPERTARBALLURL | tr "," " ")
+        for WRAPPERTARBALLURLTRIAL in $arr
+        do
+                f_print_msg "Trying with tarball from $WRAPPERTARBALLURLTRIAL"
+                f_download_wrapper_tarball_trial
+                rc=$?
+                if [ $rc -eq 0 ]; then
+                    # breaks
+                    return $rc  
+                fi
+        done
+        # if the loop was not broken, then we return the last RC
+        return $rc
+}
 
-        cmd="curl  --connect-timeout 20 --max-time 120 -s -S $WRAPPERTARBALLURL -o $WRAPPERTARBALLNAME"
+
+f_download_wrapper_tarball_trial(){
+        # Tries to donwload a tarball with scripts in python for each 
+        # field in original WRAPPERTARBALLURL
+
+        f_print_msg "=== Downloading the wrapper tarball from $WRAPPERTARBALLURLTRIAL"
+
+        WRAPPERTARBALLNAME=`/bin/basename $WRAPPERTARBALLURLTRIAL`
+
+        cmd="curl  --connect-timeout 20 --max-time 120 -s -S $WRAPPERTARBALLURLTRIAL -o $WRAPPERTARBALLNAME"
+        echo $cmd
         $cmd
         rc=$?
         if [ $rc -eq 0 ]; then
-                echo "wrapper tarball downloaded successfully" 
+                f_print_msg "apparently, wrapper tarball downloaded successfully"
+                f_check_tarball
+                rc=$?
         fi
         return $rc
 }
@@ -588,12 +616,12 @@ if [ $rc -ne 0 ]; then
         f_exit $rc
 fi
 
-# --- check the wrapper tarball is really a tarball ---
-f_check_tarball
-rc=$?
-if [ $rc -ne 0 ]; then
-        f_exit $rc
-fi
+#### --- check the wrapper tarball is really a tarball ---
+###f_check_tarball
+###rc=$?
+###if [ $rc -ne 0 ]; then
+###        f_exit $rc
+###fi
 
 f_untar_wrapper_tarball
 rc=$?
