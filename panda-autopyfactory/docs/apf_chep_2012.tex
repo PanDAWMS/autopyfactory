@@ -86,6 +86,35 @@ Examples are CondorGT2BatchSubmitPlugin, CondorGT5BatchSubmitPlugin, CondorLocal
 a plug-in to retrieve extra configuration files. 
 E.g PandaConfigPlugin queries SchedConfig. 
 
+\subsection{Usage}
+
+The normal usage will make use of one of set of 4 plug-ins, each per category, per workflow (called APFQueue). 
+Typically, each APFQueue will correspond with one queue as it is defined in the WMS service, 
+or the unique combination of a queue in the WMS service and a queue as defined in the batch system. 
+This allows for many-to-many combination, each one served by an APFQueue. 
+
+However, the combination of two APFQueues working together allows for more complex workflows.
+
+\subsubsection{APF working \emph{a la CloudScheduler}}
+
+The combination of two APFQueues can allow using Cloud Computing resources. 
+For this to happen, the configuration of both APFQueues is like this:
+
+\begin{enumerate}
+\item First APFQueue: 
+the WMS Status Plug-in queries the VO WMS service, and the Execution Plugin submits jobs (or pilots) to a local condor pool, for example.
+\item Second APFQueue: 
+the WMS Status Plug-in queries the local condor pool, 
+and gives to idle jobs in queue the same meaning that jobs ready in an VO WMS service. 
+The Execution Plug-in submits Virtual Machine instantiation orders (to EC2, for example). 
+Those VMs will join the local condor pool allowing the idle jobs (or pilot) to flow an start execution. 
+\end{enumerate}
+
+\subsubsection{APF working \emph{a la glideinWMS}}
+
+It would be possible to replicate the above mechanism to allow APF to run in a similar way that glideinWMS does. 
+Two APF workflows combined, one queries the VO WMS service and submitting jobs (or pilot) to a local pool, 
+and a second APF workflow submitting glideins to join that local pool. 
 
 \section{Monitor}
 
@@ -115,4 +144,3 @@ The authors would like to thank
 %%or allow others to do so, for United States Government purposes.
 
 \end{document}
-
