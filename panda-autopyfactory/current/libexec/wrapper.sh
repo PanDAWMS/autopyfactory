@@ -527,7 +527,7 @@ f_download_wrapper_tarball_trial(){
         $cmd
         rc=$?
         if [ $rc -eq 0 ]; then
-                f_print_msg "apparently, wrapper tarball downloaded successfully"
+                f_print_msg "apparently, wrapper tarball $WRAPPERTARBALLNAME downloaded successfully"
                 f_check_tarball
                 rc=$?
         fi
@@ -536,10 +536,16 @@ f_download_wrapper_tarball_trial(){
 
 f_check_tarball(){
         # check the downloaded file is really a tarball
-        f_print_msg "=== checking the wrapper tarball is a tarball"
+        f_print_msg "=== checking the wrapper tarball $WRAPPERTARBALLNAME is really a gzip file"
         checkfile=`file $WRAPPERTARBALLNAME`
         [[ "$checkfile" =~ "gzip compressed data" ]]
-        return $? 
+        rc=$?
+        if [ $rc -eq 0 ]; then
+            f_print_msg "the tarball $WRAPPERTARBALLNAME is really a tarball"
+        else
+            f_print_msg "WARNING: the tarball $WRAPPERTARBALLNAME is NOT really a tarball"
+        fi
+        return $rc
 }
 
 f_untar_wrapper_tarball(){
