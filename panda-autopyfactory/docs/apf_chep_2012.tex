@@ -173,13 +173,37 @@ error       &                          &                        \\ \hline
 \end{table}
 
 
+
 \begin{table}
 \begin{tabular}{|l|l|}
 \hline
-\multicolumn{2}{|c|}{Translation} \\
+\multicolumn{2}{|c|}{Translation Condor to Job Status} \\
+\hline
+\hline
+Condor Local   & APF       \\
+\hline
+\hline
+Unexpanded (the job has never run)    &   ready      \\ \hline
+Idle                                  &   ready      \\ \hline
+Running                               &   running    \\ \hline
+Removed                               &   done       \\ \hline
+Completed                             &   done       \\ \hline
+Held                                  &   failed     \\ \hline
+Transferring Output                   &   running    \\ \hline
+\end{tabular}\caption{Translation}
+\label{translation}
+\end{table}
+
+
+
+\begin{table}
+\begin{tabular}{|l|l|}
+\hline
+\multicolumn{2}{|c|}{Translation Panda to Job Status} \\
 \hline
 \hline
 Panda         & APF       \\ \hline 
+\hline
 \hline
 pending       & notready  \\ \hline
 defined       & notready  \\ \hline
@@ -194,18 +218,9 @@ transferring  & running   \\ \hline
 finished      & done      \\ \hline
 failed        & failed    \\ \hline
 cancelled     & failed    \\ \hline
-\hline
 \end{tabular}\caption{Translation}
 \label{translation}
 \end{table}
-
-
- 
-
-
-
-
-
 
 
 \subsection{Usage}
