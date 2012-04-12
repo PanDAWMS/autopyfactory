@@ -728,7 +728,6 @@ class APFQueue(threading.Thread):
         '''
         self.log.debug('_plugins: Starting')
 
-
         pd = PluginDispatcher(self)
         self.scheduler_plugin = pd.getscheplugin()
         self.wmsstatus_plugin = pd.getwmsstatusplugin()
