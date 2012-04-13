@@ -729,11 +729,11 @@ class APFQueue(threading.Thread):
         self.log.debug('_plugins: Starting')
 
         pd = PluginDispatcher(self)
-        self.scheduler_plugin = pd.getschedplugin()
-        self.wmsstatus_plugin = pd.getwmsstatusplugin()
-        self.batchsubmit_plugin = pd.getsubmitplugin()
-        self.batchstatus_plugin = pd.getbatchstatusplugin()
-        self.config_plugin = pd.getconfigplugin()
+        self.scheduler_plugin = pd.schedplugin
+        self.wmsstatus_plugin = pd.wmsstatusplugin
+        self.batchsubmit_plugin = pd.submitplugin
+        self.batchstatus_plugin = pd.batchstatusplugin
+        self.config_plugin = pd.configplugin
 
         self.log.debug('_plugins: Leaving')
  
@@ -921,6 +921,13 @@ class PluginDispatcher(object):
         self.qcl = apfqueue.qcl
         self.fcl = apfqueue.fcl
         self.apfqname = apfqueue.apfqname
+
+        # collect all plugins
+        self.schedplugin =  self.getschedplugin()
+        self.batchstatusplugin =  self.getbatchstatusplugin()
+        self.wmsstatusplugin =  self.getwmsstatusplugin()
+        self.submitplugin =  self.getsubmitplugin()
+        self.configplugin =  self.getconfigplugin()
 
         self.log.info('PluginDispatcher: Object initialized.')
 
