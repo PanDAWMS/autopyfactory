@@ -142,125 +142,134 @@ Primary attributes:
 
 ~
 
-
 \begin{table}
-\begin{tabular}{l l}
-\hline
-\hline
-Name & Description\tabularnewline
-\hline
-\hline
-\multicolumn{2}{c}{Primary} \\
-\hline
-\hline
-pending      &     job is queued (somewhere) but not running yet.      \\ \hline 
-running      &     job is currently active (run + stagein + stageout)  \\ \hline
-error        &     job has been reported to be in an error state       \\ \hline
-suspended    &     job is active, but held or suspended                \\ \hline
-done         &     job has completed                                   \\ \hline
-unknown      &     unknown or transient intermediate state             \\ \hline
-\hline
-\hline
-\multicolumn{2}{c}{Secondary} \\
-\hline
-\hline
-transferring  &     stagein + stageout  \\ \hline
-stagein       &                         \\ \hline
-stageout      &                         \\ \hline
-failed        &     (done - success)    \\ \hline
-success       &     (done - failed)     \\ \hline
-\end{tabular}\caption{Job status, primary and secondary attributes}
-\label{job secondary status}
+   \begin{center}
+      \begin{tabular}{l l}
+         \hline
+         \textbf{APF status} & \textbf{Description} \\ 
+         \hline
+         pending      &     job is queued (somewhere) but not running yet.      \\  
+         running      &     job is currently active (run + stagein + stageout)  \\ 
+         error        &     job has been reported to be in an error state       \\ 
+         suspended    &     job is active, but held or suspended                \\ 
+         done         &     job has completed                                   \\ 
+         unknown      &     unknown or transient intermediate state             \\ 
+         \hline
+      \end{tabular}
+   \end{center}
+   \caption{Batch submit system primary APF job status}
+   \label{job secondary status}
 \end{table}
 
 
 
 \begin{table}
-\begin{tabular}{l l}
-\hline
-\hline
-Name & Description\tabularnewline
-\hline
-\hline
-notready &     job created in the WMS service, but not ready yet for execution\\ \hline
-ready    &     job ready to be picked up and start execution                  \\ \hline
-running  &     job is currently running                                       \\ \hline
-done     &     job has finished with success                                  \\ \hline
-failed   &     job has finished with no success                               \\ \hline
-\end{tabular}\caption{Job status in the WMS service}
-\label{wms job status}
+   \begin{center}
+      \begin{tabular}{l l}
+         \hline
+         \textbf{APF status} & \textbf{Description}  \\ 
+         \hline
+         transferring  &     stagein + stageout  \\ 
+         stagein       &                         \\ 
+         stageout      &                         \\ 
+         failed        &     (done - success)    \\ 
+         success       &     (done - failed)     \\ 
+         \hline
+      \end{tabular}
+   \end{center}
+   \caption{Batch submit system secondary APF job status} 
+   \label{job secondary status}
 \end{table}
 
 
 
 \begin{table}
-\begin{tabular}{l l l}
-\hline
-\hline
-\multicolumn{3}{c}{Translation} \\
-\hline
-\hline
-APF         &      Condor-C/Local      &        Condor-G/Globus \\ \hline 
-\hline
-\hline
-pending     &      Unexp + Idle        &        PENDING         \\ \hline 
-running     &      Running             &        RUNNING         \\ \hline 
-suspended   &      Held                &        SUSPENDED       \\ \hline 
-done        &      Completed           &        DONE            \\ \hline
-unknown     &                          &                        \\ \hline    
-error       &                          &                        \\ \hline
-\end{tabular}\caption{Translation}
-\label{translation}
+   \begin{center}
+      \begin{tabular}{l l}
+         \hline
+         \textbf{APF status} & \textbf{Description} \\
+         \hline
+         notready &     job created in the WMS service, but not ready yet for execution\\ 
+         ready    &     job ready to be picked up and start execution                  \\ 
+         running  &     job is currently running                                       \\ 
+         done     &     job has finished with success                                  \\ 
+         failed   &     job has finished with no success                               \\ 
+         \hline
+      \end{tabular}
+   \end{center}
+   \caption{WMS service APF job status}
+   \label{wms job status}
 \end{table}
 
 
 
 \begin{table}
-\begin{tabular}{l l}
-\hline
-\hline
-\multicolumn{2}{c}{Translation Condor to Job Status} \\
-\hline
-\hline
-Condor Local   & APF       \\ \hline
-\hline
-\hline
-Unexpanded (the job has never run)    &   ready      \\ \hline
-Idle                                  &   ready      \\ \hline
-Running                               &   running    \\ \hline
-Removed                               &   done       \\ \hline
-Completed                             &   done       \\ \hline
-Held                                  &   failed     \\ \hline
-Transferring Output                   &   running    \\ \hline
-\end{tabular}\caption{Translation}
-\label{translation}
+   \begin{center}
+      \begin{tabular}{l l l}
+         \hline
+         \textbf{Condor-C/Local}      &   \textbf{Condor-G/Globus}     &   \textbf{APF}        \\ 
+         \hline
+         Unexp + Idle        &        PENDING             &   pending    \\ 
+         Running             &        RUNNING             &   running    \\ 
+         Held                &        SUSPENDED           &   suspended  \\ 
+         Completed           &        DONE                &   done       \\
+                             &                            &   unknown    \\    
+                             &                            &   error      \\ 
+         \hline
+      \end{tabular}
+   \end{center}
+   \caption{Mapping between condor status and APF batch job status}
+   \label{translation}
 \end{table}
 
 
+
 \begin{table}
-\begin{tabular}{l l}
-\hline
-\hline
-\multicolumn{2}{c}{Translation Panda to Job Status} \\\hline
-\hline
-Panda         & APF       \\ \hline 
-\hline
-\hline
-pending       & notready  \\ \hline
-defined       & notready  \\ \hline
-assigned      & notready  \\ \hline
-waiting       & notready  \\ \hline
-activated     & ready     \\ \hline
-starting      & running   \\ \hline
-sent          & running   \\ \hline
-running       & running   \\ \hline
-holding       & running   \\ \hline
-transferring  & running   \\ \hline
-finished      & done      \\ \hline
-failed        & failed    \\ \hline
-cancelled     & failed    \\ \hline
-\end{tabular}\caption{Translation}
-\label{translation}
+   \begin{center}
+      \begin{tabular}{l l}
+         \hline
+         \textbf{Condor Local}   & \textbf{APF}       \\ 
+         \hline
+         Unexpanded (the job has never run)    &   ready      \\
+         Idle                                  &   ready      \\
+         Running                               &   running    \\
+         Removed                               &   done       \\
+         Completed                             &   done       \\
+         Held                                  &   failed     \\
+         Transferring Output                   &   running    \\
+         \hline
+      \end{tabular}
+   \end{center}
+   \caption{Mapping between condor status and APF batch job status}
+   \label{translation}
+\end{table}
+
+
+
+\begin{table}
+   \begin{center}
+      \begin{tabular}{l l}
+         \hline
+         \textbf{Panda}         & \textbf{APF}       \\
+         \hline
+         pending       & notready  \\ 
+         defined       & notready  \\ 
+         assigned      & notready  \\ 
+         waiting       & notready  \\ 
+         activated     & ready     \\ 
+         starting      & running   \\ 
+         sent          & running   \\ 
+         running       & running   \\ 
+         holding       & running   \\ 
+         transferring  & running   \\ 
+         finished      & done      \\ 
+         failed        & failed    \\ 
+         cancelled     & failed    \\ 
+         \hline
+      \end{tabular}
+   \end{center}
+   \caption{Mapping between PanDA status and APF WMS job status}
+   \label{translation}
 \end{table}
 
 
