@@ -54,6 +54,45 @@ tying pilot flows closely to the amount of work the site has to run.
 It is able to gather information from many sources, 
 in order to correctly conigure itself for a site and its decision logic can easily be updated.
 
+AutoPyFactory runs a single process,
+launching a separate thread for each internal workflow (known as APFQueue).
+
+\subsection{Configuration}
+
+The entire behavior of AutoPyFactory is driven by a set of configuration files.
+The local configuration object describing the number and behaviour of APFQueues 
+can be extended dinamically with other objects retrieved from external sources, 
+e.g. from an URL.
+
+\subsubsection{Factory configuration}
+
+Two files describe the behavior of the core components of AutoPyFactory.
+
+\begin{enumerate}
+\item factory.sysconfig
+\item factory.conf
+\end{enumerate}
+
+These two files includes information about the final UNIX identity running the service,
+the location of log files, the debug level, the URL for the web based monitor, 
+or the location of the rest of configuration files.
+
+\subsubsection{Queues configuration}
+
+The queues.conf contains the list of APFQueues served by the AutoPyFactory instance,
+and describe the performance of each one of them. 
+The configuration includes the complete set of plug-ins, 
+input parameters for customization of those plug-ins, 
+duration of the log files, 
+or the final executable and its arguments.
+
+\subsubsection{Proxy configuration}
+
+Describes how to keep valid X509 grid proxy files for remote submission,
+including the source and destination files, 
+the frequency of renewal, 
+and VOMS attributes.
+
 \subsection{Plug-ins design}
 
 AutoPyFactory can serve to different queues in different ways 
