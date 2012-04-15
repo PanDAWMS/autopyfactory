@@ -99,10 +99,80 @@ including the source and destination files,
 the frequency of renewal, 
 and VOMS attributes.
 
+\subsection{AutoPyFactory internal nomenclature}
+
+Communication between different modules in AutoPyFactory 
+is possible thanks to the internal nomenclature.
+A set of generic variables with an specific meaning which all components 
+understand, allowing them to work together. 
+Table 1 and Table 2 show the AutoPyFactory names for the
+possible states in the batch submission system. 
+
+\begin{table}
+   \begin{center}
+      \begin{tabular}{l l}
+         \hline
+         \textbf{APF status} & \textbf{Description} \\ 
+         \hline
+         pending      &     job is queued (somewhere) but not running yet.      \\  
+         running      &     job is currently active (run + stagein + stageout)  \\ 
+         error        &     job has been reported to be in an error state       \\ 
+         suspended    &     job is active, but held or suspended                \\ 
+         done         &     job has completed                                   \\ 
+         unknown      &     unknown or transient intermediate state             \\ 
+         \hline
+      \end{tabular}
+   \end{center}
+   \caption{Batch submit system primary APF job status}
+   \label{job secondary status}
+\end{table}
+
+\begin{table}
+   \begin{center}
+      \begin{tabular}{l l}
+         \hline
+         \textbf{APF status} & \textbf{Description}  \\ 
+         \hline
+         transferring  &     stagein + stageout  \\ 
+         stagein       &                         \\ 
+         stageout      &                         \\ 
+         failed        &     (done - success)    \\ 
+         success       &     (done - failed)     \\ 
+         \hline
+      \end{tabular}
+   \end{center}
+   \caption{Batch submit system secondary APF job status} 
+   \label{job secondary status}
+\end{table}
+
+Table 3 shows the list of AutoPyFactory names and their meaning 
+for the possible states in the WMS system.
+
+\begin{table}
+   \begin{center}
+      \begin{tabular}{l l}
+         \hline
+         \textbf{APF status} & \textbf{Description} \\
+         \hline
+         notready &     job created in the WMS service, but not ready yet for execution\\ 
+         ready    &     job ready to be picked up and start execution                  \\ 
+         running  &     job is currently running                                       \\ 
+         done     &     job has finished with success                                  \\ 
+         failed   &     job has finished with no success                               \\ 
+         \hline
+      \end{tabular}
+   \end{center}
+   \caption{WMS service APF job status}
+   \label{wms job status}
+\end{table}
+
 \subsection{Plug-ins design}
 
 AutoPyFactory can serve to different queues in different ways 
 thanks to its modular design based on plug-ins. 
+Plug-ins serve two purposes. 
+They interact with the external services, like the VO WMS service or the batch submission system,
+and they translate the information retrieved by those services into the internal AutoPyFactory nomenclature.
 There are currently 5 types of plug-ins:
 
 \subsubsection{WMS Status Plug-in}
@@ -113,6 +183,35 @@ There are currently 5 types of plug-ins:
 The only requirements is the WMS must provide for an API. 
 This API has to return the number of jobs in different status (ready, running, finished...) per queue, 
 in such a way that information can be converted internally into APF nomenclature. 
+Table 4 shows an example of mapping between the VO WMS service (PanDA in this case)
+and the internal AutoPyFactory nomenclature.
+
+\begin{table}
+   \begin{center}
+      \begin{tabular}{l l}
+         \hline
+         \textbf{Panda}         & \textbf{APF}       \\
+         \hline
+         pending       & notready  \\ 
+         defined       & notready  \\ 
+         assigned      & notready  \\ 
+         waiting       & notready  \\ 
+         activated     & ready     \\ 
+         starting      & running   \\ 
+         sent          & running   \\ 
+         running       & running   \\ 
+         holding       & running   \\ 
+         transferring  & running   \\ 
+         finished      & done      \\ 
+         failed        & failed    \\ 
+         cancelled     & failed    \\ 
+         \hline
+      \end{tabular}
+   \end{center}
+   \caption{Mapping between PanDA status and APF WMS job status}
+   \label{translation}
+\end{table}
+
 
 \subsubsection{Batch Status Plug-in}
 
@@ -120,6 +219,50 @@ in such a way that information can be converted internally into APF nomenclature
 
 \noindent it queries the specific batch system being used to submit jobs (or pilots). 
 E.g. CondorBatchStatusPlugin queries condor (condor\_q)
+Tables 5 and 6 show two example of mappings between the external services (condor and globus in this case)
+and the internal AutoPyFactory nomenclature.
+
+\begin{table}
+   \begin{center}
+      \begin{tabular}{l l}
+         \hline
+         \textbf{Condor Local}   & \textbf{APF}       \\ 
+         \hline
+         Unexpanded (the job has never run)    &  pending     \\
+         Idle                                  &  pending     \\
+         Running                               &  running     \\
+         Removed                               &  done        \\
+         Completed                             &  done        \\
+         Held                                  &  suspended   \\
+         Transferring Output                   &  running     \\
+         \hline
+      \end{tabular}
+   \end{center}
+   \caption{Mapping between condor status and APF batch job status}
+   \label{translation}
+\end{table}
+
+\begin{table}
+   \begin{center}
+      \begin{tabular}{l l}
+         \hline
+         \textbf{Globus status}   & \textbf{APF status}       \\ 
+         \hline
+         PENDING       &   pending    \\
+         ACTIVE        &   running    \\
+         FAILED        &   done       \\
+         DONE          &   done       \\
+         SUSPENDED     &   suspended  \\
+         UNSUBMITTED   &   pending    \\
+         STAGE\_IN     &   running    \\
+         STAGE\_OUT    &   running    \\
+         \hline
+      \end{tabular}
+   \end{center}
+   \caption{Mapping between globus status and APF batch job status}
+   \label{translation}
+\end{table}
+
 
 \subsubsection{Scheduler Plugin-in}
 
@@ -149,64 +292,9 @@ E.g PandaConfigPlugin queries SchedConfig.
 
 ~
 
-\begin{table}
-   \begin{center}
-      \begin{tabular}{l l}
-         \hline
-         \textbf{APF status} & \textbf{Description} \\ 
-         \hline
-         pending      &     job is queued (somewhere) but not running yet.      \\  
-         running      &     job is currently active (run + stagein + stageout)  \\ 
-         error        &     job has been reported to be in an error state       \\ 
-         suspended    &     job is active, but held or suspended                \\ 
-         done         &     job has completed                                   \\ 
-         unknown      &     unknown or transient intermediate state             \\ 
-         \hline
-      \end{tabular}
-   \end{center}
-   \caption{Batch submit system primary APF job status}
-   \label{job secondary status}
-\end{table}
 
 
 
-\begin{table}
-   \begin{center}
-      \begin{tabular}{l l}
-         \hline
-         \textbf{APF status} & \textbf{Description}  \\ 
-         \hline
-         transferring  &     stagein + stageout  \\ 
-         stagein       &                         \\ 
-         stageout      &                         \\ 
-         failed        &     (done - success)    \\ 
-         success       &     (done - failed)     \\ 
-         \hline
-      \end{tabular}
-   \end{center}
-   \caption{Batch submit system secondary APF job status} 
-   \label{job secondary status}
-\end{table}
-
-
-
-\begin{table}
-   \begin{center}
-      \begin{tabular}{l l}
-         \hline
-         \textbf{APF status} & \textbf{Description} \\
-         \hline
-         notready &     job created in the WMS service, but not ready yet for execution\\ 
-         ready    &     job ready to be picked up and start execution                  \\ 
-         running  &     job is currently running                                       \\ 
-         done     &     job has finished with success                                  \\ 
-         failed   &     job has finished with no success                               \\ 
-         \hline
-      \end{tabular}
-   \end{center}
-   \caption{WMS service APF job status}
-   \label{wms job status}
-\end{table}
 
 
 
@@ -231,76 +319,9 @@ E.g PandaConfigPlugin queries SchedConfig.
 
 
 
-\begin{table}
-   \begin{center}
-      \begin{tabular}{l l}
-         \hline
-         \textbf{Condor Local}   & \textbf{APF}       \\ 
-         \hline
-         Unexpanded (the job has never run)    &  pending     \\
-         Idle                                  &  pending     \\
-         Running                               &  running     \\
-         Removed                               &  done        \\
-         Completed                             &  done        \\
-         Held                                  &  suspended   \\
-         Transferring Output                   &  running     \\
-         \hline
-      \end{tabular}
-   \end{center}
-   \caption{Mapping between condor status and APF batch job status}
-   \label{translation}
-\end{table}
 
 
 
-\begin{table}
-   \begin{center}
-      \begin{tabular}{l l}
-         \hline
-         \textbf{Globus status}   & \textbf{APF status}       \\ 
-         \hline
-         PENDING       &   pending    \\
-         ACTIVE        &   running    \\
-         FAILED        &   done       \\
-         DONE          &   done       \\
-         SUSPENDED     &   suspended  \\
-         UNSUBMITTED   &   pending    \\
-         STAGE\_IN     &   running    \\
-         STAGE\_OUT    &   running    \\
-         \hline
-      \end{tabular}
-   \end{center}
-   \caption{Mapping between globus status and APF batch job status}
-   \label{translation}
-\end{table}
-
-
-
-\begin{table}
-   \begin{center}
-      \begin{tabular}{l l}
-         \hline
-         \textbf{Panda}         & \textbf{APF}       \\
-         \hline
-         pending       & notready  \\ 
-         defined       & notready  \\ 
-         assigned      & notready  \\ 
-         waiting       & notready  \\ 
-         activated     & ready     \\ 
-         starting      & running   \\ 
-         sent          & running   \\ 
-         running       & running   \\ 
-         holding       & running   \\ 
-         transferring  & running   \\ 
-         finished      & done      \\ 
-         failed        & failed    \\ 
-         cancelled     & failed    \\ 
-         \hline
-      \end{tabular}
-   \end{center}
-   \caption{Mapping between PanDA status and APF WMS job status}
-   \label{translation}
-\end{table}
 
 
 \subsection{Usage}
