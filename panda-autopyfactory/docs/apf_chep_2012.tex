@@ -357,7 +357,8 @@ Please read the CONFIGURATION documentation regarding the proxy.conf file, so yo
 Make sure voms-proxy-* commands work properly.
 \item Add the racf-grid YUM repo to your system:
 \begin{verbatim}
-$ rpm -ivh http://dev.racf.bnl.gov/yum/grid/production/rhel/5Client/x86_64/racf-grid-release-0.9-1.noarch.rpm
+$ rpm -ivh \
+http://dev.racf.bnl.gov/yum/grid/production/rhel/5Client/x86_64/racf-grid-release-0.9-1.noarch.rpm
 \end{verbatim}
 The warning about NOKEY is expected. 
 This release RPM sets up YUM to point at our repository, 
