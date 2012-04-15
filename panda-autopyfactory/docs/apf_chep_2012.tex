@@ -203,18 +203,40 @@ Primary attributes:
 
 
 
+%%%\begin{table}
+%%%   \begin{center}
+%%%      \begin{tabular}{l l l}
+%%%         \hline
+%%%         \textbf{Condor-C/Local}      &   \textbf{Condor-G/Globus}     &   \textbf{APF}        \\ 
+%%%         \hline
+%%%         Unexp + Idle        &        PENDING             &   pending    \\ 
+%%%         Running             &        RUNNING             &   running    \\ 
+%%%         Held                &        SUSPENDED           &   suspended  \\ 
+%%%         Completed           &        DONE                &   done       \\
+%%%                             &                            &   unknown    \\    
+%%%                             &                            &   error      \\ 
+%%%         \hline
+%%%      \end{tabular}
+%%%   \end{center}
+%%%   \caption{Mapping between condor status and APF batch job status}
+%%%   \label{translation}
+%%%\end{table}
+
+
+
 \begin{table}
    \begin{center}
-      \begin{tabular}{l l l}
+      \begin{tabular}{l l}
          \hline
-         \textbf{Condor-C/Local}      &   \textbf{Condor-G/Globus}     &   \textbf{APF}        \\ 
+         \textbf{Condor Local}   & \textbf{APF}       \\ 
          \hline
-         Unexp + Idle        &        PENDING             &   pending    \\ 
-         Running             &        RUNNING             &   running    \\ 
-         Held                &        SUSPENDED           &   suspended  \\ 
-         Completed           &        DONE                &   done       \\
-                             &                            &   unknown    \\    
-                             &                            &   error      \\ 
+         Unexpanded (the job has never run)    &  pending     \\
+         Idle                                  &  pending     \\
+         Running                               &  running     \\
+         Removed                               &  done        \\
+         Completed                             &  done        \\
+         Held                                  &  suspended   \\
+         Transferring Output                   &  running     \\
          \hline
       \end{tabular}
    \end{center}
@@ -228,19 +250,20 @@ Primary attributes:
    \begin{center}
       \begin{tabular}{l l}
          \hline
-         \textbf{Condor Local}   & \textbf{APF}       \\ 
+         \textbf{Globus status}   & \textbf{APF status}       \\ 
          \hline
-         Unexpanded (the job has never run)    &   ready      \\
-         Idle                                  &   ready      \\
-         Running                               &   running    \\
-         Removed                               &   done       \\
-         Completed                             &   done       \\
-         Held                                  &   failed     \\
-         Transferring Output                   &   running    \\
+         PENDING       &   pending    \\
+         ACTIVE        &   running    \\
+         FAILED        &   done       \\
+         DONE          &   done       \\
+         SUSPENDED     &   suspended  \\
+         UNSUBMITTED   &   pending    \\
+         STAGE\_IN     &   running    \\
+         STAGE\_OUT    &   running    \\
          \hline
       \end{tabular}
    \end{center}
-   \caption{Mapping between condor status and APF batch job status}
+   \caption{Mapping between globus status and APF batch job status}
    \label{translation}
 \end{table}
 
