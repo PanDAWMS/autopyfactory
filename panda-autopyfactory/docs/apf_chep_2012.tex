@@ -54,7 +54,11 @@ tying pilot flows closely to the amount of work the site has to run.
 It is able to gather information from many sources, 
 in order to correctly conigure itself for a site and its decision logic can easily be updated.
 
+~
+
 Maybe here it is needed to explain what is a pilot....
+
+~
 
 The basics of the AutoPyFactory architecture are:
 \begin{itemize}
@@ -64,7 +68,9 @@ The basics of the AutoPyFactory architecture are:
     \item Submit as many new pilots as needed.
 \end{itemize}
 
-AutoPyFactory runs a single process,
+Each one of these steps is done by a different plug-in.
+
+AutoPyFactory runs as a single process,
 launching a separate thread for each internal workflow (known as APFQueue).
 Each one of these APFQueues consists on the unique combination of a WMS queue and a batch submit queue.
 
