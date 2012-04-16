@@ -786,7 +786,7 @@ class APFQueue(threading.Thread):
 
         self.log.debug("_submitpilots: Starting")
         # message for the monitor
-        msg = 'Attempt to submit %d pilots for queue %s' %(nsub, self.apfqname)
+        msg = 'Attempt to submit %s pilots for queue %s' %(nsub, self.apfqname)
         self._monitor_note(msg)
 
         (status, output) = self.batchsubmit_plugin.submit(nsub)
