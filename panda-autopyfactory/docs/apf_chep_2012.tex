@@ -54,8 +54,19 @@ tying pilot flows closely to the amount of work the site has to run.
 It is able to gather information from many sources, 
 in order to correctly conigure itself for a site and its decision logic can easily be updated.
 
+Maybe here it is needed to explain what is a pilot....
+
+The basics of the AutoPyFactory architecture are:
+\begin{itemize}
+    \item Inspects a VO WMS service to query for end-users jobs ready to run.
+    \item Inspects the submission system to query how many pilots are already running or still idle.
+    \item Makes a decission based on that information.
+    \item Submit as many new pilots as needed.
+\end{itemize}
+
 AutoPyFactory runs a single process,
 launching a separate thread for each internal workflow (known as APFQueue).
+Each one of these APFQueues consists on the unique combination of a WMS queue and a batch submit queue.
 
 \subsection{Configuration}
 
