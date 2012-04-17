@@ -287,13 +287,13 @@ Typically, each APFQueue will serve one queue as it is defined in the WMS servic
 and will submit pilots to a queue as defined in the batch system. 
 This allows for many-to-many combinations, each one served by one APFQueue in a single thread. 
 
-However, the combination of two APFQueues working together allows for more complex workflows.
+However, more complex workflows can be achieved by the combination of two APFQueues working together.
 
 \subsubsection{Cloud Computing with AutoPyFactory:}
 The combination of two APFQueues can allow using Cloud Computing resources. 
 For this to happen, the configuration of both APFQueues is like this:
 
-\begin{enumerate}
+\begin{itemize}
 \item First APFQueue: 
 the WMS Status Plug-in queries the VO WMS service, and the Execution Plugin submits jobs (or pilots) to a local condor pool, for example.
 \item Second APFQueue: 
@@ -301,7 +301,7 @@ the WMS Status Plug-in queries the local condor pool,
 and gives to idle jobs in queue the same meaning that jobs ready in an VO WMS service. 
 The Execution Plug-in submits Virtual Machine instantiation orders (to EC2, for example). 
 Those VMs will join the local condor pool allowing the idle jobs (or pilot) to flow an start execution. 
-\end{enumerate}
+\end{itemize}
 
 \subsubsection{Glideins submission with AutoPyFactory:}
 It would be possible to replicate the above mechanism to allow AutoPyFactory to run in a similar way that glideinWMS does. 
