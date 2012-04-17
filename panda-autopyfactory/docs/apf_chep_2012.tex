@@ -159,7 +159,7 @@ and merge them with the local configuration content.
 An example of a configuration plugi-in queries the PanDA SchedConfig service.
 
 
-\subsubsection{WMS Status Plug-in: }
+\subsubsection{WMS Status Plug-in:}
 Queries the VO WMS system, 
 retrieving information about the number of jobs in different status (ready, running, finished...) per queue.
 This information is converted internally into the AutoPyFactory nomenclature.
@@ -196,13 +196,13 @@ and the internal AutoPyFactory nomenclature.
 \end{table}
 
 
-\subsubsection{Batch Status Plug-in}
-
-~
-
-\noindent it queries the specific batch system being used to submit jobs (or pilots). 
-E.g. CondorBatchStatusPlugin queries condor (condor\_q)
-Tables 5 and 6 show two example of mappings between the external services (condor and globus in this case)
+\subsubsection{Batch Status Plug-in:}
+Queries the batch system being used to submit the jobs (or pilots) to the grid resources,
+to determine how many previously submitted jobs are already being executed and how many are still idle.
+This information is used to avoid submitting an unnecesary number of extra new jobs, 
+which could cause from bottlenecks and inefficiencies on the overall algorithm, to severe damage on remote Grid services.
+An example is a module querying the condor queues.
+Tables 5 and 6 show two example of mappings between the external services
 and the internal AutoPyFactory nomenclature.
 
 \begin{table}
