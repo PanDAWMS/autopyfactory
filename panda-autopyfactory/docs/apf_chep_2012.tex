@@ -156,15 +156,17 @@ There are currently 5 types of plug-ins:
 Retrieves extra configuration content from remote sources 
 (as an URL with the actual configuration file, or a web service with an API providing for the configuration content)
 and merge them with the local configuration content.
-For example, the PandaConfigPlugin queries the PanDA SchedConfig service.
+An example of a configuration plugi-in queries the PanDA SchedConfig service.
 
 
-\subsubsection{WMS Status Plug-in}
-It queries a given WMS system. E.g. PandaWMSStatusPlugin queries PanDA. 
-The only requirements is the WMS must provide for an API. 
-This API has to return the number of jobs in different status (ready, running, finished...) per queue, 
-in such a way that information can be converted internally into AutoPyFactory nomenclature. 
-Table 4 shows an example of mapping between the VO WMS service (PanDA in this case)
+\subsubsection{WMS Status Plug-in: }
+Queries the VO WMS system, 
+retrieving information about the number of jobs in different status (ready, running, finished...) per queue.
+This information is converted internally into the AutoPyFactory nomenclature.
+An example of a WMS Status plug-in queries the PanDA API.
+Another example is a plug-in querying a local Condor pool and interpreting the output as end-user jobs.
+Table 4 shows an example of mapping between the VO WMS service 
+(PanDA in this case)
 and the internal AutoPyFactory nomenclature.
 
 \begin{table}
