@@ -298,7 +298,9 @@ This allows for many-to-many combinations, each one served by one APFQueue in a 
 However, more complex workflows can be achieved by the combination of two APFQueues working together.
 
 \subsubsection{Cloud Computing with AutoPyFactory:}
-The combination of two APFQueues can allow using Cloud Computing resources. 
+The combination of two APFQueues, 
+as it is shown in figure \ref{cloud}
+can allow using Cloud Computing resources. 
 For this to happen, the configuration of both APFQueues is like this:
 
 \begin{itemize}
@@ -316,6 +318,12 @@ can include a condor startd daemon which will join the local condor pool.
 Once these remote instances have joined the condor pool, 
 the idle jobs will flow and start execution. 
 \end{itemize}
+
+\begin{figure}
+\centering\includegraphics[width=0.7\textwidth]{cloud}
+\caption{Cloud}
+\label{cloud}
+\end{figure}
 
 \subsubsection{Glideins submission with AutoPyFactory:}
 It would be possible to replicate the above mechanism to allow Condor glideins submission with AutoPyFactory.
