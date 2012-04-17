@@ -39,13 +39,30 @@ establish a reliable pilot factory service for ATLAS.
 \end{abstract}
 
 
+\section{Introduction}
+
+LHC experiments have adopted jobs workflows based on pilots systems.
+Even tought the particular implementation of these pilot-based architectures may vary 
+between different VOs, the physolophy is the same. 
+
+Generic multipurpose pilot jobs are submitted to sites without payload. 
+Only when these jobs begin to run on a grid resource they contact a central VO service 
+to pick-up a real payload (as an end-user job) and executes it.
+Using these pilot-based workflows helps to improve job reliability,
+optimize resources utilization, allows for oportunistics resources usage, 
+and mitigates many of the problems associated with the inhomogeneities found on the grid.
+
+Therefore, VO's need for a reliable, robust but scalable framework
+capable of managing the automatic flow of pilots to remote Grid resources
+accordingly with the load of payload jobs.
+These pilot frameworks need to address the different policies that the VOs
+implement to handle the different types of payload flavors.
+
+AutoPyFactory is one of these pilot frameworks.
+
+
 \section{Architecture}
 
-~
-
-Maybe here it is needed to explain what is a pilot....
-
-~
 
 AutoPyFactory runs as a single process,
 launching a separate thread for each internal workflow (known as APFQueue).
