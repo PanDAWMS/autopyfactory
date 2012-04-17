@@ -76,8 +76,8 @@ These steps can be summarized as follows:
 
 \subsection{AutoPyFactory internal nomenclature}
 
-Communication between different modules in AutoPyFactory 
-is possible thanks to the internal nomenclature.
+The communication between different modules in AutoPyFactory 
+is possible thanks to its internal nomenclature.
 A set of generic variables with an specific meaning which all components 
 understand, allowing them to work together. 
 Table 1 and Table 2 show the AutoPyFactory names for the
@@ -150,11 +150,17 @@ They interact with the external services, like the VO WMS service or the batch s
 and they translate the information retrieved by those services into the internal AutoPyFactory nomenclature.
 There are currently 5 types of plug-ins:
 
+
+\subsubsection{Configuration Plug-in:}
+
+Retrieves extra configuration content from remote sources 
+(as an URL with the actual configuration file, or a web service with an API providing for the configuration content)
+and merge them with the local configuration content.
+For example, the PandaConfigPlugin queries the PanDA SchedConfig service.
+
+
 \subsubsection{WMS Status Plug-in}
-
-~
-
-\noindent it queries a given WMS system. E.g. PandaWMSStatusPlugin queries PanDA. 
+It queries a given WMS system. E.g. PandaWMSStatusPlugin queries PanDA. 
 The only requirements is the WMS must provide for an API. 
 This API has to return the number of jobs in different status (ready, running, finished...) per queue, 
 in such a way that information can be converted internally into AutoPyFactory nomenclature. 
@@ -258,14 +264,6 @@ based on the decision made by the Sched Plug-in.
 Examples are CondorGT2BatchSubmitPlugin, CondorGT5BatchSubmitPlugin, CondorLocalBatchSubmitPlugin, CondorCREAMBatchSubmitPlugin, 
 and CondorEC2BatchSubmitPlugin.
 
-\subsubsection{Configuration Plug-in}
-
-~
-
-\noindent A plug-in to retrieve extra configuration files and merge them with the local configuration file.
-E.g PandaConfigPlugin queries SchedConfig. 
-
-~
 
 
 
