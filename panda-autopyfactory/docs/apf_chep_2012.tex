@@ -40,6 +40,7 @@ establish a reliable pilot factory service for ATLAS.
 
 
 \section{Architecture}
+
 ~
 
 Maybe here it is needed to explain what is a pilot....
@@ -52,10 +53,14 @@ as it is defined in the VO Workload Management WMS service,
 and delivers pilots to a single batch queue,
 either local o remotely. 
 
+~
+
 The behavior of these AutoPyFactory workflows, or APFQueues,
 is determined by the combination of a set of plug-ins, 
 invoked in a fixed order,  
 each one in charge of the performance of a very well defined action.
+
+~
 
 These steps can be summarized as follows:
 \begin{itemize}
@@ -64,9 +69,6 @@ These steps can be summarized as follows:
     \item Makes a decission based on that information.
     \item Submit as many new pilots as needed.
 \end{itemize}
-
-Each one of these steps is done by a different plug-in.
-
 
 \subsection{AutoPyFactory internal nomenclature}
 
