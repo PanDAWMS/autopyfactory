@@ -269,12 +269,13 @@ It implements a given algorithm to decide how many new jobs (or pilots) should b
 A typical algorithm calculates the number of new jobs based on the number of end-user jobs in a ready status in the VO WMS service, 
 with some constrains to prevent the submission of an excesively high number of jobs, 
 or to eventually keep a minimum number of submissions per cycle. 
+Figure \ref{activatedfigure} shows the decision making algorithm chartflow. 
 Another algorithm could just submit always a fixed number of jobs.
 
 \begin{figure}
 \centering\includegraphics[width=0.7\textwidth]{activated}
 \caption{Activated algorithm}
-\label{activated}
+\label{activatedfigure}
 \end{figure}
 
 \subsubsection{Execution Plug-in:}
