@@ -46,6 +46,7 @@ establish a reliable pilot factory service for ATLAS.
 Maybe here it is needed to explain what is a pilot....
 
 ~
+
 AutoPyFactory runs as a single process,
 launching a separate thread for each internal workflow (known as APFQueue).
 Each one of these APFQueues typically serves for a single job queue, 
@@ -57,17 +58,20 @@ either local o remotely.
 
 The behavior of these AutoPyFactory workflows, or APFQueues,
 is determined by the combination of a set of plug-ins, 
-invoked in a fixed order,  
+invoked in a fixed order, 
+in a loop,   
 each one in charge of the performance of a very well defined action.
 
 ~
 
 These steps can be summarized as follows:
 \begin{itemize}
-    \item Inspects a VO WMS service to query for end-users jobs ready to run.
+    \item Retrieves possible extra configuration information from an external source 
+          and merges it with the one from the local configuration files.
+    \item Inspects the VO WMS service to query for end-users jobs and their state.
     \item Inspects the submission system to query how many pilots are already running or still idle.
-    \item Makes a decission based on that information.
-    \item Submit as many new pilots as needed.
+    \item Makes a decission based on that information, implementing a given algorithm. 
+    \item Submits as many new pilots as needed, accordingly with the decision made by the previous step.
 \end{itemize}
 
 \subsection{AutoPyFactory internal nomenclature}
