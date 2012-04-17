@@ -90,6 +90,12 @@ These steps can be summarized as follows:
     \item Submits as many new pilots as needed, accordingly with the decision made by the previous step.
 \end{itemize}
 
+Those processes that are shared between more than one APFQueue,
+as querying the WMS service or a Condor pool,
+are performed in an unique thread (implemented as a Singleton design pattern),
+and their output is shared by different other modules. 
+This mechanism highly reduces the load on those services and increases the reliability and performance of the whole system.
+
 \subsection{AutoPyFactory internal nomenclature}
 
 The communication between different modules in AutoPyFactory 
