@@ -279,41 +279,18 @@ to a Clould Computing resources (using the Amazon EC2 protocol),
 or to a local Condor pool.
 
 
-
-%%%\begin{table}
-%%%   \begin{center}
-%%%      \begin{tabular}{l l l}
-%%%         \hline
-%%%         \textbf{Condor-C/Local}      &   \textbf{Condor-G/Globus}     &   \textbf{AutoPyFactory}        \\ 
-%%%         \hline
-%%%         Unexp + Idle        &        PENDING             &   pending    \\ 
-%%%         Running             &        RUNNING             &   running    \\ 
-%%%         Held                &        SUSPENDED           &   suspended  \\ 
-%%%         Completed           &        DONE                &   done       \\
-%%%                             &                            &   unknown    \\    
-%%%                             &                            &   error      \\ 
-%%%         \hline
-%%%      \end{tabular}
-%%%   \end{center}
-%%%   \caption{Mapping between condor status and AutoPyFactory batch job status}
-%%%   \label{translation}
-%%%\end{table}
-
-
 \subsection{Usage}
 
-The normal usage will make use of one of set of 4 plug-ins, each per category, per workflow (called APFQueue). 
-Typically, each APFQueue will correspond with one queue as it is defined in the WMS service, 
-or the unique combination of a queue in the WMS service and a queue as defined in the batch system. 
-This allows for many-to-many combination, each one served by an APFQueue. 
+The normal usage, as explained above, 
+makes use of a single set of 5 plug-ins per workflow. 
+Typically, each APFQueue will serve one queue as it is defined in the WMS service, 
+and will submit pilots to a queue as defined in the batch system. 
+This allows for many-to-many combinations, each one served by one APFQueue in a single thread. 
 
 However, the combination of two APFQueues working together allows for more complex workflows.
 
-\subsubsection{Cloud Computing with AutoPyFactory }
-
-~
-
-\noindent The combination of two APFQueues can allow using Cloud Computing resources. 
+\subsubsection{Cloud Computing with AutoPyFactory:}
+The combination of two APFQueues can allow using Cloud Computing resources. 
 For this to happen, the configuration of both APFQueues is like this:
 
 \begin{enumerate}
@@ -326,11 +303,8 @@ The Execution Plug-in submits Virtual Machine instantiation orders (to EC2, for 
 Those VMs will join the local condor pool allowing the idle jobs (or pilot) to flow an start execution. 
 \end{enumerate}
 
-\subsubsection{Glideins submission with AutoPyFactory}
-
-~
-
-\noindent It would be possible to replicate the above mechanism to allow AutoPyFactory to run in a similar way that glideinWMS does. 
+\subsubsection{Glideins submission with AutoPyFactory:}
+It would be possible to replicate the above mechanism to allow AutoPyFactory to run in a similar way that glideinWMS does. 
 Two AutoPyFactory workflows combined, one queries the VO WMS service and submitting jobs (or pilot) to a local pool, 
 and a second AutoPyFactory workflow submitting glideins to join that local pool. 
 
