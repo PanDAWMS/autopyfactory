@@ -327,6 +327,14 @@ while the second one submits glideins to remote resources which will join that l
 
 Activity can be displayed in a web based monitor, which delivers some useful metrics and the particular job log files.  
 Figure \ref{monitor} shows a diagram with the design of this monitor component.
+The application uses the Django web framework with a mysql backend and apache webserver. 
+The web service collects information from a number of
+factories and allows a global view of Factory deployment with broad
+views at Factory level to fine-grained information about individual pilot jobs. 
+At 60k jobs created per hour, and over 2 million web hits per day, 
+the monitoring stack must be tuned to prevent overloading.
+The deployment of memcached has helped greatly in this respect.
+
 
 \begin{figure}
 \centering\includegraphics[width=0.7\textwidth]{monitor}
