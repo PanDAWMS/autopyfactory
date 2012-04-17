@@ -295,18 +295,25 @@ For this to happen, the configuration of both APFQueues is like this:
 
 \begin{itemize}
 \item First APFQueue: 
-the WMS Status Plug-in queries the VO WMS service, and the Execution Plugin submits jobs (or pilots) to a local condor pool, for example.
+the WMS Status plug-in queries the VO WMS service, and the Execution Plugin submits jobs  to a local Condor pool.
+This Condor pool can have many Worker Nodes, or zero. 
+In the latter case, all submitted jobs will remain in idle status. 
 \item Second APFQueue: 
-the WMS Status Plug-in queries the local condor pool, 
+the WMS Status plug-in queries this local condor pool, 
 and gives to idle jobs in queue the same meaning that jobs ready in an VO WMS service. 
-The Execution Plug-in submits Virtual Machine instantiation orders (to EC2, for example). 
-Those VMs will join the local condor pool allowing the idle jobs (or pilot) to flow an start execution. 
+The Execution Plug-in then submits Virtual Machine instantiation orders (to an Amazon EC2-like resource, for example). 
+The middleware pre-installed on these Virtual Machines, 
+beside Grid middleware and any particular libraries required by the VOs, 
+can include a condor startd daemon which will join the local condor pool. 
+Once these remote instances have joined the condor pool, 
+the idle jobs will flow and start execution. 
 \end{itemize}
 
 \subsubsection{Glideins submission with AutoPyFactory:}
-It would be possible to replicate the above mechanism to allow AutoPyFactory to run in a similar way that glideinWMS does. 
-Two AutoPyFactory workflows combined, one queries the VO WMS service and submitting jobs (or pilot) to a local pool, 
-and a second AutoPyFactory workflow submitting glideins to join that local pool. 
+It would be possible to replicate the above mechanism to allow Condor glideins submission with AutoPyFactory.
+The architecture is similar, with two AutoPyFactory workflows combined.
+The first one queries the VO WMS service and submits the jobs (or pilot) to the local pool, 
+while the second one submits glideins to remote resources which will join that local pool. 
 
 \section{Monitor}
 
