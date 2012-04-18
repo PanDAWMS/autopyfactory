@@ -118,7 +118,7 @@ cycles = None
 cleanlogs.keepdays = 14
 
 factory.sleep=30
-wmsstatus.panda.sleep = 50
+wmsstatus.panda.sleep = 120
 batchstatus.condor.sleep = 50
 
 baseLogDir = /home/apf/factory/logs
