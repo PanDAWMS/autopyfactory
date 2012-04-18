@@ -237,7 +237,9 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
 
         self.log.info('Attempt to submit %d pilots for queue %s' %(n, self.wmsqueue))
 
-        cmd = 'condor_submit '
+        cmd = 'condor_submit -verbose '
+        # NOTE: -verbose is needed. 
+        # The output generated with -verbose is parsed by the monitor code to determine the number of jobs submitted
         if self.submitargs:
             cmd += self.submitargs
         cmd += ' ' + jsdfile
