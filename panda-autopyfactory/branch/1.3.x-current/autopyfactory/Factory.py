@@ -200,27 +200,27 @@ class factory:
                 if prioritystats['activated'] > 0:
                     # we have high priority jobs activated
                     if clause1 or (clause2 and clause3):
-                        msg = "%d activated with min priority %d. Submitting full load." % (prioritystats['activated'], priority)
-                        self.note(queue, msg)
                         m = min(queueParameters['nqueue'],prioritystats['activated'])
                         n = m/3  # hack to really limit pilots as we have 3 factories
+                        msg = "%d activated pri>%d. Submitting %d pilots." % (prioritystats['activated'], priority, n)
+                        self.note(queue, msg)
                         self.condorPilotSubmit(queue, cycleNumber, n)
                     else:
                         nactive = prioritystats['activated']
                         nboost = queueParameters['nqueue'] * depthboost
                         ninactive = queueParameters['pilotQueue']['inactive']
                         fields = (nactive, priority, ninactive, queueParameters['nqueue'], depthboost)
-                        msg = "No pilots needed, %d activated (pri>%d), inactive:%d nqueue:%d boost:%d" % fields
+                        msg = "Throttled, %d activated (pri>%d), inactive:%d nqueue:%d boost:%d" % fields
                         self.note(queue, msg)
                     continue
 
                 if lowprirunning < runlimit:
                     # we have low priority capacity
                     if clause1 or (clause2 and clause3):
-                        msg = "%d low pri running < runlimit=%d. Submitting full load." % (lowprirunning, runlimit)
-                        self.note(queue, msg)
                         m = min(queueParameters['nqueue'],prioritystats['activated'])
                         n = m/3  # hack to really limit pilots as we have 3 factories
+                        msg = "%d low pri running < runlimit=%d. Submitting %d pilots" % (lowprirunning, runlimit, n)
+                        self.note(queue, msg)
                         self.condorPilotSubmit(queue, cycleNumber, n)
                     else:
                         ninactive = queueParameters['pilotQueue']['inactive']
