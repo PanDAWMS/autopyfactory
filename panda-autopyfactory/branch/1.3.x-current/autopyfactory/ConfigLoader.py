@@ -99,7 +99,7 @@ class factoryConfigLoader:
                                        'site' : 'None',
                                        'siteid' : 'None',
                                        'nickname' : 'None',
-                                       'fairshare' : 'None',
+                                       'fairsharepolicy' : 'None',
                                        }
         if 'X509_USER_PROXY' in os.environ:
             defaults['QueueDefaults']['gridProxy'] = os.environ['X509_USER_PROXY']
