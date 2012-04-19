@@ -207,11 +207,14 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         else:
             try:
                 strout = self._querycondor()
-                outlist = self._parseoutput(strout)
-                aggdict = self._aggregateinfo(outlist)
-                newinfo = self._map2info(aggdict)
-                self.log.info("Replacing old info with newly generated info.")
-                self.currentinfo = newinfo
+                if not strout:
+                    self.log.warning('_update: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
+                else:
+                    outlist = self._parseoutput(strout)
+                    aggdict = self._aggregateinfo(outlist)
+                    newinfo = self._map2info(aggdict)
+                    self.log.info("Replacing old info with newly generated info.")
+                    self.currentinfo = newinfo
             except Exception, e:
                 self.log.error("_update: Exception: %s" % str(e))
                 self.log.debug("Exception: %s" % traceback.format_exc())            
