@@ -125,24 +125,24 @@ class factory:
                 
             prioritystats = None
             if queueParameters['fairsharepolicy'] is not None:
-                match = re.match('.*priority<(\d+):(\d+).*', queueParameters['fairsharepolicy'])
+		policy = queueParameters['fairsharepolicy']
+                match = re.match('.*priority<(\d+):(\d+).*', policy)
                 if match:
-                    msg = "%s has 'fairsharepolicy', extracting priority info" % queue
+                    msg = "%s fairsharepolicy: %s" % (queue, policy)
                     self.factoryMessages.debug(msg)
                     priority = int(match.group(1))
                     runlimit = int(match.group(2))
-                    msg = "Extracted min priority %d and runlimit %d from value %s" % (priority, runlimit, queueParameters['fairsharepolicy'])
+                    msg = "%s min pri:%d, runlimit %d from value %s" % (queue, priority, runlimit, policy)
                     self.factoryMessages.debug(msg)
                     error,jobstats = Client.getJobStatisticsPerSite(minPriority=priority)
                     if error:
-                        msg = "Failed to getJobStatisticsPerSite(minPriority=%d)" % priority
+                        msg = "%s failed to getJobStatisticsPerSite(minPriority=%d)" % (queue,priority)
                         self.factoryMessages.warn(msg)
                     else:
-                        msg = "Using prioritised jobstats: %s" % jobstats.get(queueParameters['siteid'])
+                        msg = "%s prioritised jobstats: %s" % (queue,jobstats.get(queueParameters['siteid']))
                         self.factoryMessages.debug(msg)
                         prioritystats = jobstats.get(queueParameters['siteid'])
                     
-                
             # Now normal queue submission algorithm begins
             if queueParameters['pilotlimit'] != None and queueParameters['pilotQueue']['total'] >= queueParameters['pilotlimit']:
                 msg = 'reached pilot limit %d (%s) - will not submit more pilots.' % (queueParameters['pilotlimit'], queueParameters['pilotQueue'])
@@ -201,7 +201,7 @@ class factory:
                     # we have high priority jobs activated
                     if clause1 or (clause2 and clause3):
                         m = min(queueParameters['nqueue'],prioritystats['activated'])
-                        n = m/3 + 1 # hack to really limit pilots as we have 3 factories
+                        n = m/3 +1  # hack to really limit pilots as we have 3 factories
                         msg = "%d activated pri>%d. Submitting %d pilots." % (prioritystats['activated'], priority, n)
                         self.note(queue, msg)
                         self.condorPilotSubmit(queue, cycleNumber, n)
@@ -218,7 +218,7 @@ class factory:
                     # we have low priority capacity
                     if clause1 or (clause2 and clause3):
                         m = min(queueParameters['nqueue'],prioritystats['activated'])
-                        n = m/3 + 1  # hack to really limit pilots as we have 3 factories
+                        n = m/3 +1 # hack to really limit pilots as we have 3 factories
                         msg = "%d low pri running < runlimit=%d. Submitting %d pilots" % (lowprirunning, runlimit, n)
                         self.note(queue, msg)
                         self.condorPilotSubmit(queue, cycleNumber, n)
@@ -229,6 +229,8 @@ class factory:
                     continue
 
             # Get here means queue doesn't have fairshare set
+            msg = "%s no fairsharepolicy, normal submission logic" % queue
+            self.factoryMessages.debug(msg)
             # Production site, online - look for activated jobs and ensure pilot queue is topped up, or
             # submit some idling pilots
             if queueParameters['pandaStatus']['activated'] > 0:
