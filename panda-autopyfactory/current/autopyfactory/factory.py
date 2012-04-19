@@ -31,6 +31,7 @@ import time
 import traceback
 import os
 import pwd
+import socket
 import sys
 
 from pprint import pprint
@@ -254,9 +255,11 @@ Jose Caballero <jcaballero@bnl.gov>
         starting_uid = os.getuid()
         starting_gid = os.getgid()
         starting_uid_name = pwd.getpwuid(starting_uid)[0]
+
+        hostname = socket.gethostname()
         
         if os.getuid() != 0:
-            self.log.info("Already running as unprivileged user %s" % starting_uid_name)
+            self.log.info("Already running as unprivileged user %s at %s" % (starting_uid_name, hostname))
             
         if os.getuid() == 0:
             try:
@@ -271,7 +274,7 @@ Jose Caballero <jcaballero@bnl.gov>
 
                 self._changehome()
 
-                self.log.info("Now running as user %d:%d ..." % (runuid, rungid))
+                self.log.info("Now running as user %d:%d at %s..." % (runuid, rungid, hostname))
             
             except KeyError, e:
                 self.log.error('No such user %s, unable run properly. Error: %s' % (self.options.runAs, e))
