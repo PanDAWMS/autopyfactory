@@ -3,6 +3,12 @@ ChangeLog
 
 $Id$
 
+2012-04-19
+
+* using fairsharepolicy keyword from schedconfig
+
+* fix typo in some factory messages
+
 2012-03-06
 
 * test-site logic tweaked to submit more pilots
