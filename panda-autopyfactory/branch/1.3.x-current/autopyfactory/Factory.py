@@ -209,8 +209,8 @@ class factory:
                         nactive = prioritystats['activated']
                         nboost = queueParameters['nqueue'] * depthboost
                         ninactive = queueParameters['pilotQueue']['inactive']
-                        fields = (nactive, priority, ninactive, nboost)
-                        msg = "No pilots needed, %d activated (pri>%d), inactive<nqueue*boost (%d<%d)" % fields
+                        fields = (nactive, priority, ninactive, queueParameters['nqueue'], depthboost)
+                        msg = "No pilots needed, %d activated (pri>%d), inactive:%d nqueue:%d boost:%d" % fields
                         self.note(queue, msg)
                     continue
 
