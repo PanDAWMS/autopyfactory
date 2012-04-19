@@ -201,7 +201,7 @@ class factory:
                     # we have high priority jobs activated
                     if clause1 or (clause2 and clause3):
                         m = min(queueParameters['nqueue'],prioritystats['activated'])
-                        n = m/3  # hack to really limit pilots as we have 3 factories
+                        n = m/3 + 1 # hack to really limit pilots as we have 3 factories
                         msg = "%d activated pri>%d. Submitting %d pilots." % (prioritystats['activated'], priority, n)
                         self.note(queue, msg)
                         self.condorPilotSubmit(queue, cycleNumber, n)
@@ -218,7 +218,7 @@ class factory:
                     # we have low priority capacity
                     if clause1 or (clause2 and clause3):
                         m = min(queueParameters['nqueue'],prioritystats['activated'])
-                        n = m/3  # hack to really limit pilots as we have 3 factories
+                        n = m/3 + 1  # hack to really limit pilots as we have 3 factories
                         msg = "%d low pri running < runlimit=%d. Submitting %d pilots" % (lowprirunning, runlimit, n)
                         self.note(queue, msg)
                         self.condorPilotSubmit(queue, cycleNumber, n)
