@@ -226,7 +226,8 @@ class factory:
                         ninactive = queueParameters['pilotQueue']['inactive']
                         msg = "Throttled. %d low pri running > runlimit:%d. Inactive:%d" % (lowprirunning, runlimit, ninactive)
                         self.note(queue, msg)
-                    continue
+
+                continue
 
             # Get here means queue doesn't have fairshare set
             msg = "%s no fairsharepolicy, normal submission logic" % queue
