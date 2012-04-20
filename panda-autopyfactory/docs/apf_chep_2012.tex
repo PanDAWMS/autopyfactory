@@ -18,19 +18,19 @@ infrastructure, which is a central part of the experiment's computing operations
 Considerable efforts have been made to use grid technology in the most efficient
 and effective way, including the use of a pilot job based workload management framework.
 In this model the experiment submits 'pilot' jobs to sites without payload. When these
-jobs begin to run they contact a central service to pick-up a real payload to execute.
-The first generation of pilot factories were usually specific to a single VO, and were
-bound to the particular architecture of that VO's distributed processing. A second
-generation provides factories which are more flexible, not tied to any particular VO,
-and provide new or improved features such as monitoring, logging, profiling, etc.
+jobs begin to run they contact a central service to retrieve a real payload to
+execute. The first generation of pilot factories were usually specific to a
+single VO, and were bound to the particular architecture of that VO's distributed processing. A 
+second generation provides factories which are more flexible, not tied to any
+particular VO, and provide new or improved features such as monitoring, logging, profiling, etc.
 In this paper we describe this key part of the ATLAS pilot architecture, a second
 generation pilot factory, AutoPyFactory.
 AutoPyFactory has a modular design and is highly configurable. It is able to send
-different types of pilots to sites and exploit different submission mechanisms and queue
-characteristics. It is tightly integrated with the PanDA job submission framework,
+different types of pilots to sites and exploit a range of submission mechanisms
+and queue characteristics. It is tightly integrated with the PanDA job submission framework,
 coupling pilot flow to the amount of work the site has to run. It gathers information
 from many sources in order to correctly configure itself for a site, and its decision logic
-can easily be updated.
+can easily be modified.
 Integrated into AutoPyFactory is a flexible system for delivering both generic and
 specific job wrappers which can perform many useful actions before starting to run
 end-user scientific applications, e.g. validation of the middleware, node profiling
@@ -42,20 +42,20 @@ establish a reliable pilot factory service for ATLAS.
 
 \section{Introduction}
 
-LHC experiments have adopted jobs workflows based on pilots systems.
-Even tought the particular implementation of these pilot-based architectures may vary 
-between different VOs, the physolophy is the same. 
+LHC experiments have adopted jobs workflows based on pilot systems.
+Even though the particular implementation of these pilot-based architectures may
+vary between different VOs, the philosophy is the same. 
 
-Generic multipurpose pilot jobs are submitted to sites without payload. 
-Only when these jobs begin to run on a grid resource they contact a central VO service 
-to pick-up a real payload (as an end-user job) and executes it.
+Generic pilot jobs are submitted to sites without payload. 
+When these jobs start on a worker node they contact a central VO
+service to retrieve a real payload (i.e., an end-user job) and execute it.
 Using these pilot-based workflows helps to improve job reliability,
-optimize resources utilization, allows for oportunistics resources usage, 
+optimize resource utilization, allows for opportunistic resources usage, 
 and mitigates many of the problems associated with the inhomogeneities found on the grid.
 
-Therefore, VO's need for a reliable, robust but scalable framework
-capable of managing the automatic flow of pilots to remote Grid resources
-accordingly with the load of payload jobs.
+Therefore, virtual organizations (VOs) need a reliable, robust and scalable
+framework capable of managing the automatic flow of pilots to remote Grid
+resources, conditional on the amount of work ready to be performed.
 These pilot frameworks need to address the different policies that the VOs
 implement to handle the different types of payload flavors.
 
@@ -64,37 +64,31 @@ AutoPyFactory is one of these pilot frameworks.
 
 \section{Architecture}
 
-
-AutoPyFactory runs as a single process,
-launching a separate thread for each internal workflow (known as APFQueue).
-Each one of these APFQueues typically serves for a single job queue, 
-as it is defined in the VO Workload Management WMS service, 
-and delivers pilots to a single batch queue,
-either local o remotely. 
-
+AutoPyFactory runs in a single daemonized process,
+launching a separate thread for each internal workflow (known as an APFQueue).
+Each one of these APFQueues typically serves a single job queue 
+as defined in the VO Workload Management Service (WMS), 
+and delivers pilots to a single batch queue, either local or remote. 
 
 The behavior of these AutoPyFactory workflows, or APFQueues,
 is determined by the combination of a set of plug-ins, 
-invoked in a fixed order, 
-in a loop,   
-each one in charge of the performance of a very well defined action.
-
+invoked in a fixed order, in a loop, each one in charge of the performance of a well defined action.
 
 These steps can be summarized as follows:
 \begin{itemize}
     \item Retrieves possible extra configuration information from an external source 
           and merges it with the one from the local configuration files.
-    \item Inspects the VO WMS service to query for end-users jobs and their state.
+    \item Inspects the VO WMS service to query for end-user jobs and their state.
     \item Inspects the submission system to query how many pilots are already running or still idle.
-    \item Makes a decission based on that information, implementing a given algorithm. 
-    \item Submits as many new pilots as needed, accordingly with the decision made by the previous step.
+    \item Calculates a number of new pilots to submit based on that information.
+    \item Submits as many new pilots as needed, determined by the previous step.
 \end{itemize}
 
-Those processes that are shared between more than one APFQueue,
-as querying the WMS service or a Condor pool,
-are performed in an unique thread (implemented as a Singleton design pattern),
-and their output is shared by different other modules. 
-This mechanism highly reduces the load on those services and increases the reliability and performance of the whole system.
+Those functions that are shared between more than one APFQueue, such
+as querying the WMS or a local batch system,
+are performed in a threaded object (implemented follwing the Singleton design
+pattern), and their information is shared by multiple APFQuees. This approach
+greatly reduces the load on those services and increases the reliability and performance of the whole system.
 
 
 \begin{figure}[h]
@@ -175,7 +169,7 @@ for the possible states in the WMS system.
 AutoPyFactory can serve to different queues in different ways 
 thanks to its modular design based on plug-ins. 
 Plug-ins serve two purposes. 
-They interact with the external services, like the VO WMS service or the batch submission system,
+They interact with the external services, like the VO WMS or the batch submission system,
 and they translate the information retrieved by those services into the internal AutoPyFactory nomenclature.
 There are currently 5 types of plug-ins:
 
@@ -184,8 +178,9 @@ There are currently 5 types of plug-ins:
 
 Retrieves extra configuration content from remote sources 
 (as an URL with the actual configuration file, or a web service with an API providing for the configuration content)
-and merge them with the local configuration content.
-An example of a configuration plugi-in queries the PanDA SchedConfig service.
+and merges them with the local configuration content.
+An example of a configuration plug-in is the one that queries the PanDA
+SchedConfig service for submission characteristics.
 
 
 \subsubsection{WMS Status Plug-in:}
@@ -193,7 +188,12 @@ Queries the VO WMS system,
 retrieving information about the number of jobs in different status (ready, running, finished...) per queue.
 This information is converted internally into the AutoPyFactory nomenclature.
 An example of a WMS Status plug-in queries the PanDA API.
-Another example is a plug-in querying a local Condor pool and interpreting the output as end-user jobs.
+Another example is a plug-in querying a local Condor pool and interpreting the
+output as end-user jobs. This source of information is typically where we find
+how much work is ready to be done, and therefore should trigger pilot
+submission. 
+
+
 Table 4 shows an example of mapping between the VO WMS service 
 (PanDA in this case)
 and the internal AutoPyFactory nomenclature.
@@ -277,13 +277,18 @@ and the internal AutoPyFactory nomenclature.
 
 
 \subsubsection{Scheduler Plugin-in:}
-It is the component in charge of making a decision based on the information provided by the two Status plug-ins. 
+This is the component in charge of making a decision of whether or not to submit
+more pilots, and if so how many. That calculation is based on the information
+provided by the two Status plug-ins (WMSStatus and BatchStatus).
 It implements a given algorithm to decide how many new jobs (or pilots) should be submitted next cyle. 
 A typical algorithm calculates the number of new jobs based on the number of end-user jobs in a ready status in the VO WMS service, 
-with some constrains to prevent the submission of an excesively high number of jobs, 
-or to eventually keep a minimum number of submissions per cycle. 
-Figure \ref{activatedfigure} shows the decision making algorithm chartflow. 
-Another algorithm could just submit always a fixed number of jobs.
+with some constraints to prevent the submission of an excesively high number of
+jobs, or to eventually keep a minimum number of submissions per cycle. 
+Figure \ref{activatedfigure} shows the logical flow implemented in the
+ActivatedSchedPlugin (so named because it is primariy keyed on the number of
+ready jobs in the WMS). Other SchedPlugins may embody other algorithms, e.g. a
+scheduler plugin could always return a fixed number of jobs, or one could seek
+to maintain a constant number of pending/queued jobs in the batch system. 
 
 \begin{figure}
 \centering\includegraphics[width=0.7\textwidth]{activated}
@@ -291,13 +296,17 @@ Another algorithm could just submit always a fixed number of jobs.
 \label{activatedfigure}
 \end{figure}
 
-\subsubsection{Execution Plug-in:}
+\subsubsection{BatchSubmit Plug-in:}
 It is the component in charge of submitting new jobs (or pilots), 
 based on the decision made by the Scheduler plug-in. 
 Examples of these execution plugins can submit jobs remotely to a Grid resources using different protocols 
-(such as GRAM2, GRAM5, or CREAM),
-to a Clould Computing resources (using the Amazon EC2 protocol), 
-or to a local Condor pool.
+(such as GRAM2, GRAM5, or CREAM), to a Clould Computing resources (using the
+Amazon EC2 protocol), or to a local Condor pool. 
+
+In theory, a submit plugin
+could use other mechanisms, e.g. simply execute a pilot process, or trigger an
+additional VM startup locally via libvirtd. In this scenario, APF could be run
+directly on the working resource (wherever the jobs are intended to run).
 
 
 \subsection{Usage}
@@ -318,7 +327,8 @@ For this to happen, the configuration of both APFQueues is like this:
 
 \begin{itemize}
 \item First APFQueue: 
-the WMS Status plug-in queries the VO WMS service, and the Execution Plugin submits jobs  to a local Condor pool.
+The WMS Status plug-in queries the VO WMS service, and the Execution Plugin
+submits jobs  to a local Condor pool.
 This Condor pool can have many Worker Nodes, or zero. 
 In the latter case, all submitted jobs will remain in idle status. 
 \item Second APFQueue: 
@@ -344,10 +354,15 @@ The architecture is similar, with two AutoPyFactory workflows combined.
 The first one queries the VO WMS service and submits the jobs (or pilot) to the local pool, 
 while the second one submits glideins to remote resources which will join that local pool. 
 
+In theory, APF is flexible enough that we can serve new needs by mixing the
+roles played by different plugins in whatever way accomplishes the required
+goal. 
+
 \section{Monitor}
 
-Activity can be displayed in a web based monitor, which delivers some useful metrics and the particular job log files.  
-Figure \ref{monitor} shows a diagram with the design of this monitor component.
+If desired, factory activity can be displayed in a central web based monitor,
+which delivers some useful metrics and displays links to the particular job log
+files. Figure \ref{monitor} shows a diagram with the design of this monitor component.
 The application uses the Django web framework with a mysql backend and apache webserver. 
 The web service collects information from a number of
 factories and allows a global view of Factory deployment with broad
@@ -363,123 +378,74 @@ The deployment of memcached has helped greatly in this respect.
 \label{monitor}
 \end{figure}
 
+\section{Proxy Manager}
+
+For submission of pilots via the Grid, APF provides an integrated utility for
+defining one or more grid or VOMS proxies to be generated and maintained while
+the factory is running. Individual APF queues are configured to use whatever
+proxy is appropriate. 
+
+
+\section{Log Server}
+
+APF includes the ability to export local directories via a built-in web server
+configured within the factory. This is normally used to allow job log files to
+be viewed remotely via links in the monitor. But any information that is
+generated by an integrated component could be exported the same way. For
+example, the Condor submit file can be examined via the web server as well. 
+
 
 \section{Deployment}
 
-\subsection{Deployment by root, running as a service}
+\subsection{Packaging}
+One of the goals of the development of APF was to allow for the possibility of
+site administrators to install the pilot factory locally at their sites. They
+would then submit pilots directly into their local batch system, rather than
+relying on central pilot submission via Grid interfaces. Toward that end, we
+have tried to make APF as easy to deploy as possible. 
 
-Installation as root via RPMs has now been quite simplified. 
-These instructions assume Red Hat Enterprise Linux 5.X (and derivates) and the system Python 2.4.3. 
-Other distros and higher Python versions should work with some extra work.
+APF is provided in the prevailing standard, versioned package format (RPM) and
+made available using standard package management tools (YUM). Signed Yum
+repositories (development, testing, and production) are maintained by the
+developers and are available globally. This permits the easy installation, and
+upgrade, of APF, either manually or via automation. 
 
-\begin{enumerate}
-\item Install and enable a supported batch system. 
-Condor is the current supported default. 
-Software available from http://www.cs.wisc.edu/condor/.
-Condor/Condor-G setup and configuration is beyond the scope of this documentation. Ensure that it is working properly before proceeding
-\item Install a grid client and set up the grid certificate+key under the user AutoPyFactory will run as. 
-Please read the CONFIGURATION documentation regarding the proxy.conf file, so you see what will be needed. 
-Make sure voms-proxy-* commands work properly.
-\item Add the racf-grid YUM repo to your system:
+This is useful beyond the usual deployment scenarios, e.g. one could dynamically
+install APF as a pilot tool directly on virtual machines running in a Cloud
+context. 
 
-%% \begin{verbatim}
-%% $ rpm -ivh \
-%% http://dev.racf.bnl.gov/yum/grid/production/rhel/5Client/x86_64/racf-grid-release-0.9-1.noarch.rpm
-%% \end{verbatim}
+\subsection{UNIX Integration}
+The infrastructure surrounding the APF runtime is made to be intuitive to
+manage by systems administrators. By default, it is configured via conventional
+Python ConfigParser-format files in /etc/apf (factory.conf, proxy.conf,
+queues.conf) and /etc/sysconfig/factory. It can be started and stopped via the
+standard init script in /etc/init.d. Factory logs are managed via the standard
+Linux logrotate facility. 
 
-~
+\section{Future Steps}
 
-\begin{tabular}{|p{16cm}|}
-   \hline
-\$ rpm -ivh http://dev.racf.bnl.gov/yum/grid/production/rhel/5Client/x86\_64/racf-grid-release-0.9-1.noarch.rpm \\
-   \hline
-\end{tabular}
+As APF is fully modular and programmatically configurable, it is a candidate for
+embedding within other frameworks. For example, a graphic Web user interface for
+queue definition and management could be easily created on top of the existing
+utility. 
 
-~
+APF is already being run in a semi-clustered way, with several instances all
+identically configured. In this mode each of three servers, for example, handles
+one third of submission load for each queue. If one of the nodes is lost, the
+other two will naturally respond by increasing submissions (although the
+individual jobs handled by the lost node will likely be lost). With the proper
+approach, it would be feasible for APF to be enhanced to provide full fault
+tolerance, such that clustered instances would be aware of each other directly,
+or by way of flags placed in a global location or service. 
 
-The warning about NOKEY is expected. 
-This release RPM sets up YUM to point at our repository, 
-and installs the GPG key with which all our RPMs are signed. 
-By default the racf-grid-release RPM sets our production repository to enabled 
-(see /etc/yum.repos.d/racf-grid-production.repo). 
-If you are testing AutoPyFactory and want to run a pre-release version, enable the racf-grid-development or racf-grid-testing repository.
-\item If you will be performing local batch system submission 
-(as opposed to remote submission via grid interfaces) 
-you must confirm that whatever account you'll be submitting as exists on the batch cluster.
-\item Install the AutoPyFactory RPM:
+Currently APF makes decisions based on the instantaneous state of WMS and Batch
+status information. In theory, adding persistence would allow submission
+decisions made by the SchedPlugin to be even more intelligent, e.g. responding
+to dynamic trends over the previous hours or days. Such a mechanism would also
+allow the gathering of information over time, e.g. the maximum number of jobs
+ever run at a site, which would allow more intelligent ramp up strategy. 
 
-%% \begin{verbatim}
-%% $ yum install autopyfactory
-%% \end{verbatim}
 
-~
-
-\begin{tabular}{|p{16cm}|}
-   \hline
-\$ yum install autopyfactory \\
-   \hline
-\end{tabular}
-
-~
-
-This performs several setup steps that otherwise would need to be done manually:
-\begin{enumerate}
-\item[-] Creates 'apf' user that AutoPyFactory will run under. 
-\item[-] Enables the factory init script via chkconfig. 
-\item[-] Pulls in the panda userinterface Python library RPM from our repository. 
-\item[-] Pulls in the python-simplejson RPM from the standard repository
-\end{enumerate}
-\item Configure AutoPyFactory queues/job submission as desired. 
-Read the CONFIGURATION documentation in order to do this. 
-Be sure to configure at least one queue in order to test function.
-\item Start AutoPyFactory:
-
-%% \begin{verbatim}
-%% $ /etc/init.d/factory status
-%% \end{verbatim}
-
-~
-
-\begin{tabular}{|p{16cm}|}
-   \hline
-\$ /etc/init.d/factory status \\
-   \hline
-\end{tabular}
-~
-
-Look at the output of ps to see that AutoPyFactory is running under the expected user, e.g.:
-
-%% \begin{verbatim}
-%% apf    22106 1.3 0.1 318064 12580 pts/2  Sl 17:13 0:00 /usr/bin/python /usr/bin/factory.py --conf /etc/apf/factory.conf --debug --sleep=60 --runas=apf --log=/var/log/apf/apf.log
-%% \end{verbatim}
-
-~
-
-\begin{tabular}{|p{16cm}|}
-   \hline
-apf    22106 1.3 0.1 318064 12580 pts/2  Sl 17:13 0:00 /usr/bin/python /usr/bin/factory.py --conf /etc/apf/factory.conf --debug --sleep=60 --runas=apf --log=/var/log/apf/apf.log \\
-   \hline
-\end{tabular}
-~
-
-Tail the log output and look for problems.
-\end{enumerate}
-
-\subsection{Deployment by root, run by user}
-
-\subsection{Deployment by user, run by user (expert mode)}
-
-User installation assumes that AutoPyFactory will be installed in the users home directory using the standard Python distutils setup commands. 
-It assumes that pre-requisites have already been installed and properly configured,
-either within the user's home directory or on the general system.
-Prerequisites: 
-
-\begin{enumerate}
-\item[-] Python 
-\item[-] Condor (Condor-G) 
-\item[-] Panda Client library 
-\item[-] simplejson
-\end{enumerate}
 
 %%\section{Acknowledgements}
 \ack{
@@ -519,3 +485,4 @@ Doug Benjamin, Sarah Williams, Asoka da Silva.
 %%or allow others to do so, for United States Government purposes.
 
 \end{document}
+
