@@ -90,11 +90,11 @@ are performed in a threaded object (implemented follwing the Singleton design
 pattern), and their information is shared by multiple APFQuees. This approach
 greatly reduces the load on those services and increases the reliability and performance of the whole system.
 
-Figure \ref{apfdesign} shows a diagram with the conceptual design and 
+Figure 1 shows a diagram with the conceptual design and 
 interactions between different components.
 
 \begin{figure}[h]
-\centering\includegraphics[width=0.9\textwidth]{apfdesign}
+\centering\includegraphics[width=0.85\textwidth]{apfdesign}
 \caption{AutoPyFactory design}
 \label{apfdesign}
 \end{figure}
@@ -286,7 +286,7 @@ It implements a given algorithm to decide how many new jobs (or pilots) should b
 A typical algorithm calculates the number of new jobs based on the number of end-user jobs in a ready status in the VO WMS service, 
 with some constraints to prevent the submission of an excesively high number of jobs, 
 or to eventually keep a minimum number of submissions per cycle. 
-Figure \ref{activatedfigure} shows the logical flow implemented in the
+Figure 2 shows the logical flow implemented in the
 ActivatedSchedPlugin (so named because it is primariy keyed on the number of
 ready jobs in the WMS). Other SchedPlugins may embody other algorithms, e.g. a
 scheduler plugin could always return a fixed number of jobs, or one could seek
@@ -323,7 +323,7 @@ However, more complex workflows can be achieved by the combination of two APFQue
 
 \subsubsection{Cloud Computing with AutoPyFactory:}
 The combination of two APFQueues, 
-as it is shown in figure \ref{cloud}
+as it is shown in figure 3, 
 can allow using Cloud Computing resources. 
 For this to happen, the configuration of both APFQueues is like this:
 
@@ -363,7 +363,7 @@ roles played by different plugins in whatever way accomplishes the required goal
 
 If desired, factory activity can be displayed in a central web based monitor,
 which delivers some useful metrics and displays links to the particular job log
-files. Figure \ref{monitor} shows a diagram with the design of this monitor component.
+files. Figure 4 shows a diagram with the design of this monitor component.
 The application uses the Django web framework with a mysql backend and apache webserver. 
 The web service collects information from a number of
 factories and allows a global view of Factory deployment with broad
