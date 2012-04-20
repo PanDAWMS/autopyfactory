@@ -19,9 +19,9 @@ Considerable efforts have been made to use grid technology in the most efficient
 and effective way, including the use of a pilot job based workload management framework.
 In this model the experiment submits 'pilot' jobs to sites without payload. When these
 jobs begin to run they contact a central service to pick-up a real payload to execute.
-The first generation of pilot factories were usually specific to a single VO, and were
-bound to the particular architecture of that VO's distributed processing. A second
-generation provides factories which are more flexible, not tied to any particular VO,
+The first generation of pilot factories were usually specific to a single VO, 
+and were bound to the particular architecture of that VO's distributed processing. 
+A second generation provides factories which are more flexible, not tied to any particular VO,
 and provide new or improved features such as monitoring, logging, profiling, etc.
 In this paper we describe this key part of the ATLAS pilot architecture, a second
 generation pilot factory, AutoPyFactory.
@@ -64,14 +64,12 @@ AutoPyFactory is one of these pilot frameworks.
 
 \section{Architecture}
 
-
 AutoPyFactory runs as a single process,
 launching a separate thread for each internal workflow (known as APFQueue).
 Each one of these APFQueues typically serves for a single job queue, 
 as it is defined in the VO Workload Management WMS service, 
 and delivers pilots to a single batch queue,
 either local o remotely. 
-
 
 The behavior of these AutoPyFactory workflows, or APFQueues,
 is determined by the combination of a set of plug-ins, 
