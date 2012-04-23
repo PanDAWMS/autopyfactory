@@ -4,39 +4,40 @@
 \begin{document}
 \title{AutoPyFactory: A Scalable Flexible Pilot Factory Implementation}
 
-\author{J. Caballero$^1$, J. Hover $^1$, P. Love$^2$, G. Stewart$^3$}
+\author{J. Caballero$^1$, J. Hover $^1$, P. Love$^2$, G. A. Stewart$^3$ on behalf of the ATLAS Collaboration} 
 
 \address{$^1$ Brookhaven National Laboratory, PO BOX 5000 Upton, NY 11973, USA}
-\address{$^2$ Department of Physics, Lancaster University, Lancaster, LA1 4YB, UK }
-\address{$^3$ Department of Physics and Astronomy, University of Glasgow, Glasgow G12 8QQ, UK}
+\address{$^2$ Department of Physics, Lancaster University, Lancaster, LA1 4YB, UK}
+\address{$^3$ CERN: European Organization for Nuclear Research, Geneva, Switzerland}
 
 \ead{jcaballero@bnl.gov}
 
 \begin{abstract}
+
 The ATLAS experiment at the CERN LHC is one of the largest users of grid computing
 infrastructure, which is a central part of the experiment's computing operations.
 Considerable efforts have been made to use grid technology in the most efficient
 and effective way, including the use of a pilot job based workload management framework.
 In this model the experiment submits 'pilot' jobs to sites without payload. When these
-jobs begin to run they contact a central service to retrieve a real payload to execute. 
-The first generation of pilot factories were usually specific to a single VO, 
-and were bound to the particular architecture of that VO's distributed processing. 
-A second generation provides factories which are more flexible, not tied to any
-particular VO, and provide new or improved features such as monitoring, logging, profiling, etc.
+jobs begin to run they contact a central service to pick-up a real payload to execute.
+The first generation of pilot factories were usually specific to a single VO, and were
+bound to the particular architecture of that VO's distributed processing.
+A second generation provides factories which are more flexible, not tied to any particular VO,
+and provide new and improved features such as monitoring, logging, profiling, etc.
 In this paper we describe this key part of the ATLAS pilot architecture, a second
 generation pilot factory, AutoPyFactory.
 AutoPyFactory has a modular design and is highly configurable. It is able to send
-different types of pilots to sites and exploit a range of submission mechanisms
-and queue characteristics. It is tightly integrated with the PanDA job submission framework,
+different types of pilots to sites and exploit different submission mechanisms and queue
+characteristics. It is tightly integrated with the PanDA job submission framework,
 coupling pilot flow to the amount of work the site has to run. It gathers information
-from many sources in order to correctly configure itself for a site, and its decision logic
-can easily be modified.
+from many sources in order to correctly configure itself for a site and its decision logic
+can easily be updated.
 Integrated into AutoPyFactory is a flexible system for delivering both generic and
 specific job wrappers which can perform many useful actions before starting to run
-end-user scientific applications, e.g. validation of the middleware, node profiling
+end-user scientific applications, e.g., validation of the middleware, node profiling
 and diagnostics, and monitoring.
-AutoPyFactory now also has a robust monitoring system and we show how this has helped
-establish a reliable pilot factory service for ATLAS.
+AutoPyFactory also has a robust monitoring system that has been invaluable in establishing a
+reliable pilot factory service for ATLAS.
 \end{abstract}
 
 
