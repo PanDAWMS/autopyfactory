@@ -125,7 +125,7 @@ class factory:
                 
             prioritystats = None
             if queueParameters['fairsharepolicy'] is not None:
-		policy = queueParameters['fairsharepolicy']
+                policy = queueParameters['fairsharepolicy']
                 match = re.match('.*priority<(\d+):(\d+).*', policy)
                 if match:
                     msg = "%s fairsharepolicy: %s" % (queue, policy)
@@ -197,19 +197,26 @@ class factory:
                 clause2 = prioritystats['activated'] > queueParameters['pilotQueue']['inactive']
                 lowprirunning = queueParameters['pandaStatus']['running'] - prioritystats['running']
 
-                if prioritystats['activated'] > 0:
+                cernstats = {'activated' : 0}
+                # get CERN-RELEASE stats and proceed to place pins in eyes
+                if 'CERN-PROD' in queue:
+                    cernstats = jobstats.get('CERN-RELEASE')
+                    msg = "cern-release jobstats: %s" % cernstats
+                    self.factoryMessages.debug(msg)
+                
+                nactivated = prioritystats['activated'] + cernstats['activated']
+                if nactivated > 0:
                     # we have high priority jobs activated
                     if clause1 or (clause2 and clause3):
-                        m = min(queueParameters['nqueue'],prioritystats['activated'])
+                        m = min(queueParameters['nqueue'],nactivated)
                         n = m/3 +1  # hack to really limit pilots as we have 3 factories
-                        msg = "%d activated pri>%d. Submitting %d pilots." % (prioritystats['activated'], priority, n)
+                        msg = "%d activated pri>%d. Submitting %d pilots." % (nactivated, priority, n)
                         self.note(queue, msg)
                         self.condorPilotSubmit(queue, cycleNumber, n)
                     else:
-                        nactive = prioritystats['activated']
                         nboost = queueParameters['nqueue'] * depthboost
                         ninactive = queueParameters['pilotQueue']['inactive']
-                        fields = (nactive, priority, ninactive, queueParameters['nqueue'], depthboost)
+                        fields = (nactivated, priority, ninactive, queueParameters['nqueue'], depthboost)
                         msg = "Throttled, %d activated (pri>%d), inactive:%d nqueue:%d boost:%d" % fields
                         self.note(queue, msg)
                     continue
@@ -217,15 +224,11 @@ class factory:
                 if lowprirunning < runlimit:
                     # we have low priority capacity
                     if clause1 or (clause2 and clause3):
-                        m = min(queueParameters['nqueue'],prioritystats['activated'])
+                        m = min(queueParameters['nqueue'],nactivated)
                         n = m/3 +1 # hack to really limit pilots as we have 3 factories
                         msg = "%d low pri running < runlimit=%d. Submitting %d pilots" % (lowprirunning, runlimit, n)
                         self.note(queue, msg)
                         self.condorPilotSubmit(queue, cycleNumber, n)
-                    else:
-                        ninactive = queueParameters['pilotQueue']['inactive']
-                        msg = "Throttled. %d low pri running > runlimit:%d. Inactive:%d" % (lowprirunning, runlimit, ninactive)
-                        self.note(queue, msg)
 
                 continue
 
