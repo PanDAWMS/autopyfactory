@@ -267,8 +267,8 @@ Jose Caballero <jcaballero@bnl.gov>
                 rungid = pwd.getpwnam(self.options.runAs).pw_gid
                 os.chown(self.options.logfile, runuid, rungid)
                 
-                os.setuid(runuid)
                 os.setgid(rungid)
+                os.setuid(runuid)
                 os.seteuid(runuid)
                 os.setegid(rungid)
 
