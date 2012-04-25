@@ -12,6 +12,7 @@ def main():
     apf = FactoryCLI()
     apf.parseopts()
     apf.setuplogging()
+    apf.platforminfo()
     ##apf.setuppandaenv()
     apf.checkroot()
     apf.createconfig()
