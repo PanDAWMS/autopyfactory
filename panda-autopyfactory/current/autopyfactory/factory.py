@@ -30,6 +30,7 @@ import threading
 import time
 import traceback
 import os
+import platform
 import pwd
 import socket
 import sys
@@ -227,6 +228,15 @@ Jose Caballero <jcaballero@bnl.gov>
         self.log.setLevel(self.options.logLevel)
         self.log.debug('logging initialised')
 
+
+    def platforminfo(self):
+        '''
+        display basic info about the platform, for debugging purposes 
+        '''
+
+        self.log.debug('platform: uname = %s %s %s %s %s %s') %platform.uname()
+        self.log.debug('platform: platform = %s') %platform.platform()
+        self.log.debug('platform: python version = %s') %platform.python_version()
 
     def setuppandaenv(self):
         '''
