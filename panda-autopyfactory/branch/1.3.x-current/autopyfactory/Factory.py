@@ -223,8 +223,9 @@ class factory:
 
                 if lowprirunning < runlimit:
                     # we have low priority capacity
+                    lowactivated = queueParameters['pandaStatus']['activated'] - nactivated
                     if clause1 or (clause2 and clause3):
-                        m = min(queueParameters['nqueue'],nactivated)
+                        m = min(queueParameters['nqueue'],lowactivated)
                         n = m/3 +1 # hack to really limit pilots as we have 3 factories
                         msg = "%d low pri running < runlimit=%d. Submitting %d pilots" % (lowprirunning, runlimit, n)
                         self.note(queue, msg)
