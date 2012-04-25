@@ -237,6 +237,11 @@ Jose Caballero <jcaballero@bnl.gov>
         self.log.info('platform: uname = %s %s %s %s %s %s' %platform.uname())
         self.log.info('platform: platform = %s' %platform.platform())
         self.log.info('platform: python version = %s' %platform.python_version())
+        envmsg = ''
+        for k,v in os.environ.iteritems():
+            envmsg += '\n%s : %s' %(k,v)
+        self.log.info('environment : %s' %envmsg)
+
 
     def setuppandaenv(self):
         '''
