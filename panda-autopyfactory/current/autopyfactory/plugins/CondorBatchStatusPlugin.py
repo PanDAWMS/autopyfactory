@@ -109,7 +109,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         self.log.info('_checkCondor: condor version is: %s' %commands.getoutput('condor_version'))       
 
         # check env var $CONDOR_CONFIG
-        CONDOR_CONFIG = os.environ.get('CONDOR_CONFIG', None):
+        CONDOR_CONFIG = os.environ.get('CONDOR_CONFIG', None)
         if CONDOR_CONFIG:
             self.log.info('_checkCondor: environment variable CONDOR_CONFIG set to %s' %CONDOR_CONFIG)
         else:
