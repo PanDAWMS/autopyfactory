@@ -106,24 +106,24 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
         
         # print condor version
-        self.log.info('_checkCondor: condor version is: \n%s' %commands.getoutput('condor_version'))       
+        self.log.debug('_checkCondor: condor version is: \n%s' %commands.getoutput('condor_version'))       
 
         # check env var $CONDOR_CONFIG
         CONDOR_CONFIG = os.environ.get('CONDOR_CONFIG', None)
         if CONDOR_CONFIG:
-            self.log.info('_checkCondor: environment variable CONDOR_CONFIG set to %s' %CONDOR_CONFIG)
+            self.log.debug('_checkCondor: environment variable CONDOR_CONFIG set to %s' %CONDOR_CONFIG)
         else:
             condor_config = '/etc/condor/condor_config'
             if os.path.isfile(condor_config):
-                self.log.info('_checkCondor: using condor config file: %s' %condor_config)
+                self.log.debug('_checkCondor: using condor config file: %s' %condor_config)
             else:
                 condor_config = '/usr/local/etc/condor_config'
                 if os.path.isfile(condor_config):
-                    self.log.info('_checkCondor: using condor config file: %s' %condor_config)
+                    self.log.debug('_checkCondor: using condor config file: %s' %condor_config)
                 else:
                     condor_config = os.path.expanduser('~condor/condor_config')
                     if os.path.isfile(condor_config):
-                        self.log.info('_checkCondor: using condor config file: %s' %condor_config)
+                        self.log.debug('_checkCondor: using condor config file: %s' %condor_config)
 
  
 
