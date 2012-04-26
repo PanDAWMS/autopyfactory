@@ -234,13 +234,13 @@ Jose Caballero <jcaballero@bnl.gov>
         display basic info about the platform, for debugging purposes 
         '''
 
-        self.log.info('platform: uname = %s %s %s %s %s %s' %platform.uname())
-        self.log.info('platform: platform = %s' %platform.platform())
-        self.log.info('platform: python version = %s' %platform.python_version())
+        self.log.debug('platform: uname = %s %s %s %s %s %s' %platform.uname())
+        self.log.debug('platform: platform = %s' %platform.platform())
+        self.log.debug('platform: python version = %s' %platform.python_version())
         envmsg = ''
         for k,v in os.environ.iteritems():
             envmsg += '\n%s : %s' %(k,v)
-        self.log.info('environment : %s' %envmsg)
+        self.log.debug('environment : %s' %envmsg)
 
 
     def setuppandaenv(self):
