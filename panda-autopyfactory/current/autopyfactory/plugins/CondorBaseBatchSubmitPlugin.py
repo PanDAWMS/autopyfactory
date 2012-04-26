@@ -50,7 +50,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         '''
     
         # print condor version
-        self.log.info('_checkCondor: condor version is: %s' %commands.getoutput('condor_version'))
+        self.log.info('_checkCondor: condor version is: \n%s' %commands.getoutput('condor_version'))
     
         # check env var $CONDOR_CONFIG
         CONDOR_CONFIG = os.environ.get('CONDOR_CONFIG', None)
