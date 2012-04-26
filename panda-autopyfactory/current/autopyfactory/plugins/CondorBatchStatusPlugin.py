@@ -116,14 +116,14 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             condor_config = '/etc/condor/condor_config'
             if os.path.isfile(condor_config):
                 self.log.info('_checkCondor: using condor config file: %s' %condor_config)
-        else:
-            condor_config = '/usr/local/etc/condor_config'
-            if os.path.isfile(condor_config):
-                self.log.info('_checkCondor: using condor config file: %s' %condor_config)
-        else:
-            condor_config = os.path.expanduser('~condor/condor_config')
-            if os.path.isfile(condor_config):
-                self.log.info('_checkCondor: using condor config file: %s' %condor_config)
+            else:
+                condor_config = '/usr/local/etc/condor_config'
+                if os.path.isfile(condor_config):
+                    self.log.info('_checkCondor: using condor config file: %s' %condor_config)
+                else:
+                    condor_config = os.path.expanduser('~condor/condor_config')
+                    if os.path.isfile(condor_config):
+                        self.log.info('_checkCondor: using condor config file: %s' %condor_config)
 
  
 
