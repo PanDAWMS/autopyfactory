@@ -3,8 +3,10 @@
 # AutoPyfactory batch status plugin for Condor
 #
 
+import commands
 import subprocess
 import logging
+import os
 import time
 import threading
 import traceback
@@ -102,7 +104,28 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         Does condor_q exist?
         Is Condor running?
         '''
-        pass
+        
+        # print condor version
+        self.log.info('_checkCondor: condor version is: %s' %commands.getoutput('condor_version'))       
+
+        # check env var $CONDOR_CONFIG
+        CONDOR_CONFIG = os.environ.get('CONDOR_CONFIG', None):
+        if CONDOR_CONFIG:
+            self.log.info('_checkCondor: environment variable CONDOR_CONFIG set to %s' %CONDOR_CONFIG)
+        else:
+            condor_config = '/etc/condor/condor_config'
+            if os.path.isfile(condor_config):
+                self.log.info('_checkCondor: using condor config file: %s' %condor_config)
+        else:
+            condor_config = '/usr/local/etc/condor_config'
+            if os.path.isfile(condor_config):
+                self.log.info('_checkCondor: using condor config file: %s' %condor_config)
+        else:
+            condor_config = os.path.expanduser('~condor/condor_config')
+            if os.path.isfile(condor_config):
+                self.log.info('_checkCondor: using condor config file: %s' %condor_config)
+
+ 
 
     def getInfo(self, maxtime=0):
         '''
