@@ -1047,6 +1047,12 @@ class PluginDispatcher(object):
                 3. The plugin module is imported, using __import__
                 4. The plugin class is retrieved. 
                    The name of the class is the same as the name of the module
+
+        It has been added the option of getting more than one plugins 
+        of the same category. 
+        The value is comma-split, and one class is retrieve for each field. 
+        Then, it will be up to the invoking entity to determine if only one item
+        is expected, and therefore a [0] is needed, or a list of item is possible.
         '''
 
         self.log.debug("_getplugin: Starting for action %s" %action)
