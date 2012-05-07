@@ -747,7 +747,7 @@ class APFQueue(threading.Thread):
         self.log.debug('_plugins: Starting')
 
         pd = PluginDispatcher(self)
-        self.scheduler_plugin = pd.schedplugin
+        self.scheduler_plugins = pd.schedplugins  # it is a list with 1 or more plugins
         self.wmsstatus_plugin = pd.wmsstatusplugin
         self.batchsubmit_plugin = pd.submitplugin
         self.batchstatus_plugin = pd.batchstatusplugin
@@ -769,7 +769,11 @@ class APFQueue(threading.Thread):
         while not self.stopevent.isSet():
             try:
                 self._autofill()
-                nsub = self.scheduler_plugin.calcSubmitNum()
+                #nsub = self.scheduler_plugin.calcSubmitNum()
+                nsub = 0
+                for sched_plugin in self.scheduler_plugins:
+                    nsub = sched_plugin.calcSubmitNum(nsub)
+
                 self._submitpilots(nsub)
                 self._monitor_shout()
                 self._exitloop()
@@ -941,7 +945,7 @@ class PluginDispatcher(object):
         self.apfqname = apfqueue.apfqname
 
         # collect all plugins
-        self.schedplugin =  self.getschedplugin()
+        self.schedplugins =  self.getschedplugins()
         self.batchstatusplugin =  self.getbatchstatusplugin()
         self.wmsstatusplugin =  self.getwmsstatusplugin()
         self.submitplugin =  self.getsubmitplugin()
@@ -949,12 +953,18 @@ class PluginDispatcher(object):
 
         self.log.info('PluginDispatcher: Object initialized.')
 
-    def getschedplugin(self):
+    def getschedplugins(self):
 
-        scheduler_cls = self._getplugin('sched')
-        scheduler_plugin = scheduler_cls(self.apfqueue)
+        #scheduler_cls = self._getplugin('sched')
+        #scheduler_plugin = scheduler_cls(self.apfqueue)
+        #return scheduler_plugin
 
-        return scheduler_plugin
+        scheduler_classes = self._getplugin('sched')  # list of classes 
+        scheduler_plugins = []
+        for scheduler_cls in scheduler_classes:
+            scheduler_plugin = scheduler_cls(self.apfqueue)
+            scheduler_plugins.append(scheduler_plugin)
+        return scheduler_plugins
 
     def getbatchstatusplugin(self):
 
@@ -1297,7 +1307,7 @@ class SchedInterface(object):
             valid()
     -----------------------------------------------------------------------
     '''
-    def calcSubmitNum(self):
+    def calcSubmitNum(self, nsub=0):
         '''
         Calculates number of jobs to submit for the associated APF queue. 
         '''
