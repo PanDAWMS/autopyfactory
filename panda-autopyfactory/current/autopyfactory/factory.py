@@ -973,7 +973,7 @@ class PluginDispatcher(object):
             queryargs = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs', logger=self.log)
             if queryargs:
                     condor_q_id = self.__queryargs2condorqid(queryargs)    
-        batchstatus_cls = self._getplugin('batchstatus')
+        batchstatus_cls = self._getplugin('batchstatus')[0]
         batchstatus_plugin = batchstatus_cls(self.apfqueue, condor_q_id=condor_q_id)
         batchstatus_plugin.start() # starts the thread
         
@@ -981,7 +981,7 @@ class PluginDispatcher(object):
 
     def getwmsstatusplugin(self):
 
-        wmsstatus_cls = self._getplugin('wmsstatus')
+        wmsstatus_cls = self._getplugin('wmsstatus')[0]
         wmsstatus_plugin = wmsstatus_cls(self.apfqueue)
         wmsstatus_plugin.start()   # starts the thread
 
@@ -989,14 +989,14 @@ class PluginDispatcher(object):
 
     def getsubmitplugin(self):
 
-        batchsubmit_cls = self._getplugin('batchsubmit')
+        batchsubmit_cls = self._getplugin('batchsubmit')[0]
         batchsubmit_plugin = batchsubmit_cls(self.apfqueue)
 
         return batchsubmit_plugin
 
     def getconfigplugin(self):
 
-        config_cls = self._getplugin('config')
+        config_cls = self._getplugin('config')[0]
         if config_cls:
             # Note it could be None
             config_plugin = config_cls(self.apfqueue)
