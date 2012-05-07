@@ -87,7 +87,7 @@ These steps can be summarized as follows:
 
 Those functions that are shared between more than one APFQueue, such
 as querying the WMS or a local batch system,
-are performed in a threaded object (implemented follwing the Singleton design
+are performed in a threaded object (implemented following the Singleton design
 pattern), and their information is shared by multiple APFQuees. This approach
 greatly reduces the load on those services and increases the reliability and performance of the whole system.
 
@@ -104,7 +104,7 @@ interactions between different components.
 
 The communication between different modules in AutoPyFactory 
 is possible thanks to its internal nomenclature.
-A set of generic variables with an specific meaning which all components 
+A set of generic variables with a specific meaning which all components 
 understand, allowing them to work together. 
 Table 1 and Table 2 show the AutoPyFactory names for the
 possible states in the batch submission system. 
@@ -180,7 +180,7 @@ There are currently 5 types of plug-ins:
 \subsubsection{Configuration Plug-in:}
 
 Retrieves extra configuration content from remote sources 
-(as an URL with the actual configuration file, or a web service with an API providing for the configuration content)
+(as a URL with the actual configuration file, or a web service with an API providing for the configuration content)
 and merges them with the local configuration content.
 An example of a configuration plug-in is the one that queries the PanDA
 SchedConfig service for submission characteristics.
@@ -231,10 +231,10 @@ and the internal AutoPyFactory nomenclature.
 \subsubsection{Batch Status Plug-in:}
 Queries the batch system being used to submit the jobs (or pilots) to the grid resources,
 to determine how many previously submitted jobs are already being executed and how many are still idle.
-This information is used to avoid submitting an unnecesary number of extra new jobs, 
-which could cause from bottlenecks and inefficiencies on the overall algorithm, to severe damage on remote Grid services.
-An example is a module querying the condor queues.
-Tables 5 and 6 show two example of mappings between the external services
+This information is used to avoid submitting an unnecessary number of extra jobs, 
+which could cause bottlenecks, inefficiencies, and even impose severe loads on remote Grid services.
+An example is a module querying the Condor queues.
+Tables 5 and 6 show two examples of mappings between the external services
 and the internal AutoPyFactory nomenclature.
 
 \begin{table}[h]
@@ -253,7 +253,7 @@ and the internal AutoPyFactory nomenclature.
          \hline
       \end{tabular}
    \end{center}
-   \caption{Mapping between condor status and AutoPyFactory batch job status}
+   \caption{Mapping between Condor status and AutoPyFactory batch job status}
    \label{translation}
 \end{table}
 
@@ -279,7 +279,7 @@ and the internal AutoPyFactory nomenclature.
 \end{table}
 
 
-\subsubsection{Scheduler Plugin-in:}
+\subsubsection{Scheduler Plug-in:}
 This is the component in charge of making a decision of whether or not to submit
 more pilots, and if so how many. That calculation is based on the information
 provided by the two Status plug-ins (WMSStatus and BatchStatus).
@@ -288,9 +288,9 @@ A typical algorithm calculates the number of new jobs based on the number of end
 with some constraints to prevent the submission of an excesively high number of jobs, 
 or to eventually keep a minimum number of submissions per cycle. 
 Figure 2 shows the logical flow implemented in the
-ActivatedSchedPlugin (so named because it is primariy keyed on the number of
+ActivatedSchedPlugin (so named because it is primarily keyed on the number of
 ready jobs in the WMS). Other SchedPlugins may embody other algorithms, e.g. a
-scheduler plugin could always return a fixed number of jobs, or one could seek
+scheduler plug-in could always return a fixed number of jobs, or one could seek
 to maintain a constant number of pending/queued jobs in the batch system. 
 
 \begin{figure}
@@ -302,11 +302,11 @@ to maintain a constant number of pending/queued jobs in the batch system.
 \subsubsection{BatchSubmit Plug-in:}
 It is the component in charge of submitting new jobs (or pilots), 
 based on the decision made by the Scheduler plug-in. 
-Examples of these execution plugins can submit jobs remotely to a Grid resources using different protocols 
-(such as GRAM2, GRAM5, or CREAM), to a Clould Computing resources (using the
-Amazon EC2 protocol), or to a local Condor pool. 
+Examples of these execution plug-ins can submit jobs remotely to a Grid resource using different protocols 
+(such as GRAM2, GRAM5, or CREAM), to a Cloud Computing resource 
+(using the Amazon EC2 protocol), or to a local Condor pool. 
 
-In theory, a submit plugin
+In theory, a submit plug-in
 could use other mechanisms, e.g. simply execute a pilot process, or trigger an
 additional VM startup locally via libvirtd. In this scenario, AutoPyFactory could be run
 directly on the working resource (wherever the jobs are intended to run).
@@ -335,13 +335,13 @@ submits jobs  to a local Condor pool.
 This Condor pool can have many Worker Nodes, or zero. 
 In the latter case, all submitted jobs will remain in idle status. 
 \item Second APFQueue: 
-the WMS Status plug-in queries this local condor pool, 
-and gives to idle jobs in queue the same meaning that jobs ready in an VO WMS service. 
+the WMS Status plug-in queries this local Condor pool, 
+and gives to idle jobs in the queue the same meaning that jobs ready in a VO WMS service have.
 The Execution Plug-in then submits Virtual Machine instantiation orders (to an Amazon EC2-like resource, for example). 
 The middleware pre-installed on these Virtual Machines, 
 beside Grid middleware and any particular libraries required by the VOs, 
-can include a condor startd daemon which will join the local condor pool. 
-Once these remote instances have joined the condor pool, 
+can include a Condor startd daemon which will join the local Condor pool. 
+Once these remote instances have joined the Condor pool, 
 the idle jobs will flow and start execution. 
 \end{itemize}
 
@@ -358,7 +358,7 @@ The first one queries the VO WMS service and submits the jobs (or pilot) to the 
 while the second one submits glideins to remote resources which will join that local pool. 
 
 In theory, AutoPyFactory is flexible enough that it can serve new needs by mixing the
-roles played by different plugins in whatever way accomplishes the required goal. 
+roles played by different plug-ins in whatever way accomplishes the required goal. 
 
 \section{Monitor}
 
@@ -368,7 +368,7 @@ files. Figure 4 shows a diagram with the design of this monitor component.
 The application uses the Django web framework with a mysql backend and apache webserver. 
 The web service collects information from a number of
 factories and allows a global view of Factory deployment with broad
-views at Factory level to fine-grained information about individual pilot jobs. 
+views from Factory level to fine-grained information about individual pilot jobs. 
 At 60k jobs created per hour, and over 2 million web hits per day, 
 the monitoring stack must be tuned to prevent overloading.
 The deployment of memcached has helped greatly in this respect.
@@ -407,10 +407,10 @@ relying on central pilot submission via Grid interfaces.
 Toward that end, AutoPyFactory has been made as easy to deploy as possible. 
 
 AutoPyFactory is provided in the prevailing standard, versioned package format (RPM) and
-made available using standard package management tools (YUM). Signed Yum
+made available using standard package management tools (yum). Signed yum
 repositories (development, testing, and production) are maintained by the
-developers and are available globally. This permits the easy installation, and
-upgrade, of AutoPyFactory, either manually or via automation. 
+developers and are available globally. This permits the easy installation and
+upgrade of AutoPyFactory, either manually or via automation. 
 
 This is useful beyond the usual deployment scenarios, e.g. one could dynamically
 install AutoPyFactory as a pilot tool directly on virtual machines running in a Cloud
@@ -445,13 +445,13 @@ status information. In theory, adding persistence would allow submission
 decisions made by the SchedPlugin to be even more intelligent, e.g. responding
 to dynamic trends over the previous hours or days. Such a mechanism would also
 allow the gathering of information over time, e.g. the maximum number of jobs
-ever run at a site, which would allow more intelligent ramp up strategy. 
+ever run at a site, which would allow a more intelligent ramp up strategy. 
 
 
 
 %%\section{Acknowledgements}
 \ack{
-The authors would like to thank the contribution from all site system administrators who have tested the software
+The authors are grateful for the contributions from all site system administrators who have tested the software
 and have provided useful feedback to improve the software and its documentation: 
 Doug Benjamin, Sarah Williams, Asoka da Silva.
 }
