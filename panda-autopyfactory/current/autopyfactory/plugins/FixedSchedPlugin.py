@@ -34,7 +34,7 @@ class FixedSchedPlugin(SchedInterface):
     def valid(self):
         return self._valid
 
-    def calcSubmitNum(self):
+    def calcSubmitNum(self, nsub=0):
         """ 
         returns always a fixed number of pilots
         """

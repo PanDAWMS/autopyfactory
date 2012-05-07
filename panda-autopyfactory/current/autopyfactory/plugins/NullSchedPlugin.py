@@ -31,5 +31,5 @@ class NullSchedPlugin(SchedInterface):
     def valid(self):
         return self._valid
     
-    def calcSubmitNum(self):
+    def calcSubmitNum(self, nsub=0):
         return 0
