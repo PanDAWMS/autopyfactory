@@ -17,8 +17,7 @@ __status__ = "Production"
 
 class MaxPerFactorySchedPlugin(SchedInterface):
 
-    #__metaclass__ = Singleton
-    # makes sense for this class to be a Singleton???
+    __metaclass__ = Singleton
 
     id = 'maxperfactory'
     
@@ -30,11 +29,6 @@ class MaxPerFactorySchedPlugin(SchedInterface):
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
 
             self.max_pilots_per_factory = self.apfqueue.fcl.generic_get('Factory', 'max_pilots_per_factory', 'getint', logger=self.log)
-
-            # testmode vars
-            #self.testmode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.allowed', 'getboolean', logger=self.log)
-            #self.pilots_in_test_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.pilots', 'getint', default_value=0, logger=self.log)
-
 
             self.log.info("SchedPlugin: Object initialized.")
         except:
