@@ -56,5 +56,7 @@ class MaxPerFactorySchedPlugin(SchedInterface):
         self.log.info('calcSubmitNum: the total number of current pilots being handled by the factory is %s' %self.total_pilots)
 
         out = min(self.total_pilots, self.max_pilots_per_factory)
+        # FIXME : that is not the right algorithm !!
+
         self.log.info('calcSubmitNum: return with out = %s' %out)
         return out
