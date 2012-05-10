@@ -32,11 +32,6 @@ class MaxPerFactorySchedPlugin(SchedInterface):
             #self.testmode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.allowed', 'getboolean', logger=self.log)
             #self.pilots_in_test_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.pilots', 'getint', default_value=0, logger=self.log)
 
-            self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
-            self.total_pilots = 0 
-            for batchqueue in self.batchinfo.keys():  # is this the best way to get the list of batch queues??
-                self.total_pilots += self.batchinfo.running
-            self.log.info('calcSubmitNum: the total number of current pilots being handled by the factory is %s' %self.total_pilots)
 
             self.log.info("SchedPlugin: Object initialized.")
         except:
@@ -51,6 +46,11 @@ class MaxPerFactorySchedPlugin(SchedInterface):
 
         self.log.debug('calcSubmitNum: Starting.')
 
+        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
+        self.total_pilots = 0 
+        for batchqueue in self.batchinfo.keys():  # is this the best way to get the list of batch queues??
+            self.total_pilots += self.batchinfo.running
+        self.log.info('calcSubmitNum: the total number of current pilots being handled by the factory is %s' %self.total_pilots)
 
         out = min(self.total_pilots, self.max_pilots_per_factory)
         self.log.info('calcSubmitNum: return with out = %s' %out)
