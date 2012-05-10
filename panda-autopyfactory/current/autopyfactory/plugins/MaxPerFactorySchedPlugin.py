@@ -48,7 +48,7 @@ class MaxPerFactorySchedPlugin(SchedInterface):
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
         total_pilots = 0 
         for batchqueue in self.batchinfo.keys():  # is this the best way to get the list of batch queues??
-            total_pilots += self.batchinfo.total
+            total_pilots += self.batchinfo.running
         self.log.info('calcSubmitNum: the total number of current pilots being handled by the factory is %s' %total_pilots)
 
         out = min(total_pilots, self.max_pilots_per_factory)
