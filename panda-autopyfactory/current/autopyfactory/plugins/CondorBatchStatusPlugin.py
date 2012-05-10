@@ -246,9 +246,8 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
     def _querycondor(self):
         '''
-            Query condor for all job info and return xml representation string
-            for further processing.
-        
+        Query condor for all job info and return xml representation string
+        for further processing.
         '''
         self.log.debug('_querycondor: Starting.')
         querycmd = "condor_q"
@@ -261,9 +260,9 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         #querycmd += " -format ' %s\n' Environment"
         querycmd += " -format ' MATCH_APF_QUEUE=%s' match_apf_queue"
 
-        # I put jobStatus at the end, because all jobs have that variable
+        # should I put jobStatus at the end, because all jobs have that variable
         # defined, so there is no risk is undefined and therefore the 
-        # \n is never called
+        # \n is never called?
         querycmd += " -format ' JobStatus=%d\n' jobstatus"
         querycmd += " -format ' GlobusStatus=%d\n' globusstatus"
         querycmd += " -xml"
