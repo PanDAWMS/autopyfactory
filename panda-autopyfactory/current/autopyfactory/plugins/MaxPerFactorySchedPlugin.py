@@ -1,7 +1,9 @@
 #! /usr/bin/env python
 #
 
+
 from autopyfactory.factory import SchedInterface
+from autopyfactory.factory import Singleton
 import logging
 
 __author__ = "John Hover, Jose Caballero"
@@ -16,6 +18,7 @@ __status__ = "Production"
 class MaxPerFactorySchedPlugin(SchedInterface):
 
     __metaclass__ = Singleton
+    # makes sense for this class to be a Singleton???
 
     id = 'maxperfactory'
     
