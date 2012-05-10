@@ -49,8 +49,10 @@ class MaxPerFactorySchedPlugin(SchedInterface):
             self.total_pilots += self.batchinfo.pending
         self.log.info('calcSubmitNum: the total number of current pending+running pilots being handled by the factory is %s' %self.total_pilots)
 
-        out = min(self.total_pilots, self.max_pilots_per_factory)
-        # FIXME : that is not the right algorithm !!
+        if nsub + self.total_pilots > self.max_pilots_per_factory:
+            out = self.max_pilots_per_factory - self.total_pilots
+        else: 
+            out = nsub
 
-        self.log.info('calcSubmitNum: return with out = %s' %out)
+        self.log.info('calcSubmitNum: initial nsub = % total_pilots = %s max_per_factory = %s, returning = %s' out)
         return out
