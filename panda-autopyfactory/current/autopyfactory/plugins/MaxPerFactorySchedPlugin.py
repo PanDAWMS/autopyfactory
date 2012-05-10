@@ -44,10 +44,12 @@ class MaxPerFactorySchedPlugin(SchedInterface):
         self.log.debug('calcSubmitNum: Starting.')
 
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
-        self.total_pilots = 0 
-        for batchqueue in self.batchinfo.keys():  # is this the best way to get the list of batch queues??
-            self.total_pilots += self.batchinfo.running
-        self.log.info('calcSubmitNum: the total number of current pilots being handled by the factory is %s' %self.total_pilots)
+
+        ### FIXME = this is not the way to find out the total number of (potentially) running pilots. It has to be thru condor_q
+        ### self.total_pilots = 0 
+        ### for batchqueue in self.batchinfo.keys():  # is this the best way to get the list of batch queues??
+        ###     self.total_pilots += self.batchinfo.running
+        ### self.log.info('calcSubmitNum: the total number of current pilots being handled by the factory is %s' %self.total_pilots)
 
         out = min(self.total_pilots, self.max_pilots_per_factory)
         # FIXME : that is not the right algorithm !!
