@@ -17,7 +17,7 @@ __status__ = "Production"
 
 class MaxPerFactorySchedPlugin(SchedInterface):
 
-    __metaclass__ = Singleton
+    #__metaclass__ = Singleton
     # makes sense for this class to be a Singleton???
 
     id = 'maxperfactory'
