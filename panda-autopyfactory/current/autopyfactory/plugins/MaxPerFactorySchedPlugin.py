@@ -45,8 +45,8 @@ class MaxPerFactorySchedPlugin(SchedInterface):
 
         self.total_pilots = 0 
         for batchqueue in self.batchinfo.keys():  
-            self.total_pilots += self.batchinfo.running
-            self.total_pilots += self.batchinfo.pending
+            self.total_pilots += self.batchinfo[batchqueue].running
+            self.total_pilots += self.batchinfo[batchqueue].pending
         self.log.info('calcSubmitNum: the total number of current pending+running pilots being handled by the factory is %s' %self.total_pilots)
 
         if nsub + self.total_pilots > self.max_pilots_per_factory:
