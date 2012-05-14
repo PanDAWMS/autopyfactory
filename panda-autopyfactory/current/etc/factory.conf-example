@@ -17,6 +17,7 @@
 # factoryAdminEmail
 # factory.sleep
 # factoryUser
+# maxperfactory.maximum
 # monitorURL
 # logserver.enabled 
 # logserver.index 
@@ -69,6 +70,12 @@
 #               Value is in seconds.
 #
 # factoryUser = account under which APF will run
+#
+# maxperfactory.maximum = maximum number of condor jobs 
+#               to be running at the same time per Factory.
+#               It is a global number, used by all APFQueues submitting
+#               pilots with condor.
+#               The value will be used by MaxPerFactorySchedPlugin plugin
 #
 # monitorURL = URL for the web monitor
 #
