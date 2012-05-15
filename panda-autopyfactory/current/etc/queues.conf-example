@@ -50,6 +50,8 @@
 # sched.fixed.pilotspercycle
 # sched.maxpercycle.maximum
 # sched.minpercycle.minimum
+# sched.maxpending.maximum
+# sched.minpending.minimum
 # sched.simple.default
 # sched.simple.maxpendingpilots
 # sched.simple.maxpilotspercycle
@@ -322,6 +324,20 @@
 # sched.minpercycle.minimum = minimum number of pilots to be submitted
 #               per cycle
 
+
+#  --------------------------------------------------------------------
+#       Configuration when schedplugin is MaxPending
+#  --------------------------------------------------------------------
+
+# sched.maxpending.maximum = maximum number of pilots to be pending
+#             
+
+#  --------------------------------------------------------------------
+#       Configuration when schedplugin is MinPending 
+#  --------------------------------------------------------------------
+
+# sched.minpending.minimum = minimum number of pilots to be pending
+#              
 
 #  --------------------------------------------------------------------
 #       Configuration when schedplugin is Simple
