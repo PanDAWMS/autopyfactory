@@ -45,7 +45,7 @@ class PandaConfigPlugin(ConfigInterface):
         self._valid = True
 
         self.mapping = {
-                'localqueue': 'batchsubmit.queue',
+                'localqueue': 'batchsubmit.condorgram.gram.queue',
                 'queue': 'batchsubmit.gridresource',
                 'environ': 'batchsubmit.environ',
                 }
