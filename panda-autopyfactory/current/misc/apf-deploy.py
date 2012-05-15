@@ -22,7 +22,8 @@ PLATFORMS=['fedora','rhel']
 REPOS=['development','testing','production']
 USAGE="apf-deploy.py <repos>"
 RELEASEMAP={ 'Fedora release 14 (Laughlin)' : ('fedora','14'),
-             'Red Hat Enterprise Linux Client release 5.7 (Tikanga)' : ('rhel','5Client'),            
+             'Red Hat Enterprise Linux Client release 5.7 (Tikanga)' : ('rhel','5Client'),
+             'Red Hat Enterprise Linux Workstation release 6.2 (Santiago)' : ('rhel','6Workstation'),            
             }
 RPMGLOB='.*.noarch.rpm$'
 RPMRE=re.compile(RPMGLOB, re.IGNORECASE)
