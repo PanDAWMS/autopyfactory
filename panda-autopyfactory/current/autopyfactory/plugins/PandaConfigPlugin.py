@@ -25,9 +25,12 @@ __status__ = "Production"
 
 
 class SchedConfigInfo(BaseInfo):
+    #valid = ['batchsubmit.condorgram.gram.queue', 
+    #         'batchsubmit.condorgram.gram.globusrsladd', 
+    #         'batchsubmit.condor_attributes',
+    #         'batchsubmit.environ', 
+    #         'batchsubmit.gridresource']
     valid = ['batchsubmit.condorgram.gram.queue', 
-             'batchsubmit.condorgram.gram.globusrsladd', 
-             'batchsubmit.condor_attributes',
              'batchsubmit.environ', 
              'batchsubmit.gridresource']
  
@@ -48,10 +51,15 @@ class PandaConfigPlugin(ConfigInterface):
     def __init__(self, apfqueue):
         self._valid = True
 
+        #self.mapping = {
+        #        'special_par': 'batchsubmit.condorgram.gram.globusrsladd',
+        #        'localqueue': 'batchsubmit.condorgram.gram.queue',
+        #        'jdladd' : 'batchsubmit.condor_attributes',
+        #        'environ': 'batchsubmit.environ',
+        #        'queue': 'batchsubmit.gridresource',
+        #        }
         self.mapping = {
-                'special_par': 'batchsubmit.condorgram.gram.globusrsladd',
                 'localqueue': 'batchsubmit.condorgram.gram.queue',
-                'jdladd' : 'batchsubmit.condor_attributes',
                 'environ': 'batchsubmit.environ',
                 'queue': 'batchsubmit.gridresource',
                 }
