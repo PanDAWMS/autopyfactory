@@ -38,7 +38,7 @@ class MinPendingchedPlugin(SchedInterface):
 
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
 
-        elif self.batchinfo is None:
+        if self.batchinfo is None:
             self.log.warning("self.batchinfo is None!")
         else:
             pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending
