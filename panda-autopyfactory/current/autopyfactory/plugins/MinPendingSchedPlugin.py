@@ -13,7 +13,7 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
-class MinPendingchedPlugin(SchedInterface):
+class MinPendingSchedPlugin(SchedInterface):
     id = 'minpending'
     
     def __init__(self, apfqueue):
