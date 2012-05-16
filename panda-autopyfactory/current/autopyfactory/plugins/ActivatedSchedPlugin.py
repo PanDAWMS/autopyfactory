@@ -105,7 +105,7 @@ class ActivatedSchedPlugin(SchedInterface):
             else:
                 # default
                 out = self._calc_online()
-            return out
+        return out
 
     def _calc_online(self):
         '''
