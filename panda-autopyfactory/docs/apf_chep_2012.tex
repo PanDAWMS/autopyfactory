@@ -14,7 +14,7 @@
 
 \begin{abstract}
 
-The ATLAS experiment at the CERN LHC is one of the largest users of grid computing
+The ATLAS experiment at the CERN LHC is one of the largest users of grid computing 
 infrastructure, which is a central part of the experiment's computing operations.
 Considerable efforts have been made to use grid technology in the most efficient
 and effective way, including the use of a pilot job based workload management framework.
@@ -45,14 +45,15 @@ reliable pilot factory service for ATLAS.
 
 LHC experiments have adopted jobs workflows based on pilot systems.
 Even though the particular implementation of these pilot-based architectures may
-vary between different VOs, the philosophy is the same. 
+vary between different Virtual Organizations (VOs), the philosophy is the same. 
+ATLAS [1] is one of the experiments using this pilot-based architecture.
 
 Generic pilot jobs are submitted to sites without payload. 
-When these jobs start on a worker node they contact a central Virtual Organization (VO)
+When these jobs start on a worker node they contact a central VO
 service to retrieve a real payload (i.e., an end-user job) and execute it.
 Using these pilot-based workflows helps to improve job reliability,
 optimize resource utilization, allows for opportunistic resources usage, 
-and mitigates many of the problems associated with the inhomogeneities found on the grid.
+and mitigates many of the problems associated with the inhomogeneities found on the grid [2].
 
 Therefore, VOs need a reliable, robust and scalable
 framework capable of managing the automatic flow of pilots to remote Grid
@@ -182,7 +183,7 @@ There are currently 5 types of plug-ins:
 Retrieves extra configuration content from remote sources 
 (as a URL with the actual configuration file, or a web service with an API providing for the configuration content)
 and merges them with the local configuration content.
-An example of a configuration plug-in is the one that queries the PanDA
+An example of a configuration plug-in is the one that queries the PanDA [3]
 SchedConfig service for submission characteristics.
 
 
@@ -191,7 +192,7 @@ Queries the VO WMS system,
 retrieving information about the number of jobs in different status (ready, running, finished...) per queue.
 This information is converted internally into the AutoPyFactory nomenclature.
 An example of a WMS Status plug-in queries the PanDA API.
-Another example is a plug-in querying a local Condor pool and interpreting the
+Another example is a plug-in querying a local Condor [4] pool and interpreting the
 output as end-user jobs. This source of information is typically where 
 how much work is ready to be done can be found, and therefore should trigger pilot
 submission. 
@@ -459,14 +460,14 @@ Doug Benjamin, Sarah Williams, Asoka da Silva.
 \section*{References}
 \begin{thebibliography}{99}
 
-\item Foster I, Kesselman C and Tuecke S 2001 The Anatomy of the Grid: Enabling Scalable Virtual Organizations
-      {\it International J. Supercomputer Applications} {\bf 15}(3)
-
-\item LHC Computing Grid Project
-      {\it http://www.cern.ch/lcg/}
+%\item LHC Computing Grid Project
+%      {\it http://www.cern.ch/lcg/}
 
 \item ATLAS Collaboration 1994 ATLAS Technical Proposal 
       {\it CERN/LHCC/94-43} 
+
+\item Foster I, Kesselman C and Tuecke S 2001 The Anatomy of the Grid: Enabling Scalable Virtual Organizations
+      {\it International J. Supercomputer Applications} {\bf 15}(3)
 
 \item Nilsson P, Caballero J, De K, Maeno T, Potekhin M and Wenaus T 2008 The PanDA system in the ATLAS experiment
       {\it Proceedings of ACAT 2008 Conference.}
