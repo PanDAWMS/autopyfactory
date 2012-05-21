@@ -1,0 +1,5 @@
+include CHANGELOG INSTALL* LICENSE README NOTES CONFIGURATION
+include bin/*
+include etc/*
+include libexec/*
+include misc/*
