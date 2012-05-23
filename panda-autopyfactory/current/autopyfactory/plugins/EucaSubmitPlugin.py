@@ -49,7 +49,7 @@ class EucaBaseBatchSubmitPlugin(BatchSubmitInterface):
         if exitStatus != 0:
             self.log.error('__submit: euca-run-instances command failed (status %d): %s', exitStatus, output)
         else:
-            self.log.info('__submit: euca-run-instances command for %s succeeded', self.wmsqueue)
+            self.log.info('__submit: euca-run-instances command succeeded')
         st, out = exitStatus, output
 
 
