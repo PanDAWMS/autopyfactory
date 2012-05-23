@@ -3,7 +3,6 @@
 # AutoPyfactory batch status plugin for OpenStack
 #
 
-import commands
 import subprocess
 import logging
 import os
