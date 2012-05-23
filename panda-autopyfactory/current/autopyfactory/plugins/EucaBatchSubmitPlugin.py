@@ -23,7 +23,7 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
-class EucaBaseBatchSubmitPlugin(BatchSubmitInterface):
+class EucaBatchSubmitPlugin(BatchSubmitInterface):
     
     def __init__(self, apfqueue):
 
