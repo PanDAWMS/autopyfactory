@@ -23,7 +23,7 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
-class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
+class EucaBaseBatchSubmitPlugin(BatchSubmitInterface):
     
     def __init__(self, apfqueue):
 
@@ -47,9 +47,9 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         cmd = "euca-run-instances -n %s %s" %(n, self.apfqname)
         (exitStatus, output) = commands.getstatusoutput(cmd)
         if exitStatus != 0:
-            self.log.error('__submit: condor_submit command for %s failed (status %d): %s', self.wmsqueue, exitStatus, output)
+            self.log.error('__submit: euca-run-instances command failed (status %d): %s', exitStatus, output)
         else:
-            self.log.info('__submit: condor_submit command for %s succeeded', self.wmsqueue)
+            self.log.info('__submit: euca-run-instances command for %s succeeded', self.wmsqueue)
         st, out = exitStatus, output
 
 
