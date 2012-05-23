@@ -55,9 +55,9 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
             self.apfqueue = apfqueue
             self.apfqname = apfqueue.apfqname
-            self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
-            self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
-            self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.euca.sleep')
+            self.sleeptime = self.apfqueue.fcl.generic_get('Factory', 'batchstatus.euca.sleep', 'getint', default_value=60, logger=self.log)
+            self.ec2_access_key = self.apfqueue.fcl.generic_get('Factory', 'batchstatus.euca.ec2_access_key', logger=self.log)
+            self.ec2_secret_key = self.apfqueue.fcl.generic_get('Factory', 'batchstatus.euca.ec2_secret_key', logger=self.log)
             self.currentinfo = None              
 
             # variable to record when was last time info was updated
@@ -154,8 +154,8 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         querycmd = 'euca-describe-images '
 
         # FIXME: Just a temporary solution
-        querycmd += ' -A %s' %os.environ['EC2_ACCESS_KEY']
-        querycmd += ' -S %s' %os.environ['EC2_PRIVATE_KEY']
+        querycmd += ' -A %s' %self.ec2_access_key
+        querycmd += ' -S %s' %self.ec2_secret_key
 
         self.log.debug('_queryopenstack: Querying cmd = %s' %querycmd.replace('\n','\\n'))
 
