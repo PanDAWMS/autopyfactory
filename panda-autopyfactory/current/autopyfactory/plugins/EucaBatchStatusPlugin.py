@@ -136,20 +136,17 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         self.log.debug('_update: Starting.')
        
-        if not utils.checkDaemon('condor'):
-            self.log.info('_update: condor daemon is not running. Doing nothing')
-        else:
-            try:
-                strout = self._queryopenstack()
-                if not strout:
-                    self.log.warning('_update: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
-                else:
-                    newinfo = self._parseoutput(strout)
-                    self.log.info("Replacing old info with newly generated info.")
-                    self.currentinfo = newinfo
-            except Exception, e:
-                self.log.error("_update: Exception: %s" % str(e))
-                self.log.debug("Exception: %s" % traceback.format_exc())            
+        try:
+            strout = self._queryopenstack()
+            if not strout:
+                self.log.warning('_update: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
+            else:
+                newinfo = self._parseoutput(strout)
+                self.log.info("Replacing old info with newly generated info.")
+                self.currentinfo = newinfo
+        except Exception, e:
+            self.log.error("_update: Exception: %s" % str(e))
+            self.log.debug("Exception: %s" % traceback.format_exc())            
 
         self.log.debug('__update: Leaving.')
 
