@@ -10,6 +10,9 @@
 # baseLogDirUrl
 # baseLogHttpPort 
 # batchstatus.condor.sleep
+# batchstatus.euca.sleep
+# batchstatus.euca.ec2_access_key
+# batchstatus.euca.ec2_secret_key
 # batchstatus.maxtime
 # cycles
 # cleanlogs.keepdays
@@ -41,8 +44,15 @@
 # baseLogHttpPort = What port to run the HTTP server to export logs. 
 #               Make sure this matchesthe value in the baseLogDirUrl.
 #
-# batchstatus.condor.sleep = time the BatchStatus Plugin waits between cycles
+# batchstatus.condor.sleep = time the Condor BatchStatus Plugin waits between cycles
 #               Value is in seconds.
+#
+# batchstatus.euca.sleep = time the Euca BatchStatus Plugin waits between cycles
+#               Value is in seconds.
+#
+# batchstatus.euca.ec2_access_key = EC2_ACCESS_KEY to interact with EC2 API
+#
+# batchstatus.euca.ec2_secret_key = EC2_SECRET_KEY to interact with EC2 API
 #
 # batchstatus.maxtime = maximum time while the info is considered reasonable. 
 #               If info stored is older than that, is considered not valid, 
