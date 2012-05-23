@@ -38,7 +38,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     -----------------------------------------------------------------------
     '''
     
-    __metaclass__ = CondorSingleton 
+    __metaclass__ = Singleton 
     
     def __init__(self, apfqueue, **kw):
 
