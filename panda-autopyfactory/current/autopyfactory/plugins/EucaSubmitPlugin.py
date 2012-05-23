@@ -35,6 +35,9 @@ class EucaBaseBatchSubmitPlugin(BatchSubmitInterface):
         self.factory = apfqueue.factory
         self.fcl = apfqueue.factory.fcl
 
+        self.ec2_access_key = self.apfqueue.fcl.generic_get('Factory', 'batchstatus.euca.ec2_access_key', logger=self.log)
+        self.ec2_secret_key = self.apfqueue.fcl.generic_get('Factory', 'batchstatus.euca.ec2_secret_key', logger=self.log)
+
         self.log.info('BatchSubmitPlugin: Object initialized.')
 
     def valid(self):
@@ -44,7 +47,7 @@ class EucaBaseBatchSubmitPlugin(BatchSubmitInterface):
         # for the time being, we assume the image is created
         # so we only run command euca-run-instances
 
-        cmd = "euca-run-instances -n %s %s" %(n, self.apfqname)
+        cmd = "euca-run-instances -n %s -a %s -s %s %s" %(n, self.ec2_access_key, self.ec2_secret_key, self.apfqname)
         (exitStatus, output) = commands.getstatusoutput(cmd)
         if exitStatus != 0:
             self.log.error('__submit: euca-run-instances command failed (status %d): %s', exitStatus, output)
