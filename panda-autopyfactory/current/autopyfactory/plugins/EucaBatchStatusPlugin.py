@@ -19,9 +19,6 @@ from autopyfactory.factory import Singleton, CondorSingleton
 from autopyfactory.info import InfoContainer
 from autopyfactory.info import BatchQueueInfo
 
-import autopyfactory.utils as utils
-
-
 __author__ = "John Hover, Jose Caballero"
 __copyright__ = "2011 John Hover, Jose Caballero"
 __credits__ = []
