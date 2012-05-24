@@ -74,6 +74,7 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
 
             self.sleeptime = self.apfqueue.fcl.generic_get('Factory', 'wmsstatus.config.sleep', 'getint', default_value=100)
 
+            self.configsinfo = None
 
             #self.scinfo = SchedConfigInfo()
 
