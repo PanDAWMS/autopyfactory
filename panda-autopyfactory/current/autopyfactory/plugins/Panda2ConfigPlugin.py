@@ -128,6 +128,17 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
         self.log.debug('run: Leaving.')
 
 
+    def join(self,timeout=None):
+        '''
+        stops the thread.
+        '''
+
+        self.log.debug('join: Starting with input %s' %timeout)
+        self.stopevent.set()
+        threading.Thread.join(self, timeout)
+        self.log.debug('join: Leaving.')
+
+
 
     def getConfig(self):
         return self.configsinfo
