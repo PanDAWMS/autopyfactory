@@ -166,6 +166,9 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
                         if v != 'None':
                             factoryData[k] = v
                             scinfo.fill(factoryData, self.mapping)
+        except:
+            # FIXME
+            pass 
         
 
         #    self.log.debug('_getschedconfig: Converted to: %s' % factoryData)
