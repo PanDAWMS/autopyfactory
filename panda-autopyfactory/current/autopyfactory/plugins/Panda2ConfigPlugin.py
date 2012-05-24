@@ -33,7 +33,7 @@ class SchedConfigInfo(BaseInfo):
         super(SchedConfigInfo, self).__init__(None) 
 
 
-class PandaConfigPlugin(ConfigInterface):
+class PandaConfigPlugin(threading.Thread, ConfigInterface):
     '''
     -----------------------------------------------------------------------
     -----------------------------------------------------------------------
@@ -70,8 +70,19 @@ class PandaConfigPlugin(ConfigInterface):
             self.qcl = apfqueue.factory.qcl
             self.batchqueue = self.qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
 
-            self.configsinfo = InfoContainer('configs', SchedConfigInfo())
             #self.scinfo = SchedConfigInfo()
+
+            # -----------------------------
+
+            # current WMSStatusIfno object
+            self.currentinfo = None
+            
+            threading.Thread.__init__(self) # init the thread
+            self.stopevent = threading.Event()
+            # to avoid the thread to be started more than once
+            self._started = False
+            
+            # -----------------------------
 
             self.log.info('scconfigplugin: Object initialized.')
         except:
@@ -80,23 +91,44 @@ class PandaConfigPlugin(ConfigInterface):
     def valid(self):
         return self._valid
 
+
+    def start(self):
+        '''
+        we override method start to prevent the thread
+        to be started more than once
+        '''
+
+        self.log.debug('start: Staring.')
+
+        if not self._started:
+                self._started = True
+                threading.Thread.start(self)
+
+        self.log.debug('start: Leaving.')
+
+
+    def run(self):
+        '''
+        Main loop
+        '''
+
+        self.log.debug('run: Starting.')
+        while not self.stopevent.isSet():
+            try:
+                self._update()
+            except Exception, e:
+                self.log.error("Main loop caught exception: %s " % str(e))
+            time.sleep(self.sleeptime)
+        self.log.debug('run: Leaving.')
+
+
+
     def getConfig(self):
-        '''
-        returns a Config object with the info we are interested in
-        id is the string that identifies a given class (e.g. condorgt2, condorcream...)
-        '''
+        return self.configsinfo
 
-        self.log.debug('getConfig: Leaving')
 
-        self._getschedconfig() 
 
-        conf = self.scinfo.getConfig(self.apfqname) 
-        ###conf.filterkeys('batchsubmit', 'batchsubmit.%s' %id)
- 
-        self.log.debug('getConfig: Leaving')
-        return conf 
-
-    def _getschedconfig(self):
+    def _update(self):
         ''' 
         queries PanDA Sched Config for batchqueue info
         ''' 
@@ -110,6 +142,7 @@ class PandaConfigPlugin(ConfigInterface):
 
         try:
 
+            self.configsinfo = InfoContainer('configs', SchedConfigInfo())
 
             url = 'http://pandaserver.cern.ch:25080/cache/schedconfig/schedconfig.all.json'
             handle = urlopen(url)
