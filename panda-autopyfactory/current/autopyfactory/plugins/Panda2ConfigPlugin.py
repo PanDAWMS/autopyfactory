@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 
 import logging
+import threading
+import time
 
 from urllib import urlopen
 
@@ -69,6 +71,9 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
 
             self.qcl = apfqueue.factory.qcl
             self.batchqueue = self.qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
+
+            self.sleeptime = self.apfqueue.fcl.generic_get('Factory', 'wmsstatus.config.sleep', 'getint', default_value=100)
+
 
             #self.scinfo = SchedConfigInfo()
 
