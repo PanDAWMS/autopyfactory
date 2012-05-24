@@ -35,7 +35,7 @@ class SchedConfigInfo(BaseInfo):
         super(SchedConfigInfo, self).__init__(None) 
 
 
-class PandaConfigPlugin(threading.Thread, ConfigInterface):
+class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
     '''
     -----------------------------------------------------------------------
     -----------------------------------------------------------------------
