@@ -70,9 +70,10 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
             self.log.debug("scconfigplugin: Initializing object...")
 
             self.qcl = apfqueue.factory.qcl
-            self.batchqueue = self.qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
+            self.fcl = apfqueue.factory.fcl
 
-            self.sleeptime = self.apfqueue.fcl.generic_get('Factory', 'wmsstatus.config.sleep', 'getint', default_value=100)
+            self.batchqueue = self.qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
+            self.sleeptime = self.fcl.generic_get('Factory', 'wmsstatus.config.sleep', 'getint', default_value=100)
 
             self.configsinfo = None
 
