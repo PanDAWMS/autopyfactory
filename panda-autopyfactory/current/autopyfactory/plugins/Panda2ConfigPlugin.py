@@ -5,14 +5,10 @@ import logging
 from urllib import urlopen
 
 from autopyfactory.info import BaseInfo 
+from autopyfactory.info import InfoContainer
 from autopyfactory.factory import ConfigInterface
 from autopyfactory.factory import Singleton
 from autopyfactory.configloader import Config, ConfigManager
-
-
-#from autopyfactory.factory import WMSStatusInterface
-#from autopyfactory.factory import WMSStatusInfo
-#from autopyfactory.info import InfoContainer
 
 __author__ = "John Hover, Jose Caballero"
 __copyright__ = "2011 John Hover, Jose Caballero"
@@ -22,9 +18,6 @@ __version__ = "2.1.0"
 __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
-
-
-
 
 class SchedConfigInfo(BaseInfo):
     #valid = ['batchsubmit.condorgram.gram.queue', 
@@ -77,7 +70,8 @@ class PandaConfigPlugin(ConfigInterface):
             self.qcl = apfqueue.factory.qcl
             self.batchqueue = self.qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
 
-            self.scinfo = SchedConfigInfo()
+            self.configsinfo = InfoContainer('configs', SchedConfigInfo())
+            #self.scinfo = SchedConfigInfo()
 
             self.log.info('scconfigplugin: Object initialized.')
         except:
@@ -115,30 +109,37 @@ class PandaConfigPlugin(ConfigInterface):
             import simplejson as json
 
         try:
-            url = 'http://pandaserver.cern.ch:25080/cache/schedconfig/%s.factory.json' % self.batchqueue
+
+
+            url = 'http://pandaserver.cern.ch:25080/cache/schedconfig/schedconfig.all.json'
             handle = urlopen(url)
             jsonData = json.load(handle, 'utf-8')
             handle.close()
             self.log.info('_getschedconfig: JSON returned: %s' % jsonData)
-            factoryData = {}
             # json always gives back unicode strings (eh?) - convert unicode to utf-8
-            for k, v in jsonData.iteritems():
-                if isinstance(k, unicode):
-                    k = k.encode('utf-8')
-                if isinstance(v, unicode):
-                    v = v.encode('utf-8')
-                v = str(v)
-                if v != 'None':
-                    factoryData[k] = v
-            
-            self.scinfo.fill(factoryData, self.mapping)
+            for batchqueue, config in jsonData.iteritems():
+                if isinstance(batchqueue, unicode):
+                    batchqueue = batchqueue.encode('utf-8')
+                    scinfo = SchedConfigInfo()
+                    self.configsinfo[batchqueue] = scinfo
+
+                    for k, v in config.iteritems():
+                        factoryData = {}
+                        if isinstance(k, unicode):
+                            k = k.encode('utf-8')
+                        if isinstance(v, unicode):
+                            v = v.encode('utf-8')
+                        v = str(v)
+                        if v != 'None':
+                            factoryData[k] = v
+                            scinfo.fill(factoryData, self.mapping)
         
 
-            self.log.debug('_getschedconfig: Converted to: %s' % factoryData)
-        except ValueError, err:
-            self.log.error('_getschedconfig: %s for queue %s, downloading from %s' % (err, self.batchqueue, url))
-        except IOError, (errno, errmsg):
-            self.log.error('_getschedconfig: %s for queue %s, downloading from %s' % (errmsg, self.batchqueue, url))
+        #    self.log.debug('_getschedconfig: Converted to: %s' % factoryData)
+        #except ValueError, err:
+        #    self.log.error('_getschedconfig: %s for queue %s, downloading from %s' % (err, self.batchqueue, url))
+        #except IOError, (errno, errmsg):
+        #    self.log.error('_getschedconfig: %s for queue %s, downloading from %s' % (errmsg, self.batchqueue, url))
 
         self.log.debug('_getschedconfig: Leaving')
 
