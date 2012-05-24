@@ -6,7 +6,9 @@ from urllib import urlopen
 
 from autopyfactory.info import BaseInfo 
 from autopyfactory.factory import ConfigInterface
+from autopyfactory.factory import Singleton
 from autopyfactory.configloader import Config, ConfigManager
+
 
 #from autopyfactory.factory import WMSStatusInterface
 #from autopyfactory.factory import WMSStatusInfo
@@ -47,8 +49,10 @@ class PandaConfigPlugin(ConfigInterface):
     -----------------------------------------------------------------------
     '''
 
+    __metaclass__ = Singleton
 
     def __init__(self, apfqueue):
+
         self._valid = True
 
         #self.mapping = {
