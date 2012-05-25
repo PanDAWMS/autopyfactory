@@ -139,12 +139,8 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
         threading.Thread.join(self, timeout)
         self.log.debug('join: Leaving.')
 
-
-
-    def getConfig(self):
+    def getInfo(self):
         return self.configsinfo
-
-
 
     def _update(self):
         ''' 
@@ -171,19 +167,19 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
             for batchqueue, config in jsonData.iteritems():
                 if isinstance(batchqueue, unicode):
                     batchqueue = batchqueue.encode('utf-8')
-                    scinfo = SchedConfigInfo()
-                    self.configsinfo[batchqueue] = scinfo
+                scinfo = SchedConfigInfo()
+                self.configsinfo[batchqueue] = scinfo
 
-                    for k, v in config.iteritems():
-                        factoryData = {}
-                        if isinstance(k, unicode):
-                            k = k.encode('utf-8')
-                        if isinstance(v, unicode):
-                            v = v.encode('utf-8')
-                        v = str(v)
-                        if v != 'None':
-                            factoryData[k] = v
-                            scinfo.fill(factoryData, self.mapping)
+                factoryData = {}
+                for k, v in config.iteritems():
+                    if isinstance(k, unicode):
+                        k = k.encode('utf-8')
+                    if isinstance(v, unicode):
+                        v = v.encode('utf-8')
+                    v = str(v)
+                    if v != 'None':
+                        factoryData[k] = v
+                scinfo.fill(factoryData, self.mapping)
         except:
             # FIXME
             pass 
