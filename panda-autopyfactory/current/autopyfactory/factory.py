@@ -768,7 +768,10 @@ class APFQueue(threading.Thread):
         time.sleep(15)
         while not self.stopevent.isSet():
             try:
-                self._autofill()
+                if not self._autofill():
+                    self.log.warning('run: _autofill() returned False. Wait another loop')
+                    time.sleep(self.sleep)
+                    continue
                 nsub = 0
                 for sched_plugin in self.scheduler_plugins:
                     nsub = sched_plugin.calcSubmitNum(nsub)
@@ -791,14 +794,21 @@ class APFQueue(threading.Thread):
         '''
         self.log.debug('_autofill: Starting')
         if self.qcl.getboolean(self.apfqname, 'autofill'):
-                self.log.info('_autofill: is True, proceeding to query config plugin and merge')
-                id = self.batchsubmit_plugin.id
-                newqcl = self.config_plugin.getInfo()[self.batchqueue].getConfig(self.apfqname)
-                newqcl.filterkeys('batchsubmit', 'batchsubmit.%s' %id)
-                self.qcl.merge(newqcl) 
-                self.log.debug('_autofill: new configuration:\n%s' %self.qcl.getSection(self.apfqname).getContent())
+            self.log.info('_autofill: is True, proceeding to query config plugin and merge')
+            schedconfigs = self.config_plugin.getInfo()
+            if not schedconfigs:
+                self.log.warning('_autofill: schedconfig object returned by getInfo() is None. Leaving method _autofill() returning False.')
+                return False
+            newqcl = schedconfigs[self.batchqueue].getConfig(self.apfqname)
+            id = self.batchsubmit_plugin.id
+            newqcl.filterkeys('batchsubmit', 'batchsubmit.%s' %id)
+            self.qcl.merge(newqcl) 
+            self.log.debug('_autofill: new configuration:\n%s' %self.qcl.getSection(self.apfqname).getContent())
+        else:
+            self.log.info('_autofill: is False, not needed to do anything')
 
         self.log.debug('_autofill: Leaving')
+        return True
 
     def _submitpilots(self, nsub):
         '''
