@@ -769,7 +769,6 @@ class APFQueue(threading.Thread):
         while not self.stopevent.isSet():
             try:
                 self._autofill()
-                #nsub = self.scheduler_plugin.calcSubmitNum()
                 nsub = 0
                 for sched_plugin in self.scheduler_plugins:
                     nsub = sched_plugin.calcSubmitNum(nsub)
