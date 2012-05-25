@@ -1009,6 +1009,7 @@ class PluginDispatcher(object):
         if config_cls:
             # Note it could be None
             config_plugin = config_cls(self.apfqueue)
+            config_plugin.start()  # starts the thread
             return config_plugin
         else:
             return None    
