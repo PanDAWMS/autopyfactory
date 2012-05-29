@@ -158,7 +158,7 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
 
             self.configsinfo = InfoContainer('configs', SchedConfigInfo())
 
-            url = 'http://http://atlas-agis-api-dev.cern.ch/request/pandaqueue/query/list/?json&preset=full&ceaggregation'
+            url = 'http://atlas-agis-api-dev.cern.ch/request/pandaqueue/query/list/?json&preset=full&ceaggregation'
             handle = urlopen(url)
             jsonData = json.load(handle, 'utf-8')
             handle.close()
