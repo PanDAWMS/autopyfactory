@@ -22,14 +22,14 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 class SchedConfigInfo(BaseInfo):
-    #valid = ['batchsubmit.condorgram.gram.queue', 
-    #         'batchsubmit.condorgram.gram.globusrsladd', 
-    #         'batchsubmit.condor_attributes',
-    #         'batchsubmit.environ', 
-    #         'batchsubmit.gridresource']
     valid = ['batchsubmit.condorgram.gram.queue', 
+             'batchsubmit.condorgram.gram.globusrsladd', 
+             'batchsubmit.condor_attributes',
              'batchsubmit.environ', 
              'batchsubmit.gridresource']
+    #valid = ['batchsubmit.condorgram.gram.queue', 
+    #         'batchsubmit.environ', 
+    #         'batchsubmit.gridresource']
  
     def __init__(self):
         super(SchedConfigInfo, self).__init__(None) 
@@ -50,18 +50,18 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
 
         self._valid = True
 
-        #self.mapping = {
-        #        'special_par': 'batchsubmit.condorgram.gram.globusrsladd',
-        #        'localqueue': 'batchsubmit.condorgram.gram.queue',
-        #        'jdladd' : 'batchsubmit.condor_attributes',
-        #        'environ': 'batchsubmit.environ',
-        #        'queue': 'batchsubmit.gridresource',
-        #        }
         self.mapping = {
+                'special_par': 'batchsubmit.condorgram.gram.globusrsladd',
                 'localqueue': 'batchsubmit.condorgram.gram.queue',
+                'jdladd' : 'batchsubmit.condor_attributes',
                 'environ': 'batchsubmit.environ',
                 'queue': 'batchsubmit.gridresource',
                 }
+        #self.mapping = {
+        #        'localqueue': 'batchsubmit.condorgram.gram.queue',
+        #        'environ': 'batchsubmit.environ',
+        #        'queue': 'batchsubmit.gridresource',
+        #        }
 
         try:
 
