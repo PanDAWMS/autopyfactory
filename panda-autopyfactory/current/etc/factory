@@ -74,6 +74,7 @@ start() {
 		echo -n $"Starting APF daemon: "	
 	    # daemon --pidfile=${PIDFILE} "$BINDIR/factory --conf $CONFFILE $OPTIONS "
         $BINDIR/factory --conf $CONFFILE $OPTIONS &
+        # NOTE: $OPTIONS is defined in factory.sysconfig
         RETVAL=$?
 	    [ $RETVAL -eq 0 ] && echo $! > $PIDFILE
 	    [ "$?" -eq 0 ] && success $"factory startup" || failure $"factory startup"
