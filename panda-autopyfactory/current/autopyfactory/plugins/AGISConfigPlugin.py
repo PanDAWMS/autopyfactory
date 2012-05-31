@@ -169,7 +169,7 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
                 self.log.debug('_update: content in %s for %s converted to: %s' % (url, batchqueue, factoryData))
                 # FIXME ?? How do I deal with gridresource ??
                 #scinfo.fill(factoryData, self.mapping)
-                scinfo['batch.condorgram.gram.queue'] = factoryData['ce_queue_name']
+                scinfo['batch.condorgram.gram.queue'] = factoryData['queues'][0]['ce_queue_name']
 
         except ValueError, err:
             self.log.error('_update: %s  downloading from %s' % (err, url))
