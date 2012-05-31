@@ -22,22 +22,42 @@
 # Description: Submit PANDA pilots. 
 ### END INIT INFO
 
+f_factdir(){
+    # little function to find out where actually
+    # this script is located.
+    # In case of an user custom installation it could
+    # be in a place different that both /etc/init.d/ or the $HOME dir.
+    # The current location is recorded in variable FACTDIR
+    
+    OLD_DIR=$PWD
+    DIRPATH=`dirname $0`
+    cd $DIRPATH
+    FACTDIR=$PWD
+    cd $OLD_DIR
+}
+
 # Source function library.
 . /etc/rc.d/init.d/functions
 
-# Determine usage context (root means RPM, non-root means home directory) and set
-# paths accordingly.  
+# Determine usage context and set paths accordingly.  
+#   -- for root it means RPM
+#   -- for non-root, the head of the path tree can be calculated from the output of f_factdir
+#      the relative paths for the rest of files are like ../bin, ../var, etc.
+
+f_factdir
 
 if [ `id -u` = 0 ]; then
-  SYSCONF=/etc/sysconfig/factory.sysconfig
-  BINDIR=/usr/bin
-  ETCDIR=/etc/apf
-  PIDFILE=/var/run/factory.pid
+    SYSCONF=/etc/sysconfig/factory.sysconfig
+    BINDIR=/usr/bin
+    ETCDIR=/etc/apf
+    PIDFILE=/var/run/factory.pid
 else
-  SYSCONF=$HOME/etc/factory.sysconfig
-  BINDIR=$HOME/bin
-  ETCDIR=$HOME/etc
-  PIDFILE=$HOME/var/run/factory.pid
+    APFHEAD=`dirname $FACTDIR`
+
+    SYSCONF=$APFHEAD/etc/factory.sysconfig
+    BINDIR=$APFHEAD/bin
+    ETCDIR=$APFHEAD/etc
+    PIDFILE=$APFHEAD/var/run/factory.pid
 fi
 
 CONFFILE=$ETCDIR/factory.conf
