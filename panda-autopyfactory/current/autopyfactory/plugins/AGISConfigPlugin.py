@@ -32,7 +32,7 @@ class SchedConfigInfo(BaseInfo):
         super(SchedConfigInfo, self).__init__(None) 
 
 
-class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
+class AGISConfigPlugin(threading.Thread, ConfigInterface):
     '''
     -----------------------------------------------------------------------
     -----------------------------------------------------------------------
