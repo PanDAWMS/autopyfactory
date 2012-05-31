@@ -88,10 +88,20 @@ check() {
 	test -x $BINDIR/factory || exit 5
 }
 
+create_var_run(){
+    # function to create directory  $APFHEAD/var/run 
+    # if it does not exist. 
+    # It is needed to place the file factory.pid 
+    if [ ! -d $APFHEAD/var/run/ ]; then
+        mkdir -p $APFHEAD/var/run/
+    fi
+}
+
 start() {
 	# Check if it is already running
 	if [ ! -f $PIDFILE ]; then
 		echo -n $"Starting APF daemon: "	
+        create_var_run
 	    # daemon --pidfile=${PIDFILE} "$BINDIR/factory --conf $CONFFILE $OPTIONS "
         $BINDIR/factory --conf $CONFFILE $OPTIONS &
         # NOTE: $OPTIONS is defined in factory.sysconfig
