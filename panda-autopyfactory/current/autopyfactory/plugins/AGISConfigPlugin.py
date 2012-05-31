@@ -47,13 +47,11 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
 
         self._valid = True
 
-        self.mapping = {
-                'special_par': 'batchsubmit.condorgram.gram.globusrsladd',
-                'localqueue': 'batchsubmit.condorgram.gram.queue',
-                'jdladd' : 'batchsubmit.condor_attributes',
-                'environ': 'batchsubmit.environ',
-                'queue': 'batchsubmit.gridresource',
-                }
+        # FIXME ?? How do I deal with  gridresource ??
+        #self.mapping = {
+        #        'ce_queue_name': 'batchsubmit.condorgram.gram.queue',
+        #        'queue': 'batchsubmit.gridresource',
+        #        }
 
         try:
 
@@ -144,20 +142,23 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
 
             self.configsinfo = InfoContainer('configs', SchedConfigInfo())
 
-            url = 'http://pandaserver.cern.ch:25080/cache/schedconfig/schedconfig.all.json'
+            url = 'http://atlas-agis-api-dev.cern.ch/request/pandaqueue/query/list/?json&preset=full&ceaggregation'
             handle = urlopen(url)
+            # json always gives back unicode strings (eh?) - convert unicode to utf-8
             jsonData = json.load(handle, 'utf-8')
             handle.close()
             self.log.info('_update: JSON returned: %s' % jsonData)
-            # json always gives back unicode strings (eh?) - convert unicode to utf-8
-            for batchqueue, config in jsonData.iteritems():
+            
+            # In the case of AGIS, the json content is a list of dictionaries
+            for jsonDict in jsonData:
+                # jsonDict is a dictionary 
+                batchqueue = jsonDict["panda_queue_name"]
                 if isinstance(batchqueue, unicode):
                     batchqueue = batchqueue.encode('utf-8')
                 scinfo = SchedConfigInfo()
                 self.configsinfo[batchqueue] = scinfo
-
                 factoryData = {}
-                for k, v in config.iteritems():
+                for k, v in jsonDict.iteritems():
                     if isinstance(k, unicode):
                         k = k.encode('utf-8')
                     if isinstance(v, unicode):
@@ -166,7 +167,9 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
                     if v != 'None':
                         factoryData[k] = v
                 self.log.debug('_update: content in %s for %s converted to: %s' % (url, batchqueue, factoryData))
-                scinfo.fill(factoryData, self.mapping)
+                # FIXME ?? How do I deal with gridresource ??
+                #scinfo.fill(factoryData, self.mapping)
+                scinfo['batch.condorgram.gram.queue'] = factoryData['ce_queue_name']
 
         except ValueError, err:
             self.log.error('_update: %s  downloading from %s' % (err, url))
