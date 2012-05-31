@@ -22,8 +22,8 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 class SchedConfigInfo(BaseInfo):
-    valid = ['batchsubmit.condorgram.gram.queue', 
-             'batchsubmit.condorgram.gram.globusrsladd', 
+    valid = ['batchsubmit.gram.queue', 
+             'batchsubmit.gram.globusrsladd', 
              'batchsubmit.condor_attributes',
              'batchsubmit.environ', 
              'batchsubmit.gridresource']
@@ -48,11 +48,11 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
         self._valid = True
 
         self.mapping = {
-                'special_par': 'batchsubmit.condorgram.gram.globusrsladd',
-                'localqueue': 'batchsubmit.condorgram.gram.queue',
-                'jdladd' : 'batchsubmit.condor_attributes',
-                'environ': 'batchsubmit.environ',
-                'queue': 'batchsubmit.gridresource',
+                'special_par': 'batchsubmit.gram.globusrsladd',
+                'localqueue' : 'batchsubmit.gram.queue',
+                'jdladd'     : 'batchsubmit.condor_attributes',
+                'environ'    : 'batchsubmit.environ',
+                'queue'      : 'batchsubmit.gridresource',
                 }
 
         try:
