@@ -22,8 +22,8 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 class SchedConfigInfo(BaseInfo):
-    valid = ['batchsubmit.condorgram.gram.queue', 
-             'batchsubmit.condorgram.gram.globusrsladd', 
+    valid = ['batchsubmit.gram.queue', 
+             'batchsubmit.gram.globusrsladd', 
              'batchsubmit.condor_attributes',
              'batchsubmit.environ', 
              'batchsubmit.gridresource']
@@ -47,11 +47,10 @@ class AGISConfigPlugin(threading.Thread, ConfigInterface):
 
         self._valid = True
 
-        # FIXME ?? How do I deal with  gridresource ??
-        #self.mapping = {
-        #        'ce_queue_name': 'batchsubmit.condorgram.gram.queue',
-        #        'queue': 'batchsubmit.gridresource',
-        #        }
+        self.mapping = {
+                'ce_queue_name': 'batchsubmit.gram.queue',
+                'gridresource':  'batchsubmit.gridresource',
+                }
 
         try:
 
@@ -158,17 +157,13 @@ class AGISConfigPlugin(threading.Thread, ConfigInterface):
                 scinfo = SchedConfigInfo()
                 self.configsinfo[batchqueue] = scinfo
                 factoryData = {}
-                for k, v in jsonDict.iteritems():
-                    if isinstance(k, unicode):
-                        k = k.encode('utf-8')
-                    if isinstance(v, unicode):
-                        v = v.encode('utf-8')
-                    if v != 'None':
-                        factoryData[k] = v
+
+                if len(jsonDict['queues']) > 0:
+                    factoryData['ce_queue_name'] = jsonDict['queues'][0]['ce_queue_name']
+                    factoryData['gridresource'] = jsonDict['queues'][0]['ce_endpoint'] + '/' + jsonDict['queues'][0]['ce_gatekeeper']
+
                 self.log.debug('_update: content in %s for %s converted to: %s' % (url, batchqueue, factoryData))
-                # FIXME ?? How do I deal with gridresource ??
-                #scinfo.fill(factoryData, self.mapping)
-                scinfo['batch.condorgram.gram.queue'] = factoryData['queues'][0]['ce_queue_name']
+                scinfo.fill(factoryData, self.mapping)
 
         except ValueError, err:
             self.log.error('_update: %s  downloading from %s' % (err, url))
