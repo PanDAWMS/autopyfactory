@@ -22,12 +22,9 @@ __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
 class SchedConfigInfo(BaseInfo):
-    #valid = ['batchsubmit.condorgram.gram.queue', 
-    #         'batchsubmit.condorgram.gram.globusrsladd', 
-    #         'batchsubmit.condor_attributes',
-    #         'batchsubmit.environ', 
-    #         'batchsubmit.gridresource']
     valid = ['batchsubmit.condorgram.gram.queue', 
+             'batchsubmit.condorgram.gram.globusrsladd', 
+             'batchsubmit.condor_attributes',
              'batchsubmit.environ', 
              'batchsubmit.gridresource']
  
@@ -50,15 +47,10 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
 
         self._valid = True
 
-        #self.mapping = {
-        #        'special_par': 'batchsubmit.condorgram.gram.globusrsladd',
-        #        'localqueue': 'batchsubmit.condorgram.gram.queue',
-        #        'jdladd' : 'batchsubmit.condor_attributes',
-        #        'environ': 'batchsubmit.environ',
-        #        'queue': 'batchsubmit.gridresource',
-        #        }
         self.mapping = {
+                'special_par': 'batchsubmit.condorgram.gram.globusrsladd',
                 'localqueue': 'batchsubmit.condorgram.gram.queue',
+                'jdladd' : 'batchsubmit.condor_attributes',
                 'environ': 'batchsubmit.environ',
                 'queue': 'batchsubmit.gridresource',
                 }
@@ -77,10 +69,6 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
 
             self.configsinfo = None
 
-            #self.scinfo = SchedConfigInfo()
-
-            # -----------------------------
-
             # current WMSStatusIfno object
             self.currentinfo = None
             
@@ -89,8 +77,6 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
             # to avoid the thread to be started more than once
             self._started = False
             
-            # -----------------------------
-
             self.log.info('scconfigplugin: Object initialized.')
         except:
             self._valid = False
@@ -146,7 +132,7 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
         ''' 
         queries PanDA Sched Config for batchqueue info
         ''' 
-        self.log.debug('_getschedconfig: Starting')
+        self.log.debug('_update: Starting')
 
         try:
             import json as json
@@ -158,11 +144,11 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
 
             self.configsinfo = InfoContainer('configs', SchedConfigInfo())
 
-            url = 'http://atlas-agis-api-dev.cern.ch/request/pandaqueue/query/list/?json&preset=full&ceaggregation'
+            url = 'http://pandaserver.cern.ch:25080/cache/schedconfig/schedconfig.all.json'
             handle = urlopen(url)
             jsonData = json.load(handle, 'utf-8')
             handle.close()
-            self.log.info('_getschedconfig: JSON returned: %s' % jsonData)
+            self.log.info('_update: JSON returned: %s' % jsonData)
             # json always gives back unicode strings (eh?) - convert unicode to utf-8
             for batchqueue, config in jsonData.iteritems():
                 if isinstance(batchqueue, unicode):
@@ -179,17 +165,14 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
                     v = str(v)
                     if v != 'None':
                         factoryData[k] = v
+                self.log.debug('_update: content in %s for %s converted to: %s' % (url, batchqueue, factoryData))
                 scinfo.fill(factoryData, self.mapping)
-        except:
-            # FIXME
-            pass 
-        
 
-        #    self.log.debug('_getschedconfig: Converted to: %s' % factoryData)
-        #except ValueError, err:
-        #    self.log.error('_getschedconfig: %s for queue %s, downloading from %s' % (err, self.batchqueue, url))
-        #except IOError, (errno, errmsg):
-        #    self.log.error('_getschedconfig: %s for queue %s, downloading from %s' % (errmsg, self.batchqueue, url))
+        except ValueError, err:
+            self.log.error('_update: %s  downloading from %s' % (err, url))
+        except IOError, (errno, errmsg):
+            self.log.error('_update: %s downloading from %s' % (errmsg, url))
 
-        self.log.debug('_getschedconfig: Leaving')
+
+        self.log.debug('_update: Leaving')
 
