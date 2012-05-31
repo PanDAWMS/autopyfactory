@@ -27,9 +27,6 @@ class SchedConfigInfo(BaseInfo):
              'batchsubmit.condor_attributes',
              'batchsubmit.environ', 
              'batchsubmit.gridresource']
-    #valid = ['batchsubmit.condorgram.gram.queue', 
-    #         'batchsubmit.environ', 
-    #         'batchsubmit.gridresource']
  
     def __init__(self):
         super(SchedConfigInfo, self).__init__(None) 
@@ -57,11 +54,6 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
                 'environ': 'batchsubmit.environ',
                 'queue': 'batchsubmit.gridresource',
                 }
-        #self.mapping = {
-        #        'localqueue': 'batchsubmit.condorgram.gram.queue',
-        #        'environ': 'batchsubmit.environ',
-        #        'queue': 'batchsubmit.gridresource',
-        #        }
 
         try:
 
@@ -77,10 +69,6 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
 
             self.configsinfo = None
 
-            #self.scinfo = SchedConfigInfo()
-
-            # -----------------------------
-
             # current WMSStatusIfno object
             self.currentinfo = None
             
@@ -89,8 +77,6 @@ class Panda2ConfigPlugin(threading.Thread, ConfigInterface):
             # to avoid the thread to be started more than once
             self._started = False
             
-            # -----------------------------
-
             self.log.info('scconfigplugin: Object initialized.')
         except:
             self._valid = False
