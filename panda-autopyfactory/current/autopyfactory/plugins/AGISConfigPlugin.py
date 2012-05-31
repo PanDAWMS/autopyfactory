@@ -161,8 +161,9 @@ class AGISConfigPlugin(threading.Thread, ConfigInterface):
                 if len(jsonDict['queues']) > 0:
                     factoryData['ce_queue_name'] = jsonDict['queues'][0]['ce_queue_name']
                     factoryData['gridresource'] = jsonDict['queues'][0]['ce_endpoint'] + '/' + jsonDict['queues'][0]['ce_gatekeeper']
-
-                self.log.debug('_update: content in %s for %s converted to: %s' % (url, batchqueue, factoryData))
+        
+                # FIXME: too much content. Recover it when we have log.trace()
+                #self.log.debug('_update: content in %s for %s converted to: %s' % (url, batchqueue, factoryData))
                 scinfo.fill(factoryData, self.mapping)
 
         except ValueError, err:
