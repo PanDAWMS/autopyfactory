@@ -165,7 +165,8 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
                     v = str(v)
                     if v != 'None':
                         factoryData[k] = v
-                self.log.debug('_update: content in %s for %s converted to: %s' % (url, batchqueue, factoryData))
+                # FIXME: too much content. Recover it when we have log.trace()
+                #self.log.debug('_update: content in %s for %s converted to: %s' % (url, batchqueue, factoryData))
                 scinfo.fill(factoryData, self.mapping)
 
         except ValueError, err:
