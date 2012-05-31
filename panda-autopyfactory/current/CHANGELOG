@@ -3,6 +3,23 @@ ChangeLog
 
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
+* Added create_run_var() to init script factory. 
+  It creates the subdirectory var/run/ if it does not exist, to place factory.pid
+
+* Added $APFHEAD to init script factory. 
+  This allows for user deployment on any directory, not necessarily $HOME
+
+* Fixed the bug in Activated plugin, not returning anything under some circumstances. 
+
+* Creating multiple Sched plugins (MinPerCycle, MaxPerCycle, MinPending, MaxPending, MaxPerFactory), 
+  and code in factory.py to allow chaining more than one sched plugin.
+
+* PandaConfig Plugin refactored to query SchedConfig in a singleton thread. 
+  This is possible because it now uses an URL that delivers the entire SchedConfig content.
+  Also more variables added: jdladd, environ, and special_pars.
+
+* First draft for Euca Submit Plugin created.
+
 
 2012-03-30
 
