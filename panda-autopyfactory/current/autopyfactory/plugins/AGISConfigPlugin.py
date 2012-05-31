@@ -163,7 +163,6 @@ class AGISConfigPlugin(threading.Thread, ConfigInterface):
                         k = k.encode('utf-8')
                     if isinstance(v, unicode):
                         v = v.encode('utf-8')
-                    v = str(v)
                     if v != 'None':
                         factoryData[k] = v
                 self.log.debug('_update: content in %s for %s converted to: %s' % (url, batchqueue, factoryData))
