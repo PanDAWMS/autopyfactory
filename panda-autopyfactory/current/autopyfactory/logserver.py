@@ -53,6 +53,9 @@ class MySimpleHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                 '.out': 'text/plain',
                 '.err': 'text/plain',
                 '.jdl': 'text/plain',
+                '.conf': 'text/plain',
+                '.txt': 'text/plain',
+                '.sh': 'text/plain',
         })
         
         base, ext = posixpath.splitext(path)
