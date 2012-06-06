@@ -53,6 +53,9 @@
 # sched.maxpending.maximum
 # sched.minpending.minimum
 # sched.statustest.allowed
+# sched.statustest.pilots
+# sched.statusoffline.allowed
+# sched.statusoffline.pilots
 # sched.simple.default
 # sched.simple.maxpendingpilots
 # sched.simple.maxpilotspercycle
@@ -353,6 +356,18 @@
 # sched.statustest.pilots = number of pilots to submit
 #               when the wmssite is in status = test
 #               and sched.statustest.allowed is True
+
+#  --------------------------------------------------------------------
+#       Configuration when schedplugin is StatusOffline
+#  --------------------------------------------------------------------
+
+# sched.statusoffline.allowed = Boolean variable to trigger
+#               special mode of operation when the wmssite or the cloud 
+#               is in status = offline
+
+# sched.statusoffline.pilots = number of pilots to submit
+#               when the wmssite or the cloud is in status = offline
+#               and sched.statusoffline.allowed is True
 
 #  --------------------------------------------------------------------
 #       Configuration when schedplugin is Simple
