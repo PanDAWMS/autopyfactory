@@ -52,6 +52,7 @@
 # sched.minpercycle.minimum
 # sched.maxpending.maximum
 # sched.minpending.minimum
+# sched.statustest.allowed
 # sched.simple.default
 # sched.simple.maxpendingpilots
 # sched.simple.maxpilotspercycle
@@ -261,6 +262,8 @@
 #               number of pilots.
 #               Or even can be filtered to a maximum number of pilots
 #               per factory (MaxPerFactorySchedPlugin)
+#               Also it can be filtered depending on the status of the wmsqueue 
+#               (StatusTestSchedPlugin, StatusOfflineSchedPlugin).
 
 
 #  --------------------------------------------------------------------
@@ -338,6 +341,18 @@
 
 # sched.minpending.minimum = minimum number of pilots to be pending
 #              
+
+#  --------------------------------------------------------------------
+#       Configuration when schedplugin is StatusTest
+#  --------------------------------------------------------------------
+
+# sched.statustest.allowed = Boolean variable to trigger
+#               special mode of operation when the wmssite is in
+#               in status = test
+
+# sched.statustest.pilots = number of pilots to submit
+#               when the wmssite is in status = test
+#               and sched.statustest.allowed is True
 
 #  --------------------------------------------------------------------
 #       Configuration when schedplugin is Simple
