@@ -3,6 +3,10 @@ ChangeLog
 
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
+* Two new Sched Plugins to handle test queues and offline queues
+
+* Bug in monitor.py fixed. 
+
 * Added create_run_var() to init script factory. 
   It creates the subdirectory var/run/ if it does not exist, to place factory.pid
 
