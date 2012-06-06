@@ -68,10 +68,8 @@ class StatusOfflineSchedPlugin(SchedInterface):
             if cloudstatus == 'offline' or sitestatus == 'offline':
                 if self.testmode:
                     self.log.info('calcSubmitNum: offline is enabled, returning default %s' %self.pilots_in_offline_mode)
-                    out = self.pilots_in_offline_mode
-                else:
-                    out = nsub
+                    nsub = self.pilots_in_offline_mode
 
-            return out
+            return nsub 
             
 
