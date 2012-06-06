@@ -62,7 +62,7 @@ class StatusTestSchedPlugin(SchedInterface):
             if sitestatus == 'test':
                 if self.testmode:
                     self.log.info('calcSubmitNum: testmode is enabled, returning default %s' %self.pilots_in_test_mode)
-                    out self.pilots_in_test_mode
+                    out = self.pilots_in_test_mode
                 else:
                     out = nsub 
         return out
