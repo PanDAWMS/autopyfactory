@@ -160,12 +160,12 @@ class AGISConfigPlugin(threading.Thread, ConfigInterface):
 
                 # FIXME. Temporary solution: working with the first item [0] in list of queues
                 if len(jsonDict['queues']) > 0:
-                    if jsonDict['queues'[0]['ce_flavour'] == 'CE':
+                    if jsonDict['queues'][0]['ce_flavour'] == 'CE':
                             # GRAM CE
                             factoryData['ce_queue_name'] = jsonDict['queues'][0]['ce_queue_name']
                             factoryData['gridresource'] = '%s/jobmanager-%s' %(jsonDict['queues'][0]['ce_endpoint'], 
                                                                                jsonDict['queues'][0]['ce_gatekeeper'])
-                    if jsonDict['queues'[0]['ce_flavour'] == 'CREAM-CE':
+                    if jsonDict['queues'][0]['ce_flavour'] == 'CREAM-CE':
                             # CREAM CE
                             factoryData['gridresource'] = 'cream %s/ce-cream/services/CREAM2 %s %s' %(jsonDict['queues'][0]['ce_endpoint'], 
                                                                                                       jsonDict['queues'][0]['ce_gatekeeper'], 
