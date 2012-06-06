@@ -167,7 +167,7 @@ class AGISConfigPlugin(threading.Thread, ConfigInterface):
                                                                                jsonDict['queues'][0]['ce_gatekeeper'])
                     if jsonDict['queues'][0]['ce_flavour'] == 'CREAM-CE':
                             # CREAM CE
-                            factoryData['gridresource'] = 'cream %s/ce-cream/services/CREAM2 %s %s' %(jsonDict['queues'][0]['ce_endpoint'], 
+                            factoryData['gridresource'] = '%s/ce-cream/services/CREAM2 %s %s' %(jsonDict['queues'][0]['ce_endpoint'], 
                                                                                                       jsonDict['queues'][0]['ce_gatekeeper'], 
                                                                                                       jsonDict['queues'][0]['ce_queue_name'])
                             
