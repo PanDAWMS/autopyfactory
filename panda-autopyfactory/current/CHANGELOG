@@ -5,7 +5,7 @@ $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
 2012-06-07
 
-* Bumped minor release version to reflect 
+* Bumped minor release version to reflect scale of several new features, and cloud submit plugin. 
 
 * Two new Sched Plugins to handle test queues and offline queues
 
