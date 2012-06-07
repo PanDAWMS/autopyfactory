@@ -16,7 +16,7 @@ import shutil
 
 PKGNAME="panda-autopyfactory"
 REPOROOT="/afs/usatlas.bnl.gov/mgmt/yam/grid"
-REGENCMD="/afs/usatlas.bnl.gov/mgmt/yam/regen-repos.sh"
+REGENCMD="/afs/usatlas.bnl.gov/mgmt/yam/regen-repos.py"
 ARCHS=['i386','x86_64']
 PLATFORMS=['fedora','rhel']
 REPOS=['development','testing','production']
