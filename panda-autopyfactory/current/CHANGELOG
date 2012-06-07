@@ -3,6 +3,10 @@ ChangeLog
 
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
+2012-06-07
+
+* Bumped minor release version to reflect 
+
 * Two new Sched Plugins to handle test queues and offline queues
 
 * Bug in monitor.py fixed. 
@@ -24,6 +28,8 @@ $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
 * First draft for Euca Submit Plugin created.
 
+* This release is the 'The Hellion' v. 2.1.1
+  http://www.darylgregory.com/pandemonium/Review_NYRSF.aspx
 
 2012-03-30
 
