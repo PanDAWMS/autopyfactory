@@ -200,7 +200,7 @@ class factory:
                 cernstats = {'activated' : 0}
                 # get CERN-RELEASE stats and proceed to place pins in eyes
                 if 'CERN-PROD' in queue:
-                    cernstats = jobstats.get('CERN-RELEASE')
+                    cernstats = jobstats.get('CERN-RELEASE', {'activated' : 0})
                     msg = "cern-release jobstats: %s" % cernstats
                     self.factoryMessages.debug(msg)
                 
@@ -209,7 +209,7 @@ class factory:
                     # we have high priority jobs activated
                     if clause1 or (clause2 and clause3):
                         m = min(queueParameters['nqueue'],nactivated)
-                        n = m/3 +1  # hack to really limit pilots as we have 3 factories
+                        n = depthboost * m/3 +1  # hack to really limit pilots as we have 3 factories
                         msg = "%d activated pri>%d. Submitting %d pilots." % (nactivated, priority, n)
                         self.note(queue, msg)
                         self.condorPilotSubmit(queue, cycleNumber, n)
@@ -344,6 +344,7 @@ class factory:
         # In job environment correct GTAG to URL for logs, JSID should be factoryId
         print >>JDL, 'environment = "PANDA_JSID=%s' % self.config.config.get('Factory', 'factoryId'),
         print >>JDL, 'GTAG=%s/$(Cluster).$(Process).out' % logUrl,
+        print >>JDL, 'RUCIO_ACCOUNT=pilot',
         print >>JDL, 'APFCID=$(Cluster).$(Process)',
         print >>JDL, 'APFFID=%s' % self.config.config.get('Factory', 'factoryId'),
         if isinstance(self.mon, Monitor):
