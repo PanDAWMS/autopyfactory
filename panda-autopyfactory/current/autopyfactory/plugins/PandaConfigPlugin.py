@@ -148,7 +148,7 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
             handle = urlopen(url)
             jsonData = json.load(handle, 'utf-8')
             handle.close()
-            self.log.info('_update: JSON returned: %s' % jsonData)
+            self.log.debug('_update: JSON returned: %s' % jsonData)
             # json always gives back unicode strings (eh?) - convert unicode to utf-8
             for batchqueue, config in jsonData.iteritems():
                 if isinstance(batchqueue, unicode):
