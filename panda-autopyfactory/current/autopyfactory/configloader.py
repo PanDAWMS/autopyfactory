@@ -225,22 +225,23 @@ class Config(SafeConfigParser, object):
                     conf.set(section, item[0], item[1])
         return conf
 
-    def getContent(self):
+    def getContent(self, safelist=[]):
         '''
         returns the content of the config object in a single string
         '''
         str = ''
         for section in self.sections():
-            str += self._getsectioncontent(section)
+            str += self._getsectioncontent(section, safelist)
         return str
 
-    def _getsectioncontent(self, section):
+    def _getsectioncontent(self, section, safelist):
         '''
         returns the content of a given sections in a single string
         '''
         str = '[%s]\n' %section
         for item in self.items(section):
-            str += '%s = %s\n' %item
+            if item not in safelist:
+                    str += '%s = %s\n' %item
         return str
 
 
