@@ -239,9 +239,11 @@ class Config(SafeConfigParser, object):
         returns the content of a given sections in a single string
         '''
         str = '[%s]\n' %section
-        for item in self.items(section):
-            if item not in safelist:
-                    str += '%s = %s\n' %item
+        for key, value in self.items(section):
+            if key  in safelist:
+               value = "********" 
+            str += '%s = %s\n' %(key, value)
+            
         return str
 
 
