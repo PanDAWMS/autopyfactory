@@ -168,6 +168,17 @@
 # batchsubmit.condorec2.access_key_id
 # batchsubmit.condorec2.secret_access_key
 # batchsubmit.condorec2.proxy
+# batchsubmit.condordeltacloud.gridresource
+# batchsubmit.condordeltacloud.username
+# batchsubmit.condordeltacloud.password_file
+# batchsubmit.condordeltacloud.image_id
+# batchsubmit.condordeltacloud.keyname
+# batchsubmit.condordeltacloud.realm_id
+# batchsubmit.condordeltacloud.hardware_profile
+# batchsubmit.condordeltacloud.hardware_profile_memory
+# batchsubmit.condordeltacloud.hardware_profile_cpu
+# batchsubmit.condordeltacloud.hardware_profile_storage
+# batchsubmit.condordeltacloud.user_data
 # batchsubmit.condorlocal.submitargs
 # batchsubmit.condorlocal.condor_attributes
 # batchsubmit.condorlocal.environ
@@ -428,7 +439,13 @@
 #  --------------------------------------------------------------------
 
 # batchsubmitplugin = Batch Submit Plugin.
-#               Currently available options are: CondorGT2, CondorGT5, CondorLocal, CondorEC2, CondorCREAM.
+#               Currently available options are: 
+#                    CondorGT2, 
+#                    CondorGT5, 
+#                    CondorCREAM, 
+#                    CondorLocal, 
+#                    CondorEC2, 
+#                    CondorDeltaCloud.
 
 #  --------------------------------------------------------------------
 #       Configuration when batchsubmitplugin is condorgt2
@@ -716,6 +733,35 @@
 # batchsubmit.condorec2.proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
 #               (See etc/proxy.conf)
 #               None if no automatic proxy renewal is desired.
+
+#  --------------------------------------------------------------------
+#       Configuration when batchsubmitplugin is condordeltacloud
+#  --------------------------------------------------------------------
+
+# batchsubmit.condordeltacloud.gridresource = ec2 service's URL (e.g. https://deltacloud.foo.org/api )
+#
+# batchsubmit.condordeltacloud.username = credentials in DeltaCloud
+#
+# batchsubmit.condordeltacloud.password_file = path to the file with the password
+#
+# batchsubmit.condordeltacloud.image_id = identifier for the VM image,
+#               previously registered with the cloud service.
+#
+# batchsubmit.condordeltacloud.keyname = in case of using SSH, 
+#               the command keyname specifies the identifier of the SSH key pair to use. 
+#
+# batchsubmit.condordeltacloud.realm_id = selects one between multiple locations the cloud service may have.
+#
+# batchsubmit.condordeltacloud.hardware_profile = selects one between the multiple hardware profiles
+#               the cloud service may provide
+#
+# batchsubmit.condordeltacloud.hardware_profile_memory = customize the hardware profile
+#
+# batchsubmit.condordeltacloud.hardware_profile_cpu = customize the hardware profile
+#
+# batchsubmit.condordeltacloud.hardware_profile_storage = customize the hardware profile
+#
+# batchsubmit.condordeltacloud.user_data = contextualization data
 
 #  --------------------------------------------------------------------
 #       Configuration when batchsubmitplugin is condorlocal
