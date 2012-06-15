@@ -71,7 +71,7 @@ class CondorDeltaCloudBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             self.JSD.add('deltacloud_image_id=%s' % self.image_id)          
         if self.keyname:
             self.JSD.add('deltacloud_keyname=%s' % self.keyname)          
-        if self.realm_id
+        if self.realm_id:
             self.JSD.add('delta_realm_id=%s' %self.realm_id)
         if self.hardware_profile:
             self.JSD.add('delta_hardware_profile=%s' %self.hardware_profile)
