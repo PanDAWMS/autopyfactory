@@ -3,6 +3,10 @@ ChangeLog
 
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
+* CondorOSGCE submit plugin created.
+
+* CondorDeltaCloud submit plugin created.
+
 2012-06-07
 
 * Bumped minor release version to reflect scale of several new features, and cloud submit plugin. 
