@@ -161,6 +161,7 @@
 # batchsubmit.condorosgce.remote_condor_schedd 
 # batchsubmit.condorosgce.remote_condor_collector
 # batchsubmit.condorosgce.gridresource
+# batchsubmit.condorosgce.proxy
 # batchsubmit.condorec2.submitargs
 # batchsubmit.condorec2.gridresource
 # batchsubmit.condorec2.condor_attributes
@@ -702,8 +703,15 @@
 #       Configuration when batchsubmitplugin is condorosgce
 #  --------------------------------------------------------------------
 
+# batchsubmit.condorosgce.remote_condor_schedd 
+#
+# batchsubmit.condorosgce.remote_condor_collector
+#
 # batchsubmit.condorosgce.gridresource = grid resource, built from other vars using interpolation
 #               batchsubmit.condorosgce.gridresource = %(batchsubmit.condorosgce.remote_condor_schedd) %(batchsubmit.condorosgce.remote_condor_collector)    
+# batchsubmit.condorosgce.proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
+#               (See etc/proxy.conf)
+#               None if no automatic proxy renewal is desired.
 
 #  --------------------------------------------------------------------
 #       Configuration when batchsubmitplugin is condorec2
