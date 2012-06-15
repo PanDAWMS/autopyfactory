@@ -231,7 +231,7 @@ class Config(SafeConfigParser, object):
         '''
         str = ''
         for section in self.sections():
-            str += self._getsectioncontent(section, safelist)
+            str += self._getsectioncontent(section, excludelist)
         return str
 
     def _getsectioncontent(self, section, excludelist):
