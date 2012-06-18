@@ -112,9 +112,9 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
 
         self.log.debug('submit: Preparing to submit %s pilots' %n)
 
-        if not utils.checkDaemon('condor'):
-            self.log.info('submit: condor daemon is not running. Doing nothing')
-            return None, None
+        #if not utils.checkDaemon('condor'):
+        #    self.log.info('submit: condor daemon is not running. Doing nothing')
+        #    return None, None
 
         if n != 0:
 
