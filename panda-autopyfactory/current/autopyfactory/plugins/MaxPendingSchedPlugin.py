@@ -47,6 +47,7 @@ class MaxPendingSchedPlugin(SchedInterface):
 
         # Catch all to prevent negative numbers
         if nsub < 0:
+            self.log.info('calcSubmitNum: calculated output was negative. Returning 0')
             nsub = 0
             
         self.log.info('calcSubmitNum: return with nsub=%s' %nsub)
