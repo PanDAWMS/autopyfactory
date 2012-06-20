@@ -56,6 +56,7 @@ class MaxPerFactorySchedPlugin(SchedInterface):
 
         # Catch all to prevent negative numbers
         if nsub < 0:
+            self.log.info('calcSubmitNum: calculated output was negative. Returning 0')
             nsub = 0
 
         self.log.info('calcSubmitNum: initial nsub = %s total_pilots = %s max_per_factory = %s returning = %s' %(nsub, self.total_pilots, self.max_pilots_per_factory, nsub))
