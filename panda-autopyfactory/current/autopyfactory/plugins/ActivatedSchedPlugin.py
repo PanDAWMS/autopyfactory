@@ -132,7 +132,7 @@ class ActivatedSchedPlugin(SchedInterface):
         try:
             pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
         except KeyError:
-                            # This is OK--it just means no jobs. 
+            # This is OK--it just means no jobs. 
             pass
         try:        
             running_pilots = self.batchinfo[self.apfqueue.apfqname].running # using the new info objects
