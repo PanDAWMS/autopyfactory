@@ -52,6 +52,7 @@
 # sched.minpercycle.minimum
 # sched.maxpending.maximum
 # sched.minpending.minimum
+# sched.maxtorun.maximum
 # sched.statustest.allowed
 # sched.statustest.pilots
 # sched.statusoffline.allowed
@@ -358,6 +359,14 @@
 #  --------------------------------------------------------------------
 
 # sched.minpending.minimum = minimum number of pilots to be pending
+#              
+
+#  --------------------------------------------------------------------
+#       Configuration when schedplugin is MaxToRun
+#  --------------------------------------------------------------------
+
+# sched.maxtorun.maximum = maximum number of pilots allowed to, potentially, 
+#               be running at a time. 
 #              
 
 #  --------------------------------------------------------------------
