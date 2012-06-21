@@ -13,8 +13,8 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
-class MaxPendingSchedPlugin(SchedInterface):
-    id = 'maxpending'
+class MaxToRunSchedPlugin(SchedInterface):
+    id = 'maxtorun'
     
     def __init__(self, apfqueue):
 
