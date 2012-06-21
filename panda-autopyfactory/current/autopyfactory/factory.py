@@ -413,7 +413,7 @@ class Factory(object):
             self.log.info("ProxyManager disabled.")
        
         # APF Queues Manager 
-        self.wmsmanager = APFQueuesManager(self)
+        self.apfqueuesmanager = APFQueuesManager(self)
         
         # Set up LogServer
         ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean', logger=self.log)
@@ -487,7 +487,7 @@ class Factory(object):
         self.log.debug("update: Starting")
 
         newqueues = self.qcl.sections()
-        self.wmsmanager.update(newqueues) 
+        self.apfqueuesmanager.update(newqueues) 
 
         self.log.debug("update: Leaving")
 
@@ -508,7 +508,7 @@ class Factory(object):
 
         logging.debug(" Shutting down all Queue threads...")
         self.log.info("Joining all Queue threads...")
-        self.wmsmanager.join()
+        self.apfqueuesmanager.join()
         self.log.info("All Queue threads joined.")
         if self.fcl.get('Factory', 'proxymanager.enabled'):
             self.log.info("Shutting down Proxymanager...")
