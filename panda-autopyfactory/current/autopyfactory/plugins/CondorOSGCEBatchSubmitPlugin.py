@@ -55,6 +55,7 @@ class CondorOSGCEBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
 
         self.JSD.add('grid_resource=condor %s' % self.gridresource) 
         #self.JSD.add('remote_universe = Local')
+        self.JSD.add('+TransferOutput=""')
         super(CondorOSGCEBatchSubmitPlugin, self)._addJSD()
 
         self.log.debug('CondorOSGCEBatchSubmitPlugin.addJSD: Leaving.')
