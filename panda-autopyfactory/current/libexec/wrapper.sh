@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-WRAPPERVERSION="0.9.6"
+WRAPPERVERSION="0.9.7"
 
 # 
 # A generic wrapper with minimal functionalities
@@ -389,8 +389,9 @@ f_parse_arguments(){
 f_print_options(){
         # printing the input options
         f_print_msg "=== Wrapper input options:"
-        echo " wrapper site: "$WRAPPERWMSQUEUE
-        echo " wrapper queue: "$WRAPPERBATCHQUEUE
+        echo " vo: "$WRAPPERVO
+        echo " site: "$WRAPPERWMSQUEUE
+        echo " queue: "$WRAPPERBATCHQUEUE
         echo " grid flavor: "$WRAPPERGRID
         echo " purpose: "$WRAPPERPURPOSE
         echo " server url: "$WRAPPERSERVERURL
