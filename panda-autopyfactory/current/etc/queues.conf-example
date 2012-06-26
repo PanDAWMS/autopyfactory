@@ -841,8 +841,8 @@
 #  --------------------------------------------------------------------
 
 # executable = path to the script which will be run by condor. 
-#              The executable can be anything, however, 
-#              two possible executables are distributed with AutoPyFactory:
+#               The executable can be anything, however, 
+#               two possible executables are distributed with AutoPyFactory:
 #
 #                       - libexec/wrapper.sh 
 #                       - libexec/runpilot3-wrapper.sh 
