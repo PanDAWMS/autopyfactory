@@ -9,6 +9,35 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<a href='#factoryconf'>factory.conf</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href='#queuesconf'>queues.conf</a><br>
 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Generic variables">Generic variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#WMS Status Plugin variables">WMS Status Plugin variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Config Plugin variables">Config Plugin variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Batch Status Plugin variables">Batch Status Plugin variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Sched Plugin variables">Sched Plugin variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Activated">Configuration when schedplugin is Activated</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Fixed">Configuration when schedplugin is Fixed</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is MaxPerCycle">Configuration when schedplugin is MaxPerCycle</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is MinPerCycle">Configuration when schedplugin is MinPerCycle</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is MaxPending">Configuration when schedplugin is MaxPending</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is MinPending">Configuration when schedplugin is MinPending</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is MaxToRun">Configuration when schedplugin is MaxToRun</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is StatusTest">Configuration when schedplugin is StatusTest</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is StatusOffline">Configuration when schedplugin is StatusOffline</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Simple">Configuration when schedplugin is Simple</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is SimpleNQueue">Configuration when schedplugin is SimpleNQueue</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Trivial">Configuration when schedplugin is Trivial</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Batch Submit Plugin variables">Batch Submit Plugin variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when batchsubmitplugin is condorgt2">Configuration when batchsubmitplugin is condorgt2</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#GlobusRSL GRAM2 variables">GlobusRSL GRAM2 variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when batchsubmitplugin is condorgt5">Configuration when batchsubmitplugin is condorgt5</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#GlobusRSL GRAM5 variables">GlobusRSL GRAM5 variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when batchsubmitplugin is condorcream">Configuration when batchsubmitplugin is condorcream</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when batchsubmitplugin is condorosgce">Configuration when batchsubmitplugin is condorosgce</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when batchsubmitplugin is condorec2">Configuration when batchsubmitplugin is condorec2</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when batchsubmitplugin is condordeltacloud">Configuration when batchsubmitplugin is condordeltacloud</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when batchsubmitplugin is condorlocal">Configuration when batchsubmitplugin is condorlocal</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Executable variables">Executable variables</a><br>
+
 <a name='configuration'><h1><span style="color: black; "><span>Configuration</span></span></h1></a>
 
 <a name='factoryconf'><h2><span style="color: black; "><span>factory.conf</span></span></h2></a>
@@ -229,7 +258,8 @@ Value is in seconds.
 
 <a name='queuesconf'><h2><span style="color: black; "><span>queues.conf</span></span></h2></a>
 
-<h3>       Generic variables</h3>
+
+<a name="Generic variables"><h3><span style="color: black; "><span>Generic variables</span></span></h3></a>
 <strong>override</strong><br>
 determines if values from this config file have precedence over
 the same values comming from different sources of information.
@@ -285,17 +315,17 @@ with info from a ConfigPlugin object
 maximum number of days the condor logs
 will be kept
 <br>
-<h3>       WMS Status Plugin variables </h3>
+<a name="WMS Status Plugin variables"><h3><span style="color: black; "><span>WMS Status Plugin variables</span></span></h3></a>
 <strong>wmsstatusplugin</strong><br>
 WMS Status Plugin.
 <br>
-<h3>       Config Plugin variables </h3>
+<a name="Config Plugin variables"><h3><span style="color: black; "><span>Config Plugin variables</span></span></h3></a>
 <strong>configplugin</strong><br>
 Config Plugin.
 Optional.
 E.g. Panda.
 <br>
-<h3>       Batch Status Plugin variables </h3>
+<a name="Batch Status Plugin variables"><h3><span style="color: black; "><span>Batch Status Plugin variables</span></span></h3></a>
 <strong>batchstatusplugin</strong><br>
 Batch Status Plugin.
 <br>
@@ -305,7 +335,7 @@ list of command line input options
 to be included in the query command *verbatim*. E.g. 
 batchstatus.condor.query = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]>
 <br>
-<h3>       Sched Plugin variables </h3>
+<a name="Sched Plugin variables"><h3><span style="color: black; "><span>Sched Plugin variables</span></span></h3></a>
 <strong>schedplugin</strong><br>
 specific Scheduler Plugin implementing
 the algorithm deciding how many new pilots
@@ -329,7 +359,7 @@ per factory (MaxPerFactorySchedPlugin)
 Also it can be filtered depending on the status of the wmsqueue 
 (StatusTestSchedPlugin, StatusOfflineSchedPlugin).
 <br>
-<h3>       Configuration when schedplugin is Activated</h3>
+<a name="Configuration when schedplugin is Activated"><h3><span style="color: black; "><span>Configuration when schedplugin is Activated</span></span></h3></a>
 <strong>sched.activated.default</strong><br>
 default number of pilots to be submitted
 when the context information 
@@ -379,38 +409,38 @@ when the wmssite is in status = test
 and sched.activated.testmode.allowed is True
 <br>
 <br>
-<h3>       Configuration when schedplugin is Fixed</h3>
+<a name="Configuration when schedplugin is Fixed"><h3><span style="color: black; "><span>Configuration when schedplugin is Fixed</span></span></h3></a>
 <strong>sched.fixed.pilotspercycle</strong><br>
 fixed number of pilots to be submitted
 each cycle, when using the Fixed Scheduler Plugin.
 <br>
-<h3>       Configuration when schedplugin is MaxPerCycle </h3>
+<a name="Configuration when schedplugin is MaxPerCycle"><h3><span style="color: black; "><span>Configuration when schedplugin is MaxPerCycle</span></span></h3></a>
 <strong>sched.maxpercycle.maximum</strong><br>
 maximum number of pilots to be submitted
 per cycle
 <br>
-<h3>       Configuration when schedplugin is MinPerCycle </h3>
+<a name="Configuration when schedplugin is MinPerCycle"><h3><span style="color: black; "><span>Configuration when schedplugin is MinPerCycle</span></span></h3></a>
 <strong>sched.minpercycle.minimum</strong><br>
 minimum number of pilots to be submitted
 per cycle
 <br>
-<h3>       Configuration when schedplugin is MaxPending</h3>
+<a name="Configuration when schedplugin is MaxPending"><h3><span style="color: black; "><span>Configuration when schedplugin is MaxPending</span></span></h3></a>
 <strong>sched.maxpending.maximum</strong><br>
 maximum number of pilots to be pending
 <br>
 <br>
-<h3>       Configuration when schedplugin is MinPending </h3>
+<a name="Configuration when schedplugin is MinPending"><h3><span style="color: black; "><span>Configuration when schedplugin is MinPending</span></span></h3></a>
 <strong>sched.minpending.minimum</strong><br>
 minimum number of pilots to be pending
 <br>
 <br>
-<h3>       Configuration when schedplugin is MaxToRun</h3>
+<a name="Configuration when schedplugin is MaxToRun"><h3><span style="color: black; "><span>Configuration when schedplugin is MaxToRun</span></span></h3></a>
 <strong>sched.maxtorun.maximum</strong><br>
 maximum number of pilots allowed to, potentially,
 be running at a time. 
 <br>
 <br>
-<h3>       Configuration when schedplugin is StatusTest</h3>
+<a name="Configuration when schedplugin is StatusTest"><h3><span style="color: black; "><span>Configuration when schedplugin is StatusTest</span></span></h3></a>
 <strong>sched.statustest.allowed</strong><br>
 Boolean variable to trigger
 special mode of operation when the wmssite is in
@@ -421,7 +451,7 @@ number of pilots to submit
 when the wmssite is in status = test
 and sched.statustest.allowed is True
 <br>
-<h3>       Configuration when schedplugin is StatusOffline</h3>
+<a name="Configuration when schedplugin is StatusOffline"><h3><span style="color: black; "><span>Configuration when schedplugin is StatusOffline</span></span></h3></a>
 <strong>sched.statusoffline.allowed</strong><br>
 Boolean variable to trigger
 special mode of operation when the wmssite or the cloud 
@@ -432,7 +462,7 @@ number of pilots to submit
 when the wmssite or the cloud is in status = offline
 and sched.statusoffline.allowed is True
 <br>
-<h3>       Configuration when schedplugin is Simple</h3>
+<a name="Configuration when schedplugin is Simple"><h3><span style="color: black; "><span>Configuration when schedplugin is Simple</span></span></h3></a>
 <strong>sched.simple.default</strong><br>
 default number of pilots to be submitted
 when the context information does not exist
@@ -451,7 +481,7 @@ maximum number of pilots
 to be submitted per cycle.
 To be used in Simple Scheduler Plugin.
 <br>
-<h3>       Configuration when schedplugin is SimpleNQueue</h3>
+<a name="Configuration when schedplugin is SimpleNQueue"><h3><span style="color: black; "><span>Configuration when schedplugin is SimpleNQueue</span></span></h3></a>
 <strong>sched.simplenqueue.default</strong><br>
 default number of pilots to be submitted
 when the context information does not exist 
@@ -488,14 +518,14 @@ in transferring status allowed at a site -
 when this limit is reached no pilots will be submitted 
 to allow backlogs to clear
 <br>
-<h3>       Configuration when schedplugin is Trivial</h3>
+<a name="Configuration when schedplugin is Trivial"><h3><span style="color: black; "><span>Configuration when schedplugin is Trivial</span></span></h3></a>
 <strong>sched.trivial.default</strong><br>
 default number of pilots
 to be submitted when the context information
 does not exist or is not reliable.
 To be used in Trivial Scheduler Plugin.
 <br>
-<h3>       Batch Submit Plugin variables </h3>
+<a name="Batch Submit Plugin variables"><h3><span style="color: black; "><span>Batch Submit Plugin variables</span></span></h3></a>
 <strong>batchsubmitplugin</strong><br>
 Batch Submit Plugin.
 Currently available options are: 
@@ -506,7 +536,7 @@ Currently available options are:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CondorEC2,&nbsp;
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CondorDeltaCloud.
 <br>
-<h3>       Configuration when batchsubmitplugin is condorgt2</h3>
+<a name="Configuration when batchsubmitplugin is condorgt2"><h3><span style="color: black; "><span>Configuration when batchsubmitplugin is condorgt2</span></span></h3></a>
 <strong>batchsubmit.condorgt2.gridresource</strong><br>
 name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor)
 <br>
@@ -552,7 +582,7 @@ name of the proxy handler in proxymanager for automatic proxy renewal
 None if no automatic proxy renewal is desired.
 <br>
 <br>
-<h3>       GlobusRSL GRAM2 variables</h3>
+<a name="GlobusRSL GRAM2 variables"><h3><span style="color: black; "><span>GlobusRSL GRAM2 variables</span></span></h3></a>
 <strong>gram2</strong><br>
 The following are GRAM2 RSL variables.
 They are just used to build batchsubmit.condorgt2.globusrsl 
@@ -659,7 +689,7 @@ globusrsl.gram2.globusrsl value
 or from all globusrsl.gram2.XYZ variables.
 e.g. (condorsubmit=('+AccountingGroup' '\"group_atlastest.usatlas1\"')('+Requirements' 'True'))
 <br>
-<h3>       Configuration when batchsubmitplugin is condorgt5</h3>
+<a name="Configuration when batchsubmitplugin is condorgt5"><h3><span style="color: black; "><span>Configuration when batchsubmitplugin is condorgt5</span></span></h3></a>
 <strong>batchsubmit.condorgt5.gridresource</strong><br>
 name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor)
 <br>
@@ -704,7 +734,7 @@ name of the proxy handler in proxymanager for automatic proxy renewal
 (See etc/proxy.conf)
 None if no automatic proxy renewal is desired.
 <br>
-<h3>       GlobusRSL GRAM5 variables</h3>
+<a name="GlobusRSL GRAM5 variables"><h3><span style="color: black; "><span>GlobusRSL GRAM5 variables</span></span></h3></a>
 <strong>gram5</strong><br>
 The following are GRAM5 RSL variables.
 They are just used to build batchsubmit.condorgt5.globusrsl 
@@ -851,7 +881,7 @@ or from all globusrsl.gram5.XYZ variables.
 e.g. (condorsubmit=('+AccountingGroup' '\"group_atlastest.usatlas1\"')('+Requirements' 'True'))
 <br>
 <br>
-<h3>       Configuration when batchsubmitplugin is condorcream</h3>
+<a name="Configuration when batchsubmitplugin is condorcream"><h3><span style="color: black; "><span>Configuration when batchsubmitplugin is condorcream</span></span></h3></a>
 <strong>batchsubmit.condorcream.webservice</strong><br>
 web service address (e.g. ce04.esc.qmul.ac.uk:8443/ce-cream/services/CREAM2)
 <br>
@@ -913,7 +943,7 @@ name of the proxy handler in proxymanager for automatic proxy renewal
 (See etc/proxy.conf)
 None if no automatic proxy renewal is desired.
 <br>
-<h3>       Configuration when batchsubmitplugin is condorosgce</h3>
+<a name="Configuration when batchsubmitplugin is condorosgce"><h3><span style="color: black; "><span>Configuration when batchsubmitplugin is condorosgce</span></span></h3></a>
 <strong>batchsubmit.condorosgce.remote_condor_schedd</strong><br>
 condor schedd
 <br>
@@ -931,7 +961,7 @@ name of the proxy handler in proxymanager for automatic proxy renewal
 (See etc/proxy.conf)
 None if no automatic proxy renewal is desired.
 <br>
-<h3>       Configuration when batchsubmitplugin is condorec2</h3>
+<a name="Configuration when batchsubmitplugin is condorec2"><h3><span style="color: black; "><span>Configuration when batchsubmitplugin is condorec2</span></span></h3></a>
 <strong>batchsubmit.condorec2.gridresource</strong><br>
 ec2 service's URL (e.g. https://ec2.amazonaws.com/ )
 <br>
@@ -986,7 +1016,7 @@ name of the proxy handler in proxymanager for automatic proxy renewal
 (See etc/proxy.conf)
 None if no automatic proxy renewal is desired.
 <br>
-<h3>       Configuration when batchsubmitplugin is condordeltacloud</h3>
+<a name="Configuration when batchsubmitplugin is condordeltacloud"><h3><span style="color: black; "><span>Configuration when batchsubmitplugin is condordeltacloud</span></span></h3></a>
 <strong>batchsubmit.condordeltacloud.gridresource</strong><br>
 ec2 service's URL (e.g. https://deltacloud.foo.org/api )
 <br>
@@ -1033,7 +1063,7 @@ customize the hardware profile
 <strong>batchsubmit.condordeltacloud.user_data</strong><br>
 contextualization data
 <br>
-<h3>       Configuration when batchsubmitplugin is condorlocal</h3>
+<a name="Configuration when batchsubmitplugin is condorlocal"><h3><span style="color: black; "><span>Configuration when batchsubmitplugin is condorlocal</span></span></h3></a>
 <strong>batchsubmit.condorlocal.submitargs</strong><br>
 list of command line input options
 to be included in the submission command *verbatim*
@@ -1079,7 +1109,7 @@ name of the proxy handler in proxymanager for automatic proxy renewal
 None if no automatic proxy renewal is desired.
 <br>
 <br>
-<h3>       Executable variables </h3>
+<a name="Executable variables"><h3><span style="color: black; "><span>Executable variables</span></span></h3></a>
 <strong>executable</strong><br>
 path to the script which will be run by condor.
 The executable can be anything, however, 
@@ -1113,6 +1143,5 @@ These are two examples of this type of templates
 <br>&nbsp;&nbsp;&nbsp;&nbsp;executable.defaultarguments&nbsp;=&nbsp;&nbsp;-s&nbsp;%(wmsqueue)s&nbsp;\
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-h&nbsp;%(batchqueue)s&nbsp;-p&nbsp;25443&nbsp;\
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-w&nbsp;https://pandaserver.cern.ch&nbsp;&nbsp;-j&nbsp;false&nbsp;&nbsp;-k&nbsp;0&nbsp;&nbsp;-u&nbsp;user
-<br>
 <br>
 </body>
