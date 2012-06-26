@@ -501,8 +501,10 @@
 #
 
 #  --------------------------------------------------------------------
-#
-#               The following are GRAM2 RSL variables. 
+#       GlobusRSL GRAM2 variables
+#  --------------------------------------------------------------------
+
+# gram2 =       The following are GRAM2 RSL variables. 
 #               They are just used to build batchsubmit.condorgt2.globusrsl 
 #               (if needed)
 #               The globusrsl directive in the condor submission file looks like
@@ -513,31 +515,31 @@
 #
 #                       http://www.globus.org/toolkit/docs/2.4/gram/gram_rsl_parameters.html
 #
-# globusrsl.gram2.arguments
-# globusrsl.gram2.count
-# globusrsl.gram2.directory
-# globusrsl.gram2.dryRun
-# globusrsl.gram2.environment
-# globusrsl.gram2.executable
-# globusrsl.gram2.gramMyJob
-# globusrsl.gram2.hostCount
-# globusrsl.gram2.jobType
-# globusrsl.gram2.maxCpuTime
-# globusrsl.gram2.maxMemory
-# globusrsl.gram2.maxTime
-# globusrsl.gram2.maxWallTime
-# globusrsl.gram2.minMemory
-# globusrsl.gram2.project
-# globusrsl.gram2.queue
-# globusrsl.gram2.remote_io_url
-# globusrsl.gram2.restart
-# globusrsl.gram2.save_state
-# globusrsl.gram2.stderr
-# globusrsl.gram2.stderr_position
-# globusrsl.gram2.stdin
-# globusrsl.gram2.stdout
-# globusrsl.gram2.stdout_position
-# globusrsl.gram2.two_phase
+# globusrsl.gram2.arguments = 
+# globusrsl.gram2.count = 
+# globusrsl.gram2.directory =
+# globusrsl.gram2.dryRun =
+# globusrsl.gram2.environment =
+# globusrsl.gram2.executable =
+# globusrsl.gram2.gramMyJob =
+# globusrsl.gram2.hostCount =
+# globusrsl.gram2.jobType =
+# globusrsl.gram2.maxCpuTime =
+# globusrsl.gram2.maxMemory =
+# globusrsl.gram2.maxTime =
+# globusrsl.gram2.maxWallTime =
+# globusrsl.gram2.minMemory =
+# globusrsl.gram2.project =
+# globusrsl.gram2.queue =
+# globusrsl.gram2.remote_io_url =
+# globusrsl.gram2.restart =
+# globusrsl.gram2.save_state =
+# globusrsl.gram2.stderr =
+# globusrsl.gram2.stderr_position =
+# globusrsl.gram2.stdin =
+# globusrsl.gram2.stdout =
+# globusrsl.gram2.stdout_position =
+# globusrsl.gram2.two_phase =
 #
 # globusrsl.gram2.globusrsl = GRAM RSL directive.
 #               If this variable is not setup, then it will be built
@@ -594,8 +596,10 @@
 #               None if no automatic proxy renewal is desired.
 
 #  --------------------------------------------------------------------
-#
-#               The following are GRAM5 RSL variables. 
+#       GlobusRSL GRAM5 variables
+#  --------------------------------------------------------------------
+
+# gram5 = The following are GRAM5 RSL variables. 
 #               They are just used to build batchsubmit.condorgt5.globusrsl 
 #               (if needed)
 #               The globusrsl directive in the condor submission file looks like
@@ -606,44 +610,44 @@
 #
 #                      http://www.globus.org/toolkit/docs/5.2/5.2.0/gram5/user/#gram5-user-rsl 
 #
-# globusrsl.gram5.arguments
-# globusrsl.gram5.count
-# globusrsl.gram5.directory
-# globusrsl.gram5.dry_run
-# globusrsl.gram5.environment
-# globusrsl.gram5.executable
-# globusrsl.gram5.file_clean_up
-# globusrsl.gram5.file_stage_in
-# globusrsl.gram5.file_stage_in_shared
-# globusrsl.gram5.file_stage_out
-# globusrsl.gram5.gass_cache
-# globusrsl.gram5.gram_my_job
-# globusrsl.gram5.host_count
-# globusrsl.gram5.job_type
-# globusrsl.gram5.library_path
-# globusrsl.gram5.loglevel
-# globusrsl.gram5.logpattern
-# globusrsl.gram5.max_cpu_time
-# globusrsl.gram5.max_memory
-# globusrsl.gram5.max_time
-# globusrsl.gram5.max_wall_time
-# globusrsl.gram5.min_memory
-# globusrsl.gram5.project
-# globusrsl.gram5.proxy_timeout
-# globusrsl.gram5.queue
-# globusrsl.gram5.remote_io_url
-# globusrsl.gram5.restart
-# globusrsl.gram5.rsl_substitution
-# globusrsl.gram5.savejobdescription
-# globusrsl.gram5.save_state
-# globusrsl.gram5.scratch_dir
-# globusrsl.gram5.stderr
-# globusrsl.gram5.stderr_position
-# globusrsl.gram5.stdin
-# globusrsl.gram5.stdout
-# globusrsl.gram5.stdout_position
-# globusrsl.gram5.two_phase
-# globusrsl.gram5.username
+# globusrsl.gram5.arguments =
+# globusrsl.gram5.count =
+# globusrsl.gram5.directory =
+# globusrsl.gram5.dry_run =
+# globusrsl.gram5.environment =
+# globusrsl.gram5.executable =
+# globusrsl.gram5.file_clean_up =
+# globusrsl.gram5.file_stage_in =
+# globusrsl.gram5.file_stage_in_shared =
+# globusrsl.gram5.file_stage_out =
+# globusrsl.gram5.gass_cache =
+# globusrsl.gram5.gram_my_job =
+# globusrsl.gram5.host_count =
+# globusrsl.gram5.job_type =
+# globusrsl.gram5.library_path =
+# globusrsl.gram5.loglevel =
+# globusrsl.gram5.logpattern =
+# globusrsl.gram5.max_cpu_time =
+# globusrsl.gram5.max_memory =
+# globusrsl.gram5.max_time =
+# globusrsl.gram5.max_wall_time =
+# globusrsl.gram5.min_memory =
+# globusrsl.gram5.project =
+# globusrsl.gram5.proxy_timeout =
+# globusrsl.gram5.queue =
+# globusrsl.gram5.remote_io_url =
+# globusrsl.gram5.restart =
+# globusrsl.gram5.rsl_substitution =
+# globusrsl.gram5.savejobdescription =
+# globusrsl.gram5.save_state =
+# globusrsl.gram5.scratch_dir =
+# globusrsl.gram5.stderr =
+# globusrsl.gram5.stderr_position =
+# globusrsl.gram5.stdin =
+# globusrsl.gram5.stdout =
+# globusrsl.gram5.stdout_position =
+# globusrsl.gram5.two_phase =
+# globusrsl.gram5.username =
 #
 # globusrsl.gram5.globusrsl = GRAM RSL directive.
 #               If this variable is not setup, then it will be built
@@ -712,9 +716,9 @@
 #       Configuration when batchsubmitplugin is condorosgce
 #  --------------------------------------------------------------------
 
-# batchsubmit.condorosgce.remote_condor_schedd 
+# batchsubmit.condorosgce.remote_condor_schedd = condor schedd 
 #
-# batchsubmit.condorosgce.remote_condor_collector
+# batchsubmit.condorosgce.remote_condor_collector =  condor collector
 #
 # batchsubmit.condorosgce.gridresource = grid resource, built from other vars using interpolation
 #               batchsubmit.condorosgce.gridresource = %(batchsubmit.condorosgce.remote_condor_schedd) %(batchsubmit.condorosgce.remote_condor_collector)    
@@ -735,7 +739,7 @@
 #               will drive into a command like
 #                   condor_submit -remote my_schedd submit.jdl
 #
-# batchsubmit.condorec2.condor_attributes list of condor attributes, 
+# batchsubmit.condorec2.condor_attributes = list of condor attributes, 
 #               splited by comma, 
 #               to be included in the condor submit file *verbatim*
 #
