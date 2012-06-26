@@ -426,6 +426,7 @@
 # sched.simplenqueue.nqueue = desired number of pilots
 #               in idle status waiting in queue to start execution.
 #               To be used in SimpleNQueue Scheduler Plugin.
+#
 # sched.simplenqueue.depthboost = multiplying factor which allows more pilots 
 #               to be submitted than nqueue if there are 
 #               sufficient activated jobs - helps when the jobs are short 
