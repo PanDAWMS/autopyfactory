@@ -56,8 +56,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.apfqueue = apfqueue
             self.apfqname = apfqueue.apfqname
             self.sleeptime = self.apfqueue.fcl.generic_get('Factory', 'batchstatus.euca.sleep', 'getint', default_value=60, logger=self.log)
-            self.ec2_access_key = self.apfqueue.fcl.generic_get('Factory', 'batchstatus.euca.ec2_access_key', logger=self.log)
-            self.ec2_secret_key = self.apfqueue.fcl.generic_get('Factory', 'batchstatus.euca.ec2_secret_key', logger=self.log)
+            self.rcfile = self.apfqueue.fcl.generic_get('Factory', 'batchstatus.euca.rcfile', logger=self.log)
             self.currentinfo = None              
 
             # variable to record when was last time info was updated
@@ -73,7 +72,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     def getInfo(self, maxtime=0):
         '''
         Returns a BatchStatusInfo object populated by the analysis 
-        over the output of a euca-describe-images command
+        over the output of a euca-describe-instances command
 
         Optionally, a maxtime parameter can be passed.
         In that case, if the info recorded is older than that maxtime,
@@ -125,17 +124,17 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
     def _update(self):
         '''        
-        Query OpenStack for image status, validate ?, and populate BatchStatusInfo object.
-        command is    euca-describe-images        
+        Query OpenStack for instance status, validate ?, and populate BatchStatusInfo object.
+        command is    euca-describe-instances        
 
         '''
 
         self.log.debug('_update: Starting.')
        
         try:
-            strout = self._queryopenstack()
+            strout = self._queryeuca()
             if not strout:
-                self.log.warning('_update: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
+                self.log.warning('_update: output of query is not valid. Not parsing it. Skip to next loop.') 
             else:
                 newinfo = self._parseoutput(strout)
                 self.log.info("Replacing old info with newly generated info.")
@@ -146,59 +145,61 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         self.log.debug('__update: Leaving.')
 
-    def _queryopenstack(self):
+    def _queryeuca(self):
         '''
         '''
 
-        self.log.debug('_querycondor: Starting.')
-        querycmd = 'euca-describe-images '
+        self.log.debug('_queryeuca: Starting.')
+        querycmd = 'euca-describe-images --config %s' % self.rcfile
 
-        # FIXME: Just a temporary solution
-        querycmd += ' -A %s' %self.ec2_access_key
-        querycmd += ' -S %s' %self.ec2_secret_key
-
-        self.log.debug('_queryopenstack: Querying cmd = %s' %querycmd.replace('\n','\\n'))
+        self.log.debug('_queryeuca: Querying cmd = %s' %querycmd.replace('\n','\\n'))
 
         before = time.time()          
         p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)     
         out = None
         (out, err) = p.communicate()
         delta = time.time() - before
-        self.log.debug('_queryopenstack: it took %s seconds to perform the query' %delta)
+        self.log.debug('_queryeuca: it took %s seconds to perform the query' %delta)
         self.log.info('OpenStack query: %s seconds to perform the query' %delta)
         if p.returncode == 0:
-            self.log.debug('_queryopenstack: Leaving with OK return code.') 
+            self.log.debug('_queryeucak: Leaving with OK return code.') 
         else:
-            self.log.warning('_queryopenstack: Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
+            self.log.warning('_queryeuca: Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
             out = None
-        self.log.debug('_queryopenstack: Leaving. Out is %s' % out)
+        self.log.debug('_queryeuca: Leaving. Out is %s' % out)
         return out
 
 
     def _parseoutput(self, output):
         '''
         output looks like
-           IMAGE   ami-00000016    None (sl6-x86_64-wn-bnlcloud-1.0-raw)       available   public          machine         instance-store
-           IMAGE   ami-0000000d    None (centos5-atlas-t3-scalr-1.0-ami)       available   public          machine         instance-store
-           IMAGE   ami-0000000c    None (centos6-scalr-0.0-ami)        available   public          machine         instance-store
-           IMAGE   ami-0000000b    None (sl6_1)        available   public          machine         instance-store
-           IMAGE   ami-00000001    local (sl6)     available   public      x86_64  machine         instance-store
+        RESERVATION    r-b1hskqmi    c8d55513d64243fa8e0b29384f6f0c81    default
+        INSTANCE i-00000028 ami-00000004 server-40 server-40 running None (c8d55513d64243fa8e0b29384f6f0c81, ct16.usatlas.bnl.gov) 0 m1.small 2012-06-27T15:56:44.000Z nova        
 
-        For the time being we assume the name of the image, e.g. sl6-x86_64-wn-bnlcloud-1.0-raw
-        is the name of the APF Queue.
+        For the time being we assume the name of the image, e.g. ami-00000004 is the name of 
+        the APF Queue.
         '''
 
         batchstatusinfo = InfoContainer('batch', BatchQueueInfo())
         
         # analyze output of euca command
         for line in output.split('\n'):
-            key = line.split()[3][1:-1]
-            if not batchstatusinfo.has_key(key):
-                batchstatusinfo[key] = BatchQueueInfo()
-                batchstatusinfo[key].running = 1
+            fields = line.split()
+            if fields[0] == 'RESERVATION':
+                self.log.debug("Saw RESERVATION line...")
+                pass
             else:
-                batchstatusinfo[key].running = +1
-        
+                (inst, id, ami, host, host2, state, key, storage, host3, idx, type, start, provider ) = line.split()
+                key = ami
+                self.log.debug("Parsed line with key %s" % ami)
+               
+                if not batchstatusinfo.has_key(key):
+                    batchstatusinfo[key] = BatchQueueInfo()
+                    if state == 'running':
+                        batchstatusinfo[key].running = 1
+                else:
+                    if state == 'running':
+                        batchstatusinfo[key].running = +1
         return batchstatusinfo
 
     #def _listnodesfromxml(self, xmldoc, tag):
