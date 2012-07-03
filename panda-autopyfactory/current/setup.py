@@ -5,9 +5,11 @@
 #
 release_version='2.1.1'
 
+import commands
+import os
 import re
 import sys
-import commands
+
 from distutils.core import setup
 from distutils.command.install import install as install_org
 from distutils.command.install_data import install_data as install_data_org
@@ -19,31 +21,40 @@ if major == 2:
         print("Autopyfactory requires Python >= 2.4. Exitting.")
         sys.exit(0)
 
-rpm_data_files=[  ('/usr/libexec', ['libexec/runpilot3-wrapper.sh',
-                                  'libexec/wrapper.sh',                                 
-                                  ]),
-                  ('/etc/apf', ['etc/factory.conf-example',
-                              'etc/queues.conf-example',
-                              'etc/proxy.conf-example',
-                              'etc/factory.sysconfig-example',
-                             ]),
-                  ('/etc/init.d', ['etc/factory',
-                                ]),
-                  ('/etc/logrotate.d', ['etc/factory.logrotate',
-                                ]),                                        
+# ===========================================================
+#           data files
+# ===========================================================
+
+libexec_files = ['libexec/runpilot3-wrapper.sh',
+                 'libexec/wrapper.sh',]
+
+etc_files = ['etc/factory.conf-example',
+             'etc/queues.conf-example',
+             'etc/proxy.conf-example',
+             'etc/factory.sysconfig-example',]
+
+initd_files = ['etc/factory',]
+
+logrotate_files = ['etc/factory.logrotate',]
+
+docs_files = ['docs/%s' %file for file in os.listdir('docs') if os.path.isfile('docs/%s' %file)]
+
+# -----------------------------------------------------------
+
+rpm_data_files=[('/usr/libexec',       libexec_files),
+                ('/etc/apf',           etc_files),
+                ('/etc/init.d',        initd_files),
+                ('/etc/logrotate.d',   logrotate_files),                                        
+                ('/usr/share/doc/apf', docs_files),                                        
+               ]
+
+home_data_files=[('libexec', libexec_files),
+                 ('etc',     etc_files),
+                 ('etc',     initd_files),
+                 ('doc/apf', docs_files ),
                 ]
 
-home_data_files=[('libexec', ['libexec/runpilot3-wrapper.sh',
-                                  'libexec/wrapper.sh',                                 
-                                 ]),
-                ('etc', [ 'etc/factory.conf-example',
-                          'etc/queues.conf-example',
-                          'etc/proxy.conf-example',
-                          'etc/factory.sysconfig-example'
-                             ]),
-                ('etc', ['etc/factory',
-                                ]),      
-                ]
+# ===========================================================
 
 def choose_data_files():
     #print(sys.argv)
