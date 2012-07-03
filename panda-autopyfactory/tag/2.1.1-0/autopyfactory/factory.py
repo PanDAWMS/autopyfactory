@@ -419,10 +419,9 @@ class Factory(object):
         ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean', logger=self.log)
         lsidx = self.fcl.generic_get('Factory','logserver.index', 'getboolean', logger=self.log)
         lsrobots = self.fcl.generic_get('Factory','logserver.allowrobots', 'getboolean', logger=self.log)
-        if ls:
-            logpath = self.fcl.get('Factory', 'baseLogDir')
-            if not os.path.exists(logpath):
-                os.makedirs(logpath)
+        logpath = self.fcl.get('Factory', 'baseLogDir')
+        if not os.path.exists(logpath):
+            os.makedirs(logpath)
         if not lsrobots:
             try:
                 f = open("%s/robots.txt" % logpath, 'w')
