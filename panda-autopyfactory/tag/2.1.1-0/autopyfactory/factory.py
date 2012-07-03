@@ -425,7 +425,7 @@ class Factory(object):
                 os.makedirs(logpath)
         if not lsrobots:
             try:
-                f = open("%s/robots.txt", 'w')
+                f = open("%s/robots.txt" % logpath, 'w')
                 f.write("User-agent: * \nDisallow: /")
                 f.close()
             except IOError:
