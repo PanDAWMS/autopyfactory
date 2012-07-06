@@ -3,6 +3,8 @@ ChangeLog
 
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
+* PandaConfig Plugin reads from SchedConfig variables related to CREAM CE.
+
 * MaxToRun sched plugin created.
 
 * CondorOSGCE submit plugin created.
