@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import logging
+import re
 import threading
 import time
 
@@ -24,9 +25,18 @@ __status__ = "Production"
 class SchedConfigInfo(BaseInfo):
     valid = ['batchsubmit.gram.queue', 
              'batchsubmit.gram.globusrsladd', 
-             #'batchsubmit.condor_attributes',
              'batchsubmit.environ', 
-             'batchsubmit.gridresource']
+             'batchsubmit.gridresource',
+             'batchsubmit.webservice',
+             'batchsubmit.queue',
+             'batchsubmit.port',
+             'batchsubmit.batch',
+             ]
+     # Some of these variables are intended to be used by GRAM-related 
+     # submit plugins (e.g. CondorGT2, CondorGT5)
+     # Other variables are meant to be consumed by CREAM submit plugins.
+     # It happens the same varible is included twice, once per each case.
+
  
     def __init__(self):
         super(SchedConfigInfo, self).__init__(None) 
@@ -47,12 +57,15 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
 
         self._valid = True
 
-        self.mapping = {
+        self.mapping_gram = {
                 'special_par': 'batchsubmit.gram.globusrsladd',
                 'localqueue' : 'batchsubmit.gram.queue',
-                #'jdladd'     : 'batchsubmit.condor_attributes',
                 'environ'    : 'batchsubmit.environ',
                 'queue'      : 'batchsubmit.gridresource',
+                }
+
+        self.mapping_cream = {
+                'localqueue' : 'batchsubmit.queue',
                 }
 
         try:
@@ -167,7 +180,34 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
                         factoryData[k] = v
                 # FIXME: too much content. Recover it when we have log.trace()
                 #self.log.debug('_update: content in %s for %s converted to: %s' % (url, batchqueue, factoryData))
-                scinfo.fill(factoryData, self.mapping)
+                scinfo.fill(factoryData, self.mapping_gram)
+                scinfo.fill(factoryData, self.mapping_cream)
+            
+
+            # ---------------------------------------------------------
+            # code for CREAM. 
+            # ---------------------------------------------------------
+            # In case of CREAM, some parsing and regex is needed 
+            queue = factoryData.get('queue', None)
+                if queue:
+                    # search for string "cream" within the content of 'queue'
+                    match1 = re.match(r'([^/]+)/cream-(\w+)', queue)
+                    if match1 != None:
+                        newfactoryData = {}
+                        # See if the port is explicitly given - if not assume 8443
+                        # Currently condor needs this specified in the JDL
+                        match2 = re.match(r'^([^:]+):(\d+)$', match1.group(1))
+                        if match2:
+                            newfactoryData['batchsubmit.webservice'] =  match2.group(1)
+                            newfactoryData['batchsubmit.port'] =  match2.group(2)
+                        else:
+                            newfactoryData['batchsubmit.webservice'] = match1.group(1)
+                            newfactoryData['batchsubmit.port']=  '8443'
+                        newfactoryData['batchsubmit.batch'] = match1.group(2)
+                        scinfo.fill(newfactoryData)
+            # ---------------------------------------------------------
+
+
 
         except ValueError, err:
             self.log.error('_update: %s  downloading from %s' % (err, url))
