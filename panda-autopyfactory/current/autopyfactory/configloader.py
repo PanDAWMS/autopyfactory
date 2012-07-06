@@ -111,7 +111,7 @@ class Config(SafeConfigParser, object):
         '''
         
         # determine the value of override.
-        if override:
+        if override is not None:
             # if input option override is not None
             _override=override
         else:
