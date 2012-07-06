@@ -118,7 +118,7 @@ class Config(SafeConfigParser, object):
             # if input option override is None
             if self.has_option(section, 'override'):
                 # if the current config parser object has override...
-                _override = self.get(section, 'override')
+                _override = self.getboolean(section, 'override')
             else:
                 # when no one knows what to do...
                 _override = False
@@ -129,7 +129,7 @@ class Config(SafeConfigParser, object):
                 if includemissing:
                     self.set(section, opt, value)
             else:
-                if not _override:
+                if _override is False:
                     self.set(section, opt, value)
     
     def clone(self):
