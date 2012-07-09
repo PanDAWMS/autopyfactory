@@ -11,10 +11,11 @@
 import copy
 import logging
 import os
-
-from ConfigParser import SafeConfigParser, NoSectionError
-from urllib import urlopen
 import urllib2
+
+from urllib import urlopen
+from ConfigParser import SafeConfigParser, NoSectionError, InterpolationMissingOptionError
+
 
 ####from autopyfactory.apfexceptions import FactoryConfigurationFailure
 ####
@@ -100,7 +101,7 @@ class Config(SafeConfigParser, object):
         ''' 
         self.add_section(section)
         for opt in config.options(section):
-            value = config.get(section, opt)
+            value = config.get(section, opt, raw=True)
             self.set(section, opt, value)
     
     def __mergesection(self, section, config, override, includemissing):
@@ -124,7 +125,7 @@ class Config(SafeConfigParser, object):
                 _override = False
 
         for opt in config.options(section):
-            value = config.get(section, opt)        
+            value = config.get(section, opt, set, raw=True)        
             if opt not in self.options(section):
                 if includemissing:
                     self.set(section, opt, value)
@@ -154,7 +155,7 @@ class Config(SafeConfigParser, object):
         for section in self.sections():
             for key in self.options(section):
                 if key.find(pattern) > -1:
-                    value = self.get(section, key)
+                    value = self.get(section, key, raw=True)
                     newkey = key.replace(pattern, newpattern)
                     self.remove_option(section, key)
                     self.set(section, newkey, value)
@@ -170,9 +171,13 @@ class Config(SafeConfigParser, object):
         '''
         for section in self.sections():
             for key in self.options(section):
-                value = self.get(section, key)
-                if value.startswith('~'):
-                    self.set(section,key,os.path.expanduser(value))
+                try:
+                    value = self.get(section, key, raw=True)
+                    if value.startswith('~'):
+                        self.set(section,key,os.path.expanduser(value))
+                except InterpolationMissingOptionError, e:
+                    pass
+
         
     def generic_get(self, section, option, get_function='get', convert_to_None=False, mandatory=False, default_value=None, logger=None):      
         '''
