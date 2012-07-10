@@ -66,6 +66,21 @@ class BaseInfo(object):
         if name in self.__class__.valid: 
             self.__dict__[name] = value
 
+    def set(self, name, value):
+        '''
+        using this method we get two advantages:
+            -- it is easy to set a single variable. Not need to use __setattr__() or fill()
+            -- it is easy to set a variable like 'foo.bar' w/o getting an error
+        '''
+        self.__setattr__(name, value)
+
+    def get(self, name):
+        '''
+        this method makes easier getting value for variables like 'foo.bar'
+        '''
+            if name in self.__class__.valid:
+                return self.__dict__[name]
+
     def fill(self, dictionary, mappings=None, reset=True):
         '''
         method to fill object attributes with values comming from a dictionary.
