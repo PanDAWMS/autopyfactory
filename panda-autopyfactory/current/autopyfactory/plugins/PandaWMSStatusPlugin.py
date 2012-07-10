@@ -513,6 +513,31 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
                       'starting': 1,
                       'transferring': 16},
         }
+
+        Client.getJobStatisticsWithLabel() ->
+
+        {'FZK-LCG2': {'prod_test': {'activated': 8, 
+                                    'holding': 1 },
+                        'managed': {'assigned': 98, 
+                                    'running': 3541, 
+                                    'transferring': 135, 
+                                    'activated': 6684, 
+                                    'holding': 70 },
+                        'rc_test': {'activated': 1}
+                      },
+         'BU_ATLAS_Tier2o': {'prod_test': {'running': 8, 
+                                           'activated': 1, 
+                                           'holding': 6},
+                               'managed': {'defined': 33, 
+                                           'transferring': 262, 
+                                           'activated': 1362, 
+                                           'assigned': 10, 
+                                           'running': 746, 
+                                           'holding': 7},
+                                 'rc_test': {'activated': 2}
+                             }
+          }
+
         '''
         
         
