@@ -164,11 +164,11 @@ class AGISConfigPlugin(threading.Thread, ConfigInterface):
                             # GRAM CE
                             factoryData['ce_queue_name'] = jsonDict['queues'][0]['ce_queue_name']
                             factoryData['gridresource'] = '%s/jobmanager-%s' %(jsonDict['queues'][0]['ce_endpoint'], 
-                                                                               jsonDict['queues'][0]['ce_gatekeeper'])
+                                                                               jsonDict['queues'][0]['ce_jobmanager'])
                     if jsonDict['queues'][0]['ce_flavour'] == 'CREAM-CE':
                             # CREAM CE
                             factoryData['gridresource'] = '%s/ce-cream/services/CREAM2 %s %s' %(jsonDict['queues'][0]['ce_endpoint'], 
-                                                                                                      jsonDict['queues'][0]['ce_gatekeeper'], 
+                                                                                                      jsonDict['queues'][0]['ce_jobmanager'], 
                                                                                                       jsonDict['queues'][0]['ce_queue_name'])
                             
 
