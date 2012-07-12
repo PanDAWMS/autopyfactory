@@ -75,7 +75,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                                       '8':   'done',
                                       '16':  'suspended',
                                       '32':  'pending',
-                                      '64':  'running',
+                                      '64':  'pending',
                                       '128': 'running'}
             
             self.jobstatus2info = {'0': 'pending',
