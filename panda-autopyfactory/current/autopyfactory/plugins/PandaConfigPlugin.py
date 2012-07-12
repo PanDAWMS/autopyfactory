@@ -31,6 +31,7 @@ class SchedConfigInfo(BaseInfo):
              'batchsubmit.queue',
              'batchsubmit.port',
              'batchsubmit.batch',
+             'wmsqueue',
              ]
      # Some of these variables are intended to be used by GRAM-related 
      # submit plugins (e.g. CondorGT2, CondorGT5)
@@ -62,6 +63,7 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
                 'localqueue' : 'batchsubmit.gram.queue',
                 'environ'    : 'batchsubmit.environ',
                 'queue'      : 'batchsubmit.gridresource',
+                'siteid'     : 'wmsqueue',
                 }
 
         self.mapping_cream = {
