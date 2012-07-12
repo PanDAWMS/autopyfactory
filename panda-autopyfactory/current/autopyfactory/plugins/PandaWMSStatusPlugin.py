@@ -547,7 +547,7 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         jobs_err, all_jobs_config = Client.getJobStatisticsPerSite(
                     countryGroup='',
                     workingGroup='', 
-                    jobType='test,prod,managed,user,panda,ddm,rc_test'
+                    jobType='test,prod,managed,user,panda,ddm,rc_test,prod_test'
                     ) 
                                                                                    
         delta = time.time() - before
