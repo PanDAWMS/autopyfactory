@@ -78,8 +78,8 @@ class BaseInfo(object):
         '''
         this method makes easier getting value for variables like 'foo.bar'
         '''
-            if name in self.__class__.valid:
-                return self.__dict__[name]
+        if name in self.__class__.valid:
+            return self.__dict__[name]
 
     def fill(self, dictionary, mappings=None, reset=True):
         '''
