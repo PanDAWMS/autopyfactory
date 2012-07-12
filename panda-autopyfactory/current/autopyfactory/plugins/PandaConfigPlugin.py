@@ -189,22 +189,22 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
             # ---------------------------------------------------------
             # In case of CREAM, some parsing and regex is needed 
             queue = factoryData.get('queue', None)
-                if queue:
-                    # search for string "cream" within the content of 'queue'
-                    match1 = re.match(r'([^/]+)/cream-(\w+)', queue)
-                    if match1 != None:
-                        newfactoryData = {}
-                        # See if the port is explicitly given - if not assume 8443
-                        # Currently condor needs this specified in the JDL
-                        match2 = re.match(r'^([^:]+):(\d+)$', match1.group(1))
-                        if match2:
-                            newfactoryData['batchsubmit.webservice'] =  match2.group(1)
-                            newfactoryData['batchsubmit.port'] =  match2.group(2)
-                        else:
-                            newfactoryData['batchsubmit.webservice'] = match1.group(1)
-                            newfactoryData['batchsubmit.port']=  '8443'
-                        newfactoryData['batchsubmit.batch'] = match1.group(2)
-                        scinfo.fill(newfactoryData)
+            if queue:
+                # search for string "cream" within the content of 'queue'
+                match1 = re.match(r'([^/]+)/cream-(\w+)', queue)
+                if match1 != None:
+                    newfactoryData = {}
+                    # See if the port is explicitly given - if not assume 8443
+                    # Currently condor needs this specified in the JDL
+                    match2 = re.match(r'^([^:]+):(\d+)$', match1.group(1))
+                    if match2:
+                        newfactoryData['batchsubmit.webservice'] =  match2.group(1)
+                        newfactoryData['batchsubmit.port'] =  match2.group(2)
+                    else:
+                        newfactoryData['batchsubmit.webservice'] = match1.group(1)
+                        newfactoryData['batchsubmit.port']=  '8443'
+                    newfactoryData['batchsubmit.batch'] = match1.group(2)
+                    scinfo.fill(newfactoryData)
             # ---------------------------------------------------------
 
 
