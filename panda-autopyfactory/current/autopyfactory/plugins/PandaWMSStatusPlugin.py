@@ -543,21 +543,16 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         
         before = time.time()
         # get Jobs Specs
-        #self.jobs_err, self.all_jobs_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='') 
-        jobs_err, all_jobs_config = Client.getJobStatisticsPerSite(
-                    countryGroup='',
-                    workingGroup='', 
-                    jobType='test,prod,managed,user,panda,ddm,rc_test,prod_test'
-                    ) 
+        #jobs_err, all_jobs_config = Client.getJobStatisticsPerSite(
+        #            countryGroup='',
+        #            workingGroup='', 
+        #            jobType='test,prod,managed,user,panda,ddm,rc_test,prod_test'
+        #            ) 
+        jobs_err, all_jobs_config = Client.getJobStatisticsWithLabel()
                                                                                    
         delta = time.time() - before
         self.log.info('_updateJobs: %s seconds to perform query' %delta)
         out = None
-        ###if not jobs_err:
-        ###    out = all_jobs_config
-        ###else:
-        ###    self.log.error('Client.getJobStatisticsPerSite() failed.')
-        ###return out
 
         if jobs_err:
                 self.log.error('Client.getJobStatisticsPerSite() failed.')
@@ -581,8 +576,11 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         for wmssite in all_jobs_config.keys():
                 qi = WMSQueueInfo()
                 wmsqueueinfo[wmssite] = qi
-                attrdict = all_jobs_config[wmssite]
-                qi.fill(attrdict, mappings=self.jobsstatisticspersite2info)
+                #attrdict = all_jobs_config[wmssite]
+                #qi.fill(attrdict, mappings=self.jobsstatisticspersite2info)
+                for label in all_jobs_config[wmssite].keys():
+                    attrdict = all_jobs_config[wmssite][label] 
+                    qi.fill(attrdict, mappings=jobsstatisticspersite2info, reset=False)
         return wmsqueueinfo
 
     def join(self,timeout=None):
