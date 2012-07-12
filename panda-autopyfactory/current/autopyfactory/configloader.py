@@ -125,7 +125,7 @@ class Config(SafeConfigParser, object):
                 _override = False
 
         for opt in config.options(section):
-            value = config.get(section, opt, set, raw=True)        
+            value = config.get(section, opt, raw=True)        
             if opt not in self.options(section):
                 if includemissing:
                     self.set(section, opt, value)
