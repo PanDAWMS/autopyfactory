@@ -3,6 +3,8 @@ ChangeLog
 
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
+* Pilots in STAGE-IN status are now considered to be PENDING instead or RUNNING.
+
 * All get() calls in configloader.py have now raw=True, so interpolations wait until the very end.
 
 * wmsqueue can be read from SchedConfig via PandaConfig Plugin. 
