@@ -226,7 +226,7 @@ class Config(SafeConfigParser, object):
         conf = Config()
         if self.has_section(section):
                 conf.add_section(section)
-                for item in self.items(section):
+                for item in self.items(section, raw=True):
                     conf.set(section, item[0], item[1])
         return conf
 
@@ -244,7 +244,7 @@ class Config(SafeConfigParser, object):
         returns the content of a given sections in a single string
         '''
         str = '[%s]\n' %section
-        for key, value in self.items(section):
+        for key, value in self.items(section, raw=True):
             if key  in excludelist:
                value = "********" 
             str += '%s = %s\n' %(key, value)
