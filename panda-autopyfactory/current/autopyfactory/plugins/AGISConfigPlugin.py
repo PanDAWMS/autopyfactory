@@ -26,7 +26,9 @@ class SchedConfigInfo(BaseInfo):
              'batchsubmit.gram.globusrsladd', 
              'batchsubmit.condor_attributes',
              'batchsubmit.environ', 
-             'batchsubmit.gridresource']
+             'batchsubmit.gridresource',
+             'wmsqueue',
+            ]
  
     def __init__(self):
         super(SchedConfigInfo, self).__init__(None) 
@@ -160,7 +162,7 @@ class AGISConfigPlugin(threading.Thread, ConfigInterface):
 
                 # FIXME. Temporary solution: working with the first item [0] in list of queues
                 if len(jsonDict['queues']) > 0:
-                    if jsonDict['queues'][0]['ce_flavour'] == 'CE':
+                    if jsonDict['queues'][0]['ce_flavour'] == 'OSG-CE':
                             # GRAM CE
                             factoryData['ce_queue_name'] = jsonDict['queues'][0]['ce_queue_name']
                             factoryData['gridresource'] = '%s/jobmanager-%s' %(jsonDict['queues'][0]['ce_endpoint'], 
@@ -168,10 +170,10 @@ class AGISConfigPlugin(threading.Thread, ConfigInterface):
                     if jsonDict['queues'][0]['ce_flavour'] == 'CREAM-CE':
                             # CREAM CE
                             factoryData['gridresource'] = '%s/ce-cream/services/CREAM2 %s %s' %(jsonDict['queues'][0]['ce_endpoint'], 
-                                                                                                      jsonDict['queues'][0]['ce_jobmanager'], 
-                                                                                                      jsonDict['queues'][0]['ce_queue_name'])
-                            
-
+                                                                                                jsonDict['queues'][0]['ce_jobmanager'], 
+                                                                                                jsonDict['queues'][0]['ce_queue_name'])
+                # reading wmsqueue
+                factoryData['wmsqueue'] = jsonDict['panda_resource']                            
 
         
                 # FIXME: too much content. Recover it when we have log.trace()
