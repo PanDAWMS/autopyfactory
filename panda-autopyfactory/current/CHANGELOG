@@ -3,11 +3,13 @@ ChangeLog
 
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
+* GRAM CE is called OSG-CE in AGIS, instead of CE. Changed in AGISConfig Plugin.
+
 * Pilots in STAGE-IN status are now considered to be PENDING instead or RUNNING.
 
 * All get() calls in configloader.py have now raw=True, so interpolations wait until the very end.
 
-* wmsqueue can be read from SchedConfig via PandaConfig Plugin. 
+* wmsqueue can be read from SchedConfig via PandaConfig Plugin, and from AGIS via AGISConfig Plugin.
 
 * PandaConfig Plugin reads from SchedConfig variables related to CREAM CE.
 
