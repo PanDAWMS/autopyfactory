@@ -5,6 +5,8 @@ $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
 2012-07-23
 
+* Using new PanDA client API method getJobStatisticsWithLabel.
+
 * GRAM CE is called OSG-CE in AGIS, instead of CE. Changed in AGISConfig Plugin.
 
 * Pilots in STAGE-IN status are now considered to be PENDING instead or RUNNING.
