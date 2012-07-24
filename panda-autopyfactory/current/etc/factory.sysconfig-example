@@ -4,7 +4,6 @@
 
 #  OPTIONS:
 # 
-#  --verbose  
 #  --debug              Set logging level to DEBUG [default INFO]
 #  --conf=FILE1[,FILE2,FILE3]
 #  --runas=ACCOUNT       User account to run as. [apf]
