@@ -175,7 +175,8 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         output looks like
         RESERVATION    r-b1hskqmi    c8d55513d64243fa8e0b29384f6f0c81    default
         INSTANCE i-0000012e ami-00000039 10.20.15.20 10.20.15.20 running None (ostester, gridreserve29.usatlas.bnl.gov) 0 m1.small 2012-06-08T11:09:56Z nova ami-00000000 ami-00000000
-    
+
+        Important note: this output changes with the version of OpenStack 
 
         For the time being we assume the name of the image, e.g. ami-00000004 is the name of 
         the APF Queue.
