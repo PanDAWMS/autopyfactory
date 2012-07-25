@@ -150,7 +150,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
 
         self.log.debug('_queryeuca: Starting.')
-        querycmd = 'euca-describe-images --config %s' % self.rcfile
+        querycmd = 'euca-describe-instances --config %s' % self.rcfile
 
         self.log.debug('_queryeuca: Querying cmd = %s' %querycmd.replace('\n','\\n'))
 
@@ -174,7 +174,8 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
         output looks like
         RESERVATION    r-b1hskqmi    c8d55513d64243fa8e0b29384f6f0c81    default
-        INSTANCE i-00000028 ami-00000004 server-40 server-40 running None (c8d55513d64243fa8e0b29384f6f0c81, ct16.usatlas.bnl.gov) 0 m1.small 2012-06-27T15:56:44.000Z nova        
+        INSTANCE i-0000012e ami-00000039 10.20.15.20 10.20.15.20 running None (ostester, gridreserve29.usatlas.bnl.gov) 0 m1.small 2012-06-08T11:09:56Z nova ami-00000000 ami-00000000
+    
 
         For the time being we assume the name of the image, e.g. ami-00000004 is the name of 
         the APF Queue.
