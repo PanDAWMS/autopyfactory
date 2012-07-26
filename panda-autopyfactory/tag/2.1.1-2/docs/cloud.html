@@ -1,0 +1,68 @@
+<body>
+
+<a href=index.html>Index<a>
+
+<br>
+<br>
+
+                        <a href='#autopyfactoryandthecloud'>AutoPyFactory and the Cloud</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href='#architecture'>Architecture</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href='#softwaredeployedintheimage'>Software deployed in the image</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href='#issuesduringtests'>Issues during tests</a><br>
+
+
+<a name='autopyfactoryandthecloud'><h1><span style="color: black; "><span>AutoPyFactory and the Cloud</span></span></h1></a>
+
+<a name='architecture'><h2>Architecture:</h2></a>
+
+<p>The design consists on two AutoPyFactory (APF) queues working simultaneously.</p>
+
+<p>The first AutoPyFactory queue submits jobs to a local pool when needed to serve a given WMS jobs queue (e.g. a PanDA siteid). 
+This local condor pool may have very few actual nodes, or even no one. 
+In this case, jobs will be waiting in queue.</p>
+
+<p>The second AutoPyFactory queue inspects this local batch system, looking for jobs pending to be run. 
+In this case, this list of pending jobs is acting as the WMS queue. 
+If there are pending jobs (which is the equivalent to activated status in PanDA, for example) 
+OSG Worker Node VMs are submitted to an IaaS provider via Condor-G 
+(currently there is one submit AutoPyFactory plugin for submission to Amazon EC2 resources. 
+In the future, to other "cloud" resources too).</p>
+
+<p>This WN starts a condor startd daemon, which contacts a given condor Central Manager and become part of its pool.</p>
+
+<p>AutoPyFactory plugins can be adjusted in such a way that VMs jobs submissions to the IaaS provider rate matches the associated WMS activated jobs load.</p>
+
+<a name='softwaredeployedintheimage'><h2>Software deployed in the image:</h2></a>
+<ul>
+<li>Red Hat Scientific Linux 5.7 base (RAW)</li>
+<li>OSG WN, ATLAS WN, CA Certs. The environment variables $OSG_GRID, $OSG_DATA, $OSG_APP are defined.</li>
+<li> CVMFS is installed and configured to point to BNL replicas/cache.</li>
+<li>Condor startd, associated with BNL test Central Manager.</li>
+</ul>
+<a name='issuesduringtests'><h2>Issues during tests:</h2></a>
+<h3>Problem with network: NAT, ..</h3>
+<ul>
+</ul>
+<p>When a startd contact a Central Manager, the latter must be able to call back the startd.</p>
+
+<p>However, the WM is behind a NAT, preventing this call back from being possible. 
+To solve this, the startd contacts the Central Manager via the Condor Connection Broker (CCB).</p>
+
+<h3>problem with $HOME directory</h3>
+
+<p>First trial failed with an error line like 
+<br /> <br /> 02 Feb 17:00:36|runJob.py | Job command 1/1 failed: res = (2560,<br /> '/cvmfs/atlas.cern.ch/repo/sw/software/i686-slc5-gcc43-opt/16.6.2/AtlasSetup/scripts/setup_runtime.sh:<br /> line 36: cd: /root: Permission<br /> denied\n/var/lib/condor/execute/dir_24497/Panda_Pilot_24618_1328201237/PandaJob_1418631160_1328201243') 
+<br /> <br /> The reason was that jobs were running as user 'nobody' whose home directory in /etc/passwd is '/'. 
+But it is possible that the shell environment variable $HOME is still pointed to /root.</p>
+
+<h3>problem with LFC (ATLAS specific):</h3>
+
+<p><br /> during the devel steps, with the VM running on a box inside the BNL perimeter, 
+it was not possible to contact the LFC catalog. 
+For example, commands like lfc-mkdir failed. 
+The reason is that because the host is inside BNL perimeter, 
+the DNS gives the internal IP for the LFC host,
+but the LFC host has not a conduit for the sub-network where the VM is running. 
+<br /> <br /> NOTE: that should not be a problem when running on the cloud, outside BNL.</p>
+
+</body>
