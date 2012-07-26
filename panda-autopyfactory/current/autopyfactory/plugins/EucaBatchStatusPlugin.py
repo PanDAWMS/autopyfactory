@@ -178,8 +178,9 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         Important note: this output changes with the version of OpenStack 
 
-        For the time being we assume the name of the image, e.g. ami-00000004 is the name of 
-        the APF Queue.
+        For the time being we assume the name of the image, 
+                e.g. ami-00000004 
+        is the name of the APF Queue.
         '''
 
         batchstatusinfo = InfoContainer('batch', BatchQueueInfo())
@@ -189,29 +190,20 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             fields = line.split()
             if fields[0] == 'RESERVATION':
                 self.log.debug("Saw RESERVATION line...")
-                pass
-            else:
-                (inst, id, ami, host, host2, state, key, storage, host3, idx, type, start, provider ) = line.split()
-                key = ami
-                self.log.debug("Parsed line with key %s" % ami)
+            elif fields[0] == 'INSTANCE':
+                imageid= fields[2]
+                state = fields[5]
+
+                self.log.debug("Parsed line with key %s" % imageid)
                
-                if not batchstatusinfo.has_key(key):
-                    batchstatusinfo[key] = BatchQueueInfo()
+                if not batchstatusinfo.has_key(imageid):
+                    batchstatusinfo[imageid] = BatchQueueInfo()
                     if state == 'running':
-                        batchstatusinfo[key].running = 1
+                        batchstatusinfo[imageid].running = 1
                 else:
                     if state == 'running':
-                        batchstatusinfo[key].running = +1
+                        batchstatusinfo[imageid].running = +1
         return batchstatusinfo
-
-    #def _listnodesfromxml(self, xmldoc, tag):
-    #    pass
-    #def _node2dict(self, node):
-    #    pass
-    #def _aggregateinfo(self, input):
-    #    pass
-    #def _map2info(self, input):
-    #    pass
 
     def join(self, timeout=None):
         ''' 
