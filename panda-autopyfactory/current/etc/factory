@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash -l
 #
 #	/etc/rc.d/init.d/factory
 #
