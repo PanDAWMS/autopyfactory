@@ -35,6 +35,7 @@ for section in conf.sections():
         if q['ce_flavour'] == 'CREAM-CE':
             gridresource = '%s/ce-cream/services/CREAM2 %s %s' %(q['ce_endpoint'], q['ce_jobmanager'], q['ce_queue_name'])
         print 
+        print 'autofill = True'
         print '[%s]' %q['ce_name']
         print 'batchqueue = %s' %key
         print 'batchsubmit.gridresource = %s' %gridresource
