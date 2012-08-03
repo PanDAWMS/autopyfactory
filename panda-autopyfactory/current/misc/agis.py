@@ -53,10 +53,12 @@ for section in conf.sections():
             submitplugin = 'condorcream'
         print 
         print '[%s]' %q['ce_name']
+        print 'configplugin = AGIS'
         print 'autofill = True'
         print 'override = True'
         print 'batchqueue = %s' %key
         print 'wmsqueue = %s' %wmsqueue
+        print 'batchsubmitplugin = Condor%s' %q['ce_version']
         print 'batchsubmit.%s.gridresource = %s' %(submitplugin, gridresource)
 
     
