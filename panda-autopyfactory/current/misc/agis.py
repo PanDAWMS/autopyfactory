@@ -56,9 +56,7 @@ for section in conf.sections():
             submitpluginstring = 'condorcream'
         print 
         print '[%s]' %q['ce_name']
-        print 'configplugin = AGIS'
-        print 'autofill = True'
-        print 'override = True'
+        print 'autofill = False'
         print 'batchqueue = %s' %key
         print 'wmsqueue = %s' %wmsqueue
         print 'batchsubmitplugin = %s' %submitplugin
