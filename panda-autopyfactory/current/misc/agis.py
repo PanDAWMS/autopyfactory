@@ -45,12 +45,15 @@ for section in conf.sections():
         if q['ce_flavour'] == 'OSG-CE':
             gridresource = '%s/jobmanager-%s' %(q['ce_endpoint'], q['ce_jobmanager'])
             if q['ce_version'] == 'GT2':
-                submitplugin = 'condorgt2'
+                submitplugin = 'CondorGT2'
+                submitpluginstring = 'condorgt2'
             if q['ce_version'] == 'GT5':
-                submitplugin = 'condorgt5'
+                submitplugin = 'CondorGT5'
+                submitpluginstring = 'condorgt5'
         if q['ce_flavour'] == 'CREAM-CE':
             gridresource = '%s/ce-cream/services/CREAM2 %s %s' %(q['ce_endpoint'], q['ce_jobmanager'], q['ce_queue_name'])
-            submitplugin = 'condorcream'
+            submitplugin = 'CondorCREAM'
+            submitpluginstring = 'condorcream'
         print 
         print '[%s]' %q['ce_name']
         print 'configplugin = AGIS'
@@ -58,8 +61,8 @@ for section in conf.sections():
         print 'override = True'
         print 'batchqueue = %s' %key
         print 'wmsqueue = %s' %wmsqueue
-        print 'batchsubmitplugin = Condor%s' %q['ce_version']
-        print 'batchsubmit.%s.gridresource = %s' %(submitplugin, gridresource)
+        print 'batchsubmitplugin = %s' %submitplugin
+        print 'batchsubmit.%s.gridresource = %s' %(submitpluginstring, gridresource)
 
     
 
