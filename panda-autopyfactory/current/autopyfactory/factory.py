@@ -398,7 +398,7 @@ class Factory(object):
         self.qcl = ConfigManager().getConfig(fcl.get('Factory', 'queueConf'))
       
         # Handle ProxyManager
-        usepman = fcl.get('Factory', 'proxymanager.enabled')
+        usepman = fcl.getboolean('Factory', 'proxymanager.enabled')
         if usepman:
                             
             pconfig = ConfigParser()
