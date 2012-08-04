@@ -510,11 +510,11 @@ class Factory(object):
         self.log.info("Joining all Queue threads...")
         self.apfqueuesmanager.join()
         self.log.info("All Queue threads joined.")
-        if self.fcl.get('Factory', 'proxymanager.enabled'):
+        if self.fcl.getboolean('Factory', 'proxymanager.enabled'):
             self.log.info("Shutting down Proxymanager...")
             self.proxymanager.join()
             self.log.info("Proxymanager stopped.")
-        if self.fcl.get('Factory', 'logserver.enabled'):
+        if self.fcl.getboolean('Factory', 'logserver.enabled'):
             self.log.info("Shutting down Logserver...")
             self.logserver.join()
             self.log.info("Logserver stopped.")            
