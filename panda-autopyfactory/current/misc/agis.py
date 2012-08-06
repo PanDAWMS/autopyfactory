@@ -56,7 +56,8 @@ for section in conf.sections():
             submitpluginstring = 'condorcream'
         print 
         #print '[%s-%s]' %(section, q['ce_name'])
-        print '[%s-%s-%s]' %(section, q['ce_endpoint'].split(':')[0], q['ce_queue_name'])
+        #print '[%s-%s-%s]' %(section, q['ce_endpoint'].split(':')[0], q['ce_queue_name'])
+        print '[%s-%s]' %(agis_sect['panda_queue_name'], q['ce_queue_id'])
         print 'autofill = False'
         print 'batchqueue = %s' %key
         print 'wmsqueue = %s' %wmsqueue
