@@ -54,6 +54,11 @@ for section in conf.sections():
             gridresource = '%s/ce-cream/services/CREAM2 %s %s' %(q['ce_endpoint'], q['ce_jobmanager'], q['ce_queue_name'])
             submitplugin = 'CondorCREAM'
             submitpluginstring = 'condorcream'
+        elif q['ce_flavour'] == 'LCG-CE':
+            gridresource = '%s/jobmanager-%s' %(q['ce_endpoint'], q['ce_jobmanager'])
+            submitplugin = 'CondorGT2'
+            submitpluginstring = 'condorgt2'
+            
         else:
             # ce_flavour has no value or not yet understood
             continue
