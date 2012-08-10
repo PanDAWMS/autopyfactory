@@ -1497,3 +1497,12 @@ class BatchSubmitInterface(object):
         '''
         raise NotImplementedError
 
+class MonitorInterface(object):
+    '''
+    Interface for publishing job info to external monitors/dashboards/loggers.
+    ------------------------------
+    Public Interface:
+        
+    
+    '''
+    
