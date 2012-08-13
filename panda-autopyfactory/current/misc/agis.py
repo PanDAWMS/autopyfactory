@@ -42,14 +42,19 @@ for section in conf.sections():
     agis_sect = agisdict[key]
     wmsqueue = agis_sect['panda_resource']
     for q in agis_sect['queues']:
+        gramqueue = None 
         if q['ce_flavour'] == 'OSG-CE':
             gridresource = '%s/jobmanager-%s' %(q['ce_endpoint'], q['ce_jobmanager'])
             if q['ce_version'] == 'GT2':
                 submitplugin = 'CondorGT2'
                 submitpluginstring = 'condorgt2'
+                gramversion = 'gram2'
             if q['ce_version'] == 'GT5':
                 submitplugin = 'CondorGT5'
                 submitpluginstring = 'condorgt5'
+                gramversion = 'gram5'
+            if q['ce_queue_name']:
+                gramqueue = q['ce_queue_name']
         elif q['ce_flavour'] == 'CREAM-CE':
             gridresource = '%s/ce-cream/services/CREAM2 %s %s' %(q['ce_endpoint'], q['ce_jobmanager'], q['ce_queue_name'])
             submitplugin = 'CondorCREAM'
@@ -72,6 +77,9 @@ for section in conf.sections():
         print 'wmsqueue = %s' %wmsqueue
         print 'batchsubmitplugin = %s' %submitplugin
         print 'batchsubmit.%s.gridresource = %s' %(submitpluginstring, gridresource)
+        if gramqueue:
+            print 'globusrsl.%s.queue = %s' %(gramversion, gramqueue)
+
 
     
 
