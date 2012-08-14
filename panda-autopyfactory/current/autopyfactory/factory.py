@@ -1497,12 +1497,30 @@ class BatchSubmitInterface(object):
         '''
         raise NotImplementedError
 
+
 class MonitorInterface(object):
     '''
     Interface for publishing job info to external monitors/dashboards/loggers.
     ------------------------------
     Public Interface:
-        
     
     '''
-    
+   
+    def __init__(self):
+        self.msg = '' 
+
+    def add2msg(self, txt):
+        self.msg += txt
+
+    def send2monitor(self):
+        '''
+        Sends the messages to the monitor
+        '''
+        self.send()
+        self.msg = ''
+
+    def send(self):
+        '''
+        Actually, sends the messages to the monitor, this time for real
+        '''
+        raise NotImplementedError
