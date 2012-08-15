@@ -88,7 +88,7 @@ def runtest1():
     #r.add_header('User-Agent', 'awesome fetcher')
     #r.add_data(urllib.urlencode({'foo': 'bar'})
     response = urllib2.urlopen(r)
-    print(response)
+    print(response.read())
 
 
     
