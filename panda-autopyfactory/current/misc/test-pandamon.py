@@ -87,7 +87,7 @@ def runtest1():
     r = urllib2.Request(url=qurl)
     #r.add_header('User-Agent', 'awesome fetcher')
     #r.add_data(urllib.urlencode({'foo': 'bar'})
-    response = urlopen(r)
+    response = urllib2.urlopen(r)
     print(response)
 
     
