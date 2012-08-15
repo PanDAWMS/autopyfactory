@@ -1504,8 +1504,8 @@ class MonitorInterface(object):
     ------------------------------
     Public Interface:
     
+    
     '''
-   
     def __init__(self):
         self.msg = '' 
 
@@ -1524,3 +1524,10 @@ class MonitorInterface(object):
         Actually, sends the messages to the monitor, this time for real
         '''
         raise NotImplementedError
+   
+    def updateJobStatus(self, jobid, status ):
+        '''
+        Update information about a single job.  
+        '''
+        raise NotImplementedError
+    

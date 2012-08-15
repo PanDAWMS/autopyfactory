@@ -14,6 +14,7 @@ import StringIO
 import urllib2
 
 from autopyfactory.factory import Singleton
+from autopyfactory.factory import MonitorInterface
 
 try:
     import pycurl
@@ -30,6 +31,7 @@ except ImportError, err:
     log = logging.getLogger('main.monitor')
     log.debug('json package not installed. Trying to import simplejson as json')
     import simplejson as json
+
 
 __author__ = "Peter Love, Jose Caballero"
 __copyright__ = "2010,2011 Peter Love; 2011 Jose Caballero"
