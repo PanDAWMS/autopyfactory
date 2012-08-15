@@ -47,9 +47,9 @@ curl --connect-timeout 20 --max-time 180 -sS
    
 '''
 
-
-
-
+SERVER='panda.cern.ch'
+PORT='25980'
+SVCPATH='/server/pandamon/query?'
 
 def runtest1():
     print("Running test...")
@@ -66,14 +66,34 @@ def runtest1():
                      'userid'    : pwd.getpwuid(os.getuid()).pw_name,
                      'doaction'  : '',
                      'host'      : h,
-                     'tstart'    : str(datetime.datetime.utcnow()),
-                     'lastmod'   : str(datetime.datetime.utcnow()),
+                     'tstart'    : datetime.datetime.utcnow(),
+                     'lastmod'   : datetime.datetime.utcnow(),
                      'message'   : '',
                      'config'    : 'BNL-CLOUD-condor',
                     #   config=pilotScheduler.py+--queue%3DANALY_NET2-pbs+--pandasite%3DANALY_NET2+--pilot%3DatlasOfficial2&
                      'description': 'TestPilot service',                
                 }
     print(attributemap)
+
+    q = ''
+    for k in attributemap.keys():
+        q += "&%s=%s" % (k, urllib.quote_plus(str(attributemap[k])) )    
+    qurl='http://%s:%s%s%s' % ( SERVER,
+                                PORT,
+                                SVCPATH,
+                                q
+                               )
+    print("%s" % qurl)
+    r = urllib2.Request(url=qurl)
+    #r.add_header('User-Agent', 'awesome fetcher')
+    #r.add_data(urllib.urlencode({'foo': 'bar'})
+    #response = urlopen(r)
+    
+
+    
+    
+    
+    
 
 if __name__ == '__main__':
     runtest1()
