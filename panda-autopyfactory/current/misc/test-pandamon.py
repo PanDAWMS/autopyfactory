@@ -49,7 +49,7 @@ curl --connect-timeout 20 --max-time 180 -sS
 
 SERVER='panda.cern.ch'
 PORT='25980'
-SVCPATH='/server/pandamon/query?'
+SVCPATH='/server/pandamon/query?autopilot=updateservicelist'
 
 def runtest1():
     print("Running test...")
@@ -57,7 +57,7 @@ def runtest1():
     #h = host, a = short alias list,  n= ip address list
     tnow = datetime.datetime.utcnow()
 
-    attributemap = { 'autopilot' : 'updateservicelist',
+    attributemap = { #'autopilot' : 'updateservicelist',
                      'status'    : 'running',
                      'name'      : 'Job scheduler',
                      'grp'       : 'TestPilot',
@@ -89,6 +89,7 @@ def runtest1():
     #r.add_data(urllib.urlencode({'foo': 'bar'})
     response = urllib2.urlopen(r)
     print(response)
+
 
     
     
