@@ -71,7 +71,8 @@ def runtest1():
                      'message'   : '',
                      'config'    : 'BNL-CLOUD-condor',
                     #   config=pilotScheduler.py+--queue%3DANALY_NET2-pbs+--pandasite%3DANALY_NET2+--pilot%3DatlasOfficial2&
-                     'description': 'TestPilot service',                
+                     'description': 'TestPilot service',
+                     'cycle'      : '360'          
                 }
     print(attributemap)
 
