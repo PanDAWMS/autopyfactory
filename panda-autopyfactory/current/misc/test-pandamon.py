@@ -52,7 +52,7 @@ PORT='25980'
 SVCPATH='/server/pandamon/query?autopilot=updateservicelist'
 
 def runtest1():
-    print("Running test...")
+    print("Running service update...")
     (h, a, n )= socket.gethostbyaddr( socket.gethostbyname(platform.node()) )
     #h = host, a = short alias list,  n= ip address list
     tnow = datetime.datetime.utcnow()
@@ -72,7 +72,7 @@ def runtest1():
                      'config'    : 'BNL-CLOUD-condor',
                     #   config=pilotScheduler.py+--queue%3DANALY_NET2-pbs+--pandasite%3DANALY_NET2+--pilot%3DatlasOfficial2&
                      'description': 'TestPilot service',
-                     'cycle'      : '360'          
+                     'cyclesec'      : '360'          
                 }
     print(attributemap)
 
@@ -92,9 +92,9 @@ def runtest1():
     print(response.read())
 
 
-    
-    
-    
+def runtest2():
+    print("Running job update test...")
+
     
 
 if __name__ == '__main__':
