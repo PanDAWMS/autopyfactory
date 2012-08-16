@@ -94,7 +94,7 @@ def runtest1():
            'tstart'    : datetime.datetime.utcnow(),
            'lastmod'   : datetime.datetime.utcnow(),
            'message'   : '',
-           'config'    : 'BNL-CLOUD-condor',
+           'config'    : 'BNL-CLOUD',
            #   config=pilotScheduler.py+--queue%3DANALY_NET2-pbs+--pandasite%3DANALY_NET2+--pilot%3DatlasOfficial2&
            'description': 'TestPilot service',
            'cyclesec'      : '360'          
