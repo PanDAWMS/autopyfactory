@@ -21,6 +21,7 @@
 import os
 import platform
 import pwd
+import random
 import socket
 import urllib
 import urllib2
