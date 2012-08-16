@@ -70,7 +70,54 @@ curl --connect-timeout 20 --max-time 180 -sS
    errinfo=+'   
    
 
-   
+works:
+curl --connect-timeout 20 --max-time 180 -sS 
+'http://panda.cern.ch:25980/server/pandamon/query?
+autopilot=updatepilot&
+status=active&
+queueid=BNL_CLOUD&
+tsubmit=2012-08-15+22%3A58%3A57.528556&
+workernode=unassigned&
+tpid=9999999.3&
+url=http%3A%2F%2Fgridui08.usatlas.bnl.gov%3A25880%2Fschedlogs%2Ftp_gridui12_23036_20120815%2Ftp_gridui12_23036_20120815-225856_624&
+nickname=BNL_CLOUD&
+tcheck=2012-08-15+22%3A58%3A57.528842&
+system=osg&jobid=9999999.0&
+tenter=2012-08-15+22%3A58%3A56.771376&
+host=gridui08.usatlas.bnl.gov&
+state=submitted&
+submithost=gridui08&
+user=jhover&
+schedd_name=gridui08.usatlas.bnl.gov&
+type=atlasOfficial2&
+tstate=2012-08-15+22%3A58%3A57.528556&
+errinfo=+'
+
+NOT working:
+
+http://panda.cern.ch:25980/server/pandamon/query?
+autopilot=updatepilot&
+status=active&
+queueid=BNL_CLOUD&
+tsubmit=2012-08-16+18%3A16%3A20.803098&
+workernode=unassigned&
+tpid=95219.1&
+url=http%3A%2F%2Fgridtest03.racf.bnl.gov%3A25880%2F2012-08-16%2FBNL_CLOUD&
+type=atlasOfficial2&
+tcheck=2012-08-16+18%3A16%3A20.803163&
+system=osg&
+jobid=14147.1&
+tenter=2012-08-16+18%3A16%3A20.803170&
+state=submitted&
+submithost=gridui08&
+user=jhover&
+host=gridui08.usatlas.bnl.gov&
+schedd_name=gridui08.usatlas.bnl.gov&
+nickname=BNL_CLOUD&
+tstate=2012-08-16+18%3A16%3A20.803172&
+errinfo=
+
+  
 '''
 
 SERVER='panda.cern.ch'
@@ -83,21 +130,21 @@ def runtest1():
     #h = host, a = short alias list,  n= ip address list
     tnow = datetime.datetime.utcnow()
 
-    am = { 'status'    : 'running',
-           'name'      : 'Job scheduler',
-           'grp'       : 'TestPilot',
-           'type'      : 'tpmon',
-           'pid'       : os.getpid(),
-           'userid'    : pwd.getpwuid(os.getuid()).pw_name,
-           'doaction'  : '',
-           'host'      : h,
-           'tstart'    : datetime.datetime.utcnow(),
-           'lastmod'   : datetime.datetime.utcnow(),
-           'message'   : '',
-           'config'    : 'BNL-CLOUD-condor',
+    am = { 'status'     : 'running',
+           'name'       : 'Job scheduler',
+           'grp'        : 'TestPilot',
+           'type'       : 'tpmon',
+           'pid'        : os.getpid(),
+           'userid'     : pwd.getpwuid(os.getuid()).pw_name,
+           'doaction'   : '',
+           'host'       : h,
+           'tstart'     : datetime.datetime.utcnow(),
+           'lastmod'    : datetime.datetime.utcnow(),
+           'message'    : '',
+           'config'     : 'BNL-CLOUD-condor',
            #   config=pilotScheduler.py+--queue%3DANALY_NET2-pbs+--pandasite%3DANALY_NET2+--pilot%3DatlasOfficial2&
            'description': 'TestPilot service',
-           'cyclesec'      : '360'          
+           'cyclesec'   : '360'          
            }
     sendQuery(am)
 
@@ -127,14 +174,14 @@ def runtest2():
           'schedd_name'   : host,
           'type'          : 'atlasOfficial2',
           'tstate'        : datetime.datetime.utcnow(),
-          'errinfo'       : '',          
+          'errinfo'       : ' ',          
           }
     sendQuery(am, 'updatepilot')
 
 
 def sendQuery(attributemap, querytype='updateservicelist'):
     '''
-    querytype:   updateservicelist | updatepilot
+    querytype:   updateservicelist | updatepilot | currentlyqueued
     
     
     '''
