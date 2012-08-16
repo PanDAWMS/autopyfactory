@@ -98,7 +98,7 @@ def runtest1():
            'description': 'TestPilot service',
            'cyclesec'      : '360'          
            }
-    sendQuery('updateservicelist', attributemap)
+    sendQuery(attributemap)
 
 
 def runtest2():
@@ -128,10 +128,10 @@ def runtest2():
           'tstate'        : datetime.datetime.utcnow(),
           'errinfo'       : '',          
           }
-    sendQuery('updatepilot', attributemap)
+    sendQuery(attributemap, 'updatepilot')
 
 
-def sendQuery(querytype='updateservicelist', attributemap):
+def sendQuery(attributemap, querytype='updateservicelist'):
     '''
     querytype:   updateservicelist | updatepilot
     
@@ -158,6 +158,6 @@ def sendQuery(querytype='updateservicelist', attributemap):
 
 if __name__ == '__main__':
     runtest1()
-    
+    runtest2()
     
     
