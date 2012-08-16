@@ -121,7 +121,7 @@ def runtest2():
           'system'        : 'osg',
           'jobid'         : '89101112.0',
           'host'          : host,
-          'submithost'    : alias,
+          'submithost'    : alias[0],
           'tenter'        : datetime.datetime.utcnow(),
           'schedd_name'   : host,
           'type'          : 'atlasOfficial2',
