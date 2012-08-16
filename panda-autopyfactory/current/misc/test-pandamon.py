@@ -174,7 +174,7 @@ def runtest2():
           'schedd_name'   : host,
           'type'          : 'atlasOfficial2',
           'tstate'        : datetime.datetime.utcnow(),
-          'errinfo'       : ' ',          
+          'errinfo'       : ' ',     ## MUST HAVE space, or won't work!!!      
           }
     sendQuery(am, 'updatepilot')
 
