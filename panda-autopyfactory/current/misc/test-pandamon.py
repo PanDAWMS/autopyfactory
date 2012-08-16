@@ -45,11 +45,36 @@ curl --connect-timeout 20 --max-time 180 -sS
    config=pilotScheduler.py+--queue%3DANALY_NET2-pbs+--pandasite%3DANALY_NET2+--pilot%3DatlasOfficial2&
    description=TestPilot+service'
    
+
+   curl --connect-timeout 20 --max-time 180 -sS 
+   'http://panda.cern.ch:25980/server/pandamon/query?
+   autopilot=updatepilot&
+   status=active&
+   queueid=ANALY_NET2&
+   tsubmit=2012-08-14+10%3A21%3A20.295097&
+   workernode=unassigned&
+   tpid=tp_gridui10_88777_9999999-102119_13&
+   url=http%3A%2F%2Fgridui10.usatlas.bnl.gov%3A25880%2Fschedlogs%2Ftp_gridui10_88888_9999999%2Ftp_gridui10_28847_20120814-102119_13&
+   nickname=ANALY_NET2-pbs&
+   tcheck=2012-08-14+10%3A21%3A20.295375&
+   system=osg&jobid=3333333.0&
+   tenter=2012-08-14+10%3A21%3A19.521314&
+   host=gridui10.usatlas.bnl.gov&
+   state=submitted&
+   submithost=gridui10&
+   user=sm&
+   schedd_name=gridui10.usatlas.bnl.gov&
+   type=atlasOfficial2&
+   tstate=2012-08-14+10%3A21%3A20.295097&
+   errinfo=+'   
+   
+
+   
 '''
 
 SERVER='panda.cern.ch'
 PORT='25980'
-SVCPATH='/server/pandamon/query?autopilot=updateservicelist'
+SVCPATH='/server/pandamon/query?'
 
 def runtest1():
     print("Running service update...")
@@ -57,31 +82,68 @@ def runtest1():
     #h = host, a = short alias list,  n= ip address list
     tnow = datetime.datetime.utcnow()
 
-    attributemap = { #'autopilot' : 'updateservicelist',
-                     'status'    : 'running',
-                     'name'      : 'Job scheduler',
-                     'grp'       : 'TestPilot',
-                     'type'      : 'tpmon',
-                     'pid'       : os.getpid(),
-                     'userid'    : pwd.getpwuid(os.getuid()).pw_name,
-                     'doaction'  : '',
-                     'host'      : h,
-                     'tstart'    : datetime.datetime.utcnow(),
-                     'lastmod'   : datetime.datetime.utcnow(),
-                     'message'   : '',
-                     'config'    : 'BNL-CLOUD-condor',
-                    #   config=pilotScheduler.py+--queue%3DANALY_NET2-pbs+--pandasite%3DANALY_NET2+--pilot%3DatlasOfficial2&
-                     'description': 'TestPilot service',
-                     'cyclesec'      : '360'          
-                }
-    print(attributemap)
+    am = { 'status'    : 'running',
+           'name'      : 'Job scheduler',
+           'grp'       : 'TestPilot',
+           'type'      : 'tpmon',
+           'pid'       : os.getpid(),
+           'userid'    : pwd.getpwuid(os.getuid()).pw_name,
+           'doaction'  : '',
+           'host'      : h,
+           'tstart'    : datetime.datetime.utcnow(),
+           'lastmod'   : datetime.datetime.utcnow(),
+           'message'   : '',
+           'config'    : 'BNL-CLOUD-condor',
+           #   config=pilotScheduler.py+--queue%3DANALY_NET2-pbs+--pandasite%3DANALY_NET2+--pilot%3DatlasOfficial2&
+           'description': 'TestPilot service',
+           'cyclesec'      : '360'          
+           }
+    sendQuery('updateservicelist', attributemap)
 
+
+def runtest2():
+    print("Running job update test...")
+    
+    (host, alias, n )= socket.gethostbyaddr( socket.gethostbyname(platform.node()) )
+    #h = host, a = short alias list,  n= ip address list
+     
+    am = {
+          'status'        : 'active',
+          'state'         : 'submitted',
+          'queueid'       : 'BNL_CLOUD',
+          'tsubmit'       : datetime.datetime.utcnow(),
+          'workernode'    : 'unassigned',
+          'tpid'          : '123456.7',
+          'nickname'      : 'BNL_CLOUD' ,  # actually panda queuename, i.e. with -condor, etc. 
+          'url'           : 'http://gridtest03.racf.bnl.gov:25880/2012-08-16/BNL_CLOUD',
+          'user'          : pwd.getpwuid(os.getuid()).pw_name,
+          'tcheck'        : datetime.datetime.utcnow(),
+          'system'        : 'osg',
+          'jobid'         : '89101112.0',
+          'host'          : host,
+          'submithost'    : alias,
+          'tenter'        : datetime.datetime.utcnow(),
+          'schedd_name'   : host,
+          'type'          : 'atlasOfficial2',
+          'tstate'        : datetime.datetime.utcnow(),
+          'errinfo'       : '',          
+          }
+    sendQuery('updatepilot', attributemap)
+
+
+def sendQuery(querytype='updateservicelist', attributemap):
+    '''
+    querytype:   updateservicelist | updatepilot
+    
+    
+    '''
     q = ''
     for k in attributemap.keys():
         q += "&%s=%s" % (k, urllib.quote_plus(str(attributemap[k])) )    
-    qurl='http://%s:%s%s%s' % ( SERVER,
+    qurl='http://%s:%s%s%s%s' % ( SERVER,
                                 PORT,
                                 SVCPATH,
+                                'autopilot=%s' % querytype ,
                                 q
                                )
     print("%s" % qurl)
@@ -91,9 +153,6 @@ def runtest1():
     response = urllib2.urlopen(r)
     print(response.read())
 
-
-def runtest2():
-    print("Running job update test...")
 
     
 
