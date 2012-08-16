@@ -7,7 +7,7 @@ import traceback
 
 from urllib import urlopen
 
-from autopyfactory.factory import WMSStatusInterface
+from autopyfactory.interfaces import WMSStatusInterface
 from autopyfactory.factory import WMSStatusInfo
 from autopyfactory.factory import Singleton 
 from autopyfactory.info import InfoContainer

@@ -23,6 +23,7 @@ import platform
 import pwd
 import random
 import socket
+import sys
 import urllib
 import urllib2
 import datetime
@@ -117,6 +118,22 @@ nickname=BNL_CLOUD&
 tstate=2012-08-16+18%3A16%3A20.803172&
 errinfo=
 
+Job status sequence:
+
+[root@gridui12 scheduler]# cat service_gridui12.usatlas.bnl.gov_sm_21388 service_gridui12.usatlas.bnl.gov_sm_707 service_gridui12.usatlas.bnl.gov_sm_1300 | grep tp_gridui12_23036_20120815-225856_624 | grep messageDB
+Schedulerutils.messageDB(): cmd= curl --connect-timeout 20 --max-time 180 -sS 'http://panda.cern.ch:25980/server/pandamon/query?autopilot=updatepilot&status=active&queueid=BU_ATLAS_Tier2o&tsubmit=2012-08-15+22%3A58%3A57.528556&workernode=unassigned&tpid=tp_gridui12_23036_20120815-225856_624&url=http%3A%2F%2Fgridui12.usatlas.bnl.gov%3A25880%2Fschedlogs%2Ftp_gridui12_23036_20120815%2Ftp_gridui12_23036_20120815-225856_624&nickname=BU_ATLAS_Tier2o-pbs&tcheck=2012-08-15+22%3A58%3A57.528842&system=osg&jobid=39949228.0&tenter=2012-08-15+22%3A58%3A56.771376&host=gridui12.usatlas.bnl.gov&state=submitted&submithost=gridui12&user=sm&schedd_name=gridui12.usatlas.bnl.gov&type=atlasOfficial2&tstate=2012-08-15+22%3A58%3A57.528556&errinfo=+' 
+Schedulerutils.messageDB(): cmd= curl --connect-timeout 20 --max-time 180 -sS 'http://panda.cern.ch:25980/server/pandamon/query?autopilot=updatepilot&status=active&tschedule=2012-08-15+23%3A06%3A18.985095&tpid=tp_gridui12_23036_20120815-225856_624&tcheck=2012-08-15+23%3A06%3A18.985130&jobid=39949228.0&state=scheduled&nickname=BU_ATLAS_Tier2o-pbs&tstate=2012-08-15+23%3A06%3A18.985095' 
+Schedulerutils.messageDB(): cmd= curl --connect-timeout 20 --max-time 180 -sS 'http://panda.cern.ch:25980/server/pandamon/query?autopilot=updatepilot&status=active&tschedule=2012-08-15+23%3A09%3A15.139811&tpid=tp_gridui12_23036_20120815-225856_624&tcheck=2012-08-15+23%3A09%3A15.139847&jobid=39949228.0&state=scheduled&nickname=BU_ATLAS_Tier2o-pbs&tstate=2012-08-15+23%3A09%3A15.139811' 
+Schedulerutils.messageDB(): cmd= curl --connect-timeout 20 --max-time 180 -sS 'http://panda.cern.ch:25980/server/pandamon/query?autopilot=updatepilot&status=active&tpid=tp_gridui12_23036_20120815-225856_624&tcheck=2012-08-16+05%3A42%3A22.543749&jobid=39949228.0&state=running&tstart=2012-08-16+05%3A42%3A22.543696&nickname=BU_ATLAS_Tier2o-pbs&tstate=2012-08-16+05%3A42%3A22.543696' 
+Schedulerutils.messageDB(): cmd= curl --connect-timeout 20 --max-time 180 -sS 'http://panda.cern.ch:25980/server/pandamon/query?autopilot=updatepilot&status=finished&PandaID=1577156287&workernode=atlas-cm2.bu.edu&tpid=tp_gridui12_23036_20120815-225856_624&tcheck=2012-08-16+05%3A43%3A55.515658&host=atlas-cm2.bu.edu&jobid=39949228.0&tdone=2012-08-16+05%3A43%3A55.515617&state=done&errcode=0&message=straggling_pilot_not_on_queue_but_in_DB&nickname=BU_ATLAS_Tier2o-pbs&tstate=2012-08-16+05%3A43%3A55.515617&errinfo=Job+successfully+completed' 
+Schedulerutils.messageDB(): cmd= curl --connect-timeout 20 --max-time 180 -sS 'http://panda.cern.ch:25980/server/pandamon/query?autopilot=updatepilot&status=finished&PandaID=1577156287&workernode=atlas-cm2.bu.edu&tpid=tp_gridui12_23036_20120815-225856_624&tcheck=2012-08-16+05%3A45%3A30.689477&host=atlas-cm2.bu.edu&jobid=39949228.0&tdone=2012-08-16+05%3A45%3A30.689436&state=done&errcode=0&message=straggling_pilot_not_on_queue_but_in_DB&nickname=BU_ATLAS_Tier2o-pbs&tstate=2012-08-16+05%3A45%3A30.689436&errinfo=Job+successfully+completed' 
+Schedulerutils.messageDB(): cmd= curl --connect-timeout 20 --max-time 180 -sS 'http://panda.cern.ch:25980/server/pandamon/query?autopilot=updatepilot&status=finished&PandaID=1577156287&workernode=atlas-cm2.bu.edu&tpid=tp_gridui12_23036_20120815-225856_624&tcheck=2012-08-16+05%3A47%3A07.572424&host=atlas-cm2.bu.edu&jobid=39949228.0&tdone=2012-08-16+05%3A47%3A07.572383&state=done&errcode=0&message=straggling_pilot_not_on_queue_but_in_DB&nickname=BU_ATLAS_Tier2o-pbs&tstate=2012-08-16+05%3A47%3A07.572383&errinfo=Job+successfully+completed' 
+
+
+
+
+
+
   
 '''
 
@@ -154,25 +171,27 @@ def runtest2():
     
     (host, alias, n )= socket.gethostbyaddr( socket.gethostbyname(platform.node()) )
     #h = host, a = short alias list,  n= ip address list
+    
+    jobid= "%d.1" %  (random.random() * 100000 )
      
     am = {
-          'status'        : 'active',
-          'state'         : 'submitted',
+          'status'        : 'active',        # active, or finished
+          'state'         : 'submitted',    # or scheduled, running this is equivialent to globus  PENDING, ACTIVE
           'queueid'       : 'BNL_CLOUD',
           'tsubmit'       : datetime.datetime.utcnow(),
           'workernode'    : 'unassigned',
-          'tpid'          : "%d.1" %  (random.random() * 100000 ),
+          'host'          : 'unassigned',
+          'tpid'          : jobid,
           'nickname'      : 'BNL_CLOUD' ,  # actually panda queuename, i.e. with -condor, etc. 
           'url'           : 'http://gridtest03.racf.bnl.gov:25880/2012-08-16/BNL_CLOUD',
           'user'          : pwd.getpwuid(os.getuid()).pw_name,
           'tcheck'        : datetime.datetime.utcnow(),
           'system'        : 'osg',
-          'jobid'         : "%d.1" %  (random.random() * 100000 ),
-          'host'          : host,
+          'jobid'         : jobid,
           'submithost'    : alias[0],
           'tenter'        : datetime.datetime.utcnow(),
           'schedd_name'   : host,
-          'type'          : 'atlasOfficial2',
+          'type'          : 'AutoPyFactory',
           'tstate'        : datetime.datetime.utcnow(),
           'errinfo'       : ' ',     ## MUST HAVE space, or won't work!!!      
           }
@@ -205,7 +224,16 @@ def sendQuery(attributemap, querytype='updateservicelist'):
     
 
 if __name__ == '__main__':
-    runtest1()
-    runtest2()
+    #runtest1()
+    #runtest2()
+    usage = '''test-pandamon.py <jobid> <state>
+    jobid, e.g.   9999999.2
+    state         submitted | scheduled | done
     
+    '''
+    print("sys.argv = %s" % sys.argv)
+    if len(sys.argv < 3):
+        print(usage)
+     
+     
     

@@ -5,7 +5,7 @@ import logging
 from urllib import urlopen
 
 from autopyfactory.info import BaseInfo 
-from autopyfactory.factory import ConfigInterface
+from autopyfactory.interfaces import ConfigInterface
 from autopyfactory.configloader import Config, ConfigManager
 
 __author__ = "John Hover, Jose Caballero"

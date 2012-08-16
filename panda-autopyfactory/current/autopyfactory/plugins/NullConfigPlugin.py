@@ -2,7 +2,7 @@
 
 import logging
 
-from autopyfactory.factory import ConfigInterface
+from autopyfactory.interfaces import ConfigInterface
 from autopyfactory.configloader import Config, ConfigManager
 
 

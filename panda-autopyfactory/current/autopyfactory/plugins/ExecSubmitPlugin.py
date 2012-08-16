@@ -7,7 +7,7 @@ import string
 import shutil
 import time
 
-from autopyfactory.factory import BatchSubmitInterface
+from autopyfactory.interfaces import BatchSubmitInterface
 import submit 
 
 __author__ = "John Hover, Jose Caballero"

@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 #
 
-from autopyfactory.factory import SchedInterface
+from autopyfactory.interfaces import SchedInterface
 import logging
 
 __author__ = "John Hover, Jose Caballero"

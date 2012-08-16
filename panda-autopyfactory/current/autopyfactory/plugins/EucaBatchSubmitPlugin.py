@@ -10,7 +10,7 @@ import re
 import string
 import time
 
-from autopyfactory.factory import BatchSubmitInterface
+from autopyfactory.interfaces import BatchSubmitInterface
 import autopyfactory.utils as utils
 import jsd 
 

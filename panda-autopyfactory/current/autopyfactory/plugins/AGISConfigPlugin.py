@@ -8,7 +8,7 @@ from urllib import urlopen
 
 from autopyfactory.info import BaseInfo 
 from autopyfactory.info import InfoContainer
-from autopyfactory.factory import ConfigInterface
+from autopyfactory.interfaces import ConfigInterface
 from autopyfactory.factory import Singleton
 from autopyfactory.configloader import Config, ConfigManager
 

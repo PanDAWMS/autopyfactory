@@ -64,6 +64,7 @@ Job update command:
 
 '''
 
+from autopyfactory.interfaces import MonitorInterface
 
 
 __author__ = "John Hover"
@@ -76,10 +77,19 @@ __email__ = "jhover@bnl.gov"
 __status__ = "Testing"
 
 
+
+
+
 class PandaMonPlugin(MonitorInterface):
     
     def __init__(self):
         pass
+ 
+ 
+
+
+
+ 
     
     
     

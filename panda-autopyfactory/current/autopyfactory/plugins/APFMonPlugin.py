@@ -14,7 +14,7 @@ import StringIO
 import urllib2
 
 from autopyfactory.factory import Singleton
-from autopyfactory.factory import MonitorInterface
+from autopyfactory.interfaces import MonitorInterface
 
 try:
     import pycurl

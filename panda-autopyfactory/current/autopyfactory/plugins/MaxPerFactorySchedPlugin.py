@@ -2,7 +2,7 @@
 #
 
 
-from autopyfactory.factory import SchedInterface
+from autopyfactory.interfaces import SchedInterface
 from autopyfactory.factory import Singleton
 import logging
 
