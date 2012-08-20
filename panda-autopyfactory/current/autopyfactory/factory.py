@@ -972,17 +972,13 @@ class PluginDispatcher(object):
 
     def getschedplugins(self):
 
-        #scheduler_cls = self._getplugin('sched')
-        #scheduler_plugin = scheduler_cls(self.apfqueue)
-        #return scheduler_plugin
-
         scheduler_classes = self._getplugin('sched')  # list of classes 
                                                       # Note that for the Sched category,
                                                       # we allow more than one plugin 
                                                       # (split by comma in the config file)
         scheduler_plugins = []
         for scheduler_cls in scheduler_classes:
-            scheduler_plugin = scheduler_cls(self.apfqueue)
+            scheduler_plugin = scheduler_cls(self.apfqueue)  # calls __init__() to instantiate the class
             scheduler_plugins.append(scheduler_plugin)
         return scheduler_plugins
 
@@ -994,7 +990,7 @@ class PluginDispatcher(object):
             if queryargs:
                     condor_q_id = self.__queryargs2condorqid(queryargs)    
         batchstatus_cls = self._getplugin('batchstatus')[0]
-        batchstatus_plugin = batchstatus_cls(self.apfqueue, condor_q_id=condor_q_id)
+        batchstatus_plugin = batchstatus_cls(self.apfqueue, condor_q_id=condor_q_id)  # calls __init__() to instantiate the class
         batchstatus_plugin.start() # starts the thread
         
         return batchstatus_plugin
@@ -1002,7 +998,7 @@ class PluginDispatcher(object):
     def getwmsstatusplugin(self):
 
         wmsstatus_cls = self._getplugin('wmsstatus')[0]
-        wmsstatus_plugin = wmsstatus_cls(self.apfqueue)
+        wmsstatus_plugin = wmsstatus_cls(self.apfqueue)  # calls __init__() to instantiate the class
         wmsstatus_plugin.start()   # starts the thread
 
         return wmsstatus_plugin
@@ -1010,7 +1006,7 @@ class PluginDispatcher(object):
     def getsubmitplugin(self):
 
         batchsubmit_cls = self._getplugin('batchsubmit')[0]
-        batchsubmit_plugin = batchsubmit_cls(self.apfqueue)
+        batchsubmit_plugin = batchsubmit_cls(self.apfqueue)  # calls __init__() to instantiate the class
 
         return batchsubmit_plugin
 
@@ -1019,7 +1015,7 @@ class PluginDispatcher(object):
         config_cls = self._getplugin('config')[0]
         if config_cls:
             # Note it could be None
-            config_plugin = config_cls(self.apfqueue)
+            config_plugin = config_cls(self.apfqueue)   # calls __init__() to instantiate the class
             config_plugin.start()  # starts the thread
             return config_plugin
         else:
