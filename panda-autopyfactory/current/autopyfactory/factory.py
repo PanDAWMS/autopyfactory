@@ -990,23 +990,33 @@ class PluginDispatcher(object):
             if queryargs:
                     condor_q_id = self.__queryargs2condorqid(queryargs)    
         batchstatus_cls = self._getplugin('batchstatus')[0]
-        batchstatus_plugin = batchstatus_cls(self.apfqueue, condor_q_id=condor_q_id)  # calls __init__() to instantiate the class
-        batchstatus_plugin.start() # starts the thread
+
+        # calls __init__() to instantiate the class
+        batchstatus_plugin = batchstatus_cls(self.apfqueue, condor_q_id=condor_q_id)  
+
+        # starts the thread
+        batchstatus_plugin.start() 
         
         return batchstatus_plugin
 
     def getwmsstatusplugin(self):
 
         wmsstatus_cls = self._getplugin('wmsstatus')[0]
-        wmsstatus_plugin = wmsstatus_cls(self.apfqueue)  # calls __init__() to instantiate the class
-        wmsstatus_plugin.start()   # starts the thread
+
+        # calls __init__() to instantiate the class
+        wmsstatus_plugin = wmsstatus_cls(self.apfqueue)  
+
+        # starts the thread
+        wmsstatus_plugin.start()   
 
         return wmsstatus_plugin
 
     def getsubmitplugin(self):
 
         batchsubmit_cls = self._getplugin('batchsubmit')[0]
-        batchsubmit_plugin = batchsubmit_cls(self.apfqueue)  # calls __init__() to instantiate the class
+
+        # calls __init__() to instantiate the class
+        batchsubmit_plugin = batchsubmit_cls(self.apfqueue)  
 
         return batchsubmit_plugin
 
@@ -1015,8 +1025,13 @@ class PluginDispatcher(object):
         config_cls = self._getplugin('config')[0]
         if config_cls:
             # Note it could be None
-            config_plugin = config_cls(self.apfqueue)   # calls __init__() to instantiate the class
-            config_plugin.start()  # starts the thread
+
+            # calls __init__() to instantiate the class
+            config_plugin = config_cls(self.apfqueue)   
+
+            # starts the thread
+            config_plugin.start()  
+
             return config_plugin
         else:
             return None    
