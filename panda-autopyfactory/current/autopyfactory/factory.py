@@ -992,6 +992,12 @@ class PluginDispatcher(object):
         batchstatus_cls = self._getplugin('batchstatus')[0]
 
         # calls __init__() to instantiate the class
+        # In this case the call accepts a second arguments:
+        #    an ID used to allow the creation of more than one Singleton
+        #    of this category. Remember the BatchStatusPlugin class is a Singleton. 
+        #    Therefore, we can have more than one
+        #    Batch Status Plugin objects, each one shared by a different
+        #    bunch of APF Queues.
         batchstatus_plugin = batchstatus_cls(self.apfqueue, condor_q_id=condor_q_id)  
 
         # starts the thread
