@@ -977,6 +977,9 @@ class PluginDispatcher(object):
         #return scheduler_plugin
 
         scheduler_classes = self._getplugin('sched')  # list of classes 
+                                                      # Note that for the Sched category,
+                                                      # we allow more than one plugin 
+                                                      # (split by comma in the config file)
         scheduler_plugins = []
         for scheduler_cls in scheduler_classes:
             scheduler_plugin = scheduler_cls(self.apfqueue)
