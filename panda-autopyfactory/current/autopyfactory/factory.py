@@ -1093,6 +1093,7 @@ class PluginDispatcher(object):
         out = []
         for name in plugin_names.split(','):
             plugin_module_name = '%s%sPlugin' %(name, plugin_prefix)
+            # Example of plugin_module_name is CondorGT2 + BatchSubmit + Plugin => CondorGT2BatchSubmitPlugin
 
             self.log.debug("_getplugin: Attempting to import derived classnames: autopyfactory.plugins.%s"
                     % plugin_module_name)
@@ -1102,11 +1103,11 @@ class PluginDispatcher(object):
                                        locals(),
                                        ["%s" % plugin_module_name])
 
-            plugin_class = plugin_module_name  #  the name of the class is the name of the module
+            plugin_class = plugin_module_name  #  the name of the class is always the name of the module
 
             self.log.debug("_getplugin: Attempting to return plugin with classname %s" %plugin_class)
             self.log.debug("_getplugin: Leaving with plugin named %s" %plugin_class)
-            out.append( getattr(plugin_module, plugin_class) )
+            out.append( getattr(plugin_module, plugin_class) )  # with getattr() we extract the actual class from the module object
         return out
 
 
