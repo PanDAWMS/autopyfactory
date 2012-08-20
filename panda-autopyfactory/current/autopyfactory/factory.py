@@ -1085,27 +1085,6 @@ class PluginDispatcher(object):
         plugin_config_item = '%splugin' %action
         plugin_prefix = plugin_prefixes[action] 
 
-        #if self.qcl.has_option(self.apfqname, plugin_config_item):
-        #        schedclass = self.qcl.get(self.apfqname, plugin_config_item)
-        #else:
-        #        return None
-
-        #plugin_module_name = '%s%sPlugin' %(schedclass, plugin_prefix)
-        #
-        #self.log.debug("_getplugin: Attempting to import derived classname: autopyfactory.plugins.%s"
-        #                % plugin_module_name)
-
-        #plugin_module = __import__("autopyfactory.plugins.%s" % plugin_module_name, 
-        #                           globals(), 
-        #                           locals(),
-        #                           ["%s" % plugin_module_name])
-
-        #plugin_class = plugin_module_name  #  the name of the class is the name of the module
-
-        #self.log.debug("_getplugin: Attempting to return plugin with classname %s" %plugin_class)
-        #self.log.debug("_getplugin: Leaving with plugin named %s" %plugin_class)
-        #return getattr(plugin_module, plugin_class)
-
         if self.qcl.has_option(self.apfqname, plugin_config_item):
             plugin_names = self.qcl.get(self.apfqname, plugin_config_item)
         else:
