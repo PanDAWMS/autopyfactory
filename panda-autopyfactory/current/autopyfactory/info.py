@@ -232,6 +232,25 @@ class WMSQueueInfo(BaseInfo):
     # property to return the total number of jobs, irrespective their state
     total = property(lambda self: sum([self.__dict__[i] for i in self.valid]))
 
+ 
+
+class JobInfo(object):
+    '''
+    Abstract representation of job in APF. 
+    At a minimum we need
+        jobid          Typically Condor cluster.proc ID, but could be VM instanceid
+        
+    '''
+    def __init__(self):
+        pass
+
+
+
+
+
+
+
+
 class CloudInfo(BaseInfo):
     '''
     -----------------------------------------------------------------------

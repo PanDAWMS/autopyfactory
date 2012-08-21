@@ -139,7 +139,8 @@ class BatchSubmitInterface(object):
     '''
     def submit(self, n):
         '''
-        Method to submit pilots 
+        Method to submit pilots.
+        Returns list of JobInfo objects 
         '''
         raise NotImplementedError
 

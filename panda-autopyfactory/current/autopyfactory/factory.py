@@ -1195,19 +1195,6 @@ class WMSStatusInfo(object):
 # for WMSStatusInfo information. For now, the existing Python Dictionaries are 
 # good enough. 
 
-class CloudInfo(object):
-    def __init__(self):
-        pass
-
-    
-class SiteInfo(object):
-    def __init__(self):
-        pass
-    
-
-class JobInfo(object):
-    def __init__(self):
-        pass
   
 
 class BatchStatusInfo(object):
