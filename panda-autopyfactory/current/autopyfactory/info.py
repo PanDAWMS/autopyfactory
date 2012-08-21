@@ -234,21 +234,21 @@ class WMSQueueInfo(BaseInfo):
 
  
 
-class JobInfo(object):
+class JobInfo(BaseInfo):
     '''
     Abstract representation of job in APF. 
     At a minimum we need
         jobid          Typically Condor cluster.proc ID, but could be VM instanceid
+        state          APF job state: submitted, pending, running, done, failed, held
+        
         
     '''
-    def __init__(self):
-        pass
-
-
-
-
-
-
+    
+    valid = ['jobid', 'state','starttime']
+    def __init__(self, jobid):
+        super(JobInfo, self).__init__(None)
+        self.jobid = jobid
+        self.state = submitted
 
 
 class CloudInfo(BaseInfo):

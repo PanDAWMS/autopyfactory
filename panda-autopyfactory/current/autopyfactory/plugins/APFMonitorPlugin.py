@@ -224,4 +224,49 @@ class APFMonitor(MonitorInterface):
 
         self.msglist = []
         self.crlist = []
+        
+    # Monitor-releated methods moved from factory.py
+
+    def _monitor_shout(self):
+        '''
+        call monitor.shout() method
+        '''
+
+        self.log.debug("__monitor_shout: Starting.")
+        if hasattr(self, 'monitor'):
+            self.monitor.shout(self.apfqname, self.cyclesrun)
+        else:
+            self.log.debug('__monitor_shout: no monitor instantiated')
+        self.log.debug("__monitor_shout: Leaving.")
+
+    def _monitor_note(self, msg):
+        '''
+        collects messages for the Monitor
+        '''
+
+        self.log.debug('__monitor_note: Starting.')
+
+        if hasattr(self, 'monitor'):
+            nick = self.qcl.get(self.apfqname, 'batchqueue')
+            self.monitor.msg(nick, self.apfqname, msg)
+        else:
+            self.log.debug('__monitor_note: no monitor instantiated')
+                
+        self.log.debug('__monitor__note: Leaving.')
+
+    def _monitor_notify(self, output):
+        '''
+        sends all collected messages to the Monitor server
+        '''
+
+        self.log.debug('__monitor_notify: Starting.')
+
+        if hasattr(self, 'monitor'):
+            nick = self.qcl.get(self.apfqname, 'batchqueue')
+            label = self.apfqname
+            self.monitor.notify(nick, label, output)
+        else:
+            self.log.debug('__monitor_notify: no monitor instantiated')
+
+        self.log.debug('__monitor_notify: Leaving.')
 

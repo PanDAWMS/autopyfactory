@@ -760,6 +760,7 @@ class APFQueue(threading.Thread):
         self.batchsubmit_plugin = pd.submitplugin
         self.batchstatus_plugin = pd.batchstatusplugin
         self.config_plugin = pd.configplugin
+        self.monitor_plugins = pd.monitorplugins
 
         self.log.debug('_plugins: Leaving')
  
@@ -784,10 +785,12 @@ class APFQueue(threading.Thread):
                 for sched_plugin in self.scheduler_plugins:
                     nsub = sched_plugin.calcSubmitNum(nsub)
 
-                self._submitpilots(nsub)
-                self._monitor_shout()
+                jobinfolist = self._submitpilots(nsub)
+                for m in self.monitor_plugins:
+                    m.updateJobStatus(jobinfolist)
+                    
                 self._exitloop()
-                self._reporttime()           
+                self._logtime()           
             except Exception, e:
                 self.log.error("Caught exception: %s " % str(e))
                 self.log.debug("Exception: %s" % traceback.format_exc())
@@ -826,61 +829,18 @@ class APFQueue(threading.Thread):
         self.log.debug("_submitpilots: Starting")
         # message for the monitor
         msg = 'Attempt to submit %s pilots for queue %s' %(nsub, self.apfqname)
-        self._monitor_note(msg)
+        #self._monitor_note(msg)
 
         (status, output) = self.batchsubmit_plugin.submit(nsub)
         if output:
             if status == 0:
-                self._monitor_notify(output)
+                self.monitor.sendMessage(msg)
 
         self.cyclesrun += 1
 
         self.log.debug("_submitpilots: Leaving")
 
-    # Monitor-releated methods
 
-    def _monitor_shout(self):
-        '''
-        call monitor.shout() method
-        '''
-
-        self.log.debug("__monitor_shout: Starting.")
-        if hasattr(self, 'monitor'):
-            self.monitor.shout(self.apfqname, self.cyclesrun)
-        else:
-            self.log.debug('__monitor_shout: no monitor instantiated')
-        self.log.debug("__monitor_shout: Leaving.")
-
-    def _monitor_note(self, msg):
-        '''
-        collects messages for the Monitor
-        '''
-
-        self.log.debug('__monitor_note: Starting.')
-
-        if hasattr(self, 'monitor'):
-            nick = self.qcl.get(self.apfqname, 'batchqueue')
-            self.monitor.msg(nick, self.apfqname, msg)
-        else:
-            self.log.debug('__monitor_note: no monitor instantiated')
-                
-        self.log.debug('__monitor__note: Leaving.')
-
-    def _monitor_notify(self, output):
-        '''
-        sends all collected messages to the Monitor server
-        '''
-
-        self.log.debug('__monitor_notify: Starting.')
-
-        if hasattr(self, 'monitor'):
-            nick = self.qcl.get(self.apfqname, 'batchqueue')
-            label = self.apfqname
-            self.monitor.notify(nick, label, output)
-        else:
-            self.log.debug('__monitor_notify: no monitor instantiated')
-
-        self.log.debug('__monitor_notify: Leaving.')
 
 
     def _exitloop(self):
@@ -898,7 +858,7 @@ class APFQueue(threading.Thread):
 
         self.log.debug("__exitloop: Leaving")
 
-    def _reporttime(self):
+    def _logtime(self):
         '''
         report the time passed since the object was created
         '''
@@ -967,6 +927,7 @@ class PluginDispatcher(object):
         self.wmsstatusplugin =  self.getwmsstatusplugin()
         self.submitplugin =  self.getsubmitplugin()
         self.configplugin =  self.getconfigplugin()
+        self.monitorplugins = self.getmonitorplugins()
 
         self.log.info('PluginDispatcher: Object initialized.')
 
@@ -1042,6 +1003,19 @@ class PluginDispatcher(object):
         else:
             return None    
 
+    def getmonitorplugins(self):
+
+
+
+        monitor_classes = self._getplugin('monitor')  # list of classes 
+        monitor_plugins = []
+        for monitor_cls in monitor_classes:
+            monitor_plugin = monitor_cls(self.apfqueue)
+            monitor_plugins.append(monitor_plugin)
+        return scheduler_plugins
+
+
+
     def __queryargs2condorqid(self, queryargs):
         """
         method to get the name for the condor_q singleton,
@@ -1073,6 +1047,7 @@ class PluginDispatcher(object):
                 - wmsstatus
                 - batchsubmit
                 - config
+                - monitor
 
         Steps taken are:
                 1. The name of the item in the config file is calculated.
@@ -1100,7 +1075,8 @@ class PluginDispatcher(object):
                 'wmsstatus': 'WMSStatus',
                 'batchstatus': 'BatchStatus',
                 'batchsubmit': 'BatchSubmit',
-                'config': 'Config'
+                'config': 'Config',
+                'monitor' : 'Monitor',
         }
 
         plugin_config_item = '%splugin' %action

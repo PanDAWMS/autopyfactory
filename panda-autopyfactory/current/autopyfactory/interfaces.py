@@ -141,6 +141,8 @@ class BatchSubmitInterface(object):
         '''
         Method to submit pilots.
         Returns list of JobInfo objects 
+        Returns list of JobInfo objects representing successfully submitted jobs. 
+        
         '''
         raise NotImplementedError
 
@@ -170,29 +172,18 @@ class MonitorInterface(object):
     Public Interface:
     
     
-    '''
-    def __init__(self):
-        self.msg = '' 
-
-    def add2msg(self, txt):
-        self.msg += txt
-
-    def send2monitor(self):
+    ''' 
+    def sendMessage(self, text):
         '''
-        Sends the messages to the monitor
+        Send message to monitor, if it supports this function. 
         '''
-        self.send()
-        self.msg = ''
-
-    def send(self):
+    
+    
+    def updateJobStatus(self, jobinfolist ):
         '''
-        Actually, sends the messages to the monitor, this time for real
-        '''
-        raise NotImplementedError
-   
-    def updateJobStatus(self, jobid, status ):
-        '''
-        Update information about a single job.  
+        Update information about job/jobs. 
+        Should support either single job object or list of job objects.  
+         
         '''
         raise NotImplementedError
     
