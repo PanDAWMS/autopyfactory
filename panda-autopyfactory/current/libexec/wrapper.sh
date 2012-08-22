@@ -465,7 +465,6 @@ f_build_pythonwrapper_opts(){
 
 f_monping() {
     CMD="curl -fksS --connect-timeout 10 --max-time 20 ${APFMON}$1/$APFFID/$APFCID/$2"
-    echo "Monitor ping: $CMD"
 
     NTRIALS=0
     MAXTRIALS=3
@@ -476,6 +475,7 @@ f_monping() {
             echo "Monitor ping: out=$out" 
             NTRIALS="$MAXTRIALS"
         else
+            echo "Monitor ping: $CMD"
             echo "Monitor ping: ERROR: out=$out"
             echo "Monotor ping: http_proxy=$http_proxy"
             NTRIALS=$(($NTRIALS+1))
