@@ -1012,7 +1012,7 @@ class PluginDispatcher(object):
         for monitor_cls in monitor_classes:
             monitor_plugin = monitor_cls(self.apfqueue)
             monitor_plugins.append(monitor_plugin)
-        return scheduler_plugins
+        return monitor_plugins
 
 
 
