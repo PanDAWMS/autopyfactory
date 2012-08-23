@@ -48,7 +48,7 @@ class CleanLogs(threading.Thread):
         threading.Thread.__init__(self) # init the thread
         self.stopevent = threading.Event()
 
-        self.log.info('CleanLogs: Object initialized.')
+        self.log.debug('CleanLogs: Object initialized.')
 
     def run(self):
         '''
