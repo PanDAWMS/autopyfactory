@@ -240,15 +240,16 @@ class JobInfo(BaseInfo):
     At a minimum we need
         jobid          Typically Condor cluster.proc ID, but could be VM instanceid
         state          APF job state: submitted, pending, running, done, failed, held
-        
+        inittime       datetime.datetime object
         
     '''
     
-    valid = ['jobid', 'state','starttime']
-    def __init__(self, jobid):
+    valid = ['jobid', 'state','inittime']
+    def __init__(self, jobid, state, inittime ):
         super(JobInfo, self).__init__(None)
         self.jobid = jobid
-        self.state = submitted
+        self.state = state
+        self.inittime = inittime
 
 
 class CloudInfo(BaseInfo):

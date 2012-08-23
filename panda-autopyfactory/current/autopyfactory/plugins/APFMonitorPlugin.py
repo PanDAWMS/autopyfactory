@@ -119,6 +119,13 @@ class APFMonitor(MonitorInterface):
         self.log.debug('Done.')
 
 
+
+    def updateJobStatus(self, jobinfolist ):
+        '''
+        Take list of JobInfo objects and translate to APFMonitor messages.
+        '''
+
+
     #def _signal(self, url, postdata):
     def old_signal(self, url, postdata):
         """

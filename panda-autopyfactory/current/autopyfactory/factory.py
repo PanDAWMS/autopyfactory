@@ -831,15 +831,10 @@ class APFQueue(threading.Thread):
         msg = 'Attempt to submit %s pilots for queue %s' %(nsub, self.apfqname)
         #self._monitor_note(msg)
 
-        (status, output) = self.batchsubmit_plugin.submit(nsub)
-        if output:
-            if status == 0:
-                self.monitor.sendMessage(msg)
-
+        jobinfolist = self.batchsubmit_plugin.submit(nsub)
         self.cyclesrun += 1
-
         self.log.debug("_submitpilots: Leaving")
-
+        return jobinfolist
 
 
 

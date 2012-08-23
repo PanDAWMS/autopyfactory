@@ -253,8 +253,7 @@ x509UserProxyVOName = "atlas"
                 jobidline = line.split()
                 procid = jobidline[2]
                 procid = procid.replace(':','') # remove trailing colon
-                ji = JobInfo(procid, 'submitted')
-                ji.submittime = now
+                ji = JobInfo(procid, 'submitted', now)
                 joblist.append(ji)
         if not len(joblist) > 0:
             joblist = None
