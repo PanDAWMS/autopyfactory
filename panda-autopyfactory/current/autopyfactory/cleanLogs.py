@@ -77,7 +77,7 @@ class CleanLogs(threading.Thread):
         dirs = dirmgr.dirs
         for dir in dirs:
             self.__processdir(dir)
-        self.log.info("__process: Processed %d directories." % len(dirs))
+        self.log.debug("__process: Processed %d directories." % len(dirs))
             
         self.log.debug("__process: Leaving.")
 
@@ -118,7 +118,7 @@ class KeepDays(object):
         self.qcl = qcl
         self.__inspect()
         
-        self.log.info('KeepDays: Object initialized.')
+        self.log.debug('KeepDays: Object initialized.')
 
     def __inspect(self):
 
@@ -147,7 +147,7 @@ class DirMgr(object):
         self.basedir = basedir
         self.dirs = self.getdirs() 
 
-        self.log.info('DirMgr: Object initialized.')
+        self.log.debug('DirMgr: Object initialized.')
 
     def getdirs(self):
  
@@ -192,7 +192,7 @@ class Dir(object):
         self.creation_t = self.creation_t() 
         self.delta_t = self.delta_t() 
 
-        self.log.info('Dir: Object initialized for dir %s.' %self.dir)
+        self.log.debug('Dir: Object initialized for dir %s.' %self.dir)
 
     def empty(self):
         return os.listdir(self.path) == []
@@ -270,7 +270,7 @@ class SubDir(object):
         self.subdir = subdir
         self.path = os.path.join(parent.path, subdir)
 
-        self.log.info('SubDir: Object initialized for subdir %s.'%self.subdir)
+        self.log.debug('SubDir: Object initialized for subdir %s.'%self.subdir)
 
     def rm(self, keepdays):
         ''' 
