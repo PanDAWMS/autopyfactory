@@ -81,16 +81,16 @@ class ActivatedSchedPlugin(SchedInterface):
         else:
             # Carefully get wmsinfo, activated. 
             self.siteid = self.apfqueue.siteid
-            self.log.debug("Siteid is %s" % self.siteid)
+            self.log.info("Siteid is %s" % self.siteid)
 
             siteinfo = self.wmsinfo.site
             sitestatus = siteinfo[self.siteid].status
-            self.log.debug('calcSubmitNum: site status is %s' %sitestatus)
+            self.log.info('calcSubmitNum: site status is %s' %sitestatus)
 
             cloud = siteinfo[self.siteid].cloud
             cloudinfo = self.wmsinfo.cloud
             cloudstatus = cloudinfo[cloud].status
-            self.log.debug('calcSubmitNum: cloud %s status is %s' %(cloud, cloudstatus))
+            self.log.info('calcSubmitNum: cloud %s status is %s' %(cloud, cloudstatus))
 
             # choosing algorithm 
             if cloudstatus == 'offline':
