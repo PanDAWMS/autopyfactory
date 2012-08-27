@@ -43,7 +43,9 @@ for section in conf.sections():
     wmsqueue = agis_sect['panda_resource']
     for q in agis_sect['queues']:
         gramqueue = None 
+
         if q['ce_flavour'] == 'OSG-CE':
+
             gridresource = '%s/jobmanager-%s' %(q['ce_endpoint'], q['ce_jobmanager'])
             if q['ce_version'] == 'GT2':
                 submitplugin = 'CondorGT2'
@@ -55,14 +57,20 @@ for section in conf.sections():
                 gramversion = 'gram5'
             if q['ce_queue_name']:
                 gramqueue = q['ce_queue_name']
+
         elif q['ce_flavour'] == 'CREAM-CE':
+
             gridresource = '%s/ce-cream/services/CREAM2 %s %s' %(q['ce_endpoint'], q['ce_jobmanager'], q['ce_queue_name'])
             submitplugin = 'CondorCREAM'
             submitpluginstring = 'condorcream'
+
         elif q['ce_flavour'] == 'LCG-CE':
+
             gridresource = '%s/jobmanager-%s' %(q['ce_endpoint'], q['ce_jobmanager'])
             submitplugin = 'CondorGT2'
             submitpluginstring = 'condorgt2'
+            gramversion = 'gram2'
+            gramqueue = q['ce_queue_name']
             
         else:
             # ce_flavour has no value or not yet understood
