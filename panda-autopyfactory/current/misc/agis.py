@@ -41,6 +41,7 @@ for section in conf.sections():
     key = conf.get(section, 'batchqueue')
     agis_sect = agisdict[key]
     wmsqueue = agis_sect['panda_resource']
+    type = agis_sect['type']
     for q in agis_sect['queues']:
         gramqueue = None 
 
@@ -75,7 +76,7 @@ for section in conf.sections():
         else:
             # ce_flavour has no value or not yet understood
             continue
-        
+
         print 
         #print '[%s-%s]' %(section, q['ce_name'])
         #print '[%s-%s-%s]' %(section, q['ce_endpoint'].split(':')[0], q['ce_queue_name'])
@@ -87,6 +88,10 @@ for section in conf.sections():
         print 'batchsubmit.%s.gridresource = %s' %(submitpluginstring, gridresource)
         if gramqueue:
             print 'globusrsl.%s.queue = %s' %(gramversion, gramqueue)
+        if type == 'analysis':
+            print 'batchsubmit.%s.proxy = atlas-analysis' %submitpluginstring
+        elif type == 'production':
+            print 'batchsubmit.%s.proxy = atlas-production' %submitpluginstring
 
 
     
