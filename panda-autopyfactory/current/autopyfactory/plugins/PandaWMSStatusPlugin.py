@@ -60,6 +60,9 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             # to avoid the thread to be started more than once
             self._started = False 
 
+            # Using the Squid Cache when contacting the PanDA server
+            Client.useWebCache()
+
             self.log.info('WMSStatusPlugin: Object initialized.')
         except:
             self._valid = False
