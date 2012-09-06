@@ -792,8 +792,8 @@ class APFQueue(threading.Thread):
                 self._exitloop()
                 self._logtime()           
             except Exception, e:
-                self.log.error("Caught exception: %s " % str(e))
-                self.log.debug("Exception: %s" % traceback.format_exc())
+                self.log.error("run: Caught exception: %s " % str(e))
+                self.log.debug("run: Exception: %s" % traceback.format_exc())
             time.sleep(self.sleep)
 
         self.log.debug("run: Leaving")
@@ -890,7 +890,7 @@ class APFQueue(threading.Thread):
         self.log.debug("join: Starting")
 
         self.stopevent.set()
-        self.log.debug('Stopping thread...')
+        self.log.debug('join: Stopping thread...')
         threading.Thread.join(self, timeout)
 
         self.log.debug("join: Leaving")
