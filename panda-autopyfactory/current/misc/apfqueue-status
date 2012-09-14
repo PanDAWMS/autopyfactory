@@ -141,6 +141,23 @@ def aggregateinfo( input):
     return queues
 
 
+statuskeys = {}
+statuskeys['globusstatus'] = ['UNSUB',    
+                              'PENDING',
+                              'STAGE_IN',
+                              'ACTIVE', 
+                              'STAGE_OUT',  
+                              'SUSP',  
+                              'DONE',  
+                              'FAILED']
+statuskeys['jobstatus'] = ['UNSUB',    
+                           'IDLE',
+                           'RUNNING',
+                           'COMPLETE', 
+                           'HELD',  
+                           'ERROR',  
+                           'REMOVED']
+
 def map2table(aggdict):
     '''
     I.e. 
@@ -168,6 +185,8 @@ def map2table(aggdict):
          6 E (error)     
 
 '''
+
+
 
     queuetable = {}
     for site in aggdict.keys():
@@ -230,12 +249,11 @@ def printtable(queuetable):
         qi = queuetable[s]
         if 'globusstatus' in qi.keys():
             t = qi['globusstatus']
+            keys = statuskeys['globusstatus']
         else:
             t = qi['jobstatus']
+            keys = statuskeys['jobstatus']
             
-        #for k in t.keys():
-        keys = t.keys()
-        keys.sort()
         for k in keys:
             print("%s = %s\t" %(k,t[k])),
         print("\n"),
