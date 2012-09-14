@@ -233,7 +233,10 @@ def printtable(queuetable):
         else:
             t = qi['jobstatus']
             
-        for k in t.keys():
+        #for k in t.keys():
+        keys = t.keys()
+        keys.sort()
+        for k in keys:
             print("%s = %s\t" %(k,t[k])),
         print("\n"),
         
