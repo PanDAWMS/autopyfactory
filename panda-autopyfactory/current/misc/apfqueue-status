@@ -141,6 +141,9 @@ def aggregateinfo( input):
     return queues
 
 
+# ------------------------------------------------------
+#   jobs status labels, in a fixed order 
+# ------------------------------------------------------
 statuskeys = {}
 statuskeys['globusstatus'] = ['UNSUB',    
                               'PENDING',
@@ -157,6 +160,8 @@ statuskeys['jobstatus'] = ['UNSUB',
                            'HELD',  
                            'ERROR',  
                            'REMOVED']
+# ------------------------------------------------------
+
 
 def map2table(aggdict):
     '''
