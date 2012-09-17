@@ -46,9 +46,9 @@ class MaxPendingSchedPlugin(SchedInterface):
                 nsub = min(nsub, self.max_pilots_pending - pending_pilots)     
 
         # Catch all to prevent negative numbers
-        if nsub < 0:
-            self.log.info('calcSubmitNum: calculated output was negative. Returning 0')
-            nsub = 0
+        #if nsub < 0:
+        #    self.log.info('calcSubmitNum: calculated output was negative. Returning 0')
+        #    nsub = 0
             
         self.log.info('calcSubmitNum: return with nsub=%s' %nsub)
         return nsub

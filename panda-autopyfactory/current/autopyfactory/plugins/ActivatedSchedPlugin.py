@@ -160,9 +160,9 @@ class ActivatedSchedPlugin(SchedInterface):
             out = min(out, self.max_pilots_pending - pending_pilots)
 
         # Catch all to prevent negative numbers
-        if out < 0:
-            self.log.info('_calc_online: calculated output was negative. Returning 0')
-            out = 0
+        #if out < 0:
+        #    self.log.info('_calc_online: calculated output was negative. Returning 0')
+        #    out = 0
         
         self.log.info('_calc_online (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
                                                                                          pending_pilots, 
