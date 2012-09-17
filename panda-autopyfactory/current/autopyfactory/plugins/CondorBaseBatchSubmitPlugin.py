@@ -119,7 +119,8 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         #    self.log.info('submit: condor daemon is not running. Doing nothing')
         #    return None, None
 
-        if n != 0:
+        #if n != 0:
+        if n > 0:
 
             self._calculateDateDir()
 
