@@ -119,9 +119,10 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         #    self.log.info('submit: condor daemon is not running. Doing nothing')
         #    return None, None
 
-        #if n != 0:
-        if n > 0:
-
+        if n <= 0:
+            self.log.debug('submit: number of job 0 or negative: %s. Aborting and returning (None, None)' %n)
+            st, output = (None, None)
+        else:
             self._calculateDateDir()
 
             self.JSD = jsd.JSDFile()
@@ -139,14 +140,10 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
                 else:
                     self.log.info('submit: jsdfile has no value. Doing nothing')
                     st, output = (None, None)
-        else:
-            st, output = (None, None)
 
         self.log.debug('submit: Got output (%s, %s).' %(st, output))
         #return st, output
         joblist = self._parseCondorSubmit(output)
-        
-        
         
    
     def _parseCondorSubmit(self, output):
