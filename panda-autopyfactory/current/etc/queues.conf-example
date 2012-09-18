@@ -67,6 +67,7 @@
 # sched.simplenqueue.pilotlimit
 # sched.simplenqueue.transferringlimit
 # sched.trivial.default
+# sched.scale.factor
 #
 # monitorplugin
 # monitor.apf.url
@@ -451,6 +452,14 @@
 #               to be submitted when the context information
 #               does not exist or is not reliable.
 #               To be used in Trivial Scheduler Plugin.
+
+#  --------------------------------------------------------------------
+#       Configuration when schedplugin is Scale 
+#  --------------------------------------------------------------------
+
+# sched.scale.factor = scale factor to correct the previous value
+#               of the number of pilots.
+#               Value is a float number.
 
 #  --------------------------------------------------------------------
 #       Monitor Plugin variables 
