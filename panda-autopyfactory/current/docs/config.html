@@ -26,6 +26,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Simple">Configuration when schedplugin is Simple</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is SimpleNQueue">Configuration when schedplugin is SimpleNQueue</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Trivial">Configuration when schedplugin is Trivial</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Scale">Configuration when schedplugin is Scale</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Batch Submit Plugin variables">Batch Submit Plugin variables</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when batchsubmitplugin is condorgt2">Configuration when batchsubmitplugin is condorgt2</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#GlobusRSL GRAM2 variables">GlobusRSL GRAM2 variables</a><br>
@@ -518,12 +519,22 @@ in transferring status allowed at a site -
 when this limit is reached no pilots will be submitted 
 to allow backlogs to clear
 <br>
+<br>
 <a name="Configuration when schedplugin is Trivial"><h3><span style="color: black; "><span>Configuration when schedplugin is Trivial</span></span></h3></a>
 <strong>sched.trivial.default</strong><br>
 default number of pilots
 to be submitted when the context information
 does not exist or is not reliable.
 To be used in Trivial Scheduler Plugin.
+<br>
+<br>
+<a name="Configuration when schedplugin is Scale"><h3><span style="color: black; "><span>Configuration when schedplugin is Scale</span></span></h3></a>
+<strong>sched.scale.factor</strong><br>
+scale factor to correct the previous value
+of the number of pilots.
+<br>
+Value is a float number.
+<br>
 <br>
 <a name="Batch Submit Plugin variables"><h3><span style="color: black; "><span>Batch Submit Plugin variables</span></span></h3></a>
 <strong>batchsubmitplugin</strong><br>
