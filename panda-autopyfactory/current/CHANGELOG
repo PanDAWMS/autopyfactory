@@ -3,6 +3,8 @@ ChangeLog
 
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
+* Sched plugins do not check for negative outputs. It has been left up to the Submit Plugin to decide what to do in that case. 
+
 * Some messages in Activated Sched Plugin moved from DEBUG loggin level to INFO level.
 
 * Bug fixed: getboolean() instead of get() when reading value of proxymanager.enabled and logmanager.enabled
