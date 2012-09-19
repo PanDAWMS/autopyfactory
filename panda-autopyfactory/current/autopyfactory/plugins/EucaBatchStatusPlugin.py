@@ -226,7 +226,6 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
 
         batchstatusinfo = InfoContainer('batch', BatchQueueInfo())
-        batchstatusinfo[self.apfqname] = BatchQueueInfo()   # Temporary solution ??
         
         # analyze output of condor_status command
         ###################################
@@ -238,6 +237,8 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         ###################################
         for line in output.split('\n')[3:-5]:
             fields = line.split()
+            #qi = BatchQueueInfo()
+            #batchstatusinfo[self.apfqname] = qi 
             if fields[4] in ['Busy', 'Retiring']:
                 if not batchstatusinfo.running:   # Temporary ??
                     batchstatusinfo[self.condorpool].running = 1
