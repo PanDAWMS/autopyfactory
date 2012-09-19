@@ -38,6 +38,6 @@ class ScaleSchedPlugin(SchedInterface):
     def calcSubmitNum(self, nsub=0):
 
         self.log.debug('calcSubmitNum: Starting with nsub=%s' %nsub)
-        nsub = nsub * self.factor
+        nsub = int(nsub * self.factor)
         self.log.info('calcSubmitNum: return with nsub=%s' %nsub)
         return nsub 
