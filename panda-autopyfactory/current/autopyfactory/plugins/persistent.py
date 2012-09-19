@@ -51,23 +51,19 @@ class PairList(object):
         return instances 
 
 
-    def add(self, apfqname, instance):
-        self.pairlist.append(Pair(apfqname, instance))
+    def addpair(self, apfqname, instance):
+        self.add(Pair(apfqname, instance))
 
 
-    def addPair(self, pair):
+    def add(self, pair):
         self.pairlist.append(pair)
 
 
-    def delete(self, apfqname, instance):
+    def deletepair(self, apfqname, instance):
         candidate = Pair(apfqname, instance)
-        try:
-            self.pairlist.remove(candidate)
-        except:
-            pass
-    
+        self.delete(candidate)
 
-    def deletePair(self, pair):
+    def delete(self, pair):
         try:
             self.pairlist.remove(pair)
         except:
@@ -124,8 +120,8 @@ backend = FileBackend('/tmp/apf/file')
 pl.read(backend)
 print pl.get('a')
 
-pl.add('z', 'Z')
-pl.delete('c', 'C2')
+pl.addpair('z', 'Z1')
+pl.deletepair('c', 'C3')
 pl.write(backend)
 
 
