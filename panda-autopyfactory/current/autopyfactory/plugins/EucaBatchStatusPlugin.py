@@ -39,6 +39,11 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     '''
     
     __metaclass__ = Singleton 
+    #################################################################
+    #
+    #  FIXME:  We need a separate singleton per each local pool
+    #
+    #################################################################
     
     def __init__(self, apfqueue, **kw):
 
@@ -56,7 +61,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.apfqueue = apfqueue
             self.apfqname = apfqueue.apfqname
             self.sleeptime = self.apfqueue.fcl.generic_get('Factory', 'batchstatus.euca.sleep', 'getint', default_value=60, logger=self.log)
-            self.rcfile = self.apfqueue.fcl.generic_get('Factory', 'batchstatus.euca.rcfile', logger=self.log)
+            self.condorpool = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.euca.condorpool', 'get', logger=self.log)
             self.currentinfo = None              
 
             # variable to record when was last time info was updated
@@ -124,15 +129,12 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
     def _update(self):
         '''        
-        Query OpenStack for instance status, validate ?, and populate BatchStatusInfo object.
-        command is    euca-describe-instances        
-
         '''
 
         self.log.debug('_update: Starting.')
        
         try:
-            strout = self._queryeuca()
+            strout = self._query()
             if not strout:
                 self.log.warning('_update: output of query is not valid. Not parsing it. Skip to next loop.') 
             else:
@@ -145,28 +147,42 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         self.log.debug('__update: Leaving.')
 
-    def _queryeuca(self):
+    def _query(self):
         '''
+        query command is like
+            $ condor_status -pool <centralmanagerhostname[:portnumber]> 
+        or, in XML format:
+            $ condor_status -pool <centralmanagerhostname[:portnumber]> -format "%s" Name -format "%s" Activity -format "%s" State -xml
+
+        Goal is to know how many startd's are running/retiring (or State=Claimed)
+        and how many are idle (or State=Owner) 
         '''
 
-        self.log.debug('_queryeuca: Starting.')
-        querycmd = 'euca-describe-instances --config %s' % self.rcfile
+        self.log.debug('_query: Starting.')
 
-        self.log.debug('_queryeuca: Querying cmd = %s' %querycmd.replace('\n','\\n'))
+        #################################################################
+        #
+        #  FIXME:  We need a separate singleton per each local pool
+        #
+        #################################################################
+        querycmd = 'condor_status --pool %s' % self.condorpool
+
+
+
+        self.log.debug('_query: Querying cmd = %s' %querycmd.replace('\n','\\n'))
 
         before = time.time()          
         p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)     
         out = None
         (out, err) = p.communicate()
         delta = time.time() - before
-        self.log.debug('_queryeuca: it took %s seconds to perform the query' %delta)
-        self.log.info('OpenStack query: %s seconds to perform the query' %delta)
+        self.log.debug('_query: it took %s seconds to perform the query' %delta)
         if p.returncode == 0:
-            self.log.debug('_queryeucak: Leaving with OK return code.') 
+            self.log.debug('_queryk: Leaving with OK return code.') 
         else:
-            self.log.warning('_queryeuca: Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
+            self.log.warning('_query: Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
             out = None
-        self.log.debug('_queryeuca: Leaving. Out is %s' % out)
+        self.log.debug('_query: Leaving. Out is %s' % out)
         return out
 
 
@@ -210,26 +226,32 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
 
         batchstatusinfo = InfoContainer('batch', BatchQueueInfo())
+        batchstatusinfo[self.condorpool] = BatchQueueInfo()   # Temporary solution ??
         
-        # analyze output of euca command
-        for line in output.split('\n'):
+        # analyze output of condor_status command
+        ###################################
+        #
+        # Temporary algorithm            
+        #
+        ###################################
+        for line in output.split('\n')[3:-5]:
             fields = line.split()
-            if fields[0] == 'RESERVATION':
-                self.log.debug("Saw RESERVATION line...")
-            elif fields[0] == 'INSTANCE':
-                imageid= fields[2]
-                state = fields[5]
+            if fields[4] in ['Busy', 'Retiring']:
+                if not batchstatusinfo.running:   # Temporary ??
+                    batchstatusinfo[self.condorpool].running = 1
+                else:   
+                    batchstatusinfo[self.condorpool].running = +1
+            if fields[4] in ['Idle']:
+                if not batchstatusinfo.pending:   # Temporary ??
+                    batchstatusinfo[self.condorpool].pending = 1
+                else:   
+                    batchstatusinfo[self.condorpool].pending = +1
 
-                self.log.debug("Parsed line with key %s" % imageid)
-               
-                if not batchstatusinfo.has_key(imageid):
-                    batchstatusinfo[imageid] = BatchQueueInfo()
-                    if state == 'running':
-                        batchstatusinfo[imageid].running = 1
-                else:
-                    if state == 'running':
-                        batchstatusinfo[imageid].running = +1
+
         return batchstatusinfo
+
+
+
 
     def join(self, timeout=None):
         ''' 
