@@ -231,7 +231,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         # analyze output of condor_status command
         ###################################
         #
-        # Temporary algorithm            
+        # Temporary algorithm ??
         #
         ###################################
         for line in output.split('\n')[3:-5]:
@@ -246,7 +246,6 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     batchstatusinfo[self.condorpool].pending = 1
                 else:   
                     batchstatusinfo[self.condorpool].pending = +1
-
 
         return batchstatusinfo
 
