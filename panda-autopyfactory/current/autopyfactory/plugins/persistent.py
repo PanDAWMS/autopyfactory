@@ -60,8 +60,7 @@ class PairList(object):
 
 
     def deletepair(self, apfqname, instance):
-        candidate = Pair(apfqname, instance)
-        self.delete(candidate)
+        self.delete(Pair(apfqname, instance)
 
     def delete(self, pair):
         try:
