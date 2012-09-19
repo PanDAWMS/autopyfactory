@@ -232,6 +232,8 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         ###################################
         #
         # Temporary algorithm ??
+        # Most probably we will need a persistent DB
+        # to know which VM was started by each APF queue
         #
         ###################################
         for line in output.split('\n')[3:-5]:
