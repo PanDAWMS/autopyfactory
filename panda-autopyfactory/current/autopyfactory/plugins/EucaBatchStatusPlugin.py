@@ -173,14 +173,40 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     def _parseoutput(self, output):
         '''
         output looks like
-        RESERVATION    r-b1hskqmi    c8d55513d64243fa8e0b29384f6f0c81    default
-        INSTANCE i-0000012e ami-00000039 10.20.15.20 10.20.15.20 running None (ostester, gridreserve29.usatlas.bnl.gov) 0 m1.small 2012-06-08T11:09:56Z nova ami-00000000 ami-00000000
 
-        Important note: this output changes with the version of OpenStack 
 
-        For the time being we assume the name of the image, 
-                e.g. ami-00000004 
-        is the name of the APF Queue.
+          Name               OpSys      Arch   State     Activity LoadAv Mem   ActvtyTime
+
+          server-486.novaloc LINUX      X86_64 Claimed   Busy     1.000  2010  0+17:32:22
+          server-487.novaloc LINUX      X86_64 Claimed   Busy     1.230  2010  0+00:18:40
+          server-501.novaloc LINUX      X86_64 Claimed   Busy     1.000  2010  0+14:56:47
+          server-502.novaloc LINUX      X86_64 Owner     Idle     0.000  2010 46+12:58:44
+          server-500.novaloc LINUX      X86_64 Claimed   Busy     1.040  2010  0+17:18:37
+
+
+        or in XML format, something like
+
+
+          <?xml version="1.0"?>
+          <!DOCTYPE classads SYSTEM "classads.dtd">
+          <classads>
+          <c>
+              <a n="MyType"><s>Machine</s></a>
+              <a n="TargetType"><s>Job</s></a>
+              <a n="Activity"><s>Busy</s></a>
+              <a n="Name"><s>server-486.novalocal</s></a>
+              <a n="CurrentTime"><e>time()</e></a>
+              <a n="State"><s>Claimed</s></a>  
+          </c>
+          <c>
+              <a n="MyType"><s>Machine</s></a>
+              <a n="TargetType"><s>Job</s></a>
+              <a n="Activity"><s>Idle</s></a>
+              <a n="Name"><s>server-502.novalocal</s></a>
+              <a n="CurrentTime"><e>time()</e></a>
+              <a n="State"><s>Owner</s></a>  
+          </c>
+          </classads>
         '''
 
         batchstatusinfo = InfoContainer('batch', BatchQueueInfo())
