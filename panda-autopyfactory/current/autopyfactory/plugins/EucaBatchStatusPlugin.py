@@ -226,7 +226,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
 
         batchstatusinfo = InfoContainer('batch', BatchQueueInfo())
-        batchstatusinfo[self.condorpool] = BatchQueueInfo()   # Temporary solution ??
+        batchstatusinfo[self.apfqname] = BatchQueueInfo()   # Temporary solution ??
         
         # analyze output of condor_status command
         ###################################
