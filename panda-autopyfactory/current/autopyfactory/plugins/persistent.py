@@ -39,8 +39,9 @@ class PairList(object):
     A list of Pair objects
     '''
 
-    def __init__(self):
+    def __init__(self, backend = None):
         self.pairlist = [] 
+        self.backend = backend
 
     def get(self, apfqname):
 
@@ -60,7 +61,8 @@ class PairList(object):
 
 
     def deletepair(self, apfqname, instance):
-        self.delete(Pair(apfqname, instance)
+        self.delete(Pair(apfqname, instance))
+
 
     def delete(self, pair):
         try:
@@ -69,12 +71,12 @@ class PairList(object):
             pass
 
 
-    def write(self, backend):
-        backend.write(self.pairlist)
+    def write(self):
+        self.backend.write(self.pairlist)
 
 
-    def read(self, backend):
-        self.pairlist = backend.read()
+    def read(self):
+        self.pairlist = self.backend.read()
         
 
 
@@ -113,15 +115,15 @@ class FileBackend(object):
 
 # =================================================================
 
-pl = PairList()
 backend = FileBackend('/tmp/apf/file')
+pl = PairList(backend)
 
-pl.read(backend)
+pl.read()
 print pl.get('a')
 
 pl.addpair('z', 'Z1')
 pl.deletepair('c', 'C3')
-pl.write(backend)
+pl.write()
 
 
 
