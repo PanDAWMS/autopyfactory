@@ -27,7 +27,7 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
-class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
+class Old_EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     '''
     -----------------------------------------------------------------------
     This class is expected to have separate instances for each PandaQueue object. 
