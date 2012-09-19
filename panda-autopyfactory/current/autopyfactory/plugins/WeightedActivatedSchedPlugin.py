@@ -48,10 +48,10 @@ class WeightedActivatedSchedPlugin(SchedInterface):
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
 
         if self.wmsinfo is None:
-            self.log.warning("wsinfo is None!")
+            self.log.warning("calcSubmitNum: wsinfo is None!")
             out = self.default
         elif self.batchinfo is None:
-            self.log.warning("self.batchinfo is None!")
+            self.log.warning("calcSubmitNum: self.batchinfo is None!")
             out = self.default            
         elif not self.wmsinfo.valid() and self.batchinfo.valid():
             out = self.default
@@ -59,7 +59,7 @@ class WeightedActivatedSchedPlugin(SchedInterface):
         else:
             # Carefully get wmsinfo, activated. 
             self.siteid = self.apfqueue.siteid
-            self.log.info("Siteid is %s" % self.siteid)
+            self.log.info("calcSubmitNum: siteid is %s" % self.siteid)
 
             out = self._calc()
         return out
@@ -71,15 +71,15 @@ class WeightedActivatedSchedPlugin(SchedInterface):
         pending_pilots = 0
 
         jobsinfo = self.wmsinfo.jobs
-        self.log.debug("jobsinfo class is %s" % jobsinfo.__class__ )
+        self.log.debug("_calc: jobsinfo class is %s" % jobsinfo.__class__ )
 
         try:
             sitedict = jobsinfo[self.siteid]
-            self.log.debug("sitedict class is %s" % sitedict.__class__ )
+            self.log.debug("_calc: sitedict class is %s" % sitedict.__class__ )
             activated_jobs = sitedict.ready
         except KeyError:
             # This is OK--it just means no jobs in any state at the siteid. 
-            self.log.error("siteid: %s not present in jobs info from WMS" % self.siteid)
+            self.log.error("_calc: siteid %s not present in jobs info from WMS" % self.siteid)
             activated_jobs = 0
         try:
             pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
@@ -96,7 +96,7 @@ class WeightedActivatedSchedPlugin(SchedInterface):
 
         out = max(0, activated_jobs - pending_pilots)
 
-        self.log.info('_calc_online (activated=%s; pending=%s) : Return=%s' %(activated_jobs, 
-                                                                              pending_pilots, 
-                                                                              out))
+        self.log.info('_calc (activated=%s; pending=%s) : Return=%s' %(activated_jobs, 
+                                                                       pending_pilots, 
+                                                                       out))
         return out
