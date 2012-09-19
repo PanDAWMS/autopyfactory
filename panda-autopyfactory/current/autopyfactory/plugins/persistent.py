@@ -115,15 +115,15 @@ class FileBackend(object):
 
 # =================================================================
 
-backend = FileBackend('/tmp/apf/file')
-pl = PairList(backend)
-
-pl.read()
-print pl.get('a')
-
-pl.addpair('z', 'Z1')
-pl.deletepair('c', 'C3')
-pl.write()
+#backend = FileBackend('/tmp/apf/file')
+#pl = PairList(backend)
+#
+#pl.read()
+#print pl.get('a')
+#
+#pl.addpair('z', 'Z1')
+#pl.deletepair('c', 'C3')
+#pl.write()
 
 
 
