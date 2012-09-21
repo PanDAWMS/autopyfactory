@@ -16,6 +16,7 @@
 # batchstatus.maxtime
 # cycles
 # cleanlogs.keepdays
+# enablequeues 
 # factoryId
 # factoryAdminEmail
 # factory.sleep
@@ -69,6 +70,12 @@
 #               For example, an apfqueue that has been created and used for a short
 #               amount of time, and it does not exist anymore.
 #               Still the created logs have to be cleaned at some point...
+#
+# enablequeues = default value to enable/disable all queues at once. 
+#               When True, its value will be overriden by the queue config variable 'enabled',
+#               queue by queue. 
+#               When False, all queues will stop working, 
+#               but the factory will still be alive performing basic actions (eg. printing logs).
 #
 # factoryId = Name that the factory instance will have in the APF web monitor. 
 #               Make factoryId something descriptive and unique for your factory,
@@ -128,6 +135,7 @@ factoryAdminEmail = neo@matrix.net
 factoryId = BNL-gridui11-jhover
 factoryUser = apf
 versionTag = 2.1.0
+enablequeues = True
 
 monitorURL =  http://apfmon.lancs.ac.uk/mon/
 
