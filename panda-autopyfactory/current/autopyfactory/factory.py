@@ -617,7 +617,8 @@ class APFQueuesManager(object):
 
         self.log.debug("_add: Starting with input %s" %apfqname)
 
-        enabled = self.factory.qcl.getboolean(apfqname, 'enabled') 
+        enabled = self.factory.qcl.getboolean(apfqname, 'enabled') and\
+                  self.factory.fcl.getboolean('Factory', 'enablequeues'):
         if enabled:
             qobject = APFQueue(apfqname, self.factory)
             self.queues[apfqname] = qobject
