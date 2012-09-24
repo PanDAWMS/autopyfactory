@@ -99,13 +99,13 @@ class PersistenceDB(object):
         self.session.commit()
 
     def getinstance(self, reference):
-        instances = self._queryDB()
+        instances = self.query()
         for i in instances:
             if i == reference:
                 return i
         return None
 
-    def _queryDB(self):
+    def query(self):
         return self.session.query(self.instance_type).all()
 
     def add(self, instance):
