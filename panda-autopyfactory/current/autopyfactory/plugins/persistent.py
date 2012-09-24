@@ -7,124 +7,108 @@ first version of the interface to handle a list of pairs
     -- VM instace 
 """
 
+import os
 
-class Pair(object):
+from sqlalchemy import create_engine, Table, Column, Integer, String, Text, MetaData, ForeignKey
+from sqlalchemy import orm
+from sqlalchemy.orm import mapper, sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+
+
+Base = declarative_base()
+class VMInstance(Base):
     '''
-    represents a pair 
-        -- APFQueue
-        -- VM instance
+    for info on declarative_base have a look to 
+    http://docs.sqlalchemy.org/en/rel_0_7/orm/examples.html?highlight=declarative_base#declarative-reflection 
     '''
 
-    def __init__(self, apfqname=None, instance=None):
-        self.apfqname = apfqname
-        self.instance = instance
-
-    def createfromline(self, line):
-        if line[-1] == '\n':
-            line = line[0:-1]
-        fields = line.split()
-        self.apfqname = fields[0]
-        self.instance = fields[1]
-
-    def line(self):
-        line = '%s %s' %(self.apfqname, self.instance)
-        return line
+    __tablename __ = "VMInstances"
+    id = Column(Integer, primary_key=True)
+    apfqname = Column(String)
+    vm_instance = Column(String)
 
     def __eq__(self, x):
-        return self.apfqname == x.apfqname and self.instance == x.instance
-
-
-class PairList(object):
-    '''
-    A list of Pair objects
-    '''
-
-    def __init__(self, backend = None):
-        self.pairlist = [] 
-        self.backend = backend
-
-    def get(self, apfqname):
-
-        instances = []
-        for pair in self.pairlist:
-            if pair.apfqname == apfqname:
-                instances.append(pair.instance)
-        return instances 
-
-
-    def addpair(self, apfqname, instance):
-        self.add(Pair(apfqname, instance))
-
-
-    def add(self, pair):
-        self.pairlist.append(pair)
-
-
-    def deletepair(self, apfqname, instance):
-        self.delete(Pair(apfqname, instance))
-
-
-    def delete(self, pair):
-        try:
-            self.pairlist.remove(pair)
-        except:
-            pass
-
-
-    def write(self):
-        self.backend.write(self.pairlist)
-
-
-    def read(self):
-        self.pairlist = self.backend.read()
+        '''
+        tell if two objects of class VMInstance have the same values (except ID)
+        '''
         
+        if not self.apfqname == x.apfqname:
+            return False
+        if not self.vm_instance == x.vm_instance:
+            return False
+        return True
 
 
+class PersistenceDB(object):
+    '''
+    class to handle the info in the DB
+    '''
 
+    def __init__(self, config_file, type):    
 
-class FileBackend(object):
+        self.instance_type = type
 
-    def __init__(self, filename):
-        self.filename = filename
+        self.config = SafeConfigParser()
+        self.config.readfp(open(config_file)
 
-    def write(self, pairlist):
+        self._setup(self)
+
+    def _setup(self):
         '''
-        writes a file with the content of the list        
+        Create connection URI/DB string and setup DB if not existing. 
         '''
+        
+        self.dburi =""
+        self.dbengine=self.config.get('persistence', 'dbengine')
+        self.dburi += self.dbengine
+        
+        self.dbuser=self.config.get('persistence', 'dbuser')
+        self.dbpassword=self.config.get('persistence', 'dbpassword')
+        if self.dbuser and self.dbpassword:
+            self.dburi += "%s:%s" % (self.dbuser, self.dbpassword)
+        
+        self.dbhost=self.config.get('persistence', 'dbhost')
+        self.dbport=self.config.get('persistence', 'dbport')
+        self.dbpath = os.path.expanduser(self.config.get('persistence', 'dbpath'))
+        
+        if self.dbhost and self.dbport and self.dbpath:
+            self.dburi += "@%s:%s/%s" % ( self.dbhost, self.dbport, self.dbpath)
+        elif self.dbpath:
+            self.dburi += "/%s" % self.dbpath
+        
+        self.engine = create_engine(self.dburi)
+        
+        self.metadata = Base.metadata
+        self.metadata.create_all(self.engine)
 
-        fd = open(self.filename, 'w')
-        for pair in pairlist:
-            print >> fd, pair.line()
-        fd.close()
+    def _createsession(self):
+    
+        Session = sessionmaker()
+        Session.configure(bind=self.engine)
+        self.session = Session()
+        
+    def _commitsession(self):
+        self.session.commit()
 
+    def getinstance(self, reference):
+        instances = self._queryDB()
+        for i in instances:
+            if i == reference:
+                return i
+        return None
 
-    def read(self):
-        '''
-        get the list from a file
-        '''
+    def _queryDB(self):
+        return self.session.query(self.instance_type).all()
 
-        pairlist = [] 
-        fd = open(self.filename)
-        for line in fd.readlines():
-            newpair = Pair()
-            newpair.createfromline(line)
-            pairlist.append(newpair)
-        fd.close()
-        return pairlist
+    def add(self, instance):
+        self.session.add(instance)
 
+    def delete(self, instance):
+        self.session.delete(instance)
 
-# =================================================================
-
-#backend = FileBackend('/tmp/apf/file')
-#pl = PairList(backend)
-#
-#pl.read()
-#print pl.get('a')
-#
-#pl.addpair('z', 'Z1')
-#pl.deletepair('c', 'C3')
-#pl.write()
-
+    def commit(self):
+        self.session.commit()
+    
 
 
 
