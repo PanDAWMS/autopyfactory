@@ -28,7 +28,6 @@ class VMInstance(Base):
 
         -- d = {'apfqname':'q', 'vm_instance':'i'}
            VMInstance( **d ) 
-
     '''
 
     __tablename __ = "VMInstances"
@@ -115,7 +114,8 @@ class PersistenceDB(object):
     def delete(self, instance):
         self.session.delete(instance)
 
-    def commit(self):
+    def save(self):
+        self.session.flush()
         self.session.commit()
     
 
