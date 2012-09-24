@@ -81,7 +81,7 @@ class PersistenceDB(object):
         self.metadata = Base.metadata
         self.metadata.create_all(self.engine)
 
-    def _createsession(self):
+    def createsession(self):
     
         Session = sessionmaker()
         Session.configure(bind=self.engine)
@@ -110,7 +110,10 @@ class PersistenceDB(object):
         self.session.commit()
     
 
+# ------ examples --------
 
-
-
-
+#o = PersistenceDB(VMInstance)
+#o.createsession()
+#o.add(VMInstance(apfqname='APFQ1', vm_instance='i_0000fb'))
+#i = o.getinstance(VMInstance(apfqname = 'APFQ1', vm_instance = 'i_0000fb'))
+#o.delete(i)
