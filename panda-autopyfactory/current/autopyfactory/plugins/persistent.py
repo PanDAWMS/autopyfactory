@@ -20,6 +20,15 @@ class VMInstance(Base):
     '''
     for info on declarative_base have a look to 
     http://docs.sqlalchemy.org/en/rel_0_7/orm/examples.html?highlight=declarative_base#declarative-reflection 
+
+    it is possible to create an object of this class in two ways 
+    (actually they are the same):
+
+        -- VMInstance( apfqname = 'q', vm_instance 'i')
+
+        -- d = {'apfqname':'q', 'vm_instance':'i'}
+           VMInstance( **d ) 
+
     '''
 
     __tablename __ = "VMInstances"
