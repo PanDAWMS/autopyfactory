@@ -59,7 +59,7 @@ class PersistenceDB(object):
         self.config = SafeConfigParser()
         self.config.readfp(open(config_file)
 
-        self._setup(self)
+        self._setup()
 
     def _setup(self):
         '''
