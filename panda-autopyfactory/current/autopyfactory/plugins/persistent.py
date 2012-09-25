@@ -57,7 +57,7 @@ class PersistenceDB(object):
         self.instance_type = type
 
         self.config = SafeConfigParser()
-        self.config.readfp(open(config_file)
+        self.config.readfp(open(config_file))
 
         self._setup()
 
