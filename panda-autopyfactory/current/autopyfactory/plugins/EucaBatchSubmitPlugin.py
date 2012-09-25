@@ -78,6 +78,16 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         #        if line.startswith('INSTANCE'):
         #            fields = line.split()
         #            print fields[1]
+        
+        self._addDB()
+
+    def _addDB(self):
+        '''
+        ancilla method to add new entries to the DB
+        so later on we will know it was this APFQueue
+        the one who launched these VM instances
+        '''
+
 
     def _delete(self, n):
         pass
