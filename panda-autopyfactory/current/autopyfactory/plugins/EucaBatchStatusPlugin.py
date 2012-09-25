@@ -269,7 +269,6 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 batchstatusinfo[apfqname].running += 1
             if activity in ['Idle']:
                 batchstatusinfo[apfqname].pending += 1
-             
 
         ### for line in output.split('\n'):
         ###     fields = line.split()
