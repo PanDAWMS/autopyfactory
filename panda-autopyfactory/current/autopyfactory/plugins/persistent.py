@@ -134,6 +134,10 @@ class PersistenceDB(object):
 
 #o = PersistenceDB(VMInstance)
 #o.createsession()
+
 #o.add(VMInstance(apfqname='APFQ1', vm_instance='i_0000fb'))
+#o.save()
+
 #i = o.getinstance(VMInstance(apfqname = 'APFQ1', vm_instance = 'i_0000fb'))
 #o.delete(i)
+#o.save()
