@@ -243,7 +243,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         # each VM. 
         # That info is recorded in a DB. 
         # We need to query that DB. 
-        
+        dict_vm_apfqname = self._queryDB()
 
 
         # analyze output of condor_status command
@@ -269,6 +269,27 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     batchstatusinfo[self.condorpool].pending = +1
 
         return batchstatusinfo
+
+
+    def _queryDB(self):
+        '''
+        ancilla method to query the DB to find out
+        which APFQueue launched each VM instance
+        It returns a dictionary:
+            keys are the vm instances
+            values are the APFQueue names
+        '''
+        from persistent import *
+
+        o = PersistenceDB('conf', VMInstance)
+        o.createsession()
+        
+        l = o.query()
+        d = {}
+        for i in l:
+            d[i.vm_instance] = i.apfqname
+
+        return d
 
 
 
