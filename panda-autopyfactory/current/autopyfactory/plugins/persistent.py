@@ -57,12 +57,10 @@ class PersistenceDB(object):
     class to handle the info in the DB
     '''
 
-    def __init__(self, config_file, type):    
+    def __init__(self, config, type):    
 
+        self.config = config
         self.instance_type = type
-
-        self.config = SafeConfigParser()
-        self.config.readfp(open(config_file))
 
         self._setup()
 
