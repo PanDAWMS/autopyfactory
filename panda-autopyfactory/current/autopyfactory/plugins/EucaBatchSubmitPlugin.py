@@ -81,12 +81,30 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         
         self._addDB()
 
-    def _addDB(self):
+    def _addDB(self, list_vm):
         '''
         ancilla method to add new entries to the DB
         so later on we will know it was this APFQueue
         the one who launched these VM instances
+
+        list_vm is a list of pairs (vm_instance, host_name)
         '''
+
+        from persistent import *
+        
+        o = PersistenceDB('conf', VMInstance)
+        o.createsession()
+
+        instances = []
+        for vm in list_vm:
+            vm_instance = vm[0]
+            host_name = vm[1]
+            instances.append( VMInstance(apfqname=self.apfqname, vm_instance=vm_instance, host_name=host_name ) ) 
+
+        o.add_all(instances)
+
+        o.save()
+
 
 
     def _delete(self, n):
