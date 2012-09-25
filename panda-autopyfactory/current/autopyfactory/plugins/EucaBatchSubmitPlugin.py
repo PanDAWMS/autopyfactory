@@ -94,7 +94,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
         from persistent import *
         
-        o = PersistenceDB('conf', VMInstance)
+        o = PersistenceDB(self.fcl.getSection('Persistence'), VMInstance)
         o.createsession()
 
         instances = []
