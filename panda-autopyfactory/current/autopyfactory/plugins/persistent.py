@@ -118,6 +118,10 @@ class PersistenceDB(object):
         self.session.add(instance)
 
     def delete(self, instance):
+        #
+        # Note: it is possible to do this:
+        #       session.query().filter(foo=bar).delete()
+        #
         self.session.delete(instance)
 
     def save(self):
