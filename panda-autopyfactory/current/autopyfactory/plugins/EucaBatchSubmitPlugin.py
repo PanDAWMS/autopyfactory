@@ -73,14 +73,15 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         st, out = exitStatus, output
 
         # parse the output after submitting
+        list_vm = []
         for line in out.split('\n'):
             if line.startswith('INSTANCE'):
                 fields = line.split()
                 vm_instance = fields[1]
                 host_name = fields[3]
-
+                list_vm.append( (vm_instance, host_name) )
         
-        self._addDB()
+        self._addDB(list_vm)
 
     def _addDB(self, list_vm):
         '''
@@ -103,7 +104,6 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
             instances.append( VMInstance(apfqname=self.apfqname, vm_instance=vm_instance, host_name=host_name ) ) 
 
         o.add_all(instances)
-
         o.save()
 
 
