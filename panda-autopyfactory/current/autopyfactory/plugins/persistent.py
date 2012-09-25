@@ -102,7 +102,7 @@ class PersistenceDB(object):
         #
         #  Note: maybe this can be done better 
         #        using filter_by() 
-        #        isntead of gettting everything and 
+        #        instead of getting everything and 
         #        searching for the object we are interested in
         #
         instances = self.query()
