@@ -119,7 +119,7 @@ class PersistenceDB(object):
 
     def delete(self, instance):
         #
-        # Note: it is possible to do this:
+        # Note: maybe it is possible to do this:
         #       session.query().filter(foo=bar).delete()
         #
         self.session.delete(instance)
