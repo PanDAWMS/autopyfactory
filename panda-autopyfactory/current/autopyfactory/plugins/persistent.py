@@ -99,6 +99,12 @@ class PersistenceDB(object):
         self.session.commit()
 
     def getinstance(self, reference):
+        #
+        #  Note: maybe this can be done better 
+        #        using filter_by() 
+        #        isntead of gettting everything and 
+        #        searching for the object we are interested in
+        #
         instances = self.query()
         for i in instances:
             if i == reference:
