@@ -14,6 +14,8 @@ from sqlalchemy import orm
 from sqlalchemy.orm import mapper, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
+from ConfigParser import SafeConfigParser
+
 
 Base = declarative_base()
 class VMInstance(Base):
