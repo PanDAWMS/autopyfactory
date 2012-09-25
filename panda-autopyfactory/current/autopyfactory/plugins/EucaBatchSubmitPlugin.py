@@ -72,12 +72,13 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
             self.log.info('__submit: euca-run-instances command succeeded')
         st, out = exitStatus, output
 
-        #To parse the output after submitting
-        #
-        #    for line in out.split('\n'):
-        #        if line.startswith('INSTANCE'):
-        #            fields = line.split()
-        #            print fields[1]
+        # parse the output after submitting
+        for line in out.split('\n'):
+            if line.startswith('INSTANCE'):
+                fields = line.split()
+                vm_instance = fields[1]
+                host_name = fields[3]
+
         
         self._addDB()
 
