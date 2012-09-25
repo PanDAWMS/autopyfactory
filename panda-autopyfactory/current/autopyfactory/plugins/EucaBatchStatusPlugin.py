@@ -165,9 +165,12 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         #  FIXME:  We need a separate singleton per each local pool
         #
         #################################################################
-        querycmd = 'condor_status --pool %s' % self.condorpool
 
-
+        # -------------------------------------------
+        # this is a temporary solution:
+        #       we dont use yet XML, but raw data instead
+        # -------------------------------------------
+        querycmd = 'condor_status --pool %s -format "Name=%s " Name -format "Activity=%s " Activity -format "State=%s " State -format "IP=%s\n" MyAddress' % self.condorpool
 
         self.log.debug('_query: Querying cmd = %s' %querycmd.replace('\n','\\n'))
 
@@ -223,19 +226,26 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
               <a n="State"><s>Owner</s></a>  
           </c>
           </classads>
+
+        or using -format:
+
+            Name=server-486.novalocal Activity=Idle State=Unclaimed IP=<10.0.0.15:21533?CCBID=130.199.185.191:29660#126296&PrivNet=localdomain>
+            Name=server-487.novalocal Activity=Busy State=Claimed IP=<10.0.0.19:23285?CCBID=130.199.185.191:29660#126683&PrivNet=localdomain>
+            Name=server-488 Activity=Busy State=Claimed IP=<10.0.0.20:26498?CCBID=130.199.185.191:29660#164846&PrivNet=localdomain>
+            Name=server-489.novalocal Activity=Busy State=Claimed IP=<10.0.0.22:28687?CCBID=130.199.185.191:29660#126617&PrivNet=localdomain>
+            Name=server-490.novalocal Activity=Busy State=Claimed IP=<10.0.0.25:22993?CCBID=130.199.185.191:29660#126665&PrivNet=localdomain>
         '''
 
         batchstatusinfo = InfoContainer('batch', BatchQueueInfo())
         
         # analyze output of condor_status command
-        ###################################
-        #
-        # Temporary algorithm ??
-        # Most probably we will need a persistent DB
-        # to know which VM was started by each APF queue
-        #
-        ###################################
-        for line in output.split('\n')[3:-5]:
+        
+        # -------------------------------------------
+        # this is a temporary solution:
+        #       we dont use yet XML, but raw data instead
+        # -------------------------------------------
+
+        for line in output.split('\n'):
             fields = line.split()
             #qi = BatchQueueInfo()
             #batchstatusinfo[self.apfqname] = qi 
