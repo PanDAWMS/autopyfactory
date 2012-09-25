@@ -26,9 +26,9 @@ class VMInstance(Base):
     it is possible to create an object of this class in two ways 
     (actually they are the same):
 
-        -- VMInstance( apfqname = 'q', vm_instance 'i')
+        -- VMInstance( apfqname = 'q', vm_instance = 'i', host_name = 'server-486.novalocal' )
 
-        -- d = {'apfqname':'q', 'vm_instance':'i'}
+        -- d = {'apfqname':'q', 'vm_instance':'i', 'host_name':'server-486.novalocal'}
            VMInstance( **d ) 
     '''
 
@@ -36,6 +36,7 @@ class VMInstance(Base):
     id = Column(Integer, primary_key=True)
     apfqname = Column(String)
     vm_instance = Column(String)
+    host_name = Column(String)
 
     def __eq__(self, x):
         '''
@@ -45,6 +46,8 @@ class VMInstance(Base):
         if not self.apfqname == x.apfqname:
             return False
         if not self.vm_instance == x.vm_instance:
+            return False
+        if not self.host_name == x.host_name:
             return False
         return True
 
