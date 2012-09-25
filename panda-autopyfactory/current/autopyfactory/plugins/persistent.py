@@ -122,6 +122,9 @@ class PersistenceDB(object):
     def add(self, instance):
         self.session.add(instance)
 
+    def add_all(self, list_instance):
+        self.session.add_all(list_instance)
+
     def delete(self, instance):
         #
         # Note: maybe it is possible to do this:
