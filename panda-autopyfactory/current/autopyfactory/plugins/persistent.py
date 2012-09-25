@@ -121,6 +121,7 @@ class PersistenceDB(object):
         #
         # Note: maybe it is possible to do this:
         #       session.query().filter(foo=bar).delete()
+        #       hmmm. seems to work only when it returns a single object, not a list
         #
         self.session.delete(instance)
 
