@@ -252,20 +252,39 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         #       we dont use yet XML, but raw data instead
         # -------------------------------------------
 
+
         for line in output.split('\n'):
             fields = line.split()
-            #qi = BatchQueueInfo()
-            #batchstatusinfo[self.apfqname] = qi 
-            if fields[4] in ['Busy', 'Retiring']:
-                if not batchstatusinfo.running:   # Temporary ??
-                    batchstatusinfo[self.condorpool].running = 1
-                else:   
-                    batchstatusinfo[self.condorpool].running = +1
-            if fields[4] in ['Idle']:
-                if not batchstatusinfo.pending:   # Temporary ??
-                    batchstatusinfo[self.condorpool].pending = 1
-                else:   
-                    batchstatusinfo[self.condorpool].pending = +1
+            host_name = fields[0].split('=')[1]
+            activity = fields[1].split('=')[1]
+            state = fields[2].split('=')[1]
+            ip = fields[3].split('=')[1]  # not really...
+            apfqname = dict_vm_apfqname[host_name]
+           
+            if apfqname not in batchstatusinfo.keys():
+                qi = BatchQueueInfo()
+                batchstatusinfo[apfqname] = qi
+
+            if activity in ['Busy', 'Retiring']:
+                batchstatusinfo[apfqname].running += 1
+            if activity in ['Idle']:
+                batchstatusinfo[apfqname].pending += 1
+             
+
+        ### for line in output.split('\n'):
+        ###     fields = line.split()
+        ###     #qi = BatchQueueInfo()
+        ###     #batchstatusinfo[self.apfqname] = qi 
+        ###     if fields[4] in ['Busy', 'Retiring']:
+        ###         if not batchstatusinfo.running:   # Temporary ??
+        ###             batchstatusinfo[self.condorpool].running = 1
+        ###         else:   
+        ###             batchstatusinfo[self.condorpool].running = +1
+        ###     if fields[4] in ['Idle']:
+        ###         if not batchstatusinfo.pending:   # Temporary ??
+        ###             batchstatusinfo[self.condorpool].pending = 1
+        ###         else:   
+        ###             batchstatusinfo[self.condorpool].pending = +1
 
         return batchstatusinfo
 
