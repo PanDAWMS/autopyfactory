@@ -245,7 +245,6 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         # We need to query that DB. 
         dict_vm_apfqname = self._queryDB()
 
-
         # analyze output of condor_status command
         
         # -------------------------------------------
@@ -287,11 +286,9 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         l = o.query()
         d = {}
         for i in l:
-            d[i.vm_instance] = i.apfqname
+            d[i.host_name] = i.apfqname
 
         return d
-
-
 
 
     def join(self, timeout=None):
