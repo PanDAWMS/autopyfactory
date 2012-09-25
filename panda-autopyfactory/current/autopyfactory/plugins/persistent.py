@@ -138,7 +138,9 @@ class PersistenceDB(object):
 
 # ------ examples --------
 
-#o = PersistenceDB(VMInstance)
+#conf = SafeConfigParser()
+#conf.readfp( open('path_to_conf') )
+#o = PersistenceDB(conf, VMInstance)
 #o.createsession()
 
 #o.add(VMInstance(apfqname='APFQ1', vm_instance='i_0000fb'))
