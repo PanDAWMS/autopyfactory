@@ -57,6 +57,13 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
             INSTANCE  i-0000022f ami-00000016  server-559  server-559 pending None (c8d55513d64243fa8e0b29384f6f0c81, ct11.usatlas.bnl.gov)  2  m1.small 2012-09-20T19:31:42.000Z nova
         '''
 
+        if n>0:
+            self._submit(n)
+        if n<0:
+            self._delete(n)
+
+    def _submit(self, n):
+
         cmd = "euca-run-instances -n %s --config %s %s" %(n, self.rcfile, self.executable)
         (exitStatus, output) = commands.getstatusoutput(cmd)
         if exitStatus != 0:
@@ -72,4 +79,5 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         #            fields = line.split()
         #            print fields[1]
 
-
+    def _delete(self, n):
+        pass
