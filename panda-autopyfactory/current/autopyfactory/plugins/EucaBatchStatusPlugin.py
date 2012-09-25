@@ -238,6 +238,14 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         batchstatusinfo = InfoContainer('batch', BatchQueueInfo())
         
+
+        # We need to know which APFQueue originally launched 
+        # each VM. 
+        # That info is recorded in a DB. 
+        # We need to query that DB. 
+        
+
+
         # analyze output of condor_status command
         
         # -------------------------------------------
