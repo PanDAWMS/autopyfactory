@@ -270,21 +270,6 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             if activity in ['Idle']:
                 batchstatusinfo[apfqname].pending += 1
 
-        ### for line in output.split('\n'):
-        ###     fields = line.split()
-        ###     #qi = BatchQueueInfo()
-        ###     #batchstatusinfo[self.apfqname] = qi 
-        ###     if fields[4] in ['Busy', 'Retiring']:
-        ###         if not batchstatusinfo.running:   # Temporary ??
-        ###             batchstatusinfo[self.condorpool].running = 1
-        ###         else:   
-        ###             batchstatusinfo[self.condorpool].running = +1
-        ###     if fields[4] in ['Idle']:
-        ###         if not batchstatusinfo.pending:   # Temporary ??
-        ###             batchstatusinfo[self.condorpool].pending = 1
-        ###         else:   
-        ###             batchstatusinfo[self.condorpool].pending = +1
-
         return batchstatusinfo
 
 
