@@ -283,7 +283,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
         from persistent import *
 
-        o = PersistenceDB('conf', VMInstance)
+        o = PersistenceDB(self.apfqueue.fcl.getSection('Persistence'), VMInstance)
         o.createsession()
         
         l = o.query()
