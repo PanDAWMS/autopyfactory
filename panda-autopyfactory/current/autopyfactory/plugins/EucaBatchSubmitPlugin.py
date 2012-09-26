@@ -116,7 +116,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
         VM instances to be killed.
             - the first candidates are those
-              where the startd is 'Idle'
+              where the startd is gone
             - after that, some VMs still running
               will get a condor_off order.
 
@@ -128,4 +128,14 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         VMs with startd 'Busy'
         (<=> batchqueueinfo in status 'running')
         '''
+
+        m = self._stop_vm(n)
+        if n>m:
+            self._stop_startd(n-m)
+    
+    def _stop_vm(self):
+        pass
+
+    def _stop_startd(self):
+        pass
 
