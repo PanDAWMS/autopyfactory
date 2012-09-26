@@ -117,4 +117,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
               where the startd is 'Idle'
             - after that, some VMs still running
               will get a condor_off order.
+        The algorithm must take into account 
+        VM with startd in status 'Retiring' (batchqueueinfo status 'done')
+        will not run any more jobs.  
         '''
