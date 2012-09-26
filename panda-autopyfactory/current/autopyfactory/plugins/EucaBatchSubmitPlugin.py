@@ -112,12 +112,16 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         '''
         when the in put n to submit() is negative, 
         this plugin interprets it as the number of
+
         VM instances to be killed.
             - the first candidates are those
               where the startd is 'Idle'
             - after that, some VMs still running
               will get a condor_off order.
+
         The algorithm must take into account 
-        VM with startd in status 'Retiring' (batchqueueinfo status 'done')
+        VM with startd in status 'Retiring' 
+        (<=> batchqueueinfo status 'done')
         will not run any more jobs.  
         '''
+
