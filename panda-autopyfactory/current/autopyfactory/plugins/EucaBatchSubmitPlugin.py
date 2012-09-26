@@ -123,6 +123,9 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         The algorithm must take into account 
         VM with startd in status 'Retiring' 
         (<=> batchqueueinfo status 'done')
-        will not run any more jobs.  
+        will not run any more jobs, 
+        so the condor_off order has to be sent to
+        VMs with startd 'Busy'
+        (<=> batchqueueinfo in status 'running')
         '''
 
