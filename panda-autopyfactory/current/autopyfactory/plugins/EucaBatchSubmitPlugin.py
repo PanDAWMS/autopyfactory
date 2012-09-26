@@ -48,7 +48,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         if n>0:
             self._submit(n)
         if n<0:
-            self._delete(n)
+            self._delete(-n)
 
     def _submit(self, n):
         '''
@@ -109,4 +109,12 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
 
     def _delete(self, n):
-        pass
+        '''
+        when the in put n to submit() is negative, 
+        this plugin interprets it as the number of
+        VM instances to be killed.
+            - the first candidates are those
+              where the startd is 'Idle'
+            - after that, some VMs still running
+              will get a condor_off order.
+        '''
