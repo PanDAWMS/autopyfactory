@@ -259,16 +259,20 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             activity = fields[1].split('=')[1]
             state = fields[2].split('=')[1]
             ip = fields[3].split('=')[1]  # not really...
-            apfqname = dict_vm_apfqname[host_name]
-           
-            if apfqname not in batchstatusinfo.keys():
-                qi = BatchQueueInfo()
-                batchstatusinfo[apfqname] = qi
 
-            if activity in ['Busy', 'Retiring']:
-                batchstatusinfo[apfqname].running += 1
-            if activity in ['Idle']:
-                batchstatusinfo[apfqname].pending += 1
+            apfqname = dict_vm_apfqname.get(host_name)
+            if apfqname:
+                # There could be VMs not launched by APF.
+                # Those will no be in the DB. 
+                # We ignore them
+                if apfqname not in batchstatusinfo.keys():
+                    qi = BatchQueueInfo()
+                    batchstatusinfo[apfqname] = qi
+
+                if activity in ['Busy', 'Retiring']:
+                    batchstatusinfo[apfqname].running += 1
+                if activity in ['Idle']:
+                    batchstatusinfo[apfqname].pending += 1
 
         return batchstatusinfo
 
