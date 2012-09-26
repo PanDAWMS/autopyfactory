@@ -236,8 +236,9 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             Name=server-490.novalocal Activity=Busy State=Claimed IP=<10.0.0.25:22993?CCBID=130.199.185.191:29660#126665&PrivNet=localdomain>
         '''
 
+        self.log.debug('_parseoutput: Starting with data %s' %output)
+
         batchstatusinfo = InfoContainer('batch', BatchQueueInfo())
-        
 
         # We need to know which APFQueue originally launched 
         # each VM. 
@@ -276,6 +277,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 if activity == 'Retiring':
                     batchstatusinfo[apfqname].done += 1
 
+        self.log.debug('_parseoutput: Leaving')
         return batchstatusinfo
 
 
@@ -287,17 +289,20 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             keys are the vm instances
             values are the APFQueue names
         '''
+        self.log.debug('_queryDB: Starting')
+
         from persistent import *
 
         o = PersistenceDB(self.apfqueue.fcl), VMInstance)
         o.createsession()
         
-        l = o.query()
-        d = {}
-        for i in l:
-            d[i.host_name] = i.apfqname
+        list_vm = o.query()
+        dict_vm = {}
+        for i in list_vm:
+            dict_vm[i.host_name] = i.apfqname
 
-        return d
+        self.log.debug('_queryDB: Leaving with dictionary %s' %dict_vm)
+        return dict_vm
 
 
     def join(self, timeout=None):
