@@ -110,8 +110,9 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
     def _delete(self, n):
         '''
-        when the in put n to submit() is negative, 
+        when the input n to submit() is negative, 
         this plugin interprets it as the number of
+        NOTE: in _delete() is again >0.
 
         VM instances to be killed.
             - the first candidates are those
