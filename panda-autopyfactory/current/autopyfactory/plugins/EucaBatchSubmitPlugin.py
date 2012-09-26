@@ -45,10 +45,13 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
     def submit(self, n):
 
+        self.log.debug('submit: Starting with n=%s' %n)
         if n>0:
             self._submit(n)
         if n<0:
-            self._delete(-n)
+            self.log.debug('n is less than 0, killing VMs instead of launching new ones')
+            self._kill(-n)
+        self.log.debug('submit: Leaving.')
 
     def _submit(self, n):
         '''
@@ -63,6 +66,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
             INSTANCE  i-0000022e ami-00000016  server-558  server-558 pending None (c8d55513d64243fa8e0b29384f6f0c81, ct42.usatlas.bnl.gov)  1  m1.small 2012-09-20T19:31:42.000Z nova
             INSTANCE  i-0000022f ami-00000016  server-559  server-559 pending None (c8d55513d64243fa8e0b29384f6f0c81, ct11.usatlas.bnl.gov)  2  m1.small 2012-09-20T19:31:42.000Z nova
         '''
+        self.log.debug('_submit: Starting with n=%s' %n)
 
         cmd = "euca-run-instances -n %s --config %s %s" %(n, self.rcfile, self.executable)
         (exitStatus, output) = commands.getstatusoutput(cmd)
@@ -82,6 +86,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
                 list_vm.append( (vm_instance, host_name) )
         
         self._addDB(list_vm)
+        self.log.debug('_submit: Leaving')
 
     def _addDB(self, list_vm):
         '''
@@ -92,6 +97,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         list_vm is a list of pairs (vm_instance, host_name)
         '''
 
+        self.log.debug('_addDB: Starting')
         from persistent import *
         
         o = PersistenceDB(self.fcl), VMInstance)
@@ -105,10 +111,9 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
         o.add_all(instances)
         o.save()
+        self.log.debug('_addDB: Leaving')
 
-
-
-    def _delete(self, n):
+    def _kill(self, n):
         '''
         when the input n to submit() is negative, 
         this plugin interprets it as the number of
@@ -129,13 +134,20 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         (<=> batchqueueinfo in status 'running')
         '''
 
-        m = self._stop_vm(n)
-        if n>m:
-            self._stop_startd(n-m)
-    
-    def _stop_vm(self):
-        pass
+        self.log.debug('_kill: Starting with n=%s' %n)
 
-    def _stop_startd(self):
-        pass
+        m = self._stop_vm(n)
+        self.log.debug('_kill: %m VMs have been stoped' %m)
+        if n>m:
+            m = self._stop_startd(n-m)
+
+        self.log.debug('_kill: Leaving')
+    
+    def _stop_vm(self, n):
+        self.log.debug('_stop_vm: Starting with n=%s' %n)
+        self.log.debug('_stop_vm: Leaving')
+
+    def _stop_startd(self, n):
+        self.log.debug('_stop_startd: Starting with n=%s' %n)
+        self.log.debug('_stop_startd: Leaving')
 
