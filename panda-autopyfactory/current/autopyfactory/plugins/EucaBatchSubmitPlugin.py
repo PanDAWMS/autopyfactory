@@ -36,7 +36,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         self.factory = apfqueue.factory
         self.fcl = apfqueue.factory.fcl
         self.qcl = apfqueue.qcl
-        self.executable = qcl.generic_get(self.apfqname, 'executable', logger=self.log)
+        self.condorpool = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.euca.condorpool', 'get', logger=self.log)
 
         self.log.info('BatchSubmitPlugin: Object initialized.')
 
@@ -135,6 +135,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
         self.log.debug('_kill: Starting with n=%s' %n)
         self._stop_startd(n)
+        self._stop_vm()
         self.log.debug('_kill: Leaving')
 
     def _stop_startd(self, n):
@@ -147,4 +148,55 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         '''
         self.log.debug('_stop_startd: Starting with n=%s' %n)
         self.log.debug('_stop_startd: Leaving')
+
+
+
+    #  -------------------------------------------------------------
+    #
+    #       FIXME
+    #
+    #   Maybe all of this can be done in the Euca BatchStatus Plugin
+    #   since I am running here again (!) condor_status
+    #
+    #  -------------------------------------------------------------
+
+    def _stop_vm(self):
+        '''
+        Terminates all VMs with no startd running.
+        Command to terminate a VM looks like:
+
+            $ euca-terminate-instances i-0000022e i-0000022f --conf /home/jhover/nova-essex/novarc
+
+        '''
+        self.log.debug('_stop_vm: Starting')
+        self.log.debug('_stop_vm: Leaving')
+
+
+    def _queryDB_hosts(self):
+        '''
+        ancilla method to query the DB to find out
+        which APFQueue launched each VM instance
+        It returns a list with all hostnames for this particular APFQueue
+        '''
+
+        self.log.debug('_queryDB: Starting')
+
+        from persistent import *
+
+        o = PersistenceDB(self.apfqueue.fcl), VMInstance)
+        o.createsession()
+
+        list_vm = o.query()
+        list_hosts = []
+        for i in list_vm:
+            list_hosts.append(i.host_name)
+
+        self.log.debug('_queryDB: Leaving with list %s' %list_hosts)
+        return list_hosts
+
+    def _condor_hosts(self):
+        '''
+        runs condor_status (again!!??) to get the list of hostnames
+        '''
+        querycmd = 'condor_status --pool %s -format "Name=%s\n" Name' % self.condorpool
 
