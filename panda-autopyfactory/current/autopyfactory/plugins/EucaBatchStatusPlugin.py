@@ -171,6 +171,13 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         #       we dont use yet XML, but raw data instead
         # -------------------------------------------
         querycmd = 'condor_status --pool %s -format "Name=%s " Name -format "Activity=%s " Activity -format "State=%s " State -format "IP=%s\n" MyAddress' % self.condorpool
+        # Note:
+        #   There will be VMs with no startd active. 
+        #   That is because in a previous cycle, the startd was order to stop.
+        #   We can ignore them at this point, 
+        #   since what is relevant is the number of active startd.
+        #   The submit plugin will purge these empty VMs.
+
 
         self.log.debug('_query: Querying cmd = %s' %querycmd.replace('\n','\\n'))
 
