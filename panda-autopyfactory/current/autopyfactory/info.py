@@ -373,6 +373,7 @@ class InfoContainer(dict):
         else:
             return self.default
 
+
 class WMSStatusInfo(object):
         '''
         -----------------------------------------------------------------------
