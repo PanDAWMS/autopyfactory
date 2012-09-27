@@ -273,7 +273,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 if activity == 'Busy':
                     batchstatusinfo[apfqname].running += 1
                 if activity == 'Idle':
-                    batchstatusinfo[apfqname].pending += 1
+                    batchstatusinfo[apfqname].running += 1
                 if activity == 'Retiring':
                     batchstatusinfo[apfqname].done += 1
 
