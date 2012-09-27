@@ -6,6 +6,10 @@
 #               VARIABLES
 # ===========================================================================
 
+# ---------------------------------------------------------------------------
+# Factory
+# ---------------------------------------------------------------------------
+
 # baseLogDir
 # baseLogDirUrl
 # baseLogHttpPort 
@@ -34,8 +38,20 @@
 # wmsstatus.panda.sleep
 
 # ---------------------------------------------------------------------------
-# Description:
+# Persistence
 # ---------------------------------------------------------------------------
+
+# persistence.dbengine
+# persistence.dbuser
+# persistence.dbpassword
+# persistence.dbhost
+# persistence.dbport
+# persistence.dbpath
+
+
+# ===========================================================================
+# Description:
+# ===========================================================================
 
 # baseLogDir =  where outputs from pilots are stored
 #               NOTE: No trailing '/'!!!
@@ -125,6 +141,12 @@
 # wmsstatus.panda.sleep = time the WMSStatus Plugin waits between cycles
 #               Value is in seconds.
 
+# persistence.dbengine = SQLAlchemy dbengine
+# persistence.dbuser = SQLAlchemy dbuser
+# persistence.dbpassword = SQLAlchemy dbpassword
+# persistence.dbhost = SQLAlchemy dbhost
+# persistence.dbport = SQLAlchemy dbport
+# persistence.dbpath = SQLAlchemy dbpath
 
 # ===========================================================================
 
@@ -157,3 +179,20 @@ baseLogHttpPort = 25880
 logserver.enabled = True
 logserver.index = True
 logserver.allowrobots = False
+
+
+
+[persistence]
+#
+# persistence is handled by sqlalchemy
+# engine string types:
+#
+# engine://user:password@host:port/database
+#
+
+persistence.dbengine=sqlite://
+persistence.dbuser=""
+persistence.dbpassword=""
+persistence.dbhost=""
+persistence.dbport=""
+persistence.dbpath=/tmp/kk/sql/sqldb.sq3
