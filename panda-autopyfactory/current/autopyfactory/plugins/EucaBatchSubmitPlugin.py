@@ -131,14 +131,10 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         VMs with startd 'Busy'
         (<=> batchqueueinfo in status 'running')
 
-        The, those VMs with no active startd
-        has to be purged. They are VMs which got
-        a condor_off order in a previous cycle. 
         '''
 
         self.log.debug('_kill: Starting with n=%s' %n)
         self._stop_startd(n)
-        self._stop_vm()
         self.log.debug('_kill: Leaving')
 
     def _stop_startd(self, n):
@@ -152,13 +148,3 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         self.log.debug('_stop_startd: Starting with n=%s' %n)
         self.log.debug('_stop_startd: Leaving')
 
-    def _stop_vm(self):
-        '''
-        Terminates all VMs with no startd running.
-        Command to terminate a VM looks like:
-
-            $ euca-terminate-instances i-0000022e i-0000022f --conf /home/jhover/nova-essex/novarc
-
-        '''
-        self.log.debug('_stop_vm: Starting')
-        self.log.debug('_stop_vm: Leaving')
