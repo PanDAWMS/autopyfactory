@@ -142,6 +142,13 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         self.log.debug('_kill: Leaving')
 
     def _stop_startd(self, n):
+        '''
+        stops n startds. 
+        We do it using command condor_off. 
+        There are two ways:
+            $condor_off -peaceful -pool gridtest03.racf.bnl.gov:29660 -addr 10.0.0.11
+            $condor_off -peaceful -pool gridtest03.racf.bnl.gov:29660 -name server-465
+        '''
         self.log.debug('_stop_startd: Starting with n=%s' %n)
         self.log.debug('_stop_startd: Leaving')
 
