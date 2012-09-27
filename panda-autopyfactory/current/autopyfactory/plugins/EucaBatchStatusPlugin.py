@@ -311,7 +311,6 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         self.log.debug('_queryDB: Leaving with dictionary %s' %dict_vm)
         return dict_vm
 
-
     def join(self, timeout=None):
         ''' 
         Stop the thread. Overriding this method required to handle Ctrl-C from console.
@@ -329,6 +328,7 @@ def test():
     
 if __name__=='__main__':
     pass
+
 
 
 
