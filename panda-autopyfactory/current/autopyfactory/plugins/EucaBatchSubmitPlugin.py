@@ -9,6 +9,7 @@ import logging
 import os
 import re
 import string
+import subprocess
 import time
 
 from autopyfactory.interfaces import BatchSubmitInterface
@@ -176,7 +177,9 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         '''
         ancilla method to query the DB to find out
         which APFQueue launched each VM instance
-        It returns a list with all hostnames for this particular APFQueue
+        It returns a dictionary for this particular APFQueue:
+            - keys are the host name
+            - values are the vm instance
         '''
 
         self.log.debug('_queryDB: Starting')
@@ -187,16 +190,24 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         o.createsession()
 
         list_vm = o.query()
-        list_hosts = []
+        dict_hosts = {}
         for i in list_vm:
-            list_hosts.append(i.host_name)
+            if i.apfqname = self.apfqname:
+                    list_hosts[i.host_name] = i.vm_instance
 
-        self.log.debug('_queryDB: Leaving with list %s' %list_hosts)
+        self.log.debug('_queryDB: Leaving with dict %s' %dict_hosts)
         return list_hosts
 
     def _condor_hosts(self):
         '''
         runs condor_status (again!!??) to get the list of hostnames
         '''
-        querycmd = 'condor_status --pool %s -format "Name=%s\n" Name' % self.condorpool
 
+        list_hosts = []
+        querycmd = 'condor_status --pool %s -format "Name=%s\n" Name' % self.condorpool
+        p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        (out, err) = p.communicate()
+        for line in output.split('\n'):
+           list_hosts.append( line ) 
+
+        return list_hosts
