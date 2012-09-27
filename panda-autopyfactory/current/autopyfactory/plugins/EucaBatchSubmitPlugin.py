@@ -140,7 +140,6 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         self._stop_startd(n)
         self._stop_vm()
         self.log.debug('_kill: Leaving')
-    
 
     def _stop_startd(self, n):
         self.log.debug('_stop_startd: Starting with n=%s' %n)
