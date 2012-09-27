@@ -119,11 +119,9 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         this plugin interprets it as the number of
         NOTE: in _delete() is again >0.
 
-        VM instances to be killed.
-            - the first candidates are those
-              where the startd is gone
-            - after that, some VMs still running
-              will get a condor_off order.
+        VM instances to be killed has to be chosen 
+        among those with startd active. 
+        A condor_off order will be sent. 
 
         The algorithm must take into account 
         VM with startd in status 'Retiring' 
@@ -132,22 +130,22 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         so the condor_off order has to be sent to
         VMs with startd 'Busy'
         (<=> batchqueueinfo in status 'running')
+
+        The, those VMs with no active startd
+        has to be purged. They are VMs which got
+        a condor_off order in a previous cycle. 
         '''
 
         self.log.debug('_kill: Starting with n=%s' %n)
-
-        m = self._stop_vm(n)
-        self.log.debug('_kill: %m VMs have been stoped' %m)
-        if n>m:
-            m = self._stop_startd(n-m)
-
+        self._stop_startd(n)
+        self._stop_vm()
         self.log.debug('_kill: Leaving')
     
-    def _stop_vm(self, n):
-        self.log.debug('_stop_vm: Starting with n=%s' %n)
-        self.log.debug('_stop_vm: Leaving')
 
     def _stop_startd(self, n):
         self.log.debug('_stop_startd: Starting with n=%s' %n)
         self.log.debug('_stop_startd: Leaving')
 
+    def _stop_vm(self):
+        self.log.debug('_stop_vm: Starting')
+        self.log.debug('_stop_vm: Leaving')
