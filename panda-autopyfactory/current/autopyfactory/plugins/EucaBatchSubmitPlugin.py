@@ -170,6 +170,14 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
         '''
         self.log.debug('_stop_vm: Starting')
+
+        db_hosts = self._queryDB_hosts()
+        list_condor_hosts = self._condor_hosts()
+
+        for host, vm_instance in db_hosts.iteritems():
+            if not self._host_in_condor(host, list_condor_hosts):
+                self._terminate_instance( vm_instance )
+
         self.log.debug('_stop_vm: Leaving')
 
 
@@ -211,3 +219,42 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
            list_hosts.append( line ) 
 
         return list_hosts
+
+    def self._host_in_condor(self, host, list_condor_hosts):
+        '''
+        checks if host is in the list.
+        
+        host looks like server-557
+        items in list_condor_hosts look like  server-456.novalocal
+        '''
+
+        self.log.debug('_host_in_db: Starting for host=%s' %host)
+
+        out = False # default value
+        for i in list_condor_hosts:
+            if i.startswith(host):
+                out = True
+                break 
+
+        self.log.debug('_host_in_db: Leaving with output=%s' %out)
+        return out
+
+
+    def _terminate_instance(self, vm_instance):
+        '''
+        terminates a single instance
+        '''
+        # -----------------------------------------------------
+        # FIXME
+        #   - maybe is more efficient to terminate a list of instances at once
+        #   - so far, the conf file is hardcoded
+        #   - so far, the remote host is hardcoded
+        # -----------------------------------------------------
+
+
+        self.log.debug('_terminate_instance: Starting for vm_instance=%s' %vm_instance)
+        cmd = 'ssh gridreserve30.usatlas.bnl.gov "euca-terminate-instances %s --conf /home/jhover/nova-essex/novarc"' %vm_instance
+        self.log.info('_terminate_instance: cmd is %s' %cmd)
+        commands.getoutput(cmd)
+        self.log.debug('_terminate_instance: Leaving')
+
