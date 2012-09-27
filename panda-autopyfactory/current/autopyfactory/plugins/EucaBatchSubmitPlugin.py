@@ -153,5 +153,12 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         self.log.debug('_stop_startd: Leaving')
 
     def _stop_vm(self):
+        '''
+        Terminates all VMs with no startd running.
+        Command to terminate a VM looks like:
+
+            $ euca-terminate-instances i-0000022e i-0000022f --conf /home/jhover/nova-essex/novarc
+
+        '''
         self.log.debug('_stop_vm: Starting')
         self.log.debug('_stop_vm: Leaving')
