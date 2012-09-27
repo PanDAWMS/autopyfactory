@@ -70,17 +70,17 @@ class PersistenceDB(object):
         '''
         
         self.dburi =""
-        self.dbengine=self.config.get('persistence', 'dbengine')
+        self.dbengine=self.config.get('persistence', 'persistence.dbengine')
         self.dburi += self.dbengine
         
-        self.dbuser=self.config.get('persistence', 'dbuser')
-        self.dbpassword=self.config.get('persistence', 'dbpassword')
+        self.dbuser=self.config.get('persistence', 'persistence.dbuser')
+        self.dbpassword=self.config.get('persistence', 'persistence.dbpassword')
         if self.dbuser and self.dbpassword:
             self.dburi += "%s:%s" % (self.dbuser, self.dbpassword)
         
-        self.dbhost=self.config.get('persistence', 'dbhost')
-        self.dbport=self.config.get('persistence', 'dbport')
-        self.dbpath = os.path.expanduser(self.config.get('persistence', 'dbpath'))
+        self.dbhost=self.config.get('persistence', 'persistence.dbhost')
+        self.dbport=self.config.get('persistence', 'persistence.dbport')
+        self.dbpath = os.path.expanduser(self.config.get('persistence', 'persistence.dbpath'))
         
         if self.dbhost and self.dbport and self.dbpath:
             self.dburi += "@%s:%s/%s" % ( self.dbhost, self.dbport, self.dbpath)
