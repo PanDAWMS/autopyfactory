@@ -152,7 +152,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         #   FIXME
         #
         #       - This is just a 1st approach.
-        #         We pick up randomly n startd's that are Busy
+        #         We just pick up the n first startd's that are Busy
         #         The final decission should take into account
         #         some time values (like for how long each one has been running)
         # ---------------------------------------------------------
