@@ -147,7 +147,22 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
             $condor_off -peaceful -pool gridtest03.racf.bnl.gov:29660 -addr 10.0.0.11
             $condor_off -peaceful -pool gridtest03.racf.bnl.gov:29660 -name server-465
         '''
+        # ---------------------------------------------------------
+        #
+        #   FIXME
+        #
+        #       - This is just a 1st approach.
+        #         We pick up randomly n startd's that are Busy
+        #         The final decission should take into account
+        #         some time values (like for how long each one has been running)
+        # ---------------------------------------------------------
+
         self.log.debug('_stop_startd: Starting with n=%s' %n)
+        
+        running_startd = self._running_startd() 
+        for host in running_startd[:n]: # we pick up (TEMPORARY SOLUTION) the first n
+            cmd = 'condor_off -peaceful -pool %s -name %s' %(self.condorpool, host)
+
         self.log.debug('_stop_startd: Leaving')
 
 
@@ -208,17 +223,22 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
     def _condor_hosts(self):
         '''
-        runs condor_status (again!!??) to get the list of hostnames
+        runs condor_status to get the list of hostnames
         '''
+        # -----------------------------------------------------
+        # FIXME
+        #   I am running condor_status again!!!
+        # -----------------------------------------------------
 
         list_hosts = []
         querycmd = 'condor_status --pool %s -format "Name=%s\n" Name' % self.condorpool
         p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         (out, err) = p.communicate()
         for line in output.split('\n'):
-           list_hosts.append( line ) 
-
+           host = line.split('=')[1]
+           list_hosts.append(host) 
         return list_hosts
+
 
     def self._host_in_condor(self, host, list_condor_hosts):
         '''
@@ -238,6 +258,25 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
         self.log.debug('_host_in_db: Leaving with output=%s' %out)
         return out
+
+
+    def _running_startd(self): 
+        # -----------------------------------------------------
+        # FIXME
+        #   I am running condor_status again!!!
+        # -----------------------------------------------------
+        
+        list_hosts = []
+        querycmd = 'condor_status --pool %s -format "Name=%s " Name -format "Activity=%s\n" Activity' % self.condorpool
+        p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        (out, err) = p.communicate()
+        for line in output.split('\n'):
+            host = line.split()[0].split('=')[1] 
+            activity = line.split()[1].split('=')[1] 
+            if activity in ['Busy' , 'Idle']:
+                    list_hosts.append( line ) 
+        return list_hosts
+        
 
 
     def _terminate_instance(self, vm_instance):
