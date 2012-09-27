@@ -79,8 +79,8 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         # parse the output after submitting
         list_vm = []
         for line in out.split('\n'):
-            if line.startswith('INSTANCE'):
-                fields = line.split()
+            fields = line.split()
+            if fields[0] == 'INSTANCE':
                 vm_instance = fields[1]
                 host_name = fields[3]
                 list_vm.append( (vm_instance, host_name) )
