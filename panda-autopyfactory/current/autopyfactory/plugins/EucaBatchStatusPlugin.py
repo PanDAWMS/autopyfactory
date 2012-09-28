@@ -297,19 +297,6 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         return batchstatusinfo
 
 
-    ### # ----------------------------------------------------
-    ### #   FIXME
-    ### #       this code is repeated in Euca Submit Plugin
-    ### #       maybe it should be in persistent.py
-    ### # ----------------------------------------------------
-    ### def _queryDB(self):
-    ###     '''
-    ###     ancilla method to query the DB 
-    ###     It creates a list with Instance objects
-    ###     '''
-    ###     self.log.debug('_queryDB: Starting')
-    ###     self.persistencedb = PersistenceDB(self.apfqueue.fcl), VMInstance)
-    ###     self.log.debug('_queryDB: Leaving')
 
 
     # --------------------------------------------
@@ -395,12 +382,17 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         self.log.debug('join: Leaving')
 
 
-def test():
-    pass
-    
-if __name__=='__main__':
-    pass
 
-
-
-
+    ### # ----------------------------------------------------
+    ### #   FIXME
+    ### #       this code is repeated in Euca Submit Plugin
+    ### #       maybe it should be in persistent.py
+    ### # ----------------------------------------------------
+    ### def _queryDB(self):
+    ###     '''
+    ###     ancilla method to query the DB 
+    ###     It creates a list with Instance objects
+    ###     '''
+    ###     self.log.debug('_queryDB: Starting')
+    ###     self.persistencedb = PersistenceDB(self.apfqueue.fcl), VMInstance)
+    ###     self.log.debug('_queryDB: Leaving')
