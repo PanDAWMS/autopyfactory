@@ -84,7 +84,11 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         '''
         self.log.debug('_submit: Starting with n=%s' %n)
 
-        cmd = "euca-run-instances -n %s --config %s %s" %(n, self.rcfile, self.executable)
+        #  --------------------------------------------
+        #   FIXME
+        #       for the time being, some values are hardcoded
+        #  --------------------------------------------
+        cmd = 'ssh root@gridreserve30.usatlas.bnl.gov "euca-run-instances -n %s --config /home/jhover/nova-essex/novarc"' %n
         (exitStatus, output) = commands.getstatusoutput(cmd)
         if exitStatus != 0:
             self.log.error('__submit: euca-run-instances command failed (status %d): %s', exitStatus, output)
@@ -172,7 +176,11 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         i = 0
         for vm in self.persistencedb.list_vm:
             if vm.startd_status in ['Busy', 'Idle']:
-                cmd = 'condor_off -peaceful -pool %s -name %s' %(self.condorpool, vm.condor_host_name)
+                #  --------------------------------------------
+                #   FIXME
+                #       for the time being, some values are hardcoded
+                #  --------------------------------------------
+                cmd = 'ssh root@grid13.racf.bnl.gov "condor_off -peaceful -pool %s -name %s"' %(self.condorpool, vm.condor_host_name)
                 self.log.info('_stop_startd: stopping startd with cmd = %s' %cmd)
                 commands.getoutput(cmd)
                 i += 1
