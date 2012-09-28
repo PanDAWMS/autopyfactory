@@ -268,7 +268,6 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         #       we dont use yet XML, but raw data instead
         # -------------------------------------------
 
-
         for line in output.split('\n'):
             fields = line.split()
             host_name = fields[0].split('=')[1]
@@ -276,7 +275,6 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             state = fields[2].split('=')[1]
             ip = fields[3].split('=')[1]  # not really...
 
-            #apfqname = self.dict_vm_apfqname.get(host_name)
             apfqname = self._get_apfqname(self.dict_vm_apfqname, host_name)
             if apfqname:
                 # There could be VMs not launched by APF.
