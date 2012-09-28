@@ -214,9 +214,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         '''
         ancilla method to query the DB to find out
         which APFQueue launched each VM instance
-        It returns a dictionary:
-            keys are the vm instances
-            values are the APFQueue names
+        It creates a list of Instance objects
         '''
 
         self.log.debug('_queryDB: Starting')
@@ -225,10 +223,6 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         self.persistencedb.createsession()
 
         self.list_vm = self.persistencedb.query()
-
-        self.dict_vm_apfqname = {}
-        for i in self.list_vm:
-            self.dict_vm_apfqname[i.host_name] = i.apfqname
 
         self.log.debug('_queryDB: Leaving')
 
