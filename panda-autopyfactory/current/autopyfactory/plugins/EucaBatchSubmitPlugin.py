@@ -169,7 +169,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         i = 0
         for vm in self.list_vm:
             if vm.startd_status in ['Busy', 'Idle']:
-                cmd = 'condor_off -peaceful -pool %s -name %s' %(self.condorpool, vm.host_name)
+                cmd = 'condor_off -peaceful -pool %s -name %s' %(self.condorpool, vm.condor_host_name)
                 i += 1
                 if i == n:
                     break
