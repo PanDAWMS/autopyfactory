@@ -120,7 +120,6 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
             new_instances.append( VMInstance(apfqname=self.apfqname, vm_instance=vm_instance, host_name=host_name ) ) 
 
         self.persistencedb.add_all(new_instances)
-        self.persistencedb.save()
         self.log.debug('_addDB: Leaving')
 
 
