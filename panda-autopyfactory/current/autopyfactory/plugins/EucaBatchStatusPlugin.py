@@ -361,6 +361,9 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     #  FIXME
     #   this is a temporary solution,
     #   we will need a better solution
+    #
+    #   We should consider using like() in filter_by(): 
+    #       session.query().filter_by(  var.like(...) )
     # --------------------------------------------
     def _get_apfqname(self, host_name):
         '''
