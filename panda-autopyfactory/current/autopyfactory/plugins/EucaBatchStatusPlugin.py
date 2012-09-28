@@ -273,12 +273,12 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         for line in output.split('\n'):
             fields = line.split()
-            host_name = fields[0].split('=')[1]
+            condor_host_name = fields[0].split('=')[1]
             activity = fields[1].split('=')[1]
             state = fields[2].split('=')[1]
             ip = fields[3].split('=')[1]  # not really... FIXME  
 
-            apfqname = self._get_apfqname(host_name)
+            apfqname = self._get_apfqname(condor_host_name)
             if apfqname:
                 # There could be VMs not launched by APF.
                 # Those will no be in the DB. 
