@@ -331,13 +331,27 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         self.log.debug('_upateDB: Starting')
 
-        # FIXME: this has already been done
-        for line in output.split('\n'):
-            fields = line.split()
-            host_name = fields[0].split('=')[1]  # looks like server-456.novalocal
-            activity = fields[1].split('=')[1]
+       
+        # ------------------------------------ 
+        #       FIXME
+        #       This double loop is very inneficient
+        # ------------------------------------ 
 
+        for vm in self.list_vm:
+            vm_host = vm.host_name # looks like server-456
+            for line in output.split('\n'):
+                fields = line.split()
+                condor_host_name = fields[0].split('=')[1]  # looks like server-456.novalocal
+                activity = fields[1].split('=')[1]
 
+                if condor_host_name.startswith(vm_host):
+                    vm.startd_status = activity 
+                    break
+            else:
+            # no hostname from condor_status is in the DB
+            # That means that startd is gone 
+            # The entry in DB has to be marked, so the VM can be killed
+            vm.startd_status = 'None'
 
 
         self.log.debug('_upateDB: Leaving')
