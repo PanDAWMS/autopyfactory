@@ -37,17 +37,24 @@ class VMInstance(Base):
     apfqname = Column(String)
     vm_instance = Column(String)
     host_name = Column(String)
+    startd_status = Column(String)
 
     def __eq__(self, x):
         '''
         tell if two objects of class VMInstance have the same values (except ID)
         '''
         
+        # ------------------------------------------------------ 
+        #  FIXME:
+        #   This algorithm needs to be improved
+        # ------------------------------------------------------ 
         if not self.apfqname == x.apfqname:
             return False
         if not self.vm_instance == x.vm_instance:
             return False
         if not self.host_name == x.host_name:
+            return False
+        if not self.startd_status == x.startd_status:
             return False
         return True
 
