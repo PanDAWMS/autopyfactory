@@ -45,7 +45,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         # We need to know which APFQueue originally launched each VM. 
         # That info is recorded in a DB. 
         # We need to query that DB. 
-        self._queryDB()
+        self.persistencedb = PersistenceDB(self.apfqueue.fcl), VMInstance)
 
         self.log.info('BatchSubmitPlugin: Object initialized.')
 
@@ -119,9 +119,10 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
             host_name = vm[1]
             new_instances.append( VMInstance(apfqname=self.apfqname, vm_instance=vm_instance, host_name=host_name ) ) 
 
-        o.add_all(new_instances)
-        o.save()
+        self.persistencedb.add_all(new_instances)
+        self.persistencedb.save()
         self.log.debug('_addDB: Leaving')
+
 
     def _kill(self, n):
         '''
@@ -167,7 +168,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         self.log.debug('_stop_startd: Starting with n=%s' %n)
         
         i = 0
-        for vm in self.list_vm:
+        for vm in self.persistencedb.list_vm:
             if vm.startd_status in ['Busy', 'Idle']:
                 cmd = 'condor_off -peaceful -pool %s -name %s' %(self.condorpool, vm.condor_host_name)
                 self.log.info('_stop_startd: stopping startd with cmd = %s' %cmd)
@@ -200,7 +201,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         '''
         self.log.debug('_stop_vm: Starting')
 
-        for vm in self.list_vm:
+        for vm in self.persistencedb.list_vm:
             if vm.startd_status == 'None'
                 self.log.info('_stop_vm: vm % has no startd active.' %vm.vm_instance)
                 self._terminate_instance(vm)
@@ -209,26 +210,21 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
 
 
-    # ----------------------------------------------------
-    #   FIXME
-    #       this code is repeated in Euca Status Plugin
-    #       maybe it should be in persistent.py
-    # ----------------------------------------------------
-    def _queryDB(self):
-        '''
-        ancilla method to query the DB to find out
-        which APFQueue launched each VM instance
-        It creates a list of Instance objects
-        '''
-
-        self.log.debug('_queryDB: Starting')
-
-        self.persistencedb = PersistenceDB(self.apfqueue.fcl), VMInstance)
-        self.persistencedb.createsession()
-
-        self.list_vm = self.persistencedb.query()
-
-        self.log.debug('_queryDB: Leaving')
+    ### # ----------------------------------------------------
+    ### #   FIXME
+    ### #       this code is repeated in Euca Status Plugin
+    ### #       maybe it should be in persistent.py
+    ### # ----------------------------------------------------
+    ### def _queryDB(self):
+    ###     '''
+    ###     ancilla method to query the DB to find out
+    ###     which APFQueue launched each VM instance
+    ###     It creates a list of Instance objects
+    ###     '''
+    ###     self.log.debug('_queryDB: Starting')
+    ###     self.persistencedb = PersistenceDB(self.apfqueue.fcl), VMInstance)
+    ###     self.list_vm = self.persistencedb.query()
+    ###     self.log.debug('_queryDB: Leaving')
 
 
 
