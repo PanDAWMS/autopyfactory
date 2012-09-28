@@ -334,30 +334,30 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
        
         # ------------------------------------ 
         #       FIXME
-        #       This double loop is very inneficient
+        #       This double loop is very inefficient
         # ------------------------------------ 
 
         for vm in self.list_vm:
-            vm_host = vm.host_name # looks like server-456
             for line in output.split('\n'):
                 fields = line.split()
                 condor_host_name = fields[0].split('=')[1]  # looks like server-456.novalocal
 
-                # if the condor_host_name column in the VM has no value,
-                # add it now
-                if vm.condor_host_name != condor_host_name:
-                    vm.condor_host_name = condor_host_name
-
                 activity = fields[1].split('=')[1]
 
-                if condor_host_name.startswith(vm_host):
+                if condor_host_name.startswith(vm.host_name): # vm.host_name looks like server-456
                     vm.startd_status = activity 
+
+                    # if the condor_host_name column in the VM has no value,
+                    # add it now
+                    if vm.condor_host_name != condor_host_name:
+                        vm.condor_host_name = condor_host_name
+
                     break
             else:
-            # no hostname from condor_status is in the DB
-            # That means that startd is gone 
-            # The entry in DB has to be marked, so the VM can be killed
-            vm.startd_status = 'None'
+                # no hostname from condor_status is in the DB
+                # That means that startd is gone 
+                # The entry in DB has to be marked, so the VM can be killed
+                vm.startd_status = 'None'
 
 
         self.log.debug('_upateDB: Leaving')
