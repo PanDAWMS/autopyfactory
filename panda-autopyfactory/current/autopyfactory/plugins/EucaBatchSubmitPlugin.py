@@ -42,8 +42,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         self.qcl = apfqueue.qcl
         self.condorpool = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.euca.condorpool', 'get', logger=self.log)
         
-        # We need to know which APFQueue originally launched 
-        # each VM. 
+        # We need to know which APFQueue originally launched each VM. 
         # That info is recorded in a DB. 
         # We need to query that DB. 
         self._queryDB()
