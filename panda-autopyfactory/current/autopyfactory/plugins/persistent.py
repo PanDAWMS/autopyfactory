@@ -37,6 +37,7 @@ class VMInstance(Base):
     apfqname = Column(String)
     vm_instance = Column(String)
     host_name = Column(String)
+    condor_host_name = Column(String)
     startd_status = Column(String)
 
     def __eq__(self, x):
@@ -53,6 +54,8 @@ class VMInstance(Base):
         if not self.vm_instance == x.vm_instance:
             return False
         if not self.host_name == x.host_name:
+            return False
+        if not self.condor_host_name == x.condor_host_name:
             return False
         if not self.startd_status == x.startd_status:
             return False
