@@ -140,12 +140,10 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         so the condor_off order has to be sent to
         VMs with startd 'Busy'
         (<=> batchqueueinfo in status 'running')
-
         '''
 
         self.log.debug('_kill: Starting with n=%s' %n)
         self._stop_startd(n)
-        self._stop_vm()
         self.log.debug('_kill: Leaving')
 
     def _stop_startd(self, n):
@@ -168,9 +166,14 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
         self.log.debug('_stop_startd: Starting with n=%s' %n)
         
-        running_startd = self._running_startd() 
-        for host in running_startd[:n]: # we pick up (TEMPORARY SOLUTION) the first n
-            cmd = 'condor_off -peaceful -pool %s -name %s' %(self.condorpool, host)
+        i = 0
+        for vm in self.list_vm:
+            if vm.startd_status in ['Busy', 'Idle']:
+                cmd = 'condor_off -peaceful -pool %s -name %s' %(self.condorpool, vm.host_name)
+                i += 1
+                if i == n:
+                    break
+
 
         self.log.debug('_stop_startd: Leaving')
 
@@ -280,22 +283,22 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         return out
 
 
-    def _running_startd(self): 
-        # -----------------------------------------------------
-        # FIXME
-        #   I am running condor_status again!!!
-        # -----------------------------------------------------
-        
-        list_hosts = []
-        querycmd = 'condor_status --pool %s -format "Name=%s " Name -format "Activity=%s\n" Activity' % self.condorpool
-        p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        (out, err) = p.communicate()
-        for line in output.split('\n'):
-            host = line.split()[0].split('=')[1] 
-            activity = line.split()[1].split('=')[1] 
-            if activity in ['Busy' , 'Idle']:
-                    list_hosts.append( line ) 
-        return list_hosts
+    ### def _running_startd(self): 
+    ###     # -----------------------------------------------------
+    ###     # FIXME
+    ###     #   I am running condor_status again!!!
+    ###     # -----------------------------------------------------
+    ###     
+    ###     list_hosts = []
+    ###     querycmd = 'condor_status --pool %s -format "Name=%s " Name -format "Activity=%s\n" Activity' % self.condorpool
+    ###     p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    ###     (out, err) = p.communicate()
+    ###     for line in output.split('\n'):
+    ###         host = line.split()[0].split('=')[1] 
+    ###         activity = line.split()[1].split('=')[1] 
+    ###         if activity in ['Busy' , 'Idle']:
+    ###                 list_hosts.append( line ) 
+    ###     return list_hosts
         
 
 
