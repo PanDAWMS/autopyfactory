@@ -209,57 +209,6 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         self.log.debug('_stop_vm: Leaving')
 
 
-
-    ### # ----------------------------------------------------
-    ### #   FIXME
-    ### #       this code is repeated in Euca Status Plugin
-    ### #       maybe it should be in persistent.py
-    ### # ----------------------------------------------------
-    ### def _queryDB(self):
-    ###     '''
-    ###     ancilla method to query the DB to find out
-    ###     which APFQueue launched each VM instance
-    ###     It creates a list of Instance objects
-    ###     '''
-    ###     self.log.debug('_queryDB: Starting')
-    ###     self.persistencedb = PersistenceDB(self.apfqueue.fcl), VMInstance)
-    ###     self.list_vm = self.persistencedb.query()
-    ###     self.log.debug('_queryDB: Leaving')
-
-
-
-    ### def _queryDB_hosts(self):
-    ###     '''
-    ###     ancilla method to query the DB to find out
-    ###     which APFQueue launched each VM instance
-    ###     It returns a dictionary for this particular APFQueue:
-    ###         - keys are the host name
-    ###         - values are the vm instance
-    ###     '''
-    ###     self.log.debug('_queryDB: Starting')
-    ###     o = PersistenceDB(self.apfqueue.fcl), VMInstance)
-    ###     o.createsession()
-    ###     self.log.debug('_queryDB: Leaving with dict %s' %dict_hosts)
-    ###     return list_hosts
-
-    ### def _condor_hosts(self):
-    ###     '''
-    ###     runs condor_status to get the list of hostnames
-    ###     '''
-    ###     # -----------------------------------------------------
-    ###     # FIXME
-    ###     #   I am running condor_status again!!!
-    ###     # -----------------------------------------------------
-    ###     list_hosts = []
-    ###     querycmd = 'condor_status --pool %s -format "Name=%s\n" Name' % self.condorpool
-    ###     p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    ###     (out, err) = p.communicate()
-    ###     for line in output.split('\n'):
-    ###        host = line.split('=')[1]
-    ###        list_hosts.append(host) 
-    ###     return list_hosts
-
-
     def self._host_in_condor(self, host, list_condor_hosts):
         '''
         checks if host is in the list.
@@ -278,25 +227,6 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
         self.log.debug('_host_in_db: Leaving with output=%s' %out)
         return out
-
-
-    ### def _running_startd(self): 
-    ###     # -----------------------------------------------------
-    ###     # FIXME
-    ###     #   I am running condor_status again!!!
-    ###     # -----------------------------------------------------
-    ###     
-    ###     list_hosts = []
-    ###     querycmd = 'condor_status --pool %s -format "Name=%s " Name -format "Activity=%s\n" Activity' % self.condorpool
-    ###     p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    ###     (out, err) = p.communicate()
-    ###     for line in output.split('\n'):
-    ###         host = line.split()[0].split('=')[1] 
-    ###         activity = line.split()[1].split('=')[1] 
-    ###         if activity in ['Busy' , 'Idle']:
-    ###                 list_hosts.append( line ) 
-    ###     return list_hosts
-        
 
 
     def _terminate_instance(self, vm):
@@ -332,6 +262,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
         self.log.debug('_kill_instance: Leaving')
 
+
     def _delete_instance(self, vm):
         '''
         vm is one of the object from the self.list_vm (class VMInstance)
@@ -342,3 +273,71 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         self.persistencedb.delete(vm)
         self.log.debug('_delete_instance: Leaving')
 
+
+
+
+
+
+    ### # ----------------------------------------------------
+    ### #   FIXME
+    ### #       this code is repeated in Euca Status Plugin
+    ### #       maybe it should be in persistent.py
+    ### # ----------------------------------------------------
+    ### def _queryDB(self):
+    ###     '''
+    ###     ancilla method to query the DB to find out
+    ###     which APFQueue launched each VM instance
+    ###     It creates a list of Instance objects
+    ###     '''
+    ###     self.log.debug('_queryDB: Starting')
+    ###     self.persistencedb = PersistenceDB(self.apfqueue.fcl), VMInstance)
+    ###     self.list_vm = self.persistencedb.query()
+    ###     self.log.debug('_queryDB: Leaving')
+
+    ### def _queryDB_hosts(self):
+    ###     '''
+    ###     ancilla method to query the DB to find out
+    ###     which APFQueue launched each VM instance
+    ###     It returns a dictionary for this particular APFQueue:
+    ###         - keys are the host name
+    ###         - values are the vm instance
+    ###     '''
+    ###     self.log.debug('_queryDB: Starting')
+    ###     o = PersistenceDB(self.apfqueue.fcl), VMInstance)
+    ###     o.createsession()
+    ###     self.log.debug('_queryDB: Leaving with dict %s' %dict_hosts)
+    ###     return list_hosts
+
+    ### def _condor_hosts(self):
+    ###     '''
+    ###     runs condor_status to get the list of hostnames
+    ###     '''
+    ###     # -----------------------------------------------------
+    ###     # FIXME
+    ###     #   I am running condor_status again!!!
+    ###     # -----------------------------------------------------
+    ###     list_hosts = []
+    ###     querycmd = 'condor_status --pool %s -format "Name=%s\n" Name' % self.condorpool
+    ###     p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    ###     (out, err) = p.communicate()
+    ###     for line in output.split('\n'):
+    ###        host = line.split('=')[1]
+    ###        list_hosts.append(host) 
+    ###     return list_hosts
+
+    ### def _running_startd(self): 
+    ###     # -----------------------------------------------------
+    ###     # FIXME
+    ###     #   I am running condor_status again!!!
+    ###     # -----------------------------------------------------
+    ###     
+    ###     list_hosts = []
+    ###     querycmd = 'condor_status --pool %s -format "Name=%s " Name -format "Activity=%s\n" Activity' % self.condorpool
+    ###     p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    ###     (out, err) = p.communicate()
+    ###     for line in output.split('\n'):
+    ###         host = line.split()[0].split('=')[1] 
+    ###         activity = line.split()[1].split('=')[1] 
+    ###         if activity in ['Busy' , 'Idle']:
+    ###                 list_hosts.append( line ) 
+    ###     return list_hosts
