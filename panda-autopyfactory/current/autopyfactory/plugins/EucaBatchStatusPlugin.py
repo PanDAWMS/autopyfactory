@@ -151,6 +151,10 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 newinfo = self._parseoutput(strout)
                 self.log.info("Replacing old info with newly generated info.")
                 self.currentinfo = newinfo
+
+                # update the session in the DB
+                self._updateDB(strout)
+
         except Exception, e:
             self.log.error("_update: Exception: %s" % str(e))
             self.log.debug("Exception: %s" % traceback.format_exc())            
@@ -289,9 +293,6 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     batchstatusinfo[apfqname].running += 1
                 if activity == 'Retiring':
                     batchstatusinfo[apfqname].done += 1
-
-                # if needed, update the session in the DB
-                self._updateDB(output)
 
         self.log.debug('_parseoutput: Leaving')
         return batchstatusinfo
