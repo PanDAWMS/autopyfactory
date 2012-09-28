@@ -328,7 +328,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         hostname comes from condor_status. It looks like server-486.novalocal
         The value of host_name in the DB comes from euca-run-instances. It looks like server-486
         '''
-        for vm in self.dict_vm_apfqname:
+        for vm in self.list_vm:
             if hostname.startswith(vm.host_name):
                 vm.startd_status = activity
 
