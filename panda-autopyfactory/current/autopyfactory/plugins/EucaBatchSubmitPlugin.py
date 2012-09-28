@@ -170,10 +170,11 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         for vm in self.list_vm:
             if vm.startd_status in ['Busy', 'Idle']:
                 cmd = 'condor_off -peaceful -pool %s -name %s' %(self.condorpool, vm.condor_host_name)
+                self.log.info('_stop_startd: stopping startd with cmd = %s' %cmd)
+                commands.getoutput(cmd)
                 i += 1
                 if i == n:
                     break
-
 
         self.log.debug('_stop_startd: Leaving')
 
