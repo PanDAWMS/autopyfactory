@@ -342,18 +342,18 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         #   this is a temporary solution,
         #   we will need a better solution
         # --------------------------------------------
-        def _get_apfqname(self, dict_vm_apfqname, host_name):
+        def _get_apfqname(self, host_name):
             '''
-            check if host_name is one of the keys of this dictionary
-                host_name comes from condor_status, and looks like  server-456.novalocal
-                the keys of the dictionary comes from the DB, and look like server-456
+            check if host_name is one of the hosts in the DB
+            If it is, return the apfqname for that entry
             '''
 
             self.log.debug('_get_apfqname: Starting with host_name=%' %host_name)
 `
-            for host, apfqname in dict_vm_apfqname.iteritems():
-                if host_name.startswith(host):
-                    out=apfqname
+            for vm in self.list_vm:
+                if host_name.startswith(vm.host_name):
+                    self.log.debug('_get_apfqname: entry in the DB with host_name=%s found' %host_name)
+                    out = vm.apfqname 
             out=None
 
             self.log.debug('_get_apfqname: Leaving with output=%' %out)
