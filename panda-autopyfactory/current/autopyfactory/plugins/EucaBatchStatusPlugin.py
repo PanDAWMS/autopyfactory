@@ -71,11 +71,10 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             # the info is recorded as seconds since epoch
             self.lasttime = 0
 
-            # We need to know which APFQueue originally launched 
-            # each VM. 
+            # We need to know which APFQueue originally launched each VM. 
             # That info is recorded in a DB. 
             # We need to query that DB. 
-            self._queryDB()
+            self.persistencedb = PersistenceDB(self.apfqueue.fcl), VMInstance)
 
             self.log.info('BatchStatusPlugin: Object initialized.')
         except:
@@ -298,25 +297,19 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         return batchstatusinfo
 
 
-    # ----------------------------------------------------
-    #   FIXME
-    #       this code is repeated in Euca Submit Plugin
-    #       maybe it should be in persistent.py
-    # ----------------------------------------------------
-    def _queryDB(self):
-        '''
-        ancilla method to query the DB 
-        It creates a list with Instance objects
-        '''
-
-        self.log.debug('_queryDB: Starting')
-
-        self.persistencedb = PersistenceDB(self.apfqueue.fcl), VMInstance)
-        self.persistencedb.createsession()
-        
-        self.list_vm = self.persistencedb.query()
-
-        self.log.debug('_queryDB: Leaving')
+    ### # ----------------------------------------------------
+    ### #   FIXME
+    ### #       this code is repeated in Euca Submit Plugin
+    ### #       maybe it should be in persistent.py
+    ### # ----------------------------------------------------
+    ### def _queryDB(self):
+    ###     '''
+    ###     ancilla method to query the DB 
+    ###     It creates a list with Instance objects
+    ###     '''
+    ###     self.log.debug('_queryDB: Starting')
+    ###     self.persistencedb = PersistenceDB(self.apfqueue.fcl), VMInstance)
+    ###     self.log.debug('_queryDB: Leaving')
 
 
     # --------------------------------------------
@@ -337,7 +330,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         #       This double loop is very inefficient
         # ------------------------------------ 
 
-        for vm in self.list_vm:
+        for vm in self.persistencedb.list_vm:
             for line in output.split('\n'):
                 fields = line.split()
                 condor_host_name = fields[0].split('=')[1]  # looks like server-456.novalocal
@@ -379,7 +372,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         self.log.debug('_get_apfqname: Starting with host_name=%' %host_name)
 `
-        for vm in self.list_vm:
+        for vm in self.persistencedb.list_vm:
             if host_name.startswith(vm.host_name):
                 self.log.debug('_get_apfqname: entry in the DB with host_name=%s found' %host_name)
                 out = vm.apfqname 
