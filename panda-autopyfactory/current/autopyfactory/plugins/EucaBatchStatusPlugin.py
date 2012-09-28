@@ -298,6 +298,11 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         return batchstatusinfo
 
 
+    # ----------------------------------------------------
+    #   FIXME
+    #       this code is repeated in Euca Submit Plugin
+    #       maybe it should be in persistent.py
+    # ----------------------------------------------------
     def _queryDB(self):
         '''
         ancilla method to query the DB 
