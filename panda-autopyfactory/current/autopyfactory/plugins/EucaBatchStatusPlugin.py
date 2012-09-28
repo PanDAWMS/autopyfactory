@@ -276,7 +276,8 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             state = fields[2].split('=')[1]
             ip = fields[3].split('=')[1]  # not really...
 
-            apfqname = self.dict_vm_apfqname.get(host_name)
+            #apfqname = self.dict_vm_apfqname.get(host_name)
+            apfqname = self._get_apfqname(self.dict_vm_apfqname, host_name)
             if apfqname:
                 # There could be VMs not launched by APF.
                 # Those will no be in the DB. 
@@ -337,6 +338,30 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 vm.startd_status = activity
 
         self.log.debug('_upateDB: Leaving')
+
+
+        # --------------------------------------------
+        #  FIXME
+        #   this is a temporary solution,
+        #   we will need a better solution
+        # --------------------------------------------
+        def _get_apfqname(self, dict_vm_apfqname, host_name):
+            '''
+            check if host_name is one of the keys of this dictionary
+                host_name comes from condor_status, and looks like  server-456.novalocal
+                the keys of the dictionary comes from the DB, and look like server-456
+            '''
+
+            self.log.debug('_get_apfqname: Starting with host_name=%' %host_name)
+`
+            for host, apfqname in dict_vm_apfqname.iteritems():
+                if host_name.startswith(host):
+                    out=apfqname
+            out=None
+
+            self.log.debug('_get_apfqname: Leaving with output=%' %out)
+            return out 
+
 
 
     def join(self, timeout=None):
