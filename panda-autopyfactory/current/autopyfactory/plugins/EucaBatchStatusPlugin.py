@@ -291,7 +291,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     batchstatusinfo[apfqname].done += 1
 
                 # if needed, update the session in the DB
-                self._updateDB(host_name, activity)
+                self._updateDB(output)
 
         self.log.debug('_parseoutput: Leaving')
         return batchstatusinfo
@@ -318,46 +318,52 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         self.log.debug('_queryDB: Leaving')
 
-    def _updateDB(self, hostname, activity):
+
+    # --------------------------------------------
+    #  FIXME
+    #   this is a temporary solution,
+    #   we will need a better solution
+    # --------------------------------------------
+    def _updateDB(self, output):
         '''
-        search for the VMInstance in the session corresponding to that 
-        host name, and update the value of startd_status (==activity)
-        
-        hostname comes from condor_status. It looks like server-486.novalocal
-        The value of host_name in the DB comes from euca-run-instances. It looks like server-486
+        output is the output from condor_status
         '''
 
-        self.log.debug('_upateDB: Starting with inputs hostname=% activity=%' %(hostname, activity))
+        self.log.debug('_upateDB: Starting')
 
-        for vm in self.list_vm:
-            if hostname.startswith(vm.host_name):
-                self.log.debug('_upateDB: entry in the DB with host_name=%s being updated' %vm.host_name)
-                vm.startd_status = activity
+        # FIXME: this has already been done
+        for line in output.split('\n'):
+            fields = line.split()
+            host_name = fields[0].split('=')[1]  # looks like server-456.novalocal
+            activity = fields[1].split('=')[1]
+
+
+
 
         self.log.debug('_upateDB: Leaving')
 
 
-        # --------------------------------------------
-        #  FIXME
-        #   this is a temporary solution,
-        #   we will need a better solution
-        # --------------------------------------------
-        def _get_apfqname(self, host_name):
-            '''
-            check if host_name is one of the hosts in the DB
-            If it is, return the apfqname for that entry
-            '''
+    # --------------------------------------------
+    #  FIXME
+    #   this is a temporary solution,
+    #   we will need a better solution
+    # --------------------------------------------
+    def _get_apfqname(self, host_name):
+        '''
+        check if host_name is one of the hosts in the DB
+        If it is, return the apfqname for that entry
+        '''
 
-            self.log.debug('_get_apfqname: Starting with host_name=%' %host_name)
+        self.log.debug('_get_apfqname: Starting with host_name=%' %host_name)
 `
-            for vm in self.list_vm:
-                if host_name.startswith(vm.host_name):
-                    self.log.debug('_get_apfqname: entry in the DB with host_name=%s found' %host_name)
-                    out = vm.apfqname 
-            out=None
+        for vm in self.list_vm:
+            if host_name.startswith(vm.host_name):
+                self.log.debug('_get_apfqname: entry in the DB with host_name=%s found' %host_name)
+                out = vm.apfqname 
+        out=None
 
-            self.log.debug('_get_apfqname: Leaving with output=%' %out)
-            return out 
+        self.log.debug('_get_apfqname: Leaving with output=%' %out)
+        return out 
 
 
 
