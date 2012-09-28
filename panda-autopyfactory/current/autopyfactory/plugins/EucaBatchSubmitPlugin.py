@@ -60,6 +60,9 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         if n<0:
             self.log.debug('n is less than 0, killing VMs instead of launching new ones')
             self._kill(-n)
+        
+        # now we need to terminate all VM with no startd active
+        self._purge()
 
         # after finishing everything the DB session has to be saved 
         self.persistencedb.save()
@@ -152,7 +155,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         We do it using command condor_off. 
         There are two ways:
             $condor_off -peaceful -pool gridtest03.racf.bnl.gov:29660 -addr 10.0.0.11
-            $condor_off -peaceful -pool gridtest03.racf.bnl.gov:29660 -name server-465
+            $condor_off -peaceful -pool gridtest03.racf.bnl.gov:29660 -name server-465.novalocal
         '''
         # ---------------------------------------------------------
         #
@@ -179,17 +182,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         self.log.debug('_stop_startd: Leaving')
 
 
-
-    #  -------------------------------------------------------------
-    #
-    #       FIXME
-    #
-    #   Maybe all of this can be done in the Euca BatchStatus Plugin
-    #   since I am running here again (!) condor_status
-    #
-    #  -------------------------------------------------------------
-
-    def _stop_vm(self):
+    def _purge(self):
         '''
         Terminates all VMs with no startd running.
         They appear in the DB with startd_status = None (None as string)
@@ -198,34 +191,14 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
             $ euca-terminate-instances i-0000022e i-0000022f --conf /home/jhover/nova-essex/novarc
 
         '''
-        self.log.debug('_stop_vm: Starting')
+        self.log.debug('_purge: Starting')
 
         for vm in self.persistencedb.list_vm:
             if vm.startd_status == 'None'
-                self.log.info('_stop_vm: vm % has no startd active.' %vm.vm_instance)
+                self.log.info('_purge: vm % has no startd active.' %vm.vm_instance)
                 self._terminate_instance(vm)
 
-        self.log.debug('_stop_vm: Leaving')
-
-
-    def self._host_in_condor(self, host, list_condor_hosts):
-        '''
-        checks if host is in the list.
-        
-        host looks like server-557
-        items in list_condor_hosts look like  server-456.novalocal
-        '''
-
-        self.log.debug('_host_in_db: Starting for host=%s' %host)
-
-        out = False # default value
-        for i in list_condor_hosts:
-            if i.startswith(host):
-                out = True
-                break 
-
-        self.log.debug('_host_in_db: Leaving with output=%s' %out)
-        return out
+        self.log.debug('_purge: Leaving')
 
 
     def _terminate_instance(self, vm):
@@ -340,3 +313,18 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
     ###         if activity in ['Busy' , 'Idle']:
     ###                 list_hosts.append( line ) 
     ###     return list_hosts
+
+    ### def self._host_in_condor(self, host, list_condor_hosts):
+    ###     '''
+    ###     checks if host is in the list.
+    ###     host looks like server-557
+    ###     items in list_condor_hosts look like  server-456.novalocal
+    ###     '''
+    ###     self.log.debug('_host_in_db: Starting for host=%s' %host)
+    ###     out = False # default value
+    ###     for i in list_condor_hosts:
+    ###         if i.startswith(host):
+    ###             out = True
+    ###             break 
+    ###     self.log.debug('_host_in_db: Leaving with output=%s' %out)
+    ###     return out
