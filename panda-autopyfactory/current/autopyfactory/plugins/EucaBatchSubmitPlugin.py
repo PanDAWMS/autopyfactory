@@ -16,6 +16,9 @@ from autopyfactory.interfaces import BatchSubmitInterface
 import autopyfactory.utils as utils
 import jsd 
 
+from persistent import *
+
+
 __author__ = "John Hover, Jose Caballero"
 __copyright__ = "2011 John Hover, Jose Caballero"
 __credits__ = []
@@ -38,6 +41,12 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         self.fcl = apfqueue.factory.fcl
         self.qcl = apfqueue.qcl
         self.condorpool = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.euca.condorpool', 'get', logger=self.log)
+        
+        # We need to know which APFQueue originally launched 
+        # each VM. 
+        # That info is recorded in a DB. 
+        # We need to query that DB. 
+        self._queryDB()
 
         self.log.info('BatchSubmitPlugin: Object initialized.')
 
@@ -52,6 +61,10 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         if n<0:
             self.log.debug('n is less than 0, killing VMs instead of launching new ones')
             self._kill(-n)
+
+        # after finishing everything the DB session has to be saved 
+        self.persistencedb.save()
+       
         self.log.debug('submit: Leaving.')
 
     def _submit(self, n):
@@ -196,6 +209,31 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         self.log.debug('_stop_vm: Leaving')
 
 
+
+    def _queryDB(self):
+        '''
+        ancilla method to query the DB to find out
+        which APFQueue launched each VM instance
+        It returns a dictionary:
+            keys are the vm instances
+            values are the APFQueue names
+        '''
+
+        self.log.debug('_queryDB: Starting')
+
+        self.persistencedb = PersistenceDB(self.apfqueue.fcl), VMInstance)
+        self.persistencedb.createsession()
+
+        self.list_vm = self.persistencedb.query()
+
+        self.dict_vm_apfqname = {}
+        for i in self.list_vm:
+            self.dict_vm_apfqname[i.host_name] = i.apfqname
+
+        self.log.debug('_queryDB: Leaving')
+
+
+
     def _queryDB_hosts(self):
         '''
         ancilla method to query the DB to find out
@@ -207,16 +245,10 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
         self.log.debug('_queryDB: Starting')
 
-        from persistent import *
 
         o = PersistenceDB(self.apfqueue.fcl), VMInstance)
         o.createsession()
 
-        list_vm = o.query()
-        dict_hosts = {}
-        for i in list_vm:
-            if i.apfqname = self.apfqname:
-                    list_hosts[i.host_name] = i.vm_instance
 
         self.log.debug('_queryDB: Leaving with dict %s' %dict_hosts)
         return list_hosts
