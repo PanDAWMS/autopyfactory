@@ -96,29 +96,29 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
             if fields[0] == 'INSTANCE':
                 vm_instance = fields[1]
                 host_name = fields[3]
-                list_vm.append( (vm_instance, host_name) )
+                list_new_vm.append( (vm_instance, host_name) )
         
-        self._addDB(list_vm)
+        self._addDB(list_new_vm)
         self.log.debug('_submit: Leaving')
 
-    def _addDB(self, list_vm):
+    def _addDB(self, list_new_vm):
         '''
         ancilla method to add new entries to the DB
         so later on we will know it was this APFQueue
         the one who launched these VM instances
 
-        list_vm is a list of pairs (vm_instance, host_name)
+        list_new_vm is a list of pairs (vm_instance, host_name)
         '''
 
         self.log.debug('_addDB: Starting')
 
-        instances = []
-        for vm in list_vm:
+        new_instances = []
+        for vm in list_new_vm:
             vm_instance = vm[0]
             host_name = vm[1]
-            instances.append( VMInstance(apfqname=self.apfqname, vm_instance=vm_instance, host_name=host_name ) ) 
+            new_instances.append( VMInstance(apfqname=self.apfqname, vm_instance=vm_instance, host_name=host_name ) ) 
 
-        o.add_all(instances)
+        o.add_all(new_instances)
         o.save()
         self.log.debug('_addDB: Leaving')
 
