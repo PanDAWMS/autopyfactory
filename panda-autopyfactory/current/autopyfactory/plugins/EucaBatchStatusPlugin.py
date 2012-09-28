@@ -328,9 +328,15 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         hostname comes from condor_status. It looks like server-486.novalocal
         The value of host_name in the DB comes from euca-run-instances. It looks like server-486
         '''
+
+        self.log.debug('_upateDB: Starting with inputs hostname=% activity=%' %(hostname, activity))
+
         for vm in self.list_vm:
             if hostname.startswith(vm.host_name):
+                self.log.debug('_upateDB: entry in the DB with host_name=%s being updated' %vm.host_name)
                 vm.startd_status = activity
+
+        self.log.debug('_upateDB: Leaving')
 
 
     def join(self, timeout=None):
