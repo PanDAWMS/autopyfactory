@@ -155,6 +155,9 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.log.error("_update: Exception: %s" % str(e))
             self.log.debug("Exception: %s" % traceback.format_exc())            
 
+        # close the DB session
+        self.persistencedb.save()
+
         self.log.debug('__update: Leaving.')
 
     def _query(self):
@@ -289,6 +292,9 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 if activity == 'Retiring':
                     batchstatusinfo[apfqname].done += 1
 
+                # if needed, update the session in the DB
+                self._updateDB(host_name, activity)
+
         self.log.debug('_parseoutput: Leaving')
         return batchstatusinfo
 
@@ -303,7 +309,6 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
         self.log.debug('_queryDB: Starting')
 
-
         self.persistencedb = PersistenceDB(self.apfqueue.fcl), VMInstance)
         self.persistencedb.createsession()
         
@@ -314,6 +319,19 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         self.log.debug('_queryDB: Leaving with dictionary %s' %dict_vm)
         return dict_vm
+
+    def _updateDB(self, hostname, activity):
+        '''
+        search for the VMInstance in the session corresponding to that 
+        host name, and update the value of startd_status (==activity)
+        
+        hostname comes from condor_status. It looks like server-486.novalocal
+        The value of host_name in the DB comes from euca-run-instances. It looks like server-486
+        '''
+        for vm in self.dict_vm_apfqname:
+            if hostname.startswith(vm.host_name):
+                vm.startd_status = activity
+
 
     def join(self, timeout=None):
         ''' 
