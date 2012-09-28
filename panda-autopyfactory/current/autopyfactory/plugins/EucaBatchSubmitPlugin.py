@@ -112,10 +112,6 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         '''
 
         self.log.debug('_addDB: Starting')
-        from persistent import *
-        
-        o = PersistenceDB(self.fcl), VMInstance)
-        o.createsession()
 
         instances = []
         for vm in list_vm:
@@ -192,6 +188,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
     def _stop_vm(self):
         '''
         Terminates all VMs with no startd running.
+        They appear in the DB with startd_status = None (None as string)
         Command to terminate a VM looks like:
 
             $ euca-terminate-instances i-0000022e i-0000022f --conf /home/jhover/nova-essex/novarc
@@ -199,17 +196,20 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         '''
         self.log.debug('_stop_vm: Starting')
 
-        db_hosts = self._queryDB_hosts()
-        list_condor_hosts = self._condor_hosts()
-
-        for host, vm_instance in db_hosts.iteritems():
-            if not self._host_in_condor(host, list_condor_hosts):
-                self._terminate_instance( vm_instance )
+        for vm in self.list_vm:
+            if vm.startd_status == 'None'
+                self.log.info('_stop_vm: vm % has no startd active.' %vm.vm_instance)
+                self._terminate_instance(vm)
 
         self.log.debug('_stop_vm: Leaving')
 
 
 
+    # ----------------------------------------------------
+    #   FIXME
+    #       this code is repeated in Euca Status Plugin
+    #       maybe it should be in persistent.py
+    # ----------------------------------------------------
     def _queryDB(self):
         '''
         ancilla method to query the DB to find out
@@ -228,42 +228,36 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
 
 
-    def _queryDB_hosts(self):
-        '''
-        ancilla method to query the DB to find out
-        which APFQueue launched each VM instance
-        It returns a dictionary for this particular APFQueue:
-            - keys are the host name
-            - values are the vm instance
-        '''
+    ### def _queryDB_hosts(self):
+    ###     '''
+    ###     ancilla method to query the DB to find out
+    ###     which APFQueue launched each VM instance
+    ###     It returns a dictionary for this particular APFQueue:
+    ###         - keys are the host name
+    ###         - values are the vm instance
+    ###     '''
+    ###     self.log.debug('_queryDB: Starting')
+    ###     o = PersistenceDB(self.apfqueue.fcl), VMInstance)
+    ###     o.createsession()
+    ###     self.log.debug('_queryDB: Leaving with dict %s' %dict_hosts)
+    ###     return list_hosts
 
-        self.log.debug('_queryDB: Starting')
-
-
-        o = PersistenceDB(self.apfqueue.fcl), VMInstance)
-        o.createsession()
-
-
-        self.log.debug('_queryDB: Leaving with dict %s' %dict_hosts)
-        return list_hosts
-
-    def _condor_hosts(self):
-        '''
-        runs condor_status to get the list of hostnames
-        '''
-        # -----------------------------------------------------
-        # FIXME
-        #   I am running condor_status again!!!
-        # -----------------------------------------------------
-
-        list_hosts = []
-        querycmd = 'condor_status --pool %s -format "Name=%s\n" Name' % self.condorpool
-        p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        (out, err) = p.communicate()
-        for line in output.split('\n'):
-           host = line.split('=')[1]
-           list_hosts.append(host) 
-        return list_hosts
+    ### def _condor_hosts(self):
+    ###     '''
+    ###     runs condor_status to get the list of hostnames
+    ###     '''
+    ###     # -----------------------------------------------------
+    ###     # FIXME
+    ###     #   I am running condor_status again!!!
+    ###     # -----------------------------------------------------
+    ###     list_hosts = []
+    ###     querycmd = 'condor_status --pool %s -format "Name=%s\n" Name' % self.condorpool
+    ###     p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    ###     (out, err) = p.communicate()
+    ###     for line in output.split('\n'):
+    ###        host = line.split('=')[1]
+    ###        list_hosts.append(host) 
+    ###     return list_hosts
 
 
     def self._host_in_condor(self, host, list_condor_hosts):
@@ -305,10 +299,24 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         
 
 
-    def _terminate_instance(self, vm_instance):
+    def _terminate_instance(self, vm):
         '''
         terminates a single instance
+            - use command euca-terminate-instances to terminate the instance
+            - remove the entry from the session
         '''
+        self.log.debug('_terminate_instance: Starting for vm_instance=%s' %vm_instance)
+        self._kill_instance(vm)
+        self._delete_instance(vm)
+        self.log.debug('_terminate_instance: Leaving')
+
+
+    def _kill_instance(self, vm):
+        '''
+        run euca command to terminate a given instance
+        vm is one of the object from the self.list_vm (class VMInstance)
+        '''
+
         # -----------------------------------------------------
         # FIXME
         #   - maybe is more efficient to terminate a list of instances at once
@@ -316,10 +324,21 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         #   - so far, the remote host is hardcoded
         # -----------------------------------------------------
 
+        self.log.debug('_kill_instance: Starting for instance %s' vm.vm_instance)
 
-        self.log.debug('_terminate_instance: Starting for vm_instance=%s' %vm_instance)
-        cmd = 'ssh gridreserve30.usatlas.bnl.gov "euca-terminate-instances %s --conf /home/jhover/nova-essex/novarc"' %vm_instance
-        self.log.info('_terminate_instance: cmd is %s' %cmd)
+        cmd = 'ssh gridreserve30.usatlas.bnl.gov "euca-terminate-instances %s --conf /home/jhover/nova-essex/novarc"' %vm.vm_instance
+        self.log.info('_kill_instance: cmd is %s' %cmd)
         commands.getoutput(cmd)
-        self.log.debug('_terminate_instance: Leaving')
+
+        self.log.debug('_kill_instance: Leaving')
+
+    def _delete_instance(self, vm):
+        '''
+        vm is one of the object from the self.list_vm (class VMInstance)
+        Delete it from the list
+        '''
+
+        self.log.debug('_delete_instance: Starting for instance %s' vm.vm_instance)
+        self.persistencedb.delete(vm)
+        self.log.debug('_delete_instance: Leaving')
 
