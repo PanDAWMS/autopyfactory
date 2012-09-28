@@ -18,6 +18,8 @@ from autopyfactory.factory import Singleton, CondorSingleton
 from autopyfactory.info import InfoContainer
 from autopyfactory.info import BatchQueueInfo
 
+from persistent import *
+
 __author__ = "John Hover, Jose Caballero"
 __copyright__ = "2011 John Hover, Jose Caballero"
 __credits__ = []
@@ -26,6 +28,7 @@ __version__ = "2.1.0"
 __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
+
 
 class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     '''
@@ -67,6 +70,13 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             # variable to record when was last time info was updated
             # the info is recorded as seconds since epoch
             self.lasttime = 0
+
+            # We need to know which APFQueue originally launched 
+            # each VM. 
+            # That info is recorded in a DB. 
+            # We need to query that DB. 
+            self.dict_vm_apfqname = self._queryDB()
+
             self.log.info('BatchStatusPlugin: Object initialized.')
         except:
             self._valid = False
@@ -247,11 +257,6 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         batchstatusinfo = InfoContainer('batch', BatchQueueInfo())
 
-        # We need to know which APFQueue originally launched 
-        # each VM. 
-        # That info is recorded in a DB. 
-        # We need to query that DB. 
-        dict_vm_apfqname = self._queryDB()
 
         # analyze output of condor_status command
         
@@ -268,7 +273,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             state = fields[2].split('=')[1]
             ip = fields[3].split('=')[1]  # not really...
 
-            apfqname = dict_vm_apfqname.get(host_name)
+            apfqname = self.dict_vm_apfqname.get(host_name)
             if apfqname:
                 # There could be VMs not launched by APF.
                 # Those will no be in the DB. 
@@ -298,7 +303,6 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
         self.log.debug('_queryDB: Starting')
 
-        from persistent import *
 
         o = PersistenceDB(self.apfqueue.fcl), VMInstance)
         o.createsession()
