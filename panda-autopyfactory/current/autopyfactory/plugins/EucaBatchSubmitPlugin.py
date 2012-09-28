@@ -101,6 +101,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         self._addDB(list_new_vm)
         self.log.debug('_submit: Leaving')
 
+
     def _addDB(self, list_new_vm):
         '''
         ancilla method to add new entries to the DB
