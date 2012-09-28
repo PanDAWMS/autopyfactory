@@ -279,7 +279,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             state = fields[2].split('=')[1]
             ip = fields[3].split('=')[1]  # not really... FIXME  
 
-            apfqname = self._get_apfqname(self.dict_vm_apfqname, host_name)
+            apfqname = self._get_apfqname(host_name)
             if apfqname:
                 # There could be VMs not launched by APF.
                 # Those will no be in the DB. 
@@ -300,22 +300,16 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
     def _queryDB(self):
         '''
-        ancilla method to query the DB to find out
-        which APFQueue launched each VM instance
-        It returns a dictionary:
-            keys are the vm instances
-            values are the APFQueue names
+        ancilla method to query the DB 
+        It creates a list with Instance objects
         '''
+
         self.log.debug('_queryDB: Starting')
 
         self.persistencedb = PersistenceDB(self.apfqueue.fcl), VMInstance)
         self.persistencedb.createsession()
         
         self.list_vm = self.persistencedb.query()
-
-        self.dict_vm_apfqname = {}
-        for i in self.list_vm:
-            self.dict_vm_apfqname[i.host_name] = i.apfqname
 
         self.log.debug('_queryDB: Leaving')
 
