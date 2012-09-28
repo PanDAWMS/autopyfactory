@@ -304,10 +304,10 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         self.log.debug('_queryDB: Starting')
 
 
-        o = PersistenceDB(self.apfqueue.fcl), VMInstance)
-        o.createsession()
+        self.session = PersistenceDB(self.apfqueue.fcl), VMInstance)
+        self.session.createsession()
         
-        list_vm = o.query()
+        list_vm = self.session.query()
         dict_vm = {}
         for i in list_vm:
             dict_vm[i.host_name] = i.apfqname
