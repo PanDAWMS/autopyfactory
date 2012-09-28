@@ -102,11 +102,12 @@ class PersistenceDB(object):
         self.metadata = Base.metadata
         self.metadata.create_all(self.engine)
 
-    def createsession(self):
-    
-        Session = sessionmaker()
-        Session.configure(bind=self.engine)
-        self.session = Session()
+        # create the session
+        self.session = sessionmaker()
+        self.session.configure(bind=self.engine)
+
+        # query
+        self.list_vm = self.session.query(self.instance_type).all()
         
     def _commitsession(self):
         self.session.commit()
