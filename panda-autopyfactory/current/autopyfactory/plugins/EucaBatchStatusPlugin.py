@@ -279,10 +279,12 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             ip = fields[3].split('=')[1]  # not really... FIXME  
 
             apfqname = self._get_apfqname(condor_host_name)
+
+            # There could be VMs not launched by APF.
+            # Those will no be in the DB. 
+            # We ignore them
             if apfqname:
-                # There could be VMs not launched by APF.
-                # Those will no be in the DB. 
-                # We ignore them
+
                 if apfqname not in batchstatusinfo.keys():
                     batchstatusinfo[apfqname] = BatchQueueInfo()
 
