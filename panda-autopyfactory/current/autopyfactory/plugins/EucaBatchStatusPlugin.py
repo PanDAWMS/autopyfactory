@@ -75,7 +75,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             # each VM. 
             # That info is recorded in a DB. 
             # We need to query that DB. 
-            self.dict_vm_apfqname = self._queryDB()
+            self._queryDB()
 
             self.log.info('BatchStatusPlugin: Object initialized.')
         except:
@@ -312,13 +312,13 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         self.persistencedb = PersistenceDB(self.apfqueue.fcl), VMInstance)
         self.persistencedb.createsession()
         
-        list_vm = self.persistencedb.query()
-        dict_vm = {}
-        for i in list_vm:
-            dict_vm[i.host_name] = i.apfqname
+        self.list_vm = self.persistencedb.query()
 
-        self.log.debug('_queryDB: Leaving with dictionary %s' %dict_vm)
-        return dict_vm
+        self.dict_vm_apfqname = {}
+        for i in self.list_vm:
+            self.dict_vm_apfqname[i.host_name] = i.apfqname
+
+        self.log.debug('_queryDB: Leaving')
 
     def _updateDB(self, hostname, activity):
         '''
