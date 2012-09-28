@@ -273,7 +273,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             host_name = fields[0].split('=')[1]
             activity = fields[1].split('=')[1]
             state = fields[2].split('=')[1]
-            ip = fields[3].split('=')[1]  # not really...
+            ip = fields[3].split('=')[1]  # not really... FIXME  
 
             apfqname = self._get_apfqname(self.dict_vm_apfqname, host_name)
             if apfqname:
@@ -281,8 +281,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 # Those will no be in the DB. 
                 # We ignore them
                 if apfqname not in batchstatusinfo.keys():
-                    qi = BatchQueueInfo()
-                    batchstatusinfo[apfqname] = qi
+                    batchstatusinfo[apfqname] = BatchQueueInfo()
 
                 if activity == 'Busy':
                     batchstatusinfo[apfqname].running += 1
