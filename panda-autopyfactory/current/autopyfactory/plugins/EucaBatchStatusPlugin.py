@@ -348,21 +348,28 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     #   this is a temporary solution,
     #   we will need a better solution
     #
-    #   We should consider using like() in filter_by(): 
+    #   We should consider using filter_by()
+    #   and, if needed, like(): 
     #       session.query().filter_by(  var.like(...) )
     # --------------------------------------------
-    def _get_apfqname(self, host_name):
+    def _get_apfqname(self, condor_host_name):
         '''
         check if host_name is one of the hosts in the DB
         If it is, return the apfqname for that entry
         '''
 
         self.log.debug('_get_apfqname: Starting with host_name=%' %host_name)
-`
+
+        #for vm in self.persistencedb.list_vm:
+        #    if host_name.startswith(vm.host_name):
+        #        self.log.debug('_get_apfqname: entry in the DB with host_name=%s found' %host_name)
+        #        out = vm.apfqname 
+
         for vm in self.persistencedb.list_vm:
-            if host_name.startswith(vm.host_name):
-                self.log.debug('_get_apfqname: entry in the DB with host_name=%s found' %host_name)
+            if vm.condor_host_name == condor_host_name:
+                self.log.debug('_get_apfqname: entry in the DB with condor_host_name=%s found' %condor_host_name)
                 out = vm.apfqname 
+
         out=None
 
         self.log.debug('_get_apfqname: Leaving with output=%' %out)
