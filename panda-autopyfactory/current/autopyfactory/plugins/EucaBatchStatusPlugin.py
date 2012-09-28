@@ -342,6 +342,12 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             for line in output.split('\n'):
                 fields = line.split()
                 condor_host_name = fields[0].split('=')[1]  # looks like server-456.novalocal
+
+                # if the condor_host_name column in the VM has no value,
+                # add it now
+                if vm.condor_host_name != condor_host_name:
+                    vm.condor_host_name = condor_host_name
+
                 activity = fields[1].split('=')[1]
 
                 if condor_host_name.startswith(vm_host):
