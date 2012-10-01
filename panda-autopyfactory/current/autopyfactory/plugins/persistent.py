@@ -120,7 +120,7 @@ class PersistenceDB(object):
         #        instead of getting everything and 
         #        searching for the object we are interested in
         #
-        instances = self.query()
+        instances = self.session.query(self.instance_type).all()
         for i in instances:
             if i == reference:
                 return i
