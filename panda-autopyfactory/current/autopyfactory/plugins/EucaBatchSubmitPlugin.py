@@ -126,7 +126,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
             host_name = vm[1]
             new_instances.append( VMInstance(apfqname=self.apfqname, vm_instance=vm_instance, host_name=host_name ) ) 
 
-        self.persistencedb.add_all(new_instances)
+        self.persistencedb.session.add_all(new_instances)
         self.log.debug('_addDB: Leaving')
 
 
@@ -250,7 +250,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         '''
 
         self.log.debug('_delete_instance: Starting for instance %s' vm.vm_instance)
-        self.persistencedb.delete(vm)
+        self.persistencedb.session.delete(vm)
         self.log.debug('_delete_instance: Leaving')
 
 
