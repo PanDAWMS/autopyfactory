@@ -74,7 +74,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             # We need to know which APFQueue originally launched each VM. 
             # That info is recorded in a DB. 
             # We need to query that DB. 
-            self.persistencedb = PersistenceDB(self.apfqueue.fcl), VMInstance)
+            self.persistencedb = PersistenceDB(self.apfqueue.fcl, VMInstance)
 
             self.log.info('BatchStatusPlugin: Object initialized.')
         except:
