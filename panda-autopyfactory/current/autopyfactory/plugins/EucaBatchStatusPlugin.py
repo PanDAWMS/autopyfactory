@@ -367,6 +367,8 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         self.log.debug('_get_apfqname: Starting with host_name=%' %host_name)
 
+        out=None   # default output
+
         #for vm in self.persistencedb.list_vm:
         #    if host_name.startswith(vm.host_name):
         #        self.log.debug('_get_apfqname: entry in the DB with host_name=%s found' %host_name)
@@ -376,8 +378,6 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             if vm.condor_host_name == condor_host_name:
                 self.log.debug('_get_apfqname: entry in the DB with condor_host_name=%s found' %condor_host_name)
                 out = vm.apfqname 
-
-        out=None
 
         self.log.debug('_get_apfqname: Leaving with output=%' %out)
         return out 
