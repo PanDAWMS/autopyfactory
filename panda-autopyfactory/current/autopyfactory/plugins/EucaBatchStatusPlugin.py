@@ -324,20 +324,21 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         for vm in self.persistencedb.list_vm:
             for line in output.split('\n'):
-                fields = line.split()
-                condor_host_name = fields[0].split('=')[1]  # looks like server-456.novalocal
+                if line != '':
+                    fields = line.split()
+                    condor_host_name = fields[0].split('=')[1]  # looks like server-456.novalocal
 
-                activity = fields[1].split('=')[1]
+                    activity = fields[1].split('=')[1]
 
-                if condor_host_name.startswith(vm.host_name): # vm.host_name looks like server-456
-                    vm.startd_status = activity 
+                    if condor_host_name.startswith(vm.host_name): # vm.host_name looks like server-456
+                        vm.startd_status = activity 
 
-                    # if the condor_host_name column in the VM has no value,
-                    # add it now
-                    if vm.condor_host_name != condor_host_name:
-                        vm.condor_host_name = condor_host_name
+                        # if the condor_host_name column in the VM has no value,
+                        # add it now
+                        if vm.condor_host_name != condor_host_name:
+                            vm.condor_host_name = condor_host_name
 
-                    break
+                        break
             else:
                 # no hostname from condor_status is in the DB
                 # That means that startd is gone 
