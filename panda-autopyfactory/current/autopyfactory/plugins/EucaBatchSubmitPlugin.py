@@ -203,7 +203,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         self.log.debug('_purge: Starting')
 
         for vm in self.persistencedb.list_vm:
-            if vm.startd_status == 'None'
+            if vm.startd_status == 'None':
                 self.log.info('_purge: vm % has no startd active.' %vm.vm_instance)
                 self._terminate_instance(vm)
 
