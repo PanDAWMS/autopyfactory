@@ -147,12 +147,13 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             if not strout:
                 self.log.warning('_update: output of query is not valid. Not parsing it. Skip to next loop.') 
             else:
-                newinfo = self._parseoutput(strout)
-                self.log.info("Replacing old info with newly generated info.")
-                self.currentinfo = newinfo
 
                 # update the session in the DB
                 self._updateDB(strout)
+
+                newinfo = self._parseoutput(strout)
+                self.log.info("Replacing old info with newly generated info.")
+                self.currentinfo = newinfo
 
         except Exception, e:
             self.log.error("_update: Exception: %s" % str(e))
