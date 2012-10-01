@@ -97,7 +97,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         st, out = exitStatus, output
 
         # parse the output after submitting
-        list_vm = []
+        list_new_vm = []
         for line in out.split('\n'):
             fields = line.split()
             if fields[0] == 'INSTANCE':
