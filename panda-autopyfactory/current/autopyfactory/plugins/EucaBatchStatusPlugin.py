@@ -274,28 +274,29 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         # -------------------------------------------
 
         for line in output.split('\n'):
-            fields = line.split()
-            condor_host_name = fields[0].split('=')[1]
-            activity = fields[1].split('=')[1]
-            state = fields[2].split('=')[1]
-            ip = fields[3].split('=')[1]  # not really... FIXME  
+            if line != '':
+                fields = line.split()
+                condor_host_name = fields[0].split('=')[1]
+                activity = fields[1].split('=')[1]
+                state = fields[2].split('=')[1]
+                ip = fields[3].split('=')[1]  # not really... FIXME  
 
-            apfqname = self._get_apfqname(condor_host_name)
+                apfqname = self._get_apfqname(condor_host_name)
 
-            # There could be VMs not launched by APF.
-            # Those will no be in the DB. 
-            # We ignore them
-            if apfqname:
+                # There could be VMs not launched by APF.
+                # Those will no be in the DB. 
+                # We ignore them
+                if apfqname:
 
-                if apfqname not in batchstatusinfo.keys():
-                    batchstatusinfo[apfqname] = BatchQueueInfo()
+                    if apfqname not in batchstatusinfo.keys():
+                        batchstatusinfo[apfqname] = BatchQueueInfo()
 
-                if activity == 'Busy':
-                    batchstatusinfo[apfqname].running += 1
-                if activity == 'Idle':
-                    batchstatusinfo[apfqname].running += 1
-                if activity == 'Retiring':
-                    batchstatusinfo[apfqname].done += 1
+                    if activity == 'Busy':
+                        batchstatusinfo[apfqname].running += 1
+                    if activity == 'Idle':
+                        batchstatusinfo[apfqname].running += 1
+                    if activity == 'Retiring':
+                        batchstatusinfo[apfqname].done += 1
 
         self.log.debug('_parseoutput: Leaving')
         return batchstatusinfo
