@@ -86,7 +86,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     def getInfo(self, maxtime=0):
         '''
         Returns a BatchStatusInfo object populated by the analysis 
-        over the output of a euca-describe-instances command
+        over the output of a condor_status command
 
         Optionally, a maxtime parameter can be passed.
         In that case, if the info recorded is older than that maxtime,
