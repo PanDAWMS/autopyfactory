@@ -186,7 +186,9 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         # this is a temporary solution:
         #       we dont use yet XML, but raw data instead
         # -------------------------------------------
-        querycmd = 'condor_status --pool %s -format "Name=%s " Name -format "Activity=%s " Activity -format "State=%s " State -format "IP=%s\n" MyAddress' % self.condorpool
+        #querycmd = 'condor_status --pool %s -format "Name=%s " Name -format "Activity=%s " Activity -format "State=%s " State -format "IP=%s\n" MyAddress' % self.condorpool
+        querycmd = 'condor_status --pool gridtest03.racf.bnl.gov:29660 -format "Name=%s " Name -format "Activity=%s " Activity -format "State=%s " State -format "IP=%s\n" MyAddress' 
+
         # Note:
         #   There will be VMs with no startd active. 
         #   That is because in a previous cycle, the startd was order to stop.
