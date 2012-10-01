@@ -32,7 +32,7 @@ class VMInstance(Base):
            VMInstance( **d ) 
     '''
 
-    __tablename __ = "VMInstances"
+    __tablename__ = "VMInstances"
     id = Column(Integer, primary_key=True)
     apfqname = Column(String)
     vm_instance = Column(String)
@@ -103,8 +103,9 @@ class PersistenceDB(object):
         self.metadata.create_all(self.engine)
 
         # create the session
-        self.session = sessionmaker()
-        self.session.configure(bind=self.engine)
+        _session = sessionmaker()
+        _session.configure(bind=self.engine)
+        self.session = _session()
 
         # query
         self.list_vm = self.session.query(self.instance_type).all()
