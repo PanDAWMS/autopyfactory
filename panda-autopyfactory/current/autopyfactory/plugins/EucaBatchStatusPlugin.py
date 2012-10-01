@@ -378,6 +378,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             if vm.condor_host_name == condor_host_name:
                 self.log.debug('_get_apfqname: entry in the DB with condor_host_name=%s found' %condor_host_name)
                 out = vm.apfqname 
+                break
 
         self.log.debug('_get_apfqname: Leaving with output=%' %out)
         return out 
