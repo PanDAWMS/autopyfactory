@@ -180,7 +180,8 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
                 #   FIXME
                 #       for the time being, some values are hardcoded
                 #  --------------------------------------------
-                cmd = 'ssh root@grid13.racf.bnl.gov "condor_off -peaceful -pool %s -name %s"' %(self.condorpool, vm.condor_host_name)
+                #cmd = 'ssh root@grid13.racf.bnl.gov "condor_off -peaceful -pool %s -name %s"' %(self.condorpool, vm.condor_host_name)
+                cmd = 'ssh root@grid13.racf.bnl.gov "condor_off -peaceful -pool gridtest03.racf.bnl.gov:29660 -name %s"' %( vm.condor_host_name)
                 self.log.info('_stop_startd: stopping startd with cmd = %s' %cmd)
                 commands.getoutput(cmd)
                 i += 1
