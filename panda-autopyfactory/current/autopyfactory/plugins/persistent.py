@@ -110,9 +110,6 @@ class PersistenceDB(object):
         # query
         self.list_vm = self.session.query(self.instance_type).all()
         
-    def _commitsession(self):
-        self.session.commit()
-
     def getinstance(self, reference):
         #
         #  Note: maybe this can be done better 
@@ -126,23 +123,6 @@ class PersistenceDB(object):
                 return i
         return None
 
-    def query(self):
-        return self.session.query(self.instance_type).all()
-
-    def add(self, instance):
-        self.session.add(instance)
-
-    def add_all(self, list_instance):
-        self.session.add_all(list_instance)
-
-    def delete(self, instance):
-        #
-        # Note: maybe it is possible to do this:
-        #       session.query().filter(foo=bar).delete()
-        #       hmmm. seems to work only when it returns a single object, not a list
-        #
-        self.session.delete(instance)
-
     def save(self):
         self.session.flush()
         self.session.commit()
@@ -153,11 +133,10 @@ class PersistenceDB(object):
 #conf = SafeConfigParser()
 #conf.readfp( open('path_to_conf') )
 #o = PersistenceDB(conf, VMInstance)
-#o.createsession()
 
-#o.add(VMInstance(apfqname='APFQ1', vm_instance='i_0000fb'))
+#o.session.add(VMInstance(apfqname='APFQ1', vm_instance='i_0000fb'))
 #o.save()
 
 #i = o.getinstance(VMInstance(apfqname = 'APFQ1', vm_instance = 'i_0000fb'))
-#o.delete(i)
+#o.session.delete(i)
 #o.save()
