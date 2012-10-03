@@ -235,7 +235,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         #   - so far, the remote host is hardcoded
         # -----------------------------------------------------
 
-        self.log.debug('_kill_instance: Starting for instance %s' vm.vm_instance)
+        self.log.debug('_kill_instance: Starting for instance %s' % vm.vm_instance)
 
         cmd = 'ssh gridreserve30.usatlas.bnl.gov "euca-terminate-instances %s --conf /home/jhover/nova-essex/novarc"' %vm.vm_instance
         self.log.info('_kill_instance: cmd is %s' %cmd)
@@ -250,7 +250,7 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
         Delete it from the list
         '''
 
-        self.log.debug('_delete_instance: Starting for instance %s' vm.vm_instance)
+        self.log.debug('_delete_instance: Starting for instance %s' % vm.vm_instance)
         self.persistencedb.session.delete(vm)
         self.log.debug('_delete_instance: Leaving')
 
