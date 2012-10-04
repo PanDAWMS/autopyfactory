@@ -54,6 +54,13 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
     def submit(self, n):
 
+        # ------------------------------------------
+        #  FIXME
+        #   this method is supposed to return something
+        #   to be passed to the monitor
+        # ------------------------------------------
+
+
         self.log.debug('submit: Starting with n=%s' %n)
         if n>0:
             self._submit(n)
