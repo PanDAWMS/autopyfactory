@@ -46,6 +46,6 @@ class CondorLSFBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         self.JSD.add('grid_resource=lsf') 
         super(CondorLSFBatchSubmitPlugin, self)._addJSD()
 
-        self.log.debug('CondorEC2BatchSubmitPlugin.addJSD: Leaving.')
+        self.log.debug('CondorLSFBatchSubmitPlugin.addJSD: Leaving.')
 
 
