@@ -935,6 +935,10 @@ wmsstatusplugin = Panda
 configplugin = Panda
 batchsubmitplugin = CondorGT2
 schedplugin = Activated
+monitorplugin = APF
+monitor.apf.url = http://apfmon.lancs.ac.uk/mon/
+
+
 
 sched.trivial.default = 0
 sched.simple.default = 0

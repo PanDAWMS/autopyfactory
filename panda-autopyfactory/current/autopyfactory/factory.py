@@ -733,22 +733,9 @@ class APFQueue(threading.Thread):
         self.batchstatusmaxtime = self.fcl.generic_get('Factory', 'batchstatus.maxtime', default_value=0, logger=self.log)
         self.wmsstatusmaxtime = self.fcl.generic_get('Factory', 'wmsstatus.maxtime', default_value=0, logger=self.log)
 
-        self._startmonitor()
         self._plugins()
 
         self.log.info('APFQueue: Object initialized.')
-
-    def _startmonitor(self):
-
-        self.log.debug('_startmonitor: Starting')
-
-        if self.fcl.has_option('Factory', 'monitorURL'):
-            self.log.info('Instantiating a monitor...')
-            from autopyfactory.monitor import Monitor
-            args = dict(self.fcl.items('Factory'))
-            self.monitor = Monitor(self.fcl)
-
-        self.log.debug('_startmonitor: Leaving')
 
     def _plugins(self):
         '''
@@ -762,7 +749,7 @@ class APFQueue(threading.Thread):
         self.batchsubmit_plugin = pd.submitplugin
         self.batchstatus_plugin = pd.batchstatusplugin
         self.config_plugin = pd.configplugin
-        self.monitor_plugins = pd.monitorplugins
+        self.monitor_plugins = pd.monitorplugins # a list of 1 or more plugins
 
         self.log.debug('_plugins: Leaving')
  
@@ -1001,8 +988,6 @@ class PluginDispatcher(object):
             return None    
 
     def getmonitorplugins(self):
-
-
 
         monitor_classes = self._getplugin('monitor')  # list of classes 
         monitor_plugins = []

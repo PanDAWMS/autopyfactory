@@ -26,7 +26,6 @@
 # factory.sleep
 # factoryUser
 # maxperfactory.maximum
-# monitorURL
 # logserver.enabled 
 # logserver.index 
 # logserver.excluderobots
@@ -111,7 +110,6 @@
 #               pilots with condor.
 #               The value will be used by MaxPerFactorySchedPlugin plugin
 #
-# monitorURL = URL for the web monitor
 #
 # logserver.enabled = determines if batch logs are exported via HTTP.
 #               Valid values are True|False
@@ -158,8 +156,6 @@ factoryId = BNL-gridui11-jhover
 factoryUser = apf
 versionTag = 2.1.0
 enablequeues = True
-
-monitorURL =  http://apfmon.lancs.ac.uk/mon/
 
 queueConf = file:///etc/apf/queues.conf
 proxyConf = /etc/apf/proxy.conf
