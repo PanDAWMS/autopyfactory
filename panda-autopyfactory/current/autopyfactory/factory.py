@@ -1289,4 +1289,43 @@ class CondorSingleton(type):
         return cls.__instance[condor_q_id]
 
 
+def singletonfactory(singletontype='single', id_var=None, id_default=None):
+    '''
+    This is an abstraction of the two previous classes. 
+    We have here a metaclass factory, which will decide 
+    which type of Singleton metaclass returns based on the inputs
+    Usage:
+
+        class A(object):
+            __metaclass__ = singletonfactory()
+
+        class B(object):
+            __metaclass__ = singletonfactory(id_var='condorpool', id_default='local')
+
+    '''
+
+    class Singleton(type):
+
+        if singletontype == 'single':
+
+            def __init__(cls, name, bases, dct):
+                cls.__instance = None 
+                type.__init__(cls, name, bases, dct)
+            def __call__(cls, *args, **kw):
+                  if cls.__instance is None:
+                       cls.__instance = type.__call__(cls, *args,**kw)
+                  return cls.__instance
+
+        if singletontype == 'multi':
+
+            def __init__(cls, name, bases, dct):
+                cls.__instance = {}
+                type.__init__(cls, name, bases, dct)
+            def __call__(cls, *args, **kw):
+                  id = kw.get(id_var, id_default)
+                  if id not in cls.__instance.keys():
+                      cls.__instance[id] = type.__call__(cls, *args,**kw)
+                  return cls.__instance[id]
+
+    return Singleton
 
