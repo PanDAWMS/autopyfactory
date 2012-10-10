@@ -1312,9 +1312,9 @@ def singletonfactory(singletontype='single', id_var=None, id_default=None):
                 cls.__instance = None 
                 type.__init__(cls, name, bases, dct)
             def __call__(cls, *args, **kw):
-                  if cls.__instance is None:
-                       cls.__instance = type.__call__(cls, *args,**kw)
-                  return cls.__instance
+                if cls.__instance is None:
+                    cls.__instance = type.__call__(cls, *args,**kw)
+                return cls.__instance
 
         if singletontype == 'multi':
 
@@ -1322,10 +1322,10 @@ def singletonfactory(singletontype='single', id_var=None, id_default=None):
                 cls.__instance = {}
                 type.__init__(cls, name, bases, dct)
             def __call__(cls, *args, **kw):
-                  id = kw.get(id_var, id_default)
-                  if id not in cls.__instance.keys():
-                      cls.__instance[id] = type.__call__(cls, *args,**kw)
-                  return cls.__instance[id]
+                id = kw.get(id_var, id_default)
+                if id not in cls.__instance.keys():
+                    cls.__instance[id] = type.__call__(cls, *args,**kw)
+                return cls.__instance[id]
 
     return Singleton
 
