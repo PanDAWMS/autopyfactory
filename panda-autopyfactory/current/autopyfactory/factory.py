@@ -889,6 +889,7 @@ class APFQueue(threading.Thread):
 #                     PLUGIN CLASS 
 # ==============================================================================  
 
+
 class PluginDispatcher(object):
     '''
     class to create a deliver, on request, the different plug-ins.
@@ -1088,6 +1089,106 @@ class PluginDispatcher(object):
             self.log.debug("_getplugin: Leaving with plugin named %s" %plugin_class)
             out.append( getattr(plugin_module, plugin_class) )  # with getattr() we extract the actual class from the module object
         return out
+
+
+
+# NOTE: the following code (ContainerLoop and ContainerChain)
+#       is not yet being used. 
+#       It be used in the future.
+#       They implement plugins containers, which would allow
+#       to loop over a given method call for all plugins of
+#       the same category. 
+
+class ContainerLoop:
+    ''' 
+    class to contain a list of objects of some other class. 
+
+    It grabs arbitrary method invocations and performs a loop 
+    over the list of objects, calling that method for each one of them.
+
+    Usage:
+
+        class XZY:
+            ...blah...
+            def f(self):
+              ...
+            def g(self):
+              ...
+
+        o1 = XYZ()
+        o2 = XYZ()	
+        o3 = XYZ()	
+
+        container = ContainerLoop( [o1, o2, o3])
+        container.f()
+        container.g()
+    '''
+
+    def __init__(self, list_objects, mode='multiple'):
+        ''' 
+        list_objects is a list of objects of some class
+        
+        if mode == 'multiple' a list with the output of each 
+            method invocation is returned.
+        if mode == 'single', then only the first item 
+            (supposedly the only one) on the outputs list
+            is returned 
+        ''' 
+
+        self.list_objects = list_objects
+        self.mode = mode
+
+    def __getattr__(self, any_method):
+        '''
+        we catch here a call to any arbitrary method.
+        We create a faked foo method to be able to do this:
+
+            cont = ContainerLoop([x,y.x]
+            cont.f()
+
+        cont.f is itself the foo method, so therefore is allowed
+        to use (). If we just return the outputs, 
+        we would be applying the () to a list.
+
+        Note: if needed, we can ensure any_method is really 
+        a method, and not a regular attribute of the objects, 
+        by a check like 
+
+            ref_obj = self.list_objects[0]
+            type(getattr(ref_obj, any_method)).__name__ == 'instancemethod'
+        '''
+
+        def foo(*args, **kw):
+            outs = []
+            for obj in self.list_objects:
+                out = getattr(obj, any_method)(*args, **kw)
+                outs.append(out)
+            if self.mode == 'multiple':
+               return outs
+            if self.mode == 'single':
+               return outs[0]
+        return foo 
+
+
+class ContainerChain:
+    '''
+    similar to ContainerLoop.
+    Difference is this one feeds each method call with the output
+    from the previous one. 
+    '''	
+
+    def __init__(self,  list_xyz ):
+         self.list_xyz = list_xyz
+
+    def __getattr__(self, any_f):
+        def foo(*args, **kw):
+             out = getattr(self.list_xyz[0], any_f)(*args, **kw)
+             for xyz in self.list_xyz[1:]:
+                 out = getattr(xyz, any_f)(out)
+             return out
+        return foo
+
+
 
 
 
