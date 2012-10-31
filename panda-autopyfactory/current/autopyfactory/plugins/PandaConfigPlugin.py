@@ -159,7 +159,8 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
 
             self.configsinfo = InfoContainer('configs', SchedConfigInfo())
 
-            url = 'http://pandaserver.cern.ch:25080/cache/schedconfig/schedconfig.all.json'
+            #url = 'http://pandaserver.cern.ch:25080/cache/schedconfig/schedconfig.all.json'
+            url = 'http://atlas-agis-api-dev.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'
             handle = urlopen(url)
             jsonData = json.load(handle, 'utf-8')
             handle.close()
