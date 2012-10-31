@@ -191,6 +191,14 @@ class BatchQueueInfo(BaseInfo):
                                                                  self.suspended)
         return s
 
+    def __add__(self, o):
+        tmp = BatchQueueInfo()
+        for var in self.__class__.valid:
+            v1 = self.get(var)
+            v2 = o.get(var)
+            tmp.set(var, v1 + v2)
+        return tmp 
+
     # property to return the total number of pilots, irrespective their state
     total = property(lambda self: sum([self.__dict__[i] for i in self.valid]))
 
@@ -228,6 +236,14 @@ class WMSQueueInfo(BaseInfo):
                                                                                   self.failed,
                                                                                   self.unknown)
         return s
+
+    def __add__(self, o):
+        tmp = BatchQueueInfo()
+        for var in self.__class__.valid:
+            v1 = self.get(var)
+            v2 = o.get(var)
+            tmp.set(var, v1 + v2)
+        return tmp 
 
     # property to return the total number of jobs, irrespective their state
     total = property(lambda self: sum([self.__dict__[i] for i in self.valid]))
