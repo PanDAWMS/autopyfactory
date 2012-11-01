@@ -129,8 +129,26 @@ class AGISConfigPlugin(threading.Thread, ConfigInterface):
 
     def _update(self):
         ''' 
-        queries PanDA Sched Config for batchqueue info
+        queries AGIS for batchqueue info
+        Output is a dictionary of dictionaries. It looks like 
+
+        {
+          "AGLT2-condor": {
+            "accesscontrol": "",
+            "allowdirectaccess": true, 
+            "allowedgroups": null, 
+            ...
+            "wntmpdir": "/tmp"
+          },
+          "AGLT2_Install": {
+            "accesscontrol": "",
+             ...
+            }
+        }
+
+        The main key is the name of the bachqueue. 
         ''' 
+
         self.log.debug('_update: Starting')
 
         try:
@@ -143,17 +161,16 @@ class AGISConfigPlugin(threading.Thread, ConfigInterface):
 
             self.configsinfo = InfoContainer('configs', SchedConfigInfo())
 
-            url = 'http://atlas-agis-api-dev.cern.ch/request/pandaqueue/query/list/?json&preset=full&ceaggregation'
+            url = 'http://atlas-agis-api.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'
             handle = urlopen(url)
             # json always gives back unicode strings (eh?) - convert unicode to utf-8
             jsonData = json.load(handle, 'utf-8')
             handle.close()
             self.log.info('_update: JSON returned: %s' % jsonData)
             
-            # In the case of AGIS, the json content is a list of dictionaries
-            for jsonDict in jsonData:
+            # In the case of AGIS, the json content is a dictionary of dictionaries
+            for batchqueue, jsonDict in jsonData.iteritems():
                 # jsonDict is a dictionary 
-                batchqueue = jsonDict["panda_queue_name"]
                 if isinstance(batchqueue, unicode):
                     batchqueue = batchqueue.encode('utf-8')
                 scinfo = SchedConfigInfo()
