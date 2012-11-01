@@ -3,6 +3,8 @@ ChangeLog
 
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
+* Using new URL for AGIS Config Plugin, and fixing code to parse new output format (a dict of dicts instead of a list of dicts)
+
 * New URL for Panda Config Plugin
 
 * Added __add__() method to BatchQueueInfo and WMSQueueInfo classes 
