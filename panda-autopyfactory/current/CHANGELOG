@@ -7,8 +7,6 @@ $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
 * Added __add__() method to BatchQueueInfo and WMSQueueInfo classes 
 
-* Default value for max_jobs_to_run in Activated Sched Plugin, to 99999
-
 * CondorLSF Submit plugin created.
 
 * Euca plugins improved.
