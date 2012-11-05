@@ -251,7 +251,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
         self.log.debug('_querycondor: Starting.')
         querycmd = "condor_q"
-        self.log.info('_querycondor: using executable condor_q in PATH=%s' %utils.which('condor_q'))
+        self.log.debug('_querycondor: using executable condor_q in PATH=%s' %utils.which('condor_q'))
 
         # verbatim input options from the queues config file
         if self.queryargs:
