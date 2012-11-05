@@ -79,7 +79,7 @@
 # batchsubmit.condorgt2.condor_attributes
 # batchsubmit.condorgt2.environ
 # batchsubmit.condorgt2.proxy
-
+#
 # globusrsl.gram2.arguments
 # globusrsl.gram2.count
 # globusrsl.gram2.directory
@@ -107,13 +107,13 @@
 # globusrsl.gram2.two_phase
 # globusrsl.gram2.globusrsl
 # globusrsl.gram2.globusrsladd
-
+#
 # batchsubmit.condorgt5.submitargs
 # batchsubmit.condorgt5.gridresource
 # batchsubmit.condorgt5.condor_attributes
 # batchsubmit.condorgt5.environ
 # batchsubmit.condorgt5.proxy
-
+#
 # globusrsl.gram5.arguments
 # globusrsl.gram5.count
 # globusrsl.gram5.directory
@@ -154,7 +154,7 @@
 # globusrsl.gram5.username
 # globusrsl.gram5.globusrsl
 # globusrsl.gram5.globusrsladd
-
+#
 # batchsubmit.condorcream.submitargs
 # batchsubmit.condorcream.webservice
 # batchsubmit.condorcream.gridresource
@@ -164,10 +164,12 @@
 # batchsubmit.condorcream.port
 # batchsubmit.condorcream.batch
 # batchsubmit.condorcream.proxy
+#
 # batchsubmit.condorosgce.remote_condor_schedd 
 # batchsubmit.condorosgce.remote_condor_collector
 # batchsubmit.condorosgce.gridresource
 # batchsubmit.condorosgce.proxy
+#
 # batchsubmit.condorec2.submitargs
 # batchsubmit.condorec2.gridresource
 # batchsubmit.condorec2.condor_attributes
@@ -178,6 +180,7 @@
 # batchsubmit.condorec2.access_key_id
 # batchsubmit.condorec2.secret_access_key
 # batchsubmit.condorec2.proxy
+#
 # batchsubmit.condordeltacloud.gridresource
 # batchsubmit.condordeltacloud.username
 # batchsubmit.condordeltacloud.password_file
@@ -189,10 +192,13 @@
 # batchsubmit.condordeltacloud.hardware_profile_cpu
 # batchsubmit.condordeltacloud.hardware_profile_storage
 # batchsubmit.condordeltacloud.user_data
+#
 # batchsubmit.condorlocal.submitargs
 # batchsubmit.condorlocal.condor_attributes
 # batchsubmit.condorlocal.environ
 # batchsubmit.condorlocal.proxy
+#
+# batchsubmit.condorlsf.proxy
 #
 # executable
 # executable.arguments
@@ -879,6 +885,15 @@
 #               (See etc/proxy.conf)
 #               None if no automatic proxy renewal is desired.
 #
+
+
+#  --------------------------------------------------------------------
+#       Configuration when batchsubmitplugin is condorlsf
+#  --------------------------------------------------------------------
+
+# batchsubmit.condorlsf.proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
+#               (See etc/proxy.conf)
+#               None if no automatic proxy renewal is desired.
 
 #  --------------------------------------------------------------------
 #       Executable variables 
