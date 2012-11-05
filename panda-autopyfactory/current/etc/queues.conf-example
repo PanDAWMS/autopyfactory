@@ -500,6 +500,7 @@
 #                    CondorGT5, 
 #                    CondorCREAM, 
 #                    CondorLocal, 
+#                    CondorLSF,
 #                    CondorEC2, 
 #                    CondorDeltaCloud.
 
