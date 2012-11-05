@@ -3,6 +3,8 @@ ChangeLog
 
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
+* Created a Singleton metaclass factory. It creates metaclasses for regular Singletons and multi Singletons.
+
 * URLs for AGIS Config Plugin and PanDA Config Plugin read from queues.conf instead of hardcoded
 
 * Printing the path to executable condor_q and condor_submit, when debug mode
