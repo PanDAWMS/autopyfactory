@@ -80,6 +80,7 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
             self.fcl = apfqueue.factory.fcl
 
             self.batchqueue = self.qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
+            self.url = self.qcl.generic_get(self.apfqname, 'config.panda.url', logger=self.log)
             self.sleeptime = self.fcl.generic_get('Factory', 'wmsstatus.config.sleep', 'getint', default_value=100)
 
             self.configsinfo = None
@@ -160,7 +161,8 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
             self.configsinfo = InfoContainer('configs', SchedConfigInfo())
 
             #url = 'http://pandaserver.cern.ch:25080/cache/schedconfig/schedconfig.all.json'
-            url = 'http://atlas-agis-api-dev.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'
+            #url = 'http://atlas-agis-api-dev.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'
+            url = self.url
             handle = urlopen(url)
             jsonData = json.load(handle, 'utf-8')
             handle.close()
