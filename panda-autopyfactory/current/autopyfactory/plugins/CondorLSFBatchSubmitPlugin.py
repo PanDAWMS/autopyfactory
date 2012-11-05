@@ -32,6 +32,8 @@ class CondorLSFBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         if not qcl:
             qcl = self.apfqueue.factory.qcl
 
+        # we rename the queue config variables to pass a new config object to parent class
+        newqcl = qcl.clone().filterkeys('batchsubmit.condorlsf', 'batchsubmit.condorgrid')
         valid = super(CondorLSFBatchSubmitPlugin, self)._readconfig(qcl)
         return valid
 
