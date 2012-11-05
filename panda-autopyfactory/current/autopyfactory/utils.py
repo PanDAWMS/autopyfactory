@@ -180,6 +180,12 @@ def checkDaemon(daemon, pattern='running'):
     return status.lower().find(pattern) > 0
 
 
+def which(file):
+    for path in os.environ["PATH"].split(":"):
+        if os.path.exists(path + "/" + file):
+                return path + "/" + file
+
+
 if __name__ == "__main__":
         
     try:
