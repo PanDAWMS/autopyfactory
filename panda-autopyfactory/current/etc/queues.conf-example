@@ -34,6 +34,8 @@
 # wmsstatusplugin
 #
 # configplugin
+# config.panda.url
+# config.agis.url
 #
 # batchstatusplugin
 # batchstatus.condor.queryargs
@@ -257,7 +259,22 @@
 
 # configplugin = Config Plugin. 
 #               Optional.
-#               E.g. Panda.
+#               Currently available options are: 
+#                   panda
+#                   agis
+
+
+#  --------------------------------------------------------------------
+#       Configuration when configplugin is panda
+#  --------------------------------------------------------------------
+
+# config.panda.url = URL to donwload configuration from PanDA
+
+#  --------------------------------------------------------------------
+#       Configuration when configplugin is agis 
+#  --------------------------------------------------------------------
+
+# config.agis.url = URL to download configuration from AGIS 
 
 #  --------------------------------------------------------------------
 #       Batch Status Plugin variables 
@@ -1054,6 +1071,9 @@ executable.defaultarguments = --wrappergrid=%(grid)s --wrapperwmsqueue=%(wmsqueu
 
 override = True
 enabled = True
+
+config.panda.url = http://atlas-agis-api-dev.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all
+config.agis.url = http://atlas-agis-api.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all
 
 # ====================================================================== 
 #               Individual queue configurations
