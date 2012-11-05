@@ -383,7 +383,7 @@ x509UserProxyVOName = "atlas"
         self.log.info('Attempt to submit %d pilots for queue %s' %(n, self.wmsqueue))
 
         cmd = 'condor_submit -verbose '
-        self.log.info('__submit: submitting using executable condor_submit from PATH=%s' %utils.which('condor_submit'))
+        self.log.debug('__submit: submitting using executable condor_submit from PATH=%s' %utils.which('condor_submit'))
         # NOTE: -verbose is needed. 
         # The output generated with -verbose is parsed by the monitor code to determine the number of jobs submitted
         if self.submitargs:
