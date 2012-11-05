@@ -1401,7 +1401,7 @@ def singletonfactory(singletontype='single', id_var=None, id_default=None):
             __metaclass__ = singletonfactory()
 
         class B(object):
-            __metaclass__ = singletonfactory(id_var='condorpool', id_default='local')
+            __metaclass__ = singletonfactory('multiple', id_var='condorpool', id_default='local')
 
     '''
 
@@ -1417,7 +1417,7 @@ def singletonfactory(singletontype='single', id_var=None, id_default=None):
                     cls.__instance = type.__call__(cls, *args,**kw)
                 return cls.__instance
 
-        if singletontype == 'multi':
+        if singletontype == 'multiple':
 
             def __init__(cls, name, bases, dct):
                 cls.__instance = {}
