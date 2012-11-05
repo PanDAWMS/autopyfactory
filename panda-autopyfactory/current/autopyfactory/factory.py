@@ -1181,11 +1181,11 @@ class ContainerChain:
     def __init__(self):
          self.list_objects = [] 
 
-    def __getattr__(self, any_f):
+    def __getattr__(self, any_method):
         def foo(*args, **kw):
-             out = getattr(self.list_objects[0], any_f)(*args, **kw)
+             out = getattr(self.list_objects[0], any_method)(*args, **kw)
              for obj in self.list_objects[1:]:
-                 out = getattr(obj, any_f)(out)
+                 out = getattr(obj, any_method)(out)
              return out
         return foo
 
