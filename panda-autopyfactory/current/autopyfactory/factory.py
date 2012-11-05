@@ -1124,9 +1124,8 @@ class ContainerLoop:
         container.g()
     '''
 
-    def __init__(self, list_objects, mode='multiple'):
+    def __init__(self, mode='multiple'):
         ''' 
-        list_objects is a list of objects of some class
         
         if mode == 'multiple' a list with the output of each 
             method invocation is returned.
@@ -1135,8 +1134,10 @@ class ContainerLoop:
             is returned 
         ''' 
 
-        self.list_objects = list_objects
         self.mode = mode
+
+        #list_objects is a list of objects of some class
+        self.list_objects = [] 
 
     def __getattr__(self, any_method):
         '''
@@ -1177,14 +1178,14 @@ class ContainerChain:
     from the previous one. 
     '''	
 
-    def __init__(self,  list_xyz ):
-         self.list_xyz = list_xyz
+    def __init__(self):
+         self.list_objects = [] 
 
     def __getattr__(self, any_f):
         def foo(*args, **kw):
-             out = getattr(self.list_xyz[0], any_f)(*args, **kw)
-             for xyz in self.list_xyz[1:]:
-                 out = getattr(xyz, any_f)(out)
+             out = getattr(self.list_objects[0], any_f)(*args, **kw)
+             for obj in self.list_objects[1:]:
+                 out = getattr(obj, any_f)(out)
              return out
         return foo
 
