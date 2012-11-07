@@ -3,7 +3,7 @@ ChangeLog
 
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
-* Returned cached info object when there are problems to contact the info service in Panda Config Plugin and AGIS Config Plugin. 
+* Returning cached info object when there are problems to contact the info service in Panda Config Plugin and AGIS Config Plugin. 
 
 * Checking condor daemon is running in CondorBase Batch Submit Plugin and Condor Batch Status Plugin.
 
