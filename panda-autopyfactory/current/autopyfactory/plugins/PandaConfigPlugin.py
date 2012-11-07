@@ -158,7 +158,7 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
 
         try:
 
-            self.configsinfo = InfoContainer('configs', SchedConfigInfo())
+            new_configsinfo = InfoContainer('configs', SchedConfigInfo())
 
             #url = 'http://pandaserver.cern.ch:25080/cache/schedconfig/schedconfig.all.json'
             #url = 'http://atlas-agis-api-dev.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'
@@ -172,7 +172,7 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
                 if isinstance(batchqueue, unicode):
                     batchqueue = batchqueue.encode('utf-8')
                 scinfo = SchedConfigInfo()
-                self.configsinfo[batchqueue] = scinfo
+                new_configsinfo[batchqueue] = scinfo
 
                 factoryData = {}
                 for k, v in config.iteritems():
@@ -215,6 +215,9 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
             self.log.error('_update: %s  downloading from %s' % (err, url))
         except IOError, (errno, errmsg):
             self.log.error('_update: %s downloading from %s' % (errmsg, url))
+        else:
+            # if everything went OK, we replace the old configsinfo variable with the new one
+            self.configsinfo = new_configsinfo
 
 
         self.log.debug('_update: Leaving')
