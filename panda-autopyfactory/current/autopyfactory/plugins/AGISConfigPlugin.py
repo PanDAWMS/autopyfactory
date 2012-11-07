@@ -160,7 +160,7 @@ class AGISConfigPlugin(threading.Thread, ConfigInterface):
 
         try:
 
-            self.configsinfo = InfoContainer('configs', SchedConfigInfo())
+            new_configsinfo = InfoContainer('configs', SchedConfigInfo())
 
             #url = 'http://atlas-agis-api.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'
             url = self.url
@@ -176,7 +176,7 @@ class AGISConfigPlugin(threading.Thread, ConfigInterface):
                 if isinstance(batchqueue, unicode):
                     batchqueue = batchqueue.encode('utf-8')
                 scinfo = SchedConfigInfo()
-                self.configsinfo[batchqueue] = scinfo
+                new_configsinfo[batchqueue] = scinfo
                 factoryData = {}
 
                 # FIXME. Temporary solution: working with the first item [0] in list of queues
@@ -203,6 +203,9 @@ class AGISConfigPlugin(threading.Thread, ConfigInterface):
             self.log.error('_update: %s  downloading from %s' % (err, url))
         except IOError, (errno, errmsg):
             self.log.error('_update: %s downloading from %s' % (errmsg, url))
+        else:
+            # if everything went OK, we replace the old configsinfo variable with the new one
+            self.configsinfo = new_configsinfo
 
 
         self.log.debug('_update: Leaving')
