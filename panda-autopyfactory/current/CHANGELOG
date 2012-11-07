@@ -3,6 +3,8 @@ ChangeLog
 
 $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
+* checking condor daemon is running in CondorBase Batch Submit Plugin and Condor Batch Status Plugin.
+
 * Created a Singleton metaclass factory. It creates metaclasses for regular Singletons and multi Singletons.
 
 * URLs for AGIS Config Plugin and PanDA Config Plugin read from queues.conf instead of hardcoded
