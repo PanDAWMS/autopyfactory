@@ -19,7 +19,7 @@ $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
 * CondorLSF Submit plugin created.
 
-* Euca plugins improved.
+* Euca plugins improved. Still under development.
 
 * New type of plugins for monitor added.
 
