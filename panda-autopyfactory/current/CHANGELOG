@@ -9,7 +9,7 @@ $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
 * URLs for AGIS Config Plugin and PanDA Config Plugin read from queues.conf instead of hardcoded
 
-* Printing the path to executable condor_q and condor_submit, when debug mode
+* Printing the path to executable condor_q and condor_submit in debug mode
 
 * Using new URL for AGIS Config Plugin, and fixing code to parse new output format (a dict of dicts instead of a list of dicts)
 
