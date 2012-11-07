@@ -7,15 +7,15 @@ $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
 * Created a Singleton metaclass factory. It creates metaclasses for regular Singletons and multi Singletons.
 
-* URLs for AGIS Config Plugin and PanDA Config Plugin read from queues.conf instead of hardcoded
+* URLs for AGIS Config Plugin and PanDA Config Plugin read from queues.conf instead of hardcoded.
 
-* Printing the path to executable condor_q and condor_submit in debug mode
+* Printing the path to executable condor_q and condor_submit in debug mode.
 
-* Using new URL for AGIS Config Plugin, and fixing code to parse new output format (a dict of dicts instead of a list of dicts)
+* Using new URL for AGIS Config Plugin, and fixing code to parse new output format (a dict of dicts instead of a list of dicts).
 
-* New URL for Panda Config Plugin
+* New URL for Panda Config Plugin.
 
-* Added __add__() method to BatchQueueInfo and WMSQueueInfo classes 
+* Added __add__() method to BatchQueueInfo and WMSQueueInfo classes .
 
 * CondorLSF Submit plugin created.
 
@@ -23,15 +23,15 @@ $Id: CHANGELOG 7686 2011-04-08 21:15:43Z jhover $
 
 * New type of plugins for monitor added.
 
-* Added factory config variable 'enablequeues'
+* Added factory config variable 'enablequeues'.
 
-* ScaleSchedPlugin created
+* ScaleSchedPlugin created.
 
 * Sched plugins do not check for negative outputs. It has been left up to the Submit Plugin to decide what to do in that case. 
 
 * Some messages in Activated Sched Plugin moved from DEBUG loggin level to INFO level.
 
-* Bug fixed: getboolean() instead of get() when reading value of proxymanager.enabled and logmanager.enabled
+* Bug fixed: getboolean() instead of get() when reading value of proxymanager.enabled and logmanager.enabled.
 
 2012-07-23
 
