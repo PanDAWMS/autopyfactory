@@ -32,7 +32,63 @@
 
 <UL>
 <LI><PRE>
- Bug fixed: getboolean() instead of get() when reading value of proxymanager.enabled and logmanager.enabled
+ Checking condor daemon is running in CondorBase Batch Submit Plugin and Condor Batch Status Plugin.
+
+</PRE>
+<LI><PRE>
+ Created a Singleton metaclass factory. It creates metaclasses for regular Singletons and multi Singletons. 
+
+</PRE>
+<LI><PRE>
+ URLs for AGIS Config Plugin and PanDA Config Plugin read from queues.conf instead of hardcoded.
+
+</PRE>
+<LI><PRE>
+ Printing the path to executable condor_q and condor_submit in debug mode.
+
+</PRE>
+<LI><PRE>
+ Using new URL for AGIS Config Plugin, and fixing code to parse new output format (a dict of dicts instead of a list of dicts).
+
+</PRE>
+<LI><PRE>
+ New URL for Panda Config Plugin
+
+</PRE>
+<LI><PRE>
+ Added __add__() method to BatchQueueInfo and WMSQueueInfo classes.
+
+</PRE>
+<LI><PRE>
+ CondorLSF Submit plugin created.
+
+</PRE>
+<LI><PRE>
+ Euca plugins improved. Still under development.
+
+</PRE>
+<LI><PRE>
+ New type of plugins for monitor added.
+
+</PRE>
+<LI><PRE>
+ Added factory config variable 'enablequeues'.
+
+</PRE>
+<LI><PRE>
+ ScaleSchedPlugin created.
+
+</PRE>
+<LI><PRE>
+ Sched plugins do not check for negative outputs. It has been left up to the Submit Plugin to decide what to do in that case.
+
+</PRE>
+<LI><PRE>
+ Some messages in Activated Sched Plugin moved from DEBUG loggin level to INFO level.
+
+</PRE>
+<LI><PRE>
+ Bug fixed: getboolean() instead of get() when reading value of proxymanager.enabled and logmanager.enabled.
 
 </PRE>
 
