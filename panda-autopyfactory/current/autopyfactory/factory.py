@@ -1180,6 +1180,7 @@ class ContainerLoop:
                 return outs
             if self.mode == 'single':
                 return outs[0]
+
         return foo 
 
 
@@ -1188,17 +1189,38 @@ class ContainerChain:
     similar to ContainerLoop.
     Difference is this one feeds each method call with the output
     from the previous one. 
+
+    We assume (at least for the time being) that inputs and outputs
+    are only lists of variables, no dictionaries are involved
     '''	
 
     def __init__(self):
-         self.list_objects = [] 
+
+        self.log = logging.getLogger('main.containerchain')
+        self.log.debug('ContainerChain: Initializing object...')
+        self.list_objects = [] 
+        self.log.info('ContainerChain: Object initialized.')
 
     def __getattr__(self, any_method):
-        def foo(*args, **kw):
-             out = getattr(self.list_objects[0], any_method)(*args, **kw)
-             for obj in self.list_objects[1:]:
-                 out = getattr(obj, any_method)(out)
-             return out
+
+        def foo(*args):
+            ins = args
+            for obj in self.list_objects:
+
+                # first we check the object has an attribute with that name
+                if not hasattr(obj, any_method):
+                    log.warning('__getattr__: obj %s has no attribute called %s' %(obj, any_method))
+                    continue
+
+                # second, we check the attribute is a method 
+                if type(getattr(obj, any_method)).__name__ != 'instancemethod':                    
+                    log.warning('__getattr__: obj %s has attribute called %s, but is not a method' %(obj, any_method))
+                    continue
+
+                out = getattr(obj, any_method)(*ins)
+                ins = out
+            return out
+
         return foo
 
 
