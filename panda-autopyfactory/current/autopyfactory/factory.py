@@ -1119,7 +1119,8 @@ class ContainerLoop:
         o2 = XYZ()	
         o3 = XYZ()	
 
-        container = ContainerLoop( [o1, o2, o3])
+        container = ContainerLoop()
+        container.list_objects = [o1, o2, o3]
         container.f()
         container.g()
     '''
@@ -1144,7 +1145,8 @@ class ContainerLoop:
         we catch here a call to any arbitrary method.
         We create a faked foo method to be able to do this:
 
-            cont = ContainerLoop([x,y.x]
+            cont = ContainerLoop()
+            cont.list_objects = [a,b,c]
             cont.f()
 
         cont.f is itself the foo method, so therefore is allowed
