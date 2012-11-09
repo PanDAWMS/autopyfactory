@@ -20,16 +20,18 @@ else:
 
 
 #  ---   read AGIS content ---
-url = 'http://atlas-agis-api-dev.cern.ch/request/pandaqueue/query/list/?json&preset=full&ceaggregation'
+#url = 'http://atlas-agis-api-dev.cern.ch/request/pandaqueue/query/list/?json&preset=full&ceaggregation'
+url = 'http://atlas-agis-api.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'
+
 handle = urlopen(url)
 # json always gives back unicode strings (eh?) - convert unicode to utf-8
 jsonData = json.load(handle, 'utf-8')
 handle.close()
 
-agisdict = {}
-for jsonDict in jsonData:
-    key = jsonDict['panda_queue_name']
-    agisdict[key] = jsonDict
+###agisdict = {}
+###for jsonDict in jsonData:
+###    key = jsonDict['panda_queue_name']
+###    agisdict[key] = jsonDict
 
 #  ---   Load the config file ---
 
@@ -39,7 +41,8 @@ conf.readfp(open(configfile))
 
 for section in conf.sections():
     key = conf.get(section, 'batchqueue')
-    agis_sect = agisdict[key]
+    #agis_sect = agisdict[key]
+    agis_sect = jsonData[key]
     wmsqueue = agis_sect['panda_resource']
     type = agis_sect['type']
     for q in agis_sect['queues']:
