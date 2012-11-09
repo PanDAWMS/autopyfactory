@@ -1204,6 +1204,7 @@ class ContainerChain:
     def __getattr__(self, any_method):
 
         def foo(*args):
+            out = None
             ins = args
             for obj in self.list_objects:
 
