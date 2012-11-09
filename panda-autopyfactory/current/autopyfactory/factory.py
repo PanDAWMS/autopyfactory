@@ -1135,10 +1135,14 @@ class ContainerLoop:
             is returned 
         ''' 
 
-        self.mode = mode
+        self.log = logging.getLogger('main.containerloop')
+        self.log.debug('ContainerLoop: Initializing object...')
 
+        self.mode = mode
         #list_objects is a list of objects of some class
         self.list_objects = [] 
+
+        self.log.info('ContainerLoop: Object initialized.')
 
     def __getattr__(self, any_method):
         '''
@@ -1152,24 +1156,30 @@ class ContainerLoop:
         cont.f is itself the foo method, so therefore is allowed
         to use (). If we just return the outputs, 
         we would be applying the () to a list.
-
-        Note: if needed, we can ensure any_method is really 
-        a method, and not a regular attribute of the objects, 
-        by a check like 
-
-            ref_obj = self.list_objects[0]
-            type(getattr(ref_obj, any_method)).__name__ == 'instancemethod'
         '''
 
         def foo(*args, **kw):
             outs = []
             for obj in self.list_objects:
+                   
+                # first we check the object has an attribute with that name
+                if not hasattr(obj, any_method):
+                    log.warning('__getattr__: obj %s has no attribute called %s' %(obj, any_method))
+                    continue
+
+                # second, we check the attribute is a method 
+                if type(getattr(obj, any_method)).__name__ != 'instancemethod':                    
+                    log.warning('__getattr__: obj %s has attribute called %s, but is not a method' %(obj, any_method))
+                    continue
+
+                # if everything went OK...
                 out = getattr(obj, any_method)(*args, **kw)
                 outs.append(out)
+
             if self.mode == 'multiple':
-               return outs
+                return outs
             if self.mode == 'single':
-               return outs[0]
+                return outs[0]
         return foo 
 
 
