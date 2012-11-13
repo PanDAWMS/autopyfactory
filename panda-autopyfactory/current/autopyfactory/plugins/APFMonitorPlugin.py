@@ -51,7 +51,7 @@ class APFMonitor(MonitorInterface):
     """
     Notifies a monitoring webservice about condor jobs
     """
-    def __init__(self, config):
+    def __init__(self, apfqueue):
         '''
         Config is a ConfigParser object with Monitor-specific atributes:
             factoryAdminEmail = jcaballero@bnl.gov
@@ -70,6 +70,13 @@ class APFMonitor(MonitorInterface):
         mainlevel = logging.getLogger('main').getEffectiveLevel()
         self.log.setLevel(mainlevel)
         self.log.debug("Start...")
+
+
+        self.apfqname = apfqueue.apfqname
+        self.qcl = apfqueue.factory.qcl
+        self.fcl = apfqueue.factory.fcl
+        
+
     
         self.monurl = config.get('Factory','monitorURL')
         self.fid = config.get('Factory','factoryId')
