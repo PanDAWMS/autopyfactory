@@ -71,10 +71,6 @@
 # sched.trivial.default
 # sched.scale.factor
 #
-# monitorplugin
-# monitor.apf.url
-# monitor.panda.url
-#
 # batchsubmitplugin
 # batchsubmit.condorgt2.submitargs
 # batchsubmit.condorgt2.gridresource
@@ -201,6 +197,8 @@
 # batchsubmit.condorlocal.proxy
 #
 # batchsubmit.condorlsf.proxy
+#
+# monitorsection
 #
 # executable
 # executable.arguments
@@ -484,34 +482,6 @@
 #               of the number of pilots.
 #               Value is a float number.
 
-#  --------------------------------------------------------------------
-#       Monitor Plugin variables 
-#  --------------------------------------------------------------------
-
-#  monitorplugin = Plugin to handle job info publishing to one or more web 
-#                  monitor/dashboards. To specify more than one, simply use a 
-#                  comma-separated list in config.   
-#
-#             Currently available options are:
-#                   APF   (Peter Love's APFmon)
-#                   Panda (The Panda monitor). 
-#
-
-#  --------------------------------------------------------------------
-#       Configuration when monitorplugin is APF
-#  --------------------------------------------------------------------
-
-# monitor.apf.url = URL for service to upload job info to.
-#                   Can be comma-separated list, meaning report to multiple monitors.  
-#               	Default:   http://apfmon.lancs.ac.uk/mon/ 
-
-#  --------------------------------------------------------------------
-#       Configuration when monitorplugin is Panda
-#  --------------------------------------------------------------------
-
-# monitor.panda.url = URL for service to upload job info to. 
-#                     Can be comma-separated list, meaning report to multiple monitors.
-#                     Default:   http://panda.cern.ch:25980/server/pandamon/query 
 
 #  --------------------------------------------------------------------
 #       Batch Submit Plugin variables 
@@ -913,6 +883,18 @@
 #               None if no automatic proxy renewal is desired.
 
 #  --------------------------------------------------------------------
+#       Monitor Section 
+#  --------------------------------------------------------------------
+
+# monitorsection = section in monitor.conf where info 
+#               about the actual monitor plugin can be found.
+#               Monitor plugins handle job info publishing 
+#               to one or more web monitor/dashboards. 
+#               To specify more than one (sections) 
+#               simply use a comma-separated list.   
+#
+
+#  --------------------------------------------------------------------
 #       Executable variables 
 #  --------------------------------------------------------------------
 
@@ -968,8 +950,7 @@ wmsstatusplugin = Panda
 configplugin = Panda
 batchsubmitplugin = CondorGT2
 schedplugin = Activated
-monitorplugin = APF
-monitor.apf.url = http://apfmon.lancs.ac.uk/mon/
+monitorsection = apfmon-lancaster
 
 
 
