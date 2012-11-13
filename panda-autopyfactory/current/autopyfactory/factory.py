@@ -412,6 +412,13 @@ class Factory(object):
         else:
             self.log.info("ProxyManager disabled.")
        
+        # Handle monitorConf
+        self.mcl = None
+        self.monconfig_path = self.qcl.generic_get('Factory', 'monitorConf')
+        if self.monconfig_path:
+            # create object monitor config loader (mcl)
+            self.mcl = ConfigManager().getConfig(self.monconfig_path)
+
         # APF Queues Manager 
         self.apfqueuesmanager = APFQueuesManager(self)
         
@@ -720,6 +727,7 @@ class APFQueue(threading.Thread):
         self.factory = factory
         self.fcl = self.factory.fcl 
         self.qcl = self.factory.qcl 
+        self.mcl = self.factory.mcl
 
         self.log.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(apfqname).getContent())
     
@@ -990,7 +998,7 @@ class PluginDispatcher(object):
 
     def getmonitorplugins(self):
 
-        monitor_classes = self._getplugin('monitor')  # list of classes 
+        monitor_classes = self._getplugin('monitor', self.apfqueue.mcl)  # list of classes 
         monitor_plugins = []
         for monitor_cls in monitor_classes:
             monitor_plugin = monitor_cls(self.apfqueue)
@@ -1020,7 +1028,7 @@ class PluginDispatcher(object):
 
         return '%s:%s' %(name, pool)
 
-    def _getplugin(self, action):
+    def _getplugin(self, action, config=None):
         '''
         Generic private method to find out the specific plugin
         to be used for this queue, depending on the action.
@@ -1032,7 +1040,13 @@ class PluginDispatcher(object):
                 - config
                 - monitor
 
+        If passed, config is an Config object, as defined in autopyfactory.configloader
+
         Steps taken are:
+           [a] config is None:
+                This means the content of the variable <action>plugin 
+                in self.qcl is directly the actual plugin
+ 
                 1. The name of the item in the config file is calculated.
                    It is supposed to have format <action>plugin.
                    For example:  schedplugin, batchstatusplugin, ...
@@ -1043,6 +1057,12 @@ class PluginDispatcher(object):
                 3. The plugin module is imported, using __import__
                 4. The plugin class is retrieved. 
                    The name of the class is the same as the name of the module
+
+            [b] config is not None. 
+                This means the content of variable <action>section 
+                points to a section in config where the actual plugin can be found.
+                Therefore, there is an extra step to read the value of <action>plugin
+                from the config object.
 
         It has been added the option of getting more than one plugins 
         of the same category. 
@@ -1062,14 +1082,28 @@ class PluginDispatcher(object):
                 'monitor' : 'Monitor',
         }
 
-        plugin_config_item = '%splugin' %action
+        plugin_config_item = '%splugin' %action # i.e. schedplugin
         plugin_prefix = plugin_prefixes[action] 
 
-        if self.qcl.has_option(self.apfqname, plugin_config_item):
-            plugin_names = self.qcl.get(self.apfqname, plugin_config_item)
+        # Get the list of plugin names
+        if config:
+            config_section_item = '%ssection' %action  # i.e. monitorsection
+            if self.qcl.has_option(self.apfqname, config_section_item):
+                plugin_names = []
+                sections = self.qcl.get(self.apfqname, config_section_item)
+                for section in sections.split(','):
+                    plugin_name = config.get(section, plugin_config_item)
+                    plugin_names.append(plugin_name)
+            else:
+                return [None]
         else:
-            return [None]
+            if self.qcl.has_option(self.apfqname, plugin_config_item):
+                plugin_names = self.qcl.get(self.apfqname, plugin_config_item)
+            else:
+                return [None]
 
+        # Once we have the list of plugin names, 
+        # we import the corresponding modules and return the classes within them.
         out = []
         for name in plugin_names.split(','):
             plugin_module_name = '%s%sPlugin' %(name, plugin_prefix)
