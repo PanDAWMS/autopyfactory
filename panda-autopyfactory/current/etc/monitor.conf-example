@@ -1,0 +1,25 @@
+#
+# monitor.conf Configuration file for monitor plugins configuration
+#
+
+# ===========================================================================
+#               VARIABLES
+# ===========================================================================
+
+# plugin 
+# monitorURL 
+
+# ===========================================================================
+# Description:
+# ===========================================================================
+
+# plugin = the type of plugin to handle this monitor instance
+
+# monitorURL = URL for the web monitor
+
+# ===========================================================================
+
+
+[apfmon-lancaster]
+plugin = APFMonitor
+monitorURL = http://my.web.monitor/ 
