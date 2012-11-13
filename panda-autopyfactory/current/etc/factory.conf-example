@@ -47,10 +47,19 @@
 # persistence.dbport
 # persistence.dbpath
 
+# ---------------------------------------------------------------------------
+# Monitor 
+# ---------------------------------------------------------------------------
+
+# monitorURL 
 
 # ===========================================================================
 # Description:
 # ===========================================================================
+
+# ---------------------------------------------------------------------------
+# Factory
+# ---------------------------------------------------------------------------
 
 # baseLogDir =  where outputs from pilots are stored
 #               NOTE: No trailing '/'!!!
@@ -139,12 +148,28 @@
 # wmsstatus.panda.sleep = time the WMSStatus Plugin waits between cycles
 #               Value is in seconds.
 
+# ---------------------------------------------------------------------------
+# Persistence
+# ---------------------------------------------------------------------------
+
 # persistence.dbengine = SQLAlchemy dbengine
 # persistence.dbuser = SQLAlchemy dbuser
 # persistence.dbpassword = SQLAlchemy dbpassword
 # persistence.dbhost = SQLAlchemy dbhost
 # persistence.dbport = SQLAlchemy dbport
 # persistence.dbpath = SQLAlchemy dbpath
+
+# ---------------------------------------------------------------------------
+# Monitor 
+# ---------------------------------------------------------------------------
+
+# There may be an arbitrary number of monitor sections.
+# Each one will correspond with a single monitor instance and type,
+# for example the standard APF monitor at Lancaster, 
+# or the standard APF monitor at CERN, or the PanDA monitor at CERN, etc.
+ 
+# monitorURL = URL for the web monitor
+
 
 # ===========================================================================
 
@@ -192,3 +217,8 @@ persistence.dbpassword=""
 persistence.dbhost=""
 persistence.dbport=""
 persistence.dbpath=/tmp/kk/sql/sqldb.sq3
+
+
+[apfmon-lancaster]
+#monitorClass = APFMonitor
+monitorURL = http://my.web.monitor/ 
