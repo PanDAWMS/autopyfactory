@@ -51,6 +51,7 @@
 # Monitor 
 # ---------------------------------------------------------------------------
 
+# monitorClass
 # monitorURL 
 
 # ===========================================================================
@@ -169,6 +170,8 @@
 # or the standard APF monitor at CERN, or the PanDA monitor at CERN, etc.
 # The number of attributes can vary from section to section. 
  
+# monitorClass = the type of plugin to handle this monitor instance
+
 # monitorURL = URL for the web monitor
 
 
@@ -221,5 +224,5 @@ persistence.dbpath=/tmp/kk/sql/sqldb.sq3
 
 
 [apfmon-lancaster]
-#monitorClass = APFMonitor
+monitorClass = APFMonitor
 monitorURL = http://my.web.monitor/ 
