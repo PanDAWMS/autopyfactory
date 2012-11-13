@@ -21,5 +21,5 @@
 
 
 [apfmon-lancaster]
-plugin = APFMonitor
+plugin = APF
 monitorURL = http://my.web.monitor/ 
