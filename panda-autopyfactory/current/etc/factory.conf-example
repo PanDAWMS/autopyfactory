@@ -32,6 +32,7 @@
 # proxyConf
 # proxymanager.enabled = True
 # queueConf
+# monitorConf
 # versionTag
 # wmsstatus.maxtime
 # wmsstatus.panda.sleep
@@ -133,6 +134,8 @@
 # queueConf = URI plus path to the configuration file for APF queues.
 #             NOTE: Must be expressed as a URI (file:// or http://)
 #
+# monitorConf = local path to the configuration file for Monitor plugins.
+#
 # versionTag = APF version number as it will be displayed in the web monitor
 #
 # wmsstatus.maximum = maximum time while the info is considered reasonable. 
@@ -167,6 +170,8 @@ enablequeues = True
 queueConf = file:///etc/apf/queues.conf
 proxyConf = /etc/apf/proxy.conf
 proxymanager.enabled = True
+
+monitorConf = /etc/apf/monitor.conf
 
 cycles = None
 cleanlogs.keepdays = 14
