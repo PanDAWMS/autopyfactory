@@ -167,6 +167,7 @@
 # Each one will correspond with a single monitor instance and type,
 # for example the standard APF monitor at Lancaster, 
 # or the standard APF monitor at CERN, or the PanDA monitor at CERN, etc.
+# The number of attributes can vary from section to section. 
  
 # monitorURL = URL for the web monitor
 
