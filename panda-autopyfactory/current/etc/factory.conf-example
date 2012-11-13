@@ -47,13 +47,6 @@
 # persistence.dbport
 # persistence.dbpath
 
-# ---------------------------------------------------------------------------
-# Monitor 
-# ---------------------------------------------------------------------------
-
-# monitorClass
-# monitorURL 
-
 # ===========================================================================
 # Description:
 # ===========================================================================
@@ -160,21 +153,6 @@
 # persistence.dbport = SQLAlchemy dbport
 # persistence.dbpath = SQLAlchemy dbpath
 
-# ---------------------------------------------------------------------------
-# Monitor 
-# ---------------------------------------------------------------------------
-
-# There may be an arbitrary number of monitor sections.
-# Each one will correspond with a single monitor instance and type,
-# for example the standard APF monitor at Lancaster, 
-# or the standard APF monitor at CERN, or the PanDA monitor at CERN, etc.
-# The number of attributes can vary from section to section. 
- 
-# monitorClass = the type of plugin to handle this monitor instance
-
-# monitorURL = URL for the web monitor
-
-
 # ===========================================================================
 
 
@@ -222,7 +200,3 @@ persistence.dbhost=""
 persistence.dbport=""
 persistence.dbpath=/tmp/kk/sql/sqldb.sq3
 
-
-[apfmon-lancaster]
-monitorClass = APFMonitor
-monitorURL = http://my.web.monitor/ 
