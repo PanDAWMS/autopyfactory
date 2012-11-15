@@ -65,6 +65,7 @@ Job update command:
 '''
 
 from autopyfactory.interfaces import MonitorInterface
+from autopyfactory.factory import Singleton, singletonfactory
 
 
 __author__ = "John Hover"
@@ -82,7 +83,9 @@ __status__ = "Testing"
 
 class PandaMonPlugin(MonitorInterface):
     
-    def __init__(self):
+    __metaclass__ = singletonfactory(id_var="id")
+
+    def __init__(self, apfqueue, id):
         pass
  
  
