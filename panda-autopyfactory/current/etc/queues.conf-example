@@ -888,6 +888,8 @@
 
 # monitorsection = section in monitor.conf where info 
 #               about the actual monitor plugin can be found.
+#               The value can be a single section or a split by comma
+#               list of sections.
 #               Monitor plugins handle job info publishing 
 #               to one or more web monitor/dashboards. 
 #               To specify more than one (sections) 
