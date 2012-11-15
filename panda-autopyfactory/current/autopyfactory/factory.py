@@ -932,6 +932,7 @@ class PluginDispatcher(object):
                                                       # (split by comma in the config file)
         scheduler_plugins = []
         for scheduler_cls in scheduler_classes:
+            scheduler_cls = scheduler_cls[1] # 2nd item of each tuple
             scheduler_plugin = scheduler_cls(self.apfqueue)  # calls __init__() to instantiate the class
             scheduler_plugins.append(scheduler_plugin)
         return scheduler_plugins
@@ -944,6 +945,7 @@ class PluginDispatcher(object):
             if queryargs:
                     condor_q_id = self.__queryargs2condorqid(queryargs)    
         batchstatus_cls = self._getplugin('batchstatus')[0]
+        batchstatus_cls = batchstatus_cls[1]  # 2nd item of the tuple
 
         # calls __init__() to instantiate the class
         # In this case the call accepts a second arguments:
@@ -962,6 +964,7 @@ class PluginDispatcher(object):
     def getwmsstatusplugin(self):
 
         wmsstatus_cls = self._getplugin('wmsstatus')[0]
+        wmsstatus_cls = wmsstatus_cls[1]   # 2nd item of the tuple
 
         # calls __init__() to instantiate the class
         wmsstatus_plugin = wmsstatus_cls(self.apfqueue)  
@@ -974,6 +977,7 @@ class PluginDispatcher(object):
     def getsubmitplugin(self):
 
         batchsubmit_cls = self._getplugin('batchsubmit')[0]
+        batchsubmit_cls = batchsubmit_cls[1]  # 2nd item of the tuple
 
         # calls __init__() to instantiate the class
         batchsubmit_plugin = batchsubmit_cls(self.apfqueue)  
@@ -983,6 +987,7 @@ class PluginDispatcher(object):
     def getconfigplugin(self):
 
         config_cls = self._getplugin('config')[0]
+        config_cls = config_cls[1]  # 2nd item of the tuple
         if config_cls:
             # Note it could be None
 
@@ -1001,6 +1006,7 @@ class PluginDispatcher(object):
         monitor_classes = self._getplugin('monitor', self.apfqueue.mcl)  # list of classes 
         monitor_plugins = []
         for monitor_cls in monitor_classes:
+            monitor_cls = monitor_cls[1]  # 2nd item of each tuple
             monitor_plugin = monitor_cls(self.apfqueue)
             monitor_plugins.append(monitor_plugin)
         return monitor_plugins
@@ -1069,6 +1075,10 @@ class PluginDispatcher(object):
         The value is comma-split, and one class is retrieve for each field. 
         Then, it will be up to the invoking entity to determine if only one item
         is expected, and therefore a [0] is needed, or a list of item is possible.
+
+        Output is a list of 2-items tuples.
+        First item is the name of the plugin.
+        Second item is the plugin class
         '''
 
         self.log.debug("_getplugin: Starting for action %s" %action)
@@ -1125,7 +1135,12 @@ class PluginDispatcher(object):
 
             self.log.debug("_getplugin: Attempting to return plugin with classname %s" %plugin_class)
             self.log.debug("_getplugin: Leaving with plugin named %s" %plugin_class)
-            out.append( getattr(plugin_module, plugin_class) )  # with getattr() we extract the actual class from the module object
+            outpair = ( plugin_module_name, getattr(plugin_module, plugin_class) )  # with getattr() we extract the actual class from the module object
+            out.append(outpair)
+            # we return a list of 2-items tuples.
+            # First item is the name of the plugin.
+            # Second item is the plugin class
+
         return out
 
 
