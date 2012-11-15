@@ -13,7 +13,7 @@ import threading
 import StringIO
 import urllib2
 
-from autopyfactory.factory import Singleton
+from autopyfactory.factory import Singleton, singletonfactory
 from autopyfactory.interfaces import MonitorInterface
 
 try:
@@ -46,12 +46,14 @@ _CIDMATCH = re.compile('\*\* Proc (\d+\.\d+)', re.M)
 
 class APFMonitor(MonitorInterface):
 
-    __metaclass__ = Singleton
+    #__metaclass__ = Singleton
+    __metaclass__ = singletonfactory(id_var="id")
+
 
     """
     Notifies a monitoring webservice about condor jobs
     """
-    def __init__(self, apfqueue):
+    def __init__(self, apfqueue, id):
         '''
         Config is a ConfigParser object with Monitor-specific atributes:
             factoryAdminEmail = jcaballero@bnl.gov
