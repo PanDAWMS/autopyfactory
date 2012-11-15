@@ -1100,13 +1100,15 @@ class PluginDispatcher(object):
         else:
             if self.qcl.has_option(self.apfqname, plugin_config_item):
                 plugin_names = self.qcl.get(self.apfqname, plugin_config_item)
+                plugin_names = plugin_names.split(',') # we convert a string split by comma into a list
             else:
                 return [None]
 
         # Once we have the list of plugin names, 
         # we import the corresponding modules and return the classes within them.
         out = []
-        for name in plugin_names.split(','):
+        for name in plugin_names:
+            # at this point plugin_names is a list of plugin_name, not a string
             name = name.strip()
             plugin_module_name = '%s%sPlugin' %(name, plugin_prefix)
             # Example of plugin_module_name is CondorGT2 + BatchSubmit + Plugin => CondorGT2BatchSubmitPlugin
