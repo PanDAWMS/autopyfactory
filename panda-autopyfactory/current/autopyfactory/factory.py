@@ -1107,6 +1107,7 @@ class PluginDispatcher(object):
         # we import the corresponding modules and return the classes within them.
         out = []
         for name in plugin_names.split(','):
+            name = name.strip()
             plugin_module_name = '%s%sPlugin' %(name, plugin_prefix)
             # Example of plugin_module_name is CondorGT2 + BatchSubmit + Plugin => CondorGT2BatchSubmitPlugin
 
