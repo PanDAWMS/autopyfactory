@@ -1494,6 +1494,9 @@ def singletonfactory(id_var=None, id_default=None):
     id_var is the name of a key variable to be passed via __init__() when asking for a new object.
     The value of that variable will be the ID to determine if a real new object is needed or not.
 
+    Note: when calling __init__(), the id_var has to be passed as a key=value variable,
+    not just as a positional variable. 
+
     Examples:
 
         class A(object):
@@ -1532,6 +1535,9 @@ def singletonfactory(id_var=None, id_default=None):
                 type.__init__(cls, name, bases, dct)
             def __call__(cls, *args, **kw):
                 id = kw.get(id_var, id_default)
+                # note: we read the value of id_var from **kw
+                #       so it has to be passed as a key=value variable,
+                #       not as a positional variable. 
                 if id not in cls.__instance.keys():
                     cls.__instance[id] = type.__call__(cls, *args,**kw)
                 return cls.__instance[id]
