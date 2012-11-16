@@ -1006,8 +1006,9 @@ class PluginDispatcher(object):
         monitor_classes = self._getplugin('monitor', self.apfqueue.mcl)  # list of classes 
         monitor_plugins = []
         for monitor_cls in monitor_classes:
-            monitor_cls = monitor_cls[1]  # 2nd item of each tuple
-            name = monitor_cls[0] # 1st item of each tuple
+            #monitor_cls = monitor_cls[1]  # 2nd item of each tuple
+            #name = monitor_cls[0] # 1st item of each tuple
+            name, monitor_cls = monitor_cls
             monitor_plugin = monitor_cls(self.apfqueue, id=name)
             monitor_plugins.append(monitor_plugin)
         return monitor_plugins
