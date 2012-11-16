@@ -31,6 +31,7 @@ libexec_files = ['libexec/runpilot3-wrapper.sh',
 etc_files = ['etc/factory.conf-example',
              'etc/queues.conf-example',
              'etc/proxy.conf-example',
+             'etc/monitor.conf-example',
              'etc/factory.sysconfig-example',]
 
 initd_files = ['etc/factory',]
