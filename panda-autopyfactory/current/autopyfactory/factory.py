@@ -414,7 +414,7 @@ class Factory(object):
        
         # Handle monitorConf
         self.mcl = None
-        self.monconfig_path = self.qcl.generic_get('Factory', 'monitorConf')
+        self.monconfig_path = self.fcl.generic_get('Factory', 'monitorConf')
         if self.monconfig_path:
             # create object monitor config loader (mcl)
             self.mcl = ConfigManager().getConfig(self.monconfig_path)
