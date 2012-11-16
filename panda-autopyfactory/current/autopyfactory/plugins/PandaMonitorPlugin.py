@@ -81,7 +81,7 @@ __status__ = "Testing"
 
 
 
-class PandaMonPlugin(MonitorInterface):
+class PandaMonitorPlugin(MonitorInterface):
     
     __metaclass__ = singletonfactory(id_var="id")
 
