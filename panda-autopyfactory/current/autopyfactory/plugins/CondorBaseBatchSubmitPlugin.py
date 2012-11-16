@@ -248,7 +248,7 @@ x509UserProxyVOName = "atlas"
         lines = output.split('\n')
         for line in lines:
             jobidline = None
-            if line.strip().startswitch('**'):
+            if line.strip().startswith('**'):
                 jobidline = line.split()
                 procid = jobidline[2]
                 procid = procid.replace(':','') # remove trailing colon
