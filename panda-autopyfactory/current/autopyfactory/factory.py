@@ -1108,13 +1108,13 @@ class PluginDispatcher(object):
                     plugin_name = config.get(section, plugin_config_item)
                     plugin_names.append(plugin_name)
             else:
-                return [None]
+                return [(None, None)] #temporary solution
         else:
             if self.qcl.has_option(self.apfqname, plugin_config_item):
                 plugin_names = self.qcl.get(self.apfqname, plugin_config_item)
                 plugin_names = plugin_names.split(',') # we convert a string split by comma into a list
             else:
-                return [None]
+                return [(None, None)] #temporary solution
 
         # Once we have the list of plugin names, 
         # we import the corresponding modules and return the classes within them.
