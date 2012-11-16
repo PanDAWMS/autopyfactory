@@ -3,6 +3,7 @@
 # AutoPyfactory batch plugin for Condor
 #
 
+import datetime
 import commands
 import logging
 import os
