@@ -55,15 +55,10 @@ class APFMonitorPlugin(MonitorInterface):
     """
     def __init__(self, apfqueue, id):
         '''
-        Config is a ConfigParser object with Monitor-specific atributes:
-            factoryAdminEmail = jcaballero@bnl.gov
-            factoryOwner = jcaballero@bnl.gov
-            factoryId = BNL-gridui11-jhover
-            factoryUser = apf
-            monitorURL =  http://apfmon.lancs.ac.uk/mon/
-            #HTTPproxy = http://proxy.sec.bnl.local
-            #HTTPproxyport = 3128
-            versionTag = 2.1.0
+        apfqueue is a reference to the APFQueue object creating this plugin.
+
+        id is the value for id_var (input of the singletonfactory)
+        to decide if a new object has to be really created or not.
         
         Also sends initial ping to monitor server. 
         
@@ -77,15 +72,16 @@ class APFMonitorPlugin(MonitorInterface):
         self.apfqname = apfqueue.apfqname
         self.qcl = apfqueue.factory.qcl
         self.fcl = apfqueue.factory.fcl
-        
-
     
-        self.monurl = config.get('Factory','monitorURL')
-        self.fid = config.get('Factory','factoryId')
-        self.version = config.get('Factory', 'versionTag')
-        self.email = config.get('Factory','factoryAdminEmail')
+        self.monurl = self.fcl.generic_get('Factory','monitorURL')
+        self.fid = self.fcl.generic_get('Factory','factoryId')
+        self.version = self.fcl.generic_get('Factory', 'versionTag')
+        self.email = self.fcl.generic_get('Factory','factoryAdminEmail')
+        self.baselogurl = self.fcl.generic_get('Factory','baseLogDirUrl')
+        self.proxyarg = self.fcl.generic_get('Factory', 'HTTPproxy', default_value=None)
+        self.proxyportarg = self.fcl.generic_get('Factory', 'HTTPproxyport', default_value=None)
+
         self.owner = self.email
-        self.baselogurl = config.get('Factory','baseLogDirUrl')
         
         self.crurl = self.monurl + 'c/'
         self.msgurl = self.monurl + 'm/'
@@ -105,11 +101,10 @@ class APFMonitorPlugin(MonitorInterface):
         self.c.setopt(pycurl.TIMEOUT, 10)
         self.c.setopt(pycurl.FOLLOWLOCATION, 1)
         
-        if config.has_option('Factory','HTTPproxy'):
-            proxyarg = config.get('Factory', 'HTTPproxy')
+        if self.proxyarg:
             self.c.setopt(pycurl.PROXY, proxyarg)
-        if config.has_option('Factory','HTTPproxyport'):
-            proxyportarg = config.get('Factory', 'HTTPproxyport')
+
+        if self.proxyportarg:
             proxyportarg = int(proxyportarg)
             self.c.setopt(pycurl.PROXYPORT, proxyportarg)
 
