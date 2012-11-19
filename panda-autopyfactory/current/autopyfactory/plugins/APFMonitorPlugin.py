@@ -71,6 +71,7 @@ class APFMonitorPlugin(MonitorInterface):
         self.apfqname = apfqueue.apfqname
         self.qcl = apfqueue.factory.qcl
         self.fcl = apfqueue.factory.fcl
+        self.mcl = apfqueue.factory.mcl
     
         self.monurl = self.fcl.generic_get('Factory','monitorURL')
         self.fid = self.fcl.generic_get('Factory','factoryId')
