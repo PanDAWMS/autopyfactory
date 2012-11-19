@@ -1006,12 +1006,11 @@ class PluginDispatcher(object):
         monitor_classes = self._getplugin('monitor', self.apfqueue.mcl)  # list of classes 
         monitor_plugins = []
         for monitor_cls in monitor_classes:
-            #monitor_cls = monitor_cls[1]  # 2nd item of each tuple
-            name, monitor_cls = monitor_cls
-            monitor_plugin = monitor_cls(self.apfqueue, monitor_id=name)
+            monitor_cls = monitor_cls[1] # 2nd item of the tuple
+            monitor_id = 
+            monitor_plugin = monitor_cls(self.apfqueue, monitor_id=monitor_id)
             monitor_plugins.append(monitor_plugin)
         return monitor_plugins
-
 
 
     def __queryargs2condorqid(self, queryargs):
@@ -1034,6 +1033,7 @@ class PluginDispatcher(object):
             pool = l[l.index('-pool') + 1]
 
         return '%s:%s' %(name, pool)
+
 
     def _getplugin(self, action, config=None):
         '''
@@ -1103,7 +1103,7 @@ class PluginDispatcher(object):
                 sections = self.qcl.get(self.apfqname, config_section_item)
                 for section in sections.split(','):
                     section = section.strip()
-                    plugin_name = config.get(section, plugin_config_item)
+                    plugin_name = config.get(section, plugin_config_item)  # i.e. APF (from monitor.conf)
                     plugin_names.append(plugin_name)
             else:
                 return [(None, None)] #temporary solution
