@@ -99,10 +99,8 @@ class APFMonitorPlugin(MonitorInterface):
 ###        self.c.setopt(pycurl.CONNECTTIMEOUT, 5)
 ###        self.c.setopt(pycurl.TIMEOUT, 10)
 ###        self.c.setopt(pycurl.FOLLOWLOCATION, 1)
-###        
 ###        if self.proxyarg:
 ###            self.c.setopt(pycurl.PROXY, proxyarg)
-###
 ###        if self.proxyportarg:
 ###            proxyportarg = int(proxyportarg)
 ###            self.c.setopt(pycurl.PROXYPORT, proxyportarg)
