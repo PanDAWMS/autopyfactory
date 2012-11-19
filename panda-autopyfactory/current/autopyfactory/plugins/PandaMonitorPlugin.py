@@ -83,9 +83,9 @@ __status__ = "Testing"
 
 class PandaMonitorPlugin(MonitorInterface):
     
-    __metaclass__ = singletonfactory(id_var="id")
+    __metaclass__ = singletonfactory(id_var="monitor_id")
 
-    def __init__(self, apfqueue, id):
+    def __init__(self, apfqueue, monitor_id):
         pass
  
  
