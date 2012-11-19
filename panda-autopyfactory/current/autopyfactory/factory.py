@@ -1109,7 +1109,7 @@ class PluginDispatcher(object):
                 return [(None, None)] #temporary solution
         else:
             if self.qcl.has_option(self.apfqname, plugin_config_item):
-                plugin_names = self.qcl.get(self.apfqname, plugin_config_item)
+                plugin_names = self.qcl.get(self.apfqname, plugin_config_item)  # i.e. Activated
                 plugin_names = plugin_names.split(',') # we convert a string split by comma into a list
             else:
                 return [(None, None)] #temporary solution
