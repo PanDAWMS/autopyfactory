@@ -46,17 +46,17 @@ _CIDMATCH = re.compile('\*\* Proc (\d+\.\d+)', re.M)
 
 class APFMonitorPlugin(MonitorInterface):
 
-    __metaclass__ = singletonfactory(id_var="id")
+    __metaclass__ = singletonfactory(id_var="monitor_id")
 
 
     """
     Notifies a monitoring webservice about condor jobs
     """
-    def __init__(self, apfqueue, id):
+    def __init__(self, apfqueue, monitor_id):
         '''
         apfqueue is a reference to the APFQueue object creating this plugin.
 
-        id is the value for id_var (input of the singletonfactory)
+        monitor_id is the value for id_var (input of the singletonfactory)
         to decide if a new object has to be really created or not.
         
         Also sends initial ping to monitor server. 
