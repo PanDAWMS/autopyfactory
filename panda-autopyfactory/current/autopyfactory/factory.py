@@ -1009,7 +1009,7 @@ class PluginDispatcher(object):
             #monitor_cls = monitor_cls[1]  # 2nd item of each tuple
             #name = monitor_cls[0] # 1st item of each tuple
             name, monitor_cls = monitor_cls
-            monitor_plugin = monitor_cls(self.apfqueue, id=name)
+            monitor_plugin = monitor_cls(self.apfqueue, monitor_id=name)
             monitor_plugins.append(monitor_plugin)
         return monitor_plugins
 
