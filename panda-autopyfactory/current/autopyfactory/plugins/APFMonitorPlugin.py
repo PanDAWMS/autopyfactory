@@ -58,6 +58,7 @@ class APFMonitorPlugin(MonitorInterface):
 
         monitor_id is the value for id_var (input of the singletonfactory)
         to decide if a new object has to be really created or not.
+        It is the value in [] in the monitor config file, mcl
         
         Also sends initial ping to monitor server. 
         
