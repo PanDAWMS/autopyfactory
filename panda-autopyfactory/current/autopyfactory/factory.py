@@ -1033,7 +1033,7 @@ class PluginDispatcher(object):
         for monitor_ph in monitor_plugin_handlers:
             ###monitor_cls = monitor_cls[1] # 2nd item of the tuple
             monitor_cls = monitor_ph.plugin_class
-            monitor_id = monitor_ph.config_section_name[1] # the name of the section in the monitor.conf
+            monitor_id = monitor_ph.config_section[1] # the name of the section in the monitor.conf
             monitor_plugin = monitor_cls(self.apfqueue, monitor_id=monitor_id)
             monitor_plugins.append(monitor_plugin)
         return monitor_plugins
