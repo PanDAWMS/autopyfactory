@@ -894,8 +894,19 @@ class APFQueue(threading.Thread):
                  
 
 # ==============================================================================                                
-#                     PLUGIN CLASS 
+#                     PLUGIN CLASSES
 # ==============================================================================  
+
+class PluginHandler(object):
+
+    def __init__(self):
+
+        self.plugin_name = None
+        self.plugin_class_name = None
+        self.plugin_module_name = None
+        self.config_section = []
+        self.plugin_class = None
+
 
 
 class PluginDispatcher(object):
@@ -1095,6 +1106,9 @@ class PluginDispatcher(object):
         plugin_config_item = '%splugin' %action # i.e. schedplugin
         plugin_prefix = plugin_prefixes[action] 
 
+        # list of objects PluginHandler
+        plugin_handlers = [] 
+
         # Get the list of plugin names
         if config:
             config_section_item = '%ssection' %action  # i.e. monitorsection
@@ -1102,46 +1116,94 @@ class PluginDispatcher(object):
                 plugin_names = []
                 sections = self.qcl.get(self.apfqname, config_section_item)
                 for section in sections.split(','):
+                
                     section = section.strip()
                     plugin_name = config.get(section, plugin_config_item)  # i.e. APF (from monitor.conf)
                     plugin_names.append(plugin_name)
+
+                    ph = PluginHandler()
+                    ph.plugin_name = plugin_name 
+                    ph.config_section = [self.apfqname, section]
+                    plugin_handlers.append(ph)
+                    
+
             else:
-                return [(None, None)] #temporary solution
+                #return [(None, None)] #temporary solution
+                return plugin_handlers
         else:
             if self.qcl.has_option(self.apfqname, plugin_config_item):
                 plugin_names = self.qcl.get(self.apfqname, plugin_config_item)  # i.e. Activated
                 plugin_names = plugin_names.split(',') # we convert a string split by comma into a list
-            else:
-                return [(None, None)] #temporary solution
+               
+                for plugin_name in plugin_names: 
+                    plugin_name = plugin_name.strip()
+                    ph = PluginHandler()
+                    ph.plugin_name = plugin_name 
+                    ph.config_section = [self.apfqname]
+                    plugin_handlers.append(ph)
 
-        # Once we have the list of plugin names, 
-        # we import the corresponding modules and return the classes within them.
-        out = []
-        for name in plugin_names:
-            # at this point plugin_names is a list of plugin_name, not a string
-            name = name.strip()
+            else:
+                #return [(None, None)] #temporary solution
+                return plugin_handlers 
+
+
+        for ph in plugin_handlers:
+
+            name = ph.plugin_name 
+
             plugin_module_name = '%s%sPlugin' %(name, plugin_prefix)
             # Example of plugin_module_name is CondorGT2 + BatchSubmit + Plugin => CondorGT2BatchSubmitPlugin
 
             self.log.debug("_getplugin: Attempting to import derived classnames: autopyfactory.plugins.%s"
-                    % plugin_module_name)
+                % plugin_module_name)
 
             plugin_module = __import__("autopyfactory.plugins.%s" % plugin_module_name,
                                        globals(),
                                        locals(),
                                        ["%s" % plugin_module_name])
 
-            plugin_class = plugin_module_name  #  the name of the class is always the name of the module
-
+            plugin_class_name = plugin_module_name  #  the name of the class is always the name of the module
+            
             self.log.debug("_getplugin: Attempting to return plugin with classname %s" %plugin_class)
             self.log.debug("_getplugin: Leaving with plugin named %s" %plugin_class)
-            outpair = ( plugin_module_name, getattr(plugin_module, plugin_class) )  # with getattr() we extract the actual class from the module object
-            out.append(outpair)
-            # we return a list of 2-items tuples.
-            # First item is the name of the plugin.
-            # Second item is the plugin class
 
-        return out
+            plugin_class = getattr(plugin_module, plugin_class) )  # with getattr() we extract the actual class from the module object
+
+            ph.plugin_class_name = plugin_class_name 
+            ph.plugin_module_name = plugin_module_name 
+            ph.plugin_class = plugin_class
+
+        return plugin_handlers
+
+        #### Once we have the list of plugin names, 
+        #### we import the corresponding modules and return the classes within them.
+        ###out = []
+        ###for name in plugin_names:
+        ###    # at this point plugin_names is a list of plugin_name, not a string
+        ###    name = name.strip()
+        ###    plugin_module_name = '%s%sPlugin' %(name, plugin_prefix)
+        ###    # Example of plugin_module_name is CondorGT2 + BatchSubmit + Plugin => CondorGT2BatchSubmitPlugin
+
+        ###    self.log.debug("_getplugin: Attempting to import derived classnames: autopyfactory.plugins.%s"
+        ###            % plugin_module_name)
+
+        ###    plugin_module = __import__("autopyfactory.plugins.%s" % plugin_module_name,
+        ###                               globals(),
+        ###                               locals(),
+        ###                               ["%s" % plugin_module_name])
+
+        ###    plugin_class = plugin_module_name  #  the name of the class is always the name of the module
+
+        ###    self.log.debug("_getplugin: Attempting to return plugin with classname %s" %plugin_class)
+        ###    self.log.debug("_getplugin: Leaving with plugin named %s" %plugin_class)
+
+        ###    outpair = ( plugin_module_name, getattr(plugin_module, plugin_class) )  # with getattr() we extract the actual class from the module object
+        ###    out.append(outpair)
+        ###    # we return a list of 2-items tuples.
+        ###    # First item is the name of the plugin.
+        ###    # Second item is the plugin class
+
+        ###return out
 
 
 
