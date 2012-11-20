@@ -937,13 +937,16 @@ class PluginDispatcher(object):
 
     def getschedplugins(self):
 
-        scheduler_classes = self._getplugin('sched')  # list of classes 
+        ###scheduler_classes = self._getplugin('sched')  # list of classes 
+        scheduler_plugin_handlers = self._getplugin('sched')  # list of PluginHandler objects
                                                       # Note that for the Sched category,
                                                       # we allow more than one plugin 
                                                       # (split by comma in the config file)
         scheduler_plugins = []
-        for scheduler_cls in scheduler_classes:
-            scheduler_cls = scheduler_cls[1] # 2nd item of each tuple
+        ###for scheduler_cls in scheduler_classes:
+        for scheduler_ph in scheduler_plugin_handlers:
+            ###scheduler_cls = scheduler_cls[1] # 2nd item of each tuple
+            scheduler_cls = scheduler_ph.plugin_class
             scheduler_plugin = scheduler_cls(self.apfqueue)  # calls __init__() to instantiate the class
             scheduler_plugins.append(scheduler_plugin)
         return scheduler_plugins
@@ -955,8 +958,10 @@ class PluginDispatcher(object):
             queryargs = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs', logger=self.log)
             if queryargs:
                     condor_q_id = self.__queryargs2condorqid(queryargs)    
-        batchstatus_cls = self._getplugin('batchstatus')[0]
-        batchstatus_cls = batchstatus_cls[1]  # 2nd item of the tuple
+        ###batchstatus_cls = self._getplugin('batchstatus')[0]
+        ###batchstatus_cls = batchstatus_cls[1]  # 2nd item of the tuple
+        batchstatus_plugin_handler = self._getplugin('batchstatus')[0]
+        batchstatus_cls = batchstatus_plugin_handler.plugin_class
 
         # calls __init__() to instantiate the class
         # In this case the call accepts a second arguments:
@@ -974,8 +979,10 @@ class PluginDispatcher(object):
 
     def getwmsstatusplugin(self):
 
-        wmsstatus_cls = self._getplugin('wmsstatus')[0]
-        wmsstatus_cls = wmsstatus_cls[1]   # 2nd item of the tuple
+        ###wmsstatus_cls = self._getplugin('wmsstatus')[0]
+        ###wmsstatus_cls = wmsstatus_cls[1]   # 2nd item of the tuple
+        wmsstatus_plugin_handler = self._getplugin('wmsstatus')[0]
+        wmsstatus_cls = wmsstatus_plugin_handler.plugin_class
 
         # calls __init__() to instantiate the class
         wmsstatus_plugin = wmsstatus_cls(self.apfqueue)  
@@ -987,8 +994,10 @@ class PluginDispatcher(object):
 
     def getsubmitplugin(self):
 
-        batchsubmit_cls = self._getplugin('batchsubmit')[0]
-        batchsubmit_cls = batchsubmit_cls[1]  # 2nd item of the tuple
+        ###batchsubmit_cls = self._getplugin('batchsubmit')[0]
+        ###batchsubmit_cls = batchsubmit_cls[1]  # 2nd item of the tuple
+        batchsubmit_plugin_handler = self._getplugin('batchsubmit')[0]
+        batchsubmit_cls = batchsubmit_plugin_handler.plugin_class
 
         # calls __init__() to instantiate the class
         batchsubmit_plugin = batchsubmit_cls(self.apfqueue)  
@@ -997,8 +1006,11 @@ class PluginDispatcher(object):
 
     def getconfigplugin(self):
 
-        config_cls = self._getplugin('config')[0]
-        config_cls = config_cls[1]  # 2nd item of the tuple
+        ###config_cls = self._getplugin('config')[0]
+        ###config_cls = config_cls[1]  # 2nd item of the tuple
+        config_plugin_handler = self._getplugin('config')[0]
+        config_cls = config_plugin_handler.plugin_class
+
         if config_cls:
             # Note it could be None
 
@@ -1014,11 +1026,14 @@ class PluginDispatcher(object):
 
     def getmonitorplugins(self):
 
-        monitor_classes = self._getplugin('monitor', self.apfqueue.mcl)  # list of classes 
+        ###monitor_classes = self._getplugin('monitor', self.apfqueue.mcl)  # list of classes 
+        monitor_plugin_handlers = self._getplugin('monitor', self.apfqueue.mcl)  # list of classes 
         monitor_plugins = []
-        for monitor_cls in monitor_classes:
-            monitor_cls = monitor_cls[1] # 2nd item of the tuple
-            monitor_id = 
+        ###for monitor_cls in monitor_classes:
+        for monitor_ph in monitor_plugin_handlers:
+            ###monitor_cls = monitor_cls[1] # 2nd item of the tuple
+            monitor_cls = monitor_ph.plugin_class
+            monitor_id = monitor_ph.config_section_name[1] # the name of the section in the monitor.conf
             monitor_plugin = monitor_cls(self.apfqueue, monitor_id=monitor_id)
             monitor_plugins.append(monitor_plugin)
         return monitor_plugins
@@ -1129,7 +1144,7 @@ class PluginDispatcher(object):
 
             else:
                 #return [(None, None)] #temporary solution
-                return plugin_handlers
+                return [PluginHandler()] # temporary solution  
         else:
             if self.qcl.has_option(self.apfqname, plugin_config_item):
                 plugin_names = self.qcl.get(self.apfqname, plugin_config_item)  # i.e. Activated
@@ -1144,7 +1159,7 @@ class PluginDispatcher(object):
 
             else:
                 #return [(None, None)] #temporary solution
-                return plugin_handlers 
+                return [PluginHandler()] # temporary solution  
 
 
         for ph in plugin_handlers:
