@@ -108,9 +108,13 @@ class APFMonitorPlugin(MonitorInterface):
         self.log.debug('Done.')
 
 
-    def updateJobStatus(self, jobinfolist ):
+    def updateJobStatus(self, apfqueue, jobinfolist ):
         '''
-        Take list of JobInfo objects and translate to APFMonitor messages.
+        Take a list of JobInfo objects and translate to APFMonitor messages.
+
+        We pass apfqueue as one of the inputs because this class is a singleton,
+        so the apfqueue object passed by __init__() may not be the same 
+        apfqueue object calling this method. 
         '''
 
 
