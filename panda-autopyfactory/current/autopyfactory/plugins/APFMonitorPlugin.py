@@ -78,8 +78,6 @@ class APFMonitorPlugin(MonitorInterface):
         self.version = self.fcl.generic_get('Factory', 'versionTag')
         self.email = self.fcl.generic_get('Factory','factoryAdminEmail')
         self.baselogurl = self.fcl.generic_get('Factory','baseLogDirUrl')
-###        self.proxyarg = self.fcl.generic_get('Factory', 'HTTPproxy', default_value=None)
-###        self.proxyportarg = self.fcl.generic_get('Factory', 'HTTPproxyport', default_value=None)
 
         self.owner = self.email
         
@@ -93,19 +91,6 @@ class APFMonitorPlugin(MonitorInterface):
         self.json = json.JSONEncoder()
         self.buffer = StringIO.StringIO()
         
-###        # Set up PyCurl
-###        self.c = pycurl.Curl()
-###        self.c.setopt(pycurl.WRITEFUNCTION, self.buffer.write)
-###        self.c.setopt(pycurl.SSL_VERIFYPEER, 0)
-###        self.c.setopt(pycurl.CONNECTTIMEOUT, 5)
-###        self.c.setopt(pycurl.TIMEOUT, 10)
-###        self.c.setopt(pycurl.FOLLOWLOCATION, 1)
-###        if self.proxyarg:
-###            self.c.setopt(pycurl.PROXY, proxyarg)
-###        if self.proxyportarg:
-###            proxyportarg = int(proxyportarg)
-###            self.c.setopt(pycurl.PROXYPORT, proxyportarg)
-
         self.log.debug('Instantiated monitor')
 
         attrlist = []
@@ -251,32 +236,3 @@ class APFMonitorPlugin(MonitorInterface):
 
 
 
-###    #def _signal(self, url, postdata):
-###    def old_signal(self, url, postdata):
-###        """
-###        handle posting of payload to URL
-###        """
-###
-###        self.c.setopt(pycurl.URL, url)
-###        self.c.setopt(pycurl.POST, 1)
-###        self.c.setopt(pycurl.POSTFIELDS, postdata)
-###        try:
-###            self.c.perform()
-###            if self.c.getinfo(pycurl.HTTP_CODE) != 200:
-###                msg = "url: %s post: %s" % (url, postdata)
-###                self.log.error(msg)
-###                self.buffer.seek(0)
-###                self.log.error(self.buffer.read())
-###                self.buffer.seek(0)
-###                return
-###        
-###        except pycurl.error, e:
-###            msg = "PyCurl server problem:", e[1]
-###            self.log.debug(msg)
-###        # Catch other errors, e.g. URLError. 
-###        except Exception, e:
-###            self.log.error("Caught exception: %s " % str(e))
-###        
-###        msg = "%s" % url
-###        self.log.debug(msg)
-###        self.buffer.seek(0)
