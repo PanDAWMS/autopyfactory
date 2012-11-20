@@ -117,7 +117,19 @@ class APFMonitorPlugin(MonitorInterface):
         apfqueue object calling this method. 
         '''
 
+        apfqname = apfqueue.apfqname
+        nickname = self.qcl.generic_get(apfqname, 'batchqueue') 
 
+        crlist = []
+
+        for ji in jobinfolist:
+            data = (ji, nickname, self.fid, apfqname)
+            crlist.append(data)
+            
+        jsonmsg = self.json.encode(rlist)
+        txt = "data=%s" % jsonmsg
+
+        self._signal(self.crurl, txt)
 
 
    
