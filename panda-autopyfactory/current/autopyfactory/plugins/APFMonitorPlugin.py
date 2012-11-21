@@ -58,7 +58,7 @@ class APFMonitorPlugin(MonitorInterface):
 
         monitor_id is the value for id_var (input of the singletonfactory)
         to decide if a new object has to be really created or not.
-        It is the name of the section [] in monitor.conf
+        It is the name of the section [] in monitor config object
         
         Also sends initial ping to monitor server. 
         
@@ -81,8 +81,6 @@ class APFMonitorPlugin(MonitorInterface):
         self.baselogurl = self.fcl.generic_get('Factory','baseLogDirUrl')
 
         self.monurl = self.mcl.generic_get(monitor_id, 'monitorURL')
-
-        
         self.crurl = self.monurl + 'c/'
         self.msgurl = self.monurl + 'm/'
         self.furl = self.monurl + 'h/'
@@ -123,7 +121,7 @@ class APFMonitorPlugin(MonitorInterface):
         crlist = []
 
         for ji in jobinfolist:
-            data = (ji, nickname, self.fid, apfqname)
+            data = (ji.jobid, nickname, self.fid, apfqname)
             crlist.append(data)
             
         jsonmsg = self.json.encode(rlist)
