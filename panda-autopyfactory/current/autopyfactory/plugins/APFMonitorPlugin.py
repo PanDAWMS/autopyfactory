@@ -131,8 +131,6 @@ class APFMonitorPlugin(MonitorInterface):
 
         self._signal(self.crurl, txt)
 
-
-   
     def _signal(self, url, postdata):
         
         self.log.debug('_signal: url is %s and postdata is %s' %(url, postdata))
@@ -142,6 +140,13 @@ class APFMonitorPlugin(MonitorInterface):
         except Exception, ex: 
             self.log.debug('_signal: urlopen() failed and raised exception %s' %ex)
         self.log.debug('_signal: urlopen() OK.')
+
+
+
+
+
+
+
         
     def _parse(self, output):
         # return a list of condor job id
