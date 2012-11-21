@@ -1163,8 +1163,7 @@ class PluginDispatcher(object):
 
             plugin_class_name = plugin_module_name  #  the name of the class is always the name of the module
             
-            self.log.debug("_getplugin: Attempting to return plugin with classname %s" %plugin_class)
-            self.log.debug("_getplugin: Leaving with plugin named %s" %plugin_class)
+            self.log.debug("_getplugin: Attempting to return plugin with classname %s" %plugin_class_name)
 
             plugin_class = getattr(plugin_module, plugin_class_name)  # with getattr() we extract the actual class from the module object
 
