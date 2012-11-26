@@ -115,6 +115,8 @@ class APFMonitorPlugin(MonitorInterface):
         apfqueue object calling this method. 
         '''
 
+        self.log.debug('updateJobStatus: starting for apfqueue %s with info list %s' %(apfqueue, jobinfolist))
+
         if jobinfolist:
         # ensure jobinfolist has any content, and is not None
 
@@ -130,14 +132,17 @@ class APFMonitorPlugin(MonitorInterface):
 
             self._signal(self.crurl, txt)
 
+        self.log.debug('updateJobStatus: leaving.')
+
     def _signal(self, url, postdata):
         
-        self.log.debug('_signal: url is %s and postdata is %s' %(url, postdata))
+        self.log.debug('_signal: starting with url %s and postdata %s' %(url, postdata))
         try:
             out = urllib2.urlopen(url, postdata)
             self.log.debug('_signal: urlopen() output=%s' % out.read())
         except Exception, ex: 
             self.log.debug('_signal: urlopen() failed and raised exception %s' %ex)
+
         self.log.debug('_signal: urlopen() OK.')
 
 
