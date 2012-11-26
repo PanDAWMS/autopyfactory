@@ -143,8 +143,10 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
                     st, output = (None, None)
 
         self.log.debug('submit: Got output (%s, %s).' %(st, output))
-        #return st, output
         joblist = self._parseCondorSubmit(output)
+        self.log.debug('submit: leaving, returning joblist %s.' %joblist)
+        return joblist
+        
         
    
     def _parseCondorSubmit(self, output):
