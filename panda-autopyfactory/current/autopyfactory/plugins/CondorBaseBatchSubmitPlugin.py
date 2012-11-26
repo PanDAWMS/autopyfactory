@@ -146,8 +146,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         joblist = self._parseCondorSubmit(output)
         self.log.debug('submit: leaving, returning joblist %s.' %joblist)
         return joblist
-        
-        
    
     def _parseCondorSubmit(self, output):
         '''
@@ -245,6 +243,9 @@ x509userproxy = "/tmp/prodProxy"
 x509UserProxyVOName = "atlas"
 
         '''
+        
+        self.log.debug('_parseCondorSubmit: Starting')
+
         now = datetime.datetime.utcnow()
         joblist = []
         lines = output.split('\n')
@@ -257,7 +258,10 @@ x509UserProxyVOName = "atlas"
                 ji = JobInfo(procid, 'submitted', now)
                 joblist.append(ji)
         if not len(joblist) > 0:
+            self.log.debug('_parseCondorSubmit: joblist has length 0, returning None')
             joblist = None
+
+        self.log.debug('_parseCondorSubmit: Leaving with joblist = %s' %joblist )
         return joblist
         
     
