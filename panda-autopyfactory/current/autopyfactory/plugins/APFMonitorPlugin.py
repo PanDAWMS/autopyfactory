@@ -125,6 +125,7 @@ class APFMonitorPlugin(MonitorInterface):
             crlist = []
             for ji in jobinfolist:
                 data = (ji.jobid, nickname, self.fid, apfqname)
+                self.log.debug('updateJobStatus: adding data (%s, %s, %s, %s)' %(ji.jobid, nickname, self.fid, apfqname))
                 crlist.append(data)
             
             jsonmsg = self.json.encode(crlist)
