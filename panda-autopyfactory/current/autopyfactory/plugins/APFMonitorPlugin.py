@@ -63,7 +63,7 @@ class APFMonitorPlugin(MonitorInterface):
         Also sends initial ping to monitor server. 
         
         '''
-        self.log = logging.getLogger('main.monitor')
+        self.log = logging.getLogger('main.monitor [singleton created by %s with id %s]' %(apfqueue, monitor_id))
         mainlevel = logging.getLogger('main').getEffectiveLevel()
         self.log.setLevel(mainlevel)
         self.log.debug("Start...")
