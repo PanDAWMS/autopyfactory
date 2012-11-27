@@ -29,6 +29,26 @@ function find_lfc_compatible_python() {
     # let the pilot setup the correct ATLAS environment for the
     # job.
     
+    # firstly try the cvmfs python2.6 binary
+    PYTHON26=/cvmfs/atlas.cern.ch/repo/sw/python/latest/setup.sh
+    if [ -f $PYTHON26 ] ; then
+      echo PYTHONPATH=$PYTHONPATH
+      echo "Clobbering PYTHONPATH. Needed to deal with tarball sites when using python2.6"
+      unset PYTHONPATH
+      echo "sourcing cvmfs python2.6 setup: $PYTHON26"
+      source $PYTHON26
+      echo current PYTHONPATH=$PYTHONPATH
+      pybin=`which python`
+      lfc_test $pybin
+      if [ $? = "0" ]; then
+          return 0
+      else
+          echo "lfc_test failed for cvmfs python"
+      fi
+    else
+      echo "cvmfs python2.6 not found"
+    fi
+
     # python2.6 is still under test, so only use it if we are asked to
     if [ -n "$APF_PYTHON26" ]; then
         pybin=python2.6
@@ -151,10 +171,10 @@ function monping() {
 
 function monpost() {
     # scrape PandaIDs from pilot log
-    echo 'SCRAPE: '
+    echo 'SCRAPE PandaIDs: '
     find -name pilotlog.* -exec egrep ^PandaID= {} \; 
 
-    echo 'END SCRAPE.'
+    echo 'END SCRAPE'
 }
 
 function set_forced_env() {
@@ -169,6 +189,7 @@ function set_forced_env() {
 ## main ##
 
 echo "This is pilot wrapper $Id$"
+echo "Please send development requests to p.love@lancaster.ac.uk"
 
 # notify monitoring, job running
 monping rn
@@ -277,13 +298,15 @@ echo
 
 
 # Add DQ2 clients to the PYTHONPATH
-echo "---- Local DDM setup ----"
-echo "Looking for $ATLAS_AREA/ddm/latest/setup.sh"
-if [ -f $ATLAS_AREA/ddm/latest/setup.sh ]; then
-    echo "Sourcing $ATLAS_AREA/ddm/latest/setup.sh"
-    source $ATLAS_AREA/ddm/latest/setup.sh
+echo "---- DDM setup ----"
+if [ -f /cvmfs/atlas.cern.ch/repo/sw/ddm/2.3.0/setup.sh ]; then
+  echo "Sourcing /cvmfs/atlas.cern.ch/repo/sw/ddm/2.3.0/setup.sh"
+  source /cvmfs/atlas.cern.ch/repo/sw/ddm/2.3.0/setup.sh
+elif [ -f $ATLAS_AREA/ddm/latest/setup.sh ]; then
+  echo "Sourcing $ATLAS_AREA/ddm/latest/setup.sh"
+  source $ATLAS_AREA/ddm/latest/setup.sh
 else
-    echo "WARNING: No DDM setup found to source."
+  echo "WARNING: No DDM setup found to source."
 fi
 echo
 
