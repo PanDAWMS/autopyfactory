@@ -306,6 +306,7 @@ x509UserProxyVOName = "atlas"
         if self.environ:
             if self.environ != 'None' and self.environ != '':
                     environment += " " + self.environ
+        environment += ' RUCIO_ACCOUNT=pilot'
         environment += '"'
         self.JSD.add(environment)
 
