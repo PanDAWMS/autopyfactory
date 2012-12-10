@@ -40,8 +40,6 @@ class CondorCEBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         self.log.debug('CondorCEBatchSubmitPlugin.addJSD: Starting.')
    
         # -- fixed stuffs -- 
-        #self.JSD.add('periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)')
-        #self.JSD.add('periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)')
         self.JSD.add('+Nonessential = True')
 
         super(CondorCEBatchSubmitPlugin, self)._addJSD() 
