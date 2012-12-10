@@ -198,6 +198,9 @@
 #
 # batchsubmit.condorlsf.proxy
 #
+# batchsubmit.condornordugrid.gridresource
+# batchsubmit.condornordugrid.nordugridrsl
+#
 # monitorsection
 #
 # executable
@@ -881,6 +884,16 @@
 # batchsubmit.condorlsf.proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
 #               (See etc/proxy.conf)
 #               None if no automatic proxy renewal is desired.
+
+#  --------------------------------------------------------------------
+#       Configuration when batchsubmitplugin is nordugrid 
+#  --------------------------------------------------------------------
+
+# batchsubmit.condornordugrid.gridresource = name of the ARC CE
+#               i.e. lcg-lrz-ce2.grid.lrz.de
+#
+# batchsubmit.condornordugrid.nordugridrsl = Entire RSL line.
+#               i.e. (jobname = 'prod_pilot')(queue=lcg)(runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY ) (environment = ('APFFID' 'voatlas94') ('PANDA_JSID' 'voatlas94') ('GTAG' 'http://voatlas94.cern.ch/pilots/2012-11-19/LRZ-LMU_arc/$(Cluster).$(Process).out') ('RUCIO_ACCOUNT' 'pilot') ('APFCID' '$(Cluster).$(Process)') ('APFMON' 'http://apfmon.lancs.ac.uk/mon/') ('FACTORYQUEUE' 'LRZ-LMU_arc') 
 
 #  --------------------------------------------------------------------
 #       Monitor Section 
