@@ -30,33 +30,26 @@ function find_lfc_compatible_python() {
     # job.
     
     # firstly try the cvmfs python2.6 binary
-    PYTHON26=/cvmfs/atlas.cern.ch/repo/sw/python/latest/setup.sh
-    if [ -f $PYTHON26 ] ; then
-      echo PYTHONPATH=$PYTHONPATH
-      echo "Clobbering PYTHONPATH. Needed to deal with tarball sites when using python2.6"
-      unset PYTHONPATH
-      echo "sourcing cvmfs python2.6 setup: $PYTHON26"
-      source $PYTHON26
-      echo current PYTHONPATH=$PYTHONPATH
-      pybin=`which python`
-      lfc_test $pybin
-      if [ $? = "0" ]; then
-          return 0
-      else
-          echo "lfc_test failed for cvmfs python"
-      fi
-    else
-      echo "cvmfs python2.6 not found"
-    fi
-
-    # python2.6 is still under test, so only use it if we are asked to
     if [ -n "$APF_PYTHON26" ]; then
-        pybin=python2.6
+      PYTHON26=/cvmfs/atlas.cern.ch/repo/sw/python/latest/setup.sh
+      if [ -f $PYTHON26 ] ; then
+        echo PYTHONPATH=$PYTHONPATH
+        echo "Clobbering PYTHONPATH. Needed to deal with tarball sites when using python2.6"
+        unset PYTHONPATH
+        echo "sourcing cvmfs python2.6 setup: $PYTHON26"
+        source $PYTHON26
+        echo current PYTHONPATH=$PYTHONPATH
+        pybin=`which python`
         lfc_test $pybin
         if [ $? = "0" ]; then
-            return 0
+          return 0
+        else
+          echo "lfc_test failed for cvmfs python"
         fi
-    fi   
+      else
+        echo "cvmfs python2.6 not found"
+      fi
+    fi
 
     # On many sites python now works just fine (m/w also now
     # distributes the LFC plugin in 64 bit)
@@ -104,18 +97,19 @@ function get_pilot_http() {
     # ptest jobs use Paul's development release.
     if [ -z "$PILOT_HTTP_SOURCES" ]; then
         if echo $@ | grep -- "-u ptest" > /dev/null; then 
-            echo "DEBUG: This is a ptest pilot. Will use development pilot code"
+            echo "DEBUG: This is a ptest pilot. Will use development pilot code with python2.6"
             PILOT_HTTP_SOURCES="http://project-atlas-gmsb.web.cern.ch/project-atlas-gmsb/pilotcode-dev.tar.gz"
             PILOT_TYPE=PT
+            APF_PYTHON26=1
         elif [ $(($RANDOM%100)) = "0" ]; then
-            echo "DEBUG: Release candidate pilot will be used."
+            echo "DEBUG: Release candidate pilot will be used with python2.6"
             PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25085/cache/pilot/pilotcode-rc.tar.gz"
             PILOT_TYPE=RC
+            APF_PYTHON26=1
         else
             echo "DEBUG: Normal production pilot code used." 
             PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25085/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
             PILOT_TYPE=PR
-
         fi
     fi
     for source in $PILOT_HTTP_SOURCES; do
@@ -299,7 +293,7 @@ echo
 
 # Add DQ2 clients to the PYTHONPATH
 echo "---- DDM setup ----"
-if [ -f /cvmfs/atlas.cern.ch/repo/sw/ddm/2.3.0/setup.sh ]; then
+if [ -n "$APF_PYTHON26" ] && [ -f /cvmfs/atlas.cern.ch/repo/sw/ddm/2.3.0/setup.sh ]; then
   echo "Sourcing /cvmfs/atlas.cern.ch/repo/sw/ddm/2.3.0/setup.sh"
   source /cvmfs/atlas.cern.ch/repo/sw/ddm/2.3.0/setup.sh
 elif [ -f $ATLAS_AREA/ddm/latest/setup.sh ]; then
