@@ -33,9 +33,10 @@ function find_lfc_compatible_python() {
     if [ -n "$APF_PYTHON26" ]; then
       PYTHON26=/cvmfs/atlas.cern.ch/repo/sw/python/latest/setup.sh
       if [ -f $PYTHON26 ] ; then
-        echo PYTHONPATH=$PYTHONPATH
-        echo "Clobbering PYTHONPATH. Needed to deal with tarball sites when using python2.6"
-        unset PYTHONPATH
+        if [ ! -z $PYTHONPATH ]; then
+          echo "Clobbering PYTHONPATH. Needed to deal with tarball sites when using python2.6"
+          unset PYTHONPATH
+        fi
         echo "sourcing cvmfs python2.6 setup: $PYTHON26"
         source $PYTHON26
         echo current PYTHONPATH=$PYTHONPATH
