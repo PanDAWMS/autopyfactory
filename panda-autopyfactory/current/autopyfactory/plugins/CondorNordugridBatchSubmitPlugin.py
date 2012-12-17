@@ -59,10 +59,20 @@ class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
    
         self.JSD.add('grid_resource = nordugrid %s' %self.gridresource)
 
-        nordugridrsl = "('GTAG' '%s/$(Cluster).$(Process).out')" % self.logUrl
+        nordugridrsl_env = " (environment = " 
+        nordugridrsl_env += "('APFFID' '%s') " % self.factoryid
+        nordugridrsl_env += "('PANDA_JSID' '%s') " % self.factoryid
+        nordugridrsl_env += "('GTAG' '%s/$(Cluster).$(Process).out') " % self.logUrl
+        nordugridrsl_env += "('APFCID' '$(Cluster).$(Process)') " 
+        nordugridrsl_env += "('APFMON' '%') " % self.monitorurl
+        nordugridrsl_env += "('FACTORYQUEUE' '%') " % self.apfqname
+        nordugridrsl_env += ") "
+
         if self.nordugridrsl:
-            nordugridrsl += self.nordugridrsl
+            nordugridrsl = self.nordugridrsl
+            nordugridrsl += nordugridrsl_env
             self.JSD.add('nordugrid_rsl = %s' %nordugridrsl) 
+
 
         super(CondorNordugridBatchSubmitPlugin, self)._addJSD() 
     
