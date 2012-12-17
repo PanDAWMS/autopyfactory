@@ -43,7 +43,7 @@ class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
             return False
         try:
             self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condornordugrid.gridresource', logger=self.log) 
-            self.nordugridrsl = qcl.generic_get(self.apfqname, 'batchsubmit.condornordugrid.nordugridrsl', default_value=None, logger=self.log) 
+            self.nordugridrsl = _nordugridrsl(qcl)
 
             return True
         except:
@@ -72,30 +72,30 @@ class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
     def _nordugridrsl(self, qcl):
         '''
         tries to build nordugrid_rsl line.
-            -- batchsubmit.nordugridrsl.XYZ
-            -- batchsubmit.nordugridrsl.rsl
-            -- batchsubmit.nordugridrsl.rsladd
+            -- nordugridrsl.XYZ
+            -- nordugridrsl.nordugridrsl
+            -- nordugridrsl.nordugridrsladd
         '''
  
         self.log.debug('_nordugridrsl: Starting.')
  
-        globus = ""
+        out = ""
  
         optlist = []
         for opt in qcl.options(self.apfqname):
-            if opt.startswith('batchsubmit.nordugridrsl.') and\
-                opt != 'batchsubmit.nordugridrsl.rsl' and\
-                opt != 'batchsubmit.nordugridrsl.rsladd':
+            if opt.startswith('nordugridrsl.') and\
+                opt != 'nordugridrsl.nordugridrsl' and\
+                opt != 'nordugridrsl.nordugridrsladd':
                     optlist.append(opt)
  
-        rsl = qcl.generic_get(self.apfqname, 'batchsubmit.nordugridrsl.rsl', logger=self.log)
-        rsladd = qcl.generic_get(self.apfqname, 'batchsubmit.nordugridrsl.rsladd', logger=self.log)
- 
+        rsl = qcl.generic_get(self.apfqname, 'nordugridrsl.nordugridrsl', logger=self.log)
+        rsladd = qcl.generic_get(self.apfqname, 'nordugridrsl.nordugridrsladd', logger=self.log)
+
         if rsl:
             out = rsl 
         else:
                 for opt in optlist:
-                    key = opt.split('batchsubmit.nordugridrsl.')[1]
+                    key = opt.split('nordugridrsl.')[1]
                     value = qcl.generic_get(self.apfqname, opt, logger=self.log)
                     if value != "":
                             nordugrid += '(%s=%s)' %(key, value)
