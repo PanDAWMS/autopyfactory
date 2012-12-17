@@ -68,3 +68,40 @@ class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
     
         self.log.debug('CondorNordugridBatchSubmitPlugin.addJSD: Leaving.')
 
+
+    def _nordugridrsl(self, qcl):
+        '''
+        tries to build nordugrid_rsl line.
+            -- batchsubmit.nordugridrsl.XYZ
+            -- batchsubmit.nordugridrsl.rsl
+            -- batchsubmit.nordugridrsl.rsladd
+        '''
+ 
+        self.log.debug('_nordugridrsl: Starting.')
+ 
+        globus = ""
+ 
+        optlist = []
+        for opt in qcl.options(self.apfqname):
+            if opt.startswith('batchsubmit.nordugridrsl.') and\
+                opt != 'batchsubmit.nordugridrsl.rsl' and\
+                opt != 'batchsubmit.nordugridrsl.rsladd':
+                    optlist.append(opt)
+ 
+        rsl = qcl.generic_get(self.apfqname, 'batchsubmit.nordugridrsl.rsl', logger=self.log)
+        rsladd = qcl.generic_get(self.apfqname, 'batchsubmit.nordugridrsl.rsladd', logger=self.log)
+ 
+        if rsl:
+            out = rsl 
+        else:
+                for opt in optlist:
+                    key = opt.split('batchsubmit.nordugridrsl.')[1]
+                    value = qcl.generic_get(self.apfqname, opt, logger=self.log)
+                    if value != "":
+                            nordugrid += '(%s=%s)' %(key, value)
+ 
+        if rsladd:
+            out += rsladd
+ 
+        self.log.debug('_nordugridrsl: Leaving with value = %s.' %out)
+        return out 
