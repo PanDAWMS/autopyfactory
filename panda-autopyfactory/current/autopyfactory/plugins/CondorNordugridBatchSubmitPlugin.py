@@ -58,8 +58,11 @@ class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         self.log.debug('CondorNordugridBatchSubmitPlugin.addJSD: Starting.')
    
         self.JSD.add('grid_resource = nordugrid %s' %self.gridresource)
+
+        nordugridrsl = "('GTAG' '%s/$(Cluster).$(Process).out')" % self.logUrl
         if self.nordugridrsl:
-            self.JSD.add('nordugrid_rsl = %s' %self.nordugridrsl) 
+            nordugridrsl += self.nordugridrsl
+            self.JSD.add('nordugrid_rsl = %s' %nordugridrsl) 
 
         super(CondorNordugridBatchSubmitPlugin, self)._addJSD() 
     
