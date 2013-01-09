@@ -290,14 +290,14 @@ for c in listnodesfromxml(xmldoc, 'c') :
 	node_dict = node2dict(c)
         nodelist.append(node_dict)  
 log.debug('nodelist length %d' % len(nodelist))
-log.debug("first node: %s" % nodelist[0])
+if len(nodelist) > 0:
+    log.debug("first node: %s" % nodelist[0])
 
-aggdict = aggregateinfo(nodelist)
-log.debug('aggdict with %d entries' % len(aggdict))
-log.debug('aggdict: %s' % aggdict)
-table = map2table(aggdict)
-
-printtable(table)
+    aggdict = aggregateinfo(nodelist)
+    log.debug('aggdict with %d entries' % len(aggdict))
+    log.debug('aggdict: %s' % aggdict)
+    table = map2table(aggdict)
+    printtable(table)
 
 
 
