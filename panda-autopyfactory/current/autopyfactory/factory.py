@@ -909,7 +909,6 @@ class PluginHandler(object):
         self.plugin_class = None
 
 
-
 class PluginDispatcher(object):
     '''
     class to create a deliver, on request, the different plug-ins.
@@ -924,6 +923,8 @@ class PluginDispatcher(object):
         self.apfqueue = apfqueue
         self.qcl = apfqueue.qcl
         self.fcl = apfqueue.fcl
+        self.mcl = apfqueue.mcl
+        
         self.apfqname = apfqueue.apfqname
 
         # collect all plugins
@@ -1015,14 +1016,17 @@ class PluginDispatcher(object):
             return None    
 
     def getmonitorplugins(self):
-
+        self.log.debug("Getting monitor plugins...")
         monitor_plugin_handlers = self._getplugin('monitor', self.apfqueue.mcl)  # list of classes 
         monitor_plugins = []
         for monitor_ph in monitor_plugin_handlers:
-            monitor_cls = monitor_ph.plugin_class
-            monitor_id = monitor_ph.config_section[1] # the name of the section in the monitor.conf
-            monitor_plugin = monitor_cls(self.apfqueue, monitor_id=monitor_id)
-            monitor_plugins.append(monitor_plugin)
+            try:
+                monitor_cls = monitor_ph.plugin_class
+                monitor_id = monitor_ph.config_section[1] # the name of the section in the monitor.conf
+                monitor_plugin = monitor_cls(self.apfqueue, monitor_id=monitor_id)
+                monitor_plugins.append(monitor_plugin)
+            except Exception, e:
+                self.log.error("Problem getting monitor plugin %s" % monitor_ph.plugin_name)
         return monitor_plugins
 
 
