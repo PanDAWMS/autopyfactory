@@ -914,8 +914,8 @@ class PluginDispatcher(object):
 
         # collect all plugins
         self.log.debug("Getting sched plugins")
-        self.schedplugins =  self.getschedplugins()
-        self.log.debug("Got $d sched plugins" % len(self.schedplugins))
+        self.schedplugins = self.getschedplugins()
+        self.log.debug("Got %d sched plugins" % len(self.schedplugins))
         self.log.debug("Getting batchstatus plugin")
         self.batchstatusplugin =  self.getbatchstatusplugin()
         self.log.debug("Getting batchstatus plugin")        
@@ -926,7 +926,7 @@ class PluginDispatcher(object):
         self.configplugin =  self.getconfigplugin()
         self.log.debug("Getting monitor plugins")
         self.monitorplugins = self.getmonitorplugins()
-        self.log.debug("Got $d monitor plugins" % len(self.monitorplugins))
+        self.log.debug("Got %d monitor plugins" % len(self.monitorplugins))
 
         self.log.info('PluginDispatcher: Object initialized.')
 
