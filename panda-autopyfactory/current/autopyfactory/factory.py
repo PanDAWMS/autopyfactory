@@ -895,11 +895,11 @@ class PluginHandler(object):
 
     def __repr__(self):
         s = ""
-        s += "plugin_name = %s" % self.plugin_name
-        s += "plugin_class_name = %s" % self.plugin_class_name
-        s += "plugin_module_name = %s" % self.plugin_module_name
-        s += "plugin_section = %s" % self.config_section
-        s += "plugin_class = %s" % self.plugin_class
+        s += "plugin_name = %s " % self.plugin_name
+        s += "plugin_class_name = %s " % self.plugin_class_name
+        s += "plugin_module_name = %s " % self.plugin_module_name
+        s += "plugin_section = %s " % self.config_section
+        s += "plugin_class = %s " % self.plugin_class
         return s
 
 class PluginDispatcher(object):
