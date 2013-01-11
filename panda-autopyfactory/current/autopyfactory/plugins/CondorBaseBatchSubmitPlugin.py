@@ -114,37 +114,32 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         
         '''
 
-        self.log.debug('submit: Preparing to submit %s pilots' %n)
+        self.log.debug('Preparing to submit %s jobs' %n)
+        joblist = None
 
         if not utils.checkDaemon('condor'):
             self.log.info('submit: condor daemon is not running. Doing nothing')
-            return None, None
+            return joblist
 
-        if n <= 0:
-            self.log.debug('submit: number of job 0 or negative: %s. Aborting and returning (None, None)' %n)
-            st, output = (None, None)
-        else:
+        if n > 0:
             self._calculateDateDir()
-
             self.JSD = jsd.JSDFile()
             valid = self._readconfig()
             if not valid:
                 self.log.error('submit: self._readconfig returned False, we cannot submit.')
-                st, output = (None, None)
             else:
                 self.log.debug('submit: self._readconfig returned True. Keep going...')
                 self._addJSD()
                 self._finishJSD(n)
                 jsdfile = self._writeJSD()
                 if jsdfile:
-                    st, output = self.__submit(n, jsdfile) 
+                    st, output = self.__submit(n, jsdfile)
+                    self.log.debug('submit: Got output (%s, %s).' %(st, output)) 
+                    joblist = self._parseCondorSubmit(output)
                 else:
                     self.log.info('submit: jsdfile has no value. Doing nothing')
-                    st, output = (None, None)
-
-        self.log.debug('submit: Got output (%s, %s).' %(st, output))
-        joblist = self._parseCondorSubmit(output)
-        self.log.debug('submit: leaving, returning joblist %s.' %joblist)
+            
+        self.log.debug('Done. Returning joblist %s.' %joblist)
         return joblist
    
     def _parseCondorSubmit(self, output):
