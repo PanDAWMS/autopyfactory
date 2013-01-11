@@ -893,6 +893,14 @@ class PluginHandler(object):
         self.config_section = []
         self.plugin_class = None
 
+    def __repr__(self):
+        s = ""
+        s += "plugin_name = %s" % self.plugin_name
+        s += "plugin_class_name = %s" % self.plugin_class_name
+        s += "plugin_module_name = %s" % self.plugin_module_name
+        s += "plugin_section = %s" % self.config_section
+        s += "plugin_class = %s" % self.plugin_class
+        return s
 
 class PluginDispatcher(object):
     '''
@@ -1010,6 +1018,7 @@ class PluginDispatcher(object):
 
     def getmonitorplugins(self):
         monitor_plugin_handlers = self._getplugin('monitor', self.apfqueue.mcl)  # list of classes 
+        self.log.debug("monitor_plugin_handlers =   %s" % monitor_plugin_handlers)
         monitor_plugins = []
         for monitor_ph in monitor_plugin_handlers:
             try:
