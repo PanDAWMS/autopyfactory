@@ -393,7 +393,7 @@ class Factory(object):
         # Handle monitor configuration
         self.mcl = None
         self.mcf = self.fcl.generic_get('Factory', 'monitorConf')
-        self.log.debug("monitor.conf file(s) = %s" % mcf)
+        self.log.debug("monitor.conf file(s) = %s" % self.mcf)
         self.mcl = ConfigManager().getConfig(self.mcf)
 
         # Handle Log Serving
