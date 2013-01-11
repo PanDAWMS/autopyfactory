@@ -115,7 +115,8 @@ class APFMonitorPlugin(MonitorInterface):
         apfqueue object calling this method. 
         '''
 
-        self.log.debug('updateJobStatus: starting for apfqueue %s with info list %s' %(apfqueue, jobinfolist))
+        self.log.debug('updateJobStatus: starting for apfqueue %s with info list %s' %(apfqueue.apfqname, 
+                                                                                       jobinfolist))
 
         if jobinfolist:
         # ensure jobinfolist has any content, and is not None

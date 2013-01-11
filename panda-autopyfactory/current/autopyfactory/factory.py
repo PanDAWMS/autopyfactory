@@ -808,15 +808,12 @@ class APFQueue(threading.Thread):
         '''
         submit using this number
         '''
-
         self.log.debug("_submitpilots: Starting")
-        # message for the monitor
         msg = 'Attempt to submit %s pilots for queue %s' %(nsub, self.apfqname)
-        #self._monitor_note(msg)
-
         jobinfolist = self.batchsubmit_plugin.submit(nsub)
+        self.log.debug("_submitpilots: Attempted submission of %d pilots and got jobinfolist %s" % (nsub,
+                                                                                                    jobinfolist))
         self.cyclesrun += 1
-        self.log.debug("_submitpilots: Leaving")
         return jobinfolist
 
 
@@ -825,7 +822,6 @@ class APFQueue(threading.Thread):
         '''
         Exit loop if desired number of cycles is reached...  
         '''
-
         self.log.debug("__exitloop: Starting")
 
         self.log.debug("__exitloop. Checking to see how many cycles to run.")
@@ -833,7 +829,6 @@ class APFQueue(threading.Thread):
                 self.log.debug('__exitloop: stopping the thread because high cyclesrun')
                 self.stopevent.set()                        
         self.log.debug("__exitloop. Incrementing cycles...")
-
         self.log.debug("__exitloop: Leaving")
 
     def _logtime(self):
