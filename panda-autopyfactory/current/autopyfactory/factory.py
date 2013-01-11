@@ -420,9 +420,10 @@ class Factory(object):
                 self.log.debug("Creating log path: %s" % logpath)
                 os.makedirs(logpath)
             if not lsrobots:
-                self.log.debug("logserver.allowrobots is False, creating file...")
+                rf = "%s/robots.txt" % logpath
+                self.log.debug("logserver.allowrobots is False, creating file: %s" % rf)
                 try:
-                    f = open("%s/robots.txt", 'w' % logpath)
+                    f = open(rf , 'w' )
                     f.write("User-agent: * \nDisallow: /")
                     f.close()
                 except IOError:
