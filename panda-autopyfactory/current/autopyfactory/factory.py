@@ -411,7 +411,7 @@ class Factory(object):
         self.log.debug("Handling LogServer...")
         ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean', logger=self.log)
         if ls:
-            self.log.info("LogServer enabled. Initializating...")
+            self.log.info("LogServer enabled. Initializing...")
             lsidx = self.fcl.generic_get('Factory','logserver.index', 'getboolean', logger=self.log)
             lsrobots = self.fcl.generic_get('Factory','logserver.allowrobots', 'getboolean', logger=self.log)
             logpath = self.fcl.get('Factory', 'baseLogDir')
@@ -1122,8 +1122,6 @@ class PluginDispatcher(object):
                     ph.plugin_name = plugin_name 
                     ph.config_section = [self.apfqname, section]
                     plugin_handlers.append(ph)
-                    
-
             else:
                 return [PluginHandler()] # temporary solution  
         else:
