@@ -119,7 +119,9 @@ class LogServer(threading.Thread):
         else:
             self.handler = MyNoListingHTTPRequestHandler
         self.httpd = None
-        self.log.debug("Initialized Logserver: port=%d, root=%s, index=%s" %(port,docroot,index))
+        self.log.debug("Initialized Logserver: port=%d, root=%s, index=%s" %(self.port,
+                                                                             self.docroot,
+                                                                             self.index))
         
     
     def _init_socketserver(self):
