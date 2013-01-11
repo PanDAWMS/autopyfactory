@@ -397,7 +397,7 @@ class Factory(object):
         self.mcl = ConfigManager().getConfig(self.mcf)
 
         # Handle Log Serving
-        self._initLogserver(self)
+        self._initLogserver()
 
         # APF Queues Manager 
         self.apfqueuesmanager = APFQueuesManager(self)
