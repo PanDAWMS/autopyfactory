@@ -176,7 +176,7 @@ def checkDaemon(daemon, pattern='running'):
     checks if a given daemon service is active
     '''
     import commands 
-    status = commands.getoutput('/etc/init.d/%s status' %daemon)
+    status = commands.getoutput('service %s status' %daemon)
     return status.lower().find(pattern) > 0
 
 

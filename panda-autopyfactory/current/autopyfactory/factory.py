@@ -1,26 +1,16 @@
 #! /usr/bin/env python
-#
-# Simple(ish) python condor_g factory for panda pilots
-#
-# $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $
-#
-#
-#  Copyright (C) 2007,2008,2009 Graeme Andrew Stewart
-#
-#  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+__author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
+__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010,2011 John Hover; 2011 Jose Caballero"
+__credits__ = []
+__license__ = "GPL"
+__version__ = "2.1.3"
+__maintainer__ = "Jose Caballero"
+__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
+__status__ = "Production"
+
 '''
-    Main module for autopyfactory, a pilot factory for PanDA
+    Main module for autopyfactory. 
 '''
 
 import datetime
@@ -41,21 +31,11 @@ from ConfigParser import ConfigParser
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.configloader import Config, ConfigManager
-#from autopyfactory.cleanLogs import CleanCondorLogs
-from autopyfactory.cleanLogs import CleanLogs
+from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
 from autopyfactory.proxymanager import ProxyManager
 
 import userinterface.Client as Client
-
-__author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
-__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010,2011 John Hover; 2011 Jose Caballero"
-__credits__ = []
-__license__ = "GPL"
-__version__ = "2.1.0"
-__maintainer__ = "Jose Caballero"
-__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
-__status__ = "Production"
 
 major, minor, release, st, num = sys.version_info
 
@@ -388,23 +368,21 @@ class Factory(object):
         '''
         fcl is a FactoryConfigLoader object. 
         '''
-
         self.log = logging.getLogger('main.factory')
         self.log.debug('Factory: Initializing object...')
-
         self.fcl = fcl
+        qcf = fcl.get('Factory', 'queueConf')
+        self.log.debug("queues.conf file(s) = %s" % qcf)
+        self.qcl = ConfigManager().getConfig(qcf)
         
-        self.log.info("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
-        self.qcl = ConfigManager().getConfig(fcl.get('Factory', 'queueConf'))
-      
-        # Handle ProxyManager
+        # Handle ProxyManager configuration
         usepman = fcl.getboolean('Factory', 'proxymanager.enabled')
-        if usepman:
-                            
+        if usepman:      
+            pcf = fcl.get('Factory','proxyConf')
+            self.log.debug("proxy.conf file(s) = %s" % qcf)
             pconfig = ConfigParser()
-            pconfig_file = fcl.get('Factory','proxyConf')
-            got_config = pconfig.read(pconfig_file)
-            self.log.debug("Read config file %s, return value: %s" % (pconfig_file, got_config)) 
+            got_config = pconfig.read(pcf)
+            self.log.debug("Read config file %s, return value: %s" % (pcf, got_config)) 
             self.proxymanager = ProxyManager(pconfig)
             self.log.info('ProxyManager initialized. Starting...')
             self.proxymanager.start()
@@ -412,45 +390,51 @@ class Factory(object):
         else:
             self.log.info("ProxyManager disabled.")
        
-        # Handle monitorConf
+        # Handle monitor configuration
         self.mcl = None
-        self.monconfig_path = self.fcl.generic_get('Factory', 'monitorConf')
-        if self.monconfig_path:
-            # create object monitor config loader (mcl)
-            self.mcl = ConfigManager().getConfig(self.monconfig_path)
+        self.mcf = self.fcl.generic_get('Factory', 'monitorConf')
+        self.log.debug("monitor.conf file(s) = %s" % mcf)
+        self.mcl = ConfigManager().getConfig(self.mcf)
+
+        # Handle Log Serving
+        self._initLogserver(self)
 
         # APF Queues Manager 
         self.apfqueuesmanager = APFQueuesManager(self)
         
-        # Set up LogServer
-        ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean', logger=self.log)
-        lsidx = self.fcl.generic_get('Factory','logserver.index', 'getboolean', logger=self.log)
-        lsrobots = self.fcl.generic_get('Factory','logserver.allowrobots', 'getboolean', logger=self.log)
-        if ls:
-            logpath = self.fcl.get('Factory', 'baseLogDir')
-            if not os.path.exists(logpath):
-                os.makedirs(logpath)
-        if not lsrobots:
-            try:
-                f = open("%s/robots.txt", 'w')
-                f.write("User-agent: * \nDisallow: /")
-                f.close()
-            except IOError:
-                self.log.warn("Unable to create robots.txt file...")
-            
-            self.logserver = LogServer(port=self.fcl.get('Factory', 'baseLogHttpPort'),
-                           docroot=logpath, index=lsidx
-                           )
+        # Log some info...
+        self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )     
+        self.log.info("Factory: Object initialized.")
 
+    def _initLogserver(self):
+        # Set up LogServer
+        self.log.debug("Handling LogServer...")
+        ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean', logger=self.log)
+        if ls:
+            self.log.info("LogServer enabled. Initializating...")
+            lsidx = self.fcl.generic_get('Factory','logserver.index', 'getboolean', logger=self.log)
+            lsrobots = self.fcl.generic_get('Factory','logserver.allowrobots', 'getboolean', logger=self.log)
+            logpath = self.fcl.get('Factory', 'baseLogDir')
+            logport = self.fcl.get('Factory', 'baseLogHttpPort')
+            if not os.path.exists(logpath):
+                self.log.debug("Creating log path: %s" % logpath)
+                os.makedirs(logpath)
+            if not lsrobots:
+                self.log.debug("logserver.allowrobots is False, creating file...")
+                try:
+                    f = open("%s/robots.txt", 'w' % logpath)
+                    f.write("User-agent: * \nDisallow: /")
+                    f.close()
+                except IOError:
+                    self.log.warn("Unable to create robots.txt file...")
+            self.log.debug("Creating LogServer object...")
+            self.logserver = LogServer(port=logport, docroot=logpath, index=lsidx)
             self.log.info('LogServer initialized. Starting...')
             self.logserver.start()
             self.log.debug('LogServer thread started.')
         else:
             self.log.info('LogServer disabled. Not running.')
-        
-        self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )
-             
-        self.log.info("Factory: Object initialized.")
+
 
     def mainLoop(self):
         '''
@@ -752,12 +736,12 @@ class APFQueue(threading.Thread):
         self.log.debug('_plugins: Starting')
 
         pd = PluginDispatcher(self)
-        self.scheduler_plugins = pd.schedplugins  # it is a list with 1 or more plugins
-        self.wmsstatus_plugin = pd.wmsstatusplugin
-        self.batchsubmit_plugin = pd.submitplugin
-        self.batchstatus_plugin = pd.batchstatusplugin
-        self.config_plugin = pd.configplugin
-        self.monitor_plugins = pd.monitorplugins # a list of 1 or more plugins
+        self.scheduler_plugins = pd.schedplugins        # a list of 1 or more plugins
+        self.wmsstatus_plugin = pd.wmsstatusplugin      # a single WMSStatus plugin
+        self.batchsubmit_plugin = pd.submitplugin       # a single BatchSubmit plugin
+        self.batchstatus_plugin = pd.batchstatusplugin  # a single BatchStatus plugin
+        self.config_plugin = pd.configplugin            # a single Config plugin
+        self.monitor_plugins = pd.monitorplugins        # a list of 1 or more plugins
 
         self.log.debug('_plugins: Leaving')
  
@@ -928,12 +912,20 @@ class PluginDispatcher(object):
         self.apfqname = apfqueue.apfqname
 
         # collect all plugins
+        self.log.debug("Getting sched plugins")
         self.schedplugins =  self.getschedplugins()
+        self.log.debug("Got $d sched plugins" % len(self.schedplugins))
+        self.log.debug("Getting batchstatus plugin")
         self.batchstatusplugin =  self.getbatchstatusplugin()
+        self.log.debug("Getting batchstatus plugin")        
         self.wmsstatusplugin =  self.getwmsstatusplugin()
+        self.log.debug("Getting submit plugin")
         self.submitplugin =  self.getsubmitplugin()
+        self.log.debug("Getting config plugin")
         self.configplugin =  self.getconfigplugin()
+        self.log.debug("Getting monitor plugins")
         self.monitorplugins = self.getmonitorplugins()
+        self.log.debug("Got $d monitor plugins" % len(self.monitorplugins))
 
         self.log.info('PluginDispatcher: Object initialized.')
 
@@ -1016,7 +1008,6 @@ class PluginDispatcher(object):
             return None    
 
     def getmonitorplugins(self):
-        self.log.debug("Getting monitor plugins...")
         monitor_plugin_handlers = self._getplugin('monitor', self.apfqueue.mcl)  # list of classes 
         monitor_plugins = []
         for monitor_ph in monitor_plugin_handlers:

@@ -114,15 +114,13 @@ class LogServer(threading.Thread):
         self.port = int(port)
         self.index = index
         self.stopevent = threading.Event()
-        #self.handler = SimpleHTTPServer.SimpleHTTPRequestHandler
         if index:
             self.handler = MySimpleHTTPRequestHandler
         else:
             self.handler = MyNoListingHTTPRequestHandler
         self.httpd = None
-        self.log.info("Initialized Logserver object")
-    
-    
+        self.log.debug("Initialized Logserver: port=%d, root=%s, index=%s" %(port,docroot,index))
+        
     
     def _init_socketserver(self):
         while not self.httpd:
