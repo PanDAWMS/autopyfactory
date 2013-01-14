@@ -173,13 +173,22 @@ class MonitorInterface(object):
     
     
     ''' 
+    def registerFactory(self, apfqueue):
+        '''
+        Initial startup hello message from new factory...
+        
+        '''
+        raise NotImplementedError
+    
+    
     def sendMessage(self, text):
         '''
         Send message to monitor, if it supports this function. 
         '''
+        raise NotImplementedError
     
     
-    def updateJobStatus(self, jobinfolist ):
+    def updateJobs(self, jobinfolist ):
         '''
         Update information about job/jobs. 
         Should support either single job object or list of job objects.  

@@ -2,8 +2,36 @@
 # $Id: monitor.py 7686 2011-04-08 21:15:43Z jhover $
 #
 
-'''Monitoring system for autopyfactory, signals Monitoring
+'''
+ Native monitoring system for autopyfactory, signals Monitoring
  webservice at each factory cycle with list of condor jobs
+
+States
+
+    CREATED: condor_submit executed, condor_id returned
+    RUNNING: pilot wrapper has started on Worker Node
+    EXITING: pilot wrapper is finishing up on Worker Node
+    DONE: condor jobstate is Completed (or Removed)
+    FAULT: condor jobstate indicates a fault, or job has become stale 
+
+API
+Endpoint              Description                           Format
+/h/                   hello from factory at start-up        POST with keys: factoryId,monitorURL,factoryOwner,baseLogDirUrl,versionTag
+/c/                   list of created jobids                JSON-encoded list of tuples: (cid, nick, fid, label)
+/m/                   list of messages w/ status of 'label' JSON-encoded list of tuples: (nick, fid, label, text)
+/$APFFID/$APFCID/rn/  ping when wrapper starts              GET request with APFFID=factoryId, APFCID=jobid
+/$APFFID/$APFCID/ex/  ping when wrapper exits               GET request with APFFID=factoryId, APFCID=jobid 
+
+Glossary
+
+nick  means e.g. Panda queue
+fid    factory id
+cid    condor job id
+label  
+
+http://apfmon.lancs.ac.uk/mon/c/
+data=[["931048.0", "BNL_CVMFS_1-condor", "BNL-gridui09-jhover", "BNL_CVMFS_1-gridgk06"]]
+
 '''
 
 import commands
@@ -15,14 +43,6 @@ import urllib2
 
 from autopyfactory.factory import Singleton, singletonfactory
 from autopyfactory.interfaces import MonitorInterface
-
-###try:
-###    import pycurl
-###except ImportError:
-###    log = logging.getLogger('main.monitor')
-###    log.error('module pycurl is not installed. Aborting.')
-###    import sys
-###    sys.exit()
 
 try:
     import json as json
@@ -88,7 +108,7 @@ class APFMonitorPlugin(MonitorInterface):
         self.crlist = []
         self.msglist = []
         
-        self.json = json.JSONEncoder()
+        self.jsonencoder = json.JSONEncoder()
         self.buffer = StringIO.StringIO()
         
         self.log.debug('Instantiated monitor')
@@ -106,7 +126,7 @@ class APFMonitorPlugin(MonitorInterface):
         self.log.debug('Done.')
 
 
-    def updateJobStatus(self, apfqueue, jobinfolist ):
+    def updateJobs(self, apfqueue, jobinfolist ):
         '''
         Take a list of JobInfo objects and translate to APFMonitor messages.
 
@@ -115,26 +135,23 @@ class APFMonitorPlugin(MonitorInterface):
         apfqueue object calling this method. 
         '''
 
-        self.log.debug('updateJobStatus: starting for apfqueue %s with info list %s' %(apfqueue.apfqname, 
+        self.log.debug('updateJobs: starting for apfqueue %s with info list %s' %(apfqueue.apfqname, 
                                                                                        jobinfolist))
-
         if jobinfolist:
         # ensure jobinfolist has any content, and is not None
-
             apfqname = apfqueue.apfqname
             nickname = self.qcl.generic_get(apfqname, 'batchqueue') 
             crlist = []
             for ji in jobinfolist:
                 data = (ji.jobid, nickname, self.fid, apfqname)
-                self.log.debug('updateJobStatus: adding data (%s, %s, %s, %s)' %(ji.jobid, nickname, self.fid, apfqname))
+                self.log.debug('updateJobs: adding data (%s, %s, %s, %s)' %(ji.jobid, nickname, self.fid, apfqname))
                 crlist.append(data)
             
-            jsonmsg = self.json.encode(crlist)
+            jsonmsg = self.jsonencoder.encode(crlist)
             txt = "data=%s" % jsonmsg
-
             self._signal(self.crurl, txt)
 
-        self.log.debug('updateJobStatus: leaving.')
+        self.log.debug('updateJobs: leaving.')
 
     def _signal(self, url, postdata):
         
@@ -142,18 +159,12 @@ class APFMonitorPlugin(MonitorInterface):
         try:
             out = urllib2.urlopen(url, postdata)
             self.log.debug('_signal: urlopen() output=%s' % out.read())
+            self.log.debug('_signal: urlopen() OK.')
         except Exception, ex: 
-            self.log.debug('_signal: urlopen() failed and raised exception %s' %ex)
-
-        self.log.debug('_signal: urlopen() OK.')
-
+            self.log.debug('_signal: urlopen() failed and raised exception %s' % ex)
+            
 
 
-
-
-
-
-        
     def _parse(self, output):
         # return a list of condor job id
         try:

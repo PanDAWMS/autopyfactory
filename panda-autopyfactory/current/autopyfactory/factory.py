@@ -769,8 +769,8 @@ class APFQueue(threading.Thread):
 
                 jobinfolist = self._submitpilots(nsub)
                 for m in self.monitor_plugins:
-                    self.log.debug('run: calling updateJobStatus for monitor plugin %s' %m)
-                    m.updateJobStatus(self, jobinfolist)
+                    self.log.debug('run: calling updateJobs for monitor plugin %s' %m)
+                    m.updateJobs(self, jobinfolist)
                     
                 self._exitloop()
                 self._logtime()           
