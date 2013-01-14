@@ -39,6 +39,13 @@ f_factdir(){
 # Source function library.
 . /etc/rc.d/init.d/functions
 
+# Source standard environment
+for i in /etc/profile.d/*.sh; do
+    if [ -r "$i" ]; then
+            . $i >/dev/null 2>&1
+    fi
+done
+
 # Determine usage context and set paths accordingly.  
 #   -- for root it means RPM
 #   -- for non-root, the head of the path tree can be calculated from the output of f_factdir
