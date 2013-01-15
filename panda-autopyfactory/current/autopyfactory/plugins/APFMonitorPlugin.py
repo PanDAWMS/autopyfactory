@@ -112,17 +112,7 @@ class APFMonitorPlugin(MonitorInterface):
         self.buffer = StringIO.StringIO()
         
         self.log.debug('Instantiated monitor')
-
-        attrlist = []
-        attrlist.append("factoryId=%s" % self.fid)
-        attrlist.append("factoryOwner=%s" % self.owner)
-        attrlist.append("versionTag=%s" % self.version)
-        attrlist.append("factoryAdminEmail=%s" % self.email)
-        attrlist.append("baseLogDirUrl=%s" % self.baselogurl)
-                
-        data = '&'.join(attrlist)        
-        self._signal(self.furl, data)
-             
+        self.registerFactory()     
         self.log.debug('Done.')
 
 
@@ -152,6 +142,21 @@ class APFMonitorPlugin(MonitorInterface):
             self._signal(self.crurl, txt)
 
         self.log.debug('updateJobs: leaving.')
+
+    def registerFactory(self):
+        '''
+        factoryId,monitorURL,factoryOwner,baseLogDirUrl,versionTag
+        '''
+        attrlist = []
+        attrlist.append("factoryId=%s" % self.fid)
+        attrlist.append("factoryOwner=%s" % self.owner)
+        attrlist.append("versionTag=%s" % self.version)
+        attrlist.append("factoryAdminEmail=%s" % self.email)
+        attrlist.append("baseLogDirUrl=%s" % self.baselogurl)
+                
+        data = '&'.join(attrlist)        
+        self._signal(self.furl, data)
+        
 
     def _signal(self, url, postdata):
         
