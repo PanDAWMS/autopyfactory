@@ -209,6 +209,12 @@ if [ -n "$TMPDIR" ]; then
 fi
 templ=$(pwd)/condorg_XXXXXXXX
 temp=$(mktemp -d $templ)
+if [ $? -ne 0 ]; then
+  echo Failed: mktemp $templ
+  echo Exiting...
+  exit
+fi
+  
 echo Changing work directory to $temp
 cd $temp
 
