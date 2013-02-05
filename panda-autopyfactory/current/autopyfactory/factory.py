@@ -268,6 +268,7 @@ Jose Caballero <jcaballero@bnl.gov>
                 os.setegid(rungid)
 
                 self._changehome()
+                self._changewd()
 
                 self.log.info("Now running as user %d:%d at %s..." % (runuid, rungid, hostname))
             
@@ -291,6 +292,18 @@ Jose Caballero <jcaballero@bnl.gov>
         we need to change by hand the value of $HOME in the environment
         '''
         os.environ['HOME'] = pwd.getpwnam(self.options.runAs).pw_dir 
+
+    def _changewd(self):
+        '''
+        changing working directory to the HOME directory of the new user,
+        typically "apf". 
+        When APF starts as a daemon, working directory may be "/".
+        If APF was called from the command line as root, working directory is "/root".
+        It is better is current working directory is just the HOME of the running user,
+        so it is easier to debug in case of failures.
+        '''
+        home = pwd.getpwnam(self.options.runAs).pw_dir
+        os.chdir(home)
 
     def createconfig(self):
         """Create config, add in options...
