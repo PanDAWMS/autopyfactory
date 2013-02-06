@@ -247,6 +247,8 @@ Jose Caballero <jcaballero@bnl.gov>
         """
         If running as root, drop privileges to --runas' account.
         """
+        self.log.debug('checkroot: Starting')
+
         starting_uid = os.getuid()
         starting_gid = os.getgid()
         starting_uid_name = pwd.getpwuid(starting_uid)[0]
@@ -280,6 +282,8 @@ Jose Caballero <jcaballero@bnl.gov>
                 self.log.error('Could not set user or group id to %s:%s. Error: %s' % (runuid, rungid, e))
                 sys.exit(1)
 
+        self.log.debug('checkroot: Leaving')
+
     def _changehome(self):
         '''
         at some point, proxyManager will make use of method
@@ -291,7 +295,12 @@ Jose Caballero <jcaballero@bnl.gov>
         Ergo, if we want the path to be expanded to a different user, i.e. apf,
         we need to change by hand the value of $HOME in the environment
         '''
-        os.environ['HOME'] = pwd.getpwnam(self.options.runAs).pw_dir 
+
+        self.log.debug('_changehome: Leaving')
+        runAs_home = pwd.getpwnam(self.options.runAs).pw_dir 
+        os.environ['HOME'] = runAs_home
+        self.log.debug('_changehome: seting up environment variable HOME to %s' %runAs_home)
+        self.log.debug('_changehome: Leaving')
 
     def _changewd(self):
         '''
@@ -302,8 +311,12 @@ Jose Caballero <jcaballero@bnl.gov>
         It is better is current working directory is just the HOME of the running user,
         so it is easier to debug in case of failures.
         '''
-        home = pwd.getpwnam(self.options.runAs).pw_dir
-        os.chdir(home)
+
+        self.log.debug('_changewd: Starting')
+        runAs_home = pwd.getpwnam(self.options.runAs).pw_dir
+        os.chdir(runAs_home)
+        self.log.debug('_changewd: switching working directory to %s' %runAs_home)
+        self.log.debug('_changewd: Leaving')
 
     def createconfig(self):
         """Create config, add in options...
