@@ -339,7 +339,7 @@ class factory:
         #print >>JDL, '+MATCH_gatekeeper_url="%s"' % self.config.queues[queue]['queue']
         #print >>JDL, '+MATCH_queue="%s"' % self.config.queues[queue]['localqueue']
         print >>JDL, "x509userproxy=%s" % self.config.queues[queue]['gridProxy']
-        print >>JDL, 'periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)'
+        print >>JDL, 'periodic_hold=JobStatus==1 && gridjobstatus=?=UNDEFINED && CurrentTime-EnteredCurrentStatus>3600'
         print >>JDL, 'periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400) || ( CurrentTime - EnteredCurrentStatus ) > 864000'
         # In job environment correct GTAG to URL for logs, JSID should be factoryId
         print >>JDL, 'environment = "PANDA_JSID=%s' % self.config.config.get('Factory', 'factoryId'),
