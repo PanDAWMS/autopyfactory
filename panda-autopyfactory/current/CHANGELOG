@@ -1,6 +1,7 @@
 ChangeLog
 ---------
 
+* Not trying to create robot.txt is logserver is disabled.
 
 * Changing directory to new HOME directory after switching identity.
 
