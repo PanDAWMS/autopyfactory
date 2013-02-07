@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* Removed hardcoded setup of periodic_remove directive from CondorLocal Batch Submit plugin.
+
 * Not trying to create robot.txt is logserver is disabled.
 
 * Changing directory to new HOME directory after switching identity.
