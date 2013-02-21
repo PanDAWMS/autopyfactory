@@ -109,7 +109,8 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
                                             if opt.startswith('batchsubmit.condorbase.condor_attributes.')]  # Note the . at the end of the pattern !!
 
             return True
-        except:
+        except Exception, e:
+            self.log.error("run: Caught exception: %s " % str(e))
             return False
 
 
