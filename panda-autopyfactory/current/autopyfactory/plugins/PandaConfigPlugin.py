@@ -123,10 +123,7 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
 
         self.log.debug('run: Starting.')
         while not self.stopevent.isSet():
-            try:
-                self._update()
-            except Exception as e:
-                self.log.error("Main loop caught exception: %s " % e)
+            self._update()
             time.sleep(self.sleeptime)
         self.log.debug('run: Leaving.')
 
@@ -157,7 +154,6 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
             import simplejson as json
 
         try:
-
             new_configsinfo = InfoContainer('configs', SchedConfigInfo())
 
             #url = 'http://pandaserver.cern.ch:25080/cache/schedconfig/schedconfig.all.json'
@@ -217,6 +213,8 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
             self.log.error('_update: %s  downloading from %s' % (err, url))
         except IOError, (errno, errmsg):
             self.log.error('_update: %s downloading from %s' % (errmsg, url))
+        except Exception as e:
+            self.log.error('Exception caught: %s' % e)
 
         self.log.debug('_update: Leaving')
 
