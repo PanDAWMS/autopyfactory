@@ -125,8 +125,8 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
         while not self.stopevent.isSet():
             try:
                 self._update()
-            except Exception, e:
-                self.log.error("Main loop caught exception: %s " % str(e))
+            except Exception as e:
+                self.log.error("Main loop caught exception: %s " % e)
             time.sleep(self.sleeptime)
         self.log.debug('run: Leaving.')
 
