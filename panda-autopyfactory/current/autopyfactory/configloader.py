@@ -251,7 +251,7 @@ class Config(SafeConfigParser, object):
         return str
 
 
-class ConfigManager:
+class ConfigManager(object):
     '''
     -----------------------------------------------------------------------
     Class to create config files with info from different sources.
@@ -263,7 +263,8 @@ class ConfigManager:
     '''
 
     def __init__(self):
-        pass
+        self.log = logger.getLogger("main.configloader")
+        
 
     def getConfig(self, sources):
         '''
@@ -272,9 +273,8 @@ class ConfigManager:
                 - path to a phisical file on disk
                 - an URL
         '''
- 
+        self.log.debug("Handling config sources %s" % sources)
         config = Config()
-
         for src in sources.split(','):
             newconfig = self.__getConfig(src)
             if newconfig:
@@ -328,8 +328,8 @@ class ConfigManager:
             f = open(path)
             return f
         except:
-            # most probably the file does not exist
-            return None
+            raise FactoryConfigurationFailure("Problem with config file %s" % path)
+    
     
     def __dataFromURI(self, uri):
         ''' 
@@ -341,8 +341,7 @@ class ConfigManager:
             uridata = urllib2.urlopen(uri)
             return uridata
         except:
-            # most probably the URL does not exist                
-            return None
+            raise FactoryConfigurationFailure("Problem with URI source %s" % uri)
 
 
 
