@@ -210,15 +210,13 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
                         newfactoryData['batchsubmit.batch'] = match1.group(2)
                         scinfo.fill(newfactoryData)
                 # ---------------------------------------------------------
+            # if everything went OK, we replace the old configsinfo variable with the new one
+            self.configsinfo = new_configsinfo
 
         except ValueError, err:
             self.log.error('_update: %s  downloading from %s' % (err, url))
         except IOError, (errno, errmsg):
             self.log.error('_update: %s downloading from %s' % (errmsg, url))
-        else:
-            # if everything went OK, we replace the old configsinfo variable with the new one
-            self.configsinfo = new_configsinfo
-
 
         self.log.debug('_update: Leaving')
 

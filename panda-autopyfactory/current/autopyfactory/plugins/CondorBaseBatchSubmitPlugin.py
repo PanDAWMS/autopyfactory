@@ -110,7 +110,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
 
             return True
         except Exception, e:
-            self.log.error("run: Caught exception: %s " % str(e))
+            self.log.error("Caught exception: %s " % str(e))
             return False
 
 
