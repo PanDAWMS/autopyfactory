@@ -94,7 +94,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             self.factoryid = self.fcl.generic_get('Factory', 'factoryId', logger=self.log)
             #self.monitorurl = self.fcl.generic_get('Factory', 'monitorURL', logger=self.log)
             self.monitorsection = self.qcl.generic_get(self.apfqname, 'monitorsection', logger=self.log)
-            self.monitorurl = self.mcl.generic_get(self.monitorsection, 'monitorURL')
+            self.monitorurl = self.mcl.generic_get(self.monitorsection, 'monitorURL', logger=self.log)
             self.factoryuser = self.fcl.generic_get('Factory', 'factoryUser', logger=self.log)
             self.submitargs = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.submitargs', logger=self.log)
             self.environ = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.environ', logger=self.log)

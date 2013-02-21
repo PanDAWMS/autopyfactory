@@ -263,7 +263,7 @@ class ConfigManager(object):
     '''
 
     def __init__(self):
-        self.log = logging.getLogger("main.configloader")
+        pass
         
 
     def getConfig(self, sources):
@@ -273,7 +273,6 @@ class ConfigManager(object):
                 - path to a phisical file on disk
                 - an URL
         '''
-        self.log.debug("Handling config sources %s" % sources)
         config = Config()
         for src in sources.split(','):
             newconfig = self.__getConfig(src)
