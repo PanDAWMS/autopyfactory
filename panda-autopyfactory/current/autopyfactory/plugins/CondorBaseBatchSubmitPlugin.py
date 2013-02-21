@@ -93,7 +93,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             
             self.factoryid = self.fcl.generic_get('Factory', 'factoryId', logger=self.log)
             #self.monitorurl = self.fcl.generic_get('Factory', 'monitorURL', logger=self.log)
-            self.monitorsection = self.qcl.generic_get(self.apfqname, 'monitorsection', logger=self.log)
+            self.monitorsection = qcl.generic_get(self.apfqname, 'monitorsection', logger=self.log)
             self.log.debug("monitorsection is %s" % self.monitorsection)            
             self.monitorurl = self.mcl.generic_get(self.monitorsection, 'monitorURL', logger=self.log)
             self.log.debug("monitorURL is %s" % self.monitorurl)
