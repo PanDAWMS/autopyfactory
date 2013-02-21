@@ -425,6 +425,7 @@ class Factory(object):
         self.mcf = self.fcl.generic_get('Factory', 'monitorConf')
         self.log.debug("monitor.conf file(s) = %s" % self.mcf)
         self.mcl = ConfigManager().getConfig(self.mcf)
+        self.log.debug("mcl is %s" % self.mcl)
 
         # Handle Log Serving
         self._initLogserver()
