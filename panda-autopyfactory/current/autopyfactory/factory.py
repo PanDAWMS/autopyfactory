@@ -199,7 +199,7 @@ Jose Caballero <jcaballero@bnl.gov>
 
 
         #formatter = logging.Formatter('%(asctime)s (UTC) [ %(levelname)s ] %(name)s: %(module)s%(lineno)s %(funcName)s() : %(message)s')
-        formatter = logging.Formatter('%(asctime)sUTC [ %(levelname)s ] %(name)s %(filename)s:%(lineno)s %(funcName)s(): %(message)s')
+        formatter = logging.Formatter('%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)s %(funcName)s(): %(message)s')
 
         #formatter = logging.Formatter('%(asctime)s (UTC) - %(name)s: %(levelname)s: %(module)s : %(message)s')
         formatter.converter = time.gmtime  # to convert timestamps to UTC
