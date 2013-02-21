@@ -263,7 +263,7 @@ class ConfigManager(object):
     '''
 
     def __init__(self):
-        self.log = logger.getLogger("main.configloader")
+        self.log = logging.getLogger("main.configloader")
         
 
     def getConfig(self, sources):
