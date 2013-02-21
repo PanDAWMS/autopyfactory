@@ -191,17 +191,12 @@ Jose Caballero <jcaballero@bnl.gov>
             rungid = pwd.getpwnam(self.options.runAs).pw_gid                  
             os.chown(logdir, runuid, rungid)
             logStream = logging.FileHandler(filename=lf)    
-        #
-        # "[ %(levelname)s ] %(asctime)s %(filename)s (Line %(lineno)d): %(message)s"
 
-        # "[%(levelname)s] %(asctime)s %(module)s.%(funcName)s(): %(message)s"
-        #
-
-
-        #formatter = logging.Formatter('%(asctime)s (UTC) [ %(levelname)s ] %(name)s: %(module)s%(lineno)s %(funcName)s() : %(message)s')
-        formatter = logging.Formatter('%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)s %(funcName)s(): %(message)s')
-
-        #formatter = logging.Formatter('%(asctime)s (UTC) - %(name)s: %(levelname)s: %(module)s : %(message)s')
+        if major == 2 and minor == 4:
+            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d : %(message)s'
+        else:
+            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
+        formatter = logging.Formatter(FORMAT)
         formatter.converter = time.gmtime  # to convert timestamps to UTC
         logStream.setFormatter(formatter)
         self.log.addHandler(logStream)
