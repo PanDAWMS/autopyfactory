@@ -154,12 +154,15 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
             import simplejson as json
 
         try:
+            self.log.debug('_update: Make info object.')
             new_configsinfo = InfoContainer('configs', SchedConfigInfo())
-
+            self.log.debug('_update: Made info object.')
             #url = 'http://pandaserver.cern.ch:25080/cache/schedconfig/schedconfig.all.json'
             #url = 'http://atlas-agis-api-dev.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'
             url = self.url
+            self.log.debug('_update: Downloading data...')
             handle = urlopen(url)
+            self.log.debug('_update: Parsing json data...')
             jsonData = json.load(handle, 'utf-8')
             handle.close()
             self.log.debug('_update: JSON returned: %s' % jsonData)
