@@ -223,7 +223,7 @@ Jose Caballero <jcaballero@bnl.gov>
         self.log.debug('platform: python version = %s' %platform.python_version())
         envmsg = ''        
         for k in sorted(os.environ.keys()):
-            envmsg += '\n%s : %s' %(k, os.environ[k])
+            envmsg += '\n%s=%s' %(k, os.environ[k])
         self.log.debug('environment : %s' %envmsg)
 
 
