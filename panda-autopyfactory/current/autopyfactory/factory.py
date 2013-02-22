@@ -221,9 +221,9 @@ Jose Caballero <jcaballero@bnl.gov>
         self.log.debug('platform: uname = %s %s %s %s %s %s' %platform.uname())
         self.log.debug('platform: platform = %s' %platform.platform())
         self.log.debug('platform: python version = %s' %platform.python_version())
-        envmsg = ''
-        for k,v in os.environ.iteritems():
-            envmsg += '\n%s : %s' %(k,v)
+        envmsg = ''        
+        for k in sorted(os.environ.keys()):
+            envmsg += '\n%s : %s' %(k, os.environ[k])
         self.log.debug('environment : %s' %envmsg)
 
 
