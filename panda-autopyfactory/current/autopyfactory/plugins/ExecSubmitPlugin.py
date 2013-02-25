@@ -45,8 +45,9 @@ class ExecSubmitPlugin(BatchSubmitInterface):
             self.arguments = self.qcl.generic_get(self.apfqname, 'executable.arguments', logger=self.log)
 
             self.log.info('BatchSubmitPlugin: Object initialized.')
-        except:
-            self._valid = False
+        except Exception, ex:
+            self.log.error("BatchSubmitPlugin object initialization failed. Raising exception")
+            raise ex
    
     def submitPilots(self, siteid, nbpilots, fcl, qcl):
         '''

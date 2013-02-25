@@ -27,8 +27,9 @@ class StatusOfflineSchedPlugin(SchedInterface):
             self.pilots_in_offline_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.statusoffline.pilots', 'getint', default_value=0, logger=self.log)
 
             self.log.info("SchedPlugin: Object initialized.")
-        except:
-            self._valid = False
+        except Exception, ex:
+            self.log.error("SchedPlugin object initialization failed. Raising exception")
+            raise ex
 
     def calcSubmitNum(self, nsub=0):
         

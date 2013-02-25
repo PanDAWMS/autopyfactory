@@ -23,8 +23,9 @@ class MaxPerCycleSchedPlugin(SchedInterface):
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
             self.max_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.maxpercycle.maximum', 'getint', logger=self.log)
             self.log.info("SchedPlugin: Object initialized.")
-        except:
-            self._valid = False
+        except Exception, ex:
+            self.log.error("SchedPlugin object initialization failed. Raising exception")
+            raise ex
 
     def calcSubmitNum(self, nsub=0):
 

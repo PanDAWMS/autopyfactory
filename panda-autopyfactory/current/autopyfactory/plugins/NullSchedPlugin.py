@@ -24,8 +24,9 @@ class NullSchedPlugin(SchedInterface):
         try:
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
             self.log.info("SchedPlugin: Object initialized.")
-        except:
-            self._valid = False
+        except Exception, ex:
+            self.log.error("SchedPlugin object initialization failed. Raising exception")
+            raise ex
 
     def calcSubmitNum(self, nsub=0):
         return 0

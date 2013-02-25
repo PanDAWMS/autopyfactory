@@ -42,8 +42,9 @@ class URLConfigPlugin(ConfigInterface):
             self.url = self.qcl.generic_get(self.apfqname, 'config.url.url', logger=self.log)
 
             self.log.info('urlconfigplugin: Object initialized.')
-        except:
-            self._valid = False
+        except Exception, ex:
+            self.log.error("urlconfigplugin object initialization failed. Raising exception")
+            raise ex
 
     def getConfig(self):
         '''

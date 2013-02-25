@@ -63,8 +63,9 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             Client.useWebCache()
 
             self.log.info('WMSStatusPlugin: Object initialized.')
-        except:
-            self._valid = False
+        except Exception, ex:
+            self.log.error("WMSStatusPlugin object initialization failed. Raising exception")
+            raise ex
 
     def getCloudInfo(self, maxtime=0):
         '''

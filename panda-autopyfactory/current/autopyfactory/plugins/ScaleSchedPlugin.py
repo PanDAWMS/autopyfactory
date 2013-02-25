@@ -28,8 +28,9 @@ class ScaleSchedPlugin(SchedInterface):
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
             self.factor = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.scale.factor', 'getfloat', default_value=1.0, logger=self.log)
             self.log.info("SchedPlugin: Object initialized.")
-        except:
-            self._valid = False
+        except Exception, ex:
+            self.log.error("SchedPlugin object initialization failed. Raising exception")
+            raise ex
 
     def calcSubmitNum(self, nsub=0):
 

@@ -28,8 +28,9 @@ class WeightedActivatedSchedPlugin(SchedInterface):
             self.log.debug("SchedPlugin: weight values are activated_w=%s, pending_w=%s." %(self.activated_w, self.pending_w))
 
             self.log.info("SchedPlugin: Object initialized.")
-        except:
-            self._valid = False
+        except Exception, ex:
+            self.log.error("SchedPlugin object initialization failed. Raising exception")
+            raise ex
 
     def calcSubmitNum(self, nsub=0):
         """ 

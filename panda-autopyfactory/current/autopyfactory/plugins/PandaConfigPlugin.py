@@ -93,8 +93,9 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
             self._started = False
             
             self.log.info('scconfigplugin: Object initialized.')
-        except:
-            self._valid = False
+        except Exception, ex:
+            self.log.error("scconfigplugin object initialization failed. Raising exception")
+            raise ex
 
 
     def start(self):

@@ -76,8 +76,9 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.persistencedb = PersistenceDB(self.apfqueue.fcl, VMInstance)
 
             self.log.info('BatchStatusPlugin: Object initialized.')
-        except:
-            self._valid = False
+        except Exception, ex:
+            self.log.error("BatchStatusPlugin object initialization failed. Raising exception")
+            raise ex
 
     def getInfo(self, maxtime=0):
         '''

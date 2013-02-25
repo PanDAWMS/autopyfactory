@@ -62,8 +62,9 @@ class Old_EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             # the info is recorded as seconds since epoch
             self.lasttime = 0
             self.log.info('BatchStatusPlugin: Object initialized.')
-        except:
-            self._valid = False
+        except Exception, ex:
+            self.log.error("BatchStatusPlugin object initialization failed. Raising exception")
+            raise ex
 
     def getInfo(self, maxtime=0):
         '''

@@ -27,8 +27,9 @@ class FillactivatedSchedPlugin(SchedInterface):
             self.log.debug('SchedPlugin: default = %s' %self.default)
             
             self.log.info("SchedPlugin: Object initialized.")
-        except:
-            self._valid = False
+        except Exception, ex:
+            self.log.error("SchedPlugin object initialization failed. Raising exception")
+            raise ex
 
     def calcSubmitNum(self, nsub=0):
         """ 

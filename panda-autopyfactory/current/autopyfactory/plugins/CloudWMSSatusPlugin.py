@@ -77,8 +77,9 @@ class CloudWMSSatusPlugin(threading.Thread, BatchStatusInterface):
             self.lasttime = 0
             self._checkCondor()
             self.log.info('BatchStatusPlugin: Object initialized.')
-        except:
-            self._valid = False
+        except Exception, ex:
+            self.log.error("BatchStatusPlugin object initialization failed. Raising exception")
+            raise ex
 
     def _checkCondor(self):
         '''
