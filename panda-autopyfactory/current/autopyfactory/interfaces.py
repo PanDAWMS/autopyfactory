@@ -15,18 +15,11 @@ class SchedInterface(object):
     -----------------------------------------------------------------------
     Public Interface:
             calcSubmitNum()
-            valid()
     -----------------------------------------------------------------------
     '''
     def calcSubmitNum(self, nsub=0):
         '''
         Calculates number of jobs to submit for the associated APF queue. 
-        '''
-        raise NotImplementedError
-
-    def valid(self):
-        '''
-        Says if the object has been initialized properly
         '''
         raise NotImplementedError
 
@@ -39,7 +32,6 @@ class BatchStatusInterface(object):
     -----------------------------------------------------------------------
     Public Interface:
             getInfo()
-            valid()
     
     Returns BatchStatusInfo object
      
@@ -51,11 +43,6 @@ class BatchStatusInterface(object):
         '''
         raise NotImplementedError
 
-    def valid(self):
-        '''
-        Says if the object has been initialized properly
-        '''
-        raise NotImplementedError
 
 class WMSStatusInterface(object):
     '''
@@ -67,7 +54,6 @@ class WMSStatusInterface(object):
             getCloudInfo()
             getSiteInfo()
             getJobsInfo()
-            valid()
     -----------------------------------------------------------------------
     '''
     def getCloudInfo(self, cloud, maxtime=0):
@@ -94,12 +80,6 @@ class WMSStatusInterface(object):
         '''
         raise NotImplementedError
 
-    def valid(self):
-        '''
-        Says if the object has been initialized properly
-        '''
-        raise NotImplementedError
-
 
 class ConfigInterface(object):
     '''
@@ -108,18 +88,11 @@ class ConfigInterface(object):
     -----------------------------------------------------------------------
     Public Interface:
             getInfo()
-            valid()
     -----------------------------------------------------------------------
     '''
     def getConfig(self):
         '''
         returns info 
-        '''
-        raise NotImplementedError
-
-    def valid(self):
-        '''
-        Says if the object has been initialized properly
         '''
         raise NotImplementedError
 
@@ -132,7 +105,6 @@ class BatchSubmitInterface(object):
     -----------------------------------------------------------------------
     Public Interface:
             submit(number)
-            valid()
             addJSD()
             writeJSD()
     -----------------------------------------------------------------------
@@ -143,12 +115,6 @@ class BatchSubmitInterface(object):
         Returns list of JobInfo objects 
         Returns list of JobInfo objects representing successfully submitted jobs. 
         
-        '''
-        raise NotImplementedError
-
-    def valid(self):
-        '''
-        Says if the object has been initialized properly
         '''
         raise NotImplementedError
 
