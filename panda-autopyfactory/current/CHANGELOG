@@ -1,6 +1,10 @@
 ChangeLog
 ---------
 
+* Removing self._valid from all plugins (work in progress)
+
+* ConfigFailure moved to apfexceptions.
+
 * Removed hardcoded setup of periodic_remove directive from CondorLocal Batch Submit plugin.
 
 * Not trying to create robot.txt is logserver is disabled.
