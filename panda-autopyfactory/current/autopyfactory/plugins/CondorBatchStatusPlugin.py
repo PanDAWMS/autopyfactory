@@ -46,7 +46,6 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     
     def __init__(self, apfqueue, **kw):
 
-        self._valid = True
         try:
             threading.Thread.__init__(self) # init the thread
             

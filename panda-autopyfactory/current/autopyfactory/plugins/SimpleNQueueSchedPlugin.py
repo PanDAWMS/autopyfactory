@@ -17,7 +17,6 @@ class SimpleNQueueSchedPlugin(SchedInterface):
     id = 'simplenqueue'
     
     def __init__(self, apfqueue):
-        self._valid = True
         try:
             self.apfqueue = apfqueue
             self.siteid = self.apfqueue.siteid

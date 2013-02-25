@@ -47,7 +47,6 @@ class AGISConfigPlugin(threading.Thread, ConfigInterface):
 
     def __init__(self, apfqueue):
 
-        self._valid = True
 
         self.mapping = {
                 'ce_queue_name': 'batchsubmit.gram.queue',

@@ -29,7 +29,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
     
     def __init__(self, apfqueue):
 
-        self._valid = True
         self.log = logging.getLogger("main.batchsubmitplugin[%s]" %apfqueue.apfqname)
 
         self.apfqueue = apfqueue

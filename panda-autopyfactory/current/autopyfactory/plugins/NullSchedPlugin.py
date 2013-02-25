@@ -21,7 +21,6 @@ class NullSchedPlugin(SchedInterface):
     interest on submitting any actual pilot at all. 
     '''       
     def __init__(self, apfqueue):
-        self._valid = True
         try:
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
             self.log.info("SchedPlugin: Object initialized.")

@@ -31,7 +31,6 @@ class URLConfigPlugin(ConfigInterface):
     '''
 
     def __init__(self, apfqueue):
-        self._valid = True
 
         try:
 

@@ -42,7 +42,6 @@ class CloudWMSSatusPlugin(threading.Thread, BatchStatusInterface):
     __metaclass__ = Singleton 
     
     def __init__(self, apfqueue):
-        self._valid = True
         try:
             threading.Thread.__init__(self) # init the thread
             

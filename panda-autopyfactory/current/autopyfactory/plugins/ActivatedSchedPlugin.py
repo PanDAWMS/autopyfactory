@@ -18,7 +18,6 @@ class ActivatedSchedPlugin(SchedInterface):
     
     def __init__(self, apfqueue):
 
-        self._valid = True
         try:
             self.apfqueue = apfqueue                
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)

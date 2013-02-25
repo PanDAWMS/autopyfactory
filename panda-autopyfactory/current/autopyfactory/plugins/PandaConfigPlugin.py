@@ -56,7 +56,6 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
 
     def __init__(self, apfqueue):
 
-        self._valid = True
 
         self.mapping_gram = {
                 'special_par': 'batchsubmit.gram.globusrsladd',

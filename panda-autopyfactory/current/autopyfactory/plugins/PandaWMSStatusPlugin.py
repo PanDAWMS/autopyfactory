@@ -42,7 +42,6 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
     __metaclass__ = Singleton
 
     def __init__(self, apfqueue):
-        self._valid = True
         try:
             self.apfqueue = apfqueue
             self.log = logging.getLogger("main.pandawmsstatusplugin[%s]" %apfqueue.apfqname)

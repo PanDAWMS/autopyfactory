@@ -26,7 +26,6 @@ class ExecSubmitPlugin(BatchSubmitInterface):
     '''
     
     def __init__(self, apfqueue):
-        self._valid = True
         try:
             self.log = logging.getLogger("main.batchsubmitplugin[%s]" %apfqueue.apfqname)
             self.apfqname = apfqueue.apfqname
