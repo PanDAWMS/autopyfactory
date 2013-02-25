@@ -31,10 +31,10 @@ class PandaStatusFailure(Exception):
     def __str__(self):
         return repr(self.value)
 
-class ConfigException(Exception):
+class ConfigFailure(Exception):
     def __init__(self, option, section):
-        self.msg = 'option %s in section %s was supposed to be mandatory, but it is not present' %(option, section)
-    def __str_(self):
-        return self.msg
+        self.value = 'Mandatory option %s in section %s not present.' %(option, section)
+    def __str__(self):
+        return self.value
 
 
