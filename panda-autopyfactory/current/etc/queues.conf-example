@@ -199,7 +199,9 @@
 # batchsubmit.condorlsf.proxy
 #
 # batchsubmit.condornordugrid.gridresource
-# batchsubmit.condornordugrid.nordugridrsl
+# nordugridrsl
+# nordugridrsladd
+# nordugridrsl.addenv.
 #
 # monitorsection
 #
@@ -892,8 +894,14 @@
 # batchsubmit.condornordugrid.gridresource = name of the ARC CE
 #               i.e. lcg-lrz-ce2.grid.lrz.de
 #
-# batchsubmit.condornordugrid.nordugridrsl = Entire RSL line.
+# nordugridrsl = Entire RSL line.
 #               i.e. (jobname = 'prod_pilot')(queue=lcg)(runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY ) (environment = ('APFFID' 'voatlas94') ('PANDA_JSID' 'voatlas94') ('GTAG' 'http://voatlas94.cern.ch/pilots/2012-11-19/LRZ-LMU_arc/$(Cluster).$(Process).out') ('RUCIO_ACCOUNT' 'pilot') ('APFCID' '$(Cluster).$(Process)') ('APFMON' 'http://apfmon.lancs.ac.uk/mon/') ('FACTORYQUEUE' 'LRZ-LMU_arc') 
+#
+# nordugridrsladd = A given tag to be added to the Nordugrid RSL line
+#
+# nordugridrsl.addenv.<XYZ> = A given tag to be added within the 'environment' tag to the Nordugrid RSL line
+#               i.e. nordugridrsl.addenv.RUCIO_ACCOUNT = pilot
+#                    will be added as ('RUCIO_ACCOUNT' 'pilot' )
 
 #  --------------------------------------------------------------------
 #       Monitor Section 
