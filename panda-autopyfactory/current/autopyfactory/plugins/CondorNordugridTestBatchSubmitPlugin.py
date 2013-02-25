@@ -68,7 +68,7 @@ class CondorNordugridTestBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
             if opt.startswith('nordugridrsl.') and\
                 opt != 'nordugridrsl.nordugridrsl' and\
                 opt != 'nordugridrsl.nordugridrsladd' and\
-                not opt.startswith('nordugridrsl.addenv.)':
+                not opt.startswith('nordugridrsl.addenv.'):
                     optlist.append(opt)
  
         rsl = qcl.generic_get(self.apfqname, 'nordugridrsl.nordugridrsl', logger=self.log)
