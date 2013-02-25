@@ -1,8 +1,9 @@
 #! /usr/bin/env python
 #
 
-from autopyfactory.interfaces import SchedInterface
 import logging
+
+from autopyfactory.interfaces import SchedInterface
 
 __author__ = "John Hover, Jose Caballero"
 __copyright__ = "2011 John Hover, Jose Caballero"
@@ -41,8 +42,9 @@ class ActivatedSchedPlugin(SchedInterface):
             self.pilots_in_test_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.pilots', 'getint', default_value=0, logger=self.log)
 
             self.log.info("SchedPlugin: Object initialized.")
-        except:
-            self._valid = False
+        except Exception, ex:
+            self.log.error("SchedPlugin object initialization failed. Raising exception")
+            raise ex
 
     def calcSubmitNum(self, nsub=0):
         """ 
