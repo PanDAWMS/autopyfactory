@@ -96,8 +96,8 @@ class CondorNordugridTestBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         nordugridrsl_env += "('PANDA_JSID' '%s') " % self.factoryid
         nordugridrsl_env += "('GTAG' '%s/$(Cluster).$(Process).out') " % self.logUrl
         nordugridrsl_env += "('APFCID' '$(Cluster).$(Process)') " 
-        nordugridrsl_env += "('APFMON' '%') " % self.monitorurl
-        nordugridrsl_env += "('FACTORYQUEUE' '%') " % self.apfqname
+        nordugridrsl_env += "('APFMON' '%s') " % self.monitorurl
+        nordugridrsl_env += "('FACTORYQUEUE' '%s') " % self.apfqname
 
         # the next is for tagas like 
         #       ('RUCIO_ACCOUNT' 'pilot')
