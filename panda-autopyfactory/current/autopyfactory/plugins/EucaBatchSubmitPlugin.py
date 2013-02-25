@@ -49,9 +49,6 @@ class EucaBatchSubmitPlugin(BatchSubmitInterface):
 
         self.log.info('BatchSubmitPlugin: Object initialized.')
 
-    def valid(self):
-        return self._valid
-
     def submit(self, n):
 
         # ------------------------------------------

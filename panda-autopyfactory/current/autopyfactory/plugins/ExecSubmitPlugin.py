@@ -49,9 +49,6 @@ class ExecSubmitPlugin(BatchSubmitInterface):
         except:
             self._valid = False
    
-    def valid(self):
-        return self._valid
- 
     def submitPilots(self, siteid, nbpilots, fcl, qcl):
         '''
         queue is the queue

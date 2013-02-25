@@ -42,9 +42,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
 
         self.log.info('BatchSubmitPlugin: Object initialized.')
 
-    def valid(self):
-        return self._valid
-
     def _checkCondor(self):
         '''
         Perform sanity check on condor environment.

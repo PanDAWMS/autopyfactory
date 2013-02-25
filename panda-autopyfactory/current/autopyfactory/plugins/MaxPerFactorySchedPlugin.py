@@ -32,9 +32,6 @@ class MaxPerFactorySchedPlugin(SchedInterface):
         except:
             self._valid = False
 
-    def valid(self):
-        return self._valid
-
     def calcSubmitNum(self, nsub=0):
         """ 
         """

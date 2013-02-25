@@ -21,9 +21,6 @@ class NullConfigPlugin(ConfigInterface):
     def __init__(self, apfqueue):
         self._valid = True
 
-    def valid(self):
-        return self._valid
-
     def getConfig(self, id):
 
         return Config()

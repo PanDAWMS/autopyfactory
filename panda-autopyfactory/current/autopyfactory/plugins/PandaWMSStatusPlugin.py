@@ -67,9 +67,6 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         except:
             self._valid = False
 
-    def valid(self):
-        return self._valid
-
     def getCloudInfo(self, maxtime=0):
         '''
         selects the entry corresponding to cloud

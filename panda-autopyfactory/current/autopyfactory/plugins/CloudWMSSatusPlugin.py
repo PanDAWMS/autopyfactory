@@ -81,9 +81,6 @@ class CloudWMSSatusPlugin(threading.Thread, BatchStatusInterface):
         except:
             self._valid = False
 
-    def valid(self):
-        return self._valid
-
     def _checkCondor(self):
         '''
         Perform sanity check on condor environment.

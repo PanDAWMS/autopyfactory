@@ -80,9 +80,6 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         except:
             self._valid = False
 
-    def valid(self):    
-        return self._valid 
-
     def getInfo(self, maxtime=0):
         '''
         Returns a BatchStatusInfo object populated by the analysis 

@@ -81,9 +81,6 @@ class AGISConfigPlugin(threading.Thread, ConfigInterface):
         except:
             self._valid = False
 
-    def valid(self):
-        return self._valid
-
 
     def start(self):
         '''
