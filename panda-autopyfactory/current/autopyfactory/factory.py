@@ -745,18 +745,26 @@ class APFQueue(threading.Thread):
         self.mcl = self.factory.mcl
 
         self.log.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(apfqname).getContent())
-    
-        self.siteid = self.qcl.generic_get(apfqname, 'wmsqueue', default_value=apfqname, logger=self.log)
-        self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue', logger=self.log)
-        self.cloud = self.qcl.generic_get(apfqname, 'cloud', logger=self.log)
-        self.cycles = self.fcl.generic_get("Factory", 'cycles', logger=self.log )
-        self.sleep = self.qcl.generic_get(apfqname, 'apfqueue.sleep', 'getint', logger=self.log)
-        self.cyclesrun = 0
-        
-        self.batchstatusmaxtime = self.fcl.generic_get('Factory', 'batchstatus.maxtime', default_value=0, logger=self.log)
-        self.wmsstatusmaxtime = self.fcl.generic_get('Factory', 'wmsstatus.maxtime', default_value=0, logger=self.log)
+   
+        try: 
+            self.siteid = self.qcl.generic_get(apfqname, 'wmsqueue', default_value=apfqname, logger=self.log)
+            self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue', logger=self.log)
+            self.cloud = self.qcl.generic_get(apfqname, 'cloud', logger=self.log)
+            self.cycles = self.fcl.generic_get("Factory", 'cycles', logger=self.log )
+            self.sleep = self.qcl.generic_get(apfqname, 'apfqueue.sleep', 'getint', logger=self.log)
+            self.cyclesrun = 0
+            
+            self.batchstatusmaxtime = self.fcl.generic_get('Factory', 'batchstatus.maxtime', default_value=0, logger=self.log)
+            self.wmsstatusmaxtime = self.fcl.generic_get('Factory', 'wmsstatus.maxtime', default_value=0, logger=self.log)
+        except Exception, ex:
+            self.log.error('APFQueue: exception captured while reading configuration variables to create the object.')
+            raise ex
 
-        self._plugins()
+        try:
+            self._plugins()
+        except Exception, ex:
+            self.log.error('APFQueue: exception captured while getting the plugins to create the object.')
+            raise ex
 
         self.log.info('APFQueue: Object initialized.')
 
