@@ -15,8 +15,8 @@ import urllib2
 from urllib import urlopen
 from ConfigParser import SafeConfigParser, NoSectionError, InterpolationMissingOptionError
 
+from autopyfactory.apfexceptions import ConfigFailure
 
-####from autopyfactory.apfexceptions import FactoryConfigurationFailure
 ####
 ####try:
 ####        import json as json
@@ -32,13 +32,6 @@ __version__ = "2.1.0"
 __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
-
-
-class ConfigException(Exception):
-    def __init__(self, option, section):
-        self.msg = 'option %s in section %s was supposed to be mandatory, but it is not present' %(option, section)
-    def __str_(self):
-        return self.msg 
 
 
 class Config(SafeConfigParser, object):
@@ -201,7 +194,7 @@ class Config(SafeConfigParser, object):
             if mandatory:
                 if logger:
                     logger.error('generic_get: option %s is not present in section %s. Will raise an exception.' %(option, section))
-                raise ConfigException(option, section)
+                raise ConfigFailure(option, section)
             else:
                 if logger:
                     logger.info('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
