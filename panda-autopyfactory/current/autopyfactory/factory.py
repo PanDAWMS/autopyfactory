@@ -643,11 +643,15 @@ class APFQueuesManager(object):
         enabled = queueenabled and globalenabled
         
         if enabled:
-            qobject = APFQueue(apfqname, self.factory)
-            self.queues[apfqname] = qobject
-            qobject.start()
-            self.log.debug('_add: %s enabled.' %apfqname)
-            self.log.info('Queue %s enabled.' %apfqname)
+            try:
+                qobject = APFQueue(apfqname, self.factory)
+            except Exception, ex:
+                self.log.error('_add: exception captured when calling apfqueue object %s' %apfqname)
+            else:
+                self.queues[apfqname] = qobject
+                qobject.start()
+                self.log.debug('_add: %s enabled.' %apfqname)
+                self.log.info('Queue %s enabled.' %apfqname)
         else:
             self.log.debug('_add: %s not enabled.' %apfqname)
             self.log.info('Queue %s not enabled.' %apfqname)
