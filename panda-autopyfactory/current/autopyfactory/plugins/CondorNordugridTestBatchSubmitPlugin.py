@@ -43,41 +43,13 @@ class CondorNordugridTestBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
             return False
         try:
             self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condornordugrid.gridresource', logger=self.log) 
-            self.nordugridrsl = _nordugridrsl(qcl)
+            self.nordugridrsl = self._nordugridrsl(qcl)
+            self.nordugridrsl_env = self._nordugridrsl_env(qcl)
 
             return True
         except:
             return False
             
-
-    def _addJSD(self):
-        '''
-        add things to the JSD object
-        '''
-    
-        self.log.debug('CondorNordugridTestBatchSubmitPlugin.addJSD: Starting.')
-   
-        self.JSD.add('grid_resource = nordugrid %s' %self.gridresource)
-
-        nordugridrsl_env = " (environment = " 
-        nordugridrsl_env += "('APFFID' '%s') " % self.factoryid
-        nordugridrsl_env += "('PANDA_JSID' '%s') " % self.factoryid
-        nordugridrsl_env += "('GTAG' '%s/$(Cluster).$(Process).out') " % self.logUrl
-        nordugridrsl_env += "('APFCID' '$(Cluster).$(Process)') " 
-        nordugridrsl_env += "('APFMON' '%') " % self.monitorurl
-        nordugridrsl_env += "('FACTORYQUEUE' '%') " % self.apfqname
-        nordugridrsl_env += ") "
-
-        if self.nordugridrsl:
-            nordugridrsl = self.nordugridrsl
-            nordugridrsl += nordugridrsl_env
-            self.JSD.add('nordugrid_rsl = %s' %nordugridrsl) 
-
-
-        super(CondorNordugridTestBatchSubmitPlugin, self)._addJSD() 
-    
-        self.log.debug('CondorNordugridTestBatchSubmitPlugin.addJSD: Leaving.')
-
 
     def _nordugridrsl(self, qcl):
         '''
@@ -95,7 +67,8 @@ class CondorNordugridTestBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         for opt in qcl.options(self.apfqname):
             if opt.startswith('nordugridrsl.') and\
                 opt != 'nordugridrsl.nordugridrsl' and\
-                opt != 'nordugridrsl.nordugridrsladd':
+                opt != 'nordugridrsl.nordugridrsladd' and\
+                not opt.startswith('nordugridrsl.addenv.)':
                     optlist.append(opt)
  
         rsl = qcl.generic_get(self.apfqname, 'nordugridrsl.nordugridrsl', logger=self.log)
@@ -115,3 +88,49 @@ class CondorNordugridTestBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
  
         self.log.debug('_nordugridrsl: Leaving with value = %s.' %out)
         return out 
+
+    def _nordugridrsl_env(self, qcl):
+
+        nordugridrsl_env = " (environment = " 
+        nordugridrsl_env += "('APFFID' '%s') " % self.factoryid
+        nordugridrsl_env += "('PANDA_JSID' '%s') " % self.factoryid
+        nordugridrsl_env += "('GTAG' '%s/$(Cluster).$(Process).out') " % self.logUrl
+        nordugridrsl_env += "('APFCID' '$(Cluster).$(Process)') " 
+        nordugridrsl_env += "('APFMON' '%') " % self.monitorurl
+        nordugridrsl_env += "('FACTORYQUEUE' '%') " % self.apfqname
+
+        # the next is for tagas like 
+        #       ('RUCIO_ACCOUNT' 'pilot')
+        # inside the environment tag
+        for opt in qcl.options(self.apfqname):
+            if opt.startswith('nordugridrsl.addenv.'):
+                key = opt.split('nordugridrsl.addenv.')[1]
+                value = qcl.generic_get(self.apfqname, opt, logger=self.log)
+                if value != "":
+                    nordugridrsl_env += "('%s' '%s')" %(key, value)
+
+        # closing the environment tag
+        nordugridrsl_env += ") "
+
+        return nordugridrsl_env
+
+
+    def _addJSD(self):
+        '''
+        add things to the JSD object
+        '''
+    
+        self.log.debug('CondorNordugridTestBatchSubmitPlugin.addJSD: Starting.')
+   
+        self.JSD.add('grid_resource = nordugrid %s' %self.gridresource)
+
+        nordugridrsl = "" 
+        if self.nordugridrsl:
+            nordugridrsl = self.nordugridrsl
+        nordugridrsl += self.nordugridrsl_env
+        self.JSD.add('nordugrid_rsl = %s' %nordugridrsl) 
+
+        super(CondorNordugridTestBatchSubmitPlugin, self)._addJSD() 
+    
+        self.log.debug('CondorNordugridTestBatchSubmitPlugin.addJSD: Leaving.')
+
