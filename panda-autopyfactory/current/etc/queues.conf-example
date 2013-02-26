@@ -794,7 +794,9 @@
 # batchsubmit.condorec2.ami_id = identifier for the VM image, 
 #               previously registered in one of Amazon's storage service (S3 or EBS)
 #
-# batchsubmit.condorec2.instance_type = hardware configurations for instances to run on.
+# batchsubmit.condorec2.ec2_spot_price = max price to pay, in dollars to three decimal places. e.g. .040
+#
+# batchsubmit.condorec2.instance_type = hardware configurations for instances to run on, .e.g m1.medium
 #
 # batchsubmit.condorec2.user_data = up to 16Kbytes of contextualization data.
 #               This makes it easy for many instances to share the same VM image, but perform different work.

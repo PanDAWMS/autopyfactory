@@ -44,6 +44,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             self.user_data = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.user_data', logger=self.log)
             self.access_key_id = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.access_key_id', logger=self.log)
             self.secret_access_key = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.secret_access_key', logger=self.log)
+            self.spot_price = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.spot_price', logger=self.log)
             return True
         except:
             return False
@@ -66,9 +67,12 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
 
         # -- EC2 specific parameters --
         self.JSD.add("ec2_ami_id=%s" % self.ami_id) 
+        self.JSD.add("executable=%s" % self.ami_id)
         self.JSD.add("ec2_instance_type=%s" % self.instance_type) 
         if self.user_data:
             self.JSD.add('ec2_user_data=%s' % self.user_data)          
+        if self.spot_price:
+            self.JSD.add('ec2_spot_price=%f' % self.spot_price)
 
         super(CondorEC2BatchSubmitPlugin, self)._addJSD()
 
