@@ -45,6 +45,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             self.access_key_id = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.access_key_id', logger=self.log)
             self.secret_access_key = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.secret_access_key', logger=self.log)
             self.spot_price = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.spot_price', logger=self.log)
+            self.security_groups = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.security_groups', logger=self.log)
             return True
         except:
             return False
@@ -60,8 +61,6 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         self.JSD.add('grid_resource=ec2 %s' % self.gridresource) 
 
         # -- proxy path --
-        #self.JSD.add("ec2_access_key_id=%s" % self.x509userproxy) 
-        #self.JSD.add("ec2_secret_access_key=%s" % self.x509userproxy) 
         self.JSD.add("ec2_access_key_id=%s" % self.access_key_id) 
         self.JSD.add("ec2_secret_access_key=%s" % self.secret_access_key) 
 
@@ -73,6 +72,8 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             self.JSD.add('ec2_user_data=%s' % self.user_data)          
         if self.spot_price:
             self.JSD.add('ec2_spot_price=%f' % self.spot_price)
+        if self.security_group:
+            self.JSD.add('ec2_security_groups=%s' % self.security_group)
 
         super(CondorEC2BatchSubmitPlugin, self)._addJSD()
 
