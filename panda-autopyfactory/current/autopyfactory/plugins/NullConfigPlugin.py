@@ -19,6 +19,7 @@ __status__ = "Production"
 class NullConfigPlugin(ConfigInterface):
 
     def __init__(self, apfqueue):
+        pass
 
     def getConfig(self, id):
 

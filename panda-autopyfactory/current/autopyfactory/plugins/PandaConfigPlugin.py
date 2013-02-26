@@ -214,7 +214,7 @@ class PandaConfigPlugin(threading.Thread, ConfigInterface):
             self.log.error('_update: %s  downloading from %s' % (err, url))
         except IOError, (errno, errmsg):
             self.log.error('_update: %s downloading from %s' % (errmsg, url))
-        except Exception as e:
+        except Exception, e:
             self.log.error('Exception caught: %s' % e)
 
         self.log.debug('_update: Leaving')
