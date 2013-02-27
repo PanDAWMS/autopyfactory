@@ -767,9 +767,9 @@ class APFQueue(threading.Thread):
         try:
             self._plugins()
         except Exception, ex:
-            self.log.error('APFQueue: exception captured while getting the plugins to create the object.')
+            self.log.error('APFQueue: Exception getting plugins: %s' % str(ex))
             raise ex
-
+        
         self.log.info('APFQueue: Object initialized.')
 
     def _plugins(self):
@@ -957,25 +957,20 @@ class PluginDispatcher(object):
         
         self.apfqname = apfqueue.apfqname
 
-        # collect all plugins
-        try:
-            self.log.debug("Getting sched plugins")
-            self.schedplugins = self.getschedplugins()
-            self.log.debug("Got %d sched plugins" % len(self.schedplugins))
-            self.log.debug("Getting batchstatus plugin")
-            self.batchstatusplugin =  self.getbatchstatusplugin()
-            self.log.debug("Getting batchstatus plugin")        
-            self.wmsstatusplugin =  self.getwmsstatusplugin()
-            self.log.debug("Getting submit plugin")
-            self.submitplugin =  self.getsubmitplugin()
-            self.log.debug("Getting config plugin")
-            self.configplugin =  self.getconfigplugin()
-            self.log.debug("Getting monitor plugins")
-            self.monitorplugins = self.getmonitorplugins()
-            self.log.debug("Got %d monitor plugins" % len(self.monitorplugins))
-        except Exception, ex:
-            self.log.error('PluginDispatcher failed getting all plugins') 
-            raise ex
+        self.log.debug("Getting sched plugins")
+        self.schedplugins = self.getschedplugins()
+        self.log.debug("Got %d sched plugins" % len(self.schedplugins))
+        self.log.debug("Getting batchstatus plugin")
+        self.batchstatusplugin =  self.getbatchstatusplugin()
+        self.log.debug("Getting batchstatus plugin")        
+        self.wmsstatusplugin =  self.getwmsstatusplugin()
+        self.log.debug("Getting submit plugin")
+        self.submitplugin =  self.getsubmitplugin()
+        self.log.debug("Getting config plugin")
+        self.configplugin =  self.getconfigplugin()
+        self.log.debug("Getting monitor plugins")
+        self.monitorplugins = self.getmonitorplugins()
+        self.log.debug("Got %d monitor plugins" % len(self.monitorplugins))
 
         self.log.info('PluginDispatcher: Object initialized.')
 
