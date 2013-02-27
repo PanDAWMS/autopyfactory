@@ -15,6 +15,9 @@ from autopyfactory.factory import BatchStatusInfo
 from autopyfactory.factory import QueueInfo
 from autopyfactory.factory import Singleton 
 
+from autopyfactory.info import CloudInfo
+from autopyfactory.info import SiteInfo
+from autopyfactory.info import JobInfo
 from autopyfactory.info import InfoContainer
 from autopyfactory.info import WMSStatusInfo
 from autopyfactory.info import WMSQueueInfo
