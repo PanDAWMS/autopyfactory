@@ -1160,15 +1160,15 @@ class PluginDispatcher(object):
                 plugin_names = []
                 sections = self.qcl.get(self.apfqname, config_section_item)
                 for section in sections.split(','):
-                
-                    section = section.strip()
-                    plugin_name = config.get(section, plugin_config_item)  # i.e. APF (from monitor.conf)
-                    plugin_names.append(plugin_name)
-
-                    ph = PluginHandler()
-                    ph.plugin_name = plugin_name 
-                    ph.config_section = [self.apfqname, section]
-                    plugin_handlers.append(ph)
+                    if section != "None":
+                        section = section.strip()
+                        plugin_name = config.get(section, plugin_config_item)  # i.e. APF (from monitor.conf)
+                        plugin_names.append(plugin_name)
+    
+                        ph = PluginHandler()
+                        ph.plugin_name = plugin_name 
+                        ph.config_section = [self.apfqname, section]
+                        plugin_handlers.append(ph)
             else:
                 return [PluginHandler()] # temporary solution  
         else:
