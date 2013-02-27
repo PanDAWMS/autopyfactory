@@ -752,6 +752,7 @@ class APFQueue(threading.Thread):
    
         try: 
             self.siteid = self.qcl.generic_get(apfqname, 'wmsqueue', default_value=apfqname, logger=self.log)
+            self.wmsqueue = self.qcl.generic_get(apfqname, 'wmsqueue', default_value=apfqname, logger=self.log)
             self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue', logger=self.log)
             self.cloud = self.qcl.generic_get(apfqname, 'cloud', logger=self.log)
             self.cycles = self.fcl.generic_get("Factory", 'cycles', logger=self.log )

@@ -21,7 +21,7 @@ class ReadySchedPlugin(SchedInterface):
 
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
+            self.log = logging.getLogger("main.schedplugin[%s]" % apfqueue.apfqname)
             self.log.info("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
