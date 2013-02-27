@@ -1178,10 +1178,11 @@ class PluginDispatcher(object):
                
                 for plugin_name in plugin_names: 
                     plugin_name = plugin_name.strip()
-                    ph = PluginHandler()
-                    ph.plugin_name = plugin_name 
-                    ph.config_section = [self.apfqname]
-                    plugin_handlers.append(ph)
+                    if plugin_name != "None":
+                        ph = PluginHandler()
+                        ph.plugin_name = plugin_name 
+                        ph.config_section = [self.apfqname]
+                        plugin_handlers.append(ph)
 
             else:
                 return [PluginHandler()] # temporary solution  
