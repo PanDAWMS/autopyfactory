@@ -188,10 +188,20 @@ class CloudWMSStatusPlugin(threading.Thread, BatchStatusInterface):
         self.log.debug('_update: Starting.')
         
         try:
+
+
             strout = self._querycondor()
             outlist = self._parseoutput(strout)
             aggdict = self._aggregateinfo(outlist)
-            newinfo = self._map2info(aggdict)
+            newinfojobs = self._map2info(aggdict)
+
+            # Info object
+            #   The cloud and site parts are just empty (legacy code)
+            newinfo = WMSStatusInfo()
+            newinfo.cloud = InfoContainer('clouds', CloudInfo())
+            newinfo.site = InfoContainer('sites', SiteInfo())
+            newinfo.jobs = newinfojobs
+
             self.log.info("Replacing old info with newly generated info.")
             self.currentinfo = newinfo
         except Exception, e:
@@ -455,7 +465,7 @@ class CloudWMSStatusPlugin(threading.Thread, BatchStatusInterface):
 
 
         self.log.debug('_map2info: Starting.')
-        wmsstatusinfo = InfoContainer('wmscloud')
+        wmsstatusinfo = InfoContainer('jobs', WMSQueueInfo())
         for site in input.keys():
                 qi = WMSQueueInfo()
                 wmsstatusinfo[site] = qi
