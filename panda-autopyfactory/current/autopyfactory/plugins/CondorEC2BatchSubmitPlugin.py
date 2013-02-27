@@ -74,7 +74,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         if self.spot_price:
             self.JSD.add('ec2_spot_price=%f' % self.spot_price)
         if self.security_group:
-            self.JSD.add('ec2_security_groups=%s' % self.security_group)
+            self.JSD.add('ec2_security_groups=%s' % self.security_groups)
 
         super(CondorEC2BatchSubmitPlugin, self)._addJSD()
 
