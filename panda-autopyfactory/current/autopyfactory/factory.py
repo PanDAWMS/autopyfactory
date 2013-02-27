@@ -1158,20 +1158,19 @@ class PluginDispatcher(object):
 
         # Get the list of plugin names
         if config:
-            config_section_item = '%ssection' %action  # i.e. monitorsection
+            config_section_item = '%ssection' % action  # i.e. monitorsection
             if self.qcl.has_option(self.apfqname, config_section_item):
                 plugin_names = []
                 sections = self.qcl.get(self.apfqname, config_section_item)
                 for section in sections.split(','):
-                    if section != "None":
-                        section = section.strip()
-                        plugin_name = config.get(section, plugin_config_item)  # i.e. APF (from monitor.conf)
-                        plugin_names.append(plugin_name)
-    
-                        ph = PluginHandler()
-                        ph.plugin_name = plugin_name 
-                        ph.config_section = [self.apfqname, section]
-                        plugin_handlers.append(ph)
+                    section = section.strip()
+                    plugin_name = config.get(section, plugin_config_item)  # i.e. APF (from monitor.conf)
+                    plugin_names.append(plugin_name)
+
+                    ph = PluginHandler()
+                    ph.plugin_name = plugin_name 
+                    ph.config_section = [self.apfqname, section]
+                    plugin_handlers.append(ph)
             else:
                 return [PluginHandler()] # temporary solution  
         else:
@@ -1181,11 +1180,10 @@ class PluginDispatcher(object):
                
                 for plugin_name in plugin_names: 
                     plugin_name = plugin_name.strip()
-                    if plugin_name != "None":
-                        ph = PluginHandler()
-                        ph.plugin_name = plugin_name 
-                        ph.config_section = [self.apfqname]
-                        plugin_handlers.append(ph)
+                    ph = PluginHandler()
+                    ph.plugin_name = plugin_name 
+                    ph.config_section = [self.apfqname]
+                    plugin_handlers.append(ph)
 
             else:
                 return [PluginHandler()] # temporary solution  
