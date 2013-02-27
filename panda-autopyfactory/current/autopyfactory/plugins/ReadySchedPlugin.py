@@ -47,7 +47,6 @@ class ReadySchedPlugin(SchedInterface):
             out = 0 
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
-            # Carefully get wmsinfo, activated. 
             self.siteid = self.apfqueue.siteid
             self.log.info("Siteid is %s" % self.siteid)
 
@@ -70,17 +69,17 @@ class ReadySchedPlugin(SchedInterface):
         try:
             sitedict = jobsinfo[self.siteid]
             self.log.debug("sitedict class is %s" % sitedict.__class__ )
-            #activated_jobs = sitedict['activated']
             activated_jobs = sitedict.ready
         except KeyError:
             # This is OK--it just means no jobs in any state at the siteid. 
             self.log.error("siteid: %s not present in jobs info from WMS" % self.siteid)
-            activated_jobs = 0
+
         try:
             pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
         except KeyError:
             # This is OK--it just means no jobs. 
             pass
+
         try:        
             running_pilots = self.batchinfo[self.apfqueue.apfqname].running # using the new info objects
         except KeyError:
@@ -88,13 +87,7 @@ class ReadySchedPlugin(SchedInterface):
             pass
 
         out = max(0, activated_jobs - pending_pilots)
-        
 
-        # Catch all to prevent negative numbers
-        #if out < 0:
-        #    self.log.info('_calc_online: calculated output was negative. Returning 0')
-        #    out = 0
-        
         self.log.info('_calc (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
                                                                                          pending_pilots, 
                                                                                          running_pilots, 
