@@ -81,7 +81,7 @@ class CondorNordugridTestBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
                     key = opt.split('nordugridrsl.')[1]
                     value = qcl.generic_get(self.apfqname, opt, logger=self.log)
                     if value != "":
-                            out += "('%s' '%s')" %(key, value)
+                            out += "(%s %s)" %(key, value)
  
         if rsladd:
             out += rsladd
