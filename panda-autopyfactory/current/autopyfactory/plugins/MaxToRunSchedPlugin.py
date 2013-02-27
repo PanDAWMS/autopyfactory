@@ -20,21 +20,17 @@ class MaxToRunSchedPlugin(SchedInterface):
 
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
-
+            self.log = logging.getLogger("main.schedplugin[%s]" % apfqueue.apfqname)
             self.max_to_run = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.maxtorun.maximum', 'getint', logger=self.log)
-
             self.log.info("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
     def calcSubmitNum(self, nsub=0):
-
         self.log.debug('calcSubmitNum: Starting with nsub=%s' %nsub)
-
+        input = nsub
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
-
         if self.batchinfo is None:
             self.log.warning("self.batchinfo is None!")
         else:
@@ -44,5 +40,5 @@ class MaxToRunSchedPlugin(SchedInterface):
             if self.max_to_run:
                 nsub = min(nsub, self.max_to_run - all_pilots)
            
-        self.log.info('calcSubmitNum: (pending pilots=%s; running pilots=%s): Return=%s' %(pending_pilots, running_pilots, nsub))
+        self.log.info('calcSubmitNum: (input=%s; pending=%s; running=%s): Return=%s' %(input, pending_pilots, running_pilots, nsub))
         return nsub

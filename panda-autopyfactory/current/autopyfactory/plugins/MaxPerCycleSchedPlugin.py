@@ -28,12 +28,11 @@ class MaxPerCycleSchedPlugin(SchedInterface):
             raise ex
 
     def calcSubmitNum(self, nsub=0):
-
         self.log.debug('calcSubmitNum: Starting with nsub=%s' %nsub)
+        input = nsub
 
         if self.max_pilots_per_cycle:
             nsub = min(nsub, self.max_pilots_per_cycle)
-
                 
-        self.log.info('calcSubmitNum: return with nsub=%s' %nsub)
+        self.log.info('calcSubmitNum: input=%s ;return nsub=%s' % (input, nsub))
         return nsub 

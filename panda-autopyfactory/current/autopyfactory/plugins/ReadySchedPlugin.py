@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 #
-
 import logging
 
 from autopyfactory.interfaces import SchedInterface
@@ -31,7 +30,7 @@ class ReadySchedPlugin(SchedInterface):
         """ 
         It just returns nb of Activated Jobs - nb of Pending Pilots
         """
-
+        input = nsub
         self.log.debug('calcSubmitNum: Starting.')
 
         self.wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
@@ -50,10 +49,10 @@ class ReadySchedPlugin(SchedInterface):
             self.key = self.apfqueue.wmsqueue
             self.log.info("Key is %s" % self.key)
 
-            out = self._calc()
+            out = self._calc(input)
         return out
 
-    def _calc(self):
+    def _calc(self, input):
         '''
         algorithm 
         '''
@@ -87,9 +86,13 @@ class ReadySchedPlugin(SchedInterface):
             pass
 
         out = max(0, activated_jobs - pending_pilots)
-
-        self.log.info('_calc (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
+        self.log.info('_calc() (input=%s; activated=%s; pending=%s; running=%s;) : Return=%s' %(input,
+                                                                                                activated_jobs, 
                                                                                          pending_pilots, 
                                                                                          running_pilots, 
                                                                                          out))
         return out
+
+
+
+
