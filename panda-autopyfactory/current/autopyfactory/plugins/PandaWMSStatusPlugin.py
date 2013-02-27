@@ -66,6 +66,9 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         except Exception, ex:
             self.log.error("WMSStatusPlugin object initialization failed. Raising exception")
             raise ex
+        # Using the Squid Cache when contacting the PanDA server
+        Client.useWebCache()
+
 
     def getCloudInfo(self, maxtime=0):
         '''
