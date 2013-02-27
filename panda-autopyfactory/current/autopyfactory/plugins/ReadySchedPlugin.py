@@ -47,8 +47,8 @@ class ReadySchedPlugin(SchedInterface):
             out = 0 
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
-            self.siteid = self.apfqueue.siteid
-            self.log.info("Siteid is %s" % self.siteid)
+            self.key = self.apfqueue.wmsqueue
+            self.log.info("Key is %s" % self.key)
 
             out = self._calc()
         return out
@@ -67,12 +67,12 @@ class ReadySchedPlugin(SchedInterface):
         self.log.debug("jobsinfo class is %s" % jobsinfo.__class__ )
 
         try:
-            sitedict = jobsinfo[self.siteid]
+            sitedict = jobsinfo[self.key]
             self.log.debug("sitedict class is %s" % sitedict.__class__ )
             activated_jobs = sitedict.ready
         except KeyError:
-            # This is OK--it just means no jobs in any state at the siteid. 
-            self.log.error("siteid: %s not present in jobs info from WMS" % self.siteid)
+            # This is OK--it just means no jobs in any state at the key. 
+            self.log.error("key: %s not present in jobs info from WMS" % self.key)
 
         try:
             pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
