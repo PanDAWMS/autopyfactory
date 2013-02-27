@@ -16,6 +16,7 @@ from autopyfactory.factory import QueueInfo
 from autopyfactory.factory import Singleton 
 
 from autopyfactory.info import InfoContainer
+from autopyfactory.info import WMSStatusInfo
 from autopyfactory.info import WMSQueueInfo
 
 
@@ -212,8 +213,6 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         self.log.debug('_update: Starting.')
         
         try:
-
-
             strout = self._querycondor()
             outlist = self._parseoutput(strout)
             aggdict = self._aggregateinfo(outlist)
