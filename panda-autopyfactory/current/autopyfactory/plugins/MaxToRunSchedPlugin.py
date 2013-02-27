@@ -43,11 +43,6 @@ class MaxToRunSchedPlugin(SchedInterface):
             all_pilots = pending_pilots + running_pilots
             if self.max_to_run:
                 nsub = min(nsub, self.max_to_run - all_pilots)
-
-        # Catch all to prevent negative numbers
-        #if nsub < 0:
-        #    self.log.info('calcSubmitNum: calculated output was negative. Returning 0')
-        #    nsub = 0
-            
+           
         self.log.info('calcSubmitNum: (pending pilots=%s; running pilots=%s): Return=%s' %(pending_pilots, running_pilots, nsub))
         return nsub

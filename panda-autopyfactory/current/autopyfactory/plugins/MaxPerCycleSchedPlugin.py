@@ -34,10 +34,6 @@ class MaxPerCycleSchedPlugin(SchedInterface):
         if self.max_pilots_per_cycle:
             nsub = min(nsub, self.max_pilots_per_cycle)
 
-        # Catch all to prevent negative numbers
-        #if nsub < 0:
-        #    self.log.info('calcSubmitNum: calculated output was negative. Returning 0')
-        #    nsub = 0
                 
         self.log.info('calcSubmitNum: return with nsub=%s' %nsub)
         return nsub 
