@@ -1173,22 +1173,24 @@ class PluginDispatcher(object):
                     ph.plugin_name = plugin_name 
                     ph.config_section = [self.apfqname, section]
                     plugin_handlers.append(ph)
-            else:
-                return [PluginHandler()] # temporary solution  
+            #else:
+            #    return [PluginHandler()] # temporary solution  
+        
         else:
             if self.qcl.has_option(self.apfqname, plugin_config_item):
                 plugin_names = self.qcl.get(self.apfqname, plugin_config_item)  # i.e. Activated
                 plugin_names = plugin_names.split(',') # we convert a string split by comma into a list
                
                 for plugin_name in plugin_names: 
-                    plugin_name = plugin_name.strip()
-                    ph = PluginHandler()
-                    ph.plugin_name = plugin_name 
-                    ph.config_section = [self.apfqname]
-                    plugin_handlers.append(ph)
-
-            else:
-                return [PluginHandler()] # temporary solution  
+                    if plugin_name != "None":
+                        plugin_name = plugin_name.strip()
+                        ph = PluginHandler()
+                        ph.plugin_name = plugin_name 
+                        ph.config_section = [self.apfqname]
+                        plugin_handlers.append(ph)
+            
+            #else:
+            #    return [PluginHandler()] # temporary solution  
 
 
         for ph in plugin_handlers:
