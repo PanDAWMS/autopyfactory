@@ -45,8 +45,8 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         try:
             threading.Thread.__init__(self) # init the thread
             
-            self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s]" %apfqueue.apfqname)
-            self.log.debug('BatchStatusPlugin: Initializing object...')
+            self.log = logging.getLogger("main.wmsstatusplugin[singleton created by %s]" %apfqueue.apfqname)
+            self.log.debug('Initializing object...')
             self.stopevent = threading.Event()
 
             # to avoid the thread to be started more than once
@@ -76,9 +76,10 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             # the info is recorded as seconds since epoch
             self.lasttime = 0
             self._checkCondor()
-            self.log.info('BatchStatusPlugin: Object initialized.')
+            self.log.info('WMSStatusPlugin: Object initialized.')
+
         except Exception, ex:
-            self.log.error("BatchStatusPlugin object initialization failed. Raising exception")
+            self.log.error("WMSStatusPlugin object initialization failed. Raising exception")
             raise ex
 
     def _checkCondor(self):

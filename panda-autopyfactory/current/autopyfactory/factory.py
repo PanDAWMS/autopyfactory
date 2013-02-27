@@ -766,6 +766,7 @@ class APFQueue(threading.Thread):
 
         try:
             self._plugins()
+        
         except Exception, ex:
             self.log.error('APFQueue: Exception getting plugins: %s' % str(ex))
             raise ex
