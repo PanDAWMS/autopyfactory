@@ -42,45 +42,45 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
     __metaclass__ = Singleton 
     
     def __init__(self, apfqueue):
-        try:
-            threading.Thread.__init__(self) # init the thread
-            
-            self.log = logging.getLogger("main.wmsstatusplugin[singleton created by %s]" %apfqueue.apfqname)
-            self.log.debug('Initializing object...')
-            self.stopevent = threading.Event()
+        #try:
+        threading.Thread.__init__(self) # init the thread
+        
+        self.log = logging.getLogger("main.wmsstatusplugin[singleton created by %s]" %apfqueue.apfqname)
+        self.log.debug('Initializing object...')
+        self.stopevent = threading.Event()
 
-            # to avoid the thread to be started more than once
-            self.__started = False
+        # to avoid the thread to be started more than once
+        self.__started = False
 
-            self.apfqueue = apfqueue
-            self.fconfig = apfqueue.fcl.config          
-            self.apfqname = apfqueue.apfqname
-            self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
-            self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
-            self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
-            self.currentinfo = None              
+        self.apfqueue = apfqueue
+        self.fconfig = apfqueue.fcl.config          
+        self.apfqname = apfqueue.apfqname
+        self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
+        self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
+        self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
+        self.currentinfo = None              
 
-            # ================================================================
-            #                     M A P P I N G S 
-            # ================================================================
-            
-            self.jobstatus2info = {'0': 'ready',
-                                   '1': 'ready',
-                                   '2': 'running',
-                                   '3': 'done',
-                                   '4': 'done',
-                                   '5': 'failed',
-                                   '6': 'running'}
+        # ================================================================
+        #                     M A P P I N G S 
+        # ================================================================
+        
+        self.jobstatus2info = {'0': 'ready',
+                               '1': 'ready',
+                               '2': 'running',
+                               '3': 'done',
+                               '4': 'done',
+                               '5': 'failed',
+                               '6': 'running'}
 
-            # variable to record when was last time info was updated
-            # the info is recorded as seconds since epoch
-            self.lasttime = 0
-            self._checkCondor()
-            self.log.info('WMSStatusPlugin: Object initialized.')
+        # variable to record when was last time info was updated
+        # the info is recorded as seconds since epoch
+        self.lasttime = 0
+        self._checkCondor()
+        self.log.info('WMSStatusPlugin: Object initialized.')
 
-        except Exception, ex:
-            self.log.error("WMSStatusPlugin object initialization failed. Raising exception")
-            raise ex
+        #except Exception, ex:
+        #    self.log.error("WMSStatusPlugin object initialization failed. Raising exception")
+        #    raise ex
 
     def _checkCondor(self):
         '''
