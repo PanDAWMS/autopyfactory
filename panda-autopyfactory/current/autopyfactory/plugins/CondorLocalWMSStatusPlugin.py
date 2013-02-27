@@ -111,6 +111,30 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentinfo))
             return self.currentinfo
 
+    # temporary solution
+    def getCloudInfo(self, maxtime=0):
+    
+        self.log.debug('getCloudInfo: Starting maxtime = %s' %maxtime)
+        out = self.currentinfo.cloud
+        self.log.info('getCloudInfo: Cloud has %d entries' % len(out))
+        return out
+
+    # temporary solution
+    def getSiteInfo(self, maxtime=0):
+    
+        self.log.debug('getSiteInfo: Starting. maxtime = %s' %maxtime)
+        out = self.currentinfo.site
+        self.log.info('getSiteInfo: Siteinfo has %d entries' %len(out))
+        return out
+
+    # temporary solution
+    def getJobsInfo(self, maxtime=0):
+    
+        self.log.debug('getSiteInfo: Starting. maxtime = %s' %maxtime)
+        out = self.currentinfo.jobs
+        self.log.info('getSiteInfo: Siteinfo has %d entries' %len(out))
+        return out
+    
 
     def start(self):
         '''
