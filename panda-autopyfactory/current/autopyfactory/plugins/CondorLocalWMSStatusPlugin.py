@@ -10,7 +10,7 @@ import threading
 import traceback
 import xml.dom.minidom
 
-from autopyfactory.interfaces import BatchStatusInterface
+from autopyfactory.interfaces import WMSStatusInterface
 from autopyfactory.factory import BatchStatusInfo
 from autopyfactory.factory import QueueInfo
 from autopyfactory.factory import Singleton 
