@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* version number for panda userinterface package in setup.cfg
+
 * bugs in CondorLocalWMSStatusPlugin fixed
 
 * ReadySchedPlugin created
