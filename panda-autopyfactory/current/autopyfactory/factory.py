@@ -1039,22 +1039,24 @@ class PluginDispatcher(object):
         return batchsubmit_plugin
 
     def getconfigplugin(self):
-
-        config_plugin_handler = self._getplugin('config')[0]
-        config_cls = config_plugin_handler.plugin_class
-
-        if config_cls:
-            # Note it could be None
-
-            # calls __init__() to instantiate the class
-            config_plugin = config_cls(self.apfqueue)   
-
-            # starts the thread
-            config_plugin.start()  
-
-            return config_plugin
-        else:
-            return None    
+        cphlist = self._getplugin('config')
+        if cphlist:
+            config_plugin_handler = self._getplugin('config')[0]
+            config_cls = config_plugin_handler.plugin_class
+    
+            if config_cls:
+                # Note it could be None
+    
+                # calls __init__() to instantiate the class
+                config_plugin = config_cls(self.apfqueue)   
+    
+                # starts the thread
+                config_plugin.start()  
+    
+                return config_plugin
+            else:
+                return None
+        return None    
 
     def getmonitorplugins(self):
         monitor_plugin_handlers = self._getplugin('monitor', self.apfqueue.mcl)  # list of classes 
