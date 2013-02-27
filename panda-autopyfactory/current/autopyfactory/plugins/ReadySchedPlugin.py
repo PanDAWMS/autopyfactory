@@ -14,33 +14,14 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
-class ActivatedSchedPlugin(SchedInterface):
-    id = 'activated'
+class ReadySchedPlugin(SchedInterface):
+    id = 'ready'
     
     def __init__(self, apfqueue):
 
         try:
             self.apfqueue = apfqueue                
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
-
-            self.max_jobs_torun = None
-            self.max_pilots_per_cycle = None
-            self.min_pilots_per_cycle = None
-            self.max_pilots_pending = None
-            
-            # A default value is required. 
-            self.default = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.default', 'getint', default_value=0, logger=self.log)    
-            self.log.debug('SchedPlugin: default = %s' %self.default)
-            
-            self.max_jobs_torun = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun', 'getint', logger=self.log)
-            self.max_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_pilots_per_cycle', 'getint', logger=self.log)
-            self.min_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle', 'getint', logger=self.log)
-            self.min_pilots_pending = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.min_pilots_pending', 'getint', logger=self.log)
-            self.max_pilots_pending = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending', 'getint', logger=self.log)
-            # testmode vars
-            self.testmode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.allowed', 'getboolean', logger=self.log)
-            self.pilots_in_test_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.pilots', 'getint', default_value=0, logger=self.log)
-
             self.log.info("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
@@ -48,20 +29,9 @@ class ActivatedSchedPlugin(SchedInterface):
 
     def calcSubmitNum(self, nsub=0):
         """ 
-        By default, returns nb of Activated Jobs - nb of Pending Pilots
-
-        But, if max_jobs_running is defined, 
-        it can impose a limit on the number of new pilots,
-        to prevent passing that limit on max nb of running jobs.
-
-        If there is a max_pilots_per_cycle defined, 
-        it can impose a limit too.
-
-        If there is a min_pilots_per_cycle defined, 
-        and the final decission was a lower number, 
-        then this min_pilots_per_cycle is the number of pilots 
-        to be submitted.
+        It just returns nb of Activated Jobs - nb of Pending Pilots
         """
+
         self.log.debug('calcSubmitNum: Starting.')
 
         self.wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
@@ -69,45 +39,24 @@ class ActivatedSchedPlugin(SchedInterface):
 
         if self.wmsinfo is None:
             self.log.warning("wsinfo is None!")
-            out = self.default
+            out = 0 
         elif self.batchinfo is None:
             self.log.warning("self.batchinfo is None!")
-            out = self.default            
+            out = 0
         elif not self.wmsinfo.valid() and self.batchinfo.valid():
-            out = self.default
+            out = 0 
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             # Carefully get wmsinfo, activated. 
             self.siteid = self.apfqueue.siteid
             self.log.info("Siteid is %s" % self.siteid)
 
-            siteinfo = self.wmsinfo.site
-            sitestatus = siteinfo[self.siteid].status
-            self.log.info('calcSubmitNum: site status is %s' %sitestatus)
-
-            cloud = siteinfo[self.siteid].cloud
-            cloudinfo = self.wmsinfo.cloud
-            cloudstatus = cloudinfo[cloud].status
-            self.log.info('calcSubmitNum: cloud %s status is %s' %(cloud, cloudstatus))
-
-            # choosing algorithm 
-            if cloudstatus == 'offline':
-                return self._calc_offline()
-
-            #if sitestatus == 'online':
-            #    out = self._calc_online()
-            if sitestatus == 'test':
-                out = self._calc_test()
-            elif sitestatus == 'offline':
-                out = self._calc_offline()
-            else:
-                # default
-                out = self._calc_online()
+            out = self._calc()
         return out
 
-    def _calc_online(self):
+    def _calc(self):
         '''
-        algorithm when wmssite is in online mode
+        algorithm 
         '''
         
         # initial default values. 
@@ -138,52 +87,16 @@ class ActivatedSchedPlugin(SchedInterface):
             # This is OK--it just means no jobs. 
             pass
 
-        all_pilots = pending_pilots + running_pilots
-
         out = max(0, activated_jobs - pending_pilots)
         
-        if self.max_jobs_torun: 
-            out = min(out, self.max_jobs_torun - all_pilots)
-
-        if self.min_pilots_pending:
-            out = max(out, self.min_pilots_pending - pending_pilots)
-        
-        if self.max_pilots_per_cycle:
-            out = min(out, self.max_pilots_per_cycle)
-
-        if self.min_pilots_per_cycle:
-            out = max(out, self.min_pilots_per_cycle)
-
-        if self.max_pilots_pending:
-            out = min(out, self.max_pilots_pending - pending_pilots)
 
         # Catch all to prevent negative numbers
         #if out < 0:
         #    self.log.info('_calc_online: calculated output was negative. Returning 0')
         #    out = 0
         
-        self.log.info('_calc_online (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
+        self.log.info('_calc (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
                                                                                          pending_pilots, 
                                                                                          running_pilots, 
                                                                                          out))
         return out
-
-    def _calc_test(self):
-        '''
-        algorithm when wmssite is in test mode
-        '''
-
-        if self.testmode:
-            self.log.info('_calc_test: testmode is enabled, returning default %s' %self.pilots_in_test_mode)
-            return self.pilots_in_test_mode
-        else:
-            self.log.info('_calc_test: testmode is not enabled. Calling the normal online algorithm')
-            return self._calc_online()
-            
-    def _calc_offline(self):
-        '''
-        algorithm when wmssite is in offline mode
-        '''
-        # default, just return 0
-        return 0 
-
