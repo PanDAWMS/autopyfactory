@@ -770,7 +770,7 @@ class APFQueue(threading.Thread):
         
         except Exception, ex:
             self.log.error('APFQueue: Exception getting plugins: %s' % str(ex))
-            
+            self.log.debug("Exception: %s" % traceback.format_exc())
             raise ex
         
         self.log.info('APFQueue: Object initialized.')
