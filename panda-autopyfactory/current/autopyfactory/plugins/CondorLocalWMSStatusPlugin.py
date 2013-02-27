@@ -51,13 +51,12 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
         # to avoid the thread to be started more than once
         self.__started = False
-
-        self.apfqueue = apfqueue
-        self.fconfig = apfqueue.fcl.config          
+        
+        self.apfqueue = apfqueue   
         self.apfqname = apfqueue.apfqname
-        self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
-        self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
-        self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
+        #self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
+        #self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
+        self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.condor.sleep')
         self.currentinfo = None              
 
         # ================================================================
