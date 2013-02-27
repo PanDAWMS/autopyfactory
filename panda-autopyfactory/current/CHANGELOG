@@ -1,6 +1,10 @@
 ChangeLog
 ---------
 
+* bugs in CondorLocalWMSStatusPlugin fixed
+
+* ReadySchedPlugin created
+
 * Removing self._valid from all plugins (work in progress)
 
 * ConfigFailure moved to apfexceptions.
