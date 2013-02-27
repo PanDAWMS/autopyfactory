@@ -762,6 +762,7 @@ class APFQueue(threading.Thread):
             self.wmsstatusmaxtime = self.fcl.generic_get('Factory', 'wmsstatus.maxtime', default_value=0, logger=self.log)
         except Exception, ex:
             self.log.error('APFQueue: exception captured while reading configuration variables to create the object.')
+            self.log.debug("Exception: %s" % traceback.format_exc())
             raise ex
 
         try:
@@ -769,6 +770,7 @@ class APFQueue(threading.Thread):
         
         except Exception, ex:
             self.log.error('APFQueue: Exception getting plugins: %s' % str(ex))
+            
             raise ex
         
         self.log.info('APFQueue: Object initialized.')
@@ -816,7 +818,8 @@ class APFQueue(threading.Thread):
                     m.updateJobs(self, jobinfolist)
                     
                 self._exitloop()
-                self._logtime()           
+                self._logtime() 
+                          
             except Exception, e:
                 self.log.error("run: Caught exception: %s " % str(e))
                 self.log.debug("run: Exception: %s" % traceback.format_exc())
