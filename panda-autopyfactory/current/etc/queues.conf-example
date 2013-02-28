@@ -1128,7 +1128,7 @@ enabled = False
 wmsqueue = ANALY_LRZ 
 batchqueue = ANALY_LRZ
 
-batchsubmitplugin = CondorNordugridTest
+batchsubmitplugin = CondorNordugrid
 batchsubmit.condornordugrid.gridresource = lcg-lrz-ce2.grid.lrz.de 
 nordugridrsl.jobname = 'analy_pilot'
 nordugridrsl.queue = lcg
