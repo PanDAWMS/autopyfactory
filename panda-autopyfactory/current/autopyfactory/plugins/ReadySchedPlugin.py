@@ -87,7 +87,7 @@ class ReadySchedPlugin(SchedInterface):
 
         out = max(0, activated_jobs - pending_pilots)
         self.log.info('_calc() (input=%s; activated=%s; pending=%s; running=%s;) : Return=%s' %(input,
-                                                                                                activated_jobs, 
+                                                                                         activated_jobs, 
                                                                                          pending_pilots, 
                                                                                          running_pilots, 
                                                                                          out))
