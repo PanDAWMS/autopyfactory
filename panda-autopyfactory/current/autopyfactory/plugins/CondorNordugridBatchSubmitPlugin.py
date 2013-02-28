@@ -16,16 +16,16 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
-class CondorNordugridTestBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
-    id = 'condornordugridtest'
+class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
+    id = 'condornordugrid'
     '''
     This class is expected to have separate instances for each PandaQueue object. 
     '''
    
     def __init__(self, apfqueue):
 
-        super(CondorNordugridTestBatchSubmitPlugin, self).__init__(apfqueue) 
-        self.log.info('CondorNordugridTestBatchSubmitPlugin: Object initialized.')
+        super(CondorNordugridBatchSubmitPlugin, self).__init__(apfqueue) 
+        self.log.info('CondorNordugridBatchSubmitPlugin: Object initialized.')
 
     def _readconfig(self, qcl=None):
         ''' 
@@ -38,7 +38,7 @@ class CondorNordugridTestBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
 
         # we rename the queue config variables to pass a new config object to parent class
         newqcl = qcl.clone().filterkeys('batchsubmit.condornordugrid', 'batchsubmit.condorce')
-        valid = super(CondorNordugridTestBatchSubmitPlugin, self)._readconfig(newqcl) 
+        valid = super(CondorNordugridBatchSubmitPlugin, self)._readconfig(newqcl) 
         if not valid:
             return False
         try:
@@ -120,7 +120,7 @@ class CondorNordugridTestBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         add things to the JSD object
         '''
     
-        self.log.debug('CondorNordugridTestBatchSubmitPlugin.addJSD: Starting.')
+        self.log.debug('CondorNordugridBatchSubmitPlugin.addJSD: Starting.')
    
         self.JSD.add('grid_resource = nordugrid %s' %self.gridresource)
 
@@ -130,7 +130,7 @@ class CondorNordugridTestBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         nordugridrsl += self.nordugridrsl_env
         self.JSD.add('nordugrid_rsl = %s' %nordugridrsl) 
 
-        super(CondorNordugridTestBatchSubmitPlugin, self)._addJSD() 
+        super(CondorNordugridBatchSubmitPlugin, self)._addJSD() 
     
-        self.log.debug('CondorNordugridTestBatchSubmitPlugin.addJSD: Leaving.')
+        self.log.debug('CondorNordugridBatchSubmitPlugin.addJSD: Leaving.')
 
