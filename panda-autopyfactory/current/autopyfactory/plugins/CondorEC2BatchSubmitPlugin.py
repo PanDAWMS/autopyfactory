@@ -58,6 +58,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         '''
 
         self.log.debug('CondorEC2BatchSubmitPlugin.addJSD: Starting.')
+        super(CondorEC2BatchSubmitPlugin, self)._addJSD()
 
         self.JSD.add('grid_resource=ec2 %s' % self.gridresource) 
 
@@ -75,8 +76,6 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             self.JSD.add('ec2_spot_price=%f' % self.spot_price)
         if self.security_groups:
             self.JSD.add('ec2_security_groups=%s' % self.security_groups)
-
-        super(CondorEC2BatchSubmitPlugin, self)._addJSD()
 
         self.log.debug('CondorEC2BatchSubmitPlugin.addJSD: Leaving.')
 
