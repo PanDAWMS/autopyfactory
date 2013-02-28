@@ -227,7 +227,9 @@ class Config(SafeConfigParser, object):
         returns the content of the config object in a single string
         '''
         str = ''
-        for section in self.sections():
+        sects = self.sections()
+        sects.sort()
+        for s in sects:
             str += self._getsectioncontent(section, excludelist)
         return str
 
