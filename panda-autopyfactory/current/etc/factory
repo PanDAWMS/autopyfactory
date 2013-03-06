@@ -125,7 +125,7 @@ start() {
 stop() {
 
 	check
-	echo -n $"Stopping factory daemon: "
+	echo -n $"Stopping APF daemon: "
 	killproc -p $PIDFILE factory
 	RETVAL=$?
 	[ $RETVAL -eq 0 ] && rm -f $PIDFILE
@@ -147,7 +147,7 @@ reload() {
 	check
 	
 	trap "" SIGHUP
-	action $"Reloading factory daemon:" killall -HUP factory.py
+	action $"Reloading APF daemon:" killall -HUP factory.py
 	RETVAL=$?
 	return $RETVAL
 }	
