@@ -1202,8 +1202,8 @@ class PluginDispatcher(object):
             plugin_module_name = '%s%sPlugin' %(name, plugin_prefix)
             # Example of plugin_module_name is CondorGT2 + BatchSubmit + Plugin => CondorGT2BatchSubmitPlugin
 
-            self.log.debug("_getplugin: Attempting to import derived classnames: autopyfactory.plugins.%s"
-                % plugin_module_name)
+            self.log.debug("_getplugin: Attempting to import derived classnames: autopyfactory.plugins.%s.%s"
+                % ( plugin_action, plugin_module_name))
 
             plugin_module = __import__("autopyfactory.plugins.%s.%s" %  plugin_action,
                                        plugin_module_name,
