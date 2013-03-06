@@ -2,6 +2,8 @@ ChangeLog
 ---------
 2013-03-15
 
+* Non plugin modules (jsd.py, persistence.py) moved to main directory.
+
 * Split plugins into their own directories. 
 
 * version number for panda userinterface package in setup.cfg
