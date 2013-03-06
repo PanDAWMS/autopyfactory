@@ -11,10 +11,11 @@ import re
 import string
 import time
 
+from autopyfactory import jsd
 from autopyfactory.interfaces import BatchSubmitInterface
 from autopyfactory.info import JobInfo
 import autopyfactory.utils as utils
-import jsd 
+ 
 
 __author__ = "John Hover, Jose Caballero"
 __copyright__ = "2011 John Hover, Jose Caballero"
