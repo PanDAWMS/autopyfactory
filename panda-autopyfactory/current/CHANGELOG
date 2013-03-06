@@ -1,5 +1,8 @@
 ChangeLog
 ---------
+2013-03-15
+
+* Split plugins into their own directories. 
 
 * version number for panda userinterface package in setup.cfg
 
