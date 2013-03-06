@@ -1155,7 +1155,8 @@ class PluginDispatcher(object):
 
         plugin_config_item = '%splugin' %action # i.e. schedplugin
         plugin_prefix = plugin_prefixes[action] 
-
+        plugin_action = action
+        
         # list of objects PluginHandler
         plugin_handlers = [] 
 
@@ -1204,7 +1205,8 @@ class PluginDispatcher(object):
             self.log.debug("_getplugin: Attempting to import derived classnames: autopyfactory.plugins.%s"
                 % plugin_module_name)
 
-            plugin_module = __import__("autopyfactory.plugins.%s" % plugin_module_name,
+            plugin_module = __import__("autopyfactory.plugins.%s.%s" %  plugin_action,
+                                       plugin_module_name,
                                        globals(),
                                        locals(),
                                        ["%s" % plugin_module_name])
