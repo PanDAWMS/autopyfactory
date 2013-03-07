@@ -864,7 +864,6 @@ class APFQueue(threading.Thread):
         return jobinfolist
 
 
-
     def _exitloop(self):
         '''
         Exit loop if desired number of cycles is reached...  

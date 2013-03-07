@@ -14,9 +14,9 @@ import time
 
 from autopyfactory.interfaces import BatchSubmitInterface
 import autopyfactory.utils as utils
-import jsd 
+from autopyfactory import jsd
 
-from persistent import *
+from autopyfactory.persistence import *
 
 
 __author__ = "John Hover, Jose Caballero"

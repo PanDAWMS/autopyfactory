@@ -5,7 +5,7 @@
 
 from CondorCEBatchSubmitPlugin import CondorCEBatchSubmitPlugin 
 import autopyfactory.utils as utils
-import jsd 
+from autopyfactory import jsd 
 
 __author__ = "John Hover, Jose Caballero"
 __copyright__ = "2011 John Hover, Jose Caballero"

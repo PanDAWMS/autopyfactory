@@ -116,7 +116,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         Returns processed list of JobInfo objects. 
         
         '''
-
         self.log.debug('Preparing to submit %s jobs' %n)
         joblist = None
 
@@ -141,6 +140,15 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
                     joblist = self._parseCondorSubmit(output)
                 else:
                     self.log.info('submit: jsdfile has no value. Doing nothing')
+        elif n < 0:
+            # For certain plugins, this means to retire or terminate nodes...
+            pass
+        
+        else:
+            self.log.debug("Asked to submit 0. Doing nothing...")
+        
+        
+        
             
         self.log.debug('Done. Returning joblist %s.' %joblist)
         return joblist

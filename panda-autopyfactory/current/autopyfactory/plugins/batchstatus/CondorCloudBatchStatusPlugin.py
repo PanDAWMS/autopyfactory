@@ -1,7 +1,11 @@
 #!/bin/env python
 #
 # AutoPyfactory batch status plugin for Condor
+# Dedicated to handling VM job submissions and VM pool startds. 
+#   
 #
+
+
 
 import commands
 import subprocess
@@ -33,15 +37,20 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
-class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
+class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     '''
-    -----------------------------------------------------------------------
-    This class is expected to have separate instances for each PandaQueue object. 
-    The first time it is instantiated, 
-    -----------------------------------------------------------------------
-    Public Interface:
-            the interfaces inherited from Thread and from BatchStatusInterface
-    -----------------------------------------------------------------------
+    BatchStatusPlugin intended to handle CloudInstances, i.e. a combination of a 
+    submitted VM job AND startd information gathered from condor_status output. 
+
+    It adds new statuses: Retiring and Retired. 
+    
+
+
+
+
+
+
+
     '''
     
     __metaclass__ = CondorSingleton 
@@ -527,6 +536,137 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         self.log.debug('Stopping thread....')
         threading.Thread.join(self, timeout)
         self.log.debug('join: Leaving')
+
+
+class CloudBatchInfo(object):
+    '''
+    Info object 
+    
+    
+    '''
+
+    def __init__(self, instanceid, machine, state, activity):
+        '''
+        instanceID is self-explanatory
+        machine is the full internal/local hostname (to allow condor_off)
+        '''
+        self.id = instanceid
+        self.machine = machine
+        self.state = state
+        self.activity = activity
+
+    def __str__(self):
+        s = "ClusterInfo: %s %s %s %s" % (self.id, self.machine, self.state, self.activity)
+        return s
+
+
+
+
+
+def statuscondor():
+    '''
+    Return human readable info about startds. 
+    '''
+    log = logging.getLogger()
+    cmd = 'condor_status -xml'
+    log.debug('Querying cmd = %s' %cmd.replace('\n','\\n'))
+    before = time.time()
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    out = None
+    (out, err) = p.communicate()
+    delta = time.time() - before
+    log.debug('It took %s seconds to perform the query' %delta)
+    log.info('%s seconds to perform the query' %delta)
+    if p.returncode == 0:
+        log.debug('Leaving with OK return code.')
+    else:
+        log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
+        out = None
+    log.debug('Leaving. Out is %s' % out)
+    return out
+
+def xml2nodelist(input):
+    log = logging.getLogger()
+    xmldoc = xml.dom.minidom.parseString(input).documentElement
+    nodelist = []
+    for c in listnodesfromxml(xmldoc, 'c') :
+        node_dict = node2dict(c)
+        nodelist.append(node_dict)
+    log.debug('_parseoutput: Leaving and returning list of %d entries.' %len(nodelist))
+    log.info('Got list of %d entries.' %len(nodelist))
+    return nodelist
+
+
+
+
+
+
+
+
+
+def listnodesfromxml( xmldoc, tag):
+    return xmldoc.getElementsByTagName(tag)
+
+def node2dict( node):
+    '''
+ 
+    '''
+    dic = {}
+    for child in node.childNodes:
+        if child.nodeType == child.ELEMENT_NODE:
+            key = child.attributes['n'].value
+            if len(child.childNodes[0].childNodes) > 0:
+                value = child.childNodes[0].firstChild.data
+                dic[key.lower()] = str(value)
+    return dic
+
+
+
+def test():
+    list =  [ { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
+                'jobStatus' : '2' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
+                'jobStatus' : '1' },
+                           { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
+                'jobStatus' : '1' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
+                'jobStatus' : '1' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
+                'jobStatus' : '2' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
+                'jobStatus' : '3' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
+                'jobStatus' : '3' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
+                'jobStatus' : '3' }
+            ]
+
+
+def correlate():
+    out = statuscondor()
+    nl = xml2nodelist(out)
+    infolist = []
+    for n in nl:
+        #print(n)
+        try:
+            ec2iid = n['ec2instanceid']
+            state = n['state']
+            act = n['activity']
+            slots = n['totalslots']
+            machine = n['machine']
+
+            j = ClusterInfo(ec2iid, machine, state, act)
+            j.slots = slots
+            infolist.append(j)
+        except Exception, e:
+            print("Bad node. Error: %s" % str(e))
+    for i in infolist:
+        print(i)
+
+
+
+if __name__=='__main__':
+    correlate()
 
 
 
