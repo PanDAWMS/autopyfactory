@@ -40,23 +40,18 @@ __status__ = "Production"
 class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     '''
     BatchStatusPlugin intended to handle CloudInstances, i.e. a combination of a 
-    submitted VM job AND startd information gathered from condor_status output. 
+    submitted VM job AND startd information gathered from 'condor_status -master' output. 
 
     It adds new statuses: Retiring and Retired. 
-    
-
-
-
-
-
-
+    It adds correlation between VM jobs and startds in pool so that the startd status (Idle, 
+    Retiring, Retired) appears in VM job attributes in the info object.  
 
     '''
     
     __metaclass__ = CondorSingleton 
     
     def __init__(self, apfqueue, **kw):
-
+        
         try:
             threading.Thread.__init__(self) # init the thread
             
@@ -73,21 +68,16 @@ class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
             self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs', logger=self.log) 
-            self.currentinfo = None              
+            
+            # This is job statistic info
+            self.currentinfo = None
+            # This is per-job info 
+            self.currentjobs = None              
 
             # ================================================================
             #                     M A P P I N G S 
-            # ================================================================
-            
-            self.globusstatus2info = {'1':   'pending',
-                                      '2':   'running',
-                                      '4':   'done',
-                                      '8':   'done',
-                                      '16':  'suspended',
-                                      '32':  'pending',
-                                      '64':  'pending',
-                                      '128': 'running'}
-            
+            # ================================================================          
+           
             self.jobstatus2info = {'0': 'pending',
                                    '1': 'pending',
                                    '2': 'running',
@@ -132,8 +122,6 @@ class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     condor_config = os.path.expanduser('~condor/condor_config')
                     if os.path.isfile(condor_config):
                         self.log.debug('_checkCondor: using condor config file: %s' %condor_config)
-
- 
 
     def getInfo(self, maxtime=0):
         '''
@@ -195,8 +183,6 @@ class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         
         condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
                  -format 'jobStatus=%d ' jobStatus 
-                 -format 'globusStatus=%d ' GlobusStatus 
-                 -format 'gkUrl=%s' MATCH_gatekeeper_url
                  -format '-%s ' MATCH_queue 
                  -format '%s\n' Environment
 
@@ -218,17 +204,6 @@ class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 5       H - Held                                 
                 6       > - Transferring Output
 
-        The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
-        
-                Value   Status
-                1       PENDING 
-                2       ACTIVE 
-                4       FAILED 
-                8       DONE 
-                16      SUSPENDED 
-                32      UNSUBMITTED 
-                64      STAGE_IN 
-                128     STAGE_OUT 
         '''
 
         self.log.debug('_update: Starting.')
@@ -249,6 +224,20 @@ class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             except Exception, e:
                 self.log.error("_update: Exception: %s" % str(e))
                 self.log.debug("Exception: %s" % traceback.format_exc())            
+            
+            try:
+                strout = self._statuscondor()
+                if not strout:
+                    self.log.warning('_update: output of _statuscondor is not valid. Not parsing it. Skip to next loop.') 
+                else:
+                    outlist = self._parseoutput(strout)
+                    # aggdict = self._aggregateinfo(outlist)
+                    # newinfo = self._map2info(aggdict)
+                    self.log.info("Replacing old info with newly generated info.")
+                    self.currentjobs = outlist
+            except Exception, e:
+                self.log.error("_update: Exception: %s" % str(e))
+                self.log.debug("Exception: %s" % traceback.format_exc()) 
 
         self.log.debug('__update: Leaving.')
 
@@ -268,12 +257,14 @@ class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         # removing temporarily (?) Environment from the query 
         #querycmd += " -format ' %s\n' Environment"
         querycmd += " -format ' MATCH_APF_QUEUE=%s' match_apf_queue"
+        querycmd += " -format ' EC2InstanceName=%s' ec2instancename"  
 
         # should I put jobStatus at the end, because all jobs have that variable
         # defined, so there is no risk is undefined and therefore the 
         # \n is never called?
         querycmd += " -format ' JobStatus=%d\n' jobstatus"
-        querycmd += " -format ' GlobusStatus=%d\n' globusstatus"
+        
+        #querycmd += " -format ' GlobusStatus=%d\n' globusstatus"
         querycmd += " -xml"
 
         self.log.debug('_querycondor: Querying cmd = %s' %querycmd.replace('\n','\\n'))
@@ -359,6 +350,26 @@ class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     value = child.childNodes[0].firstChild.data
                     dic[key.lower()] = str(value)
         return dic
+
+    def _indexbyqueue(self, input):
+        '''
+        This function takes a list of job status dicts, and indexes them by queue 
+        
+        Example input:
+        [ { 'match_apf_queue' : 'BNL_ATLAS_1',
+            'jobstatus' : '2' },
+          { 'match_apf_queue' : 'BNL_ATLAS_1',
+            'jobstatus' : '1' },
+           { 'match_apf_queue' : 'BNL_ATLAS_2',
+            'jobstatus' : '1' },        
+        ]                        
+        
+        
+        
+        
+        ''' 
+
+
 
 
     def _aggregateinfo(self, input):
@@ -538,13 +549,51 @@ class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         self.log.debug('join: Leaving')
 
 
+########################################################################
+# New classes and functions for correlating VM Jobs and Cloud startds. 
+#
+########################################################################3
+
+class CondorJobInfo(object):
+
+    def __init__(self, dict):
+        '''
+        Creates JobInfo object from arbitrary dictionary of attributes. 
+        '''
+        log = logging.getLogger()
+        self.jobattrs = []
+        for k in dict.keys():
+            self.__setattr__(k,dict[k])
+            self.jobattrs.append(k)
+        self.jobattrs.sort()
+        log.debug("Made CondorJobInfo object with %d attributes" % len(self.jobattrs))    
+        
+    def __str__(self):
+        attrstoprint = ['ec2instancename',
+                        'ec2instanctype',
+                        'enteredcurrentstatus',
+                        'jobstatus',
+                        'match_apf_queue',
+                        ]   
+               
+        s = "[ CondorJob: %s.%s] " % (self.clusterid, self.autoclusterid)
+        for k in self.jobattrs:
+            if k in attrstoprint:
+                s += " %s=%s " % ( k, self.__getattribute__(k))
+        return s
+    
+    def __repr__(self):
+        s = str(self)
+        return s
+
+
+
 class CloudBatchInfo(object):
     '''
-    Info object 
-    
-    
+    Info object to represent a startd on the cloud. 
+    If it has multiple slots, we need to calculate overall state/activity carefully. 
+       
     '''
-
     def __init__(self, instanceid, machine, state, activity):
         '''
         instanceID is self-explanatory
@@ -555,11 +604,25 @@ class CloudBatchInfo(object):
         self.state = state
         self.activity = activity
 
+    def merge(self, other):
+        if self.id == other.id and self.machine == other.machine:
+            pass
+            #if self.state == ""
+            
+            
+            
+        else:
+            pass
+        
+
+
     def __str__(self):
-        s = "ClusterInfo: %s %s %s %s" % (self.id, self.machine, self.state, self.activity)
+        s = "CloudBatchInfo: %s %s %s %s" % (self.id, self.machine, self.state, self.activity)
         return s
 
-
+    def __repr__(self):
+        s = str(self)
+        return s    
 
 
 
@@ -582,8 +645,33 @@ def statuscondor():
     else:
         log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
         out = None
-    log.debug('Leaving. Out is %s' % out)
+    #log.debug('Leaving. Out is %s' % out)
     return out
+
+
+def querycondorxml():
+    '''
+    Return human readable info about startds. 
+    '''
+    log = logging.getLogger()
+    cmd = 'condor_q -xml'
+    log.debug('Querying cmd = %s' %cmd.replace('\n','\\n'))
+    before = time.time()
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    out = None
+    (out, err) = p.communicate()
+    delta = time.time() - before
+    log.debug('It took %s seconds to perform the query' %delta)
+    log.info('%s seconds to perform the query' %delta)
+    if p.returncode == 0:
+        log.debug('Leaving with OK return code.')
+    else:
+        log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
+        out = None
+    #log.debug('Leaving. Out is %s' % out)
+    return out
+
+
 
 def xml2nodelist(input):
     log = logging.getLogger()
@@ -596,16 +684,9 @@ def xml2nodelist(input):
     log.info('Got list of %d entries.' %len(nodelist))
     return nodelist
 
-
-
-
-
-
-
-
-
 def listnodesfromxml( xmldoc, tag):
     return xmldoc.getElementsByTagName(tag)
+
 
 def node2dict( node):
     '''
@@ -619,8 +700,7 @@ def node2dict( node):
                 value = child.childNodes[0].firstChild.data
                 dic[key.lower()] = str(value)
     return dic
-
-
+   
 
 def test():
     list =  [ { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
@@ -641,7 +721,6 @@ def test():
                 'jobStatus' : '3' }
             ]
 
-
 def correlate():
     out = statuscondor()
     nl = xml2nodelist(out)
@@ -655,7 +734,7 @@ def correlate():
             slots = n['totalslots']
             machine = n['machine']
 
-            j = ClusterInfo(ec2iid, machine, state, act)
+            j = CloudBatchInfo(ec2iid, machine, state, act)
             j.slots = slots
             infolist.append(j)
         except Exception, e:
@@ -664,11 +743,79 @@ def correlate():
         print(i)
 
 
+def getJobInfo():
+        log = logging.getLogger()
+        out = querycondorxml()
+        nl = xml2nodelist(out)
+        log.info("Got node list of length %d" % len(nl))
+        joblist = []
+        qd = {}
+        if len(nl) > 0:
+            for n in nl:
+                j = CondorJobInfo(n)
+                joblist.append(j)
+            
+            indexhash = {}
+            for j in joblist:
+                try:
+                    i = j.match_apf_queue
+                    indexhash[i] = 1
+                except:
+                    # We don't care about jobs not from APF
+                    pass
+    
+            for k in indexhash.keys():
+            # Make a list for jobs for each apfqueue
+                qd[k] = []
+            
+            # We can now safely do this..
+            for j in joblist:
+                try:
+                    index = j.match_apf_queue
+                    qjl = qd[index]
+                    qjl.append(j)
+                except:
+                    # again we don't care about non-APF jobs
+                    pass    
+                
+        log.info("Made job list of length %d" % len(joblist))
+        log.info("Made a job info dict of length %d" % len(qd))
+        return qd
+
+def getStartdInfoByEC2Id():
+    log = logging.getLogger()
+    out = statuscondor()
+    nl = xml2nodelist(out)
+    infolist = {}
+    for n in nl:
+        #print(n)
+        try:
+            ec2iid = n['ec2instanceid']
+            state = n['state']
+            act = n['activity']
+            slots = n['totalslots']
+            machine = n['machine']
+            j = CloudBatchInfo(ec2iid, machine, state, act)
+            #log.debug("Created cbi: %s" % j)
+            j.slots = slots
+            infolist[ec2iid] = j
+        except Exception, e:
+            log.error("Bad node. Error: %s" % str(e))
+    return infolist
+    
+
 
 if __name__=='__main__':
-    correlate()
+    logging.basicConfig(level=logging.DEBUG)
+#    correlate()
+    infodict = getJobInfo()
+    ec2jobs = infodict['BNL_CLOUD-ec2-spot']    
+    #pprint(ec2jobs)
+    
+    startds = getStartdInfoByEC2Id()    
+    print(startds)
 
-
+    
 
 
 
