@@ -1,5 +1,11 @@
 #!/usr/bin/env python 
 
+"""
+Output a factory config file only outputs ACTIVE sites
+"""
+
+import logging
+from optparse import OptionParser
 from urllib import urlopen
 import sys
 try:
@@ -7,95 +13,168 @@ try:
 except ImportError, err:
     import simplejson as json
 
-from ConfigParser import SafeConfigParser
+defaultsection = """\
+
+[DEFAULT]
+
+vo = ATLAS
+status = online
+override = True
+enabled = True
+autofill = False
+
+cleanlogs.keepdays = 7
+
+# plugins
+batchstatusplugin = Condor
+wmsstatusplugin = Panda
+configplugin = Panda
+batchsubmitplugin = CondorCREAM
+batchsubmit.condorcream.proxy = atlas-production
+
+schedplugin = Activated
+sched.activated.min_pilots_per_cycle = 0
+sched.activated.max_pilots_per_cycle = 50
+sched.activated.max_jobs_torun = 500
+sched.activated.max_pilots_pending = 100
+sched.activated.testmode.allowed = True
+sched.activated.testmode.pilots = 1
+
+executable = /data/atlpan/libexec/runpilot3-wrapper-jan29.sh
+executable.defaultarguments = -s %(wmsqueue)s -h %(batchqueue)s -p 25443 -w https://pandaserver.cern.ch -j false -k 0
+
+batchsubmit.condorcream.environ = APF_PYTHON26=1 RUCIO_ACCOUNT=pilot
+
+apfqueue.sleep = 60
+
+"""
 
 
-#  ---   read config filename from  input ---
+def main():
 
-if len(sys.argv) != 2:
-    print 'config filename missing'
-    sys.exit(1)
-else:
-    configfile = sys.argv[1]
+    parser = OptionParser(usage='''%prog [OPTIONS]
+Output a factory queue configuration using ACTIVE sites from the
+specified cloud and activity type.
+''')
+    parser.add_option("-c",
+                       dest="cloud",
+                       action="store",
+                       default='ALL',
+                       type="string",
+                       help="name of cloud")
+    parser.add_option("-a",
+                       dest="activity",
+                       default="analysis",
+                       action="store",
+                       type="choice",
+                       choices=['analysis','production'],
+                       help="activity filter ('analysis' [default] or 'production')")
+    parser.add_option("-q", "--quiet",
+                       dest="loglevel",
+                       default=logging.WARNING,
+                       action="store_const",
+                       const=logging.WARNING,
+                       help="Set logging level to WARNING [default]")
+    parser.add_option("-v", "--info",
+                       dest="loglevel",
+                       default=logging.WARNING,
+                       action="store_const",
+                       const=logging.INFO,
+                       help="Set logging level to INFO [default WARNING]")
 
+    (options, args) = parser.parse_args()
 
-#  ---   read AGIS content ---
-#url = 'http://atlas-agis-api-dev.cern.ch/request/pandaqueue/query/list/?json&preset=full&ceaggregation'
-url = 'http://atlas-agis-api.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'
+    if options.testmode: options.loglevel = logging.INFO
 
-handle = urlopen(url)
-# json always gives back unicode strings (eh?) - convert unicode to utf-8
-jsonData = json.load(handle, 'utf-8')
-handle.close()
-
-###agisdict = {}
-###for jsonDict in jsonData:
-###    key = jsonDict['panda_queue_name']
-###    agisdict[key] = jsonDict
-
-#  ---   Load the config file ---
-
-conf = SafeConfigParser()
-conf.readfp(open(configfile))
-
-
-for section in conf.sections():
-    key = conf.get(section, 'batchqueue')
-    #agis_sect = agisdict[key]
-    agis_sect = jsonData[key]
-    wmsqueue = agis_sect['panda_resource']
-    type = agis_sect['type']
-    for q in agis_sect['queues']:
-        gramqueue = None 
-
-        if q['ce_flavour'] == 'OSG-CE':
-
-            gridresource = '%s/jobmanager-%s' %(q['ce_endpoint'], q['ce_jobmanager'])
-            if q['ce_version'] == 'GT2':
-                submitplugin = 'CondorGT2'
-                submitpluginstring = 'condorgt2'
-                gramversion = 'gram2'
-            if q['ce_version'] == 'GT5':
-                submitplugin = 'CondorGT5'
-                submitpluginstring = 'condorgt5'
-                gramversion = 'gram5'
-            if q['ce_queue_name']:
-                gramqueue = q['ce_queue_name']
-
-        elif q['ce_flavour'] == 'CREAM-CE':
-
-            gridresource = '%s/ce-cream/services/CREAM2 %s %s' %(q['ce_endpoint'], q['ce_jobmanager'], q['ce_queue_name'])
-            submitplugin = 'CondorCREAM'
-            submitpluginstring = 'condorcream'
-
-        elif q['ce_flavour'] == 'LCG-CE':
-
-            gridresource = '%s/jobmanager-%s' %(q['ce_endpoint'], q['ce_jobmanager'])
-            submitplugin = 'CondorGT2'
-            submitpluginstring = 'condorgt2'
-            gramversion = 'gram2'
-            gramqueue = q['ce_queue_name']
-            
-        else:
-            # ce_flavour has no value or not yet understood
-            continue
-
-        print 
-        #print '[%s-%s]' %(section, q['ce_name'])
-        #print '[%s-%s-%s]' %(section, q['ce_endpoint'].split(':')[0], q['ce_queue_name'])
-        print '[%s-%s]' %(agis_sect['panda_queue_name'], q['ce_queue_id'])
-        print 'autofill = False'
-        print 'batchqueue = %s' %key
-        print 'wmsqueue = %s' %wmsqueue
-        print 'batchsubmitplugin = %s' %submitplugin
-        print 'batchsubmit.%s.gridresource = %s' %(submitpluginstring, gridresource)
-        if gramqueue:
-            print 'globusrsl.%s.queue = %s' %(gramversion, gramqueue)
-        if type == 'analysis':
-            print 'batchsubmit.%s.proxy = atlas-analysis' %submitpluginstring
-        elif type == 'production':
-            print 'batchsubmit.%s.proxy = atlas-production' %submitpluginstring
-
-
+    logger = logging.getLogger()
+    logger.setLevel(options.loglevel)
+    fmt = '[APF:%(levelname)s %(asctime)s] %(message)s'
+    formatter = logging.Formatter(fmt, '%T')
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(formatter)
+    logger.handlers = []
+    logger.addHandler(handler)
     
+    msg = 'Cloud: %s' % options.cloud.upper()
+    logging.info(msg)
+    msg = 'Activity: %s' % options.activity
+    logging.info(msg)
+    url = 'http://atlas-agis-api.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'
+    if options.cloud.upper() != 'ALL':
+        url += '&cloud=%s' % options.cloud.upper()
+    logging.info(url)
 
+    handle = urlopen(url)
+    d = json.load(handle, 'utf-8')
+    handle.close()
+
+    print "# auto-generated by: agis.py %s" % ' '.join(sys.argv[1:])
+
+    print defaultsection
+    
+    for key in sorted(d):
+        try:
+            if d[key]['site_state'] == 'ACTIVE' and d[key]['type'] == options.activity:
+
+                wmsqueue = d[key]['panda_resource']
+                cetype = d[key]['type']
+                
+                for q in d[key]['queues']:
+                    gramqueue = None 
+            
+                    if q['ce_flavour'] == 'OSG-CE':
+            
+                        gridresource = '%s/jobmanager-%s' %(q['ce_endpoint'], q['ce_jobmanager'])
+                        if q['ce_version'] == 'GT2':
+                            submitplugin = 'CondorGT2'
+                            submitpluginstring = 'condorgt2'
+                            gramversion = 'gram2'
+                        if q['ce_version'] == 'GT5':
+                            submitplugin = 'CondorGT5'
+                            submitpluginstring = 'condorgt5'
+                            gramversion = 'gram5'
+                        if q['ce_queue_name']:
+                            gramqueue = q['ce_queue_name']
+            
+                    elif q['ce_flavour'] == 'CREAM-CE':
+            
+                        gridresource = '%s/ce-cream/services/CREAM2 %s %s' %(q['ce_endpoint'], q['ce_jobmanager'], q['ce_queue_name'])
+                        submitplugin = 'CondorCREAM'
+                        submitpluginstring = 'condorcream'
+            
+                    elif q['ce_flavour'] == 'LCG-CE':
+            
+                        gridresource = '%s/jobmanager-%s' %(q['ce_endpoint'], q['ce_jobmanager'])
+                        submitplugin = 'CondorGT2'
+                        submitpluginstring = 'condorgt2'
+                        gramversion = 'gram2'
+                        gramqueue = q['ce_queue_name']
+                        
+                    else:
+                        print "# Unknown ce_flavour for ce_queue_id: %s" % q['ce_queue_id']
+                        continue
+            
+                    print
+                    print '[%s-%s]' % (d[key]['nickname'], q['ce_queue_id'])
+                    print 'enabled = True'
+                    print 'autofill = False'
+                    print 'batchqueue = %s' % key
+                    print 'wmsqueue = %s' % wmsqueue
+                    print 'batchsubmitplugin = %s' % submitplugin
+                    print 'batchsubmit.%s.gridresource = %s' % (submitpluginstring, gridresource)
+                    if gramqueue:
+                        print 'globusrsl.%s.queue = %s' % (gramversion, gramqueue)
+                    if cetype == 'analysis':
+                        print 'batchsubmit.%s.proxy = atlas-analysis' % submitpluginstring
+                        print 'executable.arguments = %(executable.defaultarguments)s -u user'
+                    elif cetype == 'production':
+                        print 'batchsubmit.%s.proxy = atlas-production' % submitpluginstring
+                        print 'executable.arguments = %(executable.defaultarguments)s'
+
+
+        except KeyError, e:
+          print '# Key error: %s' % e
+          print
+
+if __name__ == "__main__":
+    sys.exit(main())
