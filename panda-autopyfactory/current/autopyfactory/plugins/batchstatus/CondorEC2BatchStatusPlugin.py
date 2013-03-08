@@ -741,14 +741,15 @@ class CondorStartdInfo(object):
                 Idle 
                 Retiring 
                 Suspended
-
         '''
-        self.id = instanceid
-        self.machine = machine
+        self.id = slotinfo.instanceid
+        self.machine = slotinfo.machine
         self.state = {}
         self.activity = {}
-        self.state[state] = 1
-        self.activity[activity] = 1
+        self.state[slotinfo.state] = 1
+        self.activity[slotinfo.activity] = 1
+        
+    
     
     def add(self, slotinfo):
         '''
