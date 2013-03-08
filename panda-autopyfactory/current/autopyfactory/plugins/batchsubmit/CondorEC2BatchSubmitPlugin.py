@@ -88,12 +88,12 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         '''
         statusinfo = self.apfqueue.batchstatus_plugin.getInfo()
         jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo()
-        if cloudstatus:
+        if statusinfo and jobinfo:
             pass
             
             
         else:
-            self.log.info("No batch status info available. Do nothing.")
+            self.log.info("Some info unavailable. Do nothing.")
         
         
         

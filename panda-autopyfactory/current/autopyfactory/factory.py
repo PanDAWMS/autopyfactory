@@ -1550,6 +1550,7 @@ class CondorSingleton(type):
     def __init__(cls, name, bases, dct):
         cls.__instance = {} 
         type.__init__(cls, name, bases, dct)
+
     def __call__(cls, *args, **kw): 
         condor_q_id = kw.get('condor_q_id', 'local')
         if condor_q_id not in cls.__instance.keys():
