@@ -702,7 +702,7 @@ class CondorSlotInfo(object):
                 Suspended
 
         '''
-        self.id = instanceid
+        self.instanceid = instanceid
         self.machine = machine
         self.state = state
         self.activity = activity
