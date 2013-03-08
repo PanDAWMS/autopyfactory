@@ -130,6 +130,15 @@ class BatchSubmitInterface(object):
         '''
         raise NotImplementedError
 
+    def retire(self, n):
+        '''
+        Primarily relevant for EC2 VM jobs. Tells APF to connect to this many
+        *startds* and retire all jobs running.  
+        
+        '''
+        raise NotImplementedError
+
+
 
 class MonitorInterface(object):
     '''
