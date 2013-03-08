@@ -142,7 +142,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
                     self.log.info('submit: jsdfile has no value. Doing nothing')
         elif n < 0:
             # For certain plugins, this means to retire or terminate nodes...
-            pass
+            self.retire(n)
         
         else:
             self.log.debug("Asked to submit 0. Doing nothing...")

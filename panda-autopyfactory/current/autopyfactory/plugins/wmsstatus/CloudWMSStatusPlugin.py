@@ -389,7 +389,7 @@ class CloudWMSSatusPlugin(threading.Thread, BatchStatusInterface):
     def _map2info(self, input):
         '''
         This takes aggregated info by queue, with condor/condor-g specific status totals, and maps them 
-        to the backend-agnostic APF BatchQueueInfo object.
+        to the backend-agnostic APF BatchStatusInfo object.
         
            APF             Condor-C/Local              Condor-G/Globus 
         .pending           Unexp + Idle                PENDING

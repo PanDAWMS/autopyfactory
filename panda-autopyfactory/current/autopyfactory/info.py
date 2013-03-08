@@ -155,7 +155,7 @@ class BaseInfo(object):
         return conf
 
 
-class BatchQueueInfo(BaseInfo):
+class BatchStatusInfo(BaseInfo):
     '''
     -----------------------------------------------------------------------
      Empty anonymous placeholder for attribute-based queue information.
@@ -175,6 +175,8 @@ class BatchQueueInfo(BaseInfo):
             stageout           
             failed             (done - success)
             success            (done - failed)
+            retired
+            retiring
             ?
     -----------------------------------------------------------------------
     '''
@@ -182,17 +184,17 @@ class BatchQueueInfo(BaseInfo):
 
     def __init__(self):
         # default value 0
-        super(BatchQueueInfo, self).__init__(0)
+        super(BatchStatusInfo, self).__init__(0)
         
 
     def __str__(self):
-        s = "BatchQueueInfo: pending=%d, running=%d, suspended=%d" % (self.pending, 
+        s = "BatchStatusInfo: pending=%d, running=%d, suspended=%d" % (self.pending, 
                                                                  self.running, 
                                                                  self.suspended)
         return s
 
     def __add__(self, o):
-        tmp = BatchQueueInfo()
+        tmp = BatchStatusInfo()
         for var in self.__class__.valid:
             v1 = self.get(var)
             v2 = o.get(var)
@@ -238,7 +240,7 @@ class WMSQueueInfo(BaseInfo):
         return s
 
     def __add__(self, o):
-        tmp = BatchQueueInfo()
+        tmp = BatchStatusInfo()
         for var in self.__class__.valid:
             v1 = self.get(var)
             v2 = o.get(var)
@@ -325,7 +327,7 @@ class InfoContainer(dict):
     def __init__(self, infotype, default):
         '''
         Info for each info type is retrieved, set, and adjusted via the corresponding label
-        For example, for a container of BatchQueueInfo objects:
+        For example, for a container of BatchStatusInfo objects:
 
             numrunning = info['BNL_ATLAS_1'].running
             info['BNL_ITB_1'].pending = 17
@@ -345,14 +347,14 @@ class InfoContainer(dict):
         does not exist in the dictionary.
         It is expected to be an empty instance
         from whichever class the dictionary is storing objects.
-        For example, BatchQueueInfo() or WMSQueueInfo(), etc.
+        For example, BatchStatusInfo() or WMSQueueInfo(), etc.
 
         Any alteration access updates the info.mtime attribute. 
         '''
         
         self.log = logging.getLogger('main.batchstatus')
         self.log.debug('Status: Initializing object...')
-        self.type = infotype # this can be things like "BatchQueueInfo", "SiteInfo", "WMSQueueInfo"...
+        self.type = infotype # this can be things like "BatchStatusInfo", "SiteInfo", "WMSQueueInfo"...
         self.default = default
         self.lasttime = None
         self.log.info('Status: Object Initialized')

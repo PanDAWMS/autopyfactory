@@ -23,7 +23,7 @@ from autopyfactory.factory import BatchStatusInfo
 from autopyfactory.factory import QueueInfo
 from autopyfactory.factory import Singleton, CondorSingleton
 from autopyfactory.info import InfoContainer
-from autopyfactory.info import BatchQueueInfo
+from autopyfactory.info import BatchStatusInfo
 
 import autopyfactory.utils as utils
 
@@ -71,6 +71,7 @@ class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             
             # This is job statistic info
             self.currentinfo = None
+            
             # This is per-job info 
             self.currentjobs = None              
 
@@ -85,7 +86,6 @@ class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                                    '4': 'done',
                                    '5': 'suspended',
                                    '6': 'running'}
-
 
             # variable to record when was last time info was updated
             # the info is recorded as seconds since epoch
@@ -180,19 +180,7 @@ class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''        
         Query Condor for job status, validate ?, and populate BatchStatusInfo object.
         Condor-G query template example:
-        
-        condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
-                 -format 'jobStatus=%d ' jobStatus 
-                 -format '-%s ' MATCH_queue 
-                 -format '%s\n' Environment
-
-        NOTE: using a single backslash in the final part of the 
-              condor_q command '\n' only works with the 
-              latest versions of condor. 
-              With older versions, there are two options:
-                      - using 4 backslashes '\\\\n'
-                      - using a raw string and two backslashes '\\n'
-
+      
         The JobStatus code indicates the current Condor status of the job.
         
                 Value   Status                            
@@ -450,19 +438,19 @@ class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     def _map2info(self, input):
         '''
         This takes aggregated info by queue, with condor/condor-g specific status totals, and maps them 
-        to the backend-agnostic APF BatchQueueInfo object.
+        to the backend-agnostic APF BatchStatusInfo object.
         
            APF             Condor-C/Local              Condor-G/Globus 
         .pending           Unexp + Idle                PENDING
         .running           Running                     RUNNING
         .suspended         Held                        SUSPENDED
         .done              Completed                   DONE
-        .unknown           
+        .unknown                      
         .error
         
         Primary attributes. Each job is in one and only one state:
             pending            job is queued (somewhere) but not running yet.
-            running            job is currently active (run + stagein + stageout)
+            running            job is currently active (run + stagein + stageout + retiring)
             error              job has been reported to be in an error state
             suspended          job is active, but held or suspended
             done               job has completed
@@ -474,7 +462,7 @@ class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             stageout           
             failed             (done - success)
             success            (done - failed)
-            ?
+            retiring
         
           The JobStatus code indicates the current status of the job.
             
@@ -487,38 +475,22 @@ class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     5       Held
                     6       Transferring Output
 
-            The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
-            
-                    Value   Status
-                    1       PENDING 
-                    2       ACTIVE 
-                    4       FAILED 
-                    8       DONE 
-                    16      SUSPENDED 
-                    32      UNSUBMITTED 
-                    64      STAGE_IN 
-                    128     STAGE_OUT 
         Input:
           Dictionary of APF queues consisting of dicts of job attributes and counts.
           { 'UC_ITB' : { 'Jobstatus' : { '1': '17',
                                        '2' : '24',
                                        '3' : '17',
                                      },
-                       'Globusstatus' : { '1':'13',
-                                          '2' : '26',
-                                          }
                       }
            }          
         Output:
             A BatchStatusInfo object which maps attribute counts to generic APF
             queue attribute counts. 
         '''
-
-
         self.log.debug('_map2info: Starting.')
-        batchstatusinfo = InfoContainer('batch', BatchQueueInfo())
+        batchstatusinfo = InfoContainer('batch', BatchStatusInfo())
         for site in input.keys():
-            qi = BatchQueueInfo()
+            qi = BatchStatusInfo()
             batchstatusinfo[site] = qi
             attrdict = input[site]
             
@@ -554,7 +526,13 @@ class CondorCloudBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 #
 ########################################################################3
 
-class CondorJobInfo(object):
+class CondorEC2JobInfo(object):
+    '''
+    This object represents an EC2 Condor job resulting in a startd connecting back to 
+    the local pool. It is only relevant to this Status Plugin.     
+        
+    
+    '''
 
     def __init__(self, dict):
         '''
@@ -587,8 +565,7 @@ class CondorJobInfo(object):
         return s
 
 
-
-class CloudBatchInfo(object):
+class CondorStartdInfo(object):
     '''
     Info object to represent a startd on the cloud. 
     If it has multiple slots, we need to calculate overall state/activity carefully. 
@@ -598,26 +575,36 @@ class CloudBatchInfo(object):
         '''
         instanceID is self-explanatory
         machine is the full internal/local hostname (to allow condor_off)
+
+        States: Owner Matched Claimed Unclaimed Preempting Backfill
+        Activities: Busy Idle Retiring Suspended
+
         '''
         self.id = instanceid
         self.machine = machine
-        self.state = state
-        self.activity = activity
+        self.state = {}
+        self.activity = {}
+        self.state[state] = 1
+        self.activity[activity] = 1
+        
 
     def merge(self, other):
+        '''
+        Add in info about another slot for this startd.
+        We need to track this because if any slot is Busy, then the startd is busy. 
+                
+        '''      
         if self.id == other.id and self.machine == other.machine:
             pass
-            #if self.state == ""
-            
-            
-            
+                        
         else:
+            # This is a mismatch, ignore...
             pass
         
 
-
     def __str__(self):
-        s = "CloudBatchInfo: %s %s %s %s" % (self.id, self.machine, self.state, self.activity)
+        s = "CloudBatchInfo: %s %s\n" % (self.id, self.machine)
+        
         return s
 
     def __repr__(self):
@@ -670,7 +657,6 @@ def querycondorxml():
         out = None
     #log.debug('Leaving. Out is %s' % out)
     return out
-
 
 
 def xml2nodelist(input):
@@ -752,7 +738,7 @@ def getJobInfo():
         qd = {}
         if len(nl) > 0:
             for n in nl:
-                j = CondorJobInfo(n)
+                j = CondorECJobInfo(n)
                 joblist.append(j)
             
             indexhash = {}
@@ -795,8 +781,8 @@ def getStartdInfoByEC2Id():
             act = n['activity']
             slots = n['totalslots']
             machine = n['machine']
-            j = CloudBatchInfo(ec2iid, machine, state, act)
-            #log.debug("Created cbi: %s" % j)
+            j = CondorStartdInfo(ec2iid, machine, state, act)
+            #log.debug("Created csdi: %s" % j)
             j.slots = slots
             infolist[ec2iid] = j
         except Exception, e:

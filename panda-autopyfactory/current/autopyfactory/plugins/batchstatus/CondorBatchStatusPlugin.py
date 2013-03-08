@@ -15,11 +15,11 @@ import xml.dom.minidom
 from datetime import datetime
 from pprint import pprint
 from autopyfactory.interfaces import BatchStatusInterface
-from autopyfactory.factory import BatchStatusInfo
+#from autopyfactory.factory import 
 from autopyfactory.factory import QueueInfo
 from autopyfactory.factory import Singleton, CondorSingleton
 from autopyfactory.info import InfoContainer
-from autopyfactory.info import BatchQueueInfo
+from autopyfactory.info import BatchStatusInfo
 
 import autopyfactory.utils as utils
 
@@ -128,7 +128,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
     def getInfo(self, maxtime=0):
         '''
-        Returns a BatchStatusInfo object populated by the analysis 
+        Returns a  object populated by the analysis 
         over the output of a condor_q command
 
         Optionally, a maxtime parameter can be passed.
@@ -181,7 +181,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
     def _update(self):
         '''        
-        Query Condor for job status, validate ?, and populate BatchStatusInfo object.
+        Query Condor for job status, validate ?, and populate  object.
         Condor-G query template example:
         
         condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
@@ -430,7 +430,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     def _map2info(self, input):
         '''
         This takes aggregated info by queue, with condor/condor-g specific status totals, and maps them 
-        to the backend-agnostic APF BatchQueueInfo object.
+        to the backend-agnostic APF BatchStatusInfo object.
         
            APF             Condor-C/Local              Condor-G/Globus 
         .pending           Unexp + Idle                PENDING
@@ -490,16 +490,16 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                       }
            }          
         Output:
-            A BatchStatusInfo object which maps attribute counts to generic APF
+            A  object which maps attribute counts to generic APF
             queue attribute counts. 
         '''
 
 
         self.log.debug('_map2info: Starting.')
-        batchstatusinfo = InfoContainer('batch', BatchQueueInfo())
+        batchstatusinfo = InfoContainer('batch', BatchStatusInfo())
         for site in input.keys():
-            qi = BatchQueueInfo()
-            batchstatusinfo[site] = qi
+            qi = BatchStatusInfo()
+            [site] = qi
             attrdict = input[site]
             
             # use finer-grained globus statuses in preference to local summaries, if they exist. 
@@ -512,10 +512,10 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 qi.fill(valdict, mappings=self.jobstatus2info)
                     
         batchstatusinfo.lasttime = int(time.time())
-        self.log.debug('_map2info: Returning BatchStatusInfo: %s' % batchstatusinfo)
+        self.log.debug('_map2info: Returning : %s' % batchstatusinfo )
         for site in batchstatusinfo.keys():
             self.log.debug('_map2info: Queue %s = %s' % (site, batchstatusinfo[site]))           
-        return batchstatusinfo
+        return 
 
     def join(self, timeout=None):
         ''' 

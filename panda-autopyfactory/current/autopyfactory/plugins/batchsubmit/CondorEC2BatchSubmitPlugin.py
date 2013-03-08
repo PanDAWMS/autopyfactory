@@ -80,4 +80,31 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
 
         self.log.debug('CondorEC2BatchSubmitPlugin.addJSD: Leaving.')
 
+    def retire(self, n, order='oldest'):
+        '''
+        trigger retirement of this many nodes, but looking at this parent APF queue's 
+        CondorCloudBatchStatus plugin. 
+        
+        '''
+        statusinfo = self.apfqueue.batchstatus_plugin.getInfo()
+        jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo()
+        if cloudstatus:
+            pass
+            
+            
+        else:
+            self.log.info("No batch status info available. Do nothing.")
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 

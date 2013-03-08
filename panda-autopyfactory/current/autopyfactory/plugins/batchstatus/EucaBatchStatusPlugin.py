@@ -16,7 +16,7 @@ from autopyfactory.factory import BatchStatusInfo
 from autopyfactory.factory import QueueInfo
 from autopyfactory.factory import Singleton, CondorSingleton
 from autopyfactory.info import InfoContainer
-from autopyfactory.info import BatchQueueInfo
+from autopyfactory.info import BatchStatusInfo
 
 from persistent import *
 
@@ -261,7 +261,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
         self.log.debug('_parseoutput: Starting with data %s' %output)
 
-        batchstatusinfo = InfoContainer('batch', BatchQueueInfo())
+        batchstatusinfo = InfoContainer('batch', BatchStatusInfo())
 
 
         # analyze output of condor_status command
@@ -287,7 +287,7 @@ class EucaBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 if apfqname:
 
                     if apfqname not in batchstatusinfo.keys():
-                        batchstatusinfo[apfqname] = BatchQueueInfo()
+                        batchstatusinfo[apfqname] = BatchStatusInfo()
 
                     if activity == 'Busy':
                         batchstatusinfo[apfqname].running += 1

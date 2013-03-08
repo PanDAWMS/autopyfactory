@@ -43,6 +43,12 @@ class BatchStatusInterface(object):
         '''
         raise NotImplementedError
 
+    def getJobInfo(self, maxtime=0):
+        '''
+        Returns detailed info about jobs in batch system. 
+        '''
+        raise NotImplementedError
+    
 
 class WMSStatusInterface(object):
     '''
