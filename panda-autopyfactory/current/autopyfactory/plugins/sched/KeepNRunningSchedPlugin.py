@@ -53,10 +53,10 @@ class KeepNRunningSchedPlugin(SchedInterface):
             out = 0 
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
-            self.key = self.apfqueue.wmsqueue
+            self.key = self.apfqueue.apfqname
             self.log.info("Key is %s" % self.key)
-
             out = self._calc(input)
+            self.log.debug("Returning %d" % out)
         return out
 
     def _calc(self, input):
@@ -65,10 +65,10 @@ class KeepNRunningSchedPlugin(SchedInterface):
         '''
         
         # initial default values. 
-        activated_jobs = 0
         pending_pilots = 0
         running_pilots = 0
-
+        retiring_pilots = 0
+        
         jobsinfo = self.wmsinfo.jobs
         self.log.debug("jobsinfo class is %s" % jobsinfo.__class__ )
 
@@ -92,11 +92,22 @@ class KeepNRunningSchedPlugin(SchedInterface):
             # This is OK--it just means no jobs. 
             pass
 
-        out = max(0, activated_jobs - pending_pilots)
-        self.log.info('_calc() (input=%s; activated=%s; pending=%s; running=%s;) : Return=%s' %(input,
-                                                                                         activated_jobs, 
+        try:        
+            retiring_pilots = self.batchinfo[self.apfqueue.apfqname].retiring # using the new info objects
+        except KeyError:
+            # This is OK--it just means no jobs. 
+            pass
+
+        # 
+        # Output is simply keep_running, minus potentially or currently running, while ignoring retiring jobs
+        # 
+        out = self.keep_running - ( (self.running_pilots - self.retiring_pilots) + self.pending_pilots)
+
+        self.log.info('_calc() input=%s (ignored); keep_running=%s; pending=%s; running=%s; retiring=%s : Return=%s' %(input,
+                                                                                         self.keep_running, 
                                                                                          pending_pilots, 
-                                                                                         running_pilots, 
+                                                                                         running_pilots,
+                                                                                         retiring_pilots, 
                                                                                          out))
         return out
 
