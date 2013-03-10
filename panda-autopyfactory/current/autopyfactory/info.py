@@ -163,7 +163,7 @@ class BatchStatusInfo(BaseInfo):
      
         Primary attributes are:
             pending            job is queued (somewhere) but not running yet.
-            running            job is currently active (run + stagein + stageout)
+            running            job is currently active (run + stagein + stageout + retiring)
             error              job has been reported to be in an error state
             suspended          job is active, but held or suspended
             done               job has completed
