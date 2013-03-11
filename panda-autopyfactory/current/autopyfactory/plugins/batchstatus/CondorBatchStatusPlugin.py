@@ -499,7 +499,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         batchstatusinfo = InfoContainer('batch', BatchStatusInfo())
         for site in input.keys():
             qi = BatchStatusInfo()
-            [site] = qi
+            batchstatusinfo[site] = qi
             attrdict = input[site]
             
             # use finer-grained globus statuses in preference to local summaries, if they exist. 
