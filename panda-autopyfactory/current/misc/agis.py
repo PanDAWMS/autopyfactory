@@ -84,8 +84,6 @@ specified cloud and activity type.
 
     (options, args) = parser.parse_args()
 
-    if options.testmode: options.loglevel = logging.INFO
-
     logger = logging.getLogger()
     logger.setLevel(options.loglevel)
     fmt = '[APF:%(levelname)s %(asctime)s] %(message)s'
