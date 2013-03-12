@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: runpilot3-wrapper.sh 7598 2011-03-28 10:30:57Z graemes $
+# $Id: runpilot3-wrapper.sh 14033 2013-01-29 10:31:09Z plove $
 #
 function lfc_test() {
     echo -n "Testing LFC module for $1: "
@@ -29,14 +29,28 @@ function find_lfc_compatible_python() {
     # let the pilot setup the correct ATLAS environment for the
     # job.
     
-    # python2.6 is still under test, so only use it if we are asked to
+    # firstly try the cvmfs python2.6 binary
     if [ -n "$APF_PYTHON26" ]; then
-    	pybin=python2.6
-    	lfc_test $pybin
-    	if [ $? = "0" ]; then
-        	return 0
-    	fi
-    fi   
+      PYTHON26=/cvmfs/atlas.cern.ch/repo/sw/python/latest/setup.sh
+      if [ -f $PYTHON26 ] ; then
+        if [ ! -z $PYTHONPATH ]; then
+          echo "Clobbering PYTHONPATH. Needed to deal with tarball sites when using python2.6"
+          unset PYTHONPATH
+        fi
+        echo "sourcing cvmfs python2.6 setup: $PYTHON26"
+        source $PYTHON26
+        echo current PYTHONPATH=$PYTHONPATH
+        pybin=`which python`
+        lfc_test $pybin
+        if [ $? = "0" ]; then
+          return 0
+        else
+          echo "lfc_test failed for cvmfs python"
+        fi
+      else
+        echo "cvmfs python2.6 not found"
+      fi
+    fi
 
     # On many sites python now works just fine (m/w also now
     # distributes the LFC plugin in 64 bit)
@@ -83,20 +97,21 @@ function get_pilot_http() {
     # N.B. an RC pilot is chosen once every 100 downloads for production and
     # ptest jobs use Paul's development release.
     if [ -z "$PILOT_HTTP_SOURCES" ]; then
-    	if echo $@ | grep -- "-u ptest" > /dev/null; then 
-    		echo "DEBUG: This is a ptest pilot. Will use development pilot code"
+        if echo $@ | grep -- "-u ptest" > /dev/null; then 
+            echo "DEBUG: This is a ptest pilot. Will use development pilot code with python2.6"
             PILOT_HTTP_SOURCES="http://project-atlas-gmsb.web.cern.ch/project-atlas-gmsb/pilotcode-dev.tar.gz"
             PILOT_TYPE=PT
-    	elif [ $(($RANDOM%100)) = "0" ]; then
-            echo "DEBUG: Release candidate pilot will be used."
-            PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode-rc.tar.gz"
+            APF_PYTHON26=1
+        elif [ $(($RANDOM%100)) = "0" ]; then
+            echo "DEBUG: Release candidate pilot will be used with python2.6"
+            PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25085/cache/pilot/pilotcode-rc.tar.gz"
             PILOT_TYPE=RC
+            APF_PYTHON26=1
         else
-        	echo "DEBUG: Normal production pilot code used." 
-            PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25080/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
+            echo "DEBUG: Normal production pilot code used." 
+            PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25085/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
             PILOT_TYPE=PR
-
-    	fi
+        fi
     fi
     for source in $PILOT_HTTP_SOURCES; do
         echo "Trying to download pilot from $source..."
@@ -150,19 +165,11 @@ function monping() {
 }
 
 function monpost() {
-    echo Monitor debug begin:
-    pwd
-    ls -l
-    echo Finding pandaJobData.out...
-    find -name pandaJobData.out
-
     # scrape PandaIDs from pilot log
-    echo 'SCRAPE: '
-    find -name pilotlog.*
-    cat pilotlog.*
+    echo 'SCRAPE PandaIDs: '
     find -name pilotlog.* -exec egrep ^PandaID= {} \; 
 
-    echo Monitor debug end:
+    echo 'END SCRAPE'
 }
 
 function set_forced_env() {
@@ -176,7 +183,8 @@ function set_forced_env() {
 
 ## main ##
 
-echo "This is pilot wrapper $Id: runpilot3-wrapper.sh 7598 2011-03-28 10:30:57Z graemes $"
+echo "This is pilot wrapper $Id: runpilot3-wrapper.sh 14033 2013-01-29 10:31:09Z plove $"
+echo "Please send development requests to p.love@lancaster.ac.uk"
 
 # notify monitoring, job running
 monping rn
@@ -201,6 +209,12 @@ if [ -n "$TMPDIR" ]; then
 fi
 templ=$(pwd)/condorg_XXXXXXXX
 temp=$(mktemp -d $templ)
+if [ $? -ne 0 ]; then
+  echo Failed: mktemp $templ
+  echo Exiting...
+  exit
+fi
+  
 echo Changing work directory to $temp
 cd $temp
 
@@ -285,13 +299,15 @@ echo
 
 
 # Add DQ2 clients to the PYTHONPATH
-echo "---- Local DDM setup ----"
-echo "Looking for $ATLAS_AREA/ddm/latest/setup.sh"
-if [ -f $ATLAS_AREA/ddm/latest/setup.sh ]; then
-    echo "Sourcing $ATLAS_AREA/ddm/latest/setup.sh"
-    source $ATLAS_AREA/ddm/latest/setup.sh
+echo "---- DDM setup ----"
+if [ -n "$APF_PYTHON26" ] && [ -f /cvmfs/atlas.cern.ch/repo/sw/ddm/2.3.0/setup.sh ]; then
+  echo "Sourcing /cvmfs/atlas.cern.ch/repo/sw/ddm/2.3.0/setup.sh"
+  source /cvmfs/atlas.cern.ch/repo/sw/ddm/2.3.0/setup.sh
+elif [ -f $ATLAS_AREA/ddm/latest/setup.sh ]; then
+  echo "Sourcing $ATLAS_AREA/ddm/latest/setup.sh"
+  source $ATLAS_AREA/ddm/latest/setup.sh
 else
-    echo "WARNING: No DDM setup found to source."
+  echo "WARNING: No DDM setup found to source."
 fi
 echo
 
@@ -324,9 +340,10 @@ cmd="$pybin pilot.py $pilot_args"
 
 echo cmd: $cmd
 $cmd
+pexitcode=$?
 
 echo
-echo "Pilot exit status was $?"
+echo "Pilot exit status was $pexitcode"
 
 # notify monitoring, job exiting, capture the pilot exit status
 if [ -f STATUSCODE ]; then
