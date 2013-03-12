@@ -353,6 +353,10 @@
 #               when the wmssite is in status = test
 #               and sched.activated.testmode.allowed is True
 #
+# sched.activated.testmode.max_pending = maximum number of pilots 
+#               permitted in pendig state when the wmssite is in 
+#               status = test and sched.activated.testmode.allowed is True
+#
 
 #  --------------------------------------------------------------------
 #       Configuration when schedplugin is Ready 
