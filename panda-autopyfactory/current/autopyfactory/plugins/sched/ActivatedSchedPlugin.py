@@ -40,6 +40,7 @@ class ActivatedSchedPlugin(SchedInterface):
             # testmode vars
             self.testmode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.allowed', 'getboolean', logger=self.log)
             self.pilots_in_test_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.pilots', 'getint', default_value=0, logger=self.log)
+            self.max_pending_in_test_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.max_pending', 'getint', default_value=10, logger=self.log)
 
             self.log.info("SchedPlugin: Object initialized.")
         except Exception, ex:
@@ -167,14 +168,31 @@ class ActivatedSchedPlugin(SchedInterface):
         '''
         algorithm when wmssite is in test mode
         '''
-
-        if self.testmode:
-            self.log.info('_calc_test: testmode is enabled, returning default %s' %self.pilots_in_test_mode)
-            return self.pilots_in_test_mode
-        else:
+        if not self.testmode:
             self.log.info('_calc_test: testmode is not enabled. Calling the normal online algorithm')
             return self._calc_online()
-            
+
+        pending_pilots = 0
+
+        try:
+            pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
+        except KeyError:
+            # This is OK--it just means no jobs. 
+            pass
+
+        if pending_pilots > self.max_pending_in_test_mode:
+            out = 0
+            self.log.info('_calc_test: (pending=%s > max_pending=%s;) : Return=%s' %(pending_pilots,
+                                                                                   self.max_pending_in_test_mode,
+                                                                                   out))
+        else:
+            out = self.pilots_in_test_mode
+            self.log.info('_calc_test: (pending=%s; max_pending=%s;) : Return=%s' %(pending_pilots,
+                                                                                  self.max_pending_in_test_mode,
+                                                                                  out))
+
+        return out
+
     def _calc_offline(self):
         '''
         algorithm when wmssite is in offline mode
