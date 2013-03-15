@@ -13,6 +13,13 @@ try:
 except ImportError, err:
     import simplejson as json
 
+blacksites = [
+              'IAAS',
+              'Australia-NECTAR',
+              'HELIX',
+              'CERN-P1',
+]
+
 defaultsection = """\
 
 [DEFAULT]
@@ -34,11 +41,12 @@ batchsubmit.condorcream.proxy = atlas-production
 
 schedplugin = Activated
 sched.activated.min_pilots_per_cycle = 0
-sched.activated.max_pilots_per_cycle = 50
-sched.activated.max_jobs_torun = 500
-sched.activated.max_pilots_pending = 100
+sched.activated.max_pilots_per_cycle = 20
+sched.activated.max_jobs_torun = 1000
+sched.activated.max_pilots_pending = 20
 sched.activated.testmode.allowed = True
 sched.activated.testmode.pilots = 1
+sched.activated.testmode.max_pending = 12
 
 executable = /data/atlpan/libexec/runpilot3-wrapper-jan29.sh
 executable.defaultarguments = -s %(wmsqueue)s -h %(batchqueue)s -p 25443 -w https://pandaserver.cern.ch -j false -k 0
@@ -112,6 +120,10 @@ specified cloud and activity type.
     
     for key in sorted(d):
         try:
+            if d[key]['site'] in blacksites:
+                print
+		print "# Blacklisted: %s" % key
+		continue
             if d[key]['site_state'] == 'ACTIVE' and d[key]['type'] == options.activity:
 
                 wmsqueue = d[key]['panda_resource']
@@ -160,6 +172,7 @@ specified cloud and activity type.
                     print 'wmsqueue = %s' % wmsqueue
                     print 'batchsubmitplugin = %s' % submitplugin
                     print 'batchsubmit.%s.gridresource = %s' % (submitpluginstring, gridresource)
+                    print 'sched.activated.max_pilots_pending = %s' % d[key]['nqueue']
                     if gramqueue:
                         print 'globusrsl.%s.queue = %s' % (gramversion, gramqueue)
                     if cetype == 'analysis':
