@@ -21,7 +21,8 @@ class ActivatedSchedPlugin(SchedInterface):
 
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
+            #self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
+            self.log = logging.getLogger("main.sched.activated")
 
             self.max_jobs_torun = None
             self.max_pilots_per_cycle = None

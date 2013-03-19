@@ -58,6 +58,10 @@ ChangeLog
 
 * Bug fixed: getboolean() instead of get() when reading value of proxymanager.enabled and logmanager.enabled.
 
+* This release is 'Babcock' v. 2.1.4
+  http://en.wikipedia.org/wiki/List_of_Characters_in_The_Passage_Trilogy#Babcock
+
+
 2012-07-23
 
 * Using new PanDA client API method getJobStatisticsWithLabel.
