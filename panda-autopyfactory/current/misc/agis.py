@@ -42,7 +42,7 @@ batchsubmit.condorcream.proxy = atlas-production
 schedplugin = Activated
 sched.activated.min_pilots_per_cycle = 0
 sched.activated.max_pilots_per_cycle = 20
-sched.activated.max_jobs_torun = 1000
+sched.activated.max_jobs_torun = 9999
 sched.activated.max_pilots_pending = 20
 sched.activated.testmode.allowed = True
 sched.activated.testmode.pilots = 1
@@ -172,7 +172,7 @@ specified cloud and activity type.
                     print 'wmsqueue = %s' % wmsqueue
                     print 'batchsubmitplugin = %s' % submitplugin
                     print 'batchsubmit.%s.gridresource = %s' % (submitpluginstring, gridresource)
-                    print 'sched.activated.max_pilots_pending = %s' % d[key]['nqueue']
+                    print 'sched.activated.max_pilots_pending = %s' % max(9,d[key]['nqueue'])
                     if gramqueue:
                         print 'globusrsl.%s.queue = %s' % (gramversion, gramqueue)
                     if cetype == 'analysis':
