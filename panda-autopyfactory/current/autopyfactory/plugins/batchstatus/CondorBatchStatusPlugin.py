@@ -51,54 +51,59 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
     
     def __init__(self, apfqueue, **kw):
 
+        threading.Thread.__init__(self) # init the thread
+        
+        self.log = logging.getLogger("batchstatusplugin[singleton: %s condor_q_id: %s]" %(apfqueue.apfqname, kw['condor_q_id']))
+        self.log.debug('BatchStatusPlugin: Initializing object...')
+        self.stopevent = threading.Event()
+
+        # to avoid the thread to be started more than once
+        self.__started = False
+
+        self.apfqueue = apfqueue
+        self.apfqname = apfqueue.apfqname
+        
         try:
-            threading.Thread.__init__(self) # init the thread
-            
-            self.log = logging.getLogger("batchstatusplugin[singleton: %s condor_q_id: %s]" %(apfqueue.apfqname, kw['condor_q_id']))
-            self.log.debug('BatchStatusPlugin: Initializing object...')
-            self.stopevent = threading.Event()
-
-            # to avoid the thread to be started more than once
-            self.__started = False
-
-            self.apfqueue = apfqueue
-            self.apfqname = apfqueue.apfqname
             self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
             self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
             self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs', logger=self.log) 
-            self.currentinfo = None              
 
-            # ================================================================
-            #                     M A P P I N G S 
-            # ================================================================
-            
-            self.globusstatus2info = {'1':   'pending',
-                                      '2':   'running',
-                                      '4':   'done',
-                                      '8':   'done',
-                                      '16':  'suspended',
-                                      '32':  'pending',
-                                      '64':  'pending',
-                                      '128': 'running'}
-            
-            self.jobstatus2info = {'0': 'pending',
-                                   '1': 'pending',
-                                   '2': 'running',
-                                   '3': 'done',
-                                   '4': 'done',
-                                   '5': 'suspended',
-                                   '6': 'running'}
+        except AttributeError:
+            self.log.warning("Got AttributeError during init. We should be running stand-alone for testing.")
+       
+        
+
+        self.currentinfo = None              
+
+        # ================================================================
+        #                     M A P P I N G S 
+        # ================================================================
+        
+        self.globusstatus2info = {'1':   'pending',
+                                  '2':   'running',
+                                  '4':   'done',
+                                  '8':   'done',
+                                  '16':  'suspended',
+                                  '32':  'pending',
+                                  '64':  'pending',
+                                  '128': 'running'}
+        
+        self.jobstatus2info = {'0': 'pending',
+                               '1': 'pending',
+                               '2': 'running',
+                               '3': 'done',
+                               '4': 'done',
+                               '5': 'suspended',
+                               '6': 'running'}
 
 
-            # variable to record when was last time info was updated
-            # the info is recorded as seconds since epoch
-            self.lasttime = 0
-            self._checkCondor()
-            self.log.info('BatchStatusPlugin: Object initialized.')
-        except Exception, ex:
-            self.log.error("BatchStatusPlugin object initialization failed. Raising exception")
-            raise ex
+        # variable to record when was last time info was updated
+        # the info is recorded as seconds since epoch
+        self.lasttime = 0
+        self._checkCondor()
+        self.log.info('BatchStatusPlugin: Object initialized.')
+
 
 
 
