@@ -315,7 +315,7 @@ def aggregateinfo(input):
             except KeyError:
                 qdict[attrkey][attrval] = 1
                    
-    self.log.info('Aggregate: Created dict with %d queues.' % len(queues))
+    log.info('Aggregate: Created dict with %d queues.' % len(queues))
     return queues
 
   
