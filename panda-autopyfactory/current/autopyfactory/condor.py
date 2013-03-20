@@ -19,6 +19,8 @@ import xml.dom.minidom
 import htcondor
 import classad
 
+import autopyfactory.utils as utils
+
 
 from datetime import datetime
 from pprint import pprint
