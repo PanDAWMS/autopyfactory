@@ -101,7 +101,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         # variable to record when was last time info was updated
         # the info is recorded as seconds since epoch
         self.lasttime = 0
-        self._checkCondor()
+        checkCondor()
         self.log.info('BatchStatusPlugin: Object initialized.')
 
 
@@ -226,8 +226,8 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 if not strout:
                     self.log.warning('_update: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
                 else:
-                    outlist = self._parseoutput(strout)
-                    aggdict = self._aggregateinfo(outlist)
+                    outlist = parseoutput(strout)
+                    aggdict = aggregateinfo(outlist)
                     newinfo = self._map2info(aggdict)
                     self.log.info("Replacing old info with newly generated info.")
                     self.currentinfo = newinfo
