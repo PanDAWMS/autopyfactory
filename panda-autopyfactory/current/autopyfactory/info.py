@@ -240,7 +240,7 @@ class WMSQueueInfo(BaseInfo):
         return s
 
     def __add__(self, o):
-        tmp = BatchStatusInfo()
+        tmp = WMSQueueInfo()
         for var in self.__class__.valid:
             v1 = self.get(var)
             v2 = o.get(var)
