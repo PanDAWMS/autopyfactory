@@ -179,6 +179,65 @@ class BatchStatusInfo(BaseInfo):
             retiring
             ?
     -----------------------------------------------------------------------
+    
+    PROPOSAL:
+    
+    batchstatusinfo.jobstats
+         { 'apfqueue1' : { 'status1' : 2,
+                          'status2' : 6,
+                         },
+           'apfqueue2' : { 'status1' : 22,
+                          'status2' : 3,
+                         }
+         }
+         
+    batchstatusinfo.jobinfo
+        { 'apfqueue1' : [  { 'att1' : 'val1',
+                             'at2' : 'val2',
+                           },
+                           { 'att1' : 'val1',
+                             'at2' : 'val2',
+                             'ec2instanceid' : 'i-123123123',
+                           }
+                        ],
+         'apfqueue2' : [  { 'att1' : 'val1',
+                             'at2' : 'val2',
+                           },
+                           { 'att1' : 'val1',
+                             'at2' : 'val2',
+                           }
+                        ],
+        }
+    batchstatusinfo.jobinfo.byiid()
+         { 'iid1' : [  { 'att1' : 'val1',
+                         'at2' : 'val2',
+                         'match_apf_queue' : 'val3'
+                           },
+                           { 'att1' : 'val1',
+                             'at2' : 'val2',
+                          'match_apf_queue' : 'val3'
+                           }
+                        ],
+         'apfqueue2' : [  { 'att1' : 'val1',
+                             'at2' : 'val2',
+                             'match_apf_queue' : 'val3'
+                           },
+                           { 'att1' : 'val1',
+                             'at2' : 'val2',
+                             'match_apf_queue' : 'val3'
+                           }
+                        ],
+        }
+        
+    
+    
+    
+        
+    batchstatusinfo.jobinfo.getqueue()
+    batchstatusinfo.jobinfo.?
+                        
+    
+    
     '''
     valid = ['pending', 'running', 'error', 'suspended', 'done', 'unknown']
 
