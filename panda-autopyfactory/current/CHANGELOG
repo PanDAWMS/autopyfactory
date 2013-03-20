@@ -58,6 +58,10 @@ ChangeLog
 
 * Bug fixed: getboolean() instead of get() when reading value of proxymanager.enabled and logmanager.enabled.
 
+* Top logger configured as root, instead of "main".
+
+* Log messages format includes method name for python > 2.4
+
 * This release is 'Babcock' v. 2.1.4
   http://en.wikipedia.org/wiki/List_of_Characters_in_The_Passage_Trilogy#Babcock
 
