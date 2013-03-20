@@ -7,6 +7,7 @@ import commands
 import subprocess
 import logging
 import os
+import sys
 import time
 import threading
 import traceback
@@ -70,6 +71,9 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs', logger=self.log) 
 
         except AttributeError:
+            self.condoruser = 'apf'
+            self.facoryid = 'test-local'
+            self.sleeptime = 30
             self.log.warning("Got AttributeError during init. We should be running stand-alone for testing.")
        
         
