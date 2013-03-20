@@ -73,7 +73,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         except AttributeError:
             self.condoruser = 'apf'
             self.facoryid = 'test-local'
-            self.sleeptime = 30
+            self.sleeptime = 10
             self.log.warning("Got AttributeError during init. We should be running stand-alone for testing.")
        
         
