@@ -177,7 +177,7 @@ Jose Caballero <jcaballero@bnl.gov>
 
         """
 
-        self.log = logging.getLogger('main')
+        self.log = logging.getLogger()
         if self.options.logfile == "stdout":
             logStream = logging.StreamHandler()
         elif self.options.logfile == 'syslog':
