@@ -324,4 +324,24 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.log.debug('_map2info: Queue %s = %s' % (site, batchstatusinfo[site]))           
         return 
 
+def test1():
+    from autopyfactory.test import MockAPFQueue
+    
+    a = MockAPFQueue('BNL_CLOUD-ec2-spot')
+    bsp = CondorBatchStatusPlugin(a, condor_q_id='local')
+    bsp.start()
+    while True:
+        try:
+            time.sleep(15)
+        except KeyboardInterrupt:
+            bsp.stopevent.set()
+            sys.exit(0)    
+
+
+
+
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
+    test1()
+
 
