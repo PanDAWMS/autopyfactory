@@ -44,8 +44,27 @@ def querycondorlib():
     (faster than getting everything)
     '''
     schedd = htcondor.Schedd() # Defaults to the local schedd.
-    outlist = schedd.query('true', ['match_apf_queue', 'globusstatus', 'jobstatus', 'ec2instanceid'])
+    list_attrs = ['match_apf_queue', 'globusstatus', 'jobstatus', 'ec2instanceid']
+    outlist = schedd.query('true', list_attrs)
+    return outlist
 
+
+def querystatuslib():
+    '''
+    Equivalent to condor_status
+    We query for a few specific ClassAd attributes 
+    (faster than getting everything)
+    Output of collector.query(htcondor.AdTypes.Startd) looks like
+
+     [
+      [ Name = "slot1@mysite.net"; Activity = "Idle"; MyType = "Machine"; TargetType = "Job"; State = "Unclaimed"; CurrentTime = time() ], 
+      [ Name = "slot2@mysite.net"; Activity = "Idle"; MyType = "Machine"; TargetType = "Job"; State = "Unclaimed"; CurrentTime = time() ]
+     ]
+    '''
+
+    collector = htcondor.Collector()
+    list_attrs = ['Name', 'State', 'Activity']
+    outlist = collector.query(htcondor.AdTypes.Startd, 'true', list_attrs)
     return outlist
 
 
