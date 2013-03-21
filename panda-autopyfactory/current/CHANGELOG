@@ -2,6 +2,8 @@ ChangeLog
 ---------
 2013-03-15
 
+* module condor.py created. It includes htcondor python bindings. 
+
 * Non plugin modules (jsd.py, persistence.py) moved to main directory.
 
 * Split plugins into their own directories. 
