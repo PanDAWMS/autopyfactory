@@ -157,9 +157,13 @@ class BaseInfo(object):
 
 class BatchStatusInfo(BaseInfo):
     '''
+    Information returned by BatchStatusPlugin getInfo() and getJobInfo() call.
+    
+    Consists 
+    
+    
     -----------------------------------------------------------------------
-     Empty anonymous placeholder for attribute-based queue information.
-     One per queue. 
+     Empty anonymous placeholder for queue information. 
      
         Primary attributes are:
             pending            job is queued (somewhere) but not running yet.
@@ -181,7 +185,6 @@ class BatchStatusInfo(BaseInfo):
     -----------------------------------------------------------------------
     
     PROPOSAL:
-    
     batchstatusinfo.jobstats
          { 'apfqueue1' : { 'status1' : 2,
                           'status2' : 6,
@@ -208,7 +211,7 @@ class BatchStatusInfo(BaseInfo):
                            }
                         ],
         }
-    batchstatusinfo.jobinfo.byiid()
+    batchstatusinfo.jobinfo.byattribute("EC2InstanceID")
          { 'iid1' : [  { 'att1' : 'val1',
                          'at2' : 'val2',
                          'match_apf_queue' : 'val3'

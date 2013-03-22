@@ -21,6 +21,13 @@ class ReadySchedPlugin(SchedInterface):
         try:
             self.apfqueue = apfqueue                
             self.log = logging.getLogger("main.schedplugin[%s]" % apfqueue.apfqname)
+            try:
+                self.offset = 0
+                self.offset = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.read.offset', 'getint')
+            except:
+                pass 
+                # Not mandatory
+                
             self.log.info("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
@@ -85,14 +92,11 @@ class ReadySchedPlugin(SchedInterface):
             # This is OK--it just means no jobs. 
             pass
 
-        out = max(0, activated_jobs - pending_pilots)
-        self.log.info('_calc() (input=%s; activated=%s; pending=%s; running=%s;) : Return=%s' %(input,
-                                                                                         activated_jobs, 
+        out = max(0, ( activated_jobs - self.offset)  - pending_pilots )
+        self.log.info('_calc() (input=%s; activated=%s; offset=%s pending=%s; running=%s;) : Return=%s' %(input,
+                                                                                         activated_jobs,
+                                                                                         self.offset, 
                                                                                          pending_pilots, 
                                                                                          running_pilots, 
                                                                                          out))
         return out
-
-
-
-

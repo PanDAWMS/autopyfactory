@@ -39,13 +39,13 @@ class BatchStatusInterface(object):
     '''
     def getInfo(self, maxtime=0):
         '''
-        Returns aggregate info about jobs in batch system. 
+        Returns aggregate statistics about jobs in batch system. Indexed by apfqeueue. 
         '''
         raise NotImplementedError
 
     def getJobInfo(self, maxtime=0):
         '''
-        Returns detailed info about jobs in batch system. 
+        Returns per-job info about jobs in batch system. 
         '''
         raise NotImplementedError
     
