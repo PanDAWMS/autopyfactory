@@ -45,7 +45,7 @@ class KeepNRunningSchedPlugin(SchedInterface):
         self.log.debug('calcSubmitNum: Starting.')
 
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
-        
+        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
         
         if self.batchinfo is None:
             self.log.warning("self.batchinfo is None!")
@@ -69,18 +69,6 @@ class KeepNRunningSchedPlugin(SchedInterface):
         pending_pilots = 0
         running_pilots = 0
         retiring_pilots = 0
-        
-        jobsinfo = self.batchinfo.jobs
-        
-        self.log.debug("jobsinfo class is %s" % jobsinfo.__class__ )
-
-        try:
-            sitedict = jobsinfo[self.key]
-            self.log.debug("sitedict class is %s" % sitedict.__class__ )
-            activated_jobs = sitedict.ready
-        except KeyError:
-            # This is OK--it just means no jobs in any state at the key. 
-            self.log.error("key: %s not present in jobs info from WMS" % self.key)
 
         try:
             pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
