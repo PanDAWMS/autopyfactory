@@ -16,11 +16,8 @@ import logging
 import time
 import traceback
 import xml.dom.minidom
-import htcondor
-import classad
 
 import autopyfactory.utils as utils
-
 
 from datetime import datetime
 from pprint import pprint
@@ -43,6 +40,13 @@ def querycondorlib():
     We query for a few specific ClassAd attributes
     (faster than getting everything)
     '''
+    
+    # We only want to try to import if we are actually using the call...
+    # Later on we will need to handle Condor version >7.9.4 and <7.9.4
+    #
+    import htcondor
+    import classad
+    
     schedd = htcondor.Schedd() # Defaults to the local schedd.
     list_attrs = ['match_apf_queue', 'globusstatus', 'jobstatus', 'ec2instanceid']
     outlist = schedd.query('true', list_attrs)
