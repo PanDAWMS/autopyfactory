@@ -100,7 +100,7 @@ class KeepNRunningSchedPlugin(SchedInterface):
         # 
         # Output is simply keep_running, minus potentially or currently running, while ignoring retiring jobs
         # 
-        out = self.keep_running - ( (self.running_pilots - self.retiring_pilots) + self.pending_pilots)
+        out = self.keep_running - ( (running_pilots - retiring_pilots) + pending_pilots)
 
         self.log.info('_calc() input=%s (ignored); keep_running=%s; pending=%s; running=%s; retiring=%s : Return=%s' %(input,
                                                                                          self.keep_running, 
