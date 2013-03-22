@@ -331,7 +331,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         self.log.debug('_map2info: Returning : %s' % batchstatusinfo )
         for site in batchstatusinfo.keys():
             self.log.debug('_map2info: Queue %s = %s' % (site, batchstatusinfo[site]))           
-        return 
+        return batchstatusinfo 
 
 def test1():
     from autopyfactory.test import MockAPFQueue
