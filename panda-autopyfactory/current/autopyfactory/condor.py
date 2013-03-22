@@ -65,6 +65,11 @@ def querystatuslib():
       [ Name = "slot2@mysite.net"; Activity = "Idle"; MyType = "Machine"; TargetType = "Job"; State = "Unclaimed"; CurrentTime = time() ]
      ]
     '''
+    # We only want to try to import if we are actually using the call...
+    # Later on we will need to handle Condor version >7.9.4 and <7.9.4
+    #
+    import htcondor
+    import classad
 
     collector = htcondor.Collector()
     list_attrs = ['Name', 'State', 'Activity']
