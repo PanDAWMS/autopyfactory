@@ -45,7 +45,8 @@ class KeepNRunningSchedPlugin(SchedInterface):
         self.log.debug('calcSubmitNum: Starting.')
 
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
-
+        
+        
         if self.batchinfo is None:
             self.log.warning("self.batchinfo is None!")
             out = 0
@@ -69,7 +70,8 @@ class KeepNRunningSchedPlugin(SchedInterface):
         running_pilots = 0
         retiring_pilots = 0
         
-        jobsinfo = self.wmsinfo.jobs
+        jobsinfo = self.batchinfo.jobs
+        
         self.log.debug("jobsinfo class is %s" % jobsinfo.__class__ )
 
         try:
