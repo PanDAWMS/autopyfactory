@@ -245,7 +245,7 @@ class APFMonitorPlugin(MonitorInterface):
 
         self.log.debug("__monitor_shout: Starting.")
         if hasattr(self, 'monitor'):
-            self.monitor.shout(self.apfqname, self.cyclesrun)
+            self.shout(self.apfqname, self.cyclesrun)
         else:
             self.log.debug('__monitor_shout: no monitor instantiated')
         self.log.debug("__monitor_shout: Leaving.")
@@ -259,7 +259,7 @@ class APFMonitorPlugin(MonitorInterface):
 
         if hasattr(self, 'monitor'):
             nick = self.qcl.get(self.apfqname, 'batchqueue')
-            self.monitor.msg(nick, self.apfqname, msg)
+            self.msg(nick, self.apfqname, msg)
         else:
             self.log.debug('__monitor_note: no monitor instantiated')
                 
@@ -275,7 +275,7 @@ class APFMonitorPlugin(MonitorInterface):
         if hasattr(self, 'monitor'):
             nick = self.qcl.get(self.apfqname, 'batchqueue')
             label = self.apfqname
-            self.monitor.notify(nick, label, output)
+            self.notify(nick, label, output)
         else:
             self.log.debug('__monitor_notify: no monitor instantiated')
 
