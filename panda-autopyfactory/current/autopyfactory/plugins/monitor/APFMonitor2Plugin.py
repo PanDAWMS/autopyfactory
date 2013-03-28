@@ -3,35 +3,7 @@
 #
 
 '''
- Native monitoring system for autopyfactory, signals Monitoring
- webservice at each factory cycle with list of condor jobs
-
-States
-
-    CREATED: condor_submit executed, condor_id returned
-    RUNNING: pilot wrapper has started on Worker Node
-    EXITING: pilot wrapper is finishing up on Worker Node
-    DONE: condor jobstate is Completed (or Removed)
-    FAULT: condor jobstate indicates a fault, or job has become stale 
-
-API
-Endpoint              Description                           Format
-/h/                   hello from factory at start-up        POST with keys: factoryId,monitorURL,factoryOwner,baseLogDirUrl,versionTag
-/c/                   list of created jobids                JSON-encoded list of tuples: (cid, nick, fid, label)
-/m/                   list of messages w/ status of 'label' JSON-encoded list of tuples: (nick, fid, label, text)
-/$APFFID/$APFCID/rn/  ping when wrapper starts              GET request with APFFID=factoryId, APFCID=jobid
-/$APFFID/$APFCID/ex/  ping when wrapper exits               GET request with APFFID=factoryId, APFCID=jobid 
-
-Glossary
-
-nick  means e.g. Panda queue
-fid    factory id
-cid    condor job id
-label  
-
-http://apfmon.lancs.ac.uk/mon/c/
-data=[["931048.0", "BNL_CVMFS_1-condor", "BNL-gridui09-jhover", "BNL_CVMFS_1-gridgk06"]]
-
+        PUT HERE SOME DOC 
 '''
 
 import commands
@@ -51,16 +23,6 @@ except ImportError, err:
     log = logging.getLogger('main.monitor')
     log.debug('json package not installed. Trying to import simplejson as json')
     import simplejson as json
-
-
-__author__ = "Peter Love, Jose Caballero"
-__copyright__ = "2010,2011 Peter Love; 2011 Jose Caballero"
-__credits__ = []
-__license__ = "GPL"
-__version__ = "2.1.0"
-__maintainer__ = "Jose Caballero"
-__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
-__status__ = "Production"
 
 
 #  ==================================================
@@ -155,8 +117,6 @@ class APFMonitor2Plugin(MonitorInterface):
 
     def registerFactory(self):
         '''
-        factoryId,monitorURL,factoryOwner,baseLogDirUrl,versionTag
-
         First check if the factory is already registered. 
         If not, then register it. 
         '''
@@ -231,18 +191,42 @@ class APFMonitor2Plugin(MonitorInterface):
         out = self._call('PUT', url, data)
 
 
-    def registerLabel(self):
+
+    def registerLabel(self, label):
         '''
-        factoryId,monitorURL,factoryOwner,baseLogDirUrl,versionTag
+        First check if the label is already registered. 
+        If not, then register it. 
         '''
-        attrlist = []
-        attrlist.append("factoryId=%s" % self.fid)
-        attrlist.append("factoryOwner=%s" % self.owner)
-        attrlist.append("versionTag=%s" % self.version)
-        attrlist.append("factoryAdminEmail=%s" % self.email)
-        attrlist.append("baseLogDirUrl=%s" % self.baselogurl)
-        data = '&'.join(attrlist)        
-        self._signal(self.furl, data)
+
+        if self._isLabelRegistered(label):
+            self.log.info('label %s is already registered' %label)
+        else:
+            self.log.info('label %s is not registered yet. Registering.' %label)
+            self._registerLabel()
+
+
+
+
+    def _isLabelRegistered(self, label):
+
+
+
+
+    def _registerLabel(self):
+        '''
+        '''
+
+        #attrlist = []
+        #attrlist.append("factoryId=%s" % self.fid)
+        #attrlist.append("factoryOwner=%s" % self.owner)
+        #attrlist.append("versionTag=%s" % self.version)
+        #attrlist.append("factoryAdminEmail=%s" % self.email)
+        #attrlist.append("baseLogDirUrl=%s" % self.baselogurl)
+        #data = '&'.join(attrlist)        
+        #self._signal(self.furl, data)
+
+
+
 
 
     def registerJobs(self, apfqueue, jobinfolist ):
