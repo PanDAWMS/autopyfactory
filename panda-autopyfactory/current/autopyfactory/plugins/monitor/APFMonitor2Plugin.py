@@ -302,24 +302,28 @@ class APFMonitor2Plugin(MonitorInterface):
 
         self.log.debug('updateJobs: leaving.')
 
+
+
        
     def _call(self, method, url, data=None):
         '''
         make the HTTP call
+        method is "PUT", "GET", "POST" or "DELETE"
         '''
 
         self.log.debug('Starting. method=%s, url=%s, data=%s' %(method, url, data))
 
         opener = urllib2.build_opener(NoExceptionHTTPHandler) 
         if data:
-                request = RequestWithMethod(method, url, data)
+            request = RequestWithMethod(method, url, data)
         else:
-                request = RequestWithMethod(method, url)
+            request = RequestWithMethod(method, url)
+
         try:
-                out = opener.open(request)
+            out = opener.open(request)
         except Exception, e:
-                self.log.debug('HTTP call failed with error %s' %e)
-                return None  # Is this OK
+            self.log.debug('HTTP call failed with error %s' %e)
+            return None  # Is this OK
 
         self.log.debug('Leaving with output %s' %out)
         return out
