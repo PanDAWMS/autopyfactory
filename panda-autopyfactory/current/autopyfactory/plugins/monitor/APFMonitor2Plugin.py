@@ -261,15 +261,18 @@ class APFMonitor2Plugin(MonitorInterface):
             self.log.debug('label %s is already registered' %label)
         else:
             self.log.info('label %s is not registered yet. Registering.' %label)
-            self._registerLabel(label)
+            self._registerLabel(apfqueue)
 
 
-    def _isLabelRegistered(self):
+    def _isLabelRegistered(self, label):
         return label in self.registeredlabels
 
 
     def _registerLabel(self, apfqueue):
         '''
+        We pass apfqueue as input because this class is a singleton,
+        so the apfqueue object passed by __init__() may not be the same 
+        apfqueue object calling this method. 
         '''
 
         url = self.monurl + '/labels'
