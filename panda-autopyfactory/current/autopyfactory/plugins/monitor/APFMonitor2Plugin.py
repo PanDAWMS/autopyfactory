@@ -127,7 +127,7 @@ class APFMonitor2Plugin(MonitorInterface):
         '''
 
         if self._isFactoryRegistered():
-            self.log.info('factory is already registered')
+            self.log.debug('factory is already registered')
         else:
             self.log.info('factory is not registered yet. Registering.')
             self._registerFactory()
@@ -177,7 +177,6 @@ class APFMonitor2Plugin(MonitorInterface):
         labels = [ factory['name'] for factory in out ] 
         
         return self.fid in factories
-
 
 
     def _registerFactory(self):
@@ -265,7 +264,7 @@ class APFMonitor2Plugin(MonitorInterface):
 
 
         if label not in self.registeredlabels:
-            self.log.info('label %s is already registered' %label)
+            self.log.debug('label %s is already registered' %label)
         else:
             self.log.info('label %s is not registered yet. Registering.' %label)
             self._registerLabel()
