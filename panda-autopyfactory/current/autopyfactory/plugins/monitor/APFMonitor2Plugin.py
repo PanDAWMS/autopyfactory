@@ -169,7 +169,7 @@ class APFMonitor2Plugin(MonitorInterface):
         url = self.monurl + '/factories'
         out = self._call('GET', url)
         out = json.loads(out)
-        factories = [ factory['name'] for factory in out ] 
+        labels = [ factory['name'] for factory in out ] 
         
         return self.fid in factories
 
@@ -207,7 +207,7 @@ class APFMonitor2Plugin(MonitorInterface):
 
 
 
-    def _isLabelRegistered(self, label):
+    def _getLabels(self, label):
         '''
         queries for the list of labels registered for this factory.
         URL looks like
@@ -244,6 +244,13 @@ class APFMonitor2Plugin(MonitorInterface):
               }
             ]
         '''
+
+        url = self.monurl + '/labels?factory=' + self.fid
+        out = self._call('GET', url)
+        out = json.loads(out)
+        labels = [ label['name'] for label in out ] 
+        
+        return labels
 
 
 
