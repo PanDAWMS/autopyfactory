@@ -69,7 +69,7 @@ __status__ = "Production"
 #
 #  ==================================================
 
-class BetterHTTPHandler(urllib2.BaseHandler):
+class NoExceptionHTTPHandler(urllib2.BaseHandler):
 
     # a substitute/supplement to urllib2.HTTPErrorProcessor
     # that doesn't raise exceptions on status codes 201,204,206
@@ -155,7 +155,17 @@ class APFMonitor2Plugin(MonitorInterface):
     def registerFactory(self):
         '''
         factoryId,monitorURL,factoryOwner,baseLogDirUrl,versionTag
+
+        First check if the factory is already registered. 
+        If not, then register it. 
         '''
+
+    def _checkFactory(self):
+
+
+
+    def _registerFactory(self):
+
         attrlist = []
         attrlist.append("factoryId=%s" % self.fid)
         attrlist.append("factoryOwner=%s" % self.owner)
@@ -164,7 +174,7 @@ class APFMonitor2Plugin(MonitorInterface):
         attrlist.append("baseLogDirUrl=%s" % self.baselogurl)
 
         data = '&'.join(attrlist)        
-        self._signal(self.furl, data)
+        self._call(method, self.furl, data)
 
 
     def registerLabel(self):
@@ -208,141 +218,25 @@ class APFMonitor2Plugin(MonitorInterface):
 
         self.log.debug('updateJobs: leaving.')
 
-        
+       
+    def _call(self, method, url, data=None):
+        '''
+        make the HTTP call
+        '''
 
+        self.log.debug('Starting. method=%s, url=%s, data=%s' %(method, url, data))
 
-
-
-
-
-
-
-
-
-
-
-    def _signal(self, url, postdata):
-        
-        self.log.debug('_signal: starting with url %s and postdata %s' %(url, postdata))
+        opener = urllib2.build_opener(NoExceptionHTTPHandler) 
+        if data:
+                request = RequestWithMethod(method, url, data)
+        else:
+                request = RequestWithMethod(method, url)
         try:
-            out = urllib2.urlopen(url, postdata)
-            self.log.debug('_signal: urlopen() output=%s' % out.read())
-            self.log.debug('_signal: urlopen() OK.')
-        except Exception, ex: 
-            self.log.debug('_signal: urlopen() failed and raised exception %s' % ex)
-            
+                out = opener.open(request)
+        except Exception, e:
+                self.log.debug('HTTP call failed with error %s' %e)
+                return None  # Is this OK
 
-
-    def _parse(self, output):
-        # return a list of condor job id
-        try:
-            return _CIDMATCH.findall(output)
-        except:
-            return []
-
-    def notify(self, nick, label, output):
-        """
-        Record creation of the condor job
-
-        nick = nickname
-        label = queue (what is in [] in the config file)
-        output = output of command condor_submit
-
-        """
-        msg = "nick: %s, fid: %s, label: %s" % (nick, self.fid, label)
-        self.log.debug(msg)
-
-        joblist = self._parse(output)
-
-        msg = "Number of CID found: %d" % len(joblist)
-        self.log.debug(msg)
-
-        for cid in joblist:
-            data = (cid, nick, self.fid, label)
-            self.crlist.append(data)
-
-    def msg(self, nick, label, text):
-        """
-        Send the latest factory message to the monitoring webservice
-
-        nick = nickname
-        label = queue (what is in [] in the config file)
-        text = message to be sent to the monitor server
-
-        """
-        data = (nick, self.fid, label, text[:140])
-        self.msglist.append(data)
-
-    def shout(self, label, cycleNumber):
-        """
-        Send information blob to webservice
-
-        label = queue (what is in [] in the config file)
-        cycleNumber = cycle number
-        """
-
-        msg = 'End of queue %s cycle: %d' % (label, cycleNumber)
-        self.log.debug(msg)
-        msg = 'msglist length: %d' % len(self.msglist)
-        self.log.debug(msg)
-        msg = 'crlist length: %d' % len(self.crlist)
-        self.log.debug(msg)
-
-        jsonmsg = self.json.encode(self.msglist)
-        txt = "cycle=%s&data=%s" % (cycleNumber, jsonmsg)
-        self._signal(self.msgurl, txt)
-
-        jsonmsg = self.json.encode(self.crlist)
-        txt = "data=%s" % jsonmsg
-        self._signal(self.crurl, txt)
-
-        self.msglist = []
-        self.crlist = []
-        
-    # Monitor-releated methods moved from factory.py
-
-    def _monitor_shout(self):
-        '''
-        call monitor.shout() method
-        '''
-
-        self.log.debug("__monitor_shout: Starting.")
-        if hasattr(self, 'monitor'):
-            self.shout(self.apfqname, self.cyclesrun)
-        else:
-            self.log.debug('__monitor_shout: no monitor instantiated')
-        self.log.debug("__monitor_shout: Leaving.")
-
-    def _monitor_note(self, msg):
-        '''
-        collects messages for the Monitor
-        '''
-
-        self.log.debug('__monitor_note: Starting.')
-
-        if hasattr(self, 'monitor'):
-            nick = self.qcl.get(self.apfqname, 'batchqueue')
-            self.msg(nick, self.apfqname, msg)
-        else:
-            self.log.debug('__monitor_note: no monitor instantiated')
-                
-        self.log.debug('__monitor__note: Leaving.')
-
-    def _monitor_notify(self, output):
-        '''
-        sends all collected messages to the Monitor server
-        '''
-
-        self.log.debug('__monitor_notify: Starting.')
-
-        if hasattr(self, 'monitor'):
-            nick = self.qcl.get(self.apfqname, 'batchqueue')
-            label = self.apfqname
-            self.notify(nick, label, output)
-        else:
-            self.log.debug('__monitor_notify: no monitor instantiated')
-
-        self.log.debug('__monitor_notify: Leaving.')
-
-
+        self.log.debug('Leaving with output %s' %out)
+        return out
 
