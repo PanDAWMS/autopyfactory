@@ -208,6 +208,42 @@ class APFMonitor2Plugin(MonitorInterface):
 
 
     def _isLabelRegistered(self, label):
+        '''
+        queries for the list of labels registered for this factory.
+        URL looks like
+            http://py-front.lancs.ac.uk/api/labels?factory=bnl-gridui99-factory
+        Output of query looks like (as JSON string):
+            [
+              {
+                "factory": "bnl-gridui99-factory", 
+                "id": 512, 
+                "last_modified": "2013-03-28T14:47:20Z", 
+                "localqueue": "", 
+                "msg": "", 
+                "name": "label-1", 
+                "ncreated": 100, 
+                "ndone": 0, 
+                "nexiting": 0, 
+                "nfault": 0, 
+                "nrunning": 50, 
+                "resource": ""
+              }, 
+              {
+                "factory": "bnl-gridui99-factory", 
+                "id": 513, 
+                "last_modified": "2013-03-28T15:02:56Z", 
+                "localqueue": "", 
+                "msg": "", 
+                "name": "label-2", 
+                "ncreated": 0, 
+                "ndone": 0, 
+                "nexiting": 0, 
+                "nfault": 0, 
+                "nrunning": 0, 
+                "resource": ""
+              }
+            ]
+        '''
 
 
 
