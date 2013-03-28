@@ -248,6 +248,22 @@ class APFMonitor2Plugin(MonitorInterface):
         If not, then register it. 
         '''
 
+        #####################################################
+        #
+        #   QUESTION:
+        #
+        #       We are registering a new label
+        #       when registering jobs.
+        #       So new labels are registered one by one
+        #       if needed.
+        #
+        #       Should be done at the __init__() at once?
+        #       Like getting current list, get all labels 
+        #       from qcl, and register all missing ones.
+        #
+        #####################################################
+
+
         if label not in self.registeredlabels:
             self.log.info('label %s is already registered' %label)
         else:
@@ -282,10 +298,17 @@ class APFMonitor2Plugin(MonitorInterface):
         We pass apfqueue as one of the inputs because this class is a singleton,
         so the apfqueue object passed by __init__() may not be the same 
         apfqueue object calling this method. 
+
+        jobinfolist is the output of submit() method.
+        It is a list of JobInfo objects
         '''
 
         self.log.debug('updateJobs: starting for apfqueue %s with info list %s' %(apfqueue.apfqname, 
                                                                                        jobinfolist))
+
+        self.registerLabel(label)
+
+        
         if jobinfolist:
         # ensure jobinfolist has any content, and is not None
             apfqname = apfqueue.apfqname
