@@ -263,11 +263,14 @@ class APFMonitor2Plugin(MonitorInterface):
         #####################################################
 
 
-        if label not in self.registeredlabels:
+        if self._isLabelRegistered(label):
             self.log.debug('label %s is already registered' %label)
         else:
             self.log.info('label %s is not registered yet. Registering.' %label)
             self._registerLabel()
+
+    def _isLabelRegistered(self, label):
+        return label in self.registeredlabels
 
 
     def _registerLabel(self, apfqueue):
