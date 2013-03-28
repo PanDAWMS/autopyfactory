@@ -206,7 +206,7 @@ class APFMonitor2Plugin(MonitorInterface):
           ]
         '''
 
-        url = self.monurl + '\factories'
+        url = self.monurl + '/factories'
         out = self._call('GET', url)
         out = json.loads(out)
         factories = [ factory['name'] for factory in out ] 
@@ -216,16 +216,19 @@ class APFMonitor2Plugin(MonitorInterface):
 
 
     def _registerFactory(self):
+        '''
+        register the factory
+        '''
 
-        attrlist = []
-        attrlist.append("factoryId=%s" % self.fid)
-        attrlist.append("factoryOwner=%s" % self.owner)
-        attrlist.append("versionTag=%s" % self.version)
-        attrlist.append("factoryAdminEmail=%s" % self.email)
-        attrlist.append("baseLogDirUrl=%s" % self.baselogurl)
+        url = self.monurl + '/factories/' + self.fid
 
-        data = '&'.join(attrlist)        
-        self._call(method, self.furl, data)
+        data = {}
+        data["version"] = self.version
+        data["email"] = self.email
+        data["url"] =  self.baselogurl
+        data = json.dumps(data)
+
+        out = self._call('PUT', url, data)
 
 
     def registerLabel(self):
