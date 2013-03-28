@@ -111,7 +111,10 @@ class APFMonitor2Plugin(MonitorInterface):
         self.buffer = StringIO.StringIO()
         
         self.log.debug('Instantiated monitor')
+
         self.registerFactory()     
+        self.registeredlabels = self._getLabels() # list of labels registered
+        
         self.log.debug('Done.')
 
 
@@ -198,13 +201,11 @@ class APFMonitor2Plugin(MonitorInterface):
         If not, then register it. 
         '''
 
-        if self._isLabelRegistered(label):
+        if label not in self.registeredlabels:
             self.log.info('label %s is already registered' %label)
         else:
             self.log.info('label %s is not registered yet. Registering.' %label)
             self._registerLabel()
-
-
 
 
     def _getLabels(self, label):
@@ -253,9 +254,7 @@ class APFMonitor2Plugin(MonitorInterface):
         return labels
 
 
-
-
-    def _registerLabel(self):
+    def _registerLabel(self, label):
         '''
         '''
 
@@ -269,6 +268,7 @@ class APFMonitor2Plugin(MonitorInterface):
         #self._signal(self.furl, data)
 
 
+        self.registeredlabels.append(label)
 
 
 
