@@ -62,9 +62,45 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
+
+#  ==================================================
+#
+#       CLASSES TO HANDLE HTTP CALLS BETTER
+#
+#  ==================================================
+
+class BetterHTTPHandler(urllib2.BaseHandler):
+
+    # a substitute/supplement to urllib2.HTTPErrorProcessor
+    # that doesn't raise exceptions on status codes 201,204,206
+
+    def http_error_201(self, request, response, code, msg, hdrs):
+        return response
+    def http_error_204(self, request, response, code, msg, hdrs):
+        return response
+    def http_error_206(self, request, response, code, msg, hdrs):
+        return response
+
+
+class RequestWithMethod(urllib2.Request):
+    # to be used insted of urllib2.Request
+    # This class gets the HTTP method (i.e. 'PUT') during the initlization
+
+    def __init__(self, method, *args, **kwargs):
+        self._method = method
+        urllib2.Request.__init__(self, *args, **kwargs)
+
+    def get_method(self):
+        return self._method
+
+
+#  ==================================================
+
+
 _CIDMATCH = re.compile('\*\* Proc (\d+\.\d+)', re.M)
 
-class APFMonitorPlugin(MonitorInterface):
+
+class APFMonitor2Plugin(MonitorInterface):
 
     __metaclass__ = singletonfactory(id_var="monitor_id")
 
@@ -116,7 +152,36 @@ class APFMonitorPlugin(MonitorInterface):
         self.log.debug('Done.')
 
 
-    def updateJobs(self, apfqueue, jobinfolist ):
+    def registerFactory(self):
+        '''
+        factoryId,monitorURL,factoryOwner,baseLogDirUrl,versionTag
+        '''
+        attrlist = []
+        attrlist.append("factoryId=%s" % self.fid)
+        attrlist.append("factoryOwner=%s" % self.owner)
+        attrlist.append("versionTag=%s" % self.version)
+        attrlist.append("factoryAdminEmail=%s" % self.email)
+        attrlist.append("baseLogDirUrl=%s" % self.baselogurl)
+
+        data = '&'.join(attrlist)        
+        self._signal(self.furl, data)
+
+
+    def registerLabel(self):
+        '''
+        factoryId,monitorURL,factoryOwner,baseLogDirUrl,versionTag
+        '''
+        attrlist = []
+        attrlist.append("factoryId=%s" % self.fid)
+        attrlist.append("factoryOwner=%s" % self.owner)
+        attrlist.append("versionTag=%s" % self.version)
+        attrlist.append("factoryAdminEmail=%s" % self.email)
+        attrlist.append("baseLogDirUrl=%s" % self.baselogurl)
+        data = '&'.join(attrlist)        
+        self._signal(self.furl, data)
+
+
+    def registerJobs(self, apfqueue, jobinfolist ):
         '''
         Take a list of JobInfo objects and translate to APFMonitor messages.
 
@@ -143,20 +208,18 @@ class APFMonitorPlugin(MonitorInterface):
 
         self.log.debug('updateJobs: leaving.')
 
-    def registerFactory(self):
-        '''
-        factoryId,monitorURL,factoryOwner,baseLogDirUrl,versionTag
-        '''
-        attrlist = []
-        attrlist.append("factoryId=%s" % self.fid)
-        attrlist.append("factoryOwner=%s" % self.owner)
-        attrlist.append("versionTag=%s" % self.version)
-        attrlist.append("factoryAdminEmail=%s" % self.email)
-        attrlist.append("baseLogDirUrl=%s" % self.baselogurl)
-                
-        data = '&'.join(attrlist)        
-        self._signal(self.furl, data)
         
+
+
+
+
+
+
+
+
+
+
+
 
     def _signal(self, url, postdata):
         
