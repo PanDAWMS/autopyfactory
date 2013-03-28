@@ -83,8 +83,8 @@ class APFMonitor2Plugin(MonitorInterface):
         It is the name of the section [] in monitor config object
         
         Also sends initial ping to monitor server. 
-        
         '''
+
         self.log = logging.getLogger('main.monitor [singleton created by %s with id %s]' %(apfqueue.apfqname, monitor_id))
         mainlevel = logging.getLogger('main').getEffectiveLevel()
         self.log.setLevel(mainlevel)
@@ -102,10 +102,8 @@ class APFMonitor2Plugin(MonitorInterface):
         self.monurl = self.mcl.generic_get(monitor_id, 'monitorURL')
 
         self.log.debug('Instantiated monitor')
-
         self.registerFactory()     
         self.registeredlabels = self._getLabels() # list of labels registered
-        
         self.log.debug('Done.')
 
 
