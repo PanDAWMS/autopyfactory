@@ -322,9 +322,9 @@ class APFMonitor2Plugin(MonitorInterface):
 
                 job = {}
                 
-                job['cid'] : ji.jobid 
-                job['label'] : apfqname
-                job['factory'] : self.fid 
+                job['cid'] = ji.jobid 
+                job['label'] = apfqname
+                job['factory'] = self.fid 
 
                 data.append(job)
 
