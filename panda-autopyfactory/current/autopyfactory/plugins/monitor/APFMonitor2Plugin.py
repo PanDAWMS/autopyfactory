@@ -137,6 +137,7 @@ class APFMonitor2Plugin(MonitorInterface):
         self.baselogurl = self.fcl.generic_get('Factory','baseLogDirUrl')
 
         self.monurl = self.mcl.generic_get(monitor_id, 'monitorURL')
+
         self.crurl = self.monurl + 'c/'
         self.msgurl = self.monurl + 'm/'
         self.furl = self.monurl + 'h/'
@@ -160,7 +161,57 @@ class APFMonitor2Plugin(MonitorInterface):
         If not, then register it. 
         '''
 
-    def _checkFactory(self):
+        if self._isFactoryRegistered():
+            self.log.info('factory is already registered')
+        else:
+            self.log.info('factory is not registered yet. Registering.')
+            self._registerFactory()
+
+
+    def _isFactoryRegistered(self):
+        '''
+        queries for the list of factories.
+        URL looks like http://py-front.lancs.ac.uk/api/factories
+        Output of query looks like (as JSON string):
+
+        [
+          {
+            "active": true, 
+            "email": "admin1@matrix.net", 
+            "factory_type": "AutoPyFactory", 
+            "id": 137, 
+            "ip": "127.0.0.1", 
+            "last_cycle": 0, 
+            "last_modified": "2013-03-28T13:19:56Z", 
+            "last_ncreated": 0, 
+            "last_startup": "2013-03-28T13:19:56Z", 
+            "name": "dev-factory", 
+            "url": "http://localhost/", 
+            "version": "0.0.1"
+          }, 
+          {
+            "active": true, 
+            "email": "admin2@matrix.net", 
+            "factory_type": "AutoPyFactory", 
+            "id": 5, 
+            "ip": "130.199.3.165", 
+            "last_cycle": 0, 
+            "last_modified": "2013-03-25T19:33:57Z", 
+            "last_ncreated": 0, 
+            "last_startup": "2013-03-25T19:33:57Z", 
+            "name": "bnl-gridui99-factory", 
+            "url": "http://gridui99.usatlas.bnl.gov:25880", 
+            "version": "0.0.1"
+          }, 
+          ]
+        '''
+
+        url = self.monurl + '\factories'
+        out = self._call('GET', url)
+        out = json.loads(out)
+        factories = [ factory['name'] for factory in out ] 
+        
+        return self.fid in factories
 
 
 
