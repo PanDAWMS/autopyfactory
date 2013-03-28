@@ -194,20 +194,6 @@ class APFMonitor2Plugin(MonitorInterface):
         out = self._call('PUT', url, data)
 
 
-
-    def registerLabel(self, label):
-        '''
-        First check if the label is already registered. 
-        If not, then register it. 
-        '''
-
-        if label not in self.registeredlabels:
-            self.log.info('label %s is already registered' %label)
-        else:
-            self.log.info('label %s is not registered yet. Registering.' %label)
-            self._registerLabel()
-
-
     def _getLabels(self, label):
         '''
         queries for the list of labels registered for this factory.
@@ -254,19 +240,35 @@ class APFMonitor2Plugin(MonitorInterface):
         return labels
 
 
+    def registerLabel(self, label):
+        '''
+        First check if the label is already registered. 
+        If not, then register it. 
+        '''
+
+        if label not in self.registeredlabels:
+            self.log.info('label %s is already registered' %label)
+        else:
+            self.log.info('label %s is not registered yet. Registering.' %label)
+            self._registerLabel()
+
+
     def _registerLabel(self, label):
         '''
         '''
 
-        #attrlist = []
-        #attrlist.append("factoryId=%s" % self.fid)
-        #attrlist.append("factoryOwner=%s" % self.owner)
-        #attrlist.append("versionTag=%s" % self.version)
-        #attrlist.append("factoryAdminEmail=%s" % self.email)
-        #attrlist.append("baseLogDirUrl=%s" % self.baselogurl)
-        #data = '&'.join(attrlist)        
-        #self._signal(self.furl, data)
+        url = self.monurl + '/labels'
 
+        data = {}
+        data['name'] = label
+        data['factory'] = self.fid
+        data['wmsqueue'] = self.fid
+        data['batchqueue'] = self.fid
+        data['resource'] = self.fid
+        data['localqueue'] = self.fid
+        data = json.dumps(data)
+
+        self._call('PUT', url, data)
 
         self.registeredlabels.append(label)
 
