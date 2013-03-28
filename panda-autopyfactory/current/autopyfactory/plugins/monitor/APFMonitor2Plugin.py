@@ -97,21 +97,10 @@ class APFMonitor2Plugin(MonitorInterface):
         self.fid = self.fcl.generic_get('Factory','factoryId')
         self.version = self.fcl.generic_get('Factory', 'versionTag')
         self.email = self.fcl.generic_get('Factory','factoryAdminEmail')
-        self.owner = self.email
         self.baselogurl = self.fcl.generic_get('Factory','baseLogDirUrl')
 
         self.monurl = self.mcl.generic_get(monitor_id, 'monitorURL')
 
-        self.crurl = self.monurl + 'c/'
-        self.msgurl = self.monurl + 'm/'
-        self.furl = self.monurl + 'h/'
-        
-        self.crlist = []
-        self.msglist = []
-        
-        self.jsonencoder = json.JSONEncoder()
-        self.buffer = StringIO.StringIO()
-        
         self.log.debug('Instantiated monitor')
 
         self.registerFactory()     
