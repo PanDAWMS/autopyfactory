@@ -308,7 +308,8 @@ class APFMonitor2Plugin(MonitorInterface):
 
         url = self.monurl + 'jobs'
 
-        self.registerLabel(label)
+        # jobs can not be registered unless the label is already registered
+        self.registerLabel(apfqueue)
         
         if jobinfolist:
         # ensure jobinfolist has any content, and is not None
