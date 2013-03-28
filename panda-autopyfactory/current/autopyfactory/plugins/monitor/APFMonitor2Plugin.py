@@ -303,27 +303,37 @@ class APFMonitor2Plugin(MonitorInterface):
         It is a list of JobInfo objects
         '''
 
-        self.log.debug('updateJobs: starting for apfqueue %s with info list %s' %(apfqueue.apfqname, 
-                                                                                       jobinfolist))
+        self.log.debug('Starting for apfqueue %s with info list %s' %(apfqueue.apfqname, 
+                                                                     jobinfolist))
+
+        url = self.monurl + 'jobs'
 
         self.registerLabel(label)
-
         
         if jobinfolist:
         # ensure jobinfolist has any content, and is not None
             apfqname = apfqueue.apfqname
             nickname = self.qcl.generic_get(apfqname, 'batchqueue') 
-            crlist = []
-            for ji in jobinfolist:
-                data = (ji.jobid, nickname, self.fid, apfqname)
-                self.log.debug('updateJobs: adding data (%s, %s, %s, %s)' %(ji.jobid, nickname, self.fid, apfqname))
-                crlist.append(data)
-            
-            jsonmsg = self.jsonencoder.encode(crlist)
-            txt = "data=%s" % jsonmsg
-            self._signal(self.crurl, txt)
 
-        self.log.debug('updateJobs: leaving.')
+            data = [] 
+
+            for ji in jobinfolist:
+
+                job = {}
+                
+                job['cid'] : ji.jobid 
+                job['label'] : apfqname
+                job['factory'] : self.fid 
+
+                data.append(job)
+
+                self.log.debug('updateJobs: adding data (%s, %s, %s)' %(ji.jobid, self.fid, apfqname))
+
+            data = json.dumps(data) 
+
+            out = self._call('PUT', url, data)
+
+        self.log.debug('Leaving.')
 
 
 
