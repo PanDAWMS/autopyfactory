@@ -62,9 +62,6 @@ class RequestWithMethod(urllib2.Request):
 #  ==================================================
 
 
-_CIDMATCH = re.compile('\*\* Proc (\d+\.\d+)', re.M)
-
-
 class APFMonitor2Plugin(MonitorInterface):
 
     __metaclass__ = singletonfactory(id_var="monitor_id")
@@ -113,12 +110,17 @@ class APFMonitor2Plugin(MonitorInterface):
         If not, then register it. 
         '''
 
+        self.log.debug('Starting')
         if self._isFactoryRegistered():
             self.log.debug('factory is already registered')
+            out = None
         else:
             self.log.info('factory is not registered yet. Registering.')
-            self._registerFactory()
+            out = self._registerFactory()
 
+        self.log.debug('Leaving')
+        return out
+      
 
     def _isFactoryRegistered(self):
         '''
@@ -171,6 +173,8 @@ class APFMonitor2Plugin(MonitorInterface):
         register the factory
         '''
 
+        self.log.debug('Starting')
+
         url = self.monurl + '/factories/' + self.fid
 
         data = {}
@@ -180,6 +184,9 @@ class APFMonitor2Plugin(MonitorInterface):
         data = json.dumps(data)
 
         out = self._call('PUT', url, data)
+
+        self.log.debug('Leaving')
+        return out
 
 
     def _getLabels(self, label):
@@ -220,11 +227,14 @@ class APFMonitor2Plugin(MonitorInterface):
             ]
         '''
 
+        self.log.debug('Starting')
+
         url = self.monurl + '/labels?factory=' + self.fid
         out = self._call('GET', url)
         out = json.loads(out)
         labels = [ label['name'] for label in out ] 
         
+        self.log.debug('Leaving')
         return labels
 
 
@@ -255,13 +265,19 @@ class APFMonitor2Plugin(MonitorInterface):
         #
         #####################################################
 
+        self.log.debug('Starting')
+
         label = apfqueue.apfqname
 
         if self._isLabelRegistered(label):
             self.log.debug('label %s is already registered' %label)
+            out = None
         else:
             self.log.info('label %s is not registered yet. Registering.' %label)
-            self._registerLabel(apfqueue)
+            out = self._registerLabel(apfqueue)
+
+        self.log.debug('Leaving')
+        return out
 
 
     def _isLabelRegistered(self, label):
@@ -275,6 +291,8 @@ class APFMonitor2Plugin(MonitorInterface):
         apfqueue object calling this method. 
         '''
 
+        self.log.debug('Starting')
+
         url = self.monurl + '/labels'
 
         data = {}
@@ -286,12 +304,15 @@ class APFMonitor2Plugin(MonitorInterface):
         data['localqueue'] = '' 
         data = json.dumps(data)
 
-        self._call('PUT', url, data)
+        out = self._call('PUT', url, data)
 
         self.registeredlabels.append(label)
 
+        self.log.debug('Leaving')
+        return out
 
-    def registerJobs(self, apfqueue, jobinfolist ):
+
+    def registerJobs(self, apfqueue, jobinfolist):
         '''
         Take a list of JobInfo objects and translate to APFMonitor messages.
 
@@ -311,10 +332,11 @@ class APFMonitor2Plugin(MonitorInterface):
         # jobs can not be registered unless the label is already registered
         self.registerLabel(apfqueue)
         
+        out = None
+
         if jobinfolist:
         # ensure jobinfolist has any content, and is not None
             apfqname = apfqueue.apfqname
-            nickname = self.qcl.generic_get(apfqname, 'batchqueue') 
 
             data = [] 
 
@@ -335,8 +357,7 @@ class APFMonitor2Plugin(MonitorInterface):
             out = self._call('PUT', url, data)
 
         self.log.debug('Leaving.')
-
-
+        return out
 
        
     def _call(self, method, url, data=None):
@@ -357,7 +378,7 @@ class APFMonitor2Plugin(MonitorInterface):
             out = opener.open(request)
         except Exception, e:
             self.log.debug('HTTP call failed with error %s' %e)
-            return None  # Is this OK
+            out = None  # Is this OK?
 
         self.log.debug('Leaving with output %s' %out)
         return out
