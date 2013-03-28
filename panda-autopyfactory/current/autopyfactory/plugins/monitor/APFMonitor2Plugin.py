@@ -73,6 +73,7 @@ class APFMonitor2Plugin(MonitorInterface):
     def __init__(self, apfqueue, monitor_id):
         '''
         apfqueue is a reference to the APFQueue object creating this plugin.
+        We need it to get qcl, fcl, and mcl config loaders. 
 
         monitor_id is the value for id_var (input of the singletonfactory)
         to decide if a new object has to be really created or not.
@@ -86,8 +87,6 @@ class APFMonitor2Plugin(MonitorInterface):
         self.log.setLevel(mainlevel)
         self.log.debug("Start...")
 
-
-        self.apfqname = apfqueue.apfqname
         self.qcl = apfqueue.factory.qcl
         self.fcl = apfqueue.factory.fcl
         self.mcl = apfqueue.factory.mcl
@@ -253,19 +252,19 @@ class APFMonitor2Plugin(MonitorInterface):
             self._registerLabel()
 
 
-    def _registerLabel(self, label):
+    def _registerLabel(self, apfqueue):
         '''
         '''
 
         url = self.monurl + '/labels'
 
         data = {}
-        data['name'] = label
+        data['name'] = apfqueue.apfqname
         data['factory'] = self.fid
-        data['wmsqueue'] = self.fid
-        data['batchqueue'] = self.fid
-        data['resource'] = self.fid
-        data['localqueue'] = self.fid
+        data['wmsqueue'] = '' 
+        data['batchqueue'] = ''
+        data['resource'] = '' 
+        data['localqueue'] = '' 
         data = json.dumps(data)
 
         self._call('PUT', url, data)
