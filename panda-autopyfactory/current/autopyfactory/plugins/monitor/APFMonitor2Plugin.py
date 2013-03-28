@@ -228,10 +228,16 @@ class APFMonitor2Plugin(MonitorInterface):
         return labels
 
 
-    def registerLabel(self, label):
+    def registerLabel(self, apfqueue):
         '''
         First check if the label is already registered. 
         If not, then register it. 
+
+        Label is the name of the section in queues.conf
+
+        We pass apfqueue as input because this class is a singleton,
+        so the apfqueue object passed by __init__() may not be the same 
+        apfqueue object calling this method. 
         '''
 
         #####################################################
@@ -249,14 +255,16 @@ class APFMonitor2Plugin(MonitorInterface):
         #
         #####################################################
 
+        label = apfqueue.apfqname
 
         if self._isLabelRegistered(label):
             self.log.debug('label %s is already registered' %label)
         else:
             self.log.info('label %s is not registered yet. Registering.' %label)
-            self._registerLabel()
+            self._registerLabel(label)
 
-    def _isLabelRegistered(self, label):
+
+    def _isLabelRegistered(self):
         return label in self.registeredlabels
 
 
