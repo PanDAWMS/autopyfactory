@@ -32,9 +32,10 @@ except ImportError, err:
 #  ==================================================
 
 class NoExceptionHTTPHandler(urllib2.BaseHandler):
-
-    # a substitute/supplement to urllib2.HTTPErrorProcessor
-    # that doesn't raise exceptions on status codes 201,204,206
+    '''
+    A substitute/supplement to urllib2.HTTPErrorProcessor
+    that doesn't raise exceptions on status codes 201,204,206
+    '''
 
     def http_error_201(self, request, response, code, msg, hdrs):
         return response
@@ -45,8 +46,10 @@ class NoExceptionHTTPHandler(urllib2.BaseHandler):
 
 
 class RequestWithMethod(urllib2.Request):
-    # to be used insted of urllib2.Request
-    # This class gets the HTTP method (i.e. 'PUT') during the initlization
+    '''
+    To be used insted of urllib2.Request
+    This class gets the HTTP method (i.e. 'PUT') during the initlization
+    '''
 
     def __init__(self, method, *args, **kwargs):
         self._method = method
@@ -270,7 +273,6 @@ class APFMonitor2Plugin(MonitorInterface):
         self._call('PUT', url, data)
 
         self.registeredlabels.append(label)
-
 
 
     def registerJobs(self, apfqueue, jobinfolist ):
