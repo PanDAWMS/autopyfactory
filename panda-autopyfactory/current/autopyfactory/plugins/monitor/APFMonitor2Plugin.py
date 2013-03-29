@@ -299,13 +299,17 @@ class APFMonitor2Plugin(MonitorInterface):
 
         url = self.monurl + '/labels'
 
-        data = {}
-        data['name'] = apfqueue.apfqname
-        data['factory'] = self.fid
-        data['wmsqueue'] = '' 
-        data['batchqueue'] = ''
-        data['resource'] = '' 
-        data['localqueue'] = '' 
+        data = [] 
+
+        label = {}
+        label['name'] = apfqueue.apfqname
+        label['factory'] = self.fid
+        label['wmsqueue'] = '' 
+        label['batchqueue'] = ''
+        label['resource'] = '' 
+        label['localqueue'] = '' 
+
+        data.append(label)
         data = json.dumps(data)
 
         out = self._call('PUT', url, data)
