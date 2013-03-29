@@ -35,6 +35,10 @@ class NoExceptionHTTPHandler(urllib2.BaseHandler):
     '''
     A substitute/supplement to urllib2.HTTPErrorProcessor
     that doesn't raise exceptions on status codes 201,204,206
+    For example, when a registration operation (via HTTP PUT command)
+    is successful, a code 201 CREATED is returned. 
+    urllib2 interprets that as an ERROR, and raises an exception. 
+    To avoid it we override the behavior of http_err_<RC> methods.
     '''
 
     def http_error_201(self, request, response, code, msg, hdrs):
