@@ -27,7 +27,6 @@
 # enabled
 # status
 # apfqueue.sleep
-# autofill
 #
 # cleanlogs.keepdays
 #
@@ -243,9 +242,6 @@
 #
 # apfqueue.sleep = sleep time between cycles in APFQueue object.
 #               Value is in seconds.   
-#
-# autofill = says if the info from this filled should be completed
-#               with info from a ConfigPlugin object
 #
 # cleanlogs.keepdays = maximum number of days the condor logs
 #               will be kept
@@ -975,7 +971,6 @@ cloud = US
 country = US
 group = None
 status = online
-autofill = false
 
 cleanlogs.keepdays = 7
 
