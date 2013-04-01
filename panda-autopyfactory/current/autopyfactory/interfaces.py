@@ -120,7 +120,7 @@ class BatchSubmitInterface(object):
         Method to submit pilots.
         Returns list of JobInfo objects 
         Returns list of JobInfo objects representing successfully submitted jobs. 
-        
+        The JobInfo must have a jobid attribute
         '''
         raise NotImplementedError
 
