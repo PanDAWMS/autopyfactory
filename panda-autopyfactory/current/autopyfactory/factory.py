@@ -787,7 +787,6 @@ class APFQueue(threading.Thread):
         self.wmsstatus_plugin = pd.wmsstatusplugin      # a single WMSStatus plugin
         self.batchsubmit_plugin = pd.submitplugin       # a single BatchSubmit plugin
         self.batchstatus_plugin = pd.batchstatusplugin  # a single BatchStatus plugin
-        self.config_plugin = pd.configplugin            # a single Config plugin
         self.monitor_plugins = pd.monitorplugins        # a list of 1 or more plugins
 
         self.log.debug('_plugins: Leaving')
@@ -805,10 +804,6 @@ class APFQueue(threading.Thread):
         time.sleep(15)
         while not self.stopevent.isSet():
             try:
-                if not self._autofill():
-                    self.log.warning('run: _autofill() returned False. Wait another loop')
-                    time.sleep(self.sleep)
-                    continue
                 nsub = 0
                 for sched_plugin in self.scheduler_plugins:
                     nsub = sched_plugin.calcSubmitNum(nsub)
@@ -828,28 +823,6 @@ class APFQueue(threading.Thread):
 
         self.log.debug("run: Leaving")
 
-    def _autofill(self):
-        '''
-        checks if the config loader needs to be autofilled
-        with info coming from a Config Plugin.
-        '''
-        self.log.debug('_autofill: Starting')
-        if self.qcl.getboolean(self.apfqname, 'autofill'):
-            self.log.info('_autofill: is True, proceeding to query config plugin and merge')
-            schedconfigs = self.config_plugin.getInfo()
-            if not schedconfigs:
-                self.log.warning('_autofill: schedconfig object returned by getInfo() is None. Leaving method _autofill() returning False.')
-                return False
-            newqcl = schedconfigs[self.batchqueue].getConfig(self.apfqname)
-            id = self.batchsubmit_plugin.id
-            newqcl.filterkeys('batchsubmit', 'batchsubmit.%s' %id)
-            self.qcl.merge(newqcl) 
-            self.log.debug('_autofill: new configuration:\n%s' %self.qcl.getSection(self.apfqname).getContent())
-        else:
-            self.log.info('_autofill: is False, not needed to do anything')
-
-        self.log.debug('_autofill: Leaving')
-        return True
 
     def _submitpilots(self, nsub):
         '''
@@ -970,8 +943,6 @@ class PluginDispatcher(object):
         self.wmsstatusplugin =  self.getwmsstatusplugin()
         self.log.debug("Getting submit plugin")
         self.submitplugin =  self.getsubmitplugin()
-        self.log.debug("Getting config plugin")
-        self.configplugin =  self.getconfigplugin()
         self.log.debug("Getting monitor plugins")
         self.monitorplugins = self.getmonitorplugins()
         self.log.debug("Got %d monitor plugins" % len(self.monitorplugins))
@@ -1038,26 +1009,6 @@ class PluginDispatcher(object):
 
         return batchsubmit_plugin
 
-    def getconfigplugin(self):
-        cphlist = self._getplugin('config')
-        if cphlist:
-            config_plugin_handler = self._getplugin('config')[0]
-            config_cls = config_plugin_handler.plugin_class
-    
-            if config_cls:
-                # Note it could be None
-    
-                # calls __init__() to instantiate the class
-                config_plugin = config_cls(self.apfqueue)   
-    
-                # starts the thread
-                config_plugin.start()  
-    
-                return config_plugin
-            else:
-                return None
-        return None    
-
     def getmonitorplugins(self):
         monitor_plugin_handlers = self._getplugin('monitor', self.apfqueue.mcl)  # list of classes 
         self.log.debug("monitor_plugin_handlers =   %s" % monitor_plugin_handlers)
@@ -1104,7 +1055,6 @@ class PluginDispatcher(object):
                 - batchstatus
                 - wmsstatus
                 - batchsubmit
-                - config
                 - monitor
 
         If passed, config is an Config object, as defined in autopyfactory.configloader
@@ -1148,7 +1098,6 @@ class PluginDispatcher(object):
                 'wmsstatus': 'WMSStatus',
                 'batchstatus': 'BatchStatus',
                 'batchsubmit': 'BatchSubmit',
-                'config': 'Config',
                 'monitor' : 'Monitor',
         }
 
