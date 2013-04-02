@@ -236,8 +236,9 @@ class APFMonitorPlugin(MonitorInterface):
 
         url = self.monurl + '/labels?factory=' + self.fid
         out = self._call('GET', url)
-        out = json.loads(out)
+        out = json.loads(out.read())
         labels = [ label['name'] for label in out ] 
+        self.log.debug('list of registered labels = %s' %labels)
         
         self.log.debug('Leaving')
         return labels
