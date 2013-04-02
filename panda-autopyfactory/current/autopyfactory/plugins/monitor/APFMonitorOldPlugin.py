@@ -64,7 +64,7 @@ __status__ = "Production"
 
 _CIDMATCH = re.compile('\*\* Proc (\d+\.\d+)', re.M)
 
-class APFMonitorPlugin(MonitorInterface):
+class APFMonitorOldPlugin(MonitorInterface):
 
     __metaclass__ = singletonfactory(id_var="monitor_id")
 
