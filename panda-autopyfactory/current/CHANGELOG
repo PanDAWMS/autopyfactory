@@ -14,7 +14,7 @@ ChangeLog
 
 * bugs in CondorLocalWMSStatusPlugin fixed
 
-* ReadySchedPlugin created
+* ReadySchedPlugin created -> Activated decommissioned
 
 * Removing self._valid from all plugins (work in progress)
 
