@@ -3,35 +3,7 @@
 #
 
 '''
- Native monitoring system for autopyfactory, signals Monitoring
- webservice at each factory cycle with list of condor jobs
-
-States
-
-    CREATED: condor_submit executed, condor_id returned
-    RUNNING: pilot wrapper has started on Worker Node
-    EXITING: pilot wrapper is finishing up on Worker Node
-    DONE: condor jobstate is Completed (or Removed)
-    FAULT: condor jobstate indicates a fault, or job has become stale 
-
-API
-Endpoint              Description                           Format
-/h/                   hello from factory at start-up        POST with keys: factoryId,monitorURL,factoryOwner,baseLogDirUrl,versionTag
-/c/                   list of created jobids                JSON-encoded list of tuples: (cid, nick, fid, label)
-/m/                   list of messages w/ status of 'label' JSON-encoded list of tuples: (nick, fid, label, text)
-/$APFFID/$APFCID/rn/  ping when wrapper starts              GET request with APFFID=factoryId, APFCID=jobid
-/$APFFID/$APFCID/ex/  ping when wrapper exits               GET request with APFFID=factoryId, APFCID=jobid 
-
-Glossary
-
-nick  means e.g. Panda queue
-fid    factory id
-cid    condor job id
-label  
-
-http://apfmon.lancs.ac.uk/mon/c/
-data=[["931048.0", "BNL_CVMFS_1-condor", "BNL-gridui09-jhover", "BNL_CVMFS_1-gridgk06"]]
-
+        PUT HERE SOME DOC 
 '''
 
 import commands
@@ -53,18 +25,48 @@ except ImportError, err:
     import simplejson as json
 
 
-__author__ = "Peter Love, Jose Caballero"
-__copyright__ = "2010,2011 Peter Love; 2011 Jose Caballero"
-__credits__ = []
-__license__ = "GPL"
-__version__ = "2.1.0"
-__maintainer__ = "Jose Caballero"
-__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
-__status__ = "Production"
+#  ==================================================
+#
+#       CLASSES TO HANDLE HTTP CALLS BETTER
+#
+#  ==================================================
 
-_CIDMATCH = re.compile('\*\* Proc (\d+\.\d+)', re.M)
+class NoExceptionHTTPHandler(urllib2.BaseHandler):
+    '''
+    A substitute/supplement to urllib2.HTTPErrorProcessor
+    that doesn't raise exceptions on status codes 201,204,206
+    For example, when a registration operation (via HTTP PUT command)
+    is successful, a code 201 CREATED is returned. 
+    urllib2 interprets that as an ERROR, and raises an exception. 
+    To avoid it we override the behavior of http_err_<RC> methods.
+    '''
 
-class APFMonitorPlugin(MonitorInterface):
+    def http_error_201(self, request, response, code, msg, hdrs):
+        return response
+    def http_error_204(self, request, response, code, msg, hdrs):
+        return response
+    def http_error_206(self, request, response, code, msg, hdrs):
+        return response
+
+
+class RequestWithMethod(urllib2.Request):
+    '''
+    To be used insted of urllib2.Request
+    This class gets the HTTP method (i.e. 'PUT') during the initlization
+    '''
+
+    def __init__(self, method, *args, **kwargs):
+        self._method = method
+        urllib2.Request.__init__(self, *args, **kwargs)
+
+    def get_method(self):
+        return self._method
+
+
+#  ==================================================
+
+
+class APFMonitor2Plugin(MonitorInterface):
 
     __metaclass__ = singletonfactory(id_var="monitor_id")
 
@@ -75,21 +77,20 @@ class APFMonitorPlugin(MonitorInterface):
     def __init__(self, apfqueue, monitor_id):
         '''
         apfqueue is a reference to the APFQueue object creating this plugin.
+        We need it to get qcl, fcl, and mcl config loaders. 
 
         monitor_id is the value for id_var (input of the singletonfactory)
         to decide if a new object has to be really created or not.
         It is the name of the section [] in monitor config object
         
         Also sends initial ping to monitor server. 
-        
         '''
+
         self.log = logging.getLogger('main.monitor [singleton created by %s with id %s]' %(apfqueue.apfqname, monitor_id))
         mainlevel = logging.getLogger('main').getEffectiveLevel()
         self.log.setLevel(mainlevel)
         self.log.debug("Start...")
 
-
-        self.apfqname = apfqueue.apfqname
         self.qcl = apfqueue.factory.qcl
         self.fcl = apfqueue.factory.fcl
         self.mcl = apfqueue.factory.mcl
@@ -97,189 +98,296 @@ class APFMonitorPlugin(MonitorInterface):
         self.fid = self.fcl.generic_get('Factory','factoryId')
         self.version = self.fcl.generic_get('Factory', 'versionTag')
         self.email = self.fcl.generic_get('Factory','factoryAdminEmail')
-        self.owner = self.email
         self.baselogurl = self.fcl.generic_get('Factory','baseLogDirUrl')
 
         self.monurl = self.mcl.generic_get(monitor_id, 'monitorURL')
-        self.crurl = self.monurl + 'c/'
-        self.msgurl = self.monurl + 'm/'
-        self.furl = self.monurl + 'h/'
-        
-        self.crlist = []
-        self.msglist = []
-        
-        self.jsonencoder = json.JSONEncoder()
-        self.buffer = StringIO.StringIO()
-        
+
         self.log.debug('Instantiated monitor')
         self.registerFactory()     
+        self.registeredlabels = self._getLabels() # list of labels registered
         self.log.debug('Done.')
 
 
-    def updateJobs(self, apfqueue, jobinfolist ):
+    def registerFactory(self):
+        '''
+        First check if the factory is already registered. 
+        If not, then register it. 
+        '''
+
+        self.log.debug('Starting')
+        if self._isFactoryRegistered():
+            self.log.debug('factory is already registered')
+            out = None
+        else:
+            self.log.info('factory is not registered yet. Registering.')
+            out = self._registerFactory()
+
+        self.log.debug('Leaving')
+        return out
+      
+
+    def _isFactoryRegistered(self):
+        '''
+        queries for the list of factories.
+        URL looks like http://py-front.lancs.ac.uk/api/factories
+        Output of query looks like (as JSON string):
+
+        [
+          {
+            "active": true, 
+            "email": "admin1@matrix.net", 
+            "factory_type": "AutoPyFactory", 
+            "id": 137, 
+            "ip": "127.0.0.1", 
+            "last_cycle": 0, 
+            "last_modified": "2013-03-28T13:19:56Z", 
+            "last_ncreated": 0, 
+            "last_startup": "2013-03-28T13:19:56Z", 
+            "name": "dev-factory", 
+            "url": "http://localhost/", 
+            "version": "0.0.1"
+          }, 
+          {
+            "active": true, 
+            "email": "admin2@matrix.net", 
+            "factory_type": "AutoPyFactory", 
+            "id": 5, 
+            "ip": "130.199.3.165", 
+            "last_cycle": 0, 
+            "last_modified": "2013-03-25T19:33:57Z", 
+            "last_ncreated": 0, 
+            "last_startup": "2013-03-25T19:33:57Z", 
+            "name": "bnl-gridui99-factory", 
+            "url": "http://gridui99.usatlas.bnl.gov:25880", 
+            "version": "0.0.1"
+          }, 
+          ]
+        '''
+
+        url = self.monurl + '/factories'
+        out = self._call('GET', url)
+        out = json.loads(out)
+        labels = [ factory['name'] for factory in out ] 
+        
+        return self.fid in factories
+
+
+    def _registerFactory(self):
+        '''
+        register the factory
+        '''
+
+        self.log.debug('Starting')
+
+        url = self.monurl + '/factories/' + self.fid
+
+        data = {}
+        data["version"] = self.version
+        data["email"] = self.email
+        data["url"] =  self.baselogurl
+        data = json.dumps(data)
+
+        out = self._call('PUT', url, data)
+
+        self.log.debug('Leaving')
+        return out
+
+
+    def _getLabels(self, label):
+        '''
+        queries for the list of labels registered for this factory.
+        URL looks like
+            http://py-front.lancs.ac.uk/api/labels?factory=bnl-gridui99-factory
+        Output of query looks like (as JSON string):
+            [
+              {
+                "factory": "bnl-gridui99-factory", 
+                "id": 512, 
+                "last_modified": "2013-03-28T14:47:20Z", 
+                "localqueue": "", 
+                "msg": "", 
+                "name": "label-1", 
+                "ncreated": 100, 
+                "ndone": 0, 
+                "nexiting": 0, 
+                "nfault": 0, 
+                "nrunning": 50, 
+                "resource": ""
+              }, 
+              {
+                "factory": "bnl-gridui99-factory", 
+                "id": 513, 
+                "last_modified": "2013-03-28T15:02:56Z", 
+                "localqueue": "", 
+                "msg": "", 
+                "name": "label-2", 
+                "ncreated": 0, 
+                "ndone": 0, 
+                "nexiting": 0, 
+                "nfault": 0, 
+                "nrunning": 0, 
+                "resource": ""
+              }
+            ]
+        '''
+
+        self.log.debug('Starting')
+
+        url = self.monurl + '/labels?factory=' + self.fid
+        out = self._call('GET', url)
+        out = json.loads(out)
+        labels = [ label['name'] for label in out ] 
+        
+        self.log.debug('Leaving')
+        return labels
+
+
+    def registerLabel(self, apfqueue):
+        '''
+        First check if the label is already registered. 
+        If not, then register it. 
+
+        Label is the name of the section in queues.conf
+
+        We pass apfqueue as input because this class is a singleton,
+        so the apfqueue object passed by __init__() may not be the same 
+        apfqueue object calling this method. 
+        '''
+
+        #####################################################
+        #
+        #   QUESTION:
+        #
+        #       We are registering a new label
+        #       when registering jobs.
+        #       So new labels are registered one by one
+        #       if needed.
+        #
+        #       Should be done at the __init__() at once?
+        #       Like getting current list, get all labels 
+        #       from qcl, and register all missing ones.
+        #
+        #####################################################
+
+        self.log.debug('Starting')
+
+        label = apfqueue.apfqname
+
+        if self._isLabelRegistered(label):
+            self.log.debug('label %s is already registered' %label)
+            out = None
+        else:
+            self.log.info('label %s is not registered yet. Registering.' %label)
+            out = self._registerLabel(apfqueue)
+
+        self.log.debug('Leaving')
+        return out
+
+
+    def _isLabelRegistered(self, label):
+        return label in self.registeredlabels
+
+
+    def _registerLabel(self, apfqueue):
+        '''
+        We pass apfqueue as input because this class is a singleton,
+        so the apfqueue object passed by __init__() may not be the same 
+        apfqueue object calling this method. 
+        '''
+
+        self.log.debug('Starting')
+
+        url = self.monurl + '/labels'
+
+        data = [] 
+
+        label = {}
+        label['name'] = apfqueue.apfqname
+        label['factory'] = self.fid
+        label['wmsqueue'] = '' 
+        label['batchqueue'] = ''
+        label['resource'] = '' 
+        label['localqueue'] = '' 
+
+        data.append(label)
+        data = json.dumps(data)
+
+        out = self._call('PUT', url, data)
+
+        self.registeredlabels.append(label)
+
+        self.log.debug('Leaving')
+        return out
+
+
+    def registerJobs(self, apfqueue, jobinfolist):
         '''
         Take a list of JobInfo objects and translate to APFMonitor messages.
 
         We pass apfqueue as one of the inputs because this class is a singleton,
         so the apfqueue object passed by __init__() may not be the same 
         apfqueue object calling this method. 
+
+        jobinfolist is the output of submit() method.
+        It is a list of JobInfo objects
         '''
 
-        self.log.debug('updateJobs: starting for apfqueue %s with info list %s' %(apfqueue.apfqname, 
-                                                                                       jobinfolist))
+        self.log.debug('Starting for apfqueue %s with info list %s' %(apfqueue.apfqname, 
+                                                                     jobinfolist))
+
+        url = self.monurl + 'jobs'
+
+        # jobs can not be registered unless the label is already registered
+        self.registerLabel(apfqueue)
+        
+        out = None
+
         if jobinfolist:
         # ensure jobinfolist has any content, and is not None
             apfqname = apfqueue.apfqname
-            nickname = self.qcl.generic_get(apfqname, 'batchqueue') 
-            crlist = []
+
+            data = [] 
+
             for ji in jobinfolist:
-                data = (ji.jobid, nickname, self.fid, apfqname)
-                self.log.debug('updateJobs: adding data (%s, %s, %s, %s)' %(ji.jobid, nickname, self.fid, apfqname))
-                crlist.append(data)
-            
-            jsonmsg = self.jsonencoder.encode(crlist)
-            txt = "data=%s" % jsonmsg
-            self._signal(self.crurl, txt)
 
-        self.log.debug('updateJobs: leaving.')
-
-    def registerFactory(self):
-        '''
-        factoryId,monitorURL,factoryOwner,baseLogDirUrl,versionTag
-        '''
-        attrlist = []
-        attrlist.append("factoryId=%s" % self.fid)
-        attrlist.append("factoryOwner=%s" % self.owner)
-        attrlist.append("versionTag=%s" % self.version)
-        attrlist.append("factoryAdminEmail=%s" % self.email)
-        attrlist.append("baseLogDirUrl=%s" % self.baselogurl)
+                job = {}
                 
-        data = '&'.join(attrlist)        
-        self._signal(self.furl, data)
-        
+                job['cid'] = ji.jobid 
+                job['label'] = apfqname
+                job['factory'] = self.fid 
 
-    def _signal(self, url, postdata):
-        
-        self.log.debug('_signal: starting with url %s and postdata %s' %(url, postdata))
+                data.append(job)
+
+                self.log.debug('updateJobs: adding data (%s, %s, %s)' %(ji.jobid, self.fid, apfqname))
+
+            data = json.dumps(data) 
+
+            out = self._call('PUT', url, data)
+
+        self.log.debug('Leaving.')
+        return out
+
+       
+    def _call(self, method, url, data=None):
+        '''
+        make the HTTP call
+        method is "PUT", "GET", "POST" or "DELETE"
+        '''
+
+        self.log.debug('Starting. method=%s, url=%s, data=%s' %(method, url, data))
+
+        opener = urllib2.build_opener(NoExceptionHTTPHandler) 
+        if data:
+            request = RequestWithMethod(method, url, data)
+        else:
+            request = RequestWithMethod(method, url)
+
         try:
-            out = urllib2.urlopen(url, postdata)
-            self.log.debug('_signal: urlopen() output=%s' % out.read())
-            self.log.debug('_signal: urlopen() OK.')
-        except Exception, ex: 
-            self.log.debug('_signal: urlopen() failed and raised exception %s' % ex)
-            
+            out = opener.open(request)
+        except Exception, e:
+            self.log.debug('HTTP call failed with error %s' %e)
+            out = None  # Is this OK?
 
-
-    def _parse(self, output):
-        # return a list of condor job id
-        try:
-            return _CIDMATCH.findall(output)
-        except:
-            return []
-
-    def notify(self, nick, label, output):
-        """
-        Record creation of the condor job
-
-        nick = nickname
-        label = queue (what is in [] in the config file)
-        output = output of command condor_submit
-
-        """
-        msg = "nick: %s, fid: %s, label: %s" % (nick, self.fid, label)
-        self.log.debug(msg)
-
-        joblist = self._parse(output)
-
-        msg = "Number of CID found: %d" % len(joblist)
-        self.log.debug(msg)
-
-        for cid in joblist:
-            data = (cid, nick, self.fid, label)
-            self.crlist.append(data)
-
-    def msg(self, nick, label, text):
-        """
-        Send the latest factory message to the monitoring webservice
-
-        nick = nickname
-        label = queue (what is in [] in the config file)
-        text = message to be sent to the monitor server
-
-        """
-        data = (nick, self.fid, label, text[:140])
-        self.msglist.append(data)
-
-    def shout(self, label, cycleNumber):
-        """
-        Send information blob to webservice
-
-        label = queue (what is in [] in the config file)
-        cycleNumber = cycle number
-        """
-
-        msg = 'End of queue %s cycle: %d' % (label, cycleNumber)
-        self.log.debug(msg)
-        msg = 'msglist length: %d' % len(self.msglist)
-        self.log.debug(msg)
-        msg = 'crlist length: %d' % len(self.crlist)
-        self.log.debug(msg)
-
-        jsonmsg = self.json.encode(self.msglist)
-        txt = "cycle=%s&data=%s" % (cycleNumber, jsonmsg)
-        self._signal(self.msgurl, txt)
-
-        jsonmsg = self.json.encode(self.crlist)
-        txt = "data=%s" % jsonmsg
-        self._signal(self.crurl, txt)
-
-        self.msglist = []
-        self.crlist = []
-        
-    # Monitor-releated methods moved from factory.py
-
-    def _monitor_shout(self):
-        '''
-        call monitor.shout() method
-        '''
-
-        self.log.debug("__monitor_shout: Starting.")
-        if hasattr(self, 'monitor'):
-            self.shout(self.apfqname, self.cyclesrun)
-        else:
-            self.log.debug('__monitor_shout: no monitor instantiated')
-        self.log.debug("__monitor_shout: Leaving.")
-
-    def _monitor_note(self, msg):
-        '''
-        collects messages for the Monitor
-        '''
-
-        self.log.debug('__monitor_note: Starting.')
-
-        if hasattr(self, 'monitor'):
-            nick = self.qcl.get(self.apfqname, 'batchqueue')
-            self.msg(nick, self.apfqname, msg)
-        else:
-            self.log.debug('__monitor_note: no monitor instantiated')
-                
-        self.log.debug('__monitor__note: Leaving.')
-
-    def _monitor_notify(self, output):
-        '''
-        sends all collected messages to the Monitor server
-        '''
-
-        self.log.debug('__monitor_notify: Starting.')
-
-        if hasattr(self, 'monitor'):
-            nick = self.qcl.get(self.apfqname, 'batchqueue')
-            label = self.apfqname
-            self.notify(nick, label, output)
-        else:
-            self.log.debug('__monitor_notify: no monitor instantiated')
-
-        self.log.debug('__monitor_notify: Leaving.')
-
-
+        self.log.debug('Leaving with output %s' %out)
+        return out
 
