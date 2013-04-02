@@ -22,12 +22,10 @@ class ReadySchedPlugin(SchedInterface):
             self.apfqueue = apfqueue                
             self.log = logging.getLogger("main.schedplugin[%s]" % apfqueue.apfqname)
             try:
-                self.offset = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.ready.offset', 'getint')
+                self.offset = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.ready.offset', 'getint', default_value=0)
             except:
                 pass 
                 # Not mandatory
-            if not self.offset:
-                self.offset = 0
                 
             self.log.info("SchedPlugin: Object initialized.")
         except Exception, ex:
