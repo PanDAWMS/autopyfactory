@@ -66,7 +66,7 @@ class RequestWithMethod(urllib2.Request):
 #  ==================================================
 
 
-class APFMonitor2Plugin(MonitorInterface):
+class APFMonitorPlugin(MonitorInterface):
 
     __metaclass__ = singletonfactory(id_var="monitor_id")
 
