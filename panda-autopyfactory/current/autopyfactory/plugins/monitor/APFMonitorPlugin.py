@@ -337,7 +337,7 @@ class APFMonitorPlugin(MonitorInterface):
         self.log.debug('Starting for apfqueue %s with info list %s' %(apfqueue.apfqname, 
                                                                      jobinfolist))
 
-        url = self.monurl + 'jobs'
+        url = self.monurl + '/jobs'
 
         # jobs can not be registered unless the label is already registered
         self.registerLabel(apfqueue)
