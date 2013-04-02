@@ -6,10 +6,6 @@
 ## If you don't set them here the factory takes sensible default values, so nothing is mandatory
 ## see ConfigLoader._configurationDefaults() for these values. 
 #
-# Most important values can now be detected from schedconfig, so there is no need to set them
-# at all. These values are marked with a *. N.B. Even if you do set these values in the factory
-# they will be overwritten unless the "override = True" setting is used.
-#
 # Some of these values may be in the process of deprecation, especially submission parameters 
 # which are now handled by the submit plugins. 
 
@@ -17,7 +13,6 @@
 #               VARIABLES
 # =========================================================================== 
 
-# override
 #
 # grid
 # vo
@@ -31,10 +26,6 @@
 # cleanlogs.keepdays
 #
 # wmsstatusplugin
-#
-# configplugin
-# config.panda.url
-# config.agis.url
 #
 # batchstatusplugin
 # batchstatus.condor.queryargs
@@ -215,11 +206,6 @@
 #       Generic variables
 #  --------------------------------------------------------------------
 
-# override = determines if values from this config file have precedence over
-#               the same values comming from different sources of information.
-#               If True then schedconfig does not clobber configuration file values.
-#               Valid values are True|False.
-#
 # cloud = is the cloud this queue is in. You should set this to suppress pilot 
 #               submission when the cloud goes offline
 #               N.B. Panda clouds are UPPER CASE, e.g., UK
@@ -251,29 +237,6 @@
 #  --------------------------------------------------------------------
 
 # wmsstatusplugin = WMS Status Plugin.
-
-#  --------------------------------------------------------------------
-#       Config Plugin variables 
-#  --------------------------------------------------------------------
-
-# configplugin = Config Plugin. 
-#               Optional.
-#               Currently available options are: 
-#                   panda
-#                   agis
-
-
-#  --------------------------------------------------------------------
-#       Configuration when configplugin is panda
-#  --------------------------------------------------------------------
-
-# config.panda.url = URL to donwload configuration from PanDA
-
-#  --------------------------------------------------------------------
-#       Configuration when configplugin is agis 
-#  --------------------------------------------------------------------
-
-# config.agis.url = URL to download configuration from AGIS 
 
 #  --------------------------------------------------------------------
 #       Batch Status Plugin variables 
@@ -981,7 +944,6 @@ cleanlogs.keepdays = 7
 # plugins
 batchstatusplugin = Condor
 wmsstatusplugin = Panda
-configplugin = Panda
 batchsubmitplugin = CondorGT2
 schedplugin = Ready 
 monitorsection = apfmon-lancaster
@@ -1084,11 +1046,7 @@ executable.defaultarguments = --wrappergrid=%(grid)s --wrapperwmsqueue=%(wmsqueu
 #executable = /usr/libexec/runpilot3.sh
 #executable.defaultarguments =  -s %(wmsqueue)s -h %(batchqueue)s -p 25443 -w https://pandaserver.cern.ch  -j false  -k 0  -u user
 
-override = True
 enabled = True
-
-config.panda.url = http://atlas-agis-api-dev.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all
-config.agis.url = http://atlas-agis-api.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all
 
 # ====================================================================== 
 #               Individual queue configurations
