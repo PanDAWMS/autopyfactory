@@ -95,7 +95,6 @@ setup(
               'autopyfactory.plugins',
               'autopyfactory.plugins.batchstatus',
               'autopyfactory.plugins.batchsubmit',
-              'autopyfactory.plugins.config',              
               'autopyfactory.plugins.monitor',
               'autopyfactory.plugins.sched',
               'autopyfactory.plugins.wmsstatus',
