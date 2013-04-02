@@ -299,7 +299,7 @@
 #               value returned by the previous one.
 #               By selecting the right combination of Plugins in a given order,
 #               a complex algorithm can be built.
-#               E.g., the algorithm can start by using Activated Plugin,
+#               E.g., the algorithm can start by using Ready Plugin,
 #               which will determine the number of pilots based on 
 #               the number of activated jobs in the WMS queue and 
 #               the number of already submitted pilots.
@@ -315,6 +315,9 @@
 #  --------------------------------------------------------------------
 #       Configuration when schedplugin is Activated
 #  --------------------------------------------------------------------
+
+#  IMPORTANT NOTE: Activated plugin is decommissioned. 
+#                  It is not maintained anymore.
 
 # sched.activated.default = default number of pilots to be submitted
 #               when the context information 
@@ -358,7 +361,8 @@
 #       Configuration when schedplugin is Ready 
 #  --------------------------------------------------------------------
 
-# None
+#  sched.ready.offset = the minimum value in the number of ready jobs
+#               to trigger submission. 
 
 #  --------------------------------------------------------------------
 #       Configuration when schedplugin is Fixed
@@ -979,7 +983,7 @@ batchstatusplugin = Condor
 wmsstatusplugin = Panda
 configplugin = Panda
 batchsubmitplugin = CondorGT2
-schedplugin = Activated
+schedplugin = Ready 
 monitorsection = apfmon-lancaster
 
 
