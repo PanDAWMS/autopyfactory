@@ -167,7 +167,8 @@ class APFMonitorPlugin(MonitorInterface):
         url = self.monurl + '/factories'
         out = self._call('GET', url)
         out = json.loads(out.read())
-        labels = [ factory['name'] for factory in out ] 
+        factories = [ factory['name'] for factory in out ] 
+        self.log.debug('list of registered factories = %s' %factories)
         
         return self.fid in factories
 
