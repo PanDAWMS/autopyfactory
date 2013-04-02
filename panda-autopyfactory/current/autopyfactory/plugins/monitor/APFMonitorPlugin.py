@@ -364,7 +364,7 @@ class APFMonitorPlugin(MonitorInterface):
 
             data = json.dumps(data) 
 
-            out = self._call('PUT', url, data)
+            out = self._call('PUT', url, data=data)
 
         self.log.debug('Leaving.')
         return out
