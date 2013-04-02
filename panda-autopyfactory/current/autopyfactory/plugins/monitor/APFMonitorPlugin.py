@@ -194,7 +194,7 @@ class APFMonitorPlugin(MonitorInterface):
         return out
 
 
-    def _getLabels(self, label):
+    def _getLabels(self):
         '''
         queries for the list of labels registered for this factory.
         URL looks like
