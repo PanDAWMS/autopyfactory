@@ -316,7 +316,7 @@ class APFMonitorPlugin(MonitorInterface):
 
         out = self._call('PUT', url, data)
 
-        self.registeredlabels.append(label)
+        self.registeredlabels.append(apfqueue.apfqname)
 
         self.log.debug('Leaving')
         return out
