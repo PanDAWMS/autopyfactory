@@ -18,6 +18,9 @@ blacksites = [
               'Australia-NECTAR',
               'HELIX',
               'CERN-P1',
+              'CERN-RELEASE',
+              'SARA-MATRIX',
+              'ZA-WITS-CORE',
 ]
 
 defaultsection = """\
@@ -43,20 +46,19 @@ schedplugin = Activated
 sched.activated.min_pilots_per_cycle = 0
 sched.activated.max_pilots_per_cycle = 20
 sched.activated.max_jobs_torun = 9999
-sched.activated.max_pilots_pending = 20
+sched.activated.max_pilots_pending = 50
 sched.activated.testmode.allowed = True
 sched.activated.testmode.pilots = 1
 sched.activated.testmode.max_pending = 12
 
 executable = /data/atlpan/libexec/runpilot3-wrapper-jan29.sh
-executable.defaultarguments = -s %(wmsqueue)s -h %(batchqueue)s -p 25443 -w https://pandaserver.cern.ch -j false -k 0
+executable.defaultarguments = -s %(wmsqueue)s -h %(batchqueue)s -p 25443 -w https://pandaserver.cern.ch -j false -k %(memory)s
 
 batchsubmit.condorcream.environ = APF_PYTHON26=1 RUCIO_ACCOUNT=pilot
 
 apfqueue.sleep = 60
 
 """
-
 
 def main():
 
@@ -122,15 +124,17 @@ specified cloud and activity type.
         try:
             if d[key]['site'] in blacksites:
                 print
-		print "# Blacklisted: %s" % key
+		print "# Excluded: %s" % key
 		continue
             if d[key]['site_state'] == 'ACTIVE' and d[key]['type'] == options.activity:
 
                 wmsqueue = d[key]['panda_resource']
                 cetype = d[key]['type']
+                memory = d[key]['memory']
                 
                 for q in d[key]['queues']:
                     gramqueue = None 
+                    nordugridrsl = None 
             
                     if q['ce_flavour'] == 'OSG-CE':
             
@@ -153,14 +157,22 @@ specified cloud and activity type.
                         submitpluginstring = 'condorcream'
             
                     elif q['ce_flavour'] == 'LCG-CE':
-            
+                        print
+                        print "# Skipping GT2 queue: %s (%s)" % (key, q['ce_queue_id'])
+                        continue
                         gridresource = '%s/jobmanager-%s' %(q['ce_endpoint'], q['ce_jobmanager'])
                         submitplugin = 'CondorGT2'
                         submitpluginstring = 'condorgt2'
                         gramversion = 'gram2'
                         gramqueue = q['ce_queue_name']
                         
+                    elif q['ce_flavour'] == 'ARC-CE':
+                        gridresource = q['ce_endpoint']
+                        submitplugin = 'CondorNordugrid'
+                        submitpluginstring = 'condornordugrid'
+			nordugridrsl = '(jobname = "prod_pilot")(runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY )'
                     else:
+                        print
                         print "# Unknown ce_flavour for ce_queue_id: %s" % q['ce_queue_id']
                         continue
             
@@ -170,9 +182,14 @@ specified cloud and activity type.
                     print 'autofill = False'
                     print 'batchqueue = %s' % key
                     print 'wmsqueue = %s' % wmsqueue
+                    print 'memory = %s' % memory
                     print 'batchsubmitplugin = %s' % submitplugin
                     print 'batchsubmit.%s.gridresource = %s' % (submitpluginstring, gridresource)
-                    print 'sched.activated.max_pilots_pending = %s' % max(9,d[key]['nqueue'])
+                    # times 3 hack until tuning is sorted
+                    print 'sched.activated.max_pilots_pending = %s' % max(9,d[key]['nqueue'] * 3)
+                    if nordugridrsl:
+                        print 'batchsubmit.condornordugrid.nordugridrsl = %s' % nordugridrsl
+                        print 'batchsubmit.condornordugrid.queue = %s' % q['ce_queue_name']
                     if gramqueue:
                         print 'globusrsl.%s.queue = %s' % (gramversion, gramqueue)
                     if cetype == 'analysis':
