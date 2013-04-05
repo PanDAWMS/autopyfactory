@@ -98,6 +98,7 @@ class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         nordugridrsl_env += "('APFCID' '$(Cluster).$(Process)') " 
         nordugridrsl_env += "('APFMON' '%s') " % self.monitorurl
         nordugridrsl_env += "('FACTORYQUEUE' '%s') " % self.apfqname
+        nordugridrsl_env += "('FACTORYUSER' '%s') " % self.factoryuser
 
         # the next is for tagas like 
         #       ('RUCIO_ACCOUNT' 'pilot')
