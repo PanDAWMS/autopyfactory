@@ -45,7 +45,7 @@ ChangeLog
 
 * New URL for Panda Config Plugin.
 
-* Added __add__() method to BatchQueueInfo and WMSQueueInfo classes .
+* Added __add__() method to BatchQueueInfo and WMSQueueInfo classes.
 
 * CondorLSF Submit plugin created.
 
