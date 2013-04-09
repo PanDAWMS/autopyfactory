@@ -25,8 +25,8 @@ if major == 2:
 #           data files
 # ===========================================================
 
-libexec_files = ['libexec/runpilot3-wrapper.sh',
-                 'libexec/wrapper.sh',]
+libexec_files = ['libexec/runpilot3-wrapper.sh-example',
+                 'libexec/wrapper.sh-example',]
 
 etc_files = ['etc/factory.conf-example',
              'etc/queues.conf-example',
@@ -42,14 +42,14 @@ docs_files = ['docs/%s' %file for file in os.listdir('docs') if os.path.isfile('
 
 # -----------------------------------------------------------
 
-rpm_data_files=[('/usr/libexec',       libexec_files),
+rpm_data_files=[('/etc/apf',           libexec_files),
                 ('/etc/apf',           etc_files),
                 ('/etc/init.d',        initd_files),
                 ('/etc/logrotate.d',   logrotate_files),                                        
                 ('/usr/share/doc/apf', docs_files),                                        
                ]
 
-home_data_files=[('libexec', libexec_files),
+home_data_files=[('etc',     libexec_files),
                  ('etc',     etc_files),
                  ('etc',     initd_files),
                  ('doc/apf', docs_files ),
