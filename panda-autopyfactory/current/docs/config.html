@@ -15,6 +15,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Batch Status Plugin variables">Batch Status Plugin variables</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Sched Plugin variables">Sched Plugin variables</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Activated">Configuration when schedplugin is Activated</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Ready">Configuration when schedplugin is Ready</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Fixed">Configuration when schedplugin is Fixed</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is MaxPerCycle">Configuration when schedplugin is MaxPerCycle</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is MinPerCycle">Configuration when schedplugin is MinPerCycle</a><br>
@@ -394,6 +395,8 @@ Also it can be filtered depending on the status of the wmsqueue
 </ul>
 
 <a name="Configuration when schedplugin is Activated"><h3><span style="color: black; "><span>Configuration when schedplugin is Activated</span></span></h3></a>
+<br>
+<b>IMPORTANT NOTE: Deprecated. Activated Plugin is not maintained anymore. Instead, suggested option is to use Ready Plugin plus a chain of limiting plugins (MaxPerCycle, MinPerCycle...)</b>
 <ul>
 <li><strong>sched.activated.default</strong><br>
 default number of pilots to be submitted
@@ -442,6 +445,14 @@ in status = test
 number of pilots to submit
 when the wmssite is in status = test
 and sched.activated.testmode.allowed is True
+<br>
+</ul>
+
+<a name="Configuration when schedplugin is Ready"><h3><span style="color: black; "><span>Configuration when schedplugin is Ready</span></span></h3></a>
+<ul>
+<li><strong>sched.ready.offset</strong>
+<br>
+the minimum value in the number of ready jobs to trigger submission.
 <br>
 </ul>
 
