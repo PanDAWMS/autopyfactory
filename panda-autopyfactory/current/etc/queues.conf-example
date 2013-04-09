@@ -61,6 +61,7 @@
 # sched.simplenqueue.transferringlimit
 # sched.trivial.default
 # sched.scale.factor
+# sched.keepnrunning.keep_running
 #
 # batchsubmitplugin
 # batchsubmit.condorgt2.submitargs
@@ -461,6 +462,13 @@
 #               of the number of pilots.
 #               Value is a float number.
 
+
+#  --------------------------------------------------------------------
+#       Configuration when schedplugin is KeepNRunning
+#  --------------------------------------------------------------------
+
+# sched.keepnrunning.keep_running = number of total jobs to keep 
+#               running and/or pending
 
 #  --------------------------------------------------------------------
 #       Batch Submit Plugin variables 
