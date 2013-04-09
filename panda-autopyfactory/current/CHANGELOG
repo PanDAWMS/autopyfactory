@@ -49,7 +49,7 @@ ChangeLog
 
 * CondorLSF Submit plugin created.
 
-* Euca plugins improved. Still under development.
+* Euca plugins improved. Still under development. NOTE: most probably they will be removed and never used.
 
 * New type of plugins for monitor added.
 
