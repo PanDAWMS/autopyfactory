@@ -1275,55 +1275,72 @@ These are two examples of this type of templates
 <ul>
 <li><strong>baseproxy</strong>
 <br>
+if used, create a very long-lived proxy, e.g.
 <br>
-
-
+grid-proxy-init -valid 720:0 -out /tmp/plainProxy
 <br>
-<li><strong>checktime</strong>
-<br>
-<br>
-
-<br>
-<li><strong>interruptcheck</strong>
-<br>
-<br>
-
-<br>
-<li><strong>lifetime</strong>
-<br>
-<br>
-
-<br>
-<li><strong>minlife</strong>
-<br>
+Note that maintenance of this proxy must 
+occur completely outside of APF. 
 <br>
 
 <br>
 <li><strong>proxyfile</strong>
 <br>
+path to the user grid proxy file.
+<br>
+
+<br>
+<li><strong>checktime</strong>
+<br>
+How often to check proxy validity, in seconds
+<br>
+
+<br>
+<li><strong>interruptcheck</strong>
+<br>
+Frequency to check for keyboard/signal interrupts, in seconds
+<br>
+
+<br>
+<li><strong>lifetime</strong>
+<br>
+initial voms lifetime, in seconds (604800 = 7 days).
+345600 is ATLAS VOMS maximum
+<br>
+
+<br>
+<li><strong>minlife</strong>
+<br>
+Minimum lifetime of proxy (renew if less) in seconds
 <br>
 
 <br>
 <li><strong>renew</strong>
 <br>
+If you do not want to use ProxyManager to renew proxies, 
+set this  False and only define 'proxyfile'.
+If renew is set to false, 
+then no grid client setup is necessary. 
 <br>
 
 <br>
 <li><strong>usercert</strong>
 <br>
+path to the user grid certificate file
 <br>
 
 <br>
 <li><strong>userkey</strong>
 <br>
+path to the user grid key file
 <br>
 
 <br>
 <li><strong>vorole</strong>
 <br>
+user VO role
 <br>
 
-<br>
 </ul>
 
 <a name='monitorconf'><h2><span style="color: black; "><span>monitor.conf</span></span></h2></a>
