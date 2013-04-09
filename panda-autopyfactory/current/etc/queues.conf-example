@@ -39,6 +39,7 @@
 # sched.activated.max_pilots_pending
 # sched.activated.testmode.allowed
 # sched.activated.testmode.pilots
+# sched.ready.offset
 # sched.fixed.pilotspercycle
 # sched.maxpercycle.maximum
 # sched.minpercycle.minimum
