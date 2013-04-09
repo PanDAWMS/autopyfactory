@@ -1,6 +1,9 @@
 ChangeLog
 ---------
-2013-03-15
+
+2013-04-10
+
+* wrapper examples are placed in /etc/apf/ instead of /usr/libexec/
 
 * No more Config Plugins.
 
