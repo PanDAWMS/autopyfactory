@@ -2,6 +2,55 @@
 # proxy.conf   Configuration file for ProxyManager component of AutoPyFactory. 
 #
 
+# =========================================================================== 
+#               VARIABLES
+# =========================================================================== 
+
+# baseproxy 
+# proxyfile
+# lifetime 
+# checktime 
+# minlife
+# interruptcheck 
+# renew 
+# usercert
+# userkey
+# vorole
+
+# =========================================================================== 
+#               DESCRIPTION 
+# =========================================================================== 
+
+# baseproxy = if used, create a very long-lived proxy, e.g.
+#               grid-proxy-init -valid 720:0 -out /tmp/plainProxy
+#               Note that maintenance of this proxy must 
+#               occur completely outside of APF. 
+#
+# proxyfile = path to the user grid proxy file.
+#
+# lifetime = initial voms lifetime, in seconds (604800 = 7 days)
+#               345600 is ATLAS VOMS maximum
+#
+# checktime = How often to check proxy validity, in seconds
+#
+# minlife = Minimum lifetime of proxy (renew if less) in seconds
+#
+# interruptcheck = Frequency to check for keyboard/signal interrupts, in seconds
+#
+# renew = If you do not want to use ProxyManager to renew proxies, 
+#               set this  False and only define 'proxyfile'
+#               If renew is set to false, 
+#               then no grid client setup is necessary. 
+#
+# usercert = path to the user grid certificate file
+#
+# userkey = path to the user grid key file
+#
+# vorole = user VO role
+
+
+# =========================================================================== 
+
 [DEFAULT]
 #envset_KEY = VALUE
 #envunset = VAR1,VAR2,VAR3
