@@ -8,7 +8,6 @@ import shutil
 import time
 
 from autopyfactory.interfaces import BatchSubmitInterface
-import submit 
 
 __author__ = "John Hover, Jose Caballero"
 __copyright__ = "2011 John Hover, Jose Caballero"
