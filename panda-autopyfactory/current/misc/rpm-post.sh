@@ -4,7 +4,7 @@
 #	cp -f /etc/apf/factory.conf.bak /etc/apf/factory.conf
 #fi
 chmod ugo+x /etc/init.d/factory
-chmod ugo+x /usr/libexec/wrapper.sh
+#chmod ugo+x /usr/libexec/wrapper.sh
 /sbin/chkconfig --add factory
 
 #  check that factory.sysconfig has been placed in /etc/sysconfig/factory.sysconfig 
