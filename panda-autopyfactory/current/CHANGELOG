@@ -3,6 +3,8 @@ ChangeLog
 
 2013-04-10
 
+* created test.py, to start creating unittest-like code
+
 * should_transfer_files = NO
 
 * new configuration file for monitor plugins.
