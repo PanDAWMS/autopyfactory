@@ -3,6 +3,8 @@ ChangeLog
 
 2013-04-10
 
+* created RELEASE_NOTES
+
 * everything related euca and persistence removed from config files. 
 
 * created test.py, to start creating unittest-like code
