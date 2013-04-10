@@ -40,6 +40,8 @@ initd_files = ['etc/factory',]
 logrotate_files = ['etc/factory.logrotate',]
 
 docs_files = ['docs/%s' %file for file in os.listdir('docs') if os.path.isfile('docs/%s' %file)]
+# adding RELEASE_NOTES to the docs
+docs_files.append('RELEASE_NOTES')
 
 # -----------------------------------------------------------
 
