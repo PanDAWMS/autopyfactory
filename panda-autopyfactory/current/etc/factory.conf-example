@@ -14,9 +14,6 @@
 # baseLogDirUrl
 # baseLogHttpPort 
 # batchstatus.condor.sleep
-# batchstatus.euca.sleep
-# batchstatus.euca.ec2_access_key
-# batchstatus.euca.ec2_secret_key
 # batchstatus.maxtime
 # cycles
 # cleanlogs.keepdays
@@ -67,13 +64,6 @@
 #
 # batchstatus.condor.sleep = time the Condor BatchStatus Plugin waits between cycles
 #               Value is in seconds.
-#
-# batchstatus.euca.sleep = time the Euca BatchStatus Plugin waits between cycles
-#               Value is in seconds.
-#
-# batchstatus.euca.ec2_access_key = EC2_ACCESS_KEY to interact with EC2 API
-#
-# batchstatus.euca.ec2_secret_key = EC2_SECRET_KEY to interact with EC2 API
 #
 # batchstatus.maxtime = maximum time while the info is considered reasonable. 
 #               If info stored is older than that, is considered not valid, 
@@ -145,17 +135,6 @@
 # wmsstatus.panda.sleep = time the WMSStatus Plugin waits between cycles
 #               Value is in seconds.
 
-# ---------------------------------------------------------------------------
-# Persistence
-# ---------------------------------------------------------------------------
-
-# persistence.dbengine = SQLAlchemy dbengine
-# persistence.dbuser = SQLAlchemy dbuser
-# persistence.dbpassword = SQLAlchemy dbpassword
-# persistence.dbhost = SQLAlchemy dbhost
-# persistence.dbport = SQLAlchemy dbport
-# persistence.dbpath = SQLAlchemy dbpath
-
 # ===========================================================================
 
 
@@ -187,21 +166,3 @@ baseLogHttpPort = 25880
 logserver.enabled = True
 logserver.index = True
 logserver.allowrobots = False
-
-
-
-[persistence]
-#
-# persistence is handled by sqlalchemy
-# engine string types:
-#
-# engine://user:password@host:port/database
-#
-
-persistence.dbengine=sqlite://
-persistence.dbuser=""
-persistence.dbpassword=""
-persistence.dbhost=""
-persistence.dbport=""
-persistence.dbpath=/tmp/kk/sql/sqldb.sq3
-
