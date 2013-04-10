@@ -390,7 +390,6 @@ class JSDFile(object):
 if __name__ == '__main__':
 
     import commands
-    from submit import *
     
     print '--------------------------------'
     print 'TEST 1'
