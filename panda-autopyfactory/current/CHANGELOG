@@ -3,6 +3,8 @@ ChangeLog
 
 2013-04-10
 
+* new configuration file for monitor plugins.
+
 * wrapper examples are placed in /etc/apf/ instead of /usr/libexec/
 
 * No more Config Plugins.
