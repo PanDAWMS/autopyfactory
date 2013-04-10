@@ -34,17 +34,6 @@
 # wmsstatus.maxtime
 # wmsstatus.panda.sleep
 
-# ---------------------------------------------------------------------------
-# Persistence
-# ---------------------------------------------------------------------------
-
-# persistence.dbengine
-# persistence.dbuser
-# persistence.dbpassword
-# persistence.dbhost
-# persistence.dbport
-# persistence.dbpath
-
 # ===========================================================================
 # Description:
 # ===========================================================================
