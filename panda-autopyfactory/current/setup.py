@@ -25,8 +25,9 @@ if major == 2:
 #           data files
 # ===========================================================
 
-libexec_files = ['libexec/runpilot3-wrapper.sh-example',
-                 'libexec/wrapper.sh-example',]
+#libexec_files = ['libexec/runpilot3-wrapper.sh-example',
+#                 'libexec/wrapper.sh-example',]
+libexec_files = ['libexec/%s' %file for file in os.listdir('libexec') if os.path.isfile('libexec/%s' %file)]
 
 etc_files = ['etc/factory.conf-example',
              'etc/queues.conf-example',
