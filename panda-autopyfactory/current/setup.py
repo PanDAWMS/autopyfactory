@@ -106,7 +106,6 @@ setup(
                'bin/factory',
                'misc/apfqueue-status',
                'misc/apfqueue-jobs-by-status.sh',
-               'misc/testpandaclient.py'
               ],
     
     data_files = choose_data_files()
