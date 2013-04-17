@@ -132,6 +132,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             else:
                 self.log.debug('submit: self._readconfig returned True. Keep going...')
                 self._addJSD()
+                self._custom_attrs()
                 self._finishJSD(n)
                 jsdfile = self._writeJSD()
                 if jsdfile:
@@ -315,13 +316,6 @@ x509UserProxyVOName = "atlas"
         environment += '"'
         self.JSD.add(environment)
 
-        # Adding condor attributes
-        if self.condor_attributes:
-            for attr in self.__parse_condor_attribute(self.condor_attributes):
-                self.JSD.add(attr)
-
-        for item in self.extra_condor_attributes:
-            self.JSD.add('%s = %s' %item)
 
         self.JSD.add("executable=%s" % self.executable)
         self.JSD.add('arguments=%s' % self.arguments)
@@ -414,6 +408,23 @@ x509UserProxyVOName = "atlas"
 
         self.log.debug('__submit: Leaving with output (%s, %s).' %(st, out))
         return st, out
+
+
+    def _custom_attrs(self):
+        ''' 
+        adding custom attributes from the queues.conf file
+        ''' 
+        self.log.debug('Starting.')
+
+        if self.condor_attributes:
+            for attr in self.__parse_condor_attribute(self.condor_attributes):
+                self.JSD.add(attr)
+
+        for item in self.extra_condor_attributes:
+            self.JSD.add('%s = %s' %item)
+
+        self.log.debug('Leaving.')
+
 
     def _finishJSD(self, n):
         '''
