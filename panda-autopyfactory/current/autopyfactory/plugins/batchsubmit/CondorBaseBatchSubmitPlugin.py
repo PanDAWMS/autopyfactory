@@ -328,7 +328,7 @@ x509UserProxyVOName = "atlas"
         self.JSD.add("stream_error=False")
         self.JSD.add("notification=Error")
         self.JSD.add("transfer_executable = True")
-        self.JSD.add("should_transfer_files = NO")
+        #self.JSD.add("should_transfer_files = NO")
         #self.JSD.add("when_to_transfer_output = ON_EXIT_OR_EVICT")
         
         self.log.debug('addJSD: Leaving.')
