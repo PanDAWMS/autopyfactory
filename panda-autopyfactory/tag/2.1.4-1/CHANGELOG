@@ -3,6 +3,8 @@ ChangeLog
 
 2013-04-10
 
+* utils distributed via /usr/share/apf instead of /usr/bin, and have different names.
+
 * created RELEASE_NOTES
 
 * everything related euca and persistence removed from config files. 
