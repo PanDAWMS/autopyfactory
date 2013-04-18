@@ -22,11 +22,9 @@ if major == 2:
         sys.exit(0)
 
 # ===========================================================
-#           data files
+#                D A T A     F I L E S 
 # ===========================================================
 
-#libexec_files = ['libexec/runpilot3-wrapper.sh-example',
-#                 'libexec/wrapper.sh-example',]
 libexec_files = ['libexec/%s' %file for file in os.listdir('libexec') if os.path.isfile('libexec/%s' %file)]
 
 etc_files = ['etc/factory.conf-example',
@@ -39,9 +37,17 @@ initd_files = ['etc/factory',]
 
 logrotate_files = ['etc/factory.logrotate',]
 
+# docs files:
+#   --everything in the docs/ directory
+#   -- RELEASE_NOTES file 
 docs_files = ['docs/%s' %file for file in os.listdir('docs') if os.path.isfile('docs/%s' %file)]
-# adding RELEASE_NOTES to the docs
 docs_files.append('RELEASE_NOTES')
+
+utils_files = ['misc/apf-agis-config',
+               'misc/apf-queue-status',
+               'misc/apf-queue-jobs-by-status.sh',
+               'misc/apf-test-pandaclient',
+               ]
 
 # -----------------------------------------------------------
 
@@ -50,18 +56,19 @@ rpm_data_files=[('/etc/apf',           libexec_files),
                 ('/etc/init.d',        initd_files),
                 ('/etc/logrotate.d',   logrotate_files),                                        
                 ('/usr/share/doc/apf', docs_files),                                        
+                ('/usr/share/apf',     utils_files),                                        
                ]
 
-home_data_files=[('etc',     libexec_files),
-                 ('etc',     etc_files),
-                 ('etc',     initd_files),
-                 ('doc/apf', docs_files ),
+home_data_files=[('etc',       libexec_files),
+                 ('etc',       etc_files),
+                 ('etc',       initd_files),
+                 ('doc/apf',   docs_files ),
+                 ('share/apf', utils_files),                                        
                 ]
 
-# ===========================================================
+# -----------------------------------------------------------
 
 def choose_data_files():
-    #print(sys.argv)
     rpminstall = True
     userinstall = False
      
@@ -82,6 +89,8 @@ def choose_data_files():
         # Something probably went wrong, so punt
         return rpm_data_files
        
+# ===========================================================
+
 # setup for distutils
 setup(
     name="panda-autopyfactory",
@@ -104,8 +113,6 @@ setup(
               ],
     scripts = [ # Utilities and main script
                'bin/factory',
-               'misc/apfqueue-status',
-               'misc/apfqueue-jobs-by-status.sh'
               ],
     
     data_files = choose_data_files()
