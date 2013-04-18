@@ -124,8 +124,8 @@ specified cloud and activity type.
         try:
             if d[key]['site'] in blacksites:
                 print
-		print "# Excluded: %s" % key
-		continue
+                print "# Excluded: %s" % key
+                continue
             if d[key]['site_state'] == 'ACTIVE' and d[key]['type'] == options.activity:
 
                 wmsqueue = d[key]['panda_resource']
@@ -170,7 +170,7 @@ specified cloud and activity type.
                         gridresource = q['ce_endpoint']
                         submitplugin = 'CondorNordugrid'
                         submitpluginstring = 'condornordugrid'
-			nordugridrsl = '(jobname = "prod_pilot")(runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY )'
+                        nordugridrsl = '(jobname = "prod_pilot")(runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY )'
                     else:
                         print
                         print "# Unknown ce_flavour for ce_queue_id: %s" % q['ce_queue_id']
