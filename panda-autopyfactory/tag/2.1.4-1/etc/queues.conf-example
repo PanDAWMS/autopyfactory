@@ -1095,17 +1095,18 @@ executable.arguments = %(executable.defaultarguments)s --script=pilot.py --libco
 #               CREAM example
 # ---------------------------------------------------------------------- 
 
-[CNAF_INFN_IT]
+[RAL-LCG2-lcgce04-grid3000M-pbs-3379]
 enabled = False
 
-wmsqueue = ANALY_BNL_ATLAS_1
-batchqueue = ANALY_BNL_ATLAS_1-condor
+batchqueue = RAL-LCG2-lcgce04-grid3000M-pbs
+wmsqueue = RAL-LCG2
 
 batchsubmitplugin = CondorCREAM
-batchsubmit.cream.webservice = ce06-lcg.cr.cnaf.infn.it
+
+batchsubmit.cream.webservice = lcgce04.gridpp.rl.ac.uk
 batchsubmit.cream.port = 8443
-batchsubmit.cream.batch = lsf
-batchsubmit.cream.queue = atlas
+batchsubmit.cream.batch = pbs
+batchsubmit.cream.queue = grid3000M 
 batchsubmit.cream.condor_attributes = periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
 batchsubmit.cream.proxy = atlas-production
 
