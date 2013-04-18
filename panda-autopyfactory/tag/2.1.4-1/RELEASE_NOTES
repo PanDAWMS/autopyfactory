@@ -32,6 +32,10 @@
   Read carefully the inline documentation in
   'monitor.conf' before using it.
 
+* Utils, including script to generate 'queues.conf'
+  with information from AGIS, have changed name and location.
+  New scripts are place underneath '/usr/share/apf'
+
 ------------------------------------------
       version 2.1.1-3
 ------------------------------------------
