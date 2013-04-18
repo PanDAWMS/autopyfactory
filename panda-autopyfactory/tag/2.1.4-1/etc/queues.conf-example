@@ -1101,7 +1101,7 @@ enabled = False
 wmsqueue = ANALY_BNL_ATLAS_1
 batchqueue = ANALY_BNL_ATLAS_1-condor
 
-batchsubmitplugin = CREAM
+batchsubmitplugin = CondorCREAM
 batchsubmit.cream.webservice = ce06-lcg.cr.cnaf.infn.it
 batchsubmit.cream.port = 8443
 batchsubmit.cream.batch = lsf
