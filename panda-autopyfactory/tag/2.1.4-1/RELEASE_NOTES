@@ -6,7 +6,7 @@
   are placed underneath the '/etc/apf/' directory.
   They are not copied directly into '/usr/libexec/' anymore.
 
-  'wrapper-0.9.8.sh' has a different set of
+  'wrapper-0.9.9.sh' has a different set of
   input options than previous one. 
   Read carefully the inline documentation before using it.
 
