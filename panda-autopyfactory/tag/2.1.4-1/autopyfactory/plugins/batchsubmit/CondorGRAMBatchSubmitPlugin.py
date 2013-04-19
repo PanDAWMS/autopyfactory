@@ -91,7 +91,7 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         ###self.JSD.add(globusrsl)
 
         # -- fixed stuffs --
-        self.JSD.add('copy_to_spool = false')
+        self.JSD.add('copy_to_spool = True')
 
         super(CondorGRAMBatchSubmitPlugin, self)._addJSD() 
     
