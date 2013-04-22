@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: 
+# $Id$ 
 #
 function lfc_test() {
     echo -n "Testing LFC module for $1: "
