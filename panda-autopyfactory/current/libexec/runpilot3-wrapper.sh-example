@@ -203,7 +203,7 @@ function set_forced_env() {
 
 ## main ##
 
-echo "This is pilot wrapper $Id: runpilot3-wrapper.sh devel $"
+echo "This is pilot wrapper $Id$"
 echo "Please send development requests to p.love@lancaster.ac.uk"
 
 # notify monitoring, job running
