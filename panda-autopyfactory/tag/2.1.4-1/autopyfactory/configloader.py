@@ -15,7 +15,7 @@ import urllib2
 from urllib import urlopen
 from ConfigParser import SafeConfigParser, NoSectionError, InterpolationMissingOptionError
 
-from autopyfactory.apfexceptions import ConfigFailure
+from autopyfactory.apfexceptions import ConfigFailure, FactoryConfigurationFailure
 
 ####
 ####try:
@@ -323,7 +323,7 @@ class ConfigManager(object):
             f = open(path)
             return f
         except:
-            raise ConfigFailure("Problem with config file %s" % path)
+            raise FactoryConfigurationFailure("Problem with config file %s" % path)
     
     
     def __dataFromURI(self, uri):
@@ -336,7 +336,7 @@ class ConfigManager(object):
             uridata = urllib2.urlopen(uri)
             return uridata
         except:
-            raise ConfigFailure("Problem with URI source %s" % uri)
+            raise FactoryConfigurationFailure("Problem with URI source %s" % uri)
 
 
 
