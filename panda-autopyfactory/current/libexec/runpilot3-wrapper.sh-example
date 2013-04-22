@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: runpilot3-wrapper.sh 14033 2013-01-29 10:31:09Z plove $
+# $Id: 
 #
 function lfc_test() {
     echo -n "Testing LFC module for $1: "
