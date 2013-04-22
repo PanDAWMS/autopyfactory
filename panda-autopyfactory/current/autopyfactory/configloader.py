@@ -323,7 +323,7 @@ class ConfigManager(object):
             f = open(path)
             return f
         except:
-            raise FactoryConfigurationFailure("Problem with config file %s" % path)
+            raise ConfigFailure("Problem with config file %s" % path)
     
     
     def __dataFromURI(self, uri):
@@ -336,7 +336,7 @@ class ConfigManager(object):
             uridata = urllib2.urlopen(uri)
             return uridata
         except:
-            raise FactoryConfigurationFailure("Problem with URI source %s" % uri)
+            raise ConfigFailure("Problem with URI source %s" % uri)
 
 
 
