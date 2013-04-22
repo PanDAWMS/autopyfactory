@@ -22,4 +22,4 @@
 
 [apfmon-lancaster]
 monitorplugin = APF
-monitorURL = http://my.web.monitor/ 
+monitorURL = http://apfmon.lancs.ac.uk/api
