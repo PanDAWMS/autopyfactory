@@ -231,6 +231,7 @@ class Config(SafeConfigParser, object):
         sections.sort()
         for section in sections:
             str += self._getsectioncontent(section, raw, excludelist)
+            str += '\n'
         return str
 
     def _getsectioncontent(self, section, raw, excludelist):
