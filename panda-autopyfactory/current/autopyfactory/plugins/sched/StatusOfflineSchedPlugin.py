@@ -40,12 +40,15 @@ class StatusOfflineSchedPlugin(SchedInterface):
 
         if self.wmsinfo is None:
             self.log.warning("wsinfo is None!")
-            out = self.default
+            #out = self.default
+            out = 0
         elif self.batchinfo is None:
             self.log.warning("self.batchinfo is None!")
-            out = self.default            
+            #out = self.default            
+            out = 0
         elif not self.wmsinfo.valid() and self.batchinfo.valid():
-            out = self.default
+            #out = self.default
+            out = 0
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             # Carefully get wmsinfo, activated. 
@@ -64,7 +67,7 @@ class StatusOfflineSchedPlugin(SchedInterface):
             # choosing algorithm 
             if cloudstatus == 'offline' or sitestatus == 'offline':
                 if self.testmode:
-                    self.log.info('calcSubmitNum: offline is enabled, returning default %s' %self.pilots_in_offline_mode)
+                    self.log.info('calcSubmitNum: offline is enabled, returning out = %s' %self.pilots_in_offline_mode)
                     nsub = self.pilots_in_offline_mode
 
             return nsub 
