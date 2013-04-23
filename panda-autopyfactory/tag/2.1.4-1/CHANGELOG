@@ -3,6 +3,8 @@ ChangeLog
 
 2013-04-10
 
+* allowing raw = True or False in getContent() method in configloader
+
 * utils distributed via /usr/share/apf instead of /usr/bin, and have different names.
 
 * created RELEASE_NOTES
