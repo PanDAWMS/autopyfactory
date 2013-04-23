@@ -222,7 +222,7 @@ class Config(SafeConfigParser, object):
                     conf.set(section, item[0], item[1])
         return conf
 
-    def getContent(self, excludelist=[]):
+    def getContent(self, raw=True, excludelist=[]):
         '''
         returns the content of the config object in a single string
         '''
@@ -230,15 +230,15 @@ class Config(SafeConfigParser, object):
         sections = self.sections()
         sections.sort()
         for section in sections:
-            str += self._getsectioncontent(section, excludelist)
+            str += self._getsectioncontent(section, raw, excludelist)
         return str
 
-    def _getsectioncontent(self, section, excludelist):
+    def _getsectioncontent(self, section, raw, excludelist):
         '''
         returns the content of a given sections in a single string
         '''
         str = '[%s]\n' %section
-        itemlist = self.items(section, raw=True)
+        itemlist = self.items(section, raw=raw)
         itemlist.sort()
         for key, value in itemlist:
             if key  in excludelist:
