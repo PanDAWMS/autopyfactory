@@ -429,6 +429,13 @@ class Factory(object):
         # Handle Log Serving
         self._initLogserver()
 
+        # dump the content of queues.conf 
+        qclstr = self.qcl.getContent(raw=False)
+        logpath = self.fcl.get('Factory', 'baseLogDir')
+        qclfile = open('%s/queues.conf' %logpath, 'w')
+        print >> qclfile, qclstr
+        qclfile.close()
+
         # APF Queues Manager 
         self.apfqueuesmanager = APFQueuesManager(self)
         
