@@ -115,12 +115,14 @@ class APFMonitorPlugin(MonitorInterface):
         '''
 
         self.log.debug('Starting')
-        if self._isFactoryRegistered():
-            self.log.debug('factory is already registered')
-            out = None
-        else:
-            self.log.info('factory is not registered yet. Registering.')
-            out = self._registerFactory()
+
+        #if self._isFactoryRegistered():
+        #    self.log.debug('factory is already registered')
+        #    out = None
+        #else:
+        #    self.log.info('factory is not registered yet. Registering.')
+        #    out = self._registerFactory()
+        out = self._registerFactory()
 
         self.log.debug('Leaving')
         return out
