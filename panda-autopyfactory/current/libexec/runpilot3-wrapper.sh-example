@@ -61,10 +61,7 @@ function find_lfc_compatible_python() {
         pybin=`which python`
         lfc_test $pybin
         if [ $? = "0" ]; then
-          echo "lfc_test passed OK, using cvmfs python: $pybin"
           return 0
-        else
-          echo "lfc_test failed for cvmfs python"
         fi
       else
         echo "cvmfs python2.6 not found"
