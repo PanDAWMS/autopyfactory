@@ -385,7 +385,7 @@ class APFMonitorPlugin(MonitorInterface):
         url = "%s/labels/%s:%s" %( self.monurl, self.fid, label)
         msg = "Attempt to submit %s pilots" %n  
         data = {'status': msg}
-        data = json.dump(data)
+        data = json.dumps(data)
         self._call("POST", url, data=data) 
 
         self.log.debug('Leaving')
