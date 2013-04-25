@@ -365,13 +365,31 @@ class APFMonitorPlugin(MonitorInterface):
                 self.log.debug('updateJobs: adding data (%s, %s, %s)' %(ji.jobid, self.fid, apfqname))
 
             data = json.dumps(data) 
-
             out = self._call('PUT', url, data=data)
+
+            # sending a message to the label
+            n = len(jobinfolist)
+            self.updateLabel(apfqname, n) 
 
         self.log.debug('Leaving.')
         return out
 
-       
+    def updateLabel(self, label, n):
+        '''
+        update each label (==apfqname) in the monitor
+        n is the number of new pilots being submitted
+        '''
+
+        self.log.debug('Starting for label %s and number of pilots %s' %(label, n))
+
+        url = self.monurl + "/labels/" + label
+        msg = "Attempt to submit %s pilots" %n  
+        data = {'status': msg}
+        self._call("POST", url, data=data) 
+
+        self.log.debug('Leaving')
+
+ 
     def _call(self, method, url, data=None):
         '''
         make the HTTP call
