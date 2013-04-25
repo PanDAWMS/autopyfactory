@@ -382,9 +382,10 @@ class APFMonitorPlugin(MonitorInterface):
 
         self.log.debug('Starting for label %s and number of pilots %s' %(label, n))
 
-        url = self.monurl + "/labels/" + label
+        url = "%s/labels/%s:%s" %(self.monurl, self.fid, label)
         msg = "Attempt to submit %s pilots" %n  
         data = {'status': msg}
+        data = json.dump(data)
         self._call("POST", url, data=data) 
 
         self.log.debug('Leaving')
