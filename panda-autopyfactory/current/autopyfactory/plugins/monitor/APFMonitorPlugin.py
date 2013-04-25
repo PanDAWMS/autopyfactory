@@ -11,6 +11,7 @@ import logging
 import re
 import threading
 import StringIO
+import urllib
 import urllib2
 
 from autopyfactory.factory import Singleton, singletonfactory
@@ -385,7 +386,7 @@ class APFMonitorPlugin(MonitorInterface):
         url = "%s/labels/%s:%s" %(self.monurl, self.fid, label)
         msg = "Attempt to submit %s pilots" %n  
         data = {'status': msg}
-        data = json.dumps(data)
+        data = urllib.urlencode(data)
         self._call("POST", url, data=data) 
 
         self.log.debug('Leaving')
