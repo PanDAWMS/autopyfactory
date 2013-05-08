@@ -3,6 +3,8 @@ ChangeLog
 
 2013-05-06
 
+* copy_to_spool set to True
+
 * dumping the content of queues.conf on start
 
 * allowing raw = True or False in getContent() method in configloader
