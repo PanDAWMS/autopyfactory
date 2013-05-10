@@ -17,10 +17,11 @@ blacksites = [
               'IAAS',
               'Australia-NECTAR',
               'HELIX',
+              'HELIX_NEBULA_CLOUD',
+              'CERN-CLOUD',
               'CERN-P1',
               'CERN-RELEASE',
-              'SARA-MATRIX',
-              'ZA-WITS-CORE',
+              'UKI-LT2-Brunel',
 ]
 
 defaultsection = """\
@@ -51,10 +52,12 @@ sched.activated.testmode.allowed = True
 sched.activated.testmode.pilots = 1
 sched.activated.testmode.max_pending = 12
 
-executable = /data/atlpan/libexec/runpilot3-wrapper-jan29.sh
+executable = /data/atlpan/libexec/runpilot3-wrapper-apr24.sh
 executable.defaultarguments = -s %(wmsqueue)s -h %(batchqueue)s -p 25443 -w https://pandaserver.cern.ch -j false -k %(memory)s
 
 batchsubmit.condorcream.environ = APF_PYTHON26=1 RUCIO_ACCOUNT=pilot
+batchsubmit.condorcream.condor_attributes = periodic_hold=JobStatus==1 && gridjobstatus=?=UNDEFINED && CurrentTime-EnteredCurrentStatus>3600
+batchsubmit.condorcream.condor_attributes = periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
 
 apfqueue.sleep = 60
 
@@ -122,10 +125,14 @@ specified cloud and activity type.
     
     for key in sorted(d):
         try:
+            if d[key]['vo_name'] != 'atlas':
+		print
+                print "# NOT ATLAS: %s" % d[key]['site']
+                continue
             if d[key]['site'] in blacksites:
                 print
-                print "# Excluded: %s" % key
-                continue
+		print "# Excluded: %s" % key
+		continue
             if d[key]['site_state'] == 'ACTIVE' and d[key]['type'] == options.activity:
 
                 wmsqueue = d[key]['panda_resource']
@@ -135,6 +142,10 @@ specified cloud and activity type.
                 for q in d[key]['queues']:
                     gramqueue = None 
                     nordugridrsl = None 
+                    submitplugin = None
+                    submitpluginstring = None
+                    gramqueue = None
+                    gramversion = None
             
                     if q['ce_flavour'] == 'OSG-CE':
             
@@ -170,10 +181,10 @@ specified cloud and activity type.
                         gridresource = q['ce_endpoint']
                         submitplugin = 'CondorNordugrid'
                         submitpluginstring = 'condornordugrid'
-                        nordugridrsl = '(jobname = "prod_pilot")(runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY )'
+			nordugridrsl = '(jobname = prod_pilot)(runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY )'
                     else:
                         print
-                        print "# Unknown ce_flavour for ce_queue_id: %s" % q['ce_queue_id']
+                        print "# Unknown ce_flavour for %s (%s)" % (q['ce_name'], q['ce_queue_id'])
                         continue
             
                     print
