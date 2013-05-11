@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+
+* method setuppandaenv() deleted from factory.py
+
 2013-05-06
 
 * copy_to_spool set to True
