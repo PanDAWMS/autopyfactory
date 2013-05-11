@@ -13,7 +13,6 @@ def main():
     apf.parseopts()
     apf.setuplogging()
     apf.platforminfo()
-    ##apf.setuppandaenv()
     apf.checkroot()
     apf.createconfig()
     apf.mainloop()
