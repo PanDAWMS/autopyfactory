@@ -482,7 +482,14 @@ f_build_pythonwrapper_opts(){
 
 f_monping() {
     #CMD="curl -fksS --connect-timeout 10 --max-time 20 ${APFMON}$1/$APFFID/$APFCID/$2"
-    CMD="curl -ksS -d state=$1 --connect-timeout 10 --max-time 20 ${APFMON}/jobs/${APFFID}:${APFCID}"
+    #CMD="curl -ksS -d state=$1 --connect-timeout 10 --max-time 20 ${APFMON}/jobs/${APFFID}:${APFCID}"
+
+    if [ "$1" == "running" ]; then
+        CMD="curl -ksS -d state=$1 --connect-timeout 10 --max-time 20 ${APFMON}/jobs/${APFFID}:${APFCID}"
+    fi
+    if [ "$1" == "exiting" ]; then
+        CMD="curl -ksS -d state=$1 -d rc=$2 --connect-timeout 10 --max-time 20 ${APFMON}/jobs/${APFFID}:${APFCID}"
+    fi
 
     echo "Monitor ping: $CMD"
 
