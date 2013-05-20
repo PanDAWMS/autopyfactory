@@ -24,9 +24,9 @@ class MaxPendingSchedPlugin(SchedInterface):
 
             self.max_pilots_pending = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.maxpending.maximum', 'getint', logger=self.log)
 
-            self.log.info("Object initialized.")
+            self.log.info("SchedPlugin: Object initialized.")
         except Exception, ex:
-            self.log.error("object initialization failed. Raising exception")
+            self.log.error("SchedPlugin: object initialization failed. Raising exception")
             raise ex
 
     def calcSubmitNum(self, nsub=0):
