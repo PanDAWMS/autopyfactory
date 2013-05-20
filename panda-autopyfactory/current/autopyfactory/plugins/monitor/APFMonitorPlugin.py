@@ -32,6 +32,7 @@ except ImportError, err:
 #
 #  ==================================================
 
+
 class NoExceptionHTTPHandler(urllib2.BaseHandler):
     '''
     A substitute/supplement to urllib2.HTTPErrorProcessor
@@ -64,6 +65,17 @@ class RequestWithMethod(urllib2.Request):
         return self._method
 
 
+#  ==================================================
+# This class is just to make the name of the HTTP
+# methods ("POST", "GET", etc) to look like macros
+
+class http:
+    GET = "GET"
+    POST = "POST"
+    PUT = "PUT"
+    DELETE = "DELETE"  
+    
+    
 #  ==================================================
 
 
@@ -168,7 +180,7 @@ class APFMonitorPlugin(MonitorInterface):
         '''
 
         url = self.monurl + '/factories'
-        out = self._call('GET', url)
+        out = self._call(http.GET, url)
         out = json.loads(out.read())
         factories = [ factory['name'] for factory in out ] 
         self.log.debug('list of registered factories = %s' %factories)
@@ -191,7 +203,7 @@ class APFMonitorPlugin(MonitorInterface):
         data["url"] =  self.baselogurl
         data = json.dumps(data)
 
-        out = self._call('PUT', url, data)
+        out = self._call(http.PUT, url, data)
 
         self.log.debug('Leaving')
         return out
@@ -238,7 +250,7 @@ class APFMonitorPlugin(MonitorInterface):
         self.log.debug('Starting')
 
         url = self.monurl + '/labels?factory=' + self.fid
-        out = self._call('GET', url)
+        out = self._call(http.GET, url)
         out = json.loads(out.read())
         labels = [ label['name'] for label in out ] 
         self.log.debug('list of registered labels = %s' %labels)
@@ -317,7 +329,7 @@ class APFMonitorPlugin(MonitorInterface):
         data.append(label)
         data = json.dumps(data)
 
-        out = self._call('PUT', url, data)
+        out = self._call(http.PUT, url, data)
 
         self.registeredlabels.append(apfqueue.apfqname)
 
@@ -366,7 +378,7 @@ class APFMonitorPlugin(MonitorInterface):
                 self.log.debug('updateJobs: adding data (%s, %s, %s)' %(ji.jobid, self.fid, apfqname))
 
             data = json.dumps(data) 
-            out = self._call('PUT', url, data=data)
+            out = self._call(http.PUT, url, data=data)
 
             # sending a message to the label
             n = len(jobinfolist)
@@ -387,7 +399,7 @@ class APFMonitorPlugin(MonitorInterface):
         msg = "Attempt to submit %s pilots" %n  
         data = {'status': msg}
         data = urllib.urlencode(data)
-        self._call("POST", url, data=data) 
+        self._call(http.POST, url, data=data) 
 
         self.log.debug('Leaving')
 
