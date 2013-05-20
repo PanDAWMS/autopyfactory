@@ -310,15 +310,15 @@
 #               To be used in Activated Scheduler Plugin.
 #
 # sched.activated.testmode.allowed = Boolean variable to trigger
-#               special mode of operation when the wmssite is in
+#               special mode of operation when the wmsqueue is in
 #               in status = test
 #
 # sched.activated.testmode.pilots = number of pilots to submit
-#               when the wmssite is in status = test
+#               when the wmsqueue is in status = test
 #               and sched.activated.testmode.allowed is True
 #
 # sched.activated.testmode.max_pending = maximum number of pilots 
-#               permitted in pendig state when the wmssite is in 
+#               permitted in pendig state when the wmsqueue is in 
 #               status = test and sched.activated.testmode.allowed is True
 #
 
@@ -380,11 +380,11 @@
 #  --------------------------------------------------------------------
 
 # sched.statustest.allowed = Boolean variable to trigger
-#               special mode of operation when the wmssite is in
+#               special mode of operation when the wmsqueue is in
 #               in status = test
 
 # sched.statustest.pilots = number of pilots to submit
-#               when the wmssite is in status = test
+#               when the wmsqueue is in status = test
 #               and sched.statustest.allowed is True
 
 #  --------------------------------------------------------------------
@@ -392,11 +392,11 @@
 #  --------------------------------------------------------------------
 
 # sched.statusoffline.allowed = Boolean variable to trigger
-#               special mode of operation when the wmssite or the cloud 
+#               special mode of operation when the wmsqueue or the cloud 
 #               is in status = offline
 
 # sched.statusoffline.pilots = number of pilots to submit
-#               when the wmssite or the cloud is in status = offline
+#               when the wmsqueue or the cloud is in status = offline
 #               and sched.statusoffline.allowed is True
 
 #  --------------------------------------------------------------------
