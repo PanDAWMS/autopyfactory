@@ -49,6 +49,7 @@ class CondorLocalBatchSubmitPlugin(CondorBaseBatchSubmitPlugin):
 
         self.JSD.add("universe=vanilla")
         self.JSD.add("should_transfer_files = IF_NEEDED")
+        self.JSD.add('+TransferOutput = ""')
 
         super(CondorLocalBatchSubmitPlugin, self)._addJSD()
 
