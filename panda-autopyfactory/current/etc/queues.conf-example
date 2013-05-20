@@ -506,8 +506,6 @@
 #               Note the following directives are added by default:
 #
 #                       transfer_executable = True
-#                       should_transfer_files = YES
-#                       when_to_transfer_output = ON_EXIT_OR_EVICT
 #                       stream_output=False
 #                       stream_error=False
 #                       notification=Error
@@ -602,8 +600,6 @@
 #               Note the following directives are added by default:
 #
 #                       transfer_executable = True
-#                       should_transfer_files = YES
-#                       when_to_transfer_output = ON_EXIT_OR_EVICT
 #                       stream_output=False
 #                       stream_error=False
 #                       notification=Error
@@ -710,8 +706,6 @@
 #               Note the following directives are added by default:
 #
 #                       transfer_executable = True
-#                       should_transfer_files = YES
-#                       when_to_transfer_output = ON_EXIT_OR_EVICT
 #                       stream_output=False
 #                       stream_error=False
 #                       notification=Error
@@ -841,8 +835,8 @@
 #
 #                       universe = vanilla
 #                       transfer_executable = True
-#                       should_transfer_files = YES
-#                       when_to_transfer_output = ON_EXIT_OR_EVICT
+#                       should_transfer_files = IF_NEEDED
+#                       +TransferOutput = ""
 #                       stream_output=False
 #                       stream_error=False
 #                       notification=Error
