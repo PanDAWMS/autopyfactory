@@ -1,6 +1,7 @@
 ChangeLog
 ---------
 
+* port number is got from URL instead of from config variable baseLogHttpPort
 
 * method setuppandaenv() deleted from factory.py
 
