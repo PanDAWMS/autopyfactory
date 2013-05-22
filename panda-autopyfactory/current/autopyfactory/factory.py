@@ -432,7 +432,6 @@ class Factory(object):
             lsidx = self.fcl.generic_get('Factory','logserver.index', 'getboolean', logger=self.log)
             lsrobots = self.fcl.generic_get('Factory','logserver.allowrobots', 'getboolean', logger=self.log)
             logpath = self.fcl.get('Factory', 'baseLogDir')
-            #logport = self.fcl.get('Factory', 'baseLogHttpPort')
             logport = logpath.split(':')[-1]  # logpath is like http://www.foo.bar:12345
                                               # we only need the port 12345
             if not os.path.exists(logpath):
