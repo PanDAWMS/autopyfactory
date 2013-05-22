@@ -12,7 +12,6 @@
 
 # baseLogDir
 # baseLogDirUrl
-# baseLogHttpPort 
 # batchstatus.condor.sleep
 # batchstatus.maxtime
 # cycles
@@ -45,11 +44,9 @@
 # baseLogDir =  where outputs from pilots are stored
 #               NOTE: No trailing '/'!!!
 #
-# baseLogDirUrl = where outputs from pilots are available via http 
+# baseLogDirUrl = where outputs from pilots are available via http.
+#               NOTE: It must include the port.
 #               NOTE: No trailing '/'!!!
-#
-# baseLogHttpPort = What port to run the HTTP server to export logs. 
-#               Make sure this matchesthe value in the baseLogDirUrl.
 #
 # batchstatus.condor.sleep = time the Condor BatchStatus Plugin waits between cycles
 #               Value is in seconds.
@@ -150,7 +147,6 @@ batchstatus.condor.sleep = 50
 
 baseLogDir = /home/apf/factory/logs
 baseLogDirUrl = http://my.host.domain:25880
-baseLogHttpPort = 25880 
 
 logserver.enabled = True
 logserver.index = True
