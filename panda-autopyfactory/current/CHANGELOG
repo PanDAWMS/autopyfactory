@@ -1,9 +1,11 @@
 ChangeLog
 ---------
 
-* port number is got from URL instead of from config variable baseLogHttpPort
+* Added logserver2.py, to create directory listing similar to Apache one.
 
-* method setuppandaenv() deleted from factory.py
+* Port number is got from URL instead of from config variable baseLogHttpPort
+
+* Method setuppandaenv() deleted from factory.py
 
 2013-05-06
 
