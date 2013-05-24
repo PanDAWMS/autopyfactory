@@ -98,5 +98,5 @@ class ReadySchedPlugin(SchedInterface):
                                                                                          pending_pilots, 
                                                                                          running_pilots, 
                                                                                          out))
-        msg = "ready=%d,offset=%d,pending=%d,return=%d" % (activated_jobs, self.offset, pending_pilots)
+        msg = "ready=%d,offset=%d,pend=%d,ret=%d" % (activated_jobs, self.offset, pending_pilots)
         return (out,msg)
