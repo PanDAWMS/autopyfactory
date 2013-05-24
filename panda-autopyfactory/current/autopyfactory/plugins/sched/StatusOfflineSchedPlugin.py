@@ -31,7 +31,7 @@ class StatusOfflineSchedPlugin(SchedInterface):
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
-    def calcSubmitNum(self, nsub=0):
+    def calcSubmitNum(self, n=0):
         
         self.log.debug('calcSubmitNum: Starting.')
 
@@ -39,16 +39,19 @@ class StatusOfflineSchedPlugin(SchedInterface):
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
 
         if self.wmsinfo is None:
-            self.log.warning("wsinfo is None!")
+            self.log.warning("wmsinfo is None!")
             #out = self.default
             out = 0
+            msg = "StatusOffline,no wmsinfo,ret=0"
         elif self.batchinfo is None:
             self.log.warning("self.batchinfo is None!")
             #out = self.default            
             out = 0
+            msg = "StatusOffline,no batchinfo,ret=0"
         elif not self.wmsinfo.valid() and self.batchinfo.valid():
             #out = self.default
             out = 0
+            msg = "StatusOffline,no wms/batchinfo,ret=0"
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             # Carefully get wmsinfo, activated. 
@@ -64,12 +67,16 @@ class StatusOfflineSchedPlugin(SchedInterface):
             cloudstatus = cloudinfo[cloud].status
             self.log.debug('calcSubmitNum: cloud %s status is %s' %(cloud, cloudstatus))
 
+            out = n
+            msg = None
+
             # choosing algorithm 
             if cloudstatus == 'offline' or sitestatus == 'offline':
                 if self.testmode:
                     self.log.info('calcSubmitNum: offline is enabled, returning out = %s' %self.pilots_in_offline_mode)
-                    nsub = self.pilots_in_offline_mode
+                    out = self.pilots_in_offline_mode
+                    msg = "StatusOffline,ret=%s" %(self.pilots_in_offline_mode)
 
-            return nsub 
+            return (out, msg) 
             
 
