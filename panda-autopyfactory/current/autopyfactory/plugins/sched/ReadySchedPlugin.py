@@ -43,11 +43,13 @@ class ReadySchedPlugin(SchedInterface):
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
 
         if self.wmsinfo is None:
-            self.log.warning("wsinfo is None!")
+            self.log.warning("wmsinfo is None!")
             out = 0 
+            msg = 'Invalid wmsinfo' 
         elif self.batchinfo is None:
             self.log.warning("self.batchinfo is None!")
             out = 0
+            msg = 'Invalid batchinfo' 
         elif not self.wmsinfo.valid() and self.batchinfo.valid():
             out = 0 
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
