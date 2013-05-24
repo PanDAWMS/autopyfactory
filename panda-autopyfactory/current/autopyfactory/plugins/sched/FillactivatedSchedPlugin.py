@@ -41,21 +41,24 @@ class FillactivatedSchedPlugin(SchedInterface):
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
 
         if self.wmsinfo is None:
-            self.log.warning("wsinfo is None!")
+            self.log.warning("wmsinfo is None!")
             out = self.default
+            msg = "Invalid wmsinfo"
         elif self.batchinfo is None:
             self.log.warning("self.batchinfo is None!")
             out = self.default            
+            msg = "Invalid batchinfo"
         elif not self.wmsinfo.valid() and self.batchinfo.valid():
             out = self.default
+            msg = "Invalid wms/batchinfo"
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             # Carefully get wmsinfo, activated. 
             self.siteid = self.apfqueue.siteid
             self.log.info("Siteid is %s" % self.siteid)
 
-        out = _calc_online() 
-        return out
+        (out, msg) = _calc_online() 
+        return (out, msg)
 
     def _calc_online(self):
         '''
@@ -98,4 +101,5 @@ class FillactivatedSchedPlugin(SchedInterface):
                                                                                          pending_pilots, 
                                                                                          running_pilots, 
                                                                                          out))
-        return out
+        msg = "Fillactivated,act=%s,pend=%s,run=%s,ret=%s" %(activated_jobs, pending_pilots, running_pilots, out)
+        return (out, msg)
