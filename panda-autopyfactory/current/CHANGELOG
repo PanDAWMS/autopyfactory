@@ -1,6 +1,10 @@
 ChangeLog
 ---------
 
+* All Sched Plugins returns a tuple (number of pilots, message). 
+  
+* Sending to the monitor the messages returned by Sched Plugins.
+
 * Changed setup.py, factory.py and plugins/monitor/APFMonitorPlugin.py to use release version info directly
   from factory.py rather than requiring that it be correctly placed in a config file. 
 
