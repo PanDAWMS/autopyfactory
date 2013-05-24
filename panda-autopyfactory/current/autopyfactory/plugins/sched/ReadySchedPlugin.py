@@ -52,6 +52,7 @@ class ReadySchedPlugin(SchedInterface):
             msg = 'Invalid batchinfo' 
         elif not self.wmsinfo.valid() and self.batchinfo.valid():
             out = 0 
+            msg = 'Invalid wms/batchinfo' 
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             self.key = self.apfqueue.wmsqueue
