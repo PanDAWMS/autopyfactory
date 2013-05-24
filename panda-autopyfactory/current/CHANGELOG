@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+* Changed setup.py, factory.py and plugins/monitor/APFMonitorPlugin.py to use release version info directly
+  from factory.py rather than requiring that it be correctly placed in a config file. 
+
 * Added logserver2.py, to create directory listing similar to Apache one.
 
 * Port number is got from URL instead of from config variable baseLogHttpPort
