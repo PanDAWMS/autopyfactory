@@ -31,15 +31,18 @@ class FixedSchedPlugin(SchedInterface):
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
-    def calcSubmitNum(self, nsub=0):
+    def calcSubmitNum(self, n=0):
         """ 
         returns always a fixed number of pilots
         """
 
         if self.pilotspercycle:
             out = self.pilotspercycle
+            msg = "Fixed,ret=%s" %out
         else:
             out = 0
+            msg = "Fixed,noinfo,ret=0"
             self.log.debug('calcSubmitNum: there is not a fixedPilotsPerCycle, returning 0')
-        return out
+
+        return (out, msg)
 
