@@ -804,7 +804,9 @@ class APFQueue(threading.Thread):
                 for m in self.monitor_plugins:
                     self.log.debug('run: calling registerJobs for monitor plugin %s' %m)
                     m.registerJobs(self, jobinfolist)
-                    m.updatelabel(fullmsg)
+                    if fullmsg:
+                        self.log.debug('run: calling updateLabel for monitor plugin %s' %m)
+                        m.updateLabel(self.apfqname, fullmsg)
                 self._exitloop()
                 self._logtime() 
                           
