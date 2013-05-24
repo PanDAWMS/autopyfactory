@@ -32,9 +32,10 @@ class ScaleSchedPlugin(SchedInterface):
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
-    def calcSubmitNum(self, nsub=0):
+    def calcSubmitNum(self, n=0):
 
-        self.log.debug('calcSubmitNum: Starting with nsub=%s' %nsub)
-        nsub = int(nsub * self.factor)
-        self.log.info('calcSubmitNum: return with nsub=%s' %nsub)
-        return nsub 
+        self.log.debug('calcSubmitNum: Starting with n=%s' %n)
+        out = int(n * self.factor)
+        self.log.info('calcSubmitNum: return with out=%s' %out)
+        msg = "Scale=%s,factor=%s,ret=%s" %(n, self.factor, out )
+        return (out, msg) 
