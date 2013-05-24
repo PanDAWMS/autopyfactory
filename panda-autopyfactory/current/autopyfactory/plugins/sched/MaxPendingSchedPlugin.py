@@ -29,23 +29,27 @@ class MaxPendingSchedPlugin(SchedInterface):
             self.log.error("SchedPlugin: object initialization failed. Raising exception")
             raise ex
 
-    def calcSubmitNum(self, nsub=0):
+    def calcSubmitNum(self, n=0):
 
-        self.log.debug('calcSubmitNum: Starting with nsub=%s' %nsub)
+        self.log.debug('calcSubmitNum: Starting with n=%s' %n)
 
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
 
+        out = n
+        msg = None
+    
         if self.batchinfo is None:
             self.log.warning("self.batchinfo is None!")
         else:
             pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending
             if self.max_pilots_pending:
-                nsub = min(nsub, self.max_pilots_pending - pending_pilots)     
+                out = min(n, self.max_pilots_pending - pending_pilots)     
+                msg = "MaxPending=%s,pend=%s,max=%s,ret=%s" %(n, pending_pilots, self.max_pilots_pending, out)
 
         # Catch all to prevent negative numbers
-        #if nsub < 0:
+        #if out < 0:
         #    self.log.info('calcSubmitNum: calculated output was negative. Returning 0')
-        #    nsub = 0
+        #    out = 0
             
-        self.log.info('calcSubmitNum: return with nsub=%s' %nsub)
-        return nsub
+        self.log.info('calcSubmitNum: return with out=%s' %out)
+        return (out, msg)
