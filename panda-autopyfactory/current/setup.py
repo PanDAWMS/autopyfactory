@@ -3,7 +3,9 @@
 # Setup prog for autopyfactory
 #
 #
-release_version='2.1.4'
+
+release_version='2.2.1'
+# Do not forget to set it up also in factory.conf
 
 import commands
 import os
