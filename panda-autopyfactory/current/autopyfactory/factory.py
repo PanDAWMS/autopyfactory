@@ -794,14 +794,17 @@ class APFQueue(threading.Thread):
         while not self.stopevent.isSet():
             try:
                 nsub = 0
+                fullmsg = ""
                 for sched_plugin in self.scheduler_plugins:
-                    nsub = sched_plugin.calcSubmitNum(nsub)
+                    (nsub, msg) = sched_plugin.calcSubmitNum(nsub)
+                    if msg:
+                        ';'.join(full,msg)
 
                 jobinfolist = self._submitpilots(nsub)
                 for m in self.monitor_plugins:
                     self.log.debug('run: calling registerJobs for monitor plugin %s' %m)
                     m.registerJobs(self, jobinfolist)
-                    
+                    m.updatelabel(fullmsg)
                 self._exitloop()
                 self._logtime() 
                           
