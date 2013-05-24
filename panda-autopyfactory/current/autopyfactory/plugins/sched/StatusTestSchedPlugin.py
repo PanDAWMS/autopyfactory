@@ -31,7 +31,7 @@ class StatusTestSchedPlugin(SchedInterface):
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
-    def calcSubmitNum(self, nsub=0):
+    def calcSubmitNum(self, n=0):
         
         self.log.debug('calcSubmitNum: Starting.')
 
@@ -39,16 +39,19 @@ class StatusTestSchedPlugin(SchedInterface):
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
 
         if self.wmsinfo is None:
-            self.log.warning("wsinfo is None!")
+            self.log.warning("wmsinfo is None!")
             #out = self.default
             out = 0
+            msg = "StatusTest,no wmsinfo,ret=0"
         elif self.batchinfo is None:
             self.log.warning("self.batchinfo is None!")
             #out = self.default            
             out = 0
+            msg = "StatusTest,no batchinfo,ret=0"
         elif not self.wmsinfo.valid() and self.batchinfo.valid():
             #out = self.default
             out = 0
+            msg = "StatusTest,no wms/batchinfo,ret=0"
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             # Carefully get wmsinfo, activated. 
@@ -59,10 +62,15 @@ class StatusTestSchedPlugin(SchedInterface):
             sitestatus = siteinfo[self.siteid].status
             self.log.debug('calcSubmitNum: site status is %s' %sitestatus)
 
+            out = n
+            msg = None
+
             if sitestatus == 'test':
                 if self.testmode:
                     self.log.info('calcSubmitNum: testmode is enabled, returning out = %s' %self.pilots_in_test_mode)
-                    nsub = self.pilots_in_test_mode
-        return nsub 
+                    out= self.pilots_in_test_mode
+                    msg='StatusTest,ret=%s' %self.pilots_in_test_mode
+
+        return (out, msg)
 
 
