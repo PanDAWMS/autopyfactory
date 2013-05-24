@@ -27,12 +27,15 @@ class MaxPerCycleSchedPlugin(SchedInterface):
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
-    def calcSubmitNum(self, nsub=0):
-        self.log.debug('calcSubmitNum: Starting with nsub=%s' %nsub)
-        input = nsub
+    def calcSubmitNum(self, n=0):
+        self.log.debug('calcSubmitNum: Starting with n=%s' %n)
+
+        out = n
+        msg = None
 
         if self.max_pilots_per_cycle:
-            nsub = min(nsub, self.max_pilots_per_cycle)
+            out = min(n, self.max_pilots_per_cycle)
+            msg = "MaxPerCycle=%s,max=%s,ret=%" %(n, self.max_pilots_per_cycle, out)
                 
-        self.log.info('calcSubmitNum: input=%s ;return=%s' % (input, nsub))
-        return nsub 
+        self.log.info('calcSubmitNum: input=%s ;return=%s' % (n, out))
+        return (out, msg)
