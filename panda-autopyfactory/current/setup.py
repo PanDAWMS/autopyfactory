@@ -4,7 +4,9 @@
 #
 #
 
-release_version='2.2.1'
+from autopyfactory import factory
+
+release_version=factory.__version__
 # Do not forget to set it up also in factory.conf
 
 import commands

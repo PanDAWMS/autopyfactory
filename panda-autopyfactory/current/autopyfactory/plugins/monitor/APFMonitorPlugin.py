@@ -109,7 +109,7 @@ class APFMonitorPlugin(MonitorInterface):
         self.mcl = apfqueue.factory.mcl
     
         self.fid = self.fcl.generic_get('Factory','factoryId')
-        self.version = self.fcl.generic_get('Factory', 'versionTag')
+        self.version = apfqueue.factory.version
         self.email = self.fcl.generic_get('Factory','factoryAdminEmail')
         self.baselogurl = self.fcl.generic_get('Factory','baseLogDirUrl')
 

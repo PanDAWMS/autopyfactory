@@ -4,7 +4,7 @@ __author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
 __copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010,2011 John Hover; 2011 Jose Caballero"
 __credits__ = []
 __license__ = "GPL"
-__version__ = "2.1.3"
+__version__ = "2.2.2"
 __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
@@ -379,6 +379,7 @@ class Factory(object):
         '''
         self.log = logging.getLogger('main.factory')
         self.log.debug('Factory: Initializing object...')
+        self.version = autopfactory.factory.__version__
         self.fcl = fcl
         qcf = fcl.get('Factory', 'queueConf')
         self.log.debug("queues.conf file(s) = %s" % qcf)
