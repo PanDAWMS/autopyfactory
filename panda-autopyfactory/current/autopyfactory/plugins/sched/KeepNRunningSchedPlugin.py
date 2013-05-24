@@ -50,15 +50,17 @@ class KeepNRunningSchedPlugin(SchedInterface):
         if self.batchinfo is None:
             self.log.warning("self.batchinfo is None!")
             out = 0
+            msg = "Invalid batchinfo"
         elif not self.batchinfo.valid():
             out = 0 
+            msg = "Invalid batchinfo"
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             self.key = self.apfqueue.apfqname
             self.log.info("Key is %s" % self.key)
-            out = self._calc(input)
+            (out, msg) = self._calc(input)
             self.log.debug("Returning %d" % out)
-        return out
+        return (out, msg)
 
     def _calc(self, input):
         '''
@@ -108,7 +110,8 @@ class KeepNRunningSchedPlugin(SchedInterface):
                                                                                          running_pilots,
                                                                                          retiring_pilots, 
                                                                                          out))
-        return out
+        msg = "KeepNRunning=%s,keep=%s,run=%s,pend=%s,retiring=%s,ret=%s" (input, self.keep_running, running_pilots, pending_pilots, retiring_pilots, out)
+        return (out, msg)
 
 
 
