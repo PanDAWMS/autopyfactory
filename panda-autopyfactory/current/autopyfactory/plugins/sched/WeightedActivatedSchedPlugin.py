@@ -32,7 +32,7 @@ class WeightedActivatedSchedPlugin(SchedInterface):
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
-    def calcSubmitNum(self, nsub=0):
+    def calcSubmitNum(self, n=0):
         """ 
         It returns nb of Activated Jobs - nb of Pending Pilots
         But before making that calculation, it applies a scaling factor
@@ -47,19 +47,22 @@ class WeightedActivatedSchedPlugin(SchedInterface):
         if self.wmsinfo is None:
             self.log.warning("calcSubmitNum: wsinfo is None!")
             out = self.default
+            msg = "Weighted,no wmsinfo,ret=%s" %out
         elif self.batchinfo is None:
             self.log.warning("calcSubmitNum: self.batchinfo is None!")
             out = self.default            
+            msg = "Weighted,no batchinfo,ret=%s" %out
         elif not self.wmsinfo.valid() and self.batchinfo.valid():
             out = self.default
+            msg = "Weighted,no wms/batchinfo,ret=%s" %out
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             # Carefully get wmsinfo, activated. 
             self.siteid = self.apfqueue.siteid
             self.log.info("calcSubmitNum: siteid is %s" % self.siteid)
 
-            out = self._calc()
-        return out
+            (out, msg) = self._calc()
+        return (out, msg)
 
     def _calc(self):
         
@@ -88,12 +91,13 @@ class WeightedActivatedSchedPlugin(SchedInterface):
             pass
 
         # correct values based on weights
-        activated_jobs = int(activated_jobs * self.activated_w)
-        pending_pilots = int(pending_pilots * self.pending_w)
+        activated_jobs_w = int(activated_jobs * self.activated_w)
+        pending_pilots_w = int(pending_pilots * self.pending_w)
 
-        out = max(0, activated_jobs - pending_pilots)
+        out = max(0, activated_jobs_w - pending_pilots_w)
 
-        self.log.info('_calc (activated=%s; pending=%s) : Return=%s' %(activated_jobs, 
-                                                                       pending_pilots, 
+        self.log.info('_calc (activated=%s; pending=%s) : Return=%s' %(activated_jobs_w, 
+                                                                       pending_pilots_w, 
                                                                        out))
-        return out
+        msg = "Weighted,act=%s,actw=%s,pend=%s,pendw=%s,out=%s" %(activated_jobs, activated_jobs_w, pending_pilots, pending_pilots_w, out)
+        return (out, msg)
