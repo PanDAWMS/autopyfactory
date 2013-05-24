@@ -55,8 +55,8 @@ class ReadySchedPlugin(SchedInterface):
             self.key = self.apfqueue.wmsqueue
             self.log.info("Key is %s" % self.key)
 
-            out = self._calc(input)
-        return out
+            (out, msg) = self._calc(input)
+        return (out, msg)
 
     def _calc(self, input):
         '''
@@ -98,4 +98,5 @@ class ReadySchedPlugin(SchedInterface):
                                                                                          pending_pilots, 
                                                                                          running_pilots, 
                                                                                          out))
-        return out
+        msg = "ready=%d,offset=%d,pending=%d,return=%d" % (activated_jobs, self.offset, pending_pilots)
+        return (out,msg)
