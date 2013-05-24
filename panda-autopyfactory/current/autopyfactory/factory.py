@@ -379,7 +379,7 @@ class Factory(object):
         '''
         self.log = logging.getLogger('main.factory')
         self.log.debug('Factory: Initializing object...')
-        self.version = autopfactory.factory.__version__
+        self.version = __version__
         self.fcl = fcl
         qcf = fcl.get('Factory', 'queueConf')
         self.log.debug("queues.conf file(s) = %s" % qcf)
