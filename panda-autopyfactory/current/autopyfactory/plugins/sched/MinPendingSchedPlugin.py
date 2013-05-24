@@ -29,23 +29,27 @@ class MinPendingSchedPlugin(SchedInterface):
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
-    def calcSubmitNum(self, nsub=0):
+    def calcSubmitNum(self, n=0):
 
-        self.log.debug('calcSubmitNum: Starting with nsub=%s' %nsub)
+        self.log.debug('calcSubmitNum: Starting with n=%s' %n)
 
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
+
+        out = n
+        msg = None
 
         if self.batchinfo is None:
             self.log.warning("self.batchinfo is None!")
         else:
             pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending
             if self.min_pilots_pending:
-                nsub = max(nsub, self.min_pilots_pending - pending_pilots)     
+                out = max(n, self.min_pilots_pending - pending_pilots)     
+                msg = "MinPending=%s,min=%s,pend=%s,ret=%s" %(n, self.min_pilots_pending, pending_pilots, out)
         
         # Catch all to prevent negative numbers
-        #if nsub < 0:
+        #if out < 0:
         #    self.log.info('calcSubmitNum: calculated output was negative. Returning 0')
-        #    nsub = 0
+        #    out = 0
             
-        self.log.info('calcSubmitNum: (min_pilots_pending=%s; pending=%s) : Return = %s' %(self.min_pilots_pending, pending_pilots, nsub))
-        return nsub
+        self.log.info('calcSubmitNum: (min_pilots_pending=%s; pending=%s) : Return = %s' %(self.min_pilots_pending, pending_pilots, out))
+        return (out, msg) 
