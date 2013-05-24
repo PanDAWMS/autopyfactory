@@ -380,10 +380,6 @@ class APFMonitorPlugin(MonitorInterface):
             data = json.dumps(data) 
             out = self._call(http.PUT, url, data=data)
 
-            # sending a message to the label
-            n = len(jobinfolist)
-            self.updateLabel(apfqname, n) 
-
         self.log.debug('Leaving.')
         return out
 
