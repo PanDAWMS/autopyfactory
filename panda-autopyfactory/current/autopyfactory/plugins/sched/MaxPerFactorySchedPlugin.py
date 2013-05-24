@@ -32,7 +32,7 @@ class MaxPerFactorySchedPlugin(SchedInterface):
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
-    def calcSubmitNum(self, nsub=0):
+    def calcSubmitNum(self, n=0):
         """ 
         """
 
@@ -46,15 +46,19 @@ class MaxPerFactorySchedPlugin(SchedInterface):
             self.total_pilots += self.batchinfo[batchqueue].pending
         self.log.info('calcSubmitNum: the total number of current pending+running pilots being handled by the factory is %s' %self.total_pilots)
 
+        out = n
+        msg = None
+
         if self.total_pilots > self.max_pilots_per_factory:
-            nsub = 0
-        elif nsub + self.total_pilots > self.max_pilots_per_factory:
-            nsub = self.max_pilots_per_factory - self.total_pilots
+            out = 0
+        elif n + self.total_pilots > self.max_pilots_per_factory:
+            out = self.max_pilots_per_factory - self.total_pilots
 
         # Catch all to prevent negative numbers
-        #if nsub < 0:
+        #if n < 0:
         #    self.log.info('calcSubmitNum: calculated output was negative. Returning 0')
-        #    nsub = 0
+        #    out = 0
 
-        self.log.info('calcSubmitNum: initial nsub = %s total_pilots = %s max_per_factory = %s returning = %s' %(nsub, self.total_pilots, self.max_pilots_per_factory, nsub))
-        return nsub 
+        self.log.info('calcSubmitNum: initial n = %s total_pilots = %s max_per_factory = %s returning = %s' %(n, self.total_pilots, self.max_pilots_per_factory, out))
+        msg = 'MaxPerFactory=%s,total=%s,max=%s,ret=%s' %(n, self.total_pilots, self.max_pilots_per_factory, out)
+        return (out, msg)
