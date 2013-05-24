@@ -29,4 +29,4 @@ class NullSchedPlugin(SchedInterface):
             raise ex
 
     def calcSubmitNum(self, nsub=0):
-        return 0
+        return (0, "Null=0")
