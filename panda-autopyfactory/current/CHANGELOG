@@ -7,6 +7,7 @@ ChangeLog
 
 * Changed setup.py, factory.py and plugins/monitor/APFMonitorPlugin.py to use release version info directly
   from factory.py rather than requiring that it be correctly placed in a config file. 
+  versionTag removed from factory.conf
 
 * Added logserver2.py, to create directory listing similar to Apache one.
 
