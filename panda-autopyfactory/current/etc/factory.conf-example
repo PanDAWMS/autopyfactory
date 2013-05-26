@@ -29,7 +29,6 @@
 # proxymanager.enabled = True
 # queueConf
 # monitorConf
-# versionTag
 # wmsstatus.maxtime
 # wmsstatus.panda.sleep
 
@@ -112,8 +111,6 @@
 #
 # monitorConf = local path to the configuration file for Monitor plugins.
 #
-# versionTag = APF version number as it will be displayed in the web monitor
-#
 # wmsstatus.maximum = maximum time while the info is considered reasonable. 
 #               If info stored is older than that, is considered not valid, 
 #               and some NULL output will be returned.
@@ -129,7 +126,6 @@
 factoryAdminEmail = neo@matrix.net
 factoryId = BNL-gridui11-jhover
 factoryUser = apf
-versionTag = 2.1.0
 enablequeues = True
 
 queueConf = file:///etc/apf/queues.conf
