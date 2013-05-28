@@ -71,6 +71,7 @@ CONFFILE=$ETCDIR/factory.conf
 
 # Source settings from sysconfig
 # overriding default if present
+
 if [ -f $SYSCONF ]; then
    . $SYSCONF
 fi
@@ -110,7 +111,12 @@ start() {
 		echo -n $"Starting APF daemon: "	
         create_var_run
 	    # daemon --pidfile=${PIDFILE} "$BINDIR/factory --conf $CONFFILE $OPTIONS "
-        $BINDIR/factory --conf $CONFFILE $OPTIONS &
+        if -z [ $CONSOLE_LOG ]; then
+        	$BINDIR/factory --conf $CONFFILE $OPTIONS >> $CONSOLE_LOG 2>&1 &
+        else
+            $BINDIR/factory --conf $CONFFILE $OPTIONS > /dev/null 2>&1 &
+        fi
+        
         # NOTE: $OPTIONS is defined in factory.sysconfig
         RETVAL=$?
 	    [ $RETVAL -eq 0 ] && echo $! > $PIDFILE
