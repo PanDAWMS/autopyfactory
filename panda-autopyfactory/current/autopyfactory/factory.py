@@ -377,9 +377,12 @@ class Factory(object):
         '''
         fcl is a FactoryConfigLoader object. 
         '''
-        self.log = logging.getLogger('main.factory')
-        self.log.debug('Factory: Initializing object...')
+
         self.version = __version__
+
+        self.log = logging.getLogger('main.factory')
+        self.log.info('AutoPyFactory version %s' %self.version)
+        self.log.info('Factory: Initializing object...')
         self.fcl = fcl
         qcf = fcl.get('Factory', 'queueConf')
         self.log.debug("queues.conf file(s) = %s" % qcf)
