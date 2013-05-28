@@ -77,6 +77,6 @@ class StatusOfflineSchedPlugin(SchedInterface):
                     out = self.pilots_in_offline_mode
                     msg = "StatusOffline,ret=%s" %(self.pilots_in_offline_mode)
 
-            return (out, msg) 
+        return (out, msg) 
             
 
