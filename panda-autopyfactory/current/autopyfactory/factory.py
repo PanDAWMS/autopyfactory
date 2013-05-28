@@ -614,9 +614,11 @@ class APFQueuesManager(object):
         self.log.debug("_addqueues: Starting with input %s" %apfqnames)
 
         count = 0
+
         for apfqname in apfqnames:
             self._add(apfqname)
             count += 1
+
         self.log.debug('_addqueues: %d queues in the config file' %count)
         self.log.info('%d queues in the configuration.' %count)
         self.log.debug("_addqueues: Leaving")
