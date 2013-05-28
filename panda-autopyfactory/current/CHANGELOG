@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* Added a log message with the APF version number.
+
 * All Sched Plugins returns a tuple (number of pilots, message). 
   
 * Sending to the monitor the messages returned by Sched Plugins.
