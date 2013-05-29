@@ -1,5 +1,8 @@
 ChangeLog
 ---------
+
+* Fixed setup.cfg
+
 * Adjusted sysconfig, factory init, and logrotate to use a console.log for python interpreter-level 
   debugging. 
 
