@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id$ 
+# $Id$
 #
 function lfc_test() {
     echo -n "Testing LFC module for $1: "
@@ -29,24 +29,6 @@ function find_lfc_compatible_python() {
     # let the pilot setup the correct ATLAS environment for the
     # job.
     
-    pybin=`which python`
-    pyver=`$pybin -c "import sys; print '%03d%03d%03d' % sys.version_info[0:3]"`
-
-    # check if native python version > 2.6.0
-    if [ $pyver -ge 002006000 ] ; then
-        echo "Native python version is > 2.6.0"
-        lfc_test $pybin
-        if [ $? = "0" ]; then
-          return 0
-        else
-          echo "Trying cvmfs version..."
-        fi
-    else
-        echo "Native python $pybin is old: $pyver"
-          echo "Trying cvmfs version..."
-    fi
-
-
     # firstly try the cvmfs python2.6 binary
     if [ -n "$APF_PYTHON26" ]; then
       PYTHON26=/cvmfs/atlas.cern.ch/repo/sw/python/latest/setup.sh
@@ -62,6 +44,8 @@ function find_lfc_compatible_python() {
         lfc_test $pybin
         if [ $? = "0" ]; then
           return 0
+        else
+          echo "lfc_test failed for cvmfs python"
         fi
       else
         echo "cvmfs python2.6 not found"
@@ -112,7 +96,6 @@ function get_pilot_http() {
     # loop over those servers. Otherwise use CERN, with Glasgow as a fallback.
     # N.B. an RC pilot is chosen once every 100 downloads for production and
     # ptest jobs use Paul's development release.
-
     if [ -z "$PILOT_HTTP_SOURCES" ]; then
         if echo $@ | grep -- "-u ptest" > /dev/null; then 
             echo "DEBUG: This is a ptest pilot. Will use development pilot code with python2.6"
@@ -170,14 +153,25 @@ function set_limits() {
     fi
 }
 
-function monping() {
+function monrunning() {
     echo -n 'Monitor ping: '
-    curl -fksS --connect-timeout 10 --max-time 20 ${APFMON}$1/$APFFID/$APFCID/$2
+    curl -ksS --connect-timeout 10 --max-time 20 -d state=running ${APFMON}/jobs/${APFFID}:${APFCID}
     if [ $? -eq 0 ]; then
         echo
     else
         echo $?
-        echo ARGS: ${APFMON}$1/$APFFID/$APFCID/$2
+        echo ARGS: -d state=exiting ${APFMON}/jobs/${APFFID}:${APFCID}
+    fi
+}
+
+function monexiting() {
+    echo -n 'Monitor ping: '
+    curl -ksS --connect-timeout 10 --max-time 20 -d state=exiting -d rc=$1 ${APFMON}/jobs/${APFFID}:${APFCID}
+    if [ $? -eq 0 ]; then
+        echo
+    else
+        echo $?
+        echo ARGS: -d state=exiting -d rc=$1 ${APFMON}/jobs/${APFFID}:${APFCID}
     fi
 }
 
@@ -204,7 +198,7 @@ echo "This is pilot wrapper $Id$"
 echo "Please send development requests to p.love@lancaster.ac.uk"
 
 # notify monitoring, job running
-monping rn
+monrunning
 
 # Check what was delivered
 echo "Scanning landing zone..."
@@ -214,6 +208,9 @@ echo $startdir
 ls -l
 me=$0
 echo "Me and my args: $0 $@"
+if [ ! -f $me ]; then
+    echo "Trouble ahead - cannot find myself. Should I try psychoanalysis?"
+fi
 echo
 
 # If we have TMPDIR defined, then move into this directory
@@ -368,7 +365,7 @@ else
 fi
 echo -n STATUSCODE:
 echo $scode
-monping ex $scode
+monexiting $scode
 monpost
 
 
