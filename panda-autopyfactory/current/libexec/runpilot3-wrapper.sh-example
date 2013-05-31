@@ -28,6 +28,23 @@ function find_lfc_compatible_python() {
     # use the site environment in which to run the pilot and
     # let the pilot setup the correct ATLAS environment for the
     # job.
+
+    pybin=`which python`
+    pyver=`$pybin -c "import sys; print '%03d%03d%03d' % sys.version_info[0:3]"`
+           -    
+    # check if native python version > 2.6.0
+    if [ $pyver -ge 002006000 ] ; then
+      echo "Native python version is > 2.6.0"
+      lfc_test $pybin
+      if [ $? = "0" ]; then
+        return 0
+      else
+        echo "Trying cvmfs version..."
+      fi
+    else
+      echo "Native python $pybin is old: $pyver"
+      echo "Trying cvmfs version..."
+    fi
     
     # firstly try the cvmfs python2.6 binary
     if [ -n "$APF_PYTHON26" ]; then
@@ -44,8 +61,6 @@ function find_lfc_compatible_python() {
         lfc_test $pybin
         if [ $? = "0" ]; then
           return 0
-        else
-          echo "lfc_test failed for cvmfs python"
         fi
       else
         echo "cvmfs python2.6 not found"
