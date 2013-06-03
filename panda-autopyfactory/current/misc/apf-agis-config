@@ -21,7 +21,7 @@ blacksites = [
               'CERN-CLOUD',
               'CERN-P1',
               'CERN-RELEASE',
-              'UKI-LT2-Brunel',
+              'GRIDPP_CLOUD',
 ]
 
 defaultsection = """\
@@ -32,34 +32,29 @@ vo = ATLAS
 status = online
 override = True
 enabled = True
-autofill = False
 
 cleanlogs.keepdays = 7
 
 # plugins
 batchstatusplugin = Condor
 wmsstatusplugin = Panda
-configplugin = Panda
-batchsubmitplugin = CondorCREAM
-batchsubmit.condorcream.proxy = atlas-production
+schedplugin = Ready
+monitorsection = apfmon-lancaster
 
-schedplugin = Activated
-sched.activated.min_pilots_per_cycle = 0
-sched.activated.max_pilots_per_cycle = 20
-sched.activated.max_jobs_torun = 9999
-sched.activated.max_pilots_pending = 50
-sched.activated.testmode.allowed = True
-sched.activated.testmode.pilots = 1
-sched.activated.testmode.max_pending = 12
+schedplugin = Ready, StatusTest, MaxToRun, MinPerCycle, MaxPerCycle, MaxPending, StatusOffline
+sched.statustest.allowed = True
+sched.statustest.pilots = 1
+sched.statusoffline.allowed = True
+sched.minpercycle.minimum = 0
+sched.maxpending.maximum = 25
 
-executable = /data/atlpan/libexec/runpilot3-wrapper-apr24.sh
+executable = /data/atlpan/libexec/runpilot3-wrapper-may31.sh
 executable.defaultarguments = -s %(wmsqueue)s -h %(batchqueue)s -p 25443 -w https://pandaserver.cern.ch -j false -k %(memory)s
 
-batchsubmit.condorcream.environ = APF_PYTHON26=1 RUCIO_ACCOUNT=pilot
 batchsubmit.condorcream.condor_attributes = periodic_hold=JobStatus==1 && gridjobstatus=?=UNDEFINED && CurrentTime-EnteredCurrentStatus>3600
 batchsubmit.condorcream.condor_attributes = periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
 
-apfqueue.sleep = 60
+apfqueue.sleep = 300
 
 """
 
@@ -126,13 +121,13 @@ specified cloud and activity type.
     for key in sorted(d):
         try:
             if d[key]['vo_name'] != 'atlas':
-		print
+                print
                 print "# NOT ATLAS: %s" % d[key]['site']
                 continue
             if d[key]['site'] in blacksites:
                 print
-		print "# Excluded: %s" % key
-		continue
+                print "# Excluded: %s" % key
+                continue
             if d[key]['site_state'] == 'ACTIVE' and d[key]['type'] == options.activity:
 
                 wmsqueue = d[key]['panda_resource']
@@ -166,6 +161,7 @@ specified cloud and activity type.
                         gridresource = '%s/ce-cream/services/CREAM2 %s %s' %(q['ce_endpoint'], q['ce_jobmanager'], q['ce_queue_name'])
                         submitplugin = 'CondorCREAM'
                         submitpluginstring = 'condorcream'
+                        creamenv = 'APF_PYTHON26=1 RUCIO_ACCOUNT=pilot'
             
                     elif q['ce_flavour'] == 'LCG-CE':
                         print
@@ -181,7 +177,7 @@ specified cloud and activity type.
                         gridresource = q['ce_endpoint']
                         submitplugin = 'CondorNordugrid'
                         submitpluginstring = 'condornordugrid'
-			nordugridrsl = '(jobname = prod_pilot)(runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY )'
+                        nordugridrsl = '(memory=%s)(jobname = prod_pilot)(jobname = arc_pilot)' % memory
                     else:
                         print
                         print "# Unknown ce_flavour for %s (%s)" % (q['ce_name'], q['ce_queue_id'])
@@ -190,17 +186,21 @@ specified cloud and activity type.
                     print
                     print '[%s-%s]' % (d[key]['nickname'], q['ce_queue_id'])
                     print 'enabled = True'
-                    print 'autofill = False'
                     print 'batchqueue = %s' % key
                     print 'wmsqueue = %s' % wmsqueue
                     print 'memory = %s' % memory
                     print 'batchsubmitplugin = %s' % submitplugin
                     print 'batchsubmit.%s.gridresource = %s' % (submitpluginstring, gridresource)
-                    # times 3 hack until tuning is sorted
-                    print 'sched.activated.max_pilots_pending = %s' % max(9,d[key]['nqueue'] * 3)
+                    print 'sched.maxtorun.maximum = %d' % 9999
+                    print 'sched.maxpercycle.maximum = %d' % max(9, d[key]['nqueue'] * 2)
+                    if creamenv:
+                        print 'batchsubmit.condorcream.environ = %s' % creamenv
                     if nordugridrsl:
                         print 'batchsubmit.condornordugrid.nordugridrsl = %s' % nordugridrsl
-                        print 'batchsubmit.condornordugrid.queue = %s' % q['ce_queue_name']
+                        print 'nordugridrsl.nordugridrsladd = (runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY)'
+                        print 'nordugridrsl.queue = %s' % q['ce_queue_name']
+			print 'nordugridrsl.addenv.RUCIO_ACCOUNT = pilot'
+			print 'nordugridrsl.addenv.APF_PYTHON26 = 1'
                     if gramqueue:
                         print 'globusrsl.%s.queue = %s' % (gramversion, gramqueue)
                     if cetype == 'analysis':
