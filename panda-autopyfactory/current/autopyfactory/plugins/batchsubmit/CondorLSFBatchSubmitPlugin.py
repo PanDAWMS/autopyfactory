@@ -6,14 +6,6 @@
 from CondorGridBatchSubmitPlugin import CondorGridBatchSubmitPlugin
 from autopyfactory import jsd
 
-__author__ = "John Hover, Jose Caballero"
-__copyright__ = "2011 John Hover, Jose Caballero"
-__credits__ = []
-__license__ = "GPL"
-__version__ = "2.1.0"
-__maintainer__ = "Jose Caballero"
-__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
-__status__ = "Production"
 
 class CondorLSFBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
     id = 'condorlsf'

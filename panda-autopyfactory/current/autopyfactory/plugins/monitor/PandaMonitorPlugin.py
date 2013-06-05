@@ -68,14 +68,6 @@ from autopyfactory.interfaces import MonitorInterface
 from autopyfactory.factory import Singleton, singletonfactory
 
 
-__author__ = "John Hover"
-__copyright__ = "2012 John Hover"
-__credits__ = []
-__license__ = "GPL"
-__version__ = "2.1.0"
-__maintainer__ = "John hover"
-__email__ = "jhover@bnl.gov"
-__status__ = "Testing"
 
 
 

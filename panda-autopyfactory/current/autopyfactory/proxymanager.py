@@ -12,14 +12,6 @@ import time
 
 from subprocess import Popen, PIPE, STDOUT
 
-__author__ = "John Hover"
-__copyright__ = "2010,2011, John Hover"
-__credits__ = []
-__license__ = "GPL"
-__version__ = "2.1.0"
-__maintainer__ = "Jose Caballero"
-__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
-__status__ = "Production"
 
 
 class ProxyManager(threading.Thread):

@@ -17,14 +17,6 @@ from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatu
 from autopyfactory.configloader import Config
 from autopyfactory.logserver import LogServer
 
-__author__ = "Jose Caballero"
-__copyright__ = "2011 Jose Caballero"
-__credits__ = []
-__license__ = "GPL"
-__version__ = "2.1.0"
-__maintainer__ = "Jose Caballero"
-__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
-__status__ = "Production"
 
 major, minor, release, st, num = sys.version_info
 

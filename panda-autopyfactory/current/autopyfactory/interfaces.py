@@ -1,11 +1,3 @@
-__author__ = "Jose Caballero, John Hover"
-__copyright__ = "2011, Jose Caballero, John Hover"
-__credits__ = []
-__license__ = "GPL"
-__version__ = "2.1.0"
-__maintainer__ = "Jose Caballero, John Hover"
-__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
-__status__ = "Production"
 
 
 class SchedInterface(object):
