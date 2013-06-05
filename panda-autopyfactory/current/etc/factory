@@ -111,10 +111,10 @@ start() {
 		echo -n $"Starting APF daemon: "	
         create_var_run
 	    # daemon --pidfile=${PIDFILE} "$BINDIR/factory --conf $CONFFILE $OPTIONS "
-        if [ -n $CONSOLE_LOG ]; then
+        if [ -n "$CONSOLE_LOG" ]; then
         	$BINDIR/factory --conf $CONFFILE $OPTIONS >> $CONSOLE_LOG 2>&1 &
         else
-            $BINDIR/factory --conf $CONFFILE $OPTIONS > /dev/null 2>&1 &
+            $BINDIR/factory --conf $CONFFILE $OPTIONS &
         fi
         
         # NOTE: $OPTIONS is defined in factory.sysconfig
