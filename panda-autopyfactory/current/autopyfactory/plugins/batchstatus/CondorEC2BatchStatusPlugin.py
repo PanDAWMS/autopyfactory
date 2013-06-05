@@ -496,7 +496,6 @@ class CondorStartdInfo(object):
     Info object to represent a startd on the cloud. 
     If it has multiple slots, we need to calculate overall state/activity carefully. 
     
-           
     '''
     def __init__(self, slotinfo):
         '''
@@ -509,6 +508,7 @@ class CondorStartdInfo(object):
                 Unclaimed 
                 Preempting 
                 Backfill
+
         Activities: 
                 Busy 
                 Idle 
@@ -558,10 +558,7 @@ class CondorStartdInfo(object):
     def __repr__(self):
         s = str(self)
         return s    
-
-
-
-      
+    
 
 
 def test2():
