@@ -40,6 +40,9 @@ class MaxToRunSchedPlugin(SchedInterface):
                                                             pending_pilots, 
                                                             running_pilots, 
                                                             out)
-            self.log.info('calcSubmitNum: (input=%s; pending=%s; running=%s): Return=%s' %(n, pending_pilots, running_pilots, out))
+            self.log.info('calcSubmitNum: (input=%s; pending=%s; running=%s): Return=%s' %(n, 
+                                                                                           pending_pilots, 
+                                                                                           running_pilots, 
+                                                                                           out))
 
         return (out, msg) 
