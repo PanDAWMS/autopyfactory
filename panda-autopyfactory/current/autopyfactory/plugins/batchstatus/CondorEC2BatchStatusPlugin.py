@@ -23,7 +23,7 @@ from autopyfactory.factory import Singleton, CondorSingleton
 from autopyfactory.info import InfoContainer
 from autopyfactory.info import BatchStatusInfo
 
-from autopyfactory.condor import checkCondor, querycondorxml, xml2nodelist, parseoutput
+from autopyfactory.condor import checkCondor, querycondorxml, xml2nodelist, parseoutput, statuscondor
 from autopyfactory.condor import listnodesfromxml, node2dict, aggregateinfo
 
 
@@ -191,7 +191,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.log.warning('_update: condor daemon is not running. Doing nothing')
         else:
             try:
-                xmlout = self._querycondorxml()
+                xmlout = querycondor()
                 if not xmlout:
                     self.log.warning('_update: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
                 else:
@@ -205,7 +205,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.log.debug("Exception: %s" % traceback.format_exc())            
             
             try:
-                xmlout = self._statuscondorxml()
+                xmlout = statuscondor()
                 if not xmlout:
                     self.log.warning('_update: output of _statuscondor is not valid. Not parsing it. Skip to next loop.') 
                 else:
