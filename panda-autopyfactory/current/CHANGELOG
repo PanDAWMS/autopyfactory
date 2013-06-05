@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* all __XYZ__ module names deleted, except in factory.py
+
 * Fixed setup.cfg
 
 * Adjusted sysconfig, factory init, and logrotate to use a console.log for python interpreter-level 
