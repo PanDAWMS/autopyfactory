@@ -436,8 +436,8 @@ class Factory(object):
             lsidx = self.fcl.generic_get('Factory','logserver.index', 'getboolean', logger=self.log)
             lsrobots = self.fcl.generic_get('Factory','logserver.allowrobots', 'getboolean', logger=self.log)
             logpath = self.fcl.get('Factory', 'baseLogDir')
-            logport = logpath.split(':')[-1]  # logpath is like http://www.foo.bar:12345
-                                              # we only need the port 12345
+            logurl = self.fcl.get('Factory','baseLogDirUrl')            
+            logport = self._parseLogPort(logurl)
             if not os.path.exists(logpath):
                 self.log.debug("Creating log path: %s" % logpath)
                 os.makedirs(logpath)
@@ -458,7 +458,29 @@ class Factory(object):
         else:
             self.log.info('LogServer disabled. Not running.')
 
-
+    def _parseLogPort(self, logurl):
+        '''
+        logUrl is like:  http[s]://hostname[:port]
+        if port exists, return port
+        if port is omitted, 
+           if http, return 80
+           if https, return 443
+           
+        Return value must be an int. 
+        '''
+        urlparts = logurl.split(':')
+        urltype = urlparts[0]
+        port = 80
+        if len(urlparts) == 3:
+            port = int(urlparts[2])
+        elif len(urlparts) == 2:
+            if urltype == "http":
+                port = 80
+            elif urltype == "https":
+                port = 443
+        return int(port)
+        
+        
     def mainLoop(self):
         '''
         Main functional loop of overall Factory. 
