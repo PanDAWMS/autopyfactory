@@ -195,7 +195,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 if not xmlout:
                     self.log.warning('_update: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
                 else:
-                    dictlist = self._parseoutput(xmlout)
+                    dictlist = parseoutput(xmlout)
                     jl = self._dicttojoblist(dictlist)
                     self.log.debug("Created indexed joblist of length %d" % len(jl))
                     self.currentjobs = jl
