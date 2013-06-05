@@ -23,7 +23,7 @@ from autopyfactory.factory import Singleton, CondorSingleton
 from autopyfactory.info import InfoContainer
 from autopyfactory.info import BatchStatusInfo
 
-from autopyfactory.condor import checkCondor, querycondorxml, xml2nodelist, parseoutput, statuscondor
+from autopyfactory.condor import checkCondor, querycondor, xml2nodelist, parseoutput, statuscondor
 from autopyfactory.condor import listnodesfromxml, node2dict, aggregateinfo
 
 
@@ -209,7 +209,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 if not xmlout:
                     self.log.warning('_update: output of _statuscondor is not valid. Not parsing it. Skip to next loop.') 
                 else:
-                    dictlist = self._parseoutput(xmlout)
+                    dictlist = parseoutput(xmlout)
                     sl = self._dicttoslotlist(dictlist)
                     self.log.debug("Created SlotInfo list of length %d" % len(sl))
                     stdlist = self._slotlisttostartdlist(sl)
