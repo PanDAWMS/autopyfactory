@@ -564,7 +564,7 @@ class CondorStartdInfo(object):
 def test2():
     from autopyfactory.test import MockAPFQueue
     
-    a = MockAPFQueue('BNL_CLOUD-ec2-spot')
+    a = MockAPFQueue('BNL_CLOUD-ec2-xle1-sl6')
     bsp = CondorEC2BatchStatusPlugin(a, condor_q_id='local')
     bsp.start()
     while True:

@@ -838,6 +838,7 @@ class APFQueue(threading.Thread):
                 self._logtime() 
                           
             except Exception, e:
+                
                 self.log.error("run: Caught exception: %s " % str(e))
                 self.log.debug("run: Exception: %s" % traceback.format_exc())
             time.sleep(self.sleep)
