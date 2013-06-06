@@ -102,7 +102,7 @@ class KeepNRunningSchedPlugin(SchedInterface):
                                                                                          running_pilots,
                                                                                          retiring_pilots, 
                                                                                          out))
-        msg = "KeepNRunning=%s,keep=%s,run=%s,pend=%s,retiring=%s,ret=%s" (str(input), 
+        msg = "in=%s,keep=%s,run=%s,pend=%s,retiring=%s,ret=%s" % (str(input), 
                                                                            self.keep_running, 
                                                                            running_pilots, 
                                                                            pending_pilots, 
