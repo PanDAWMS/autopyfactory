@@ -157,7 +157,7 @@ class info(object):
         self.cmd += self._tstart
         self.cmd += "&tend="
         self.cmd += self._tend
-        self.cmd += "&hours=&days=&dump=yes&limit=10'"
+        self.cmd += "&hours=&days=&dump=yes&limit=10000'"
         # example
         #   &computingSite=BNL_ATLAS_RCF&tstart=2013-05-18+00:00:00&tend=2013-05-20+00:00&hours=&days=&dump=yes&limit=10000'"
 
