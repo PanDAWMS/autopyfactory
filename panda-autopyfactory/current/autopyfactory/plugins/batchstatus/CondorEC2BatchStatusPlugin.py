@@ -26,7 +26,6 @@ from autopyfactory.info import BatchStatusInfo
 from autopyfactory.condor import checkCondor, querycondor, xml2nodelist, parseoutput, statuscondor
 from autopyfactory.condor import listnodesfromxml, node2dict, aggregateinfo
 
-
 import autopyfactory.utils as utils
 
 
