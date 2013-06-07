@@ -138,7 +138,7 @@ class info(object):
 
     def _createcmd(self):
 
-        fields = self._getfields():
+        fields = self._getfields()
 
         self.cmd ="curl -s 'http://pandamon.cern.ch/jobinfo?jobparam="
         self.cmd += fields
