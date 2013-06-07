@@ -3,6 +3,8 @@ ChangeLog
 
 * created misc/apf-panda-jobs-info.py 
 
+* INFO messages in configloader for missing non-mandatory variables moved to DEBUG.
+
 * all __XYZ__ module names deleted, except in factory.py
 
 * Fixed setup.cfg
