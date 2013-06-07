@@ -19,96 +19,103 @@ import sys
 #       ./apf-panda-jobs-info.py  --start=2013-06-06+00:00:00 --end=2013-06-07+00:00:00 --site=ANALY_BNL_SHORT
 
 
-jobfields = ['PandaID',
-             'assignedPriority',
-             'AtlasRelease',
-             'attemptNr',
-             'batchID',
-             'brokerageErrorCode',
-             'brokerageErrorDiag',
-             'cloud',
-             'cmtConfig',
-             'commandToPilot',
-             'computingElement',
-             'computingSite',
-             'coreCount',
-             'countryGroup',
-             'cpuConsumptionTime',
-             'cpuConsumptionUnit',
-             'cpuConversion',
-             'creationHost',
-             'creationTime',
-             'currentPriority',
-             'ddmErrorCode',
-             'ddmErrorDiag',
-             'destinationDBlock',
-             'destinationSE',
-             'destinationSite',
-             'dispatchDBlock',
-             'endTime',
-             'exeErrorCode',
-             'exeErrorDiag',
-             'grid',
-             'homepackage',
-             'inputFileBytes',
-             'INPUTFILEPROJECT',
-             'inputFileType',
-             'ipConnectivity',
-             'jobDefinitionID',
-             'jobDispatcherErrorCode',
-             'jobDispatcherErrorDiag',
-             'jobExecutionID',
-             'JOBMETRICS',
-             'jobName',
-             #'jobParameters',
-             'jobsetID',
-             'jobStatus',
-             'lockedby',
-             'maxAttempt',
-             'maxCpuCount',
-             'maxCpuUnit',
-             'maxDiskCount',
-             'maxDiskUnit',
-             #'metadata',
-             'minRamCount',
-             'minRamUnit',
-             'modificationHost',
-             'modificationTime',
-             'nEvents',
-             'nInputDataFiles',
-             'nInputFiles',
-             'NOUTPUTDATAFILES',
-             'OUTPUTFILEBYTES',
-             #'PandaID',
-             'parentID',
-             'pilotErrorCode',
-             'pilotErrorDiag',
-             'pilotID',
-             'pilotTiming',
-             'processingType',
-             'prodDBlock',
-             'prodDBUpdateTime',
-             'prodSeriesLabel',
-             'prodSourceLabel',
-             'prodUserID',
-             'prodUserName',
-             'relocationFlag',
-             'schedulerID',
-             'sourceSite',
-             'specialHandling',
-             'startTime',
-             'stateChangeTime',
-             'supErrorCode',
-             'supErrorDiag',
-             'taskBufferErrorCode',
-             'taskBufferErrorDiag',
-             'taskID',
-             'transExitCode',
-             'transferType',
-             'transformation',
-             'VO',
-             'workingGroup',
-             ]
+class fields(object):
+    def __init__(self, fields_str=None):
+
+        if fields_str:
+            self.fields = fields_str.split(',')
+        else:
+            self.fields = ['assignedPriority',
+                           'AtlasRelease',
+                           'attemptNr',
+                           'batchID',
+                           'brokerageErrorCode',
+                           'brokerageErrorDiag',
+                           'cloud',
+                           'cmtConfig',
+                           'commandToPilot',
+                           'computingElement',
+                           'computingSite',
+                           'coreCount',
+                           'countryGroup',
+                           'cpuConsumptionTime',
+                           'cpuConsumptionUnit',
+                           'cpuConversion',
+                           'creationHost',
+                           'creationTime',
+                           'currentPriority',
+                           'ddmErrorCode',
+                           'ddmErrorDiag',
+                           'destinationDBlock',
+                           'destinationSE',
+                           'destinationSite',
+                           'dispatchDBlock',
+                           'endTime',
+                           'exeErrorCode',
+                           'exeErrorDiag',
+                           'grid',
+                           'homepackage',
+                           'inputFileBytes',
+                           'INPUTFILEPROJECT',
+                           'inputFileType',
+                           'ipConnectivity',
+                           'jobDefinitionID',
+                           'jobDispatcherErrorCode',
+                           'jobDispatcherErrorDiag',
+                           'jobExecutionID',
+                           'JOBMETRICS',
+                           'jobName',
+                           #'jobParameters',
+                           'jobsetID',
+                           'jobStatus',
+                           'lockedby',
+                           'maxAttempt',
+                           'maxCpuCount',
+                           'maxCpuUnit',
+                           'maxDiskCount',
+                           'maxDiskUnit',
+                           #'metadata',
+                           'minRamCount',
+                           'minRamUnit',
+                           'modificationHost',
+                           'modificationTime',
+                           'nEvents',
+                           'nInputDataFiles',
+                           'nInputFiles',
+                           'NOUTPUTDATAFILES',
+                           'OUTPUTFILEBYTES',
+                           #'PandaID',
+                           'parentID',
+                           'pilotErrorCode',
+                           'pilotErrorDiag',
+                           'pilotID',
+                           'pilotTiming',
+                           'processingType',
+                           'prodDBlock',
+                           'prodDBUpdateTime',
+                           'prodSeriesLabel',
+                           'prodSourceLabel',
+                           'prodUserID',
+                           'prodUserName',
+                           'relocationFlag',
+                           'schedulerID',
+                           'sourceSite',
+                           'specialHandling',
+                           'startTime',
+                           'stateChangeTime',
+                           'supErrorCode',
+                           'supErrorDiag',
+                           'taskBufferErrorCode',
+                           'taskBufferErrorDiag',
+                           'taskID',
+                           'transExitCode',
+                           'transferType',
+                           'transformation',
+                           'VO',
+                           'workingGroup',
+                           ]
+
+        self.fields_str = ','.join(self.fields)    
 
 
 class info(object):
@@ -116,47 +123,49 @@ class info(object):
     def __init__(self): 
 
         self._parseargs()
+        self.fields = fields(self._fields)
         self._createcmd()
 
     def _parseargs(self):
 
-        self.tstart = None
-        self.tend = None
-        self.site = None
-        self.fields = None
+        self._tstart = None
+        self._tend = None
+        self._site = None
+        self._fields = None
 
         opts, args = getopt.getopt(sys.argv[1:], "", ["start=", "end=", "site=", "fields="]) 
         for opt, arg in opts:
             if opt == "--start":
-                self.tstart = arg
+                self._tstart = arg
             if opt == "--end":
-                self.tend = arg
+                self._tend = arg
             if opt == "--site":
-                self.site = arg
+                self._site = arg
             if opt == "--fields":
-                self.fields = arg
+                self._fields = arg
+
 
     def _createcmd(self):
 
-        fields = self._getfields()
+        fields_str = self.fields.fields_str
 
         self.cmd ="curl -s 'http://pandamon.cern.ch/jobinfo?jobparam="
-        self.cmd += fields
+        self.cmd += fields_str
         self.cmd += "&computingSite="
-        self.cmd += self.site
+        self.cmd += self._site
         self.cmd += "&tstart="
-        self.cmd += self.tstart
+        self.cmd += self._tstart
         self.cmd += "&tend="
-        self.cmd += self.tend
-        self.cmd += "&hours=&days=&dump=yes&limit=10000'"
+        self.cmd += self._tend
+        self.cmd += "&hours=&days=&dump=yes&limit=10'"
         # example
         #   &computingSite=BNL_ATLAS_RCF&tstart=2013-05-18+00:00:00&tend=2013-05-20+00:00&hours=&days=&dump=yes&limit=10000'"
 
 
     def _getfields(self):
 
-        if self.fields:
-            return self.fields
+        if self._fields:
+            return self._fields
         else:
             return ','.join(jobfields[1:])
 
@@ -181,7 +190,7 @@ class info(object):
         for j in self.jobs:
             msg = ""
             tokens=[]
-            for field in self.fields:
+            for field in self.fields.fields:
                 tokens.append("%s=%s" %(field, j[field]))
             msg = "|".join(tokens)
             print msg
@@ -189,6 +198,7 @@ class info(object):
 
 if __name__ == '__main__':
     i = info()
+    print i.cmd
     i.query()
     i.display()
 
