@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* created misc/apf-panda-jobs-info.py 
+
 * all __XYZ__ module names deleted, except in factory.py
 
 * Fixed setup.cfg
