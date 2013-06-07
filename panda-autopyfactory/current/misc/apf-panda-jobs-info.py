@@ -143,7 +143,7 @@ class info(object):
         self.cmd ="curl -s 'http://pandamon.cern.ch/jobinfo?jobparam="
         self.cmd += fields
         self.cmd += "&computingSite="
-        self.cmd += self.tsite
+        self.cmd += self.site
         self.cmd += "&tstart="
         self.cmd += self.tstart
         self.cmd += "&tend="
