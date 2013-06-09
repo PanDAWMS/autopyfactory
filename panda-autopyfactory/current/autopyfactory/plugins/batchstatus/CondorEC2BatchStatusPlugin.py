@@ -308,8 +308,10 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         for si in slotlist:
             try:
                 stdinfo = startdlist[si.instanceid]
+                self.log.debug("Found existing CondorStartdInfo object, adding slotinfo...")
                 stdinfo.add(si)
-            except:
+            except KeyError:
+                self.log.debug("KeyError. Creating new CondorStartdInfo object...")
                 startdlist[si.instanceid] = CondorStartdInfo(si)
         self.log.info("Created startdlist of length %d" % len(startdlist))
         return startdlist
@@ -526,7 +528,7 @@ class CondorStartdInfo(object):
                 Retiring 
                 Suspended
         '''
-        self.id = slotinfo.instanceid
+        self.instanceid = slotinfo.instanceid
         self.machine = slotinfo.machine
         self.state = {}
         self.activity = {}
@@ -539,15 +541,16 @@ class CondorStartdInfo(object):
         '''
         Add the information for a slot to this startd. 
         
-        '''    
+        '''
+        self.log.debug("Adding slotinfo to existing StartdInfo object...")    
         if self.id == slotinfo.id and self.machine == slotinfo.machine:
             try:
                 self.state[slotinfo.state] += 1
-            except:
+            except KeyError:
                 self.state[slotinfo.state] = 1
             try:
                 self.activity[slotinfo.activity] += 1
-            except:
+            except KeyError:
                 self.activity[slotinfo.activity] = 1            
         else:
             self.log.warning("Attempt to add a mismatched slotinfo to an existing StartdInfo object.")
