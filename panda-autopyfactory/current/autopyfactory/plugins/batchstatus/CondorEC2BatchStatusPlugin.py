@@ -545,7 +545,7 @@ class CondorStartdInfo(object):
         
         '''
         self.log.debug("Adding slotinfo to existing StartdInfo object...")    
-        if self.id == slotinfo.id and self.machine == slotinfo.machine:
+        if self.instanceid == slotinfo.instanceid and self.machine == slotinfo.machine:
             try:
                 self.state[slotinfo.state] += 1
             except KeyError:
