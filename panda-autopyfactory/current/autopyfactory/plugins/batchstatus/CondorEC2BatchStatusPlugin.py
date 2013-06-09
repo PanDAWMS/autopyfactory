@@ -559,7 +559,7 @@ class CondorStartdInfo(object):
         
         
     def __str__(self):
-        s = "CondorStartdInfo: %s %s" % (self.id, self.machine)
+        s = "CondorStartdInfo: %s %s" % (self.instanceid, self.machine)
         stk =  self.state.keys()
         stk.sort()
         for st in stk:
