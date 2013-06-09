@@ -217,7 +217,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     sl = self._dicttoslotlist(dictlist)
                     self.log.debug("Created SlotInfo list of length %d" % len(sl))
                     stdlist = self._slotlisttostartdlist(sl)
-                    for s in sl:
+                    for s in stdlist:
                         self.log.debug("%s" % s)
                     
                     self.log.info("Replacing old info with newly generated info.")
