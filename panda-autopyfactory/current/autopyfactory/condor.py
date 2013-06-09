@@ -125,7 +125,7 @@ def statuscondor():
     if p.returncode == 0:
         log.debug('Leaving with OK return code.')
     else:
-        log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
+        log.warning('Leaving with bad return code. rc=%s err=%s out=%s' %(p.returncode, err, out ))
         out = None
     return out
 

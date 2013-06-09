@@ -89,14 +89,4 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         
         
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
 

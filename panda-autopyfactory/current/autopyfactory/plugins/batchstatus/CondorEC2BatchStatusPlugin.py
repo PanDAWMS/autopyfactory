@@ -67,9 +67,14 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         except AttributeError:
             self.log.warning("Got AttributeError during init. We should be running stand-alone for testing.")
 
-        # This is per-job info
-        # Information is in the form of a dictionary of lists of EC2JobInfo objecsts. 
+        # This is per-job (+startd) info
+        # Information is in the form of a dictionary of lists of EC2JobInfo objects. 
         # the key of the dictionary is the APF_MATCH_QUEUE
+        #
+        # { <apfmatchqueue> : <CondorStartdInfo>
+        #                          [<CondorSlotInfo>,<CondorSlotInfo>}  
+        #
+        # }
         #
         self.currentjobs = None      
         
@@ -212,7 +217,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     sl = self._dicttoslotlist(dictlist)
                     self.log.debug("Created SlotInfo list of length %d" % len(sl))
                     stdlist = self._slotlisttostartdlist(sl)
-                    # XXXXX
+
                     
                     self.log.info("Replacing old info with newly generated info.")
 
@@ -276,7 +281,6 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         Takes the list of dicts of all jobslots (from condor_status) and constructs
         CondorStartdInfo objects, one per startd.         
         '''
-        
         
         slotlist = []
         for n in nodelist:
