@@ -436,13 +436,13 @@ class CondorEC2JobInfo(object):
         '''
         Creates JobInfo object from arbitrary dictionary of attributes. 
         '''
-        log = logging.getLogger()
+        self.log = logging.getLogger()
         self.jobattrs = []
         for k in dict.keys():
             self.__setattr__(k,dict[k])
             self.jobattrs.append(k)
         self.jobattrs.sort()
-        log.debug("Made CondorJobInfo object with %d attributes" % len(self.jobattrs))    
+        self.log.debug("Made CondorJobInfo object with %d attributes" % len(self.jobattrs))    
         
     def __str__(self):
         attrstoprint = ['ec2instancename',
@@ -485,6 +485,7 @@ class CondorSlotInfo(object):
                 Suspended
 
         '''
+        self.log = logging.getLogger()
         self.instanceid = instanceid
         self.machine = machine
         self.state = state
@@ -528,6 +529,7 @@ class CondorStartdInfo(object):
                 Retiring 
                 Suspended
         '''
+        self.log = logging.getLogger()
         self.instanceid = slotinfo.instanceid
         self.machine = slotinfo.machine
         self.state = {}
