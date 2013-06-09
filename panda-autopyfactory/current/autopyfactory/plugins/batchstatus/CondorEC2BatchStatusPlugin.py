@@ -200,9 +200,16 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     self.log.warning('_update: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
                 else:
                     dictlist = parseoutput(xmlout)
+                    aggdict = aggregateinfo(dictlist)
+                    newinfo = self._map2info(aggdict)
+                    self.log.info("Replacing old info with newly generated info.")
+                    self.currentinfo = newinfo
+
                     jl = self._dicttojoblist(dictlist)
                     self.log.debug("Created indexed joblist of length %d" % len(jl))
                     self.currentjobs = jl
+                    
+                self.log.info("Replacing old info with newly generated info.")
 
             except Exception, e:
                 self.log.error("_update: Exception: %s" % str(e))
@@ -218,12 +225,9 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     self.log.debug("Created CondorSlotInfo list of length %d" % len(sl))
                     stdlist = self._slotlisttostartdlist(sl)
                     # This list is indexed by instanceid, so 
-                    
                     for k in stdlist.keys():
                         self.log.debug("CondorStartdInfo: %s -> %s" % (k, stdlist[k]))
                     
-                    self.currentinfo = stdlist
-                    self.log.info("Replacing old info with newly generated info.")
 
             except Exception, e:
                 self.log.error("_update: Exception: %s" % str(e))
