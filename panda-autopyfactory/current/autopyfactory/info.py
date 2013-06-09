@@ -152,8 +152,6 @@ class BatchStatusInfo(BaseInfo):
     Information returned by BatchStatusPlugin getInfo() and getJobInfo() call.
     
     Consists 
-    
-    
     -----------------------------------------------------------------------
      Empty anonymous placeholder for queue information. 
      

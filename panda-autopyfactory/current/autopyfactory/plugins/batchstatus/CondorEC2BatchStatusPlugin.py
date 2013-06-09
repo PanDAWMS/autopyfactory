@@ -390,9 +390,9 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             queue attribute counts. 
         '''
         self.log.debug('_map2info: Starting.')
-        batchstatusinfo = InfoContainer('batch', BatchStatusInfo())
+        batchstatusinfo = InfoContainer('batch', CondorEC2BatchStatusInfo())
         for site in input.keys():
-            qi = BatchStatusInfo()
+            qi = CondorEC2BatchStatusInfo()
             batchstatusinfo[site] = qi
             attrdict = input[site]
             
@@ -446,7 +446,7 @@ class CondorEC2JobInfo(object):
             self.__setattr__(k,dict[k])
             self.jobattrs.append(k)
         self.jobattrs.sort()
-        self.log.debug("Made CondorJobInfo object with %d attributes" % len(self.jobattrs))    
+        #self.log.debug("Made CondorJobInfo object with %d attributes" % len(self.jobattrs))    
         
     def __str__(self):
         attrstoprint = ['ec2instancename',
@@ -579,6 +579,19 @@ class CondorStartdInfo(object):
         s = str(self)
         return s    
     
+    
+
+
+class CondorEC2BatchStatusInfo(BatchStatusInfo):
+    
+    valid = ['pending', 'running', 'error', 'suspended', 'done', 'unknown', 'retiring', 'retired']
+    
+    def __init__(self):
+        
+        super(CondorEC2BatchStatusInfo, self).__init__() 
+       
+
+
 
 
 def test2():
