@@ -215,11 +215,14 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 else:
                     dictlist = parseoutput(xmlout)
                     sl = self._dicttoslotlist(dictlist)
-                    self.log.debug("Created SlotInfo list of length %d" % len(sl))
+                    self.log.debug("Created CondorSlotInfo list of length %d" % len(sl))
                     stdlist = self._slotlisttostartdlist(sl)
-                    for s in stdlist:
-                        self.log.debug("%s" % s)
+                    # This list is indexed by instanceid, so 
                     
+                    for k in stdlist.keys():
+                        self.log.debug("CondorStartdInfo: %s -> %s" % (k, stdlist[k]))
+                    
+                    self.currentinfo = stdlist
                     self.log.info("Replacing old info with newly generated info.")
 
             except Exception, e:
@@ -472,6 +475,7 @@ class CondorSlotInfo(object):
                 Unclaimed 
                 Preempting 
                 Backfill
+
         Activities: 
                 Busy 
                 Idle 
@@ -485,7 +489,10 @@ class CondorSlotInfo(object):
         self.activity = activity
       
     def __str__(self):
-        s = "CondorSlotInfo: %s %s %s %s\n" % (self.instanceid, self.machine, self.state, self.activity)
+        s = "CondorSlotInfo: %s %s %s %s\n" % (self.instanceid, 
+                                               self.machine, 
+                                               self.state, 
+                                               self.activity)
         return s
 
     def __repr__(self):
