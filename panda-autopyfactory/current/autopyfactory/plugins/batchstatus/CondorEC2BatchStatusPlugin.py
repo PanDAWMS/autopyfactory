@@ -696,16 +696,17 @@ class CondorExecuteInfo(object):
             idle = True
             retiring = False
             for si in self.slotinfolist:
-                if si.activity == 'busy':
+                if si.activity.lower() == 'busy':
                     busy = True
                     idle = False
                     retiring = False
                     break
-                elif si.activity == 'retiring':
+                elif si.activity.lower() == 'retiring':
                     busy = False
                     idle = False
                     retiring = True
-                elif si.activity == 'idle':
+                    break
+                elif si.activity.lower() == 'idle':
                     pass
             # Calculate overall state
             overall = 'unknown'
