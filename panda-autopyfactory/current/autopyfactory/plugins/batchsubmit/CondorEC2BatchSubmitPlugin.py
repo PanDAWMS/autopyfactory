@@ -137,7 +137,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
                                                  jobinfo.ec2instancename))
         exeinfo = jobinfo.executeinfo
         publicip = exeinfo.hostname
-        machine = jobinfo.machine
+        machine = exeinfo.machine
         condorid = "%s.%s" % (jobinfo.clusterid, jobinfo.procid)
         
         if usessh:
