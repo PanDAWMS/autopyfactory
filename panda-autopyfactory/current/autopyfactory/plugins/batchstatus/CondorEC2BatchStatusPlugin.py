@@ -568,7 +568,7 @@ class CondorSlotInfo(object):
 
       
     def __str__(self):
-        s = "CondorSlotInfo: %s %s %s %s\n" % (self.instanceid, 
+        s = "CondorSlotInfo: %s %s %s %s" % (self.instanceid, 
                                                self.machine, 
                                                self.state, 
                                                self.activity
