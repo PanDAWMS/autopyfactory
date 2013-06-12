@@ -673,7 +673,7 @@ class CondorExecuteInfo(object):
             
         
     def __str__(self):
-        s = "CondorStartdInfo: %s %s" % (self.instanceid, 
+        s = "CondorExecuteInfo: %s %s %s" % (self.instanceid, 
                                          self.machine,
                                          self.hostname)
         stk =  self.state.keys()
