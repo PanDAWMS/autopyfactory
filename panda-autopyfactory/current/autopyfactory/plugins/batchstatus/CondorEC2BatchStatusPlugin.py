@@ -348,7 +348,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 j = CondorSlotInfo(ec2iid, machine, state, act)
                 slotlist.append(j)
             except Exception, e:
-                log.error("Bad node. Error: %s" % str(e))
+                self.log.error("Bad node. Error: %s" % str(e))
         return slotlist
 
     def _dicttoexelist(self, nodelist):
@@ -366,7 +366,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 j = CondorExecuteInfo(ec2iid, machine, hostname)
                 exelist.append(j)
             except Exception, e:
-                log.error("Bad node. Error: %s" % str(e))
+                self.log.error("Bad node. Error: %s" % str(e))
         return exelist
 
     def _slotlisttostartdlist(self, slotlist):
