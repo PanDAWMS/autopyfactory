@@ -715,9 +715,10 @@ class CondorExecuteInfo(object):
             busy = False
             idle = True
             retiring = False
-            act = si.activity.lower()
-            self.log.debug("slotinfo activity is %s" % act)
             for si in self.slotinfolist:
+                act = si.activity.lower()
+                self.log.debug("slotinfo activity is %s" % act)
+                
                 if act == 'busy':
                     busy = True
                     idle = False
