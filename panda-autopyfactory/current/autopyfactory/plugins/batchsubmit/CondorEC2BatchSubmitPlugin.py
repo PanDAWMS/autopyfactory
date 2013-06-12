@@ -119,7 +119,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             numretired = 0
             for job in thisqueuejobs:
                 self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)
-                if job.executeinfo.getStatus() == 'running':
+                if job.executeinfo.getStatus() == 'busy':
                     self._retirenode(job)
                     numtoretire = numtoretire - 1
                     numretired += 1
