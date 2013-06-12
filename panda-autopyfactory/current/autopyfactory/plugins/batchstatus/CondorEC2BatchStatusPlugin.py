@@ -237,8 +237,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 for aq in joblist.keys():
                     self.log.debug("Adding exeinfo to jobs in apfqueue %s" % aq)
                     for job in joblist[aq]:
-
-                        self.log.debug("Handling job %s" % job) 
+                        #self.log.debug("Handling job %s" % job) 
                         try:
                             ec2id = job.ec2instancename
                             self.log.debug("Adding exeinfo to job for ec2id %s" % ec2id )
@@ -247,8 +246,10 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                             job.executeinfo = exeinfo
                             
                         except AttributeError:
-                            self.log.exception("Got AttributeError during exeinfo. Could be OK.")
+                            pass
+                            #self.log.exception("Got AttributeError during exeinfo. Could be OK.")
                             # OK, not all jobs will be ec2 jobs. 
+                
                 # Fix newinfo, converting running ec2 jobs to retiring where 
                 # appropriate
                 for queue in newinfo:
