@@ -241,12 +241,16 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                         try:
                             ec2id = job.ec2instancename
                             self.log.debug("Adding exeinfo to job for ec2id: %s" % ec2id )
-                            exeinfo = exebyec2id[ec2id][0]
-                            self.log.debug("Retrieved exeinfo from indexed hash for ec2id: %s" % ec2id)
-                            # Should only be one per job
-                            job.executeinfo = exeinfo
-                            self.log.debug("Assigned exeinfo: %s to job %s" % (exeinfo, job))
-                            
+                            try:
+                                exeinfo = exebyec2id[ec2id][0]
+                                self.log.debug("Retrieved exeinfo from indexed hash for ec2id: %s" % ec2id)
+                                # Should only be one per job
+                                job.executeinfo = exeinfo
+                                self.log.debug("Assigned exeinfo: %s to job %s" % (exeinfo, job))
+                            except KeyError:
+                                # New VM jobs will not have exeinfo until they start 
+                                # and connect back to the pool. This is OK.  
+                                pass
                         except AttributeError:
                             pass
                             #self.log.exception("Got AttributeError during exeinfo. Could be OK.")
