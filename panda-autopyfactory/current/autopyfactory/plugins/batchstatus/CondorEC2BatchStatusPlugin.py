@@ -233,17 +233,18 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.log.debug("indexed exelist: %s" % exebyec2id)
                 
                 # Now, add exeinfo to correct jobs, by ec2instanceid...
-                for job in joblist:
-                    try:
-                        ec2id = job.ec2instancename
-                        self.log.debug("Adding exeinfo to job for ec2id" % ec2id )
-                        exeinfo = exebyec2id[ec2id]
-                        # Should only be one per job
-                        job.executeinfo = exeinfo
-                        
-                    except AttributeError:
-                        # OK, not all jobs will be ec2 jobs. 
-                        pass
+                for js in joblist.keys():
+                    for job in js: 
+                        try:
+                            ec2id = job.ec2instancename
+                            self.log.debug("Adding exeinfo to job for ec2id" % ec2id )
+                            exeinfo = exebyec2id[ec2id]
+                            # Should only be one per job
+                            job.executeinfo = exeinfo
+                            
+                        except AttributeError:
+                            # OK, not all jobs will be ec2 jobs. 
+                            pass
                 # Fix newinfo, converting running ec2 jobs to retiring where 
                 # appropriate
                 for queue in newinfo:
