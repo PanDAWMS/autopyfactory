@@ -422,7 +422,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 j = CondorExecuteInfo(ec2iid, machine, hostname)
                 exelist.append(j)
             except Exception, e:
-                self.log.error("Bad node. May be OK since not all nodes ec2: %s" % str(e))
+                self.log.warning("Bad node. May be OK since not all nodes ec2: %s" % str(e))
         return exelist
 
     def _slotlisttostartdlist(self, slotlist):
