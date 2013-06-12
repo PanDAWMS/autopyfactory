@@ -269,7 +269,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         else:
             joblist = self._dicttojoblist(dictlist)
             self.log.debug("Created indexed joblist of length %d" % len(jl))
-            self.currentjobs = jl
+            self.currentjobs = joblist
         return joblist
 
 
