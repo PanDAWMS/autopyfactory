@@ -243,7 +243,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         else:
             dictlist = parseoutput(xmlout)
             exelist = self._dicttoexelist(dictlist)
-            self.log.debug("Created CondorExecuteInfo list of length %d" % len(el))
+            self.log.debug("Created CondorExecuteInfo list of length %d" % len(exelist))
         return exelist
         
         
@@ -367,7 +367,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 j = CondorExecuteInfo(ec2iid, machine, hostname)
                 exelist.append(j)
             except Exception, e:
-                self.log.error("Bad node. Error: %s" % str(e))
+                self.log.error("Bad node. May be OK since not all nodes ec2: %s" % str(e))
         return exelist
 
     def _slotlisttostartdlist(self, slotlist):
