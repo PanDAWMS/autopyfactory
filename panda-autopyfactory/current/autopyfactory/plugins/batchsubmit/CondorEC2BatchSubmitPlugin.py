@@ -18,9 +18,15 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
     def _readconfig(self, qcl=None):
         '''
         read the config file
+        do housekeeping!
+        
+        XXX self._killretired doesn't belong here, but it was the only place to
+        unconditionally get called in the plugin every cycle. 
+        
         '''
+        self._killretired()
 
-        # Chosing the queue config object, depending on 
+        # Choosing the queue config object, depending on 
         if not qcl:
             qcl = self.apfqueue.factory.qcl
 
@@ -72,20 +78,22 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
 
         self.log.debug('CondorEC2BatchSubmitPlugin.addJSD: Leaving.')
 
-    def submit(self, n):
+    def xxxsubmit(self, n):
         '''
         
         1) unretire r retiring/retired nodes if r < n
         2) if n > r, submit n-r new jobs
         3) terminate nodes that are in 'retired' state. 
-        
-        
-        
         '''
         statusinfo = self.apfqueue.batchstatus_plugin.getInfo()
         jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo()
-
-
+        
+        if n>0:
+            pass
+            
+        elif n < 0:
+            self.retire(abs(n))
+        
         self._killretired()
         
         
@@ -138,9 +146,6 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         else:
             # call condor_off locally
             self.log.info("Trying local retirement of node %s" % publicip)
-    
-    
-    
         
     def _killretired(self):
         '''
