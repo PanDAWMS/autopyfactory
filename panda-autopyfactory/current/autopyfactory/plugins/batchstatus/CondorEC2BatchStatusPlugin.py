@@ -526,7 +526,7 @@ class CondorEC2JobInfo(object):
                         'jobstatus'
                         ]   
                
-        s = "CondorEC2Job: %s.%s " % (self.clusterid, 
+        s = "CondorEC2JobInfo: %s.%s " % (self.clusterid, 
                                       self.autoclusterid)
         for k in self.jobattrs:
             if k in attrstoprint:
