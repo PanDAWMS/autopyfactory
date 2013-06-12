@@ -431,9 +431,8 @@ def killids(idlist):
     '''
     log = logging.getLogger()
     idstring = ' '.join(idlist)
-    
     cmd = 'condor_rm %s' % idstring
-    log.debug('Querying cmd = %s' %cmd.replace('\n','\\n'))
+    log.debug('Issuing remove cmd = %s' %cmd.replace('\n','\\n'))
     before = time.time()
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     out = None
