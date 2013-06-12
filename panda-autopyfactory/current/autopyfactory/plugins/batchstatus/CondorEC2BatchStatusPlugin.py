@@ -268,7 +268,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.log.warning('_makejoblist: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
         else:
             joblist = self._dicttojoblist(dictlist)
-            self.log.debug("Created indexed joblist of length %d" % len(jl))
+            self.log.debug("Created indexed joblist of length %d" % len(joblist))
             self.currentjobs = joblist
         return joblist
 
