@@ -246,6 +246,18 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                                 self.log.debug("Retrieved exeinfo from indexed hash for ec2id: %s" % ec2id)
                                 # Should only be one per job
                                 job.executeinfo = exeinfo
+                                exestat = job.executeinfo.getStatus() 
+                                self.log.debug("Job with exeinfo, checking status=%s" % exestat)
+                                if exestat == 'retiring':
+                                    self.log.debug("Found retiring, adjusting newinfo")
+                                    newinfo[aq].retiring += 1
+                                    newinfo[aq].running -= 1
+                                elif exestat == 'retired':
+                                    self.log.debug("Found retired, adjusting newinfo")
+                                    newinfo[aq].retired += 1
+                                    newinfo[aq].running -= 1
+                                else:
+                                    self.log.debug("No change to newinfo")
                                 self.log.debug("Assigned exeinfo: %s to job %s" % (exeinfo, job))
                             except KeyError:
                                 # New VM jobs will not have exeinfo until they start 
@@ -262,7 +274,11 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     self.log.debug("queue info in newinfo. %s" % queue)
                     inf = newinfo[queue]
                     self.log.debug("info in newinfo for queue [%s]: %s" % (queue, inf))
+                
                     
+                
+                
+                # Update current info references
                 self.currentjobs = joblist
                 self.currentinfo = newinfo
             
