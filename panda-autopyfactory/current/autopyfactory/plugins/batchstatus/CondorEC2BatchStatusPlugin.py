@@ -234,6 +234,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 
                 # Now, add exeinfo to correct jobs, by ec2instanceid...
                 for js in joblist.keys():
+                    self.log.debug("Adding exeinfo to jobs in apfqueue %s" % js)
                     for job in js: 
                         try:
                             ec2id = job.ec2instancename
