@@ -150,8 +150,9 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         self.log.info("Finding and killing VM jobs in 'retired' state.")
         
         killlist = []
-        if jobinfo:        
-            for j in jobinfo:
+        if jobinfo:
+            myjobs = jobinfo[self.apfqueue.apfqname]        
+            for j in myjobs:
                 self.log.debug("jobinfo is %s " % j)
                 if j.exeinfo.getstatus() == 'retired':
                     killlist.append( "%s.%s" % (j.clusterid, j.procid))
