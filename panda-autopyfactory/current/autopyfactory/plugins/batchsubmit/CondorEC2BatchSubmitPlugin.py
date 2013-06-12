@@ -181,7 +181,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
                         killlist.append( "%s.%s" % (j.clusterid, j.procid))
                 else:
                     self.log.warning("There seems to be a VM job without even exeinfo. ec2id: %s" % j.ec2instancename)
-                self.log.debug("killlist length is %s" % len(killlist))
+            self.log.debug("killlist length is %s" % len(killlist))
         if killlist:
             self.log.info("About to kill list of %s ids. First one is %s" % (len(killlist), killlist[0] ))
             killids(killlist)
