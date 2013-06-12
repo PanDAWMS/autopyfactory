@@ -132,7 +132,8 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         
         if usessh:
             self.log.info("Trying to use SSH to retire node %s" % publicip)
-            
+            cmd='ssh root@%s "condor_off -peaceful -startd"'
+            self.log.debug("retire cmd is %s" % cmd) 
             # invoke ssh to retire node
         else:
             # call condor_off locally
