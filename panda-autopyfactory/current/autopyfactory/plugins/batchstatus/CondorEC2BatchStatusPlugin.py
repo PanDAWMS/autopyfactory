@@ -598,7 +598,7 @@ class CondorEC2JobInfo(object):
             if k in attrstoprint:
                 s += " %s=%s " % ( k, self.__getattribute__(k))
         if self.executeinfo:
-            s += self.executeinfo
+            s += "%s" % self.executeinfo
         return s
     
     def __repr__(self):
