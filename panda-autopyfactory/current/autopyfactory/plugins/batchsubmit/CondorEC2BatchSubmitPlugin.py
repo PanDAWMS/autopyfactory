@@ -111,19 +111,21 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         for each desired retirement. 
         
         '''
+        self.log.info("Beginning to retire %d VM jobs..." % n)
         jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo()
         if jobinfo:
             thisqueuejobs = jobinfo[self.apfqueue.apfqname]
             numtoretire = n
+            numretired = 0
             for job in thisqueuejobs:
                 self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)
                 if job.executeinfo.getStatus() == 'running':
                     self._retirenode(job)
                     numtoretire = numtoretire - 1
+                    numretired += 1
                 if numtoretire <= 0:
                     break
-                        
-                 
+            self.log.info("Retired %d VM jobs" % numretired)
         else:
             self.log.info("Some info unavailable. Do nothing.")
     
