@@ -23,7 +23,7 @@ from autopyfactory.factory import Singleton, CondorSingleton
 from autopyfactory.info import InfoContainer
 from autopyfactory.info import BatchStatusInfo
 
-from autopyfactory.condor import checkCondor, querycondor, statuscondor, statuscondormaster
+from autopyfactory.condor import checkCondor, querycondorxml, statuscondor, statuscondormaster
 from autopyfactory.condor import parseoutput, xml2nodelist, node2dict 
 from autopyfactory.condor import listnodesfromxml, aggregateinfo, killids
 
