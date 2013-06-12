@@ -254,8 +254,8 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.log.warning('_makeslotlist: output of statuscondor() is not valid. Not parsing it. Skip to next loop.') 
         else:
             dictlist = parseoutput(xmlout)
-            sl = self._dicttoslotlist(dictlist)
-            self.log.debug("Created CondorSlotInfo list of length %d" % len(sl))
+            slotlist = self._dicttoslotlist(dictlist)
+            self.log.debug("Created CondorSlotInfo list of length %d" % len(slotlist))
             # slotlist = self._slotlisttostartdlist(sl)
             # This list is indexed by instanceid, so 
             #for k in stdlist.keys():
@@ -571,7 +571,8 @@ class CondorSlotInfo(object):
         s = "CondorSlotInfo: %s %s %s %s\n" % (self.instanceid, 
                                                self.machine, 
                                                self.state, 
-                                               self.activity)
+                                               self.activity,
+                                               )
         return s
 
     def __repr__(self):
@@ -677,7 +678,8 @@ class CondorExecuteInfo(object):
         s = "CondorExecuteInfo: %s %s %s %s" % (self.instanceid, 
                                          self.machine,
                                          self.hostname,
-                                         self.getStatus())
+                                         self.getStatus(),
+                                         )
          
         return s
 
