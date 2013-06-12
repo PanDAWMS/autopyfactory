@@ -152,6 +152,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         killlist = []
         if jobinfo:
             myjobs = jobinfo[self.apfqueue.apfqname]        
+            self.log.debug("myjobs is %s" % myjobs)
             for j in myjobs:
                 self.log.debug("jobinfo is %s " % j)
                 if j.executeinfo.getstatus() == 'retired':

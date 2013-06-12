@@ -248,7 +248,6 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     self.log.debug("queue info in newinfo. %s" % queue)
                 
                 
-                
                 self.currentjobs = newinfo
             
             except Exception, e:
