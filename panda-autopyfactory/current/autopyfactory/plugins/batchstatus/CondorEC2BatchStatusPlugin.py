@@ -708,8 +708,9 @@ class CondorExecuteInfo(object):
            retired
         
         '''
+        overall = None
         if len(self.slotinfolist) == 0:
-            return "retired"
+            overall = 'unknown'
         else:
             busy = False
             idle = True
@@ -728,7 +729,6 @@ class CondorExecuteInfo(object):
                 elif si.activity.lower() == 'idle':
                     pass
             # Calculate overall state
-            overall = 'unknown'
             if busy:
                 overall = 'busy'
             elif idle:
