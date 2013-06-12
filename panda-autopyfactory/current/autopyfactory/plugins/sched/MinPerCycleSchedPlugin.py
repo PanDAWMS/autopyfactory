@@ -30,10 +30,6 @@ class MinPerCycleSchedPlugin(SchedInterface):
             out = max(n, self.min_pilots_per_cycle)
             msg = "MinPerCycle=%s,min=%s,ret=%s" %(n, self.min_pilots_per_cycle, out)
 
-        # Catch all to prevent negative numbers
-        #if nsub < 0:
-        #    self.log.info('calcSubmitNum: calculated output was negative. Returning 0')
-        #    nsub = 0
-                
+               
         self.log.info('calcSubmitNum: return with out=%s' %out)
         return (out, msg)
