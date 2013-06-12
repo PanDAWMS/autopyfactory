@@ -180,7 +180,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
                     if st == 'retired':
                         killlist.append( "%s.%s" % (j.clusterid, j.procid))
                 else:
-                    self.log.warning("There seems to be a VM job without even exeinfo. ec2id: %s" % job.ec2instancename)
+                    self.log.warning("There seems to be a VM job without even exeinfo. ec2id: %s" % j.ec2instancename)
                 self.log.debug("killlist length is %s" % len(killlist))
         if killlist:
             self.log.info("About to kill list of %s ids. First one is %s" % (len(killlist), killlist[0] ))
