@@ -220,7 +220,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.log.debug("rawjoblist: %s" % joblist)
                 
                 #Make hash of SlotInfo objects by instanceid 
-                slotsbyec2id =  _indexobjectsby(slotlist, 'instanceid')
+                slotsbyec2id =  self._indexobjectsby(slotlist, 'instanceid')
                 self.log.debug("indexed slotlist: %s" % slotsbyec2id)
                 
                 for exe in exelist:
