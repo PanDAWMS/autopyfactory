@@ -257,8 +257,6 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 for queue in newinfo:
                     self.log.debug("queue info in newinfo. %s" % queue)
                 
-                
-                
                 self.currentjobs = joblist
                 self.currentinfo = newinfo
             
