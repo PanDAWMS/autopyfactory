@@ -23,8 +23,9 @@ from autopyfactory.factory import Singleton, CondorSingleton
 from autopyfactory.info import InfoContainer
 from autopyfactory.info import BatchStatusInfo
 
-from autopyfactory.condor import checkCondor, querycondor, xml2nodelist, parseoutput, statuscondor
-from autopyfactory.condor import listnodesfromxml, node2dict, aggregateinfo
+from autopyfactory.condor import checkCondor, querycondor, statuscondor, statuscondormaster
+from autopyfactory.condor import parseoutput, xml2nodelist, node2dict 
+from autopyfactory.condor import listnodesfromxml, aggregateinfo, killids
 
 import autopyfactory.utils as utils
 
@@ -78,7 +79,9 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         #
         self.currentjobs = None      
         
-        # This is job statistic info, a BatchStatusInfo object. 
+        # This is job statistic info, a BatchStatusInfo object.
+        # 
+        # 
         self.currentinfo = None
 
         # ================================================================
@@ -144,7 +147,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         #    self.log.debug('getInfo: Info too old. Leaving and returning None.')
         #    return None
         else:                    
-            self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentinfo))
+            self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentjobs))
             return self.currentjobs
 
 
@@ -182,58 +185,102 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
     def _update(self):
         '''        
             Query Condor for job status, create JobInfo objects. 
-            Query condor_status for startd status, add to relevant JobInfo by instanceID
-                Update currentjobs (list of JobInfo objects)
+            Query condor_status -master for execute host info
+            Query condor_status for startd status, adding that info to executeInfo
+            
             
             Aggregate resulting objects for statistics, creating BatchStatusInfo object 
             update currentinfo
                 
         '''
         self.log.debug('_update: Starting.')
+
+        exelist = None
+        slotlist = None
+        joblist = None
+
        
         if not utils.checkDaemon('condor'):
             self.log.warning('_update: condor daemon is not running. Doing nothing')
         else:
             try:
+                exelist = self._makeexelist()
+                self.log.debug("exelist: %s" % exelist)
+                slotlist = self._makeslotlist()
+                self.log.debug("slotlist: %s" % slotlist)
+                # Query condor once
                 xmlout = querycondor()
-                if not xmlout:
-                    self.log.warning('_update: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
-                else:
-                    dictlist = parseoutput(xmlout)
-                    aggdict = aggregateinfo(dictlist)
-                    newinfo = self._map2info(aggdict)
-                    self.log.info("Replacing old info with newly generated info.")
-                    self.currentinfo = newinfo
+                dictlist = parseoutput(xmlout)
 
-                    jl = self._dicttojoblist(dictlist)
-                    self.log.debug("Created indexed joblist of length %d" % len(jl))
-                    self.currentjobs = jl
-                    
-                self.log.info("Replacing old info with newly generated info.")
-
-            except Exception, e:
-                self.log.error("_update: Exception: %s" % str(e))
-                self.log.debug("Exception: %s" % traceback.format_exc())            
+                # use it to for stats and job-by-job processing...
+                newinfo = self._makeinfolist(dictlist)
+                self.log.debug("rawinfo: %s" % newinfo)
+                joblist = self._makejoblist(dictlist)
+                self.log.debug("rawjoblist: %s" % joblist)
+               
+                # Now, add exeinfo to correct jobs, by ec2instanceid...
             
-            try:
-                xmlout = statuscondor()
-                if not xmlout:
-                    self.log.warning('_update: output of _statuscondor is not valid. Not parsing it. Skip to next loop.') 
-                else:
-                    dictlist = parseoutput(xmlout)
-                    sl = self._dicttoslotlist(dictlist)
-                    self.log.debug("Created CondorSlotInfo list of length %d" % len(sl))
-                    stdlist = self._slotlisttostartdlist(sl)
-                    # This list is indexed by instanceid, so 
-                    for k in stdlist.keys():
-                        self.log.debug("CondorStartdInfo: %s -> %s" % (k, stdlist[k]))
-                    
-
+                # Fix newinfo, converting running ec2 jobs to retiring where 
+                # appropriate
+            
             except Exception, e:
-                self.log.error("_update: Exception: %s" % str(e))
-                self.log.debug("Exception: %s" % traceback.format_exc()) 
-    
+                self.log.exception("Problem handling Condor info.")
+
         self.log.debug('__update: Leaving.')
+
+
+    def _makeexelist(self):
+        '''
+        Create and return a list of CondorExecutInfo objects based on the output
+        of condor_status -master -xml
+        
+        '''
+        exelist = None
+        xmlout = statuscondormaster()
+        if not xmlout:
+            self.log.warning('_makeexelist: output of statuscondormaster() is not valid. Not parsing it. Skip to next loop.') 
+        else:
+            dictlist = parseoutput(xmlout)
+            exelist = self._dicttoexelist(nodelist)
+            self.log.debug("Created CondorExecuteInfo list of length %d" % len(el))
+        return exelist
+        
+        
+    def _makeslotlist(self):
+        slotlist = None
+        xmlout = statuscondor()
+        if not xmlout:
+            self.log.warning('_makeslotlist: output of statuscondor() is not valid. Not parsing it. Skip to next loop.') 
+        else:
+            dictlist = parseoutput(xmlout)
+            sl = self._dicttoslotlist(dictlist)
+            self.log.debug("Created CondorSlotInfo list of length %d" % len(sl))
+            slotlist = self._slotlisttostartdlist(sl)
+            # This list is indexed by instanceid, so 
+            for k in stdlist.keys():
+                self.log.debug("CondorStartdInfo: %s -> %s" % (k, stdlist[k]))
+        return slotlist
+   
+    def _makejoblist(self, dictlist):
+        joblist = None
+        if not dictlist:
+            self.log.warning('_makejoblist: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
+        else:
+            joblist = self._dicttojoblist(dictlist)
+            self.log.debug("Created indexed joblist of length %d" % len(jl))
+            self.currentjobs = jl
+        return joblist
+
+
+    def _makeinfolist(self, dictlist):
+        newinfo = None
+        if not dictlist:
+            self.log.warning('_makeinfolist: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
+        else:
+            aggdict = aggregateinfo(dictlist)
+            newinfo = self._map2info(aggdict)
+        return newinfo
+
 
     def _dicttojoblist(self,nodelist):
         '''
@@ -303,6 +350,26 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             except Exception, e:
                 log.error("Bad node. Error: %s" % str(e))
         return slotlist
+
+    def _dicttoexelist(self, nodelist):
+        '''
+        Takes the list of dicts of all masters (from condor_status) and constructs
+        CondorExecuteInfo objects, one per startd.         
+        '''
+        
+        exelist = []
+        for n in nodelist:
+            try:
+                ec2iid = n['ec2instanceid']
+                machine = n['machine']
+                hostname = n['ec2publicdns']
+                j = CondorExecuteInfo(ec2iid, machine, hostname)
+                exelist.append(j)
+            except Exception, e:
+                log.error("Bad node. Error: %s" % str(e))
+        return exelist
+
+
 
     def _slotlisttostartdlist(self, slotlist):
         '''
@@ -439,6 +506,8 @@ class CondorEC2JobInfo(object):
     def __init__(self, dict):
         '''
         Creates JobInfo object from arbitrary dictionary of attributes. 
+        ec2instancename -> ec2instanceid
+        
         '''
         self.log = logging.getLogger()
         self.jobattrs = []
@@ -446,17 +515,18 @@ class CondorEC2JobInfo(object):
             self.__setattr__(k,dict[k])
             self.jobattrs.append(k)
         self.jobattrs.sort()
+        self.executeinfo = None
         #self.log.debug("Made CondorJobInfo object with %d attributes" % len(self.jobattrs))    
         
     def __str__(self):
-        attrstoprint = ['ec2instancename',
-                        'ec2instanctype',
+        attrstoprint = ['match_apf_queue',
+                        'ec2instancename',
+                        'ec2instancetype',
                         'enteredcurrentstatus',
-                        'jobstatus',
-                        'match_apf_queue',
+                        'jobstatus'
                         ]   
                
-        s = "[ CondorJob: %s.%s] " % (self.clusterid, self.autoclusterid)
+        s = "CondorJob: %s.%s " % (self.clusterid, self.autoclusterid)
         for k in self.jobattrs:
             if k in attrstoprint:
                 s += " %s=%s " % ( k, self.__getattribute__(k))
@@ -494,6 +564,7 @@ class CondorSlotInfo(object):
         self.machine = machine
         self.state = state
         self.activity = activity
+
       
     def __str__(self):
         s = "CondorSlotInfo: %s %s %s %s\n" % (self.instanceid, 
@@ -509,13 +580,15 @@ class CondorSlotInfo(object):
 
 
 
-class CondorStartdInfo(object):
+class CondorExecuteInfo(object):
     '''
-    Info object to represent a startd on the cloud. 
+    Info object to represent an execute host on the cloud. 
     If it has multiple slots, we need to calculate overall state/activity carefully. 
+    If it has retired, it will not appear in condor_status, only condor_status -master. 
+        So execute hosts that only appear in master will have empty slotinfolist
     
     '''
-    def __init__(self, slotinfo):
+    def __init__(self, instanceid, machine, publicdns ):
         '''
         instanceID is self-explanatory
         machine is the full internal/local hostname (to allow condor_off)
@@ -531,39 +604,78 @@ class CondorStartdInfo(object):
                 Busy 
                 Idle 
                 Retiring 
-                Suspended
+                Suspended                 
         '''
         self.log = logging.getLogger()
-        self.instanceid = slotinfo.instanceid
-        self.machine = slotinfo.machine
-        self.state = {}
-        self.activity = {}
-        self.state[slotinfo.state] = 1
-        self.activity[slotinfo.activity] = 1
-        
+        # EC2 instance id
+        self.instanceid = instanceid
+        # Condor Machine name, usually internal hostname
+        self.machine = machine
+        # "Contact-able" hostname, usually EC2PublicDNS
+        self.hostname = publicdns
+        self.slotinfolist = []
+        self.log.debug("Created new CondorExecuteInfo: %s %s %s" % (self.instanceid, 
+                                                           self.machine,
+                                                           self.hostname))   
     
-    
-    def add(self, slotinfo):
+    def addslotinfo(self, slotinfo):
         '''
-        Add the information for a slot to this startd. 
+                 
+        '''
+        self.slotinfolist.append(slotinfo)
+        self.log.debug("Adding slotinfo to list.")
+
+    def getStatus(self):
+        '''
+        Calculate master/startd status based on contents of slotinfo list:
+        Node is 'busy' if any slots are 'busy'
+        Node is 'idle' only if all slots are 'idle'.
+        Node is 'retiring' if any slot is 'retiring'.
+        Node if 'retired' if no slots appear in condor_status.   
+        
+        Valid statuses:
+           idle
+           running
+           retiring
+           retired
         
         '''
-        self.log.debug("Adding slotinfo to existing StartdInfo object...")    
-        if self.instanceid == slotinfo.instanceid and self.machine == slotinfo.machine:
-            try:
-                self.state[slotinfo.state] += 1
-            except KeyError:
-                self.state[slotinfo.state] = 1
-            try:
-                self.activity[slotinfo.activity] += 1
-            except KeyError:
-                self.activity[slotinfo.activity] = 1            
+        if len(self.slotinfolist) == 0:
+            return "retired"
         else:
-            self.log.warning("Attempt to add a mismatched slotinfo to an existing StartdInfo object.")
-        
+            busy = False
+            idle = True
+            retiring = False
+            for si in self.slotinfolist:
+                if si.activity == 'busy':
+                    busy = True
+                    idle = False
+                    retiring = False
+                    break
+                elif si.activity == 'retiring':
+                    busy = False
+                    idle = False
+                    retiring = True
+                elif si.activity == 'idle':
+                    pass
+            # Calculate overall state
+            overall = 'unknown'
+            if busy:
+                overall = 'busy'
+            elif idle:
+                overall = 'idle'
+            elif retiring:
+                overall = 'retiring'
+            else:
+                self.log.warning('Difficulty calculating status for %s ' % self.instanceid)
+            
+            return overall
+            
         
     def __str__(self):
-        s = "CondorStartdInfo: %s %s" % (self.instanceid, self.machine)
+        s = "CondorStartdInfo: %s %s" % (self.instanceid, 
+                                         self.machine,
+                                         self.hostname)
         stk =  self.state.keys()
         stk.sort()
         for st in stk:
@@ -580,8 +692,6 @@ class CondorStartdInfo(object):
         return s    
     
     
-
-
 class CondorEC2BatchStatusInfo(BatchStatusInfo):
     
     valid = ['pending', 'running', 'error', 'suspended', 'done', 'unknown', 'retiring', 'retired']
@@ -590,7 +700,6 @@ class CondorEC2BatchStatusInfo(BatchStatusInfo):
         
         super(CondorEC2BatchStatusInfo, self).__init__() 
        
-
 
 
 

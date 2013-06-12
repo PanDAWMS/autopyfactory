@@ -129,6 +129,26 @@ def statuscondor():
         out = None
     return out
 
+def statuscondormaster():
+    '''
+    Return human readable info about startds. 
+    '''
+    log = logging.getLogger()
+    cmd = 'condor_status -master -xml'
+    log.debug('Querying cmd = %s' %cmd.replace('\n','\\n'))
+    before = time.time()
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    out = None
+    (out, err) = p.communicate()
+    delta = time.time() - before
+    log.debug('It took %s seconds to perform the query' %delta)
+    log.info('%s seconds to perform the query' %delta)
+    if p.returncode == 0:
+        log.debug('Leaving with OK return code.')
+    else:
+        log.warning('Leaving with bad return code. rc=%s err=%s out=%s' %(p.returncode, err, out ))
+        out = None
+    return out
 
 def querycondor():
     '''
@@ -400,6 +420,32 @@ def getStartdInfoByEC2Id():
         except Exception, e:
             log.error("Bad node. Error: %s" % str(e))
     return infolist
+    
+
+def killids(idlist):
+    '''
+    Remove all jobs by jobid in idlist.
+    Idlist is assumed to be a list of complete ids (<clusterid>.<procid>)
+     
+    
+    '''
+    log = logging.getLogger()
+    idstring = ' '.join(idlist)
+    
+    cmd = 'condor_rm %s' % idstring
+    log.debug('Querying cmd = %s' %cmd.replace('\n','\\n'))
+    before = time.time()
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    out = None
+    (out, err) = p.communicate()
+    delta = time.time() - before
+    log.debug('It took %s seconds to perform the command' %delta)
+    log.info('%s seconds to perform the command' %delta)
+    if p.returncode == 0:
+        log.debug('Leaving with OK return code.')
+    else:
+        log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
+        out = None
     
 
 def test1():

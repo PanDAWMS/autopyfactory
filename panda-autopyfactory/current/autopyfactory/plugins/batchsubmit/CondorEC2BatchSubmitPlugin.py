@@ -72,21 +72,88 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
 
         self.log.debug('CondorEC2BatchSubmitPlugin.addJSD: Leaving.')
 
+    def submit(self, n):
+        '''
+        
+        1) unretire r retiring/retired nodes if r < n
+        2) if n > r, submit n-r new jobs
+        3) terminate nodes that are in 'retired' state. 
+        
+        
+        
+        '''
+        statusinfo = self.apfqueue.batchstatus_plugin.getInfo()
+        jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo()
+
+
+        self._killretired()
+        
+        
+
     def retire(self, n, order='oldest'):
         '''
         trigger retirement of this many nodes, but looking at this parent APF queue's 
         CondorCloudBatchStatus plugin. 
         
+        Scan jobinfo for node start times
+           execute condor_off -peaceful -daemon startd -name <machine>
+        OR
+           ssh <EC2PublicIP> condor_off -peaceful -daemon startd
+                
+        for each desired retirement. 
+        
+        '''
+        jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo()
+        if jobinfo:
+            thisqueuejobs = jobinfo[self.apfqueue.apfqname]
+            numtoretire = n
+            for job in thisqueuejobs:
+                self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)
+                if job.executeinfo.getstatus() == 'running':
+                    self._retirenode(job)
+                    numtoretire = numtoretire - 1
+                if numtoretire <= 0:
+                    break
+                        
+                 
+        else:
+            self.log.info("Some info unavailable. Do nothing.")
+    
+    def _retirenode(self, jobinfo, usessh=True):
+        '''
+        Do whatever is needed to tell the node to retire...
+        '''
+        self.log.info("Retiring node %s (%s)" % (jobinfo.executeinfo.hostname, 
+                                                 jobinfo.ec2instancename))
+        exeinfo = jobinfo.executeinfo
+        publicip = exeinfo.hostname
+        machine = jobinfo.machine
+        
+        if usessh:
+            self.log.info("Trying to use SSH to retire node %s" % publicip)
+        
+            # invoke ssh to retire node
+        else:
+            # call condor_off locally
+                        self.log.info("Trying local retirement of node %s" % publicip)
+    
+    
+    
+        
+    def _killretired(self):
+        '''
+        scan through jobinfo for this queue with job
+        
         '''
         statusinfo = self.apfqueue.batchstatus_plugin.getInfo()
         jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo()
-        if statusinfo and jobinfo:
-            pass
+        self.log("Finding and killing VM jobs in 'retired' state.")
+        
+        killlist = []        
+        for j in jobinfo:
+            if j.exeinfo.getstatus() == 'retired':
+                killlist.append( "%s.%s" % (j.clusterid, j.procid))
+        self.log("About to kill list of %s ids. First one is %s" % (len(killist), killist[0] ))
+        if killlist:
+            killids(killlist)
             
-            
-        else:
-            self.log.info("Some info unavailable. Do nothing.")
-        
-        
-        
-

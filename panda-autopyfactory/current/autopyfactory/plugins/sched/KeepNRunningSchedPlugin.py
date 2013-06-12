@@ -37,16 +37,12 @@ class KeepNRunningSchedPlugin(SchedInterface):
         self.log.debug('calcSubmitNum: Starting.')
 
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
-        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
+
         
         if self.batchinfo is None:
             self.log.warning("self.batchinfo is None!")
             out = 0
             msg = "Invalid batchinfo"
-        elif not self.batchinfo.valid():
-            out = 0 
-            msg = "Invalid batchinfo"
-            self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             self.key = self.apfqueue.apfqname
             self.log.info("Key is %s" % self.key)
@@ -58,7 +54,6 @@ class KeepNRunningSchedPlugin(SchedInterface):
         '''
         algorithm 
         '''
-        
         # initial default values. 
         pending_pilots = 0
         running_pilots = 0
