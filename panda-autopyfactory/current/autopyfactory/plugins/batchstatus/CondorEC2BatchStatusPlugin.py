@@ -222,6 +222,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             
                 # Fix newinfo, converting running ec2 jobs to retiring where 
                 # appropriate
+                self.currentjobs = None
             
             except Exception, e:
                 self.log.exception("Problem handling Condor info.")
