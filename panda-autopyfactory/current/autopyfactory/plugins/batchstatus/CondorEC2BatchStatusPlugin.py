@@ -225,8 +225,12 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 
                 for exe in exelist:
                     ec2id = exe.instanceid
-                    slots = slotsbyec2id[ec2id]
-                    exe.slotinfolist = slots
+                    try:
+                        slots = slotsbyec2id[ec2id]
+                        exe.slotinfolist = slots
+                    except KeyError:
+                        # Not necessarily a problem, if node is retired. 
+                        pass
                                  
                 # Make hash of of CondorExecuteInfo objects, indexed
                 exebyec2id = self._indexobjectsby(exelist, 'instanceid')
