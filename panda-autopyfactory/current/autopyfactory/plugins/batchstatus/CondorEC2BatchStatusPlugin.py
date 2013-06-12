@@ -209,7 +209,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 slotlist = self._makeslotlist()
                 self.log.debug("slotlist: %s" % slotlist)
                 # Query condor once
-                xmlout = querycondor()
+                xmlout = querycondorxml()
                 dictlist = parseoutput(xmlout)
 
                 # use it to for stats and job-by-job processing...
@@ -217,7 +217,9 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.log.debug("rawinfo: %s" % newinfo)
                 joblist = self._makejoblist(dictlist)
                 self.log.debug("rawjoblist: %s" % joblist)
-               
+                # Make has of of CondorExecuteInfo objects, indexed
+                
+                
                 # Now, add exeinfo to correct jobs, by ec2instanceid...
             
                 # Fix newinfo, converting running ec2 jobs to retiring where 
@@ -387,21 +389,16 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         self.log.info("Created startdlist of length %d" % len(startdlist))
         return startdlist
 
-
-    def _indexbyqueue(self, input):
+    def _indexobjectsby(self, idxattr):
         '''
-        This function takes a list of job status dicts, and indexes them by queue 
+        Takes a list of any object, and returns a hash of lists of those
+        objects. 
         
-        Example input:
-        [ { 'match_apf_queue' : 'BNL_ATLAS_1',
-            'jobstatus' : '2' },
-          { 'match_apf_queue' : 'BNL_ATLAS_1',
-            'jobstatus' : '1' },
-           { 'match_apf_queue' : 'BNL_ATLAS_2',
-            'jobstatus' : '1' },        
-        ]                        
-                
-        ''' 
+        '''
+
+
+
+
 
     def _map2info(self, input):
         '''
