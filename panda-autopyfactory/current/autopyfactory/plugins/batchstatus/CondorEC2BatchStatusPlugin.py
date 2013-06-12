@@ -526,7 +526,8 @@ class CondorEC2JobInfo(object):
                         'jobstatus'
                         ]   
                
-        s = "CondorJob: %s.%s " % (self.clusterid, self.autoclusterid)
+        s = "CondorEC2Job: %s.%s " % (self.clusterid, 
+                                      self.autoclusterid)
         for k in self.jobattrs:
             if k in attrstoprint:
                 s += " %s=%s " % ( k, self.__getattribute__(k))
@@ -673,18 +674,11 @@ class CondorExecuteInfo(object):
             
         
     def __str__(self):
-        s = "CondorExecuteInfo: %s %s %s" % (self.instanceid, 
+        s = "CondorExecuteInfo: %s %s %s %s" % (self.instanceid, 
                                          self.machine,
-                                         self.hostname)
-        stk =  self.state.keys()
-        stk.sort()
-        for st in stk:
-            s += " %s: %d" % (st, self.state[st])
-        ack =  self.activity.keys()
-        ack.sort()
-        for ac in ack:
-            s += " %s: %d" % (ac, self.activity[ac])
-        s += "\n" 
+                                         self.hostname,
+                                         self.getStatus())
+         
         return s
 
     def __repr__(self):
