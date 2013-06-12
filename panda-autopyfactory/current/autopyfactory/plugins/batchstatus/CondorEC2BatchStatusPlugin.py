@@ -424,7 +424,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         hash = {}
         for o in objlist:
             try:
-                idx = o.__getattr__(idxattr)
+                idx = getattr( o , idxattr)
                 try:
                     olist = hash[idx]
                 except KeyError:
