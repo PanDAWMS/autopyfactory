@@ -242,9 +242,11 @@ class BatchStatusInfo(BaseInfo):
         
 
     def __str__(self):
-        s = "BatchStatusInfo: pending=%d, running=%d, suspended=%d" % (self.pending, 
-                                                                 self.running, 
-                                                                 self.suspended)
+        s = "BatchStatusInfo: pending=%d, running=%d, suspended=%d, retiring=%d, retired=%d" % (self.pending, 
+                                                                                                self.running, 
+                                                                                                self.suspended,
+                                                                                                self.retiring,
+                                                                                                self.retired)
         return s
 
     def __add__(self, o):
