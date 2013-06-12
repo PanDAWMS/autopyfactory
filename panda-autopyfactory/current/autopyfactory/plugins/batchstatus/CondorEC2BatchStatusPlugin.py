@@ -229,7 +229,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                     exe.slotinfolist = slots
                                  
                 # Make hash of of CondorExecuteInfo objects, indexed
-                exebyec2id = _indexobjectsby(exelist, 'instanceid')
+                exebyec2id = self._indexobjectsby(exelist, 'instanceid')
                 self.log.debug("indexed exelist: %s" % exebyec2id)
                 
                 # Now, add exeinfo to correct jobs, by ec2instanceid...
