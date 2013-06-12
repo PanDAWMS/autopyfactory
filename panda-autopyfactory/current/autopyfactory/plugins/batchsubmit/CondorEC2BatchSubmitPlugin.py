@@ -163,4 +163,6 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         if killlist:
             self.log.info("About to kill list of %s ids. First one is %s" % (len(killlist), killlist[0] ))
             killids(killlist)
+        else:
+            self.log.info("No VM jobs to kill for apfqueue %s" % self.apfqueue.apfqname )
             
