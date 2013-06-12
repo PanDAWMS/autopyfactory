@@ -571,7 +571,7 @@ class CondorSlotInfo(object):
         s = "CondorSlotInfo: %s %s %s %s\n" % (self.instanceid, 
                                                self.machine, 
                                                self.state, 
-                                               self.activity,
+                                               self.activity
                                                )
         return s
 
@@ -678,7 +678,7 @@ class CondorExecuteInfo(object):
         s = "CondorExecuteInfo: %s %s %s %s" % (self.instanceid, 
                                          self.machine,
                                          self.hostname,
-                                         self.getStatus(),
+                                         self.getStatus()
                                          )
          
         return s
