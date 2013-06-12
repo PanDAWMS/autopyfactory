@@ -215,16 +215,41 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 # use it to for stats and job-by-job processing...
                 newinfo = self._makeinfolist(dictlist)
                 self.log.debug("rawinfo: %s" % newinfo)
+                
                 joblist = self._makejoblist(dictlist)
                 self.log.debug("rawjoblist: %s" % joblist)
-                # Make has of of CondorExecuteInfo objects, indexed
                 
+                #Make hash of SlotInfo objects by instanceid 
+                slotsbyec2id =  _indexobjectsby(slotlist, 'instanceid')
+                self.log.debug("indexed slotlist: %s" % slotsbyec2id)
+                
+                for exe in exelist:
+                    ec2id = exe.instanceid
+                    slots = slotsbyec2id[ec2id]
+                    exe.slotinfolist = slots
+                                 
+                # Make hash of of CondorExecuteInfo objects, indexed
+                exebyec2id = _indexobjectsby(exelist, 'instanceid')
+                self.log.debug("indexed exelist: %s" % exebyec2id)
                 
                 # Now, add exeinfo to correct jobs, by ec2instanceid...
-            
+                for job in joblist:
+                    try:
+                        ec2id = job.ec2instancename
+                        exeinfo = exebyec2id[ec2id]
+                        # Should only be one per job
+                        job.executeinfo = exeinfo
+                    except AttributeError:
+                        # OK, not all jobs will be ec2 jobs. 
+                        pass
                 # Fix newinfo, converting running ec2 jobs to retiring where 
                 # appropriate
-                self.currentjobs = None
+                for queue in newinfo:
+                    self.log.debug("queue info in newinfo. %s" % queue)
+                
+                
+                
+                self.currentjobs = newinfo
             
             except Exception, e:
                 self.log.exception("Problem handling Condor info.")
@@ -389,16 +414,28 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         self.log.info("Created startdlist of length %d" % len(startdlist))
         return startdlist
 
-    def _indexobjectsby(self, idxattr):
+    def _indexobjectsby(self, objlist, idxattr):
         '''
         Takes a list of any object, and returns a hash of lists of those
         objects. 
-        
+        If the objects don't have the idxattribute, they are left out. 
+                
         '''
-
-
-
-
+        hash = {}
+        for o in objlist:
+            try:
+                idx = o.__getattr__(idxattr)
+                try:
+                    olist = hash[idx]
+                except KeyError:
+                    olist = []
+                olist.append(o)
+                hash[idx] = olist
+            except KeyError:
+                pass
+        self.log.debug("Constructed indexed hash: %s" % hash)
+        return hash
+        
 
     def _map2info(self, input):
         '''
@@ -520,8 +557,12 @@ class CondorEC2JobInfo(object):
                         'ec2instancename',
                         'ec2instancetype',
                         'enteredcurrentstatus',
-                        'jobstatus'
-                        ]   
+                        'jobstatus',
+                        'ec2remotevirtualmachinename',
+                        'ec2securitygroups',
+                        'ec2spotprice',
+                        'gridjobstatus'                        
+                        ]  
                
         s = "CondorEC2JobInfo: %s.%s " % (self.clusterid, 
                                       self.procid)

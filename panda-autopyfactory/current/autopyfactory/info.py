@@ -162,6 +162,8 @@ class BatchStatusInfo(BaseInfo):
             suspended          job is active, but held or suspended
             done               job has completed
             unknown            unknown or transient intermediate state
+            retiring
+            retired
 
         Secondary attributes are:
             transferring       stagein + stageout
@@ -232,7 +234,7 @@ class BatchStatusInfo(BaseInfo):
     
     
     '''
-    valid = ['pending', 'running', 'error', 'suspended', 'done', 'unknown']
+    valid = ['pending', 'running', 'error', 'suspended', 'done', 'unknown','retiring','retired']
 
     def __init__(self):
         # default value 0
