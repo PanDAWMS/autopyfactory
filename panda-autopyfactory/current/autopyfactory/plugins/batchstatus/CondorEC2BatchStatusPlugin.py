@@ -240,11 +240,12 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                         #self.log.debug("Handling job %s" % job) 
                         try:
                             ec2id = job.ec2instancename
-                            self.log.debug("Adding exeinfo to job for ec2id %s" % ec2id )
+                            self.log.debug("Adding exeinfo to job for ec2id: %s" % ec2id )
                             exeinfo = exebyec2id[ec2id][0]
-                            self.log.debug("Retrieved exeinfo from indexed hash for ec2id %s" % ec2id)
+                            self.log.debug("Retrieved exeinfo from indexed hash for ec2id: %s" % ec2id)
                             # Should only be one per job
                             job.executeinfo = exeinfo
+                            self.log.debug("Assigned exeinfo: %s to job %s" (exeinfo, job))
                             
                         except AttributeError:
                             pass
