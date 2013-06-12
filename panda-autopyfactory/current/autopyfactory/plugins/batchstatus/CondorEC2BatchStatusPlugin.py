@@ -241,7 +241,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.log.warning('_makeexelist: output of statuscondormaster() is not valid. Not parsing it. Skip to next loop.') 
         else:
             dictlist = parseoutput(xmlout)
-            exelist = self._dicttoexelist(nodelist)
+            exelist = self._dicttoexelist(dictlist)
             self.log.debug("Created CondorExecuteInfo list of length %d" % len(el))
         return exelist
         
@@ -255,10 +255,10 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             dictlist = parseoutput(xmlout)
             sl = self._dicttoslotlist(dictlist)
             self.log.debug("Created CondorSlotInfo list of length %d" % len(sl))
-            slotlist = self._slotlisttostartdlist(sl)
+            # slotlist = self._slotlisttostartdlist(sl)
             # This list is indexed by instanceid, so 
-            for k in stdlist.keys():
-                self.log.debug("CondorStartdInfo: %s -> %s" % (k, stdlist[k]))
+            #for k in stdlist.keys():
+            #    self.log.debug("CondorStartdInfo: %s -> %s" % (k, stdlist[k]))
         return slotlist
    
     def _makejoblist(self, dictlist):
@@ -369,13 +369,12 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 log.error("Bad node. Error: %s" % str(e))
         return exelist
 
-
-
     def _slotlisttostartdlist(self, slotlist):
         '''
-        Take a list of slotinfo objects and returns a dict of StartdInfo objects, with their instanceID as the key.        
+        Take a list of slotinfo objects and returns a dict of StartdInfo objects, 
+        with their instanceID as the key.        
         '''
-        startdlist = {}
+        exelist = {}
         for si in slotlist:
             try:
                 stdinfo = startdlist[si.instanceid]
