@@ -710,7 +710,7 @@ class CondorExecuteInfo(object):
         '''
         overall = None
         if len(self.slotinfolist) == 0:
-            overall = 'unknown'
+            overall = 'retired'
         else:
             busy = False
             idle = True
