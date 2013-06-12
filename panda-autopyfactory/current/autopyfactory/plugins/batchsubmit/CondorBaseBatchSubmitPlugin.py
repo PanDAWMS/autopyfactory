@@ -143,10 +143,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         self.log.debug('Done. Returning joblist %s.' %joblist)
         return joblist
 
-    def retire(self, n):
-        # to be implemented by the derived classes, one by one
-        pass
-   
+  
     def _parseCondorSubmit(self, output):
         '''
         Parses raw output from condor_submit -verbose and returns list of JobInfo objects. 
