@@ -159,7 +159,8 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
                 self.log.debug("jobinfo is %s " % j)
                 if j.executeinfo.getStatus() == 'retired':
                     killlist.append( "%s.%s" % (j.clusterid, j.procid))
-            self.log.info("About to kill list of %s ids. First one is %s" % (len(killist), killist[0] ))
+                self.log.debug("killlist length is %s" % len(killlist))
         if killlist:
+            self.log.info("About to kill list of %s ids. First one is %s" % (len(killlist), killlist[0] ))
             killids(killlist)
             
