@@ -128,14 +128,15 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         exeinfo = jobinfo.executeinfo
         publicip = exeinfo.hostname
         machine = jobinfo.machine
+        condorid = "%s.%s" % (jobinfo.clusterid, jobinfo.procid)
         
         if usessh:
             self.log.info("Trying to use SSH to retire node %s" % publicip)
-        
+            
             # invoke ssh to retire node
         else:
             # call condor_off locally
-                        self.log.info("Trying local retirement of node %s" % publicip)
+            self.log.info("Trying local retirement of node %s" % publicip)
     
     
     
