@@ -144,6 +144,17 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             self.log.info("Trying to use SSH to retire node %s" % publicip)
             cmd='ssh root@%s "condor_off -peaceful -startd"' % publicip
             self.log.debug("retire cmd is %s" % cmd) 
+            before = time.time()
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            out = None
+            (out, err) = p.communicate()
+            delta = time.time() - before
+            log.debug('It took %s seconds to issue the command' %delta)
+            log.info('%s seconds to issue command' %delta)
+            if p.returncode == 0:
+                log.debug('Leaving with OK return code.')
+            else:
+                log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))          
             # invoke ssh to retire node
         else:
             # call condor_off locally
