@@ -154,12 +154,12 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             out = None
             (out, err) = p.communicate()
             delta = time.time() - before
-            log.debug('It took %s seconds to issue the command' %delta)
-            log.info('%s seconds to issue command' %delta)
+            self.log.debug('It took %s seconds to issue the command' %delta)
+            self.log.info('%s seconds to issue command' %delta)
             if p.returncode == 0:
-                log.debug('Leaving with OK return code.')
+                self.log.debug('Leaving with OK return code.')
             else:
-                log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))          
+                self.log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))          
             # invoke ssh to retire node
         else:
             # call condor_off locally
