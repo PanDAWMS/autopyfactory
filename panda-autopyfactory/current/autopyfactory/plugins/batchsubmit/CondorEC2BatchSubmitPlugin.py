@@ -5,7 +5,7 @@
 
 from CondorGridBatchSubmitPlugin import CondorGridBatchSubmitPlugin
 from autopyfactory import jsd 
-
+from condor import killids
 
 class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
     id = 'condorec2'
