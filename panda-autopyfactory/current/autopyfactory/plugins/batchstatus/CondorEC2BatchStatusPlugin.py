@@ -744,7 +744,7 @@ class CondorExecuteInfo(object):
             else:
                 self.log.warning('Difficulty calculating status for %s ' % self.instanceid)
             self.log.debug("executeinfo overall is %s" % overall)
-            return overall
+        return overall
             
         
     def __str__(self):
