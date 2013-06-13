@@ -70,6 +70,8 @@ class ExecSubmitPlugin(BatchSubmitInterface):
         self.log.debug('submitPilots: Leaving with output (%s, %s).' %(st, output))
         return st, output
     
+    def cleanup(self):
+        pass
     
     def __prepareExecutable(self):
         '''
