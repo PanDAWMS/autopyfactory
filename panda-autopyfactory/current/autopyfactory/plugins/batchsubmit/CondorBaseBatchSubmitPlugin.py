@@ -143,6 +143,11 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         self.log.debug('Done. Returning joblist %s.' %joblist)
         return joblist
 
+    def cleanup(self):
+        '''
+        
+        '''
+        self.log.info("Cleanup called. Noop.")
   
     def _parseCondorSubmit(self, output):
         '''

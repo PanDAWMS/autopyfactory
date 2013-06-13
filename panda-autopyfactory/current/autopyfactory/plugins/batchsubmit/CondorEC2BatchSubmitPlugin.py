@@ -27,7 +27,6 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         unconditionally get called in the plugin every cycle. 
         
         '''
-        self._killretired()
 
         # Choosing the queue config object, depending on 
         if not qcl:
@@ -164,6 +163,14 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         else:
             # call condor_off locally
             self.log.info("Trying local retirement of node %s" % publicip)
+
+    def cleanup(self):
+        '''
+        
+        '''
+        self.log.debug("Cleanup called in EC2. Retiring...")
+        self._killretired()
+
         
     def _killretired(self):
         '''

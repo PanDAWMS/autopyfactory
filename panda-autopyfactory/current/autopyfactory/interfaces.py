@@ -136,6 +136,12 @@ class BatchSubmitInterface(object):
         '''
         raise NotImplementedError
 
+    def cleanup(self):
+        '''
+        Provides a method that gets called unconditionally every cycle. 
+        
+        '''
+        raise NotImplementedError
 
 
 class MonitorInterface(object):
