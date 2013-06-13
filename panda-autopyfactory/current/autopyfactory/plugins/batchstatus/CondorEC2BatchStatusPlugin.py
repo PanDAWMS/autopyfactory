@@ -752,7 +752,7 @@ class CondorExecuteInfo(object):
                                          self.machine,
                                          self.hostname,
                                          self.getStatus(),
-                                         len(self.numslots)
+                                         len(self.slotinfolist)
                                          )
          
         return s
