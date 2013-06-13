@@ -743,7 +743,7 @@ class CondorExecuteInfo(object):
                 overall = 'retiring'
             else:
                 self.log.warning('Difficulty calculating status for %s ' % self.instanceid)
-            
+            self.log.debug("executeinfo overall is %s" % overall)
             return overall
             
         
