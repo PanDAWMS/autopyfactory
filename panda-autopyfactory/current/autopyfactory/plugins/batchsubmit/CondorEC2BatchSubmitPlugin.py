@@ -6,6 +6,7 @@
 from CondorGridBatchSubmitPlugin import CondorGridBatchSubmitPlugin
 from autopyfactory import jsd 
 from autopyfactory.condor import killids
+import subprocess
 import time
 
 
