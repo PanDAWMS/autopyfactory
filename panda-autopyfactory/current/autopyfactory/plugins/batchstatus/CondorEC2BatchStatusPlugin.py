@@ -229,8 +229,9 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                         slots = slotsbyec2id[ec2id]
                         exe.slotinfolist = slots
                     except KeyError:
+                        self.log.debug("Failed to find slotinfo for ec2id %s." % ec2id)
                         # Not necessarily a problem, if node is retired. 
-                        pass
+
                                  
                 # Make hash of of CondorExecuteInfo objects, indexed
                 exebyec2id = self._indexobjectsby(exelist, 'instanceid')
@@ -315,10 +316,6 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             dictlist = parseoutput(xmlout)
             slotlist = self._dicttoslotlist(dictlist)
             self.log.debug("Created CondorSlotInfo list of length %d" % len(slotlist))
-            # slotlist = self._slotlisttostartdlist(sl)
-            # This list is indexed by instanceid, so 
-            #for k in stdlist.keys():
-            #    self.log.debug("CondorStartdInfo: %s -> %s" % (k, stdlist[k]))
         return slotlist
    
     def _makejoblist(self, dictlist):
@@ -697,7 +694,7 @@ class CondorExecuteInfo(object):
                  
         '''
         self.slotinfolist.append(slotinfo)
-        self.log.debug("Adding slotinfo to list.")
+        self.log.debug("Adding slotinfo %s to list." % slotinfo)
 
     def getStatus(self):
         '''
@@ -751,10 +748,11 @@ class CondorExecuteInfo(object):
             
         
     def __str__(self):
-        s = "CondorExecuteInfo: %s %s %s %s" % (self.instanceid, 
+        s = "CondorExecuteInfo: %s %s %s %s %d" % (self.instanceid, 
                                          self.machine,
                                          self.hostname,
-                                         self.getStatus()
+                                         self.getStatus(),
+                                         len(self.numslots)
                                          )
          
         return s
