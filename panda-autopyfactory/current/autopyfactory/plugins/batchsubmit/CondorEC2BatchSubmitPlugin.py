@@ -122,12 +122,14 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             numretired = 0
             for job in thisqueuejobs:
                 self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)
-                if job.executeinfo.getStatus() == 'busy':
+                stat = job.executeinfo.getStatus()
+                if stat  == 'busy' or stat == 'idle':
                     self._retirenode(job)
                     numtoretire = numtoretire - 1
                     numretired += 1
-                if numtoretire <= 0:
-                    break
+                    self.log.debug("numtoretire = %d" % numtoretire)
+                    if numtoretire <= 0:
+                        break
             self.log.info("Retired %d VM jobs" % numretired)
         else:
             self.log.info("Some info unavailable. Do nothing.")
