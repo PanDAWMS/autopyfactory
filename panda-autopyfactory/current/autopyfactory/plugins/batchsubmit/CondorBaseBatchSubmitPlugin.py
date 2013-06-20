@@ -143,6 +143,13 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         self.log.debug('Done. Returning joblist %s.' %joblist)
         return joblist
 
+    def retire(self, num):
+        '''
+         Do nothing by default. 
+        '''
+        self.log.debug('Default retire() do nothing.')
+
+
     def cleanup(self):
         '''
         
