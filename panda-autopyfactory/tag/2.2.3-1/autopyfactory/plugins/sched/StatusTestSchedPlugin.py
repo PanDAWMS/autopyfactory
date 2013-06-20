@@ -59,6 +59,8 @@ class StatusTestSchedPlugin(SchedInterface):
             sitestatus = siteinfo[self.siteid].status
             self.log.debug('calcSubmitNum: site status is %s' %sitestatus)
 
+            out = nsub
+
             if sitestatus == 'test':
                 if self.testmode:
                     self.log.info('calcSubmitNum: testmode is enabled, returning out = %s' %self.pilots_in_test_mode)
