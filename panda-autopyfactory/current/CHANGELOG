@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* Bug fixed in CREAM example in queues.conf-example
+
 * created misc/apf-panda-jobs-info.py 
 
 * INFO messages in configloader for missing non-mandatory variables moved to DEBUG.
