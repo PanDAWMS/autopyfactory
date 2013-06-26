@@ -1097,12 +1097,12 @@ wmsqueue = RAL-LCG2
 
 batchsubmitplugin = CondorCREAM
 
-batchsubmit.cream.webservice = lcgce04.gridpp.rl.ac.uk
-batchsubmit.cream.port = 8443
-batchsubmit.cream.batch = pbs
-batchsubmit.cream.queue = grid3000M 
-batchsubmit.cream.condor_attributes = periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
-batchsubmit.cream.proxy = atlas-production
+batchsubmit.condorcream.webservice = lcgce04.gridpp.rl.ac.uk
+batchsubmit.condorcream.port = 8443
+batchsubmit.condorcream.batch = pbs
+batchsubmit.condorcream.queue = grid3000M 
+batchsubmit.condorcream.condor_attributes = periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
+batchsubmit.condorcream.proxy = atlas-production
 
 schedplugin = Ready, MinPerCycle, MaxPerCycle, MaxPending
 sched.minpercycle.minimum = 10
