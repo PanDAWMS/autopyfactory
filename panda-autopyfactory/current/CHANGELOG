@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* Printing env again after switching ID.
+
 * Bug fixed in CREAM example in queues.conf-example
 
 * created misc/apf-panda-jobs-info.py 
