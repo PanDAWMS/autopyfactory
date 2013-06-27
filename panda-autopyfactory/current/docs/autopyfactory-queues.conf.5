@@ -17,7 +17,7 @@ see ConfigLoader._configurationDefaults() for these values.
 Some of these values may be in the process of deprecation, especially submission parameters 
 which are now handled by the submit plugins. 
 
-.SH Generic variables
+.SH GENERIC VARIABLES
 
 .B override
 
@@ -87,7 +87,7 @@ will be kept
 
 
 
-.SH WMS Status Plugin variables
+.SH WMS STATUS PLUGIN VARIABLES
 
 
 .B wmsstatusplugin
@@ -96,7 +96,7 @@ WMS Status Plugin.
 
 
 
-.SH Config Plugin variables
+.SH CONFIG PLUGIN VARIABLES
 
 
 .B configplugin
@@ -107,7 +107,7 @@ E.g. Panda.
 
 
 
-.SH Batch Status Plugin variables
+.SH BATCH STATUS PLUGIN VARIABLES
 
 
 .B batchstatusplugin
@@ -123,7 +123,7 @@ batchstatus.condor.query = -name <schedd_name> -pool <centralmanagerhostname[:po
 
 
 
-.SH Sched Plugin variables
+.SH SCHED PLUGIN VARIABLES
 
 
 .B schedplugin
@@ -152,7 +152,7 @@ Also it can be filtered depending on the status of the wmsqueue
 
 
 
-.SH Configuration when schedplugin is Activated
+.SH CONFIGURATION WHEN SCHEDPLUGIN IS ACTIVATED
 
 
 .I IMPORTANT NOTE: Deprecated. Activated Plugin is not maintained anymore. Instead, suggested option is to use Ready Plugin plus a chain of limiting plugins (MaxPerCycle, MinPerCycle...)
@@ -215,7 +215,7 @@ and sched.activated.testmode.allowed is True
 
 
 
-.SH Configuration when schedplugin is Ready
+.SH CONFIGURATION WHEN SCHEDPLUGIN IS READY
 
 
 .B sched.ready.offset
@@ -225,7 +225,7 @@ the minimum value in the number of ready jobs to trigger submission.
 
 
 
-.SH Configuration when schedplugin is Fixed
+.SH CONFIGURATION WHEN SCHEDPLUGIN IS FIXED
 
 
 .B sched.fixed.pilotspercycle
@@ -235,7 +235,7 @@ each cycle, when using the Fixed Scheduler Plugin.
 
 
 
-.SH Configuration when schedplugin is MaxPerCycle
+.SH CONFIGURATION WHEN SCHEDPLUGIN IS MAXPERCYCLE
 
 
 .B sched.maxpercycle.maximum
@@ -245,7 +245,7 @@ per cycle
 
 
 
-.SH Configuration when schedplugin is MinPerCycle
+.SH CONFIGURATION WHEN SCHEDPLUGIN IS MINPERCYCLE
 
 
 .B sched.minpercycle.minimum
@@ -255,7 +255,7 @@ per cycle
 
 
 
-.SH Configuration when schedplugin is MaxPending
+.SH CONFIGURATION WHEN SCHEDPLUGIN IS MAXPENDING
 
 
 .B sched.maxpending.maximum
@@ -264,7 +264,7 @@ maximum number of pilots to be pending
 
 
 
-.SH Configuration when schedplugin is MinPending
+.SH CONFIGURATION WHEN SCHEDPLUGIN IS MINPENDING
 
 
 .B sched.minpending.minimum
@@ -273,7 +273,7 @@ minimum number of pilots to be pending
 
 
 
-.SH Configuration when schedplugin is MaxToRun
+.SH CONFIGURATION WHEN SCHEDPLUGIN IS MAXTORUN
 
 
 .B sched.maxtorun.maximum
@@ -283,7 +283,7 @@ be running at a time.
 
 
 
-.SH Configuration when schedplugin is StatusTest
+.SH CONFIGURATION WHEN SCHEDPLUGIN IS STATUSTEST
 
 
 .B sched.statustest.allowed
@@ -301,7 +301,7 @@ and sched.statustest.allowed is True
 
 
 
-.SH Configuration when schedplugin is StatusOffline
+.SH CONFIGURATION WHEN SCHEDPLUGIN IS STATUSOFFLINE
 
 
 .B sched.statusoffline.allowed
@@ -319,7 +319,7 @@ and sched.statusoffline.allowed is True
 
 
 
-.SH Configuration when schedplugin is Simple
+.SH CONFIGURATION WHEN SCHEDPLUGIN IS SIMPLE
 
 
 .B sched.simple.default
@@ -345,7 +345,7 @@ To be used in Simple Scheduler Plugin.
 
 
 
-.SH Configuration when schedplugin is SimpleNQueue
+.SH CONFIGURATION WHEN SCHEDPLUGIN IS SIMPLENQUEUE
 
 
 .B sched.simplenqueue.default
@@ -392,7 +392,7 @@ to allow backlogs to clear
 
 
 
-.SH Configuration when schedplugin is Trivial
+.SH CONFIGURATION WHEN SCHEDPLUGIN IS TRIVIAL
 
 
 .B sched.trivial.default
@@ -404,7 +404,7 @@ To be used in Trivial Scheduler Plugin.
 
 
 
-.SH Configuration when schedplugin is Scale
+.SH CONFIGURATION WHEN SCHEDPLUGIN IS SCALE
 
 
 .B sched.scale.factor
@@ -416,7 +416,7 @@ Value is a float number.
 
 
 
-.SH Configuration when schedplugin is KeepNRunning
+.SH CONFIGURATION WHEN SCHEDPLUGIN IS KEEPNRUNNING
 
 
 .B sched.keepnrunning.keep_running
@@ -426,7 +426,7 @@ number of total jobs to keep running and/or pending.
 
 
 
-.SH Batch Submit Plugin variables
+.SH BATCH SUBMIT PLUGIN VARIABLES
 
 
 .B batchsubmitplugin
@@ -442,7 +442,7 @@ Currently available options are:
 
 
 
-.SH Configuration when batchsubmitplugin is condorgt2
+.SH CONFIGURATION WHEN BATCHSUBMITPLUGIN IS CONDORGT2
 
 
 .B batchsubmit.condorgt2.gridresource
@@ -494,7 +494,7 @@ None if no automatic proxy renewal is desired.
 
 
 
-.SH GlobusRSL GRAM2 variables
+.SH GLOBUSRSL GRAM2 VARIABLES
 
 
 .B gram2
@@ -632,7 +632,7 @@ e.g. (condorsubmit=('+AccountingGroup' '\"group_atlastest.usatlas1\"')('+Require
 
 
 
-.SH Configuration when batchsubmitplugin is condorgt5
+.SH CONFIGURATION WHEN BATCHSUBMITPLUGIN IS CONDORGT5
 
 
 .B batchsubmit.condorgt5.gridresource
@@ -684,7 +684,7 @@ None if no automatic proxy renewal is desired.
 
 
 
-.SH GlobusRSL GRAM5 variables
+.SH GLOBUSRSL GRAM5 VARIABLES
 
 
 .B gram5
@@ -875,7 +875,7 @@ e.g. (condorsubmit=('+AccountingGroup' '\"group_atlastest.usatlas1\"')('+Require
 
 
 
-.SH Configuration when batchsubmitplugin is condorcream
+.SH CONFIGURATION WHEN BATCHSUBMITPLUGIN IS CONDORCREAM
 
 
 .B batchsubmit.condorcream.webservice
@@ -948,7 +948,7 @@ None if no automatic proxy renewal is desired.
 
 
 
-.SH Configuration when batchsubmitplugin is condorosgce
+.SH CONFIGURATION WHEN BATCHSUBMITPLUGIN IS CONDOROSGCE
 
 
 .B batchsubmit.condorosgce.remote_condor_schedd
@@ -974,7 +974,7 @@ None if no automatic proxy renewal is desired.
 
 
 
-.SH Configuration when batchsubmitplugin is condorec2
+.SH CONFIGURATION WHEN BATCHSUBMITPLUGIN IS CONDOREC2
 
 
 .B batchsubmit.condorec2.gridresource
@@ -1043,7 +1043,7 @@ None if no automatic proxy renewal is desired.
 
 
 
-.SH Configuration when batchsubmitplugin is condordeltacloud
+.SH CONFIGURATION WHEN BATCHSUBMITPLUGIN IS CONDORDELTACLOUD
 
 
 .B batchsubmit.condordeltacloud.gridresource
@@ -1105,7 +1105,7 @@ contextualization data
 
 
 
-.SH Configuration when batchsubmitplugin is condorlocal
+.SH CONFIGURATION WHEN BATCHSUBMITPLUGIN IS CONDORLOCAL
 
 
 .B batchsubmit.condorlocal.submitargs
@@ -1159,7 +1159,7 @@ None if no automatic proxy renewal is desired.
 
 
 
-.SH Monitor section
+.SH MONITOR SECTION
 
 
 .B monitorsection
@@ -1176,7 +1176,7 @@ simply use a comma-separated list.
 
 
 
-.SH Executable variables
+.SH EXECUTABLE VARIABLES
 
 
 .B executable
