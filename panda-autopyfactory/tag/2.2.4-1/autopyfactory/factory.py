@@ -213,17 +213,22 @@ Jose Caballero <jcaballero@bnl.gov>
         self.log.debug('logging initialised')
 
 
+    def _printenv(self):
+
+        envmsg = ''        
+        for k in sorted(os.environ.keys()):
+            envmsg += '\n%s=%s' %(k, os.environ[k])
+        self.log.info('environment : %s' %envmsg)
+
+
     def platforminfo(self):
         '''
         display basic info about the platform, for debugging purposes 
         '''
-        self.log.debug('platform: uname = %s %s %s %s %s %s' %platform.uname())
-        self.log.debug('platform: platform = %s' %platform.platform())
-        self.log.debug('platform: python version = %s' %platform.python_version())
-        envmsg = ''        
-        for k in sorted(os.environ.keys()):
-            envmsg += '\n%s=%s' %(k, os.environ[k])
-        self.log.debug('environment : %s' %envmsg)
+        self.log.info('platform: uname = %s %s %s %s %s %s' %platform.uname())
+        self.log.info('platform: platform = %s' %platform.platform())
+        self.log.info('platform: python version = %s' %platform.python_version())
+        self._printenv()
 
 
     def setuppandaenv(self):
@@ -276,6 +281,7 @@ Jose Caballero <jcaballero@bnl.gov>
                 self._changewd()
 
                 self.log.info("Now running as user %d:%d at %s..." % (runuid, rungid, hostname))
+                self._printenv()
             
             except KeyError, e:
                 self.log.error('No such user %s, unable run properly. Error: %s' % (self.options.runAs, e))
