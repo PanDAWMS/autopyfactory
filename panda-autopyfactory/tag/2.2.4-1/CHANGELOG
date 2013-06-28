@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* print env also after switching ID
+
 * bug fixed in StatusOffline and StatusTest sched plugins
 
 2013-05-06
