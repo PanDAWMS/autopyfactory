@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* First draft for manpages created, and rpm-post script adapted to install them.
+
 * Printing env again after switching ID.
 
 * Bug fixed in CREAM example in queues.conf-example
