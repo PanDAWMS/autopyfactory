@@ -344,54 +344,6 @@ to be submitted per cycle.
 To be used in Simple Scheduler Plugin.
 
 
-
-.SH CONFIGURATION WHEN SCHEDPLUGIN IS SIMPLENQUEUE
-
-
-.B sched.simplenqueue.default
-
-default number of pilots to be submitted
-when the context information does not exist 
-or is not reliable.
-To be used in SimpleNQueue Scheduler Plugin.
-
-
-.B sched.simplenqueue.maxpilotspercycle
-
-maximum number of pilots
-to be submitted each cycle.
-To be used in SimpleNQueue Scheduler Plugin.
-
-
-.B sched.simplenqueue.nqueue
-
-desired number of pilots
-in idle status waiting in queue to start execution.
-To be used in SimpleNQueue Scheduler Plugin.
-
-
-.B sched.simplenqueue.depthboost
-
-multiplying factor which allows more pilots
-to be submitted than nqueue if there are 
-sufficient activated jobs - helps when the jobs are short 
-
-
-.B sched.simplenqueue.pilotlimit
-
-sets a hard limit on the total number
-of pilots at a site, active + queued
-
-
-.B sched.simplenqueue.transferringlimit
-
-sets a limit on the number of jobs
-in transferring status allowed at a site - 
-when this limit is reached no pilots will be submitted 
-to allow backlogs to clear
-
-
-
 .SH CONFIGURATION WHEN SCHEDPLUGIN IS TRIVIAL
 
 
