@@ -42,6 +42,9 @@ class Config(SafeConfigParser, object):
     -----------------------------------------------------------------------
     '''
     def __init__(self):
+
+        self.log = logging.getLogger("main.config")
+
         self.optionxform = str
         super(Config, self).__init__()
 
@@ -168,7 +171,7 @@ class Config(SafeConfigParser, object):
                     pass
 
         
-    def generic_get(self, section, option, get_function='get', convert_to_None=False, mandatory=False, default_value=None, logger=None):      
+    def generic_get(self, section, option, get_function='get', convert_to_None=False, mandatory=False, default_value=None):      
         '''
         generic get() method for Config objects.
         Inputs options are:
@@ -179,28 +182,25 @@ class Config(SafeConfigParser, object):
            convert_to_None  decides if strings "None", "Null" or ""  should be converted into python None
            mandatory        says if the option is supposed to be there
            default_value    is the default value to be returned with variable is not mandatory and is not in the config file
-           logger           is the logger function 
 
         example of usage:
-                x = generic_get("Sec1", "x", get_function='getint', convert=True, mandatory=True, mandatory_exception=NoMandatoryException, logger=self.log)
+                x = generic_get("Sec1", "x", get_function='getint', convert=True, mandatory=True, mandatory_exception=NoMandatoryException)
         '''
 
         has_option = self.has_option(section, option)
 
         if not has_option:
             if mandatory:
-                if logger:
-                    logger.error('generic_get: option %s is not present in section %s. Will raise an exception.' %(option, section))
+                self.log.error('generic_get: option %s is not present in section %s. Will raise an exception.' %(option, section))
                 raise ConfigFailure(option, section)
             else:
-                if logger:
-                    logger.debug('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
+                self.debug('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
                 return default_value
+
         else:
             get_f = getattr(self, get_function)
             value = get_f(section, option)
-            if logger:
-                logger.debug('generic_get: option %s in section %s has value %s' %(option, section, value))
+            self.log.debug('generic_get: option %s in section %s has value %s' %(option, section, value))
             if convert_to_None:
                 if value.lower() in ['none', 'null', '']:
                     value = None
