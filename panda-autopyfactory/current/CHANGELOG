@@ -1,6 +1,19 @@
 ChangeLog
 ---------
 
+* Cleaning info.py code:
+    -- method dict() removed
+    -- method getconfig() removed
+    -- method __add__() removed
+    -- method set() removed
+    -- method get() removed
+    -- property total removed
+    -- class attribute valid = [] removed from all classes:
+        -- therefore method reset() removed
+        -- therefore method __setattr__() removed
+    -- method __getattribute__() is created
+
+
 * Removed logger from the input options in method generic_get()
 
 * As temporary solution, NotImplementedAttr defined in configloader.py
