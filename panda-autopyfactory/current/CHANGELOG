@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* As temporary solution, NotImplementedAttr defined in configloader.py
+
 * Documentation on old Sched Plugin SimpleNQueue deleted.
 
 * First draft for manpages created, and rpm-post script adapted to install them.
