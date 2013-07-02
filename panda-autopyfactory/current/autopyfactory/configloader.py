@@ -18,7 +18,16 @@ from ConfigParser import SafeConfigParser, NoSectionError, InterpolationMissingO
 from autopyfactory.apfexceptions import ConfigFailure, FactoryConfigurationFailure
 
 
+# --------------------------------------------------------------------------
+# we want to allow the value for config variables to be None. 
+# That is not a bad thing, is just the value is None.
+# Therefore we need a way to distinguish a correct value None from variable not defined. 
+# 
+# As a temporary solution, lets use this `a la` macro:
 
+NotImplementedAttr = "NotImplementedAttr"
+
+# --------------------------------------------------------------------------
 
 
 
