@@ -33,45 +33,25 @@ class BaseInfo(object):
     Public Interface:
             reset()
             fill(dictionary, mappings=None, reset=True)
-            dict()
     -----------------------------------------------------------------------
     '''
-    valid = []
-    def __init__(self, default=0):
-        self.__dict__['default']  = default
-        self.reset()
+    def __init__(self, default=None):
+        self.default_value = default
 
-    def reset(self):
+    def __getattribute__(self, attr):
         '''
-        gives an initial value to all attributes in the object.
-        The entire list of attributes comes from the class attribute valid.
-        The initial value was passed thru __init__()
+        overriding __getattribute__ to not to blow up 
+        when asking for a attr not defined yet
+        If a non defined attr is asked for, 
+        then the self.default_value is returned
         '''
-        for x in self.__class__.valid:
-            self.__dict__[x] = self.default
 
-    def __setattr__(self, name, value):
-        '''
-        we override __setattr__ just to be sure that no attribute other
-        than those listed in class attribute is given a value.
-        '''
-        if name in self.__class__.valid: 
-            self.__dict__[name] = value
+        try:
+            return object.__getattribute__(self, attr)
+            # we use object.__getattribute__ to avoid an infinite recursion
+        except:
+            return self.default_value
 
-    def set(self, name, value):
-        '''
-        using this method we get two advantages:
-            -- it is easy to set a single variable. Not need to use __setattr__() or fill()
-            -- it is easy to set a variable like 'foo.bar' w/o getting an error
-        '''
-        self.__setattr__(name, value)
-
-    def get(self, name):
-        '''
-        this method makes easier getting value for variables like 'foo.bar'
-        '''
-        if name in self.__class__.valid:
-            return self.__dict__[name]
 
     def fill(self, dictionary, mappings=None, reset=True):
         '''
@@ -122,29 +102,6 @@ class BaseInfo(object):
             else:
                 v = self.__dict__[k] + v
             self.__dict__[k] = v
-
-    def dict(self):
-        '''
-        returns a dictionary with the stored info. 
-        Keys are the list of variables in valid.
-        '''
-        d = {}
-        for k in self.__class__.valid:
-            d[k] = self.__dict__[k]
-        return d
-
-    def getConfig(self, section):
-        '''
-        converts the internal dictionary into 
-        a Config object
-        '''
-        conf = Config()
-        conf.add_section(section)
-        dic = self.dict()
-        for k,v in dic.iteritems():
-                if v != None:
-                        conf.set(section, k ,v)
-        return conf
 
 
 class BatchStatusInfo(BaseInfo):
@@ -249,17 +206,6 @@ class BatchStatusInfo(BaseInfo):
                                                                                                 self.retired)
         return s
 
-    def __add__(self, o):
-        tmp = BatchStatusInfo()
-        for var in self.__class__.valid:
-            v1 = self.get(var)
-            v2 = o.get(var)
-            tmp.set(var, v1 + v2)
-        return tmp 
-
-    # property to return the total number of pilots, irrespective their state
-    total = property(lambda self: sum([self.__dict__[i] for i in self.valid]))
-
 
 class WMSQueueInfo(BaseInfo):
     '''
@@ -295,18 +241,6 @@ class WMSQueueInfo(BaseInfo):
                                                                                   self.unknown)
         return s
 
-    def __add__(self, o):
-        tmp = WMSQueueInfo()
-        for var in self.__class__.valid:
-            v1 = self.get(var)
-            v2 = o.get(var)
-            tmp.set(var, v1 + v2)
-        return tmp 
-
-    # property to return the total number of jobs, irrespective their state
-    total = property(lambda self: sum([self.__dict__[i] for i in self.valid]))
-
- 
 
 class JobInfo(BaseInfo):
     '''
