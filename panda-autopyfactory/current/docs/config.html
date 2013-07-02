@@ -25,7 +25,6 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is StatusTest">Configuration when schedplugin is StatusTest</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is StatusOffline">Configuration when schedplugin is StatusOffline</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Simple">Configuration when schedplugin is Simple</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is SimpleNQueue">Configuration when schedplugin is SimpleNQueue</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Trivial">Configuration when schedplugin is Trivial</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Scale">Configuration when schedplugin is Scale</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is KeepNRunning">Configuration when schedplugin is KeepNRunning</a><br>
@@ -518,45 +517,6 @@ To be used in Simple Scheduler Plugin.
 <br>
 </ul>
 
-<a name="Configuration when schedplugin is SimpleNQueue"><h3><span style="color: black; "><span>Configuration when schedplugin is SimpleNQueue</span></span></h3></a>
-<ul>
-<li><strong>sched.simplenqueue.default</strong><br>
-default number of pilots to be submitted
-when the context information does not exist 
-or is not reliable.
-To be used in SimpleNQueue Scheduler Plugin.
-<br>
-<br>
-<li><strong>sched.simplenqueue.maxpilotspercycle</strong><br>
-maximum number of pilots
-to be submitted each cycle.
-To be used in SimpleNQueue Scheduler Plugin.
-<br>
-<br>
-<li><strong>sched.simplenqueue.nqueue</strong><br>
-desired number of pilots
-in idle status waiting in queue to start execution.
-To be used in SimpleNQueue Scheduler Plugin.
-<br>
-<br>
-<li><strong>sched.simplenqueue.depthboost</strong><br>
-multiplying factor which allows more pilots
-to be submitted than nqueue if there are 
-sufficient activated jobs - helps when the jobs are short 
-<br>
-<br>
-<li><strong>sched.simplenqueue.pilotlimit</strong><br>
-sets a hard limit on the total number
-of pilots at a site, active + queued
-<br>
-<br>
-<li><strong>sched.simplenqueue.transferringlimit</strong><br>
-sets a limit on the number of jobs
-in transferring status allowed at a site - 
-when this limit is reached no pilots will be submitted 
-to allow backlogs to clear
-<br>
-</ul>
 
 <a name="Configuration when schedplugin is Trivial"><h3><span style="color: black; "><span>Configuration when schedplugin is Trivial</span></span></h3></a>
 <ul>
