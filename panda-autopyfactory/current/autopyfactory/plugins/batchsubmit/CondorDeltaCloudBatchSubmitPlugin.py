@@ -30,17 +30,17 @@ class CondorDeltaCloudBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         if not valid:
             return False
         try:
-            self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.gridresource', logger=self.log) 
-            self.username = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.username', logger=self.log) 
-            self.password_file = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.password_file', logger=self.log) 
-            self.image_id = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.image_id', logger=self.log) 
-            self.keyname = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.keyname', logger=self.log) 
-            self.realm_id = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.realm_id', logger=self.log) 
-            self.hardware_profile = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.hardware_profile', logger=self.log) 
-            self.hardware_profile_memory = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.hardware_profile_memory', logger=self.log) 
-            self.hardware_profile_cpu = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.hardware_profile_cpu', logger=self.log) 
-            self.hardware_profile_storage = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.hardware_profile_storage', logger=self.log) 
-            self.user_data = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.user_data', logger=self.log) 
+            self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.gridresource') 
+            self.username = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.username') 
+            self.password_file = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.password_file') 
+            self.image_id = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.image_id') 
+            self.keyname = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.keyname') 
+            self.realm_id = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.realm_id') 
+            self.hardware_profile = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.hardware_profile') 
+            self.hardware_profile_memory = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.hardware_profile_memory') 
+            self.hardware_profile_cpu = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.hardware_profile_cpu') 
+            self.hardware_profile_storage = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.hardware_profile_storage') 
+            self.user_data = qcl.generic_get(self.apfqname, 'batchsubmit.condordeltacloud.user_data') 
 
             return True
         except:

@@ -15,7 +15,7 @@ class FillactivatedSchedPlugin(SchedInterface):
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
 
             # A default value is required. 
-            self.default = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.fillactivated.default', 'getint', default_value=0, logger=self.log)    
+            self.default = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.fillactivated.default', 'getint', default_value=0)    
             self.log.debug('SchedPlugin: default = %s' %self.default)
             
             self.log.info("SchedPlugin: Object initialized.")

@@ -15,7 +15,7 @@ class FixedSchedPlugin(SchedInterface):
             self.pilotspercycle = None
 
             if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.fixed.pilotspercycle'):
-                self.pilotspercycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.fixed.pilotspercycle', 'getint', logger=self.log)
+                self.pilotspercycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.fixed.pilotspercycle', 'getint')
                 self.log.debug('SchedPlugin: there is a fixedPilotsPerCycle number setup to %s' %self.pilotspercycle)
 
             self.log.info("SchedPlugin: Object initialized.")

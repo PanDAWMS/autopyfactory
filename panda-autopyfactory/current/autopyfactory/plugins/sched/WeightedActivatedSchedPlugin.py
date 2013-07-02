@@ -15,8 +15,8 @@ class WeightedActivatedSchedPlugin(SchedInterface):
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
 
             # --- weights ---
-            self.activated_w = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.weightedactivated.activated', 'getfloat', default_value=1.0, logger=self.log)
-            self.pending_w = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.weightedactivated.pending', 'getfloat', default_value=1.0, logger=self.log)
+            self.activated_w = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.weightedactivated.activated', 'getfloat', default_value=1.0)
+            self.pending_w = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.weightedactivated.pending', 'getfloat', default_value=1.0)
             self.log.debug("SchedPlugin: weight values are activated_w=%s, pending_w=%s." %(self.activated_w, self.pending_w))
 
             self.log.info("SchedPlugin: Object initialized.")

@@ -67,10 +67,10 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         '''
 
         try:
-            self.wmsqueue = qcl.generic_get(self.apfqname, 'wmsqueue', logger=self.log)
+            self.wmsqueue = qcl.generic_get(self.apfqname, 'wmsqueue')
 
-            self.executable = qcl.generic_get(self.apfqname, 'executable', logger=self.log)
-            self.factoryadminemail = self.fcl.generic_get('Factory', 'factoryAdminEmail', logger=self.log)
+            self.executable = qcl.generic_get(self.apfqname, 'executable')
+            self.factoryadminemail = self.fcl.generic_get('Factory', 'factoryAdminEmail')
 
             self.x509userproxy = None
             if qcl.has_option(self.apfqname,'batchsubmit.condorbase.proxy'):
@@ -80,19 +80,19 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             else:
                 self.log.debug('proxy is None. No proxy configured.')
             
-            self.factoryid = self.fcl.generic_get('Factory', 'factoryId', logger=self.log)
-            self.monitorsection = qcl.generic_get(self.apfqname, 'monitorsection', logger=self.log)
+            self.factoryid = self.fcl.generic_get('Factory', 'factoryId')
+            self.monitorsection = qcl.generic_get(self.apfqname, 'monitorsection')
             self.log.debug("monitorsection is %s" % self.monitorsection)            
-            self.monitorurl = self.mcl.generic_get(self.monitorsection, 'monitorURL', logger=self.log)
+            self.monitorurl = self.mcl.generic_get(self.monitorsection, 'monitorURL')
             self.log.debug("monitorURL is %s" % self.monitorurl)
             
-            self.factoryuser = self.fcl.generic_get('Factory', 'factoryUser', logger=self.log)
-            self.submitargs = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.submitargs', logger=self.log)
-            self.environ = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.environ', logger=self.log)
-            self.batchqueue = qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
-            self.arguments = qcl.generic_get(self.apfqname, 'executable.arguments', logger=self.log)
-            self.condor_attributes = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.condor_attributes', logger=self.log)
-            self.extra_condor_attributes = [(opt.replace('batchsubmit.condorbase.condor_attributes.',''),qcl.generic_get(self.apfqname, opt, logger=self.log)) \
+            self.factoryuser = self.fcl.generic_get('Factory', 'factoryUser')
+            self.submitargs = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.submitargs')
+            self.environ = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.environ')
+            self.batchqueue = qcl.generic_get(self.apfqname, 'batchqueue')
+            self.arguments = qcl.generic_get(self.apfqname, 'executable.arguments')
+            self.condor_attributes = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.condor_attributes')
+            self.extra_condor_attributes = [(opt.replace('batchsubmit.condorbase.condor_attributes.',''),qcl.generic_get(self.apfqname, opt)) \
                                             for opt in qcl.options(self.apfqname) \
                                             if opt.startswith('batchsubmit.condorbase.condor_attributes.')]  # Note the . at the end of the pattern !!
 
@@ -283,8 +283,8 @@ x509UserProxyVOName = "atlas"
         now = time.gmtime() # gmtime() is like localtime() but in UTC
         timePath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2])
         logPath = timePath + self.apfqname.translate(string.maketrans('/:','__'))
-        self.logDir = self.fcl.generic_get('Factory', 'baseLogDir', logger=self.log) + logPath
-        self.logUrl = self.fcl.generic_get('Factory', 'baseLogDirUrl', logger=self.log) + logPath
+        self.logDir = self.fcl.generic_get('Factory', 'baseLogDir') + logPath
+        self.logUrl = self.fcl.generic_get('Factory', 'baseLogDirUrl') + logPath
  
     def _addJSD(self):
 

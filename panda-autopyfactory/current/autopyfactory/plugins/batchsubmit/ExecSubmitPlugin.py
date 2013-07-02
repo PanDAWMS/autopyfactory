@@ -24,16 +24,16 @@ class ExecSubmitPlugin(BatchSubmitInterface):
             self.qcl = apfqueue.factory.qcl
             self.fcl = apfqueue.factory.fcl
 
-            self.executable = self.qcl.generic_get(self.apfqname, 'executable', logger=self.log)
-            self.factoryadminemail = self.fcl.generic_get('Factory', 'factoryAdminEmail', logger=self.log)
+            self.executable = self.qcl.generic_get(self.apfqname, 'executable')
+            self.factoryadminemail = self.fcl.generic_get('Factory', 'factoryAdminEmail')
             self.x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqname,'proxy'))
             self.factoryid = self.fcl.generic_get('Factory', 'factoryId', logger=self)
-            self.monitorurl = self.fcl.generic_get('Factory', 'monitorURL', logger=self.log)
-            self.factoryuser = self.fcl.generic_get('Factory', 'factoryUser', logger=self.log)
-            self.environ = self.qcl.generic_get(self.apfqname, 'batchsubmit.condorlocal.environ', logger=self.log)
-            self.condor_attributes = self.qcl.generic_get(self.apfqname, 'batchsubmit.condorlocal.condor_attributes', logger=self.log)
-            self.batchqueue = self.qcl.generic_get(self.apfqname, 'batchqueue', logger=self.log)
-            self.arguments = self.qcl.generic_get(self.apfqname, 'executable.arguments', logger=self.log)
+            self.monitorurl = self.fcl.generic_get('Factory', 'monitorURL')
+            self.factoryuser = self.fcl.generic_get('Factory', 'factoryUser')
+            self.environ = self.qcl.generic_get(self.apfqname, 'batchsubmit.condorlocal.environ')
+            self.condor_attributes = self.qcl.generic_get(self.apfqname, 'batchsubmit.condorlocal.condor_attributes')
+            self.batchqueue = self.qcl.generic_get(self.apfqname, 'batchqueue')
+            self.arguments = self.qcl.generic_get(self.apfqname, 'executable.arguments')
 
             self.log.info('BatchSubmitPlugin: Object initialized.')
         except Exception, ex:

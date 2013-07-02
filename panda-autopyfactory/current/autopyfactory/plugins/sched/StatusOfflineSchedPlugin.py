@@ -15,8 +15,8 @@ class StatusOfflineSchedPlugin(SchedInterface):
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
 
             # offlinemode vars
-            self.testmode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.statusoffline.allowed', 'getboolean', logger=self.log)
-            self.pilots_in_offline_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.statusoffline.pilots', 'getint', default_value=0, logger=self.log)
+            self.testmode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.statusoffline.allowed', 'getboolean')
+            self.pilots_in_offline_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.statusoffline.pilots', 'getint', default_value=0)
 
             self.log.info("SchedPlugin: Object initialized.")
         except Exception, ex:

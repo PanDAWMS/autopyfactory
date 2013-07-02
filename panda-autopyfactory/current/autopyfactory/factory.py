@@ -436,11 +436,11 @@ class Factory(object):
     def _initLogserver(self):
         # Set up LogServer
         self.log.debug("Handling LogServer...")
-        ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean', logger=self.log)
+        ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean')
         if ls:
             self.log.info("LogServer enabled. Initializing...")
-            lsidx = self.fcl.generic_get('Factory','logserver.index', 'getboolean', logger=self.log)
-            lsrobots = self.fcl.generic_get('Factory','logserver.allowrobots', 'getboolean', logger=self.log)
+            lsidx = self.fcl.generic_get('Factory','logserver.index', 'getboolean')
+            lsrobots = self.fcl.generic_get('Factory','logserver.allowrobots', 'getboolean')
             logpath = self.fcl.get('Factory', 'baseLogDir')
             logurl = self.fcl.get('Factory','baseLogDirUrl')            
             logport = self._parseLogPort(logurl)
@@ -660,8 +660,8 @@ class APFQueuesManager(object):
         '''
 
         self.log.debug("_add: Starting with input %s" %apfqname)
-        queueenabled = self.factory.qcl.generic_get(apfqname, 'enabled', 'getboolean', logger=self.log)
-        globalenabled = self.factory.fcl.generic_get('Factory', 'enablequeues', 'getboolean', default_value=True, logger=self.log)
+        queueenabled = self.factory.qcl.generic_get(apfqname, 'enabled', 'getboolean')
+        globalenabled = self.factory.fcl.generic_get('Factory', 'enablequeues', 'getboolean', default_value=True)
         enabled = queueenabled and globalenabled
         
         if enabled:
@@ -773,16 +773,16 @@ class APFQueue(threading.Thread):
         self.log.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(apfqname).getContent())
    
         try: 
-            self.siteid = self.qcl.generic_get(apfqname, 'wmsqueue', default_value=apfqname, logger=self.log)
-            self.wmsqueue = self.qcl.generic_get(apfqname, 'wmsqueue', default_value=apfqname, logger=self.log)
-            self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue', logger=self.log)
-            self.cloud = self.qcl.generic_get(apfqname, 'cloud', logger=self.log)
-            self.cycles = self.fcl.generic_get("Factory", 'cycles', logger=self.log )
-            self.sleep = self.qcl.generic_get(apfqname, 'apfqueue.sleep', 'getint', logger=self.log)
+            self.siteid = self.qcl.generic_get(apfqname, 'wmsqueue', default_value=apfqname)
+            self.wmsqueue = self.qcl.generic_get(apfqname, 'wmsqueue', default_value=apfqname)
+            self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue')
+            self.cloud = self.qcl.generic_get(apfqname, 'cloud')
+            self.cycles = self.fcl.generic_get("Factory", 'cycles' )
+            self.sleep = self.qcl.generic_get(apfqname, 'apfqueue.sleep', 'getint')
             self.cyclesrun = 0
             
-            self.batchstatusmaxtime = self.fcl.generic_get('Factory', 'batchstatus.maxtime', default_value=0, logger=self.log)
-            self.wmsstatusmaxtime = self.fcl.generic_get('Factory', 'wmsstatus.maxtime', default_value=0, logger=self.log)
+            self.batchstatusmaxtime = self.fcl.generic_get('Factory', 'batchstatus.maxtime', default_value=0)
+            self.wmsstatusmaxtime = self.fcl.generic_get('Factory', 'wmsstatus.maxtime', default_value=0)
         except Exception, ex:
             self.log.error('APFQueue: exception captured while reading configuration variables to create the object.')
             self.log.debug("Exception: %s" % traceback.format_exc())
@@ -996,7 +996,7 @@ class PluginDispatcher(object):
 
         condor_q_id = 'local'
         if self.qcl.generic_get(self.apfqname, 'batchstatusplugin') == 'Condor': 
-            queryargs = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs', logger=self.log)
+            queryargs = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs')
             if queryargs:
                     condor_q_id = self.__queryargs2condorqid(queryargs)    
         batchstatus_plugin_handler = self._getplugin('batchstatus')[0]

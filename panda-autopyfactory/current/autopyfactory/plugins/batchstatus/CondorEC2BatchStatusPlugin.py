@@ -63,7 +63,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
             self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
-            self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs', logger=self.log) 
+            self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs') 
 
         except AttributeError:
             self.log.warning("Got AttributeError during init. We should be running stand-alone for testing.")

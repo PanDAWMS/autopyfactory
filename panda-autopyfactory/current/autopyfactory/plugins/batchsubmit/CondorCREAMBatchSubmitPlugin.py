@@ -34,11 +34,11 @@ class CondorCREAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         if not valid:
             return False
         try:
-            self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.gridresource', logger=self.log) 
-            self.webservice = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.webservice', logger=self.log)
-            self.creamport = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.port', 'getint', logger=self.log)
-            self.creambatch = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.batch', logger=self.log)
-            self.queue = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.queue', logger=self.log)
+            self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.gridresource') 
+            self.webservice = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.webservice')
+            self.creamport = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.port', 'getint')
+            self.creambatch = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.batch')
+            self.queue = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.queue')
 
             return True
         except:

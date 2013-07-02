@@ -23,7 +23,7 @@ class KeepNRunningSchedPlugin(SchedInterface):
         try:
             self.apfqueue = apfqueue                
             self.log = logging.getLogger("main.schedplugin[%s]" % apfqueue.apfqname)
-            self.keep_running = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.keepnrunning.keep_running', 'getint', logger=self.log)
+            self.keep_running = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.keepnrunning.keep_running', 'getint')
             self.log.info("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")

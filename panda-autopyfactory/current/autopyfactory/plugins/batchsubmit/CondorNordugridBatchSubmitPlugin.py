@@ -34,7 +34,7 @@ class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         if not valid:
             return False
         try:
-            self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condornordugrid.gridresource', logger=self.log) 
+            self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condornordugrid.gridresource') 
             self.nordugridrsl = self._nordugridrsl(qcl)
             self.nordugridrsl_env = self._nordugridrsl_env(qcl)
 
@@ -63,15 +63,15 @@ class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
                 not opt.startswith('nordugridrsl.addenv.'):
                     optlist.append(opt)
  
-        rsl = qcl.generic_get(self.apfqname, 'nordugridrsl.nordugridrsl', logger=self.log)
-        rsladd = qcl.generic_get(self.apfqname, 'nordugridrsl.nordugridrsladd', logger=self.log)
+        rsl = qcl.generic_get(self.apfqname, 'nordugridrsl.nordugridrsl')
+        rsladd = qcl.generic_get(self.apfqname, 'nordugridrsl.nordugridrsladd')
 
         if rsl:
             out = rsl 
         else:
                 for opt in optlist:
                     key = opt.split('nordugridrsl.')[1]
-                    value = qcl.generic_get(self.apfqname, opt, logger=self.log)
+                    value = qcl.generic_get(self.apfqname, opt)
                     if value != "":
                             out += "(%s = %s)" %(key, value)
  
@@ -98,7 +98,7 @@ class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         for opt in qcl.options(self.apfqname):
             if opt.startswith('nordugridrsl.addenv.'):
                 key = opt.split('nordugridrsl.addenv.')[1]
-                value = qcl.generic_get(self.apfqname, opt, logger=self.log)
+                value = qcl.generic_get(self.apfqname, opt)
                 if value != "":
                     nordugridrsl_env += "('%s' '%s')" %(key, value)
 

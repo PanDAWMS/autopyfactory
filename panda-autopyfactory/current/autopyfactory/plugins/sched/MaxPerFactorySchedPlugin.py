@@ -17,7 +17,7 @@ class MaxPerFactorySchedPlugin(SchedInterface):
             self.apfqueue = apfqueue                
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
 
-            self.max_pilots_per_factory = self.apfqueue.fcl.generic_get('Factory', 'maxperfactory.maximum', 'getint', logger=self.log)
+            self.max_pilots_per_factory = self.apfqueue.fcl.generic_get('Factory', 'maxperfactory.maximum', 'getint')
 
             self.log.info("SchedPlugin: Object initialized.")
         except Exception, ex:

@@ -21,18 +21,18 @@ class ActivatedSchedPlugin(SchedInterface):
             self.max_pilots_pending = None
             
             # A default value is required. 
-            self.default = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.default', 'getint', default_value=0, logger=self.log)    
+            self.default = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.default', 'getint', default_value=0)    
             self.log.debug('SchedPlugin: default = %s' %self.default)
             
-            self.max_jobs_torun = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun', 'getint', logger=self.log)
-            self.max_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_pilots_per_cycle', 'getint', logger=self.log)
-            self.min_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle', 'getint', logger=self.log)
-            self.min_pilots_pending = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.min_pilots_pending', 'getint', logger=self.log)
-            self.max_pilots_pending = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending', 'getint', logger=self.log)
+            self.max_jobs_torun = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_jobs_torun', 'getint')
+            self.max_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_pilots_per_cycle', 'getint')
+            self.min_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.min_pilots_per_cycle', 'getint')
+            self.min_pilots_pending = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.min_pilots_pending', 'getint')
+            self.max_pilots_pending = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.max_pilots_pending', 'getint')
             # testmode vars
-            self.testmode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.allowed', 'getboolean', logger=self.log)
-            self.pilots_in_test_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.pilots', 'getint', default_value=0, logger=self.log)
-            self.max_pending_in_test_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.max_pending', 'getint', default_value=10, logger=self.log)
+            self.testmode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.allowed', 'getboolean')
+            self.pilots_in_test_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.pilots', 'getint', default_value=0)
+            self.max_pending_in_test_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.activated.testmode.max_pending', 'getint', default_value=10)
 
             self.log.info("SchedPlugin: Object initialized.")
         except Exception, ex:

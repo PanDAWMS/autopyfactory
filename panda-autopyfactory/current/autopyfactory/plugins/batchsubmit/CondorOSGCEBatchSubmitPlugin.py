@@ -32,7 +32,7 @@ class CondorOSGCEBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         if not valid:
             return False
         try:
-            self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorosgce.gridresource', logger=self.log) 
+            self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorosgce.gridresource') 
             return True
         except:
             return False

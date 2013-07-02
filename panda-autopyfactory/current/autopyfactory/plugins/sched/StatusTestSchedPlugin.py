@@ -15,8 +15,8 @@ class StatusTestSchedPlugin(SchedInterface):
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
 
             # testmode vars
-            self.testmode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.statustest.allowed', 'getboolean', logger=self.log)
-            self.pilots_in_test_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.statustest.pilots', 'getint', default_value=0, logger=self.log)
+            self.testmode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.statustest.allowed', 'getboolean')
+            self.pilots_in_test_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.statustest.pilots', 'getint', default_value=0)
 
             self.log.info("SchedPlugin: Object initialized.")
         except Exception, ex:
