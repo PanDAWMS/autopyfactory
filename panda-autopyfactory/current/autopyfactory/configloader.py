@@ -17,12 +17,8 @@ from ConfigParser import SafeConfigParser, NoSectionError, InterpolationMissingO
 
 from autopyfactory.apfexceptions import ConfigFailure, FactoryConfigurationFailure
 
-####
-####try:
-####        import json as json
-####except ImportError, err:
-####        # Not critical (yet) - try simplejson
-####        import simplejson as json
+
+
 
 
 
