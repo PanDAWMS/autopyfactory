@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* Removed logger from the input options in method generic_get()
+
 * As temporary solution, NotImplementedAttr defined in configloader.py
 
 * Documentation on old Sched Plugin SimpleNQueue deleted.
