@@ -18,13 +18,36 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         super(CondorEC2BatchSubmitPlugin, self).__init__(apfqueue)
         self.log.info('CondorEC2BatchSubmitPlugin: Object initialized.')
 
+    def submit(self, num):
+        '''
+        Override base submit to determine if we need to *unretire* any nodes. 
+        
+        retiring_pilots = self.batchinfo[self.apfqueue.apfqname].retiring
+        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
+        
+        '''
+        if num < 1:
+            self.log.debug("Number to submit is negative, calling parent...")
+            super(CondorEC2BatchSubmitPlugin, self).submit(num)
+        else:
+            self.log.debug("Checking for jobs in 'retiring' state...")
+            batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
+            numretiring = batchinfo.retiring
+            numleft = num - numretiring
+            if numleft > 0:
+                self.log.debug("More to submit (%d) than retiring (%d). Unretiring all and submitting %d" % (num, 
+                                                                                                             numretiring ,
+                                                                                                             numleft) )
+                self.unretire(numretiring)
+                super(CondorEC2BatchSubmitPlugin, self).submit(numleft)
+            else:
+                self.log.debug("Fewer to submit than retiring. Unretiring %d" % num)
+                self.unretire(num)
+                
+
     def _readconfig(self, qcl=None):
         '''
         read the config file
-        do housekeeping!
-        
-        XXX self._killretired doesn't belong here, but it was the only place to
-        unconditionally get called in the plugin every cycle. 
         
         '''
 
