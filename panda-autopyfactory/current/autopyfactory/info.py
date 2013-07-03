@@ -94,6 +94,12 @@ class BaseInfo(object):
                 log.debug("Stack Trace: %s " % traceback.format_exc()) 
                 log.debug("k: %s v: %s dictionary: %s mappings: %s" % (k,v, dictionary, mappings))
             
+
+            # if the key is new, then ...
+            #       if no reset: we add the value to the old one
+            #       if reset: we do nothing, so the final value will be the new one
+            # if the key is not new...
+            #       we just add the value to the stored one
             if k not in usedk:
                 usedk.append(k)
                 if not reset:
