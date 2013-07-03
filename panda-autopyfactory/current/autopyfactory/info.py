@@ -321,7 +321,7 @@ class SiteInfo(BaseInfo):
         self.setokens = ""
         self.type = ""
         self.lfcregister = ""
-        self.status = ""
+        self.status = ""  # only thing we care about...
         self.lfchost = ""
         self.releases = ""
         self.statusmodtime = ""
