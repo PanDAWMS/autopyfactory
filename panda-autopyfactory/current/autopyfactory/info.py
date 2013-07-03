@@ -190,7 +190,6 @@ class BatchStatusInfo(BaseInfo):
     def __init__(self):
         # default value 0
         super(BatchStatusInfo, self).__init__(0)
-        
 
     def __str__(self):
         s = "BatchStatusInfo: pending=%d, running=%d, suspended=%d, retiring=%d, retired=%d" % (self.pending, 
