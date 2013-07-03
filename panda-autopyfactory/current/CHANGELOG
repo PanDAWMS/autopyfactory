@@ -13,6 +13,7 @@ ChangeLog
         -- therefore method __setattr__() removed
     -- method __getattribute__() is created
     -- method valid() in class InfoContainer deleted
+    -- no longer importing Config from configloader 
 
 
 * Removed logger from the input options in method generic_get()
