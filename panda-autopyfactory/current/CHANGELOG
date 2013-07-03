@@ -12,6 +12,7 @@ ChangeLog
         -- therefore method reset() removed
         -- therefore method __setattr__() removed
     -- method __getattribute__() is created
+    -- method valid() in class InfoContainer deleted
 
 
 * Removed logger from the input options in method generic_get()
