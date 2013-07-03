@@ -34,23 +34,8 @@ class BaseInfo(object):
             fill(dictionary, mappings=None, reset=True)
     -----------------------------------------------------------------------
     '''
-    def __init__(self, default=None):
-        self.default_value = default
-
-    def __getattribute__(self, attr):
-        '''
-        overriding __getattribute__ to not to blow up 
-        when asking for a attr not defined yet
-        If a non defined attr is asked for, 
-        then the self.default_value is returned
-        '''
-
-        try:
-            return object.__getattribute__(self, attr)
-            # we use object.__getattribute__ to avoid an infinite recursion
-        except:
-            return self.default_value
-
+    def __init__(self):
+        pass
 
     def fill(self, dictionary, mappings=None, reset=True):
         '''
@@ -193,15 +178,22 @@ class BatchStatusInfo(BaseInfo):
     '''
 
     def __init__(self):
-        # default value 0
-        super(BatchStatusInfo, self).__init__(0)
+        self.pending = 0
+        self.running = 0
+        self.suspended = 0
+        self.retiring = 0
+        self.retired = 0
+        self.done = 0
 
     def __str__(self):
-        s = "BatchStatusInfo: pending=%d, running=%d, suspended=%d, retiring=%d, retired=%d" % (self.pending, 
-                                                                                                self.running, 
-                                                                                                self.suspended,
-                                                                                                self.retiring,
-                                                                                                self.retired)
+        s = "BatchStatusInfo: pending=%d, running=%d, suspended=%d, retiring=%d, retired=%d, done=%d" %\
+            (self.pending, 
+             self.running, 
+             self.suspended,
+             self.retiring,
+             self.retired,
+             self.done
+            )
         return s
 
 
@@ -226,16 +218,22 @@ class WMSQueueInfo(BaseInfo):
     '''
 
     def __init__(self):
-        # default value 0
-        super(WMSQueueInfo, self).__init__(0)
+        self.notready = 0
+        self.ready = 0
+        self.running = 0
+        self.done = 0
+        self.failed = 0
+        self.unknown = 0
 
     def __str__(self):
-        s = "WMSQueueInfo: notready=%s, ready=%s, running=%s, done=%s, failed=%s, unknown=%s" %(self.notready,
-                                                                                  self.ready,
-                                                                                  self.running,
-                                                                                  self.done,
-                                                                                  self.failed,
-                                                                                  self.unknown)
+        s = "WMSQueueInfo: notready=%s, ready=%s, running=%s, done=%s, failed=%s, unknown=%s" %\
+            (self.notready,
+             self.ready,
+             self.running,
+             self.done,
+             self.failed,
+             self.unknown
+            )
         return s
 
 
@@ -249,8 +247,7 @@ class JobInfo(BaseInfo):
         
     '''
     
-    def __init__(self, jobid, state, inittime ):
-        super(JobInfo, self).__init__(None)
+    def __init__(self, jobid, state, inittime):
         self.jobid = jobid
         self.state = state
         self.inittime = inittime
@@ -268,8 +265,25 @@ class CloudInfo(BaseInfo):
     '''
 
     def __init__(self):
-        # default value None
-        super(CloudInfo, self).__init__(None)
+        self.tier1 = ""
+        self.status = ""
+        self.fasttrack = ""
+        self.transtimehi = ""
+        self.name = ""
+        self.weight = ""
+        self.transtimelo = ""
+        self.dest = ""
+        self.countries = ""
+        self.relocation = ""
+        self.sites = ""
+        self.server = ""
+        self.waittime = ""
+        self.source = ""
+        self.tier1SE = ""
+        self.pilotowners = ""
+        self.mcshare = ""
+        self.validation = ""
+        self.nprestage = ""
 
     def __str__(self):
         s = "CloudInfo" #FIXME: here we need something more
@@ -289,8 +303,40 @@ class SiteInfo(BaseInfo):
 
 
     def __init__(self):
-        # default value None
-        super(SiteInfo, self).__init__(None)
+        self.comment = ""
+        self.gatekeeper = ""
+        self.cloudlist = ""
+        self.defaulttoken = ""
+        self.priorityoffset = ""
+        self.cloud = ""
+        self.accesscontrol = ""
+        self.retry = ""
+        self.maxinputsize = ""
+        self.space = ""
+        self.sitename = ""
+        self.allowdirectaccess = ""
+        self.seprodpath = ""
+        self.ddm = ""
+        self.memory = ""
+        self.setokens = ""
+        self.type = ""
+        self.lfcregister = ""
+        self.status = ""
+        self.lfchost = ""
+        self.releases = ""
+        self.statusmodtime = ""
+        self.maxtime = ""
+        self.nickname = ""
+        self.dq2url = ""
+        self.copysetup = ""
+        self.cachedse = ""
+        self.cmtconfig = ""
+        self.allowedgroups = ""
+        self.queue = ""
+        self.localqueue = ""
+        self.glexec = ""
+        self.validatedreleases = ""
+        self.se = ""
 
     def __str__(self):
         s = "SiteInfo" #FIXME: here we need something more
