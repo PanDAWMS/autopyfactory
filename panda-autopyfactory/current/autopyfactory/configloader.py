@@ -267,13 +267,15 @@ class ConfigManager(object):
                 - path to a phisical file on disk
                 - an URL
         '''
-        config = Config()
-        for src in sources.split(','):
-            newconfig = self.__getConfig(src)
-            if newconfig:
-                    config.merge(newconfig)
-
-        return config
+        try:
+            config = Config()
+            for src in sources.split(','):
+                newconfig = self.__getConfig(src)
+                if newconfig:
+                        config.merge(newconfig)
+            return config
+        except:
+            raise ConfigFailure('creating config object from source %s failed' %sources)
 
 
     def __getConfig(self, src):
