@@ -1,9 +1,10 @@
 ChangeLog
 ---------
 
+* method section2dict() created in configloader. It will be usefull to generate the mappings from config files
+
 * getConfig() method in configloader.py embedded in a try - except block
   and all config loader object creation in factory.py embedded in try - except blocks
- 
 
 * Exception class ConfigFailure renamed ConfigFailureMandatoryAttr
 
