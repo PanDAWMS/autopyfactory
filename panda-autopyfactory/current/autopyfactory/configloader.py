@@ -15,7 +15,7 @@ import urllib2
 from urllib import urlopen
 from ConfigParser import SafeConfigParser, NoSectionError, InterpolationMissingOptionError
 
-from autopyfactory.apfexceptions import ConfigFailure, FactoryConfigurationFailure
+from autopyfactory.apfexceptions import ConfigFailure, ConfigFailureMandatoryAttr, FactoryConfigurationFailure
 
 
 # --------------------------------------------------------------------------
@@ -192,7 +192,7 @@ class Config(SafeConfigParser, object):
         if not has_option:
             if mandatory:
                 self.log.error('generic_get: option %s is not present in section %s. Will raise an exception.' %(option, section))
-                raise ConfigFailure(option, section)
+                raise ConfigFailureMandatoryAttr(option, section)
             else:
                 self.log.debug('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
                 return default_value
