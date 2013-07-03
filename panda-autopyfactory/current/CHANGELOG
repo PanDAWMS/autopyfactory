@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* getConfig() method in configloader.py embedded in a try - except block
+
 * Exception class ConfigFailure renamed ConfigFailureMandatoryAttr
 
 * Cleaning info.py code:
