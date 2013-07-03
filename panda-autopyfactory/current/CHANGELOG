@@ -14,6 +14,7 @@ ChangeLog
     -- method __getattribute__() is created
     -- method valid() in class InfoContainer deleted
     -- no longer importing Config from configloader 
+    -- no longer self.default_value
 
 
 * Removed logger from the input options in method generic_get()
