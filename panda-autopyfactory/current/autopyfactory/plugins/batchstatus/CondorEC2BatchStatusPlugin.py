@@ -529,7 +529,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             # use finer-grained globus statuses in preference to local summaries, if they exist. 
             if 'globusstatus' in attrdict.keys():
                 valdict = attrdict['globusstatus']
-                qi.fill(valdict, mappings=self.globusstatus2info)
+                qi.fill(valdict, mappings=self.globusstatus2info)   #  !!!! this mapping does not exist !!!!
             # must be a local-only job or other. 
             else:
                 valdict = attrdict['jobstatus']
