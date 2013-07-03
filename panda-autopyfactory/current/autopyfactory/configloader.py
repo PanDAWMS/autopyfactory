@@ -124,6 +124,16 @@ class Config(SafeConfigParser, object):
             else:
                 if _override is False:
                     self.set(section, opt, value)
+
+    def section2dict(self, section):
+        '''
+        converts a given section into a dictionary
+        '''
+        d = {}
+        for opt in self.options(section):
+            value = self.get(section, opt)
+            d[opt] = value
+        return d
     
     def clone(self):
         '''
