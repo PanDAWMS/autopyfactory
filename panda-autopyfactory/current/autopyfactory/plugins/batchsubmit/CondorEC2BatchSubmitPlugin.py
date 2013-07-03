@@ -36,7 +36,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             numleft = num - numretiring
             if numleft > 0:
                 self.log.debug("More to submit (%d) than retiring (%d). Unretiring all and submitting %d" % (num, 
-                                                                                                             numretiring ,
+                                                                                                             numretiring,
                                                                                                              numleft) )
                 self.unretire(numretiring)
                 super(CondorEC2BatchSubmitPlugin, self).submit(numleft)

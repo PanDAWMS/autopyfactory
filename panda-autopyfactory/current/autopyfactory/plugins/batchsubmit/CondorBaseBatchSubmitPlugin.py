@@ -330,15 +330,13 @@ x509UserProxyVOName = "atlas"
         self.JSD.add("stream_error=False")
         self.JSD.add("notification=Error")
         self.JSD.add("transfer_executable = True")
-        #self.JSD.add("should_transfer_files = NO")
-        #self.JSD.add("when_to_transfer_output = ON_EXIT_OR_EVICT")
         
         self.log.debug('addJSD: Leaving.')
    
     def __parse_condor_attribute(self, s):
         '''
-        auxiliar method to help spliting the string
-        usign the comma as splitting character.
+        auxiliar method to help splitting the string
+        using the comma as splitting character.
         The trick here is what to do when the comma is preceded 
         by one or more \
         Sometimes the user wants the comma to be taken literally 
