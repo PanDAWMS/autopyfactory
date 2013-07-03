@@ -29,7 +29,7 @@ from pprint import pprint
 from optparse import OptionParser
 from ConfigParser import ConfigParser
 
-from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
+from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure, ConfigFailure
 from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
@@ -311,7 +311,11 @@ Jose Caballero <jcaballero@bnl.gov>
         """Create config, add in options...
         """
         if self.options.confFiles != None:
-            self.fcl = ConfigManager().getConfig(self.options.confFiles)
+            try:
+                self.fcl = ConfigManager().getConfig(self.options.confFiles)
+            except ConfigFailure, errMsg:
+                self.log.error('Failed to create FactoryConfigLoader')
+                sys.exit(0)
         
         self.fcl.set("Factory","cyclesToDo", str(self.options.cyclesToDo))
         self.fcl.set("Factory", "sleepTime", str(self.options.sleepTime))
@@ -392,7 +396,12 @@ class Factory(object):
         self.fcl = fcl
         qcf = fcl.get('Factory', 'queueConf')
         self.log.debug("queues.conf file(s) = %s" % qcf)
-        self.qcl = ConfigManager().getConfig(qcf)
+
+        try:
+            self.qcl = ConfigManager().getConfig(qcf)
+       except ConfigFailure, errMsg:
+            self.log.error('Failed to create QueuesConfigLoader')
+            sys.exit(0)
         
         # Handle ProxyManager configuration
         usepman = fcl.getboolean('Factory', 'proxymanager.enabled')
@@ -400,7 +409,13 @@ class Factory(object):
             pcf = fcl.get('Factory','proxyConf')
             self.log.debug("proxy.conf file(s) = %s" % qcf)
             pconfig = ConfigParser()
-            got_config = pconfig.read(pcf)
+
+            try:
+                got_config = pconfig.read(pcf)
+            except Exception, e:
+                sys.log.error('Failed to create ProxyConfigLoader')
+                sys.exit(0)
+
             self.log.debug("Read config file %s, return value: %s" % (pcf, got_config)) 
             self.proxymanager = ProxyManager(pconfig)
             self.log.info('ProxyManager initialized. Starting...')
@@ -413,7 +428,13 @@ class Factory(object):
         self.mcl = None
         self.mcf = self.fcl.generic_get('Factory', 'monitorConf')
         self.log.debug("monitor.conf file(s) = %s" % self.mcf)
-        self.mcl = ConfigManager().getConfig(self.mcf)
+        
+        try:
+            self.mcl = ConfigManager().getConfig(self.mcf)
+        except ConfigFailure, e:
+            self.log.error('Failed to create MonitorConfigLoader')
+            sys.exit(0)
+
         self.log.debug("mcl is %s" % self.mcl)
 
         # Handle Log Serving
