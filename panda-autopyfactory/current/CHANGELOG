@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* Exception class ConfigFailure renamed ConfigFailureMandatoryAttr
+
 * Cleaning info.py code:
     -- method dict() removed
     -- method getconfig() removed
