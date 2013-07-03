@@ -182,16 +182,10 @@ class BatchStatusInfo(BaseInfo):
         }
         
     
-    
-    
         
     batchstatusinfo.jobinfo.getqueue()
     batchstatusinfo.jobinfo.?
-                        
-    
-    
     '''
-    valid = ['pending', 'running', 'error', 'suspended', 'done', 'unknown','retiring','retired']
 
     def __init__(self):
         # default value 0
@@ -226,7 +220,6 @@ class WMSQueueInfo(BaseInfo):
 
     -----------------------------------------------------------------------
     '''
-    valid = ['notready', 'ready', 'running', 'done', 'failed', 'unknown']
 
     def __init__(self):
         # default value 0
@@ -252,7 +245,6 @@ class JobInfo(BaseInfo):
         
     '''
     
-    valid = ['jobid', 'state','inittime']
     def __init__(self, jobid, state, inittime ):
         super(JobInfo, self).__init__(None)
         self.jobid = jobid
@@ -270,7 +262,6 @@ class CloudInfo(BaseInfo):
     Once we decided which ones should stay we can clean up the valid list.
     -----------------------------------------------------------------------
     '''
-    valid = ['tier1', 'status', 'fasttrack', 'transtimehi', 'name', 'weight', 'transtimelo', 'dest', 'countries', 'relocation', 'sites', 'server', 'waittime', 'source', 'tier1SE', 'pilotowners', 'mcshare', 'validation', 'nprestage']
 
     def __init__(self):
         # default value None
@@ -292,7 +283,6 @@ class SiteInfo(BaseInfo):
     -----------------------------------------------------------------------
     '''
 
-    valid = ['comment', 'gatekeeper', 'cloudlist', 'defaulttoken', 'priorityoffset', 'cloud', 'accesscontrol', 'retry', 'maxinputsize', 'space', 'sitename', 'allowdirectaccess', 'seprodpath', 'ddm', 'memory', 'setokens', 'type', 'lfcregister', 'status', 'lfchost', 'releases', 'statusmodtime', 'maxtime', 'nickname', 'dq2url', 'copysetup', 'cachedse', 'cmtconfig', 'allowedgroups', 'queue', 'localqueue', 'glexec', 'validatedreleases', 'se']
 
     def __init__(self):
         # default value None
