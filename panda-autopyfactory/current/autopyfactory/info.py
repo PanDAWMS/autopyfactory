@@ -339,21 +339,6 @@ class InfoContainer(dict):
         self.lasttime = None
         self.log.info('Status: Object Initialized')
 
-    def valid(self):
-        '''
-        checks if all attributes have a valid value, or
-        some of them is None and therefore the collected info 
-        is not reliable
-        '''
-        self.log.debug('valid: Starting.')
-
-        out = True  # default
-        #if self.batch == None:
-        #    out = False 
-
-        #self.log.info('valid: Leaving with output %s.' %out)
-        return out
-
     def __str__(self):
         s = "InfoContainer containing %d objects of type %s" % (self.__len__(), self.type)
         return s
