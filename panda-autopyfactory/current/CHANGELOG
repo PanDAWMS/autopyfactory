@@ -2,6 +2,8 @@ ChangeLog
 ---------
 
 * getConfig() method in configloader.py embedded in a try - except block
+  and all config loader object creation in factory.py embedded in try - except blocks
+ 
 
 * Exception class ConfigFailure renamed ConfigFailureMandatoryAttr
 
