@@ -348,8 +348,12 @@ class InfoContainer(dict):
         overrides the default __getitem__ 
         to check if the key is one of the 
         queues stored in the dictionary. 
-        If it is a new key, then it returns
-        self.default
+        If it is a new key, 
+        then it returns self.default
+
+        It is a way to force using 
+
+            dict.get(k, [default])
         '''
         if k in self.keys():
             return dict.__getitem__(self, k)
