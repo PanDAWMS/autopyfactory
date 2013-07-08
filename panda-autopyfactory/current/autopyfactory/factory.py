@@ -399,7 +399,7 @@ class Factory(object):
 
         try:
             self.qcl = ConfigManager().getConfig(qcf)
-       except ConfigFailure, errMsg:
+        except ConfigFailure, errMsg:
             self.log.error('Failed to create QueuesConfigLoader')
             sys.exit(0)
         
