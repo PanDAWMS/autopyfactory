@@ -17,16 +17,16 @@ fi
 
 # --- install the man pages, only if root  ---
 gzip /usr/share/doc/apf/autopyfactory.1
-mv /usr/share/doc/apf/autopyfactory.1.gz /usr/share/man/man1/
+mv -f /usr/share/doc/apf/autopyfactory.1.gz /usr/share/man/man1/
 
 gzip /usr/share/doc/apf/autopyfactory-queues.conf.5
-mv /usr/share/doc/apf/autopyfactory-queues.conf.5.gz /usr/share/man/man5/
+mv -f /usr/share/doc/apf/autopyfactory-queues.conf.5.gz /usr/share/man/man5/
 
 gzip /usr/share/doc/apf/autopyfactory-factory.conf.5
-mv /usr/share/doc/apf/autopyfactory-factory.conf.5.gz /usr/share/man/man5/ 
+mv -f /usr/share/doc/apf/autopyfactory-factory.conf.5.gz /usr/share/man/man5/ 
 
 gzip /usr/share/doc/apf/autopyfactory-proxy.conf.5
-mv /usr/share/doc/apf/autopyfactory-proxy.conf.5.gz /usr/share/man/man5/ 
+mv -f /usr/share/doc/apf/autopyfactory-proxy.conf.5.gz /usr/share/man/man5/ 
 
 gzip /usr/share/doc/apf/autopyfactory-monitor.conf.5
-mv /usr/share/doc/apf/autopyfactory-monitor.conf.5.gz /usr/share/man/man5/  
+mv -f /usr/share/doc/apf/autopyfactory-monitor.conf.5.gz /usr/share/man/man5/  
