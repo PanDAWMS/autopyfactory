@@ -94,7 +94,7 @@ function get_pilot() {
     mkdir pilot3
     cd pilot3
 
-    get_pilot_http $@
+    get_pilot_http $myargs
     if [ $? = "0" ]; then
         return 0
     fi
@@ -111,7 +111,7 @@ function get_pilot_http() {
     # N.B. an RC pilot is chosen once every 100 downloads for production and
     # ptest jobs use Paul's development release.
     if [ -z "$PILOT_HTTP_SOURCES" ]; then
-        if echo $@ | grep -- "-u ptest" > /dev/null; then 
+        if echo $myargs | grep -- "-u ptest" > /dev/null; then 
             echo "DEBUG: This is a ptest pilot. Will use development pilot code with python2.6"
             PILOT_HTTP_SOURCES="http://project-atlas-gmsb.web.cern.ch/project-atlas-gmsb/pilotcode-dev.tar.gz"
             PILOT_TYPE=PT
@@ -221,10 +221,8 @@ startdir=$(pwd)
 echo $startdir
 ls -l
 me=$0
-echo "Me and my args: $0 $@"
-if [ ! -f $me ]; then
-    echo "Trouble ahead - cannot find myself. Should I try psychoanalysis?"
-fi
+myargs=$@
+echo "Me and my args: $0 $myargs"
 echo
 
 # If we have TMPDIR defined, then move into this directory
@@ -244,7 +242,7 @@ echo Changing work directory to $temp
 cd $temp
 
 # Try to get pilot code...
-get_pilot $@
+get_pilot
 ls -l
 if [ ! -f pilot.py ]; then
     echo "FATAL: Problem with pilot delivery - failing after dumping environment"
@@ -253,7 +251,7 @@ fi
 # Set any limits we need to stop jobs going crazy
 echo
 echo "---- Setting crazy job protection limits ----"
-set_limits $@
+set_limits
 echo
 
 # Set any forced environment variables
@@ -351,13 +349,15 @@ echo
 scratch=`pwd`
 
 echo "---- Ready to run pilot ----"
-echo "My Arguments: $@"
+echo "Arglist: $@"
+echo "My Arguments: $myargs"
+
 
 # If we know the pilot type then set this
 if [ -n "$PILOT_TYPE" ]; then
-    pilot_args="-d $scratch $@ -i $PILOT_TYPE"
+    pilot_args="-d $scratch $myargs -i $PILOT_TYPE"
 else
-    pilot_args="-d $scratch $@"
+    pilot_args="-d $scratch $myargs"
 fi
 
 # Prd server and pass arguments
