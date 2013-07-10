@@ -139,7 +139,15 @@ class Config(SafeConfigParser, object):
         '''
         makes an exact copy of the object
         '''
-        return copy.deepcopy(self)
+        #return copy.deepcopy(self)
+        # NOTE: we cannot do deepcopy because self contains 
+        #       an attribute self.log = logger 
+        #       that cannot be cloned
+
+        newconfig = Config()
+        newconfig.merge(self)
+        return newconfig
+
     
     def filterkeys(self, pattern, newpattern):
         '''
