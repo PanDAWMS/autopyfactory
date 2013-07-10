@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* more robust code to deal with scenario where condor_q gives no output
+
 * all JSD.add() method replaced to use the new format (2 inputs instead of 1)
 
 * jsd.py and jsd3.py moved to attic/ and jsd4.py moved to jsd.py
