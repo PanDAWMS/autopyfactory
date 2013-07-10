@@ -334,7 +334,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         Makes list of CondorEC2JobInfo objects 
         Input may be None        
         '''
-        newinfo = None
+        newinfo = []
         if not dictlist:
             self.log.warning('_makeinfolist: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
         else:
