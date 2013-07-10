@@ -76,14 +76,14 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
    
         # -- globusrsl -- 
         if self.globus:
-            self.JSD.add('globusrsl=%s' %self.globus)
+            self.JSD.add('globusrsl', '%s' %self.globus)
         ###globusrsl = "globusrsl=(jobtype=%s)" %self.jobtype
         ###if self.queue:
         ###     globusrsl += "(queue=%s)" % self.queue
         ###self.JSD.add(globusrsl)
 
         # -- fixed stuffs --
-        self.JSD.add('copy_to_spool = True')
+        self.JSD.add('copy_to_spool', 'True')
 
         super(CondorGRAMBatchSubmitPlugin, self)._addJSD() 
     

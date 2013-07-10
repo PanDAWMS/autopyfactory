@@ -290,20 +290,20 @@ x509UserProxyVOName = "atlas"
 
         self.log.debug('addJSD: Starting.')
 
-        self.JSD.add("Dir=%s/" % self.logDir)
-        self.JSD.add("notify_user=%s" % self.factoryadminemail)
+        self.JSD.add("Dir", "%s/" % self.logDir)
+        self.JSD.add("notify_user", "%s" % self.factoryadminemail)
 
         # -- MATCH_APF_QUEUE --
         # this token is very important, since it will be used by other plugins
         # to identify this pilot from others when running condor_q
-        self.JSD.add('+MATCH_APF_QUEUE="%s"' % self.apfqname)
+        self.JSD.add('+MATCH_APF_QUEUE', '"%s"' % self.apfqname)
 
         # -- proxy path --
         if self.x509userproxy:
-            self.JSD.add("x509userproxy=%s" % self.x509userproxy)
+            self.JSD.add("x509userproxy", "%s" % self.x509userproxy)
 
         ### Environment
-        environment = 'environment = "PANDA_JSID=%s' % self.factoryid
+        environment = '"PANDA_JSID=%s' % self.factoryid
         environment += ' GTAG=%s/$(Cluster).$(Process).out' % self.logUrl
         environment += ' APFCID=$(Cluster).$(Process)'
         environment += ' APFFID=%s' % self.factoryid
@@ -316,20 +316,20 @@ x509UserProxyVOName = "atlas"
             if self.environ != 'None' and self.environ != '':
                     environment += " " + self.environ
         environment += '"'
-        self.JSD.add(environment)
+        self.JSD.add('environment', environment)
 
 
-        self.JSD.add("executable=%s" % self.executable)
-        self.JSD.add('arguments=%s' % self.arguments)
+        self.JSD.add("executable", "%s" % self.executable)
+        self.JSD.add('arguments', '%s' % self.arguments)
 
         # -- fixed stuffs -- 
-        self.JSD.add("output=$(Dir)/$(Cluster).$(Process).out")
-        self.JSD.add("error=$(Dir)/$(Cluster).$(Process).err")
-        self.JSD.add("log=$(Dir)/$(Cluster).$(Process).log")
-        self.JSD.add("stream_output=False")
-        self.JSD.add("stream_error=False")
-        self.JSD.add("notification=Error")
-        self.JSD.add("transfer_executable = True")
+        self.JSD.add("output", "$(Dir)/$(Cluster).$(Process).out")
+        self.JSD.add("error", "$(Dir)/$(Cluster).$(Process).err")
+        self.JSD.add("log", "$(Dir)/$(Cluster).$(Process).log")
+        self.JSD.add("stream_output", "False")
+        self.JSD.add("stream_error", "False")
+        self.JSD.add("notification", "Error")
+        self.JSD.add("transfer_executable", "True")
         
         self.log.debug('addJSD: Leaving.')
    
@@ -418,10 +418,14 @@ x509UserProxyVOName = "atlas"
 
         if self.condor_attributes:
             for attr in self.__parse_condor_attribute(self.condor_attributes):
-                self.JSD.add(attr)
+                if '=' in attr:
+                    attr = attr.split('=')
+                    self.JSD.add(attr[0], attr[1])
+                else:
+                    self.JSD.add(attr)
 
         for item in self.extra_condor_attributes:
-            self.JSD.add('%s = %s' %item)
+            self.JSD.add(item[0], item[1])
 
         self.log.debug('Leaving.')
 

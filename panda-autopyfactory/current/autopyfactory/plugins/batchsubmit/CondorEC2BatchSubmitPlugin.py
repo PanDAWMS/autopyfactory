@@ -84,22 +84,22 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         self.log.debug('CondorEC2BatchSubmitPlugin.addJSD: Starting.')
         super(CondorEC2BatchSubmitPlugin, self)._addJSD()
 
-        self.JSD.add('grid_resource=ec2 %s' % self.gridresource) 
+        self.JSD.add('grid_resource', 'ec2 %s' % self.gridresource) 
 
         # -- proxy path --
-        self.JSD.add("ec2_access_key_id=%s" % self.access_key_id) 
-        self.JSD.add("ec2_secret_access_key=%s" % self.secret_access_key) 
+        self.JSD.add("ec2_access_key_id", "%s" % self.access_key_id) 
+        self.JSD.add("ec2_secret_access_key", "%s" % self.secret_access_key) 
 
         # -- EC2 specific parameters --
-        self.JSD.add("ec2_ami_id=%s" % self.ami_id) 
-        self.JSD.add("executable=%s" % self.apfqueue.apfqname)
-        self.JSD.add("ec2_instance_type=%s" % self.instance_type) 
+        self.JSD.add("ec2_ami_id", "%s" % self.ami_id) 
+        self.JSD.add("executable", "%s" % self.apfqueue.apfqname)
+        self.JSD.add("ec2_instance_type", "%s" % self.instance_type) 
         if self.user_data:
-            self.JSD.add('ec2_user_data=%s' % self.user_data)          
+            self.JSD.add('ec2_user_data', '%s' % self.user_data)          
         if self.spot_price:
-            self.JSD.add('ec2_spot_price=%f' % self.spot_price)
+            self.JSD.add('ec2_spot_price', '%f' % self.spot_price)
         if self.security_groups:
-            self.JSD.add('ec2_security_groups=%s' % self.security_groups)
+            self.JSD.add('ec2_security_groups', '%s' % self.security_groups)
 
         self.log.debug('CondorEC2BatchSubmitPlugin.addJSD: Leaving.')
 

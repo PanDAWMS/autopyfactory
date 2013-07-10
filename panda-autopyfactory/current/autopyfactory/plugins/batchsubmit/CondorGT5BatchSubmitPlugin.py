@@ -44,7 +44,7 @@ class CondorGT5BatchSubmitPlugin(CondorGRAMBatchSubmitPlugin):
 
         self.log.debug('CondorGT5BatchSubmitPlugin.addJSD: Starting.')
 
-        self.JSD.add('grid_resource=gt5 %s' % self.gridresource) 
+        self.JSD.add('grid_resource', 'gt5 %s' % self.gridresource) 
         super(CondorGT5BatchSubmitPlugin, self)._addJSD()
 
         self.log.debug('CondorGT5BatchSubmitPlugin.addJSD: Leaving.')

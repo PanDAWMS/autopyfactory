@@ -32,7 +32,7 @@ class CondorCEBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         self.log.debug('CondorCEBatchSubmitPlugin.addJSD: Starting.')
    
         # -- fixed stuffs -- 
-        self.JSD.add('+Nonessential = True')
+        self.JSD.add('+Nonessential', 'True')
 
         super(CondorCEBatchSubmitPlugin, self)._addJSD() 
     
