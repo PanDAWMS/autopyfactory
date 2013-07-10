@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* logserver2.py moved to logserver.py, and old one moved to attic/
+
 * using method merge() instead of deepcopy() in configloader.py
 
 * method section2dict() created in configloader. It will be usefull to generate the mappings from config files
