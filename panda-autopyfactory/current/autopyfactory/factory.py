@@ -852,7 +852,11 @@ class APFQueue(threading.Thread):
                 for sched_plugin in self.scheduler_plugins:
                     (nsub, msg) = sched_plugin.calcSubmitNum(nsub)
                     if msg:
-                        fullmsg = "%s;%s" % (fullmsg, msg)
+                        if fullmsg:
+                            fullmsg = "%s;%s" % (fullmsg, msg)
+                        else:
+                            fullmsg = msg
+                        
 
                 jobinfolist = self._submitpilots(nsub)
                 for m in self.monitor_plugins:
