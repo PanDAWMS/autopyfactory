@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* jsd.py and jsd3.py moved to attic/ and jsd4.py moved to jsd.py
+
 * logserver2.py moved to logserver.py, and old one moved to attic/
 
 * using method merge() instead of deepcopy() in configloader.py
