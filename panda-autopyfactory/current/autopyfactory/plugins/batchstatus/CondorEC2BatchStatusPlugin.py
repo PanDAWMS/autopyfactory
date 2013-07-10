@@ -319,7 +319,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         return slotlist
    
     def _makejoblist(self, dictlist):
-        joblist = None
+        joblist = {}
         if not dictlist:
             self.log.warning('_makejoblist: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
         else:
