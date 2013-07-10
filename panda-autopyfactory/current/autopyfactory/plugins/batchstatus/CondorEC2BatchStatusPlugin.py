@@ -275,10 +275,10 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 
                 # Fix newinfo, converting running ec2 jobs to retiring where 
                 # appropriate
-                for queue in newinfo:
-                    self.log.debug("queue info in newinfo. %s" % queue)
-                    inf = newinfo[queue]
-                    self.log.debug("info in newinfo for queue [%s]: %s" % (queue, inf))
+                #for queue in newinfo:
+                #    self.log.debug("queue info in newinfo. %s" % queue)
+                #    inf = newinfo[queue]
+                #    self.log.debug("info in newinfo for queue [%s]: %s" % (queue, inf))
                 
                 # Update current info references
                 self.currentjobs = joblist
@@ -334,7 +334,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         Makes list of CondorEC2JobInfo objects 
         Input may be None        
         '''
-        newinfo = []
+        newinfo = None
         if not dictlist:
             self.log.warning('_makeinfolist: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
         else:
@@ -774,8 +774,7 @@ class CondorEC2BatchStatusInfo(BatchStatusInfo):
     
     valid = ['pending', 'running', 'error', 'suspended', 'done', 'unknown', 'retiring', 'retired']
     
-    def __init__(self):
-        
+    def __init__(self):        
         super(CondorEC2BatchStatusInfo, self).__init__() 
        
 
