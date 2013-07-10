@@ -2,7 +2,7 @@
 #
 # AutoPyfactory batch status plugin for Condor
 # Dedicated to handling VM job submissions and VM pool startds. 
-#   
+   
 
 import commands
 import subprocess
@@ -188,7 +188,6 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             Query condor_status -master for execute host info
             Query condor_status for startd status, adding that info to executeInfo
             
-            
             Aggregate resulting objects for statistics, creating BatchStatusInfo object 
             update currentinfo
                 
@@ -208,6 +207,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.log.debug("exelist: %s" % exelist)
                 slotlist = self._makeslotlist()
                 self.log.debug("slotlist: %s" % slotlist)
+
                 # Query condor once
                 xmlout = querycondorxml()
                 dictlist = parseoutput(xmlout)
@@ -330,6 +330,10 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
 
     def _makeinfolist(self, dictlist):
+        '''
+        Makes list of CondorEC2JobInfo objects 
+        Input may be None        
+        '''
         newinfo = None
         if not dictlist:
             self.log.warning('_makeinfolist: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
@@ -517,7 +521,11 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         
         Output:
             A BatchStatusInfo object which maps attribute counts to generic APF
-            queue attribute counts. 
+            queue attribute counts.
+            
+            
+        If input is empty dictionary, output is emptry InfoContainer
+        
         '''
         self.log.debug('_map2info: Starting.')
         batchstatusinfo = InfoContainer('batch', CondorEC2BatchStatusInfo())

@@ -243,6 +243,9 @@ def parseoutput(output):
       { 'match_apf_queue' : 'BNL_ATLAS_1',
         'jobstatus' : '1' }
     ]
+    
+    If the query has no 'c' elements, returns None
+    
     '''
     log=logging.getLogger()
     log.debug('Starting.')                
@@ -251,7 +254,7 @@ def parseoutput(output):
     for c in listnodesfromxml(xmldoc, 'c') :
         node_dict = node2dict(c)
         nodelist.append(node_dict)            
-    log.info('Got list of %d entries.' %len(nodelist))
+    log.info('Got list of %d entries.' %len(nodelist))       
     return nodelist
 
 
@@ -315,7 +318,10 @@ def aggregateinfo(input):
                    'globusstatus' : { '1':'12',
                                       '2' : '46',
                                       }
-                  },             
+                  }, 
+                  
+    If input is empty list, output is empty dictionary
+                 
     '''
     log=logging.getLogger()
     log.debug('Starting with list of %d items.' % len(input))
@@ -340,8 +346,6 @@ def aggregateinfo(input):
                 continue
             attrval = item[attrkey]
             # So attrkey : attrval in joblist
-            
-            
             # Get current attrdict for this attribute from qdict
             try:
                 attrdict = qdict[attrkey]
