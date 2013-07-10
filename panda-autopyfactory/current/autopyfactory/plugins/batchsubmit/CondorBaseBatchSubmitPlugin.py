@@ -419,8 +419,9 @@ x509UserProxyVOName = "atlas"
         if self.condor_attributes:
             for attr in self.__parse_condor_attribute(self.condor_attributes):
                 if '=' in attr:
-                    attr = attr.split('=')
-                    self.JSD.add(attr[0], attr[1])
+                    key = attr.split('=')[0]
+                    value = '='.join( attr.split('=')[1:] )
+                    self.JSD.add(key, value)
                 else:
                     self.JSD.add(attr)
 
