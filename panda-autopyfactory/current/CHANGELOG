@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* using method merge() instead of deepcopy() in configloader.py
+
 * method section2dict() created in configloader. It will be usefull to generate the mappings from config files
 
 * getConfig() method in configloader.py embedded in a try - except block
