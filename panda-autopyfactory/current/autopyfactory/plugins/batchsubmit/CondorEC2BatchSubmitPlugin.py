@@ -32,7 +32,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         else:
             self.log.debug("Checking for jobs in 'retiring' state...")
             batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
-            numretiring = batchinfo.retiring
+            numretiring = batchinfo[self.apfqueue.apfqname].retiring
             numleft = num - numretiring
             if numleft > 0:
                 self.log.debug("More to submit (%d) than retiring (%d). Unretiring all and submitting %d" % (num, 
