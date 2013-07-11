@@ -121,11 +121,35 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         
         self._killretired()
         
+    def unretire(self, n ):
+        '''
+        trigger unretirement of n nodes. 
         
+        '''
+        self.log.info("Beginning to unretire %d VM jobs..." % n)
+        jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo()
+        if jobinfo:
+            thisqueuejobs = jobinfo[self.apfqueue.apfqname]
+            numtounretire = n
+            numunretired = 0
+            for job in thisqueuejobs:
+                self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)
+                stat = job.executeinfo.getStatus()
+                if stat  == 'retiring':
+                    self._unretirenode(job)
+                    numtounretire = numtounretire - 1
+                    numunretired += 1
+                    self.log.debug("numtounretire = %d" % numtounretire)
+                    if numtounretire <= 0:
+                        break
+            self.log.info("Retired %d VM jobs" % numretired)
+        else:
+            self.log.info("Some info unavailable. Do nothing.")    
+            
 
     def retire(self, n, order='oldest'):
         '''
-        trigger retirement of this many nodes, but looking at this parent APF queue's 
+        trigger retirement of this many nodes, by looking at this parent APF queue's 
         CondorCloudBatchStatus plugin. 
         
         Scan jobinfo for node start times
@@ -155,6 +179,8 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             self.log.info("Retired %d VM jobs" % numretired)
         else:
             self.log.info("Some info unavailable. Do nothing.")
+
+
     
     def _retirenode(self, jobinfo, usessh=True):
         '''
@@ -186,6 +212,38 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         else:
             # call condor_off locally
             self.log.info("Trying local retirement of node %s" % publicip)
+
+    def _unretirenode(self, jobinfo, usessh=True):
+        '''
+        Do whatever is needed to tell the node to un-retire...
+        '''
+        self.log.info("Unretiring node %s (%s)" % (jobinfo.executeinfo.hostname, 
+                                                 jobinfo.ec2instancename))
+        exeinfo = jobinfo.executeinfo
+        publicip = exeinfo.hostname
+        machine = exeinfo.machine
+        condorid = "%s.%s" % (jobinfo.clusterid, jobinfo.procid)
+        
+        if usessh:
+            self.log.info("Trying to use SSH to retire node %s" % publicip)
+            cmd='ssh root@%s "condor_on -startd"' % publicip
+            self.log.debug("unretire cmd is %s" % cmd) 
+            before = time.time()
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            out = None
+            (out, err) = p.communicate()
+            delta = time.time() - before
+            self.log.debug('It took %s seconds to issue the command' %delta)
+            self.log.info('%s seconds to issue command' %delta)
+            if p.returncode == 0:
+                self.log.debug('Leaving with OK return code.')
+            else:
+                self.log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))          
+            # invoke ssh to retire node
+        else:
+            # call condor_off locally
+            self.log.info("Trying local unretirement of node %s" % publicip)
+
 
     def cleanup(self):
         '''
