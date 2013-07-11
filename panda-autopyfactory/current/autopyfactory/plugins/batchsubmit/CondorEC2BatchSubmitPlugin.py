@@ -150,7 +150,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
                     self.log.debug("numtounretire = %d" % numtounretire)
                     if numtounretire <= 0:
                         break
-            self.log.info("Retired %d VM jobs" % numretired)
+            self.log.info("Retired %d VM jobs" % numunretired)
         else:
             self.log.info("Some info unavailable. Do nothing.")    
             
