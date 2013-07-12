@@ -42,7 +42,7 @@ class StatusOfflineSchedPlugin(SchedInterface):
             #out = self.default
             out = 0
             msg = "StatusOffline,no wms/batchinfo,ret=0"
-            self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
+            self.log.warn('calcSubmitNum: a status is not valid, Return=%s' %out)
         else:
             # Carefully get wmsinfo, activated. 
             self.siteid = self.apfqueue.siteid
@@ -62,7 +62,7 @@ class StatusOfflineSchedPlugin(SchedInterface):
 
             # choosing algorithm 
             if cloudstatus == 'offline' or sitestatus == 'offline':
-                self.log.info('calcSubmitNum: returning out = %s' %self.pilots_in_offline_mode)
+                self.log.info('calcSubmitNum: Return=%s' %self.pilots_in_offline_mode)
                 out = self.pilots_in_offline_mode
                 msg = "StatusOffline,ret=%s" %(self.pilots_in_offline_mode)
 
