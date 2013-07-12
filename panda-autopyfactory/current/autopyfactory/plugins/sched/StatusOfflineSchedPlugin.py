@@ -14,8 +14,6 @@ class StatusOfflineSchedPlugin(SchedInterface):
             self.apfqueue = apfqueue                
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
 
-            # offlinemode vars
-            self.testmode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.statusoffline.allowed', 'getboolean')
             self.pilots_in_offline_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.statusoffline.pilots', 'getint', default_value=0)
 
             self.log.info("SchedPlugin: Object initialized.")
@@ -64,10 +62,9 @@ class StatusOfflineSchedPlugin(SchedInterface):
 
             # choosing algorithm 
             if cloudstatus == 'offline' or sitestatus == 'offline':
-                if self.testmode:
-                    self.log.info('calcSubmitNum: offline is enabled, returning out = %s' %self.pilots_in_offline_mode)
-                    out = self.pilots_in_offline_mode
-                    msg = "StatusOffline,ret=%s" %(self.pilots_in_offline_mode)
+                self.log.info('calcSubmitNum: returning out = %s' %self.pilots_in_offline_mode)
+                out = self.pilots_in_offline_mode
+                msg = "StatusOffline,ret=%s" %(self.pilots_in_offline_mode)
 
         return (out, msg) 
             
