@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* created a script in misc/ to search for pilots running (in theory) for more than 8 days.
+
 * Removed allowed variables for Test and Offline Sched plugins, and from the queues.conf. If the plugin is used, we assume it is allowed. 
 
 * more robust code to deal with scenario where condor_q gives no output
