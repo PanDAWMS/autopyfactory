@@ -46,9 +46,7 @@
 # sched.maxpending.maximum
 # sched.minpending.minimum
 # sched.maxtorun.maximum
-# sched.statustest.allowed
 # sched.statustest.pilots
-# sched.statusoffline.allowed
 # sched.statusoffline.pilots
 # sched.simple.default
 # sched.simple.maxpendingpilots
@@ -373,25 +371,15 @@
 #       Configuration when schedplugin is StatusTest
 #  --------------------------------------------------------------------
 
-# sched.statustest.allowed = Boolean variable to trigger
-#               special mode of operation when the wmsqueue is in
-#               in status = test
-
 # sched.statustest.pilots = number of pilots to submit
 #               when the wmsqueue is in status = test
-#               and sched.statustest.allowed is True
 
 #  --------------------------------------------------------------------
 #       Configuration when schedplugin is StatusOffline
 #  --------------------------------------------------------------------
 
-# sched.statusoffline.allowed = Boolean variable to trigger
-#               special mode of operation when the wmsqueue or the cloud 
-#               is in status = offline
-
 # sched.statusoffline.pilots = number of pilots to submit
 #               when the wmsqueue or the cloud is in status = offline
-#               and sched.statusoffline.allowed is True
 
 #  --------------------------------------------------------------------
 #       Configuration when schedplugin is Simple
