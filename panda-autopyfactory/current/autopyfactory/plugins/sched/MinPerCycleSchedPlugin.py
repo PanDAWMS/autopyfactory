@@ -31,5 +31,5 @@ class MinPerCycleSchedPlugin(SchedInterface):
             msg = "MinPerCycle=%s,min=%s,ret=%s" %(n, self.min_pilots_per_cycle, out)
 
                
-        self.log.info('calcSubmitNum: return with out=%s' %out)
+        self.log.info('calcSubmitNum: Return=%s' %out)
         return (out, msg)
