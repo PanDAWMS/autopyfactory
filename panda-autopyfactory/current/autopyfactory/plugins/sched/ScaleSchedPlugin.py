@@ -29,6 +29,6 @@ class ScaleSchedPlugin(SchedInterface):
 
         self.log.debug('calcSubmitNum: Starting with n=%s' %n)
         out = int(n * self.factor)
-        self.log.info('calcSubmitNum: return with out=%s' %out)
+        self.log.info('calcSubmitNum: Return=%s' %out)
         msg = "Scale=%s,factor=%s,ret=%s" %(n, self.factor, out )
         return (out, msg) 
