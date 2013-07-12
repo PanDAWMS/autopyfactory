@@ -51,6 +51,6 @@ class MaxPerFactorySchedPlugin(SchedInterface):
         #    self.log.info('calcSubmitNum: calculated output was negative. Returning 0')
         #    out = 0
 
-        self.log.info('calcSubmitNum: initial n = %s total_pilots = %s max_per_factory = %s returning = %s' %(n, self.total_pilots, self.max_pilots_per_factory, out))
+        self.log.info('calcSubmitNum: initial n = %s total_pilots = %s max_per_factory = %s Return=%s' %(n, self.total_pilots, self.max_pilots_per_factory, out))
         msg = 'MaxPerFactory=%s,total=%s,max=%s,ret=%s' %(n, self.total_pilots, self.max_pilots_per_factory, out)
         return (out, msg)
