@@ -43,5 +43,5 @@ class MinPendingSchedPlugin(SchedInterface):
         #    self.log.info('calcSubmitNum: calculated output was negative. Returning 0')
         #    out = 0
             
-        self.log.info('calcSubmitNum: (min_pilots_pending=%s; pending=%s) : Return = %s' %(self.min_pilots_pending, pending_pilots, out))
+        self.log.info('calcSubmitNum: (min_pilots_pending=%s; pending=%s) : Return=%s' %(self.min_pilots_pending, pending_pilots, out))
         return (out, msg) 
