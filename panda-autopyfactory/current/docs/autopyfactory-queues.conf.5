@@ -286,37 +286,19 @@ be running at a time.
 .SH CONFIGURATION WHEN SCHEDPLUGIN IS STATUSTEST
 
 
-.B sched.statustest.allowed
-
-Boolean variable to trigger
-special mode of operation when the wmsqueue is in
-in status = test
-
-
 .B sched.statustest.pilots
 
 number of pilots to submit
 when the wmsqueue is in status = test
-and sched.statustest.allowed is True
-
 
 
 .SH CONFIGURATION WHEN SCHEDPLUGIN IS STATUSOFFLINE
-
-
-.B sched.statusoffline.allowed
-
-Boolean variable to trigger
-special mode of operation when the wmsqueue or the cloud 
-is in status = offline
 
 
 .B sched.statusoffline.pilots
 
 number of pilots to submit
 when the wmsqueue or the cloud is in status = offline
-and sched.statusoffline.allowed is True
-
 
 
 .SH CONFIGURATION WHEN SCHEDPLUGIN IS SIMPLE
