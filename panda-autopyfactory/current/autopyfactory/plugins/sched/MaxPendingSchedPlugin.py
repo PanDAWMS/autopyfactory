@@ -43,5 +43,5 @@ class MaxPendingSchedPlugin(SchedInterface):
         #    self.log.info('calcSubmitNum: calculated output was negative. Returning 0')
         #    out = 0
             
-        self.log.info('calcSubmitNum: return with out=%s' %out)
+        self.log.info('calcSubmitNum: Return=%s' %out)
         return (out, msg)
