@@ -50,6 +50,7 @@ utils_files = ['misc/apf-agis-config',
                'misc/apf-queue-status',
                'misc/apf-queue-jobs-by-status.sh',
                'misc/apf-test-pandaclient',
+               'misc/apf-check-old-pilots',
                ]
 
 # -----------------------------------------------------------
