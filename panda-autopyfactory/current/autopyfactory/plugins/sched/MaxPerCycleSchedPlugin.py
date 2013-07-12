@@ -32,5 +32,5 @@ class MaxPerCycleSchedPlugin(SchedInterface):
                                          self.max_pilots_per_cycle, 
                                          out)
                 
-        self.log.info('calcSubmitNum: input=%s ;return=%s' % (n, out))
+        self.log.info('calcSubmitNum: input=%s; Return=%s' % (n, out))
         return (out, msg)
