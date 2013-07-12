@@ -42,7 +42,7 @@ class StatusTestSchedPlugin(SchedInterface):
             #out = self.default
             out = 0
             msg = "StatusTest,no wms/batchinfo,ret=0"
-            self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
+            self.log.warn('calcSubmitNum: a status is not valid, Return=%s' %out)
         else:
             # Carefully get wmsinfo, activated. 
             self.siteid = self.apfqueue.siteid
@@ -56,7 +56,7 @@ class StatusTestSchedPlugin(SchedInterface):
             msg = None
 
             if sitestatus == 'test':
-                self.log.info('calcSubmitNum: returning out = %s' %self.pilots_in_test_mode)
+                self.log.info('calcSubmitNum: Return=%s' %self.pilots_in_test_mode)
                 out= self.pilots_in_test_mode
                 msg='StatusTest,ret=%s' %self.pilots_in_test_mode
 
