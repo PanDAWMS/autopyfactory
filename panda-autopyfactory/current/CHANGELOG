@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* Removed allowed variables for Test and Offline Sched plugins, and from the queues.conf. If the plugin is used, we assume it is allowed. 
+
 * more robust code to deal with scenario where condor_q gives no output
 
 * all JSD.add() method replaced to use the new format (2 inputs instead of 1)
