@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* log messages in sched plugins more homogeneous. Now all of them are "Return=123".
+
 * created a script in misc/ to search for pilots running (in theory) for more than 8 days.
 
 * Removed allowed variables for Test and Offline Sched plugins, and from the queues.conf. If the plugin is used, we assume it is allowed. 
