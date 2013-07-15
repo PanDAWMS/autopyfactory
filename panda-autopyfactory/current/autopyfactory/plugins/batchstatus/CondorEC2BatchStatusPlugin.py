@@ -66,20 +66,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         except AttributeError:
             self.log.warning("Got AttributeError during init. We should be running stand-alone for testing.")
 
-        # This is per-job (+startd) info
-        # Information is in the form of a dictionary of lists of EC2JobInfo objects. 
-        # the key of the dictionary is the APF_MATCH_QUEUE
-        #
-        # { <apfmatchqueue> : <CondorStartdInfo>
-        #                          [<CondorSlotInfo>,<CondorSlotInfo>}  
-        #
-        # }
-        #
         self.currentjobs = None      
-        
-        # This is job statistic info, a BatchStatusInfo object.
-        # 
-        # 
         self.currentinfo = None
 
         # ================================================================
@@ -270,14 +257,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                             pass
                             #self.log.exception("Got AttributeError during exeinfo. Could be OK.")
                             # OK, not all jobs will be ec2 jobs. 
-                
-                # Fix newinfo, converting running ec2 jobs to retiring where 
-                # appropriate
-                #for queue in newinfo:
-                #    self.log.debug("queue info in newinfo. %s" % queue)
-                #    inf = newinfo[queue]
-                #    self.log.debug("info in newinfo for queue [%s]: %s" % (queue, inf))
-                
+                               
                 # Update current info references
                 self.currentjobs = joblist
                 self.currentinfo = newinfo
@@ -306,7 +286,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         
         
     def _makeslotlist(self):
-        slotlist = None
+        slotlist = []
         xmlout = statuscondor()
         if not xmlout:
             self.log.warning('_makeslotlist: output of statuscondor() is not valid. Not parsing it. Skip to next loop.') 
@@ -450,6 +430,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         Takes a list of any object, and returns a hash of lists of those
         objects. 
         If the objects don't have the idxattribute, they are left out. 
+        If objlist is empty, return empty hash
                 
         '''
         hash = {}
@@ -526,7 +507,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         
         '''
         self.log.debug('_map2info: Starting.')
-        batchstatusinfo = InfoContainer('batch', CondorEC2BatchStatusInfo())
+        batchstatusinfo = BatchStatusInfo()
         for site in input.keys():
             qi = CondorEC2BatchStatusInfo()
             batchstatusinfo[site] = qi
@@ -767,15 +748,6 @@ class CondorExecuteInfo(object):
         s = str(self)
         return s    
     
-    
-class CondorEC2BatchStatusInfo(BatchStatusInfo):
-    
-    valid = ['pending', 'running', 'error', 'suspended', 'done', 'unknown', 'retiring', 'retired']
-    
-    def __init__(self):        
-        super(CondorEC2BatchStatusInfo, self).__init__() 
-       
-
 
 
 def test2():

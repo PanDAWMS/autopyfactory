@@ -94,163 +94,6 @@ class BaseInfo(object):
             self.__dict__[k] = v
 
 
-class BatchStatusInfo(BaseInfo):
-    '''
-    Information returned by BatchStatusPlugin getInfo() and getJobInfo() call.
-    
-    Consists 
-    -----------------------------------------------------------------------
-     Empty anonymous placeholder for queue information. 
-     
-        Primary attributes are:
-            pending            job is queued (somewhere) but not running yet.
-            running            job is currently active (run + stagein + stageout + retiring)
-            error              job has been reported to be in an error state
-            suspended          job is active, but held or suspended
-            done               job has completed
-            unknown            unknown or transient intermediate state
-            retiring
-            retired
-
-        Secondary attributes are:
-            transferring       stagein + stageout
-            stagein
-            stageout           
-            failed             (done - success)
-            success            (done - failed)
-            retired
-            retiring
-            ?
-    -----------------------------------------------------------------------
-    
-    PROPOSAL:
-    batchstatusinfo.jobstats
-         { 'apfqueue1' : { 'status1' : 2,
-                          'status2' : 6,
-                         },
-           'apfqueue2' : { 'status1' : 22,
-                          'status2' : 3,
-                         }
-         }
-         
-    batchstatusinfo.jobinfo
-        { 'apfqueue1' : [  { 'att1' : 'val1',
-                             'at2' : 'val2',
-                           },
-                           { 'att1' : 'val1',
-                             'at2' : 'val2',
-                             'ec2instanceid' : 'i-123123123',
-                           }
-                        ],
-         'apfqueue2' : [  { 'att1' : 'val1',
-                             'at2' : 'val2',
-                           },
-                           { 'att1' : 'val1',
-                             'at2' : 'val2',
-                           }
-                        ],
-        }
-    batchstatusinfo.jobinfo.byattribute("EC2InstanceID")
-         { 'iid1' : [  { 'att1' : 'val1',
-                         'at2' : 'val2',
-                         'match_apf_queue' : 'val3'
-                           },
-                           { 'att1' : 'val1',
-                             'at2' : 'val2',
-                          'match_apf_queue' : 'val3'
-                           }
-                        ],
-         'apfqueue2' : [  { 'att1' : 'val1',
-                             'at2' : 'val2',
-                             'match_apf_queue' : 'val3'
-                           },
-                           { 'att1' : 'val1',
-                             'at2' : 'val2',
-                             'match_apf_queue' : 'val3'
-                           }
-                        ],
-        }
-        
-    
-        
-    batchstatusinfo.jobinfo.getqueue()
-    batchstatusinfo.jobinfo.?
-    '''
-
-    def __init__(self):
-        self.pending = 0
-        self.running = 0
-        self.suspended = 0
-        self.retiring = 0
-        self.retired = 0
-        self.done = 0
-
-    def __str__(self):
-        s = "BatchStatusInfo: pending=%d, running=%d, suspended=%d, retiring=%d, retired=%d, done=%d" %\
-            (self.pending, 
-             self.running, 
-             self.suspended,
-             self.retiring,
-             self.retired,
-             self.done
-            )
-        return s
-
-
-class WMSQueueInfo(BaseInfo):
-    '''
-    -----------------------------------------------------------------------
-    Empty anonymous placeholder for attribute-based WMS job information.
-    One per WMS queue (for example, one per siteid in PanDA)
-
-    Attributes are:
-        - notready
-        - ready
-        - running
-        - done
-        - failed
-        - unknown
-   
-    Note: eventually, a new class (or this one modified) will have 
-          a valid list of attributes for statuses with labels (PanDA ProdSourceLabel)
-
-    -----------------------------------------------------------------------
-    '''
-
-    def __init__(self):
-        self.notready = 0
-        self.ready = 0
-        self.running = 0
-        self.done = 0
-        self.failed = 0
-        self.unknown = 0
-
-    def __str__(self):
-        s = "WMSQueueInfo: notready=%s, ready=%s, running=%s, done=%s, failed=%s, unknown=%s" %\
-            (self.notready,
-             self.ready,
-             self.running,
-             self.done,
-             self.failed,
-             self.unknown
-            )
-        return s
-
-
-class JobInfo(BaseInfo):
-    '''
-    Abstract representation of job in APF. 
-    At a minimum we need
-        jobid          Typically Condor cluster.proc ID, but could be VM instanceid
-        state          APF job state: submitted, pending, running, done, failed, held
-        inittime       datetime.datetime object
-        
-    '''
-    
-    def __init__(self, jobid, state, inittime):
-        self.jobid = jobid
-        self.state = state
-        self.inittime = inittime
 
 
 class CloudInfo(BaseInfo):
@@ -288,7 +131,139 @@ class CloudInfo(BaseInfo):
     def __str__(self):
         s = "CloudInfo" #FIXME: here we need something more
         return s
+
+
+class BatchStatusInfo(BaseInfo):
+    '''
+    Information returned by BatchStatusPlugin getInfo() calls. 
+
+    Logically consists of a dictionary of dictionaries, where the top-level keys are APF
+    queue names, and the second-level is a Python dictionary containing 
+       
+    '''
+
+    def __init__(self):
+        self.data = {}
+
+
+    def __str__(self):
+        s = "BatchStatusInfo: APF Queues: "
+        for k in self.data.keys():
+            s += " %s " % k 
+        return s
+
+    def __getitem__(self, key):
+        try:
+            item = self.data[key]
+        except KeyError:
+            return QueueInfo()
+
+    def __iter__(self):
+        return self.data.itervalues()
+
+
+
+class BatchStatusJobsInfo(BaseInfo):
+    '''
+    Information returned by BatchStatusPlugin getJobInfo() calls. 
+
+    Logically consists of a dictionary of dictionaries, where the top-level keys are APF
+    queue names, and the second-level is a Python list containing dictionaries of attributes, one per job. 
+       
+    '''
+    def __init__(self):
+        self.data = {}
+
+    def __str__(self):
+        s = "BatchStatusJobsInfo: APF Queues: "
+        for k in self.data.keys():
+            s += " %s " % k 
+        return s
+
+    def __getitem__(self, key):
+        try:
+            item = self.data[key]
+        except KeyError:
+            return JobsInfo()
+
+    def __iter__(self):
+        return self.data.itervalues()
+
+
+
+class WMSQueueInfo(BaseInfo):
+    '''
+    -----------------------------------------------------------------------
+    Empty anonymous placeholder for attribute-based WMS job information.
+    One per WMS queue (for example, one per siteid in PanDA)
+
+    Attributes are:
+        - notready
+        - ready
+        - running
+        - done
+        - failed
+        - unknown
+   
+    Note: eventually, a new class (or this one modified) will have 
+          a valid list of attributes for statuses with labels (PanDA ProdSourceLabel)
+
+    -----------------------------------------------------------------------
+    '''
+
+    def __init__(self):
+        self.log = logging.getLogger()
+
+    def __getattr__(self, name):
+        '''
+        Return 0 for non-existent attributes, otherwise behave normally.         
+        '''
+        try:
+            return self.__getattribute__(name)
+        except AttributeError:
+            return 0        
+
+    def __str__(self):
+        s = "WMSQueueInfo: notready=%s, ready=%s, running=%s, done=%s, failed=%s, unknown=%s" %\
+            (self.notready,
+             self.ready,
+             self.running,
+             self.done,
+             self.failed,
+             self.unknown
+            )
+        return s
+
+
+class JobInfo(BaseInfo):
+    '''
+    Abstract representation of job in APF. 
+    At a minimum we need
+        jobid          Typically Condor cluster.proc ID, but could be VM instanceid
+        state          APF job state: submitted, pending, running, done, failed, held
+        inittime       datetime.datetime object
         
+    '''
+    
+    def __init__(self, jobid, state, inittime):
+        self.jobid = jobid
+        self.state = state
+        self.inittime = inittime
+
+
+class JobsInfo(list):
+    '''
+    Data structure to contain info on all jobs for a single APF queue. 
+        
+    '''
+
+    def __init__(self):
+        self.log = logging.getLogger()
+        
+    def __str__(self):
+        s = "JobsInfo object containing %d jobs" % len(self)
+        
+    
 
 class SiteInfo(BaseInfo):
     '''
@@ -414,10 +389,7 @@ class InfoContainer(dict):
 class WMSStatusInfo(object):
         '''
         -----------------------------------------------------------------------
-        Class to collect info from WMS Status Plugin 
-        -----------------------------------------------------------------------
-        Public Interface:
-                valid()
+        Class to represent info from a WMS Status Plugin 
         -----------------------------------------------------------------------
         '''
         def __init__(self):
@@ -432,24 +404,6 @@ class WMSStatusInfo(object):
 
             self.log.info('Status: Object Initialized')
 
-        def valid(self):
-            '''
-            checks if all attributes have a valid value, or
-            some of them is None and therefore the collected info 
-            is not reliable
-            '''
-            self.log.debug('valid: Starting.')
-
-            out = True  # default
-            if self.cloud == None:
-                out = False 
-            if self.site == None:
-                out = False 
-            if self.jobs == None:
-                out = False 
-
-            self.log.debug('valid: Leaving with output %s.' %out)
-            return out
 
         def __len__(self):
             length = 3
@@ -460,3 +414,33 @@ class WMSStatusInfo(object):
             if self.jobs is None:
                 length -= 1
             return length
+
+
+
+class QueueInfo(object):
+    '''
+    -----------------------------------------------------------------------
+     Empty anonymous placeholder for aggregated queue information for a single APF queue.  
+     
+    '''
+    def __init__(self):
+        self.log = logging.getLogger()
+    
+
+    def __getattr__(self, name):
+        '''
+        Return 0 for non-existent attributes, otherwise behave normally.         
+        '''
+        try:
+            return self.__getattribute__(name)
+        except AttributeError:
+            return 0
+
+            
+    def __str__(self):
+        s = "QueueInfo: pending=%d, running=%d, suspended=%d" % (self.pending, 
+                                                                 self.running, 
+                                                                 self.suspended)
+        return s
+
+  

@@ -110,7 +110,7 @@ def checkCondor():
 
 def statuscondor():
     '''
-    Return human readable info about startds. 
+    Return info about job startd slots. 
     '''
     log = logging.getLogger()
     cmd = 'condor_status -xml'
@@ -131,7 +131,7 @@ def statuscondor():
 
 def statuscondormaster():
     '''
-    Return human readable info about startds. 
+    Return human readable info about masters. 
     '''
     log = logging.getLogger()
     cmd = 'condor_status -master -xml'
@@ -244,7 +244,7 @@ def parseoutput(output):
         'jobstatus' : '1' }
     ]
     
-    If the query has no 'c' elements, returns None
+    If the query has no 'c' elements, returns empty list
     
     '''
     log=logging.getLogger()

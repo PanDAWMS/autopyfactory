@@ -12,6 +12,7 @@ from autopyfactory.factory import Singleton
 from autopyfactory.info import WMSStatusInfo
 from autopyfactory.info import InfoContainer
 from autopyfactory.info import WMSQueueInfo
+from autopyfactory.info import WMSStatusInfo
 from autopyfactory.info import SiteInfo
 from autopyfactory.info import CloudInfo
 import autopyfactory.utils as utils
@@ -276,55 +277,6 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
                     ci.fill(attrdict)
             return cloudsinfo
                         
-    ###   def _updatejobs(self):
-    ###       '''
-    ###       
-    ###       Client.getJobStatisticsPerSite(
-    ###                   countryGroup='',
-    ###                   workingGroup='', 
-    ###                   jobType='test,prod,managed,user,panda,ddm,rc_test'
-    ###                   )  ->
-    ###       
-    ###       {   None: {   'activated': 0,
-    ###                     'assigned': 0,
-    ###                     'cancelled': 11632,
-    ###                     'defined': 2196,
-    ###                     'failed': 0,
-    ###                     'finished': 0,
-    ###                     'running': 0},
-    ###          
-    ###          'AGLT2': { 'activated': 495,
-    ###                     'assigned': 170,
-    ###                     'cancelled': 1,
-    ###                     'failed': 15,
-    ###                     'finished': 114,
-    ###                     'holding': 9,
-    ###                     'running': 341,
-    ###                     'starting': 1,
-    ###                     'transferring': 16},
-    ###       }
-    ###       '''
-    ###       
-    ###       
-    ###       before = time.time()
-    ###       # get Jobs Specs
-    ###       #self.jobs_err, self.all_jobs_config = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='') 
-    ###       jobs_err, all_jobs_config = Client.getJobStatisticsPerSite(
-    ###                   countryGroup='',
-    ###                   workingGroup='', 
-    ###                   jobType='test,prod,managed,user,panda,ddm,rc_test'
-    ###                   ) 
-    ###                                                                                  
-    ###       delta = time.time() - before
-    ###       self.log.info('_updateJobs: %s seconds to perform query' %delta)
-    ###       out = None
-    ###       ###if not jobs_err:
-    ###       ###    out = all_jobs_config
-    ###       ###else:
-    ###       ###    self.log.error('Client.getJobStatisticsPerSite() failed.')
-    ###       ###return out
-    ###       
-
 
     def _updatesites(self):
         '''
