@@ -88,7 +88,11 @@ class BaseInfo(object):
             if k not in usedk:
                 usedk.append(k)
                 if not reset:
-                    v = self.__dict__[k] + v
+                    try:
+                        v = self.__dict__[k] + v
+                    except KeyError:
+                        pass
+                    self.__dict__[k] = v
             else:
                 try:
                     v = self.__dict__[k] + v
