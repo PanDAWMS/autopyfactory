@@ -8,8 +8,8 @@ import traceback
 from urllib import urlopen
 
 from autopyfactory.interfaces import WMSStatusInterface
-from autopyfactory.factory import WMSStatusInfo
 from autopyfactory.factory import Singleton 
+from autopyfactory.info import WMSStatusInfo
 from autopyfactory.info import InfoContainer
 from autopyfactory.info import WMSQueueInfo
 from autopyfactory.info import SiteInfo
