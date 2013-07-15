@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* fake info classes imports removed, and importing from the right place (info.py instead of factory.py)
+
 * log messages in sched plugins more homogeneous. Now all of them are "Return=123".
 
 * created a script in misc/ to search for pilots running (in theory) for more than 8 days.
