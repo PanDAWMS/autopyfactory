@@ -30,13 +30,10 @@ class MinPendingSchedPlugin(SchedInterface):
         out = n
         msg = None
 
-        if self.batchinfo is None:
-            self.log.warning("self.batchinfo is None!")
-        else:
-            pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending
-            if self.min_pilots_pending:
-                out = max(n, self.min_pilots_pending - pending_pilots)     
-                msg = "MinPending=%s,min=%s,pend=%s,ret=%s" %(n, self.min_pilots_pending, pending_pilots, out)
+        pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending
+        if self.min_pilots_pending:
+            out = max(n, self.min_pilots_pending - pending_pilots)     
+            msg = "MinPending=%s,min=%s,pend=%s,ret=%s" %(n, self.min_pilots_pending, pending_pilots, out)
         
         # Catch all to prevent negative numbers
         #if out < 0:

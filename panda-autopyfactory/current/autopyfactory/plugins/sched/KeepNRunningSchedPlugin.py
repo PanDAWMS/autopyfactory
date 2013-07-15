@@ -59,32 +59,9 @@ class KeepNRunningSchedPlugin(SchedInterface):
         running_pilots = 0
         retiring_pilots = 0
 
-        try:
-            pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
-        except KeyError:
-            # This is OK--it just means no jobs. 
-            pass
-        except AttributeError:
-            # This is OK--it just means no jobs. 
-            pass
-
-        try:        
-            running_pilots = self.batchinfo[self.apfqueue.apfqname].running # using the new info objects
-        except KeyError:
-            # This is OK--it just means no jobs. 
-            pass
-        except AttributeError:
-            # This is OK--it just means no jobs. 
-            pass
-
-        try:        
-            retiring_pilots = self.batchinfo[self.apfqueue.apfqname].retiring # using the new info objects
-        except KeyError:
-            # This is OK--it just means no jobs. 
-            pass
-        except AttributeError:
-            # This is OK--it just means no jobs. 
-            pass
+        pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
+        running_pilots = self.batchinfo[self.apfqueue.apfqname].running  # using the new info object
+        retiring_pilots = self.batchinfo[self.apfqueue.apfqname].retiring # using the new info objects
 
         # 
         # Output is simply keep_running, minus potentially or currently running, while ignoring retiring jobs

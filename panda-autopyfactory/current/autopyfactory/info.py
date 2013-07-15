@@ -133,7 +133,7 @@ class CloudInfo(BaseInfo):
         return s
 
 
-class BatchStatusInfo(BaseInfo):
+class BatchStatusInfo(object):
     '''
     Information returned by BatchStatusPlugin getInfo() calls. 
 
@@ -163,7 +163,7 @@ class BatchStatusInfo(BaseInfo):
 
 
 
-class BatchStatusJobsInfo(BaseInfo):
+class BatchStatusJobsInfo(object):
     '''
     Information returned by BatchStatusPlugin getJobInfo() calls. 
 
@@ -388,9 +388,13 @@ class InfoContainer(dict):
 
 class WMSStatusInfo(object):
         '''
-        -----------------------------------------------------------------------
-        Class to represent info from a WMS Status Plugin 
-        -----------------------------------------------------------------------
+        Class to represent info from a WMS Status Plugin. Returned by getInfo() call
+        on WMSStatusPlugin
+        
+        .site
+
+        
+
         '''
         def __init__(self):
 
