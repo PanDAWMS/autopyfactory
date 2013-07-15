@@ -11,7 +11,6 @@ import traceback
 import xml.dom.minidom
 
 from autopyfactory.interfaces import BatchStatusInterface
-from autopyfactory.factory import BatchStatusInfo
 from autopyfactory.factory import Singleton 
 
 from autopyfactory.info import InfoContainer
