@@ -108,24 +108,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
 
         self.log.debug('CondorEC2BatchSubmitPlugin.addJSD: Leaving.')
 
-    def xxxsubmit(self, n):
-        '''
-        
-        1) unretire r retiring/retired nodes if r < n
-        2) if n > r, submit n-r new jobs
-        3) terminate nodes that are in 'retired' state. 
-        '''
-        statusinfo = self.apfqueue.batchstatus_plugin.getInfo()
-        jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo()
-        
-        if n>0:
-            pass
-            
-        elif n < 0:
-            self.retire(abs(n))
-        
-        self._killretired()
-        
+       
     def unretire(self, n ):
         '''
         trigger unretirement of n nodes. 
