@@ -90,7 +90,11 @@ class BaseInfo(object):
                 if not reset:
                     v = self.__dict__[k] + v
             else:
-                v = self.__dict__[k] + v
+                try:
+                    v = self.__dict__[k] + v
+                except KeyError:
+                    # missing keys no longer handled. 
+                    pass
             self.__dict__[k] = v
 
 

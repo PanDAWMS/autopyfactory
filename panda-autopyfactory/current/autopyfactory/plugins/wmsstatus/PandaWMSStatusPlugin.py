@@ -523,8 +523,6 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         for wmssite in all_jobs_config.keys():
                 qi = WMSQueueInfo()
                 wmsqueueinfo[wmssite] = qi
-                #attrdict = all_jobs_config[wmssite]
-                #qi.fill(attrdict, mappings=self.jobsstatisticspersite2info)
                 for label in all_jobs_config[wmssite].keys():
                     attrdict = all_jobs_config[wmssite][label] 
                     qi.fill(attrdict, mappings=self.jobsstatisticspersite2info, reset=False)
