@@ -458,6 +458,7 @@ class QueueInfo(object):
             return 0
 
     def __setattr__(self, name, value):
+        self.log.debug("setting attribute %s to %s" % (name, value))
         intval = int(value)
         object.__setattr__(self, name, intval)
 
