@@ -40,7 +40,7 @@ class ExecSubmitPlugin(BatchSubmitInterface):
             self.log.error("BatchSubmitPlugin object initialization failed. Raising exception")
             raise ex
    
-    def submitPilots(self, siteid, nbpilots, fcl, qcl):
+    def submitPilots(self, wmsqueue, nbpilots, fcl, qcl):
         '''
         queue is the queue
         nsub is the number of pilots to be submitted 
@@ -48,9 +48,9 @@ class ExecSubmitPlugin(BatchSubmitInterface):
         qcl is the QueueConfigLoader object
         '''
 
-        self.log.debug('submitPilots: Starting with inputs siteid=%s nbpilots=%s fcl=%s qcl=%s' %(siteid, nbpilots, fcl, qcl)) 
+        self.log.debug('submitPilots: Starting with inputs wmsqueue=%s nbpilots=%s fcl=%s qcl=%s' %(wmsqueue, nbpilots, fcl, qcl)) 
 
-        self.siteid = siteid 
+        self.wmsqueue = wmsqueue 
         self.nbpilots = nbpilots
         self.fcl = fcl
         self.qcl = qcl
@@ -88,7 +88,7 @@ class ExecSubmitPlugin(BatchSubmitInterface):
                 shutil.copy(self.executable, self.logDir) 
             except OSError, (errno, errMsg):
                 self.log.error('__writeJSDFile: Failed to create directory %s (error %d): %s', self.logDir, errno, errMsg)
-                self.log.error('__writeJSDFile: Cannot submit pilots for %s', self.siteid)
+                self.log.error('__writeJSDFile: Cannot submit pilots for %s', self.wmsqueue)
                 return
 
         self.log.debug('__prepareExecutable: Leaving.')
@@ -110,9 +110,9 @@ class ExecSubmitPlugin(BatchSubmitInterface):
 
         (exitStatus, output) = commands.getstatusoutput(cmd)
         if exitStatus != 0:
-            self.log.error('local execution for %s failed (status %d): %s', self.siteid, exitStatus, output)
+            self.log.error('local execution for %s failed (status %d): %s', self.wmsqueue, exitStatus, output)
         else:
-            self.log.info('local execution for %s succeeded', self.siteid)
+            self.log.info('local execution for %s succeeded', self.wmsqueue)
         st, out = exitStatus, output
 
 
