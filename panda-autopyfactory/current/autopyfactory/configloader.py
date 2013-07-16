@@ -206,12 +206,6 @@ class Config(SafeConfigParser, object):
         has_option = self.has_option(section, option)
 
         if not has_option:
-            ###if mandatory:
-            ###    self.log.error('generic_get: option %s is not present in section %s. Will raise an exception.' %(option, section))
-            ###    raise ConfigFailureMandatoryAttr(option, section)
-            ###else:
-            ###    self.log.debug('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
-            ###    return default_value
 
             if not default_value:
                 self.log.debug('generic_get: option %s is not present in section %s. Return NotImplementedAttr' %(option, section)
@@ -219,7 +213,6 @@ class Config(SafeConfigParser, object):
             else:
                 self.log.debug('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
                 return default_value
-                
 
         else:
             get_f = getattr(self, get_function)
