@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* generic_get() simplified
+
 * InfoContainer simplified. Only one argument to __init__(), and it is a class instead of an object.
 
 * fake info classes imports removed, and importing from the right place (info.py instead of factory.py)
