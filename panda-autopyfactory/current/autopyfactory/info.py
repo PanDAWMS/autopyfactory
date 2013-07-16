@@ -169,6 +169,8 @@ class BatchStatusInfo(object):
     def __iter__(self):
         return self.data.itervalues()
 
+    def keys(self):
+        return self.data.keys()
 
 
 class BatchStatusJobsInfo(object):
