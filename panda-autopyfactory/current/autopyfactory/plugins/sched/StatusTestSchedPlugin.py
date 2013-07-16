@@ -45,11 +45,11 @@ class StatusTestSchedPlugin(SchedInterface):
             self.log.warn('calcSubmitNum: a status is not valid, Return=%s' %out)
         else:
             # Carefully get wmsinfo, activated. 
-            self.siteid = self.apfqueue.siteid
-            self.log.debug("Siteid is %s" % self.siteid)
+            self.wmsqueue = self.apfqueue.wmsqueue
+            self.log.debug("Siteid is %s" % self.wmsqueue)
 
             siteinfo = self.wmsinfo.site
-            sitestatus = siteinfo[self.siteid].status
+            sitestatus = siteinfo[self.wmsqueue].status
             self.log.debug('calcSubmitNum: site status is %s' %sitestatus)
 
             out = n
