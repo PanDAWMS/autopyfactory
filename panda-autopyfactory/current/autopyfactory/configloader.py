@@ -189,7 +189,7 @@ class Config(SafeConfigParser, object):
                     pass
 
         
-    def generic_get(self, section, option, get_function='get', mandatory=False, default_value=None):      
+    def generic_get(self, section, option, get_function='get', default_value=None):      
         '''
         generic get() method for Config objects.
         Inputs options are:
@@ -197,7 +197,6 @@ class Config(SafeConfigParser, object):
            section          is the  SafeConfigParser section
            option           is the option in the SafeConfigParser section
            get_function     is the string representing the actual SafeConfigParser method:  "get", "getint", "getfloat", "getboolean"
-           mandatory        says if the option is supposed to be there
            default_value    is the default value to be returned with variable is not mandatory and is not in the config file
 
         example of usage:
@@ -207,12 +206,20 @@ class Config(SafeConfigParser, object):
         has_option = self.has_option(section, option)
 
         if not has_option:
-            if mandatory:
-                self.log.error('generic_get: option %s is not present in section %s. Will raise an exception.' %(option, section))
-                raise ConfigFailureMandatoryAttr(option, section)
+            ###if mandatory:
+            ###    self.log.error('generic_get: option %s is not present in section %s. Will raise an exception.' %(option, section))
+            ###    raise ConfigFailureMandatoryAttr(option, section)
+            ###else:
+            ###    self.log.debug('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
+            ###    return default_value
+
+            if not default_value:
+                self.log.debug('generic_get: option %s is not present in section %s. Return NotImplementedAttr' %(option, section)
+                return NotImplementedAttr
             else:
                 self.log.debug('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
                 return default_value
+                
 
         else:
             get_f = getattr(self, get_function)
