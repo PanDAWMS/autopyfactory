@@ -457,6 +457,9 @@ class QueueInfo(object):
         except AttributeError:
             return 0
 
+    def __setattr__(self, name, value):
+        self.__dict__(name, int(value))
+
             
     def __str__(self):
         s = "QueueInfo: pending=%d, running=%d, suspended=%d" % (self.pending, 

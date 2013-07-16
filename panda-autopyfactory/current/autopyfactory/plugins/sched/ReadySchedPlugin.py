@@ -68,17 +68,12 @@ class ReadySchedPlugin(SchedInterface):
 
 
         self.log.debug("batchinfo object is %s" % self.batchinfo)        
-        qi = self.batchinfo[self.apfqueue.apfqname]
-        self.log.debug("qi object for %s is %s" % (self.apfqueue.apfqname, qi))
-        pending_pilots = qi.pending  # using the new info objects
+        self.log.debug("qi object for %s is %s" % (self.apfqueue.apfqname, self.batchinfo[self.apfqueue.apfqname]))
+        pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending
+        running_pilots = self.batchinfo[self.apfqueue.apfqname].running
 
-
-        try:        
-            running_pilots = self.batchinfo[self.apfqueue.apfqname].running # using the new info objects
-        except KeyError:
-            # This is OK--it just means no jobs. 
-            pass
-
+        self.log.debug("pending = %d running = %d offset = %d" % (pending_pilots, running_pilots, self.offset))
+        
         out = max(0, ( activated_jobs - self.offset)  - pending_pilots )
         self.log.info('_calc() (input=%s; activated=%s; offset=%s pending=%s; running=%s;) : Return=%s' %(input,
                                                                                          activated_jobs,
