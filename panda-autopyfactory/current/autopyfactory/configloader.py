@@ -220,6 +220,23 @@ class Config(SafeConfigParser, object):
             self.log.debug('generic_get: option %s in section %s has value %s' %(option, section, value))
             return value
 
+    def validate(*lists):
+        '''
+        method to validate that a series of mandatory variables have a real value.
+        *list is a list of lists. 
+        At least one of the lists must have all its items valid. 
+        '''
+
+        for l in lists:
+            for item in l:
+                if item is NotImplementedAttr:
+                    break
+            else:
+                return True
+
+        return False
+
+
     def getSection(self, section):
         '''
         creates and returns a new Config object, 
