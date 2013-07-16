@@ -62,19 +62,16 @@ class ReadySchedPlugin(SchedInterface):
         jobsinfo = self.wmsinfo.jobs
         self.log.debug("jobsinfo class is %s" % jobsinfo.__class__ )
 
-        try:
-            sitedict = jobsinfo[self.key]
-            self.log.debug("sitedict class is %s" % sitedict.__class__ )
-            activated_jobs = sitedict.ready
-        except KeyError:
-            # This is OK--it just means no jobs in any state at the key. 
-            self.log.error("key: %s not present in jobs info from WMS" % self.key)
+        sitedict = jobsinfo[self.key]
+        self.log.debug("sitedict class is %s" % sitedict.__class__ )
+        activated_jobs = sitedict.ready
 
-        try:
-            pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
-        except KeyError:
-            # This is OK--it just means no jobs. 
-            pass
+
+        self.log.debug("batchinfo object is %s" % self.batchinfo)        
+        qi = self.batchinfo[self.apfqueue.apfqname]
+        self.log.debug("qi object for %s is %s" % (self.apfqueue.apfqname, qi))
+        pending_pilots = qi.pending  # using the new info objects
+
 
         try:        
             running_pilots = self.batchinfo[self.apfqueue.apfqname].running # using the new info objects
