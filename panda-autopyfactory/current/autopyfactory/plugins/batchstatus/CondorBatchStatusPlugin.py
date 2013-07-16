@@ -119,7 +119,8 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
             self.log.debug('getInfo: Info too old. Leaving and returning None.')
             return None
-        else:                    
+        else:
+            self.log.debug('getInfo: Current info is %s' % self.currentinfo)                    
             self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentinfo))
             return self.currentinfo
 
