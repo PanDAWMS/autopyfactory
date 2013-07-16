@@ -303,7 +303,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
 
         self.log.debug('_map2info: Starting.')
-        batchstatusinfo = InfoContainer('batch', BatchStatusInfo())
+        batchstatusinfo = InfoContainer(BatchStatusInfo)
         for site in input.keys():
             qi = BatchStatusInfo()
             batchstatusinfo[site] = qi

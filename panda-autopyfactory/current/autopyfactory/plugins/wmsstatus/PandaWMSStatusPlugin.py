@@ -269,7 +269,7 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         if clouds_err:
             self.log.error('Client.getCloudSpecs() failed')
         else:
-            cloudsinfo = InfoContainer('clouds', CloudInfo())
+            cloudsinfo = InfoContainer(CloudInfo)
             for cloud in all_clouds_config.keys():
                     ci = CloudInfo()
                     cloudsinfo[cloud] = ci
@@ -425,7 +425,7 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         if sites_err:
             self.log.error('Client.getSiteSpecs() failed.')
         else:
-            sitesinfo = InfoContainer('sites', SiteInfo())
+            sitesinfo = InfoContainer(SiteInfo)
             for site in all_sites_config.keys():
                     si = SiteInfo()
                     sitesinfo[site] = si
@@ -519,7 +519,7 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
                                            'failed'      : 'failed',
                                            'cancelled'   : 'failed'}
 
-        wmsqueueinfo = InfoContainer('jobs', WMSQueueInfo())
+        wmsqueueinfo = InfoContainer(WMSQueueInfo)
         for wmssite in all_jobs_config.keys():
                 qi = WMSQueueInfo()
                 wmsqueueinfo[wmssite] = qi

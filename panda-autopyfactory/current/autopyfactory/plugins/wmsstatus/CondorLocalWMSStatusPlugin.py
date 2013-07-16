@@ -210,8 +210,8 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             # Info object
             #   The cloud and site parts are just empty (legacy code)
             newinfo = WMSStatusInfo()
-            newinfo.cloud = InfoContainer('clouds', CloudInfo())
-            newinfo.site = InfoContainer('sites', SiteInfo())
+            newinfo.cloud = InfoContainer(CloudInfo)
+            newinfo.site = InfoContainer(SiteInfo)
             newinfo.jobs = newinfojobs
 
             self.log.info("Replacing old info with newly generated info.")
@@ -290,7 +290,7 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             queue attribute counts. 
         '''
         self.log.debug('_map2info: Starting.')
-        wmsstatusinfo = InfoContainer('jobs', WMSQueueInfo())
+        wmsstatusinfo = InfoContainer(WMSQueueInfo)
         for site in input.keys():
                 qi = WMSQueueInfo()
                 wmsstatusinfo[site] = qi
