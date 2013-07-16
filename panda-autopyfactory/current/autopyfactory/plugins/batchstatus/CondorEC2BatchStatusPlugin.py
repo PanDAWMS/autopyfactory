@@ -20,6 +20,7 @@ from autopyfactory.interfaces import BatchStatusInterface
 from autopyfactory.factory import Singleton, CondorSingleton
 from autopyfactory.info import InfoContainer
 from autopyfactory.info import BatchStatusInfo
+from autopyfactory.info import QueueInfo
 
 from autopyfactory.condor import checkCondor, querycondorxml, statuscondor, statuscondormaster
 from autopyfactory.condor import parseoutput, xml2nodelist, node2dict 
@@ -509,7 +510,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         self.log.debug('_map2info: Starting.')
         batchstatusinfo = BatchStatusInfo()
         for site in input.keys():
-            qi = CondorEC2BatchStatusInfo()
+            qi = QueueInfo()
             batchstatusinfo[site] = qi
             attrdict = input[site]
             
