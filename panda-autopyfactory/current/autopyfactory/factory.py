@@ -770,7 +770,7 @@ class APFQueue(threading.Thread):
     
     def __init__(self, apfqname, factory):
         '''
-        siteid is the name of the section in the queueconfig, 
+        apfqname is the name of the section in the queueconfig, 
         i.e. the queue name, 
         factory is the Factory object who created the queue 
         '''
