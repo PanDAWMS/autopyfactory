@@ -3,6 +3,8 @@ ChangeLog
 
 * siteid removed from several places and replaced by wmsqueue.
 
+* method validate() added to configloader.py
+
 * generic_get() simplified
 
 * InfoContainer simplified. Only one argument to __init__(), and it is a class instead of an object.
