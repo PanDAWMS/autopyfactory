@@ -168,7 +168,7 @@ class BatchStatusInfo(object):
         return self.data.keys()
 
     
-    def len(self):
+    def __len__(self):
         return len(self.data)
 
     def __str__(self):
