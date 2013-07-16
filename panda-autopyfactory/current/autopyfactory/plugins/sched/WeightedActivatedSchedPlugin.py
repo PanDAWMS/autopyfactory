@@ -50,8 +50,8 @@ class WeightedActivatedSchedPlugin(SchedInterface):
             self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
         else:
             # Carefully get wmsinfo, activated. 
-            self.siteid = self.apfqueue.siteid
-            self.log.info("calcSubmitNum: siteid is %s" % self.siteid)
+            self.wmsqueue = self.apfqueue.wmsqueue
+            self.log.info("calcSubmitNum: wmsqueue is %s" % self.wmsqueue)
 
             (out, msg) = self._calc()
         return (out, msg)
@@ -66,12 +66,12 @@ class WeightedActivatedSchedPlugin(SchedInterface):
         self.log.debug("_calc: jobsinfo class is %s" % jobsinfo.__class__ )
 
         try:
-            sitedict = jobsinfo[self.siteid]
+            sitedict = jobsinfo[self.wmsqueue]
             self.log.debug("_calc: sitedict class is %s" % sitedict.__class__ )
             activated_jobs = sitedict.ready
         except KeyError:
-            # This is OK--it just means no jobs in any state at the siteid. 
-            self.log.error("_calc: siteid %s not present in jobs info from WMS" % self.siteid)
+            # This is OK--it just means no jobs in any state at the wmsqueue. 
+            self.log.error("_calc: wmsqueue %s not present in jobs info from WMS" % self.wmsqueue)
             activated_jobs = 0
         try:
             pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
