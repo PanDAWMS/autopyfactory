@@ -154,12 +154,6 @@ class BatchStatusInfo(object):
         self.data = {}
 
 
-    def __str__(self):
-        s = "BatchStatusInfo: APF Queues: "
-        for k in self.data.keys():
-            s += " %s " % k 
-        return s
-
     def __getitem__(self, key):
         try:
             item = self.data[key]
@@ -169,11 +163,23 @@ class BatchStatusInfo(object):
     def __iter__(self):
         return self.data.itervalues()
 
+
     def keys(self):
         return self.data.keys()
+
     
     def len(self):
         return len(self.data)
+
+    def __str__(self):
+        s = "BatchStatusInfo:"
+        if len(self.data) > 0:
+            for k in self.data.keys():
+                s += " %s " % k
+        else:
+            s += " Empty " 
+        return s
+
 
 
 class BatchStatusJobsInfo(object):
