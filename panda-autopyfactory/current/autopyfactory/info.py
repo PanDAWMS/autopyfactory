@@ -439,9 +439,10 @@ class WMSStatusInfo(object):
 
 class QueueInfo(object):
     '''
-    -----------------------------------------------------------------------
-     Empty anonymous placeholder for aggregated queue information for a single APF queue.  
-     
+    Empty anonymous placeholder for aggregated queue information for a single APF queue.  
+
+    Returns 0 as value for any un-initialized attribute. 
+    
     '''
     def __init__(self):
         self.log = logging.getLogger()
