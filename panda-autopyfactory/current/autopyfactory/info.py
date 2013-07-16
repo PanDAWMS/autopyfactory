@@ -458,7 +458,8 @@ class QueueInfo(object):
             return 0
 
     def __setattr__(self, name, value):
-        self.__dict__(name, int(value))
+        intval = int(value)
+        object.__setattr__(self, name, intval)
 
             
     def __str__(self):
