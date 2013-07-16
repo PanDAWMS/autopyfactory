@@ -45,7 +45,10 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.panda.sleep')
 
             # current WMSStatusIfno object
-            self.currentinfo = None
+            self.currentcloudinfo = None
+            self.currentjobsinfo = None
+            self.currentsiteinfo = None
+
 
             threading.Thread.__init__(self) # init the thread
             self.stopevent = threading.Event()
@@ -139,10 +142,12 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         
         if infotype in ['jobs','cloud','site']:
             if delta < maxtime:
-                out = getattr(self.currentinfo, infotype)
+                attrname = 'current%sinfo' % infotype
+                out = getattr(attrname)
             else:
                 self.log.info("_getMaxtimeinfo: Info too old. Delta is %d maxtime is %d" % (delta,maxtime))
         self.log.debug('_getmaxtimeinfo: Leaving.')        
+        return out
 
     def _update(self):
         '''
@@ -155,12 +160,20 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         newinfo = WMSStatusInfo()
         
         try:
-            newinfo.cloud = self._updateclouds()
-            newinfo.site = self._updatesites()
-            newinfo.jobs = self._updatejobs()
-            newinfo.lasttime = int(time.time())
+            newcloudinfo = self._updateclouds()
+            newcloudinfo.lasttime = int(time.time())
+
+            newsiteinfo = self._updatesites()
+            newsiteinfo.lasttime = int(time.time())
+
+            newjobsinfo = self._updatejobs()
+            newjobsinfo.lasttime = int(time.time())
+            
             self.log.info("Replacing old info with newly generated info.")
-            self.currentinfo = newinfo
+            self.currentjobsinfo = newjobsinfo
+            self.currentcloudinfo = newjobsinfo
+            self.currentsiteinfo = newjobsinfo
+        
         except Exception, e:
             self.log.error("_update: Exception: %s" % str(e))
             self.log.debug("Exception: %s" % traceback.format_exc()) 
@@ -269,7 +282,7 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         if clouds_err:
             self.log.error('Client.getCloudSpecs() failed')
         else:
-            cloudsinfo = InfoContainer(CloudInfo)
+            cloudsinfo = WMSStatusInfo()
             for cloud in all_clouds_config.keys():
                     ci = CloudInfo()
                     cloudsinfo[cloud] = ci
@@ -425,7 +438,7 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         if sites_err:
             self.log.error('Client.getSiteSpecs() failed.')
         else:
-            sitesinfo = InfoContainer(SiteInfo)
+            sitesinfo = WMSStatusInfo()
             for site in all_sites_config.keys():
                     si = SiteInfo()
                     sitesinfo[site] = si
@@ -519,14 +532,14 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
                                            'failed'      : 'failed',
                                            'cancelled'   : 'failed'}
 
-        wmsqueueinfo = InfoContainer(WMSQueueInfo)
+        wmsstatusinfo = WMSStatusInfo()
         for wmssite in all_jobs_config.keys():
                 qi = WMSQueueInfo()
                 wmsqueueinfo[wmssite] = qi
                 for label in all_jobs_config[wmssite].keys():
                     attrdict = all_jobs_config[wmssite][label] 
                     qi.fill(attrdict, mappings=self.jobsstatisticspersite2info, reset=False)
-        return wmsqueueinfo
+        return wmsstatusinfo
 
     def join(self,timeout=None):
         '''
@@ -556,5 +569,5 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             return None    
         else:
             self.log.debug('getInfo: Leaving. Returning info with %d items' %len(self.currentinfo))
-            return self.currentinfo
+            return self.currentjobsinfo
             

@@ -260,6 +260,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                             # OK, not all jobs will be ec2 jobs. 
                                
                 # Update current info references
+                # curr
                 self.currentjobs = joblist
                 self.currentinfo = newinfo
             

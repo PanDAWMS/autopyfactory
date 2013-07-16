@@ -34,19 +34,20 @@ class ReadySchedPlugin(SchedInterface):
         self.wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
 
-        if self.wmsinfo is None:
-            self.log.warning("wmsinfo is None!")
+        if self.wmsinfo is None or self.batchinfo is None:
+            self.log.warning("Missing info. wmsinfo is %s batchinfo is %s" % (self.wmsinfo, self.batchinfo))
             out = 0 
-            msg = 'Invalid wmsinfo' 
-        elif self.batchinfo is None:
-            self.log.warning("self.batchinfo is None!")
-            out = 0
-            msg = 'Invalid batchinfo' 
+            msg = 'Invalid wmsinfo or batchinfo' 
         else:
-            self.key = self.apfqueue.wmsqueue
-            self.log.info("Key is %s" % self.key)
-
-            (out, msg) = self._calc(input)
+            self.wmsqname = self.apfqueue.wmsqueue
+            jobsdict = wmsinfo[self.wmsqname]
+            self.log.info("WMS queue is %s" % self.wmsqname)
+            if jobsdict is None:
+                self.log.warning("Missing info. Jobsdict is None.")
+                out = 0
+                msg = 'Empty jobs dictionary wmsqueue %s' % self.wmsqname)
+            else:
+                (out, msg) = self._calc(input)
         return (out, msg)
 
     def _calc(self, input):
@@ -59,13 +60,8 @@ class ReadySchedPlugin(SchedInterface):
         pending_pilots = 0
         running_pilots = 0
 
-        jobsinfo = self.wmsinfo.jobs
-        self.log.debug("jobsinfo class is %s" % jobsinfo.__class__ )
-
-        sitedict = jobsinfo[self.key]
         self.log.debug("sitedict class is %s" % sitedict.__class__ )
-        activated_jobs = sitedict.ready
-
+        activated_jobs = self.wmsinfo[self.wmsqname].ready
 
         self.log.debug("batchinfo object is %s" % self.batchinfo)        
         self.log.debug("qi object for %s is %s" % (self.apfqueue.apfqname, self.batchinfo[self.apfqueue.apfqname]))

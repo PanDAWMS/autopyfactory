@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-#
 
 import datetime
 import logging
@@ -16,30 +15,72 @@ from pprint import pprint
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.logserver import LogServer
 
-
 major, minor, release, st, num = sys.version_info
 
-        
+'''
+General info scheme:
 
-class BaseInfo(object):
+    BatchStatusPlugin
+       getInfo   ->    BatchStatusInfo[apfqname] -> BatchQueueInfo(QueueInfo)
+                                                       .state1  -> 0
+                                                       .state2  -> 123
+       getJobInfo ->   BatchStatusInfo[apfqname] -> 
+             
+       
+    WMSStatusPlugin
+       getInfo   ->     WMSStatusInfo[wmsqname]  ->  JobsInfo(QueueInfo)
+                                                           .state1 -> 0
+                                                           .state2 -> 123
+                          
+       getSiteInfo  ->  WMSStatusInfo[sitename]  ->  SiteInfo(QueueInfo)
+       getCloudInfo ->  WMSStatusInfo[cloudname] ->  CloudInfo(QueueInfo)
+      
+             
+Inheritance:
+
+    BaseAPFInfo           BaseQueueInfo
+        |                       |
+        V                       V
+    BatchStatusInfo       BatchQueueInfo
+    WMSStatusInfo         WMSQueueInfo
+  
+'''
+    
+
+
+class BaseAPFInfo(dict):
     '''
-    -----------------------------------------------------------------------
-    Interface for all Info classes.
-    The key thing is the class attribute valid. Each class inherited from
-    InfoBase must give a list of values to valid. This list of values
-    will be the list of attributes that that class will handle. 
-    -----------------------------------------------------------------------
+    Base for top-level Info classes with second-level Info objects indexed 
+    by APF/WMS queue names.
+        
+    '''
+    
+    def __getitem__(self, k):
+        '''
+        Just ensure that if info for a queue is requested return None rather
+        than trigger a KeyError exception. 
+    
+        '''
+        if k in self.keys():
+            return dict.__getitem__(self, k)
+        else:
+            return None
+  
+  
+  
+  
+
+class BaseQueueInfo(object):
+    '''
+    Base for aggregate (attribute-oriented) Info classes which are used per APF/WMS queue.
     Public Interface:
-            reset()
-            fill(dictionary, mappings=None, reset=True)
-    -----------------------------------------------------------------------
+    
+            fill(dictionary, mappings=None, reset=True)                
     '''
-    def __init__(self):
-        pass
 
     def fill(self, dictionary, mappings=None, reset=True):
         '''
-        method to fill object attributes with values comming from a dictionary.
+        method to fill object attributes with values from a dictionary.
 
         Each key of the dictionary is supposed 
         to be one attribute in the object.
@@ -101,116 +142,65 @@ class BaseInfo(object):
                     pass
             self.__dict__[k] = v
 
+    def __getattr__(self, name):
+        '''
+        Return 0 for non-existent attributes, otherwise behave normally.         
+        '''
+        try:
+            return self.__getattribute__(name)
+        except AttributeError:
+            return 0
+
+
+    def __setattr__(self, name, value):
+        '''
+        Makes sure that all attribute values are integers, since this object is
+        intended only for aggregate information 
+        '''
+        self.log.debug("setting attribute %s to %s" % (name, value))
+        intval = int(value)
+        object.__setattr__(self, name, intval)
 
 
 
-class CloudInfo(BaseInfo):
-    '''
-    -----------------------------------------------------------------------
-    Empty anonymous placeholder for attribute-based cloud information.
-    One per cloud. 
-
-    Note: most probably not all attributes are really needed. 
-    Once we decided which ones should stay we can clean up the valid list.
-    -----------------------------------------------------------------------
-    '''
-
-    def __init__(self):
-        self.tier1 = ""
-        self.status = ""
-        self.fasttrack = ""
-        self.transtimehi = ""
-        self.name = ""
-        self.weight = ""
-        self.transtimelo = ""
-        self.dest = ""
-        self.countries = ""
-        self.relocation = ""
-        self.sites = ""
-        self.server = ""
-        self.waittime = ""
-        self.source = ""
-        self.tier1SE = ""
-        self.pilotowners = ""
-        self.mcshare = ""
-        self.validation = ""
-        self.nprestage = ""
-
-    def __str__(self):
-        s = "CloudInfo" #FIXME: here we need something more
-        return s
-
-
-class BatchStatusInfo(object):
+class BatchStatusInfo(BaseAPFInfo):
     '''
     Information returned by BatchStatusPlugin getInfo() calls. 
-
-    Logically consists of a dictionary of dictionaries, where the top-level keys are APF
-    queue names, and the second-level is a Python dictionary containing 
-       
+    Contains objects indexed by APF/WMS queue name. 
     '''
 
-    def __init__(self):
-        self.data = {}
 
-
-    def __getitem__(self, key):
-        try:
-            item = self.data[key]
-        except KeyError:
-            return QueueInfo()
-
-    def __iter__(self):
-        return self.data.itervalues()
-
-
-    def keys(self):
-        return self.data.keys()
-
+class WMSStatusInfo(BaseAPFInfo):
+    '''
+    Information returned by WMSStatusPlugin getInfo() calls. 
+    Contains objects indexed by APF/WMS queue name.    
     
-    def __len__(self):
-        return len(self.data)
-
-    def __str__(self):
-        s = "BatchStatusInfo:"
-        if len(self.data) > 0:
-            for k in self.data.keys():
-                s += " %s " % k
-        else:
-            s += " Empty " 
-        return s
+    '''
 
 
 
-class BatchStatusJobsInfo(object):
+class BatchStatusJobsInfo(BaseAPFInfo):
     '''
     Information returned by BatchStatusPlugin getJobInfo() calls. 
 
-    Logically consists of a dictionary of dictionaries, where the top-level keys are APF
+    Logically consists of a dictionary where the top-level keys are APF
     queue names, and the second-level is a Python list containing dictionaries of attributes, one per job. 
        
     '''
-    def __init__(self):
-        self.data = {}
 
-    def __str__(self):
-        s = "BatchStatusJobsInfo: APF Queues: "
-        for k in self.data.keys():
-            s += " %s " % k 
-        return s
+class CloudStatusInfo(BaseAPFInfo):
+    '''
+    Information returned by WMSStatusPlugin getCloudInfo() calls. 
+    Contains objects indexed by APF/WMS queue name.  
+    '''
 
-    def __getitem__(self, key):
-        try:
-            item = self.data[key]
-        except KeyError:
-            return JobsInfo()
-
-    def __iter__(self):
-        return self.data.itervalues()
+class CloudInfo(BaseQueueInfo):
+    '''
+    Attribute-based class containing WMS info about (WMS) clouds. 
+    '''
 
 
-
-class WMSQueueInfo(BaseInfo):
+class WMSQueueInfo(BaseQueueInfo):
     '''
     -----------------------------------------------------------------------
     Empty anonymous placeholder for attribute-based WMS job information.
@@ -254,7 +244,7 @@ class WMSQueueInfo(BaseInfo):
         return s
 
 
-class JobInfo(BaseInfo):
+class JobInfo(object):
     '''
     Abstract representation of job in APF. 
     At a minimum we need
@@ -270,203 +260,37 @@ class JobInfo(BaseInfo):
         self.inittime = inittime
 
 
-class JobsInfo(list):
+class JobsInfo(BaseQueueInfo):
     '''
-    Data structure to contain info on all jobs for a single APF queue. 
-        
+    Placeholder for attribute-based job information
+    
     '''
 
-    def __init__(self):
-        self.log = logging.getLogger()
-        
-    def __str__(self):
-        s = "JobsInfo object containing %d jobs" % len(self)
-        
+
+class SiteStatusInfo(BaseAPFInfo):
+    '''
+    Information returned by WMSStatusPlugin getSiteInfo() calls. 
+    Contains objects indexed by APF/WMS queue name.  
+    '''    
     
 
-class SiteInfo(BaseInfo):
+class SiteInfo(BaseQueueInfo):
     '''
-    -----------------------------------------------------------------------
-    Empty anonymous placeholder for attribute-based site information.
+    Placeholder for attribute-based site information.
     One per site. 
-
-    Note: most probably not all attributes are really needed. 
-    Once we decided which ones should stay we can clean up the valid list.
-    -----------------------------------------------------------------------
     '''
 
 
-    def __init__(self):
-        self.comment = ""
-        self.gatekeeper = ""
-        self.cloudlist = ""
-        self.defaulttoken = ""
-        self.priorityoffset = ""
-        self.cloud = ""
-        self.accesscontrol = ""
-        self.retry = ""
-        self.maxinputsize = ""
-        self.space = ""
-        self.sitename = ""
-        self.allowdirectaccess = ""
-        self.seprodpath = ""
-        self.ddm = ""
-        self.memory = ""
-        self.setokens = ""
-        self.type = ""
-        self.lfcregister = ""
-        self.status = ""  # only thing we care about...
-        self.lfchost = ""
-        self.releases = ""
-        self.statusmodtime = ""
-        self.maxtime = ""
-        self.nickname = ""
-        self.dq2url = ""
-        self.copysetup = ""
-        self.cachedse = ""
-        self.cmtconfig = ""
-        self.allowedgroups = ""
-        self.queue = ""
-        self.localqueue = ""
-        self.glexec = ""
-        self.validatedreleases = ""
-        self.se = ""
-
-    def __str__(self):
-        s = "SiteInfo" #FIXME: here we need something more
-        return s
-  
-
-class InfoContainer(dict):
-    '''
-    -----------------------------------------------------------------------
-    Class to collect info from different Status Plugins
-    
-    In a nutshell, the class is a dictionary of some Info type objects
-    -----------------------------------------------------------------------
-    Public Interface:
-            valid()
-    -----------------------------------------------------------------------
-    '''
-    def __init__(self, cls):
-        '''
-        Info for each info type is retrieved, set, and adjusted via the corresponding label
-        For example, for a container of BatchStatusInfo objects:
-
-            numrunning = info['BNL_ATLAS_1'].running
-            info['BNL_ITB_1'].pending = 17
-            info['BNL_ITB_1'].finished += 1
-
-        For a container of WMSQueueInfo objects:
-
-            jobswaiting = info['BNL_ATLAS_1'].activated
-            info['BNL_ITB_1'].running = 17
-            info['BNL_ITB_1'].done += 1
-            
-
-        cls is the class that will be used to create an object to
-        return something when someone asks for a key that
-        does not exist in the dictionary.
-        It is expected to be an empty instance
-        from whichever class the dictionary is storing objects.
-        For example, BatchStatusInfo() or WMSQueueInfo(), etc.
-
-        Any alteration access updates the info.mtime attribute. 
-        '''
-        
-        self.log = logging.getLogger('main.batchstatus')
-        self.log.debug('Status: Initializing object...')
-        self.stored_cls = cls
-        self.lasttime = None
-        self.log.info('Status: Object Initialized')
-
-    def __str__(self):
-        s = "InfoContainer containing %d objects of type %s" % (self.__len__(), self.stored_cls.__class__.__name__)
-        return s
-
-    def __getitem__(self, k):
-        '''
-        overrides the default __getitem__ 
-        to check if the key is one of the 
-        queues stored in the dictionary. 
-        If it is a new key, 
-        then it returns self.default
-
-        It is a way to force using 
-
-            dict.get(k, [default])
-        '''
-        if k in self.keys():
-            return dict.__getitem__(self, k)
-        else:
-            return self.stored_cls()
-
-
-class WMSStatusInfo(object):
-        '''
-        Class to represent info from a WMS Status Plugin. Returned by getInfo() call
-        on WMSStatusPlugin
-        
-        .site
-
-        
-
-        '''
-        def __init__(self):
-
-            self.log = logging.getLogger('main.wmsstatus')
-            self.log.debug('Status: Initializing object...')
-
-            self.cloud = None
-            self.site = None
-            self.jobs = None
-            self.lasttime = None
-
-            self.log.info('Status: Object Initialized')
-
-
-        def __len__(self):
-            length = 3
-            if self.cloud is None:
-                length -= 1
-            if self.site is None:
-                length -= 1
-            if self.jobs is None:
-                length -= 1
-            return length
-
-
-
-class QueueInfo(object):
+class QueueInfo(BaseQueueInfo):
     '''
     Empty anonymous placeholder for aggregated queue information for a single APF queue.  
 
     Returns 0 as value for any un-initialized attribute. 
     
     '''
-    def __init__(self):
-        self.log = logging.getLogger()
-    
-
-    def __getattr__(self, name):
-        '''
-        Return 0 for non-existent attributes, otherwise behave normally.         
-        '''
-        try:
-            return self.__getattribute__(name)
-        except AttributeError:
-            return 0
-
-    def __setattr__(self, name, value):
-        self.log.debug("setting attribute %s to %s" % (name, value))
-        intval = int(value)
-        object.__setattr__(self, name, intval)
-
-            
     def __str__(self):
         s = "QueueInfo: pending=%d, running=%d, suspended=%d" % (self.pending, 
                                                                  self.running, 
                                                                  self.suspended)
         return s
-
   
