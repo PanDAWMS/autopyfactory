@@ -17,10 +17,9 @@ from datetime import datetime
 from pprint import pprint
 from autopyfactory.interfaces import BatchStatusInterface
 from autopyfactory.factory import Singleton, CondorSingleton
-from autopyfactory.info import InfoContainer
 from autopyfactory.info import BatchStatusInfo
+from autopyfactory.info import QueueInfo
 
-#from autopyfactory.condor import checkCondor, querycondor, querycondorxml, querycondorlib  
 from autopyfactory.condor import checkCondor, querycondor, querycondorxml
 from autopyfactory.condor import parseoutput, aggregateinfo
   
@@ -303,9 +302,9 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
 
         self.log.debug('_map2info: Starting.')
-        batchstatusinfo = InfoContainer(BatchStatusInfo)
+        batchstatusinfo = BatchStatusInfo()
         for site in input.keys():
-            qi = BatchStatusInfo()
+            qi = QueueInfo()
             batchstatusinfo[site] = qi
             attrdict = input[site]
             
