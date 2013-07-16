@@ -794,7 +794,6 @@ class APFQueue(threading.Thread):
         self.log.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(apfqname).getContent())
    
         try: 
-            self.siteid = self.qcl.generic_get(apfqname, 'wmsqueue')
             self.wmsqueue = self.qcl.generic_get(apfqname, 'wmsqueue')
             self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue')
             self.cloud = self.qcl.generic_get(apfqname, 'cloud')
