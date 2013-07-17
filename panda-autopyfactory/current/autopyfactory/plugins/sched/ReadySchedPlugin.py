@@ -56,7 +56,7 @@ class ReadySchedPlugin(SchedInterface):
         pending_pilots = self.queueinfo.pending
         running_pilots = self.queueinfo.running
 
-        self.log.debug("pending = %d running = %d offset = %d" % (pending_pilots, running_pilots, self.offset))
+        self.log.debug("pending = %s running = %s offset = %s" % (pending_pilots, running_pilots, self.offset))
         
         out = max(0, ( activated_jobs - self.offset)  - pending_pilots )
         self.log.info('_calc() (input=%s; activated=%s; offset=%s pending=%s; running=%s;) : Return=%s' %(input,
