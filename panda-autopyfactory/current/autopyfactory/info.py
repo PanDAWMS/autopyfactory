@@ -156,7 +156,6 @@ class BaseQueueInfo(object):
         Makes sure that all attribute values are integers, since this object is
         intended only for aggregate information 
         '''
-        self.log.debug("setting attribute %s to %s" % (name, value))
         intval = int(value)
         object.__setattr__(self, name, intval)
 
