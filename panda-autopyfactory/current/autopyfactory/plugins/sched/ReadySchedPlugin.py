@@ -24,6 +24,7 @@ class ReadySchedPlugin(SchedInterface):
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
+
     def calcSubmitNum(self, n=0):
         """ 
         It just returns nb of Activated Jobs - nb of Pending Pilots
@@ -45,7 +46,7 @@ class ReadySchedPlugin(SchedInterface):
             if jobsdict is None:
                 self.log.warning("Missing info. Jobsdict is None.")
                 out = 0
-                msg = 'Empty jobs dictionary wmsqueue %s' % self.wmsqname)
+                msg = 'Empty jobs dictionary wmsqueue %s' % self.wmsqname
             else:
                 (out, msg) = self._calc(input)
         return (out, msg)
