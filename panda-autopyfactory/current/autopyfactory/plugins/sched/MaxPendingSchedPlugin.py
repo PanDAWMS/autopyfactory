@@ -35,7 +35,7 @@ class MaxPendingSchedPlugin(SchedInterface):
             pending_pilots = queueinfo.pending
             if self.max_pilots_pending:
                 out = min(n, self.max_pilots_pending - pending_pilots)     
-                msg = "MaxPending:pend=%s,max=%s,ret=%s" %(n, pending_pilots, self.max_pilots_pending, out)
+                msg = "MaxPending:in=%s,pend=%s,max=%s,ret=%s" %(n, pending_pilots, self.max_pilots_pending, out)
             
         self.log.info('calcSubmitNum: Return=%s' %out)
         return (out, msg)
