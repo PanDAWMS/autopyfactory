@@ -227,7 +227,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.log.warning('_update: condor daemon is not running. Doing nothing')
         else:
             try:
-                strout = querycondor()
+                strout = querycondor(self.queryargs)
                 if not strout:
                     self.log.warning('_update: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
                 else:
