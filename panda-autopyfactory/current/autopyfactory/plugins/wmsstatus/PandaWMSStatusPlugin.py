@@ -45,7 +45,7 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
             # current WMSStatusIfno object
             self.currentcloudinfo = None
-            self.currentjobsinfo = None
+            self.currentjobinfo = None
             self.currentsiteinfo = None
 
 
@@ -65,41 +65,68 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         Client.useWebCache()
 
 
-    def getCloudInfo(self, maxtime=0):
+    def getInfo(self, queue=None, maxtime=0):
+        '''
+        Returns current WMSStatusInfo object
+
+        Optionally, and maxtime parameter can be passed.
+        In that case, if the info recorded is older than that maxtime,
+        None is returned, 
+        
+        '''
+        self.log.debug('get: Starting with inputs maxtime=%s' % maxtime)
+        if self.currentjobinfo is None:
+            self.log.debug('getInfo: Info not initialized. Return None.')
+            return None    
+        elif maxtime > 0 and (int(time.time()) - self.currentjobinfo.lasttime) > maxtime:
+            self.log.debug('getInfo: Info is too old. Maxtime = %d. Returning None' % maxtime)
+            return None    
+        else:
+            if queue:
+                return self.currentjobinfo[queue]
+            else:
+                self.log.debug('getInfo: Leaving. Returning info with %d items' %len(self.currentjobinfo))
+                return self.currentjobinfo
+
+
+    def getCloudInfo(self, cloud=None, maxtime=0):
         '''
         selects the entry corresponding to cloud
         from the info retrieved from the PanDA server (as a dict)
         using method userinterface.Client.getCloudSpecs()
 
         '''
-        self.log.debug('getCloudInfo: Starting maxtime = %s' %maxtime)
-        out = self.currentinfo.cloud
-        self.log.info('getCloudInfo: Cloud has %d entries' % len(out))
-        return out 
+        if self.currentcloudinfo is None:
+            self.log.debug('getCloudInfo: Info not initialized. Return None.')
+            return None    
+        elif maxtime > 0 and (int(time.time()) - self.currentcloudinfo.lasttime) > maxtime:
+            self.log.debug('getCloudInfo: Info is too old. Maxtime = %d. Returning None' % maxtime)
+            return None    
+        else:
+            if cloud:
+                return self.currentcloudinfo[queue]
+            else:
+                self.log.debug('getInfo: Leaving. Returning info with %d items' %len(self.currentcloudinfo))
+                return self.currentcloudinfo
             
-    def getSiteInfo(self, maxtime=0):
+    def getSiteInfo(self, site=None, maxtime=0):
         '''
         selects the entry corresponding to sites
         from the info retrieved from the PanDA server (as a dict)
         using method userinterface.Client.getSiteSpecs(siteType='all')
         '''
-        self.log.debug('getSiteInfo: Starting. maxtime = %s' %maxtime)
-
-        out = self.currentinfo.site
-
-        self.log.info('getSiteInfo: Siteinfo has %d entries' %len(out))
-        return out 
-
-    def getJobsInfo(self, maxtime=0):
-         '''
-         selects the entry corresponding to jobs 
-         from the info retrieved from the PanDA server (as a dict)
-         using method userinterface.Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
-         '''
-         self.log.debug('getJobsInfo: Starting. maxtime = %s' %maxtime)
-         out = self._getmaxtimeinfo('jobs', maxtime)
-         self.log.info('getJobsInfo: Jobs has %d entries.' %len(out))
-         return out
+        if self.currentsiteinfo is None:
+            self.log.debug('getSiteInfo: Info not initialized. Return None.')
+            return None    
+        elif maxtime > 0 and (int(time.time()) - self.currentsiteinfo.lasttime) > maxtime:
+            self.log.debug('getCloudInfo: Info is too old. Maxtime = %d. Returning None' % maxtime)
+            return None    
+        else:
+            if site:
+                return self.currentcloudinfo[queue]
+            else:
+                self.log.debug('getInfo: Leaving. Returning info with %d items' %len(self.currentsiteinfo))
+                return self.currentsiteinfo
 
     def start(self):
         '''
@@ -169,7 +196,7 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             newjobsinfo.lasttime = int(time.time())
             
             self.log.info("Replacing old info with newly generated info.")
-            self.currentjobsinfo = newjobsinfo
+            self.currentjobinfo = newjobsinfo
             self.currentcloudinfo = newjobsinfo
             self.currentsiteinfo = newjobsinfo
         
@@ -273,11 +300,6 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         self.log.debug('_updateclouds: it took %s seconds to perform the query' %delta)
         self.log.info('_updateclouds: %s seconds to perform query' %delta)
         out = None
-        #if not clouds_err:
-        #    out = all_clouds_config 
-        #else:
-        #    self.log.error('Client.getCloudSpecs() failed')
-        #return out
         if clouds_err:
             self.log.error('Client.getCloudSpecs() failed')
         else:
@@ -429,11 +451,6 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         self.log.debug('_updateSites: it took %s seconds to perform the query' %delta)
         self.log.info('_updateSites: %s seconds to perform query' %delta)
         out = None
-        #if not sites_err:
-        #    out = all_sites_config 
-        #else:
-        #    self.log.error('Client.getSiteSpecs() failed.')
-        #return out     
         if sites_err:
             self.log.error('Client.getSiteSpecs() failed.')
         else:
@@ -550,23 +567,5 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         self.log.debug('join: Leaving.')
 
 
-    def getInfo(self, maxtime=0):
-        '''
-        Returns current WMSStatusInfo object
 
-        Optionally, and maxtime parameter can be passed.
-        In that case, if the info recorded is older than that maxtime,
-        None is returned, 
-        
-        '''
-        self.log.debug('get: Starting with inputs maxtime=%s' % maxtime)
-        if self.currentinfo is None:
-            self.log.debug('getInfo: Info not initialized. Return None.')
-            return None    
-        elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
-            self.log.debug('getInfo: Info is too old. Maxtime = %d. Returning None' % maxtime)
-            return None    
-        else:
-            self.log.debug('getInfo: Leaving. Returning info with %d items' %len(self.currentinfo))
-            return self.currentjobsinfo
             
