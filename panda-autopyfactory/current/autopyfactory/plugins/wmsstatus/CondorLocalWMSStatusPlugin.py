@@ -306,7 +306,6 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 qi = WMSQueueInfo()
                 wmsstatusinfo[site] = qi
                 attrdict = input[site]
-               
                 valdict = attrdict['jobstatus']
                 qi.fill(valdict, mappings=self.jobstatus2info)
                         
