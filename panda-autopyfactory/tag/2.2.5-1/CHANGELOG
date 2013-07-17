@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* bug in condor.py not using queryargs fixed
+
 * print env also after switching ID
 
 * bug fixed in StatusOffline and StatusTest sched plugins
