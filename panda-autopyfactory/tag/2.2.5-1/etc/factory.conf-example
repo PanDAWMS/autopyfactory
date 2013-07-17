@@ -132,7 +132,7 @@
 factoryAdminEmail = neo@matrix.net
 factoryId = BNL-gridui11-jhover
 factoryUser = apf
-versionTag = 2.1.0
+versionTag = 2.2.5
 enablequeues = True
 
 queueConf = file:///etc/apf/queues.conf
