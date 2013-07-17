@@ -209,7 +209,8 @@ class Config(SafeConfigParser, object):
 
             if not default_value:
                 self.log.debug('generic_get: option %s is not present in section %s. Return NotImplementedAttr' %(option, section))
-                return NotImplementedAttr
+                ###return NotImplementedAttr  ## not yet...
+                return None
             else:
                 self.log.debug('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
                 return default_value
