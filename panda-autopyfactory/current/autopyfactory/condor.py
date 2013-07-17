@@ -5,7 +5,6 @@
    to native Python data structures. 
 
 '''
-
 import os
 import sys
 import signal

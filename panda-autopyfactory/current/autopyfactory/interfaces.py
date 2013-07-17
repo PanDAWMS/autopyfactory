@@ -30,15 +30,19 @@ class BatchStatusInterface(object):
      
     -----------------------------------------------------------------------
     '''
-    def getInfo(self, maxtime=0):
+    def getInfo(self, queue=None, maxtime=0):
         '''
-        Returns aggregate statistics about jobs in batch system. Indexed by apfqeueue. 
+        Returns aggregate statistics about jobs in batch system. Indexed by queue.
+        If queue is provided, returns just the secondary object containing aggregate info
+        about that queue.  
         '''
         raise NotImplementedError
 
-    def getJobInfo(self, maxtime=0):
+    def getJobInfo(self, queue=None, maxtime=0):
         '''
-        Returns per-job info about jobs in batch system. 
+        Returns per-job info about jobs in batch system. Indexed by queue. 
+        If queue is provided, returns just the secondary object containing aggregate info
+        about that queue.  
         '''
         raise NotImplementedError
     
@@ -55,7 +59,7 @@ class WMSStatusInterface(object):
             getJobsInfo()
     -----------------------------------------------------------------------
     '''
-    def getCloudInfo(self, cloud, maxtime=0):
+    def getCloudInfo(self, cloud=None, maxtime=0):
         '''
         Method to get and updated picture of the cloud status. 
         It returns a dictionary to be inserted directly into an
@@ -63,7 +67,7 @@ class WMSStatusInterface(object):
         '''
         raise NotImplementedError
 
-    def getSiteInfo(self, site, maxtime=0):
+    def getSiteInfo(self, site=None, maxtime=0):
         '''
         Method to get and updated picture of the site status. 
         It returns a dictionary to be inserted directly into an
@@ -71,7 +75,7 @@ class WMSStatusInterface(object):
         '''
         raise NotImplementedError
 
-    def getInfo(self, site, maxtime=0):
+    def getInfo(self, queue=None, maxtime=0):
         '''
         Method to get and updated picture of the jobs status. 
         It returns a dictionary to be inserted directly into an

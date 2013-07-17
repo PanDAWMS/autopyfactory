@@ -28,7 +28,7 @@ from autopyfactory.condor import parseoutput, aggregateinfo
 class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
     '''
     -----------------------------------------------------------------------
-    This class is expected to have separate instances for each PandaQueue object. 
+    This class is expected to have separate instances for each object. 
     The first time it is instantiated, 
     -----------------------------------------------------------------------
     Public Interface:
@@ -54,7 +54,11 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         #self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
         #self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
         self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.condor.sleep')
-        self.currentinfo = None              
+
+        self.currentcloudinfo = None
+        self.currentjobinfo = None
+        self.currentsiteinfo = None
+              
 
         # ================================================================
         #                     M A P P I N G S 
@@ -74,12 +78,8 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         checkCondor()
         self.log.info('WMSStatusPlugin: Object initialized.')
 
-        #except Exception, ex:
-        #    self.log.error("WMSStatusPlugin object initialization failed. Raising exception")
-        #    raise ex
 
-
-    def getInfo(self, maxtime=0):
+    def getInfo(self, queue=None, maxtime=0):
         '''
         Returns a BatchStatusInfo object populated by the analysis 
         over the output of a condor_q command
@@ -91,41 +91,53 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         '''           
         self.log.debug('getInfo: Starting with maxtime=%s' % maxtime)
         
-        if self.currentinfo is None:
+        if self.currentjobinfo is None:
             self.log.debug('getInfo: Not initialized yet. Returning None.')
             return None
-        elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
+        elif maxtime > 0 and (int(time.time()) - self.currentjobinfo.lasttime) > maxtime:
             self.log.debug('getInfo: Info too old. Leaving and returning None.')
             return None
-        else:                    
-            self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentinfo))
-            return self.currentinfo
+        else:
+            if queue:
+                return self.currentjobinfo[queue]                    
+            else:
+                self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentjobinfo))
+                return self.currentjobinfo
 
-    # temporary solution
-    def getCloudInfo(self, maxtime=0):
-    
-        self.log.debug('getCloudInfo: Starting maxtime = %s' %maxtime)
-        out = self.currentinfo.cloud
-        self.log.info('getCloudInfo: Cloud has %d entries' % len(out))
-        return out
+    def getCloudInfo(self, cloud=None, maxtime=0):
+        self.log.debug('getCloudInfo: Starting with maxtime=%s' % maxtime)
+        
+        if self.currentcloudinfo is None:
+            self.log.debug('getCloudInfo: Not initialized yet. Returning None.')
+            return None
+        elif maxtime > 0 and (int(time.time()) - self.currentcloudinfo.lasttime) > maxtime:
+            self.log.debug('getCloudInfo: Info too old. Leaving and returning None.')
+            return None
+        else:
+            if cloud:
+                return self.currentcloudinfo[queue]                    
+            else:
+                self.log.debug('getCloudInfo: Leaving and returning info of %d entries.' % len(self.currentcloudinfo))
+                return self.currentcloudinfo
 
-    # temporary solution
-    def getSiteInfo(self, maxtime=0):
-    
-        self.log.debug('getSiteInfo: Starting. maxtime = %s' %maxtime)
-        out = self.currentinfo.site
-        self.log.info('getSiteInfo: Siteinfo has %d entries' %len(out))
-        return out
 
-    # temporary solution
-    def getJobsInfo(self, maxtime=0):
-    
-        self.log.debug('getSiteInfo: Starting. maxtime = %s' %maxtime)
-        out = self.currentinfo.jobs
-        self.log.info('getSiteInfo: Siteinfo has %d entries' %len(out))
-        return out
-    
+    def getSiteInfo(self, site=None, maxtime=0):
+        self.log.debug('getSiteInfo: Starting with maxtime=%s' % maxtime)
+        
+        if self.currentsiteinfo is None:
+            self.log.debug('getSiteInfo: Not initialized yet. Returning None.')
+            return None
+        elif maxtime > 0 and (int(time.time()) - self.currentsiteinfo.lasttime) > maxtime:
+            self.log.debug('getSiteInfo: Info too old. Leaving and returning None.')
+            return None
+        else:
+            if site:
+                return self.currentsiteinfo[queue]                    
+            else:
+                self.log.debug('getSiteInfo: Leaving and returning info of %d entries.' % len(self.currentsiteinfo))
+                return self.currentsiteinfo
 
+  
     def start(self):
         '''
         We override method start() to prevent the thread

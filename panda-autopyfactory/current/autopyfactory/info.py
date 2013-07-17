@@ -65,9 +65,8 @@ class BaseAPFInfo(dict):
             return dict.__getitem__(self, k)
         else:
             return None
-  
-  
-  
+
+   
   
 
 class BaseQueueInfo(object):

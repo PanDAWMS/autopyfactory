@@ -101,7 +101,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
 
 
-    def getInfo(self, maxtime=0):
+    def getInfo(self, queue=None, maxtime=0):
         '''
         Returns a  object populated by the analysis 
         over the output of a condor_q command
@@ -120,9 +120,12 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             self.log.debug('getInfo: Info too old. Leaving and returning None.')
             return None
         else:
-            self.log.debug('getInfo: Current info is %s' % self.currentinfo)                    
-            self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentinfo))
-            return self.currentinfo
+            if queue:
+                self.log.debug('getInfo: Current info is %s' % self.currentinfo)                    
+                self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentinfo))
+                return self.currentinfo[queue]
+            else:
+                return self.currentinfo
 
 
     def start(self):

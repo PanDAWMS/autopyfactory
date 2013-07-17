@@ -93,7 +93,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         #    raise ex
 
 
-    def getInfo(self, maxtime=0):
+    def getInfo(self, queue=None, maxtime=0):
         '''
         Returns a BatchStatusInfo object populated by the analysis 
         over the output of a condor_q command
@@ -111,11 +111,14 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
             self.log.debug('getInfo: Info too old. Leaving and returning None.')
             return None
-        else:                    
-            self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentinfo))
-            return self.currentinfo
+        else:
+            if queue:
+                return self.currentinfo[queue]
+            else:                    
+                self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentinfo))
+                return self.currentinfo
 
-    def getJobInfo(self, maxtime=0):
+    def getJobInfo(self, queue=None, maxtime=0):
         '''
         Returns a list of CondorEC2JobInfo objects which include startd information. 
 
@@ -129,12 +132,15 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         if self.currentjobs is None:
             self.log.debug('getInfo: Not initialized yet. Returning None.')
             return None
-        #elif maxtime > 0 and (int(time.time()) - self.currentjobs.lasttime) > maxtime:
-        #    self.log.debug('getInfo: Info too old. Leaving and returning None.')
-        #    return None
-        else:                    
-            self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentjobs))
-            return self.currentjobs
+        elif maxtime > 0 and (int(time.time()) - self.currentjobs.lasttime) > maxtime:
+            self.log.debug('getInfo: Info too old. Leaving and returning None.')
+            return None
+        else:
+            if queue:
+                return self.currentjobs[queue]                    
+            else:
+                self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentjobs))
+                return self.currentjobs
 
 
     def start(self):
