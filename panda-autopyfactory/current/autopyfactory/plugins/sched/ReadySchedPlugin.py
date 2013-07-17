@@ -32,6 +32,8 @@ class ReadySchedPlugin(SchedInterface):
         out = n
         self.log.debug('calcSubmitNum: Starting.')
 
+        self.log.debug('wmsstatus plugin is %s with __dict__ %s' % ( self.apfqueue.wmsstatus_plugin, self.apfqueue.wmsstatus_plugin.__dict__ ))
+
         self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue = self.apfqueue.wmsqueue, 
                                                                    maxtime = self.apfqueue.wmsstatusmaxtime)
 
