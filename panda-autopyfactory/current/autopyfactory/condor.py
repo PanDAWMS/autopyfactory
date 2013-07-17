@@ -22,10 +22,6 @@ import autopyfactory.utils as utils
 from datetime import datetime
 from pprint import pprint
 
-
-
-
-
 def querycondorlib():
     '''
     queries condor to get a list of ClassAds objects
@@ -83,7 +79,6 @@ def classad2dict(outlist):
         for k in job:
             job_dict[k] = str( job[k] )
         out.append( job_dict )
-
     return out 
 
 
@@ -108,12 +103,14 @@ def checkCondor():
     
 
 
-def statuscondor():
+def statuscondor(queryargs = None):
     '''
     Return info about job startd slots. 
     '''
     log = logging.getLogger()
-    cmd = 'condor_status -xml'
+    cmd = 'condor_status -xml '
+    if queryargs:
+        cmd += queryargs
     log.debug('Querying cmd = %s' %cmd.replace('\n','\\n'))
     before = time.time()
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -129,12 +126,15 @@ def statuscondor():
         out = None
     return out
 
-def statuscondormaster():
+def statuscondormaster(queryargs = None):
     '''
-    Return human readable info about masters. 
+    Return info about masters. 
     '''
     log = logging.getLogger()
     cmd = 'condor_status -master -xml'
+    if queryargs:
+        cmd += queryargs
+    
     log.debug('Querying cmd = %s' %cmd.replace('\n','\\n'))
     before = time.time()
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -156,6 +156,7 @@ def querycondor(queryargs=None):
     for further processing.
 
     queryargs are potential extra query arguments from queues.conf    
+    queryargs are possible extra query arguments from queues.conf 
     '''
 
     log = logging.getLogger()
@@ -163,9 +164,10 @@ def querycondor(queryargs=None):
     querycmd = "condor_q "
     log.debug('_querycondor: using executable condor_q in PATH=%s' %utils.which('condor_q'))
 
+
     # adding extra query args from queues.conf
     if queryargs:
-        querycmd += queryargs
+        querycmd += queryargs 
 
     querycmd += " -format ' MATCH_APF_QUEUE=%s' match_apf_queue"
     querycmd += " -format ' JobStatus=%d\n' jobstatus"
@@ -190,12 +192,17 @@ def querycondor(queryargs=None):
     return out
 
 
-def querycondorxml():
+
+def querycondorxml(queryargs=None):
     '''
     Return human readable info about startds. 
     '''
     log = logging.getLogger()
-    cmd = 'condor_q -xml'
+    cmd = 'condor_q -xml '
+        # adding extra query args from queues.conf
+    if queryargs:
+        querycmd += queryargs 
+       
     log.debug('Querying cmd = %s' %cmd.replace('\n','\\n'))
     before = time.time()
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
