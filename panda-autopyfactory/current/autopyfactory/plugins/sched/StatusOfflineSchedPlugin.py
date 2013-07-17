@@ -27,7 +27,7 @@ class StatusOfflineSchedPlugin(SchedInterface):
     def calcSubmitNum(self, n=0):
         
         self.log.debug('calcSubmitNum: Starting.')
-        self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue=self.apfqueue.mwsqueue, 
+        self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue=self.apfqueue.wmsqueue, 
                                                                    maxtime = self.apfqueue.wmsstatusmaxtime)
         
         self.siteinfo = self.apfqueue.wmsstatus_plugin.getSiteInfo(site=self.apfqueue.wmsqueue,
