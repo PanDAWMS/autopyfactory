@@ -19,7 +19,7 @@ class WeightedActivatedSchedPlugin(SchedInterface):
             self.pending_w = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.weightedactivated.pending', 'getfloat', default_value=1.0)
             self.log.debug("SchedPlugin: weight values are activated_w=%s, pending_w=%s." %(self.activated_w, self.pending_w))
 
-            self.log.info("SchedPlugin: Object initialized.")
+            self.log.debug("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex

@@ -252,7 +252,7 @@ class LogServer(threading.Thread):
             try:
                 self.log.debug("Attempting to bind to socket for HTTP server on port %s" % self.port)
                 self.httpd = SocketServer.TCPServer(("", self.port), self.handler)
-                self.log.info("Initialized HTTP SocketServer port=%d, root=%s, index = %s" % (self.port, 
+                self.log.debug("Initialized HTTP SocketServer port=%d, root=%s, index=%s" % (self.port, 
                                                                                              self.docroot, 
                                                                                              self.index)) 
             except Exception, e:

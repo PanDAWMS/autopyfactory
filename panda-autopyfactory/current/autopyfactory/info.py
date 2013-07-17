@@ -67,7 +67,7 @@ class BaseAPFInfo(dict):
         if k in self.keys():
             return dict.__getitem__(self, k)
         else:
-            return None
+            return self.default()
   
 
 class BaseQueueInfo(object):
@@ -151,6 +151,7 @@ class BaseQueueInfo(object):
         except AttributeError:
             return 0
 
+
 class BatchStatusInfo(BaseAPFInfo):
     '''
     Information returned by BatchStatusPlugin getInfo() calls. 
@@ -159,7 +160,7 @@ class BatchStatusInfo(BaseAPFInfo):
     
     def __init__(self):
         self.log = logging.getLogger()
-    
+        self.default = QueueInfo
 
     def __str__(self):
         s = "BatchStatusInfo: %d queues." % len(self)
@@ -174,6 +175,7 @@ class WMSStatusInfo(BaseAPFInfo):
     '''
     def __init__(self):
         self.log = logging.getLogger()
+        self.default = WMSQueueInfo
 
     def __str__(self):
         s = "WMSStatusInfo: %d queues." % len(self)
@@ -188,12 +190,15 @@ class CloudStatusInfo(BaseAPFInfo):
 def __init__(self):
         self.log = logging.getLogger()
 
+
+
 class CloudInfo(BaseQueueInfo):
     '''
     Attribute-based class containing WMS info about (WMS) clouds. 
     '''
 def __init__(self):
         self.log = logging.getLogger()
+
 
 
 class WMSQueueInfo(BaseQueueInfo):
@@ -271,6 +276,7 @@ class SiteInfo(BaseQueueInfo):
     '''
 def __init__(self):
         self.log = logging.getLogger()
+
 
 class QueueInfo(BaseQueueInfo):
     '''

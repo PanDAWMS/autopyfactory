@@ -210,7 +210,7 @@ Jose Caballero <jcaballero@bnl.gov>
                 console.setLevel(self.options.logLevel)
                 self.log.addHandler(console)
         self.log.setLevel(self.options.logLevel)
-        self.log.debug('logging initialised')
+        self.log.info('Logging initialized.')
 
 
     def _printenv(self):
@@ -218,7 +218,7 @@ Jose Caballero <jcaballero@bnl.gov>
         envmsg = ''        
         for k in sorted(os.environ.keys()):
             envmsg += '\n%s=%s' %(k, os.environ[k])
-        self.log.info('environment : %s' %envmsg)
+        self.log.debug('Environment : %s' %envmsg)
 
 
     def platforminfo(self):
@@ -234,8 +234,6 @@ Jose Caballero <jcaballero@bnl.gov>
         """
         If running as root, drop privileges to --runas' account.
         """
-        self.log.debug('checkroot: Starting')
-
         starting_uid = os.getuid()
         starting_gid = os.getgid()
         starting_uid_name = pwd.getpwuid(starting_uid)[0]
@@ -271,8 +269,6 @@ Jose Caballero <jcaballero@bnl.gov>
                 self.log.error('Could not set user or group id to %s:%s. Error: %s' % (runuid, rungid, e))
                 sys.exit(1)
 
-        self.log.debug('checkroot: Leaving')
-
     def _changehome(self):
         '''
         at some point, proxyManager will make use of method
@@ -284,12 +280,10 @@ Jose Caballero <jcaballero@bnl.gov>
         Ergo, if we want the path to be expanded to a different user, i.e. apf,
         we need to change by hand the value of $HOME in the environment
         '''
-
-        self.log.debug('_changehome: Leaving')
         runAs_home = pwd.getpwnam(self.options.runAs).pw_dir 
         os.environ['HOME'] = runAs_home
-        self.log.debug('_changehome: seting up environment variable HOME to %s' %runAs_home)
-        self.log.debug('_changehome: Leaving')
+        self.log.debug('_changehome: Setting up environment variable HOME to %s' %runAs_home)
+
 
     def _changewd(self):
         '''
@@ -300,12 +294,10 @@ Jose Caballero <jcaballero@bnl.gov>
         It is better is current working directory is just the HOME of the running user,
         so it is easier to debug in case of failures.
         '''
-
-        self.log.debug('_changewd: Starting')
         runAs_home = pwd.getpwnam(self.options.runAs).pw_dir
         os.chdir(runAs_home)
-        self.log.debug('_changewd: switching working directory to %s' %runAs_home)
-        self.log.debug('_changewd: Leaving')
+        self.log.debug('_changewd: Switching working directory to %s' %runAs_home)
+
 
     def createconfig(self):
         """Create config, add in options...
@@ -392,7 +384,6 @@ class Factory(object):
 
         self.log = logging.getLogger('main.factory')
         self.log.info('AutoPyFactory version %s' %self.version)
-        self.log.info('Factory: Initializing object...')
         self.fcl = fcl
         qcf = fcl.get('Factory', 'queueConf')
         self.log.debug("queues.conf file(s) = %s" % qcf)
@@ -610,12 +601,9 @@ class APFQueuesManager(object):
         '''
 
         self.log = logging.getLogger('main.apfquuesmanager')
-        self.log.debug('APFQueuesManager: Initializing object...')
-
         self.queues = {}
         self.factory = factory
-
-        self.log.info('APFQueuesManager: Object initialized.')
+        self.log.debug('APFQueuesManager: Object initialized.')
 
 # ----------------------------------------------------------------------
 #            Public Interface
@@ -626,9 +614,6 @@ class APFQueuesManager(object):
                 1. creates and starts new queues if needed
                 2. stops and deletes old queues if needed
         '''
-
-        self.log.debug("update: Starting with input %s" %newqueues)
-
         currentqueues = self.queues.keys()
         queues_to_remove, queues_to_add = \
                 self._diff_lists(currentqueues, newqueues)
@@ -636,23 +621,18 @@ class APFQueuesManager(object):
         self._delqueues(queues_to_remove)
         self._refresh()
 
-        self.log.debug("update: Leaving")
 
     def join(self):
         '''
         Joins all APFQueue objects
         QUESTION: should the queues also be removed from self.queues ?
         '''
-
-        self.log.debug("join: Starting")
-
         count = 0
         for q in self.queues.values():
             q.join()
             count += 1
         self.log.debug('join: %d queues joined' %count)
 
-        self.log.debug("join: Leaving")
     
     # ----------------------------------------------------------------------
     #  private methods
@@ -662,25 +642,16 @@ class APFQueuesManager(object):
         '''
         Creates new APFQueue objects
         '''
-
-        self.log.debug("_addqueues: Starting with input %s" %apfqnames)
-
         count = 0
-
         for apfqname in apfqnames:
             self._add(apfqname)
             count += 1
-
-        self.log.debug('_addqueues: %d queues in the config file' %count)
-        self.log.info('%d queues in the configuration.' %count)
-        self.log.debug("_addqueues: Leaving")
+        self.log.debug('%d queues in the configuration.' %count)
 
     def _add(self, apfqname):
         '''
         Creates a single new APFQueue object and starts it
         '''
-
-        self.log.debug("_add: Starting with input %s" %apfqname)
         queueenabled = self.factory.qcl.generic_get(apfqname, 'enabled', 'getboolean')
         globalenabled = self.factory.fcl.generic_get('Factory', 'enablequeues', 'getboolean', default_value=True)
         enabled = queueenabled and globalenabled
@@ -693,19 +664,14 @@ class APFQueuesManager(object):
             else:
                 self.queues[apfqname] = qobject
                 qobject.start()
-                self.log.debug('_add: %s enabled.' %apfqname)
                 self.log.info('Queue %s enabled.' %apfqname)
         else:
-            self.log.debug('_add: %s not enabled.' %apfqname)
-            self.log.info('Queue %s not enabled.' %apfqname)
-        self.log.debug("_add: Leaving")
+            self.log.debug('Queue %s not enabled.' %apfqname)
             
     def _delqueues(self, apfqnames):
         '''
         Deletes APFQueue objects
         '''
-
-        self.log.debug("_delqueues: Starting with input %s" %apfqnames)
 
         count = 0
         for apfqname in apfqnames:
@@ -715,35 +681,27 @@ class APFQueuesManager(object):
             count += 1
         self.log.debug('_delqueues: %d queues joined and removed' %count)
 
-        self.log.debug("_delqueues: Leaving")
 
     def _del(self, apfqname):
         '''
         Deletes a single queue object from the list and stops it.
         '''
-
-        self.log.debug("_del: Starting with input %s" %apfqname)
-
         qobject = self._get(apfqname)
         qname.join()
         self.queues.pop(apfqname)
 
-        self.log.debug("_del: Leaving")
     
     def _refresh(self):
         '''
         Calls method refresh() for all APFQueue objects
         '''
-
-        self.log.debug("_refresh: Starting")
-
         count = 0
         for q in self.queues.values():
             q.refresh()
             count += 1
         self.log.debug('_refresh: %d queues refreshed' %count)
 
-        self.log.debug("_refresh: Leaving")
+
 
     # ----------------------------------------------------------------------
     #  ancillary functions 
@@ -816,13 +774,12 @@ class APFQueue(threading.Thread):
             self.log.debug("Exception: %s" % traceback.format_exc())
             raise ex
         
-        self.log.info('APFQueue: Object initialized.')
+        self.log.debug('APFQueue: Object initialized.')
 
     def _plugins(self):
         '''
          method just to instantiate the plugin objects
         '''
-        self.log.debug('_plugins: Starting')
 
         pd = PluginDispatcher(self)
         self.scheduler_plugins = pd.schedplugins        # a list of 1 or more plugins
@@ -831,7 +788,6 @@ class APFQueue(threading.Thread):
         self.batchstatus_plugin = pd.batchstatusplugin  # a single BatchStatus plugin
         self.monitor_plugins = pd.monitorplugins        # a list of 1 or more plugins
 
-        self.log.debug('_plugins: Leaving')
  
 # Run methods
 
@@ -841,7 +797,6 @@ class APFQueue(threading.Thread):
         Main functional loop of this APFQueue. 
         '''        
 
-        self.log.debug("run: Starting" )
         # give information gathering, and proxy generation enough time to perhaps have info
         time.sleep(15)
         while not self.stopevent.isSet():
@@ -873,9 +828,6 @@ class APFQueue(threading.Thread):
                 self.log.debug("run: Exception: %s" % traceback.format_exc())
             time.sleep(self.sleep)
 
-        self.log.debug("run: Leaving")
-
-
     def _submitpilots(self, nsub):
         '''
         submit using this number
@@ -895,14 +847,11 @@ class APFQueue(threading.Thread):
         '''
         Exit loop if desired number of cycles is reached...  
         '''
-        self.log.debug("__exitloop: Starting")
-
         self.log.debug("__exitloop. Checking to see how many cycles to run.")
         if self.cycles and self.cyclesrun >= self.cycles:
                 self.log.debug('__exitloop: stopping the thread because high cyclesrun')
                 self.stopevent.set()                        
         self.log.debug("__exitloop. Incrementing cycles...")
-        self.log.debug("__exitloop: Leaving")
 
     def _logtime(self):
         '''
@@ -937,14 +886,10 @@ class APFQueue(threading.Thread):
         '''
         Stop the thread. Overriding this method required to handle Ctrl-C from console.
         '''
-
-        self.log.debug("join: Starting")
-
         self.stopevent.set()
         self.log.debug('join: Stopping thread...')
         threading.Thread.join(self, timeout)
 
-        self.log.debug("join: Leaving")
                  
 
 # ==============================================================================                                

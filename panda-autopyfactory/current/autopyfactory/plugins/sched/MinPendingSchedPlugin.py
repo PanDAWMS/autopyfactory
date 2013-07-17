@@ -16,7 +16,7 @@ class MinPendingSchedPlugin(SchedInterface):
 
             self.min_pilots_pending = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.minpending.minimum', 'getint')
 
-            self.log.info("SchedPlugin: Object initialized.")
+            self.log.debug("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex

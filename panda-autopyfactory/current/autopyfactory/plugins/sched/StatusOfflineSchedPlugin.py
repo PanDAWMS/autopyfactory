@@ -19,7 +19,7 @@ class StatusOfflineSchedPlugin(SchedInterface):
                                                                         'getint', 
                                                                         default_value=0)
 
-            self.log.info("SchedPlugin: Object initialized.")
+            self.log.debug("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
