@@ -12,9 +12,12 @@ class StatusOfflineSchedPlugin(SchedInterface):
 
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
+            self.log = logging.getLogger("main.schedplugin[%s]" % apfqueue.apfqname)
 
-            self.pilots_in_offline_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.statusoffline.pilots', 'getint', default_value=0)
+            self.pilots_in_offline_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 
+                                                                        'sched.statusoffline.pilots', 
+                                                                        'getint', 
+                                                                        default_value=0)
 
             self.log.info("SchedPlugin: Object initialized.")
         except Exception, ex:
@@ -24,37 +27,30 @@ class StatusOfflineSchedPlugin(SchedInterface):
     def calcSubmitNum(self, n=0):
         
         self.log.debug('calcSubmitNum: Starting.')
+        self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue=self.apfqueue.mwsqueue, 
+                                                                   maxtime = self.apfqueue.wmsstatusmaxtime)
+        
+        self.siteinfo = self.apfqueue.wmsstatus_plugin.getSiteInfo(site=self.apfqueue.wmsqueue,
+                                                                    maxtime = self.apfqueue.wmsstatusmaxtime)
 
-        self.wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
-        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
+        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue=self.apfqueue.apfqname, 
+                                                                  maxtime = self.apfqueue.batchstatusmaxtime)
 
-        if self.wmsinfo is None:
-            self.log.warning("wmsinfo is None!")
-            #out = self.default
+        if self.siteinfo:
+            sitecloud = self.siteinfo.cloud
+            self.cloudinfo = self.apfqueue.batchstatus_plugin.getCloudInfo(cloud=sitecloud, 
+                                                                  maxtime = self.apfqueue.batchstatusmaxtime)
+
+        if self.wmsqueueinfo is None or self.batchinfo is None or self.cloudinfo is None:
+            self.log.warning("wmsinfo, batchinfo, or cloudinfo is None!")
             out = 0
-            msg = "StatusOffline,no wmsinfo,ret=0"
-        elif self.batchinfo is None:
-            self.log.warning("self.batchinfo is None!")
-            #out = self.default            
-            out = 0
-            msg = "StatusOffline,no batchinfo,ret=0"
-        elif not self.wmsinfo.valid() and self.batchinfo.valid():
-            #out = self.default
-            out = 0
-            msg = "StatusOffline,no wms/batchinfo,ret=0"
-            self.log.warn('calcSubmitNum: a status is not valid, Return=%s' %out)
+            msg = "StatusOffline:no wms/batch/cloudinfo,ret=0"
         else:
-            # Carefully get wmsinfo, activated. 
-            self.wmsqueue = self.apfqueue.wmsqueue
-            self.log.debug("Siteid is %s" % self.wmsqueue)
 
-            siteinfo = self.wmsinfo.site
-            sitestatus = siteinfo[self.wmsqueue].status
+            sitestatus = siteinfo.status
             self.log.debug('calcSubmitNum: site status is %s' %sitestatus)
 
-            cloud = siteinfo[self.wmsqueue].cloud
-            cloudinfo = self.wmsinfo.cloud
-            cloudstatus = cloudinfo[cloud].status
+            cloudstatus = cloudinfo.status
             self.log.debug('calcSubmitNum: cloud %s status is %s' %(cloud, cloudstatus))
 
             out = n

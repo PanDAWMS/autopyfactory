@@ -25,20 +25,19 @@ class MinPendingSchedPlugin(SchedInterface):
 
         self.log.debug('calcSubmitNum: Starting with n=%s' %n)
 
-        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
+        #self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
+        self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, 
+                                                                  maxtime = self.apfqueue.batchstatusmaxtime)
 
         out = n
         msg = None
 
-        pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending
+        pending_pilots = self.queueinfo.pending
         if self.min_pilots_pending:
             out = max(n, self.min_pilots_pending - pending_pilots)     
             msg = "MinPending=%s,min=%s,pend=%s,ret=%s" %(n, self.min_pilots_pending, pending_pilots, out)
-        
-        # Catch all to prevent negative numbers
-        #if out < 0:
-        #    self.log.info('calcSubmitNum: calculated output was negative. Returning 0')
-        #    out = 0
-            
-        self.log.info('calcSubmitNum: (min_pilots_pending=%s; pending=%s) : Return=%s' %(self.min_pilots_pending, pending_pilots, out))
+       
+           
+        self.log.info('calcSubmitNum: (min_pilots_pending=%s; pending=%s) : Return=%s' %(self.min_pilots_pending, 
+                                                                                         pending_pilots, out))
         return (out, msg) 

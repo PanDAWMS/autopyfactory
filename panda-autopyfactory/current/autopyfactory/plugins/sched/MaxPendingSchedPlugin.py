@@ -22,23 +22,16 @@ class MaxPendingSchedPlugin(SchedInterface):
             raise ex
 
     def calcSubmitNum(self, n=0):
-
         self.log.debug('calcSubmitNum: Starting with n=%s' %n)
-
-        batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
-
+        #batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
+        self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
         out = n
         msg = None
     
-        pending_pilots = batchinfo[self.apfqueue.apfqname].pending
+        pending_pilots = self.queueinfo.pending
         if self.max_pilots_pending:
             out = min(n, self.max_pilots_pending - pending_pilots)     
             msg = "MaxPending=%s,pend=%s,max=%s,ret=%s" %(n, pending_pilots, self.max_pilots_pending, out)
-
-        # Catch all to prevent negative numbers
-        #if out < 0:
-        #    self.log.info('calcSubmitNum: calculated output was negative. Returning 0')
-        #    out = 0
             
         self.log.info('calcSubmitNum: Return=%s' %out)
         return (out, msg)

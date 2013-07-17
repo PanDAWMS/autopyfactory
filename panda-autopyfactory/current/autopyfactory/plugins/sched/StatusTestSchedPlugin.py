@@ -24,37 +24,22 @@ class StatusTestSchedPlugin(SchedInterface):
     def calcSubmitNum(self, n=0):
         
         self.log.debug('calcSubmitNum: Starting.')
+        self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue=self.apfqueue.mwsqueue, 
+                                                                   maxtime = self.apfqueue.wmsstatusmaxtime)
+        self.siteinfo = self.apfqueue.wmsstatus_plugin.getSiteInfo(site=self.apfqueue.wmsqueue,
+                                                                    maxtime = self.apfqueue.wmsstatusmaxtime)
+        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue=self.apfqueue.apfqname, 
+                                                                  maxtime = self.apfqueue.batchstatusmaxtime)
 
-        self.wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
-        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
-
-        if self.wmsinfo is None:
-            self.log.warning("wmsinfo is None!")
-            #out = self.default
+        if self.wmsqueueinfo is None or self.batchinfo or self.siteinfo is None:
+            self.log.warning("wmsinfo, batchinfo, or siteinfo is None!")
             out = 0
-            msg = "StatusTest,no wmsinfo,ret=0"
-        elif self.batchinfo is None:
-            self.log.warning("self.batchinfo is None!")
-            #out = self.default            
-            out = 0
-            msg = "StatusTest,no batchinfo,ret=0"
-        elif not self.wmsinfo.valid() and self.batchinfo.valid():
-            #out = self.default
-            out = 0
-            msg = "StatusTest,no wms/batchinfo,ret=0"
-            self.log.warn('calcSubmitNum: a status is not valid, Return=%s' %out)
+            msg = "StatusTest:no wms/batch/siteinfo,ret=0"
         else:
-            # Carefully get wmsinfo, activated. 
-            self.wmsqueue = self.apfqueue.wmsqueue
-            self.log.debug("Siteid is %s" % self.wmsqueue)
-
-            siteinfo = self.wmsinfo.site
-            sitestatus = siteinfo[self.wmsqueue].status
+            sitestatus = self.siteinfo.status
             self.log.debug('calcSubmitNum: site status is %s' %sitestatus)
-
             out = n
             msg = None
-
             if sitestatus == 'test':
                 self.log.info('calcSubmitNum: Return=%s' %self.pilots_in_test_mode)
                 out= self.pilots_in_test_mode

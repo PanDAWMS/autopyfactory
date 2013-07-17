@@ -32,23 +32,19 @@ class ReadySchedPlugin(SchedInterface):
         out = n
         self.log.debug('calcSubmitNum: Starting.')
 
-        self.wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
-        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
+        self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue = self.apfqueue.wmsqueue, 
+                                                                   maxtime = self.apfqueue.wmsstatusmaxtime)
 
-        if self.wmsinfo is None or self.batchinfo is None:
-            self.log.warning("Missing info. wmsinfo is %s batchinfo is %s" % (self.wmsinfo, self.batchinfo))
+        self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, 
+                                                                  maxtime = self.apfqueue.batchstatusmaxtime)
+
+
+        if self.wmsqueueinfo is None or self.queueinfo is None:
+            self.log.warning("Missing info. wmsinfo is %s batchinfo is %s" % (self.wmsqueueinfo, self.queueinfo))
             out = 0 
             msg = 'Invalid wmsinfo or batchinfo' 
         else:
-            self.wmsqname = self.apfqueue.wmsqueue
-            jobsdict = wmsinfo[self.wmsqname]
-            self.log.info("WMS queue is %s" % self.wmsqname)
-            if jobsdict is None:
-                self.log.warning("Missing info. Jobsdict is None.")
-                out = 0
-                msg = 'Empty jobs dictionary wmsqueue %s' % self.wmsqname
-            else:
-                (out, msg) = self._calc(input)
+            (out, msg) = self._calc(input)
         return (out, msg)
 
     def _calc(self, input):
@@ -61,13 +57,9 @@ class ReadySchedPlugin(SchedInterface):
         pending_pilots = 0
         running_pilots = 0
 
-        self.log.debug("sitedict class is %s" % sitedict.__class__ )
-        activated_jobs = self.wmsinfo[self.wmsqname].ready
-
-        self.log.debug("batchinfo object is %s" % self.batchinfo)        
-        self.log.debug("qi object for %s is %s" % (self.apfqueue.apfqname, self.batchinfo[self.apfqueue.apfqname]))
-        pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending
-        running_pilots = self.batchinfo[self.apfqueue.apfqname].running
+        activated_jobs = self.wmsqueueinfo.ready    
+        pending_pilots = self.queueinfo.pending
+        running_pilots = self.queueinfo.running
 
         self.log.debug("pending = %d running = %d offset = %d" % (pending_pilots, running_pilots, self.offset))
         

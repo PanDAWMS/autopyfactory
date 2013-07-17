@@ -14,7 +14,6 @@ class KeepNRunningSchedPlugin(SchedInterface):
     
     May output a negative number, if keep_running is less than current running. 
       
-           
     '''
     id = 'keepnrunning'
     
@@ -33,20 +32,16 @@ class KeepNRunningSchedPlugin(SchedInterface):
         """ 
         It just returns nb of Activated Jobs - nb of Pending Pilots
         """
-        input = nsub
         self.log.debug('calcSubmitNum: Starting.')
 
-        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
-
-        
-        if self.batchinfo is None:
-            self.log.warning("self.batchinfo is None!")
+        self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
+       
+        if not self.queueinfo:
+            self.log.warning("self.queueinfo is None!")
             out = 0
-            msg = "Invalid batchinfo"
+            msg = "Invalid queueinfo"
         else:
-            self.key = self.apfqueue.apfqname
-            self.log.info("Key is %s" % self.key)
-            (out, msg) = self._calc(input)
+            (out, msg) = self._calc(nsub)
             self.log.debug("Returning %d" % out)
         return (out, msg)
 
@@ -54,14 +49,15 @@ class KeepNRunningSchedPlugin(SchedInterface):
         '''
         algorithm 
         '''
+        
         # initial default values. 
         pending_pilots = 0
         running_pilots = 0
         retiring_pilots = 0
 
-        pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending  # using the new info objects
-        running_pilots = self.batchinfo[self.apfqueue.apfqname].running  # using the new info object
-        retiring_pilots = self.batchinfo[self.apfqueue.apfqname].retiring # using the new info objects
+        pending_pilots = self.queueinfo.pending  # using the new info objects
+        running_pilots = self.queueinfo.running  # using the new info object
+        retiring_pilots = self.queueinfo.retiring # using the new info objects
 
         # 
         # Output is simply keep_running, minus potentially or currently running, while ignoring retiring jobs
