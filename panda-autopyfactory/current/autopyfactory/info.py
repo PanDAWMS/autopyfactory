@@ -55,6 +55,9 @@ class BaseAPFInfo(dict):
         
     '''
     
+    def __init__(self):
+        dict.__init__(self)
+    
     def __getitem__(self, k):
         '''
         Just ensure that if info for a queue is requested return None rather
@@ -65,8 +68,6 @@ class BaseAPFInfo(dict):
             return dict.__getitem__(self, k)
         else:
             return None
-
-   
   
 
 class BaseQueueInfo(object):
@@ -155,6 +156,10 @@ class BatchStatusInfo(BaseAPFInfo):
     Information returned by BatchStatusPlugin getInfo() calls. 
     Contains objects indexed by APF/WMS queue name. 
     '''
+    
+    def __init__(self):
+        self.log = logging.getLogger()
+    
 
     def __str__(self):
         s = "BatchStatusInfo: %d queues." % len(self)
@@ -167,21 +172,28 @@ class WMSStatusInfo(BaseAPFInfo):
     Contains objects indexed by APF/WMS queue name.    
     
     '''
+    def __init__(self):
+        self.log = logging.getLogger()
 
     def __str__(self):
         s = "WMSStatusInfo: %d queues." % len(self)
         return s
+
 
 class CloudStatusInfo(BaseAPFInfo):
     '''
     Information returned by WMSStatusPlugin getCloudInfo() calls. 
     Contains objects indexed by APF/WMS queue name.  
     '''
+def __init__(self):
+        self.log = logging.getLogger()
 
 class CloudInfo(BaseQueueInfo):
     '''
     Attribute-based class containing WMS info about (WMS) clouds. 
     '''
+def __init__(self):
+        self.log = logging.getLogger()
 
 
 class WMSQueueInfo(BaseQueueInfo):
@@ -244,26 +256,21 @@ class JobInfo(object):
         self.inittime = inittime
 
 
-class JobsInfo(BaseQueueInfo):
-    '''
-    Placeholder for attribute-based job information
-    
-    '''
-
-
 class SiteStatusInfo(BaseAPFInfo):
     '''
     Information returned by WMSStatusPlugin getSiteInfo() calls. 
     Contains objects indexed by APF/WMS queue name.  
     '''    
-    
+def __init__(self):
+        self.log = logging.getLogger()    
 
 class SiteInfo(BaseQueueInfo):
     '''
     Placeholder for attribute-based site information.
     One per site. 
     '''
-
+def __init__(self):
+        self.log = logging.getLogger()
 
 class QueueInfo(BaseQueueInfo):
     '''
@@ -272,6 +279,9 @@ class QueueInfo(BaseQueueInfo):
     Returns 0 as value for any un-initialized attribute. 
     
     '''
+    def __init__(self):
+        self.log = logging.getLogger()
+    
     def __str__(self):
         s = "QueueInfo: pending=%d, running=%d, suspended=%d" % (self.pending, 
                                                                  self.running, 
