@@ -24,12 +24,9 @@ class StatusTestSchedPlugin(SchedInterface):
     def calcSubmitNum(self, n=0):
         
         self.log.debug('calcSubmitNum: Starting.')
-        self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue=self.apfqueue.mwsqueue, 
-                                                                   maxtime = self.apfqueue.wmsstatusmaxtime)
-        self.siteinfo = self.apfqueue.wmsstatus_plugin.getSiteInfo(site=self.apfqueue.wmsqueue,
-                                                                    maxtime = self.apfqueue.wmsstatusmaxtime)
-        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue=self.apfqueue.apfqname, 
-                                                                  maxtime = self.apfqueue.batchstatusmaxtime)
+        self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue=self.apfqueue.wmsqueue, maxtime = self.apfqueue.wmsstatusmaxtime)
+        self.siteinfo = self.apfqueue.wmsstatus_plugin.getSiteInfo(site=self.apfqueue.wmsqueue, maxtime = self.apfqueue.wmsstatusmaxtime)
+        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue=self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
 
         if self.wmsqueueinfo is None or self.batchinfo or self.siteinfo is None:
             self.log.warning("wmsinfo, batchinfo, or siteinfo is None!")
