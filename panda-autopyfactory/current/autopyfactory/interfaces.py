@@ -24,6 +24,7 @@ class BatchStatusInterface(object):
     -----------------------------------------------------------------------
     Public Interface:
             getInfo()
+            getJobInfo()
     
     Returns BatchStatusInfo object
      
@@ -70,7 +71,7 @@ class WMSStatusInterface(object):
         '''
         raise NotImplementedError
 
-    def getJobsInfo(self, site, maxtime=0):
+    def getInfo(self, site, maxtime=0):
         '''
         Method to get and updated picture of the jobs status. 
         It returns a dictionary to be inserted directly into an

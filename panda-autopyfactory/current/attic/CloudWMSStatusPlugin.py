@@ -18,7 +18,7 @@ from autopyfactory.info import WMSQueueInfo
 
 
 
-class CloudWMSSatusPlugin(threading.Thread, BatchStatusInterface):
+class CloudWMSStatusPlugin(threading.Thread, BatchStatusInterface):
     '''
     -----------------------------------------------------------------------
     This class is expected to have separate instances for each PandaQueue object. 
