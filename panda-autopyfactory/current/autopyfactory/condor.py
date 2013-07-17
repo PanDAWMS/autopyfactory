@@ -150,16 +150,22 @@ def statuscondormaster():
         out = None
     return out
 
-def querycondor():
+def querycondor(queryargs=None):
     '''
     Query condor for specific job info and return xml representation string
     for further processing.
-    
+
+    queryargs are potential extra query arguments from queues.conf    
     '''
+
     log = logging.getLogger()
     log.debug('Starting.')
     querycmd = "condor_q "
     log.debug('_querycondor: using executable condor_q in PATH=%s' %utils.which('condor_q'))
+
+    # adding extra query args from queues.conf
+    if queryargs:
+        querycmd += queryargs
 
     querycmd += " -format ' MATCH_APF_QUEUE=%s' match_apf_queue"
     querycmd += " -format ' JobStatus=%d\n' jobstatus"
