@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* passing queryargs from queues.conf to query.querycondor() call at Condor batchstatus plugin.
+
 * siteid removed from several places and replaced by wmsqueue.
 
 * method validate() added to configloader.py
