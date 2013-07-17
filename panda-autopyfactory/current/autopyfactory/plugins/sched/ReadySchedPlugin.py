@@ -31,14 +31,8 @@ class ReadySchedPlugin(SchedInterface):
         """
         out = n
         self.log.debug('calcSubmitNum: Starting.')
-
-        self.log.debug('wmsstatus plugin is %s with __dict__ %s' % ( self.apfqueue.wmsstatus_plugin, self.apfqueue.wmsstatus_plugin.__dict__ ))
-
         self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue = self.apfqueue.wmsqueue, maxtime = self.apfqueue.wmsstatusmaxtime)
-
-        self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, 
-                                                                  maxtime = self.apfqueue.batchstatusmaxtime)
-
+        self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
 
         if self.wmsqueueinfo is None or self.queueinfo is None:
             self.log.warning("Missing info. wmsinfo is %s batchinfo is %s" % (self.wmsqueueinfo, self.queueinfo))
