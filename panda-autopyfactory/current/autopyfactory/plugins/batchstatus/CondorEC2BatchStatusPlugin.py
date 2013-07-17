@@ -509,8 +509,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             A BatchStatusInfo object which maps attribute counts to generic APF
             queue attribute counts.
             
-            
-        If input is empty dictionary, output is emptry InfoContainer
+    
         
         '''
         self.log.debug('_map2info: Starting.')

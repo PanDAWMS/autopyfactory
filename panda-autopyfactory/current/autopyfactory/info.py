@@ -150,17 +150,6 @@ class BaseQueueInfo(object):
         except AttributeError:
             return 0
 
-
-    def __setattr__(self, name, value):
-        '''
-        Makes sure that all attribute values are integers, since this object is
-        intended only for aggregate information 
-        '''
-        intval = int(value)
-        object.__setattr__(self, name, intval)
-
-
-
 class BatchStatusInfo(BaseAPFInfo):
     '''
     Information returned by BatchStatusPlugin getInfo() calls. 
