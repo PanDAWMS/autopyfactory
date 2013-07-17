@@ -18,7 +18,6 @@ from datetime import datetime
 from pprint import pprint
 from autopyfactory.interfaces import BatchStatusInterface
 from autopyfactory.factory import Singleton, CondorSingleton
-from autopyfactory.info import InfoContainer
 from autopyfactory.info import BatchStatusInfo
 from autopyfactory.info import QueueInfo
 
@@ -520,15 +519,8 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             qi = QueueInfo()
             batchstatusinfo[site] = qi
             attrdict = input[site]
-            
-            # use finer-grained globus statuses in preference to local summaries, if they exist. 
-            if 'globusstatus' in attrdict.keys():
-                valdict = attrdict['globusstatus']
-                qi.fill(valdict, mappings=self.globusstatus2info)   #  !!!! this mapping does not exist !!!!
-            # must be a local-only job or other. 
-            else:
-                valdict = attrdict['jobstatus']
-                qi.fill(valdict, mappings=self.jobstatus2info)
+            valdict = attrdict['jobstatus']
+            qi.fill(valdict, mappings=self.jobstatus2info)
                     
         batchstatusinfo.lasttime = int(time.time())
         self.log.debug('_map2info: Returning BatchStatusInfo: %s' % batchstatusinfo)

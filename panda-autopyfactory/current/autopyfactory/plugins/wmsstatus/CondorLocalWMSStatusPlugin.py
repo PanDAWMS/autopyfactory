@@ -16,7 +16,6 @@ from autopyfactory.factory import Singleton
 from autopyfactory.info import CloudInfo
 from autopyfactory.info import SiteInfo
 from autopyfactory.info import JobInfo
-from autopyfactory.info import InfoContainer
 from autopyfactory.info import WMSStatusInfo
 from autopyfactory.info import WMSQueueInfo
 
@@ -302,7 +301,7 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             queue attribute counts. 
         '''
         self.log.debug('_map2info: Starting.')
-        wmsstatusinfo = InfoContainer(WMSQueueInfo)
+        wmsstatusinfo = WMSStatusInfo()
         for site in input.keys():
                 qi = WMSQueueInfo()
                 wmsstatusinfo[site] = qi
