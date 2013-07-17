@@ -216,17 +216,17 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             strout = querycondor()
             outlist = parseoutput(strout)
             aggdict = aggregateinfo(outlist)
-            newinfojobs = self._map2info(aggdict)
+            newjobinfo = self._map2info(aggdict)
 
-            # Info object
-            #   The cloud and site parts are just empty (legacy code)
-            newinfo = WMSStatusInfo()
-            newinfo.cloud = InfoContainer(CloudInfo)
-            newinfo.site = InfoContainer(SiteInfo)
-            newinfo.jobs = newinfojobs
+            
 
             self.log.info("Replacing old info with newly generated info.")
-            self.currentinfo = newinfo
+            self.currentjobinfo = newjobinfo
+            
+            # These are not meaningful for Local Condor
+            self.currentcloudinfo = None
+            self.currentsiteinfo = None
+            
         except Exception, e:
             self.log.error("_update: Exception: %s" % str(e))
             self.log.debug("Exception: %s" % traceback.format_exc())            
