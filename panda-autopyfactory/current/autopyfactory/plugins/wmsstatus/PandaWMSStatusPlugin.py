@@ -183,7 +183,6 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 - Jobs status per site
         '''
         self.log.debug('_update: Starting.')
-        newinfo = WMSStatusInfo()
         
         try:
             newcloudinfo = self._updateclouds()
@@ -192,13 +191,13 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             newsiteinfo = self._updatesites()
             newsiteinfo.lasttime = int(time.time())
 
-            newjobsinfo = self._updatejobs()
-            newjobsinfo.lasttime = int(time.time())
+            newjobinfo = self._updatejobs()
+            newjobinfo.lasttime = int(time.time())
             
             self.log.info("Replacing old info with newly generated info.")
-            self.currentjobinfo = newjobsinfo
-            self.currentcloudinfo = newjobsinfo
-            self.currentsiteinfo = newjobsinfo
+            self.currentjobinfo = newjobinfo
+            self.currentcloudinfo = newcloudinfo
+            self.currentsiteinfo = newsiteinfo
         
         except Exception, e:
             self.log.error("_update: Exception: %s" % str(e))

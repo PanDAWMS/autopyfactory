@@ -156,6 +156,10 @@ class BatchStatusInfo(BaseAPFInfo):
     Contains objects indexed by APF/WMS queue name. 
     '''
 
+    def __str__(self):
+        s = "BatchStatusInfo: %d queues." % len(self)
+        return s
+
 
 class WMSStatusInfo(BaseAPFInfo):
     '''
@@ -164,16 +168,9 @@ class WMSStatusInfo(BaseAPFInfo):
     
     '''
 
-
-
-class BatchStatusJobsInfo(BaseAPFInfo):
-    '''
-    Information returned by BatchStatusPlugin getJobInfo() calls. 
-
-    Logically consists of a dictionary where the top-level keys are APF
-    queue names, and the second-level is a Python list containing dictionaries of attributes, one per job. 
-       
-    '''
+    def __str__(self):
+        s = "WMSStatusInfo: %d queues." % len(self)
+        return s
 
 class CloudStatusInfo(BaseAPFInfo):
     '''
