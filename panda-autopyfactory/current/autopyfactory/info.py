@@ -147,7 +147,7 @@ class BaseQueueInfo(object):
         Return 0 for non-existent attributes, otherwise behave normally.         
         '''
         try:
-            return self.__getattribute__(name)
+            return int(self.__getattribute__(name))
         except AttributeError:
             return 0
 
