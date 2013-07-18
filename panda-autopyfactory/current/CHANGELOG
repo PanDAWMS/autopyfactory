@@ -1,5 +1,8 @@
 ChangeLog
 ---------
+
+* added new custom logging level: TRACE
+
 * configloader converts None in conf to Python None object. Change in default_value logic--if no default_value is provided
   then generic_get returns None. 
 
@@ -8,8 +11,6 @@ ChangeLog
 * passing queryargs from queues.conf to query.querycondor() call at Condor batchstatus plugin.
 
 * siteid removed from several places and replaced by wmsqueue.
-
-* method validate() added to configloader.py
 
 * generic_get() simplified
 
