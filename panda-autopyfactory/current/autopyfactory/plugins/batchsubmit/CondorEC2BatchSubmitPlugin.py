@@ -114,25 +114,27 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         trigger unretirement of n nodes. 
         
         '''
-        self.log.info("Beginning to unretire %d VM jobs..." % n)
-        jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqueue.apfqname)
-        if jobinfo:
-            numtounretire = n
-            numunretired = 0
-            for job in jobinfo:
-                self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)
-                stat = job.executeinfo.getStatus()
-                if stat  == 'retiring':
-                    self._unretirenode(job)
-                    numtounretire = numtounretire - 1
-                    numunretired += 1
-                    self.log.debug("numtounretire = %d" % numtounretire)
-                    if numtounretire <= 0:
-                        break
-            self.log.info("Retired %d VM jobs" % numunretired)
+        if n > 0:
+            self.log.info("Beginning to unretire %d VM jobs..." % n)
+            jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqueue.apfqname)
+            if jobinfo:
+                numtounretire = n
+                numunretired = 0
+                for job in jobinfo:
+                    self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)
+                    stat = job.executeinfo.getStatus()
+                    if stat  == 'retiring':
+                        self._unretirenode(job)
+                        numtounretire = numtounretire - 1
+                        numunretired += 1
+                        self.log.debug("numtounretire = %d" % numtounretire)
+                        if numtounretire <= 0:
+                            break
+                self.log.info("Retired %d VM jobs" % numunretired)
+            else:
+                self.log.info("Some info unavailable. Do nothing.")    
         else:
-            self.log.info("Some info unavailable. Do nothing.")    
-            
+            self.log.debug("No jobs to unretire...")
 
     def retire(self, n, order='oldest'):
         '''
