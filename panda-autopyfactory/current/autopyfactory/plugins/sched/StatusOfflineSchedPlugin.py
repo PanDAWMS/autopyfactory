@@ -46,11 +46,10 @@ class StatusOfflineSchedPlugin(SchedInterface):
             out = 0
             msg = "StatusOffline:no wms/batch/cloudinfo,ret=0"
         else:
-
-            sitestatus = siteinfo.status
+            sitestatus = self.siteinfo.status
             self.log.debug('calcSubmitNum: site status is %s' %sitestatus)
 
-            cloudstatus = cloudinfo.status
+            cloudstatus = self.cloudinfo.status
             self.log.debug('calcSubmitNum: cloud %s status is %s' %(cloud, cloudstatus))
 
             out = n
