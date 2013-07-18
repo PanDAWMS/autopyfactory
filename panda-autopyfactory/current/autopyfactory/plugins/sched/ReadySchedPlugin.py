@@ -15,6 +15,7 @@ class ReadySchedPlugin(SchedInterface):
             self.log = logging.getLogger("main.schedplugin[%s]" % apfqueue.apfqname)
             try:
                 self.offset = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.ready.offset', 'getint', default_value=0)
+                self.log.debug("SchedPlugin: offset = %d" % self.offset)
             except:
                 pass 
                 # Not mandatory
