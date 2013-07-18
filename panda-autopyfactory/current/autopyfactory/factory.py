@@ -813,9 +813,9 @@ class APFQueue(threading.Thread):
                         else:
                             fullmsg = msg
                         
-                self.log.debug("APFQueue[%s]: Plugins called. nsub=%s" % (self.apfqname, nsub))
+                self.log.debug("APFQueue[%s]: All Sched plugins called. Result nsub=%s" % (self.apfqname, nsub))
                 jobinfolist = self._submitpilots(nsub)
-                self.log.debug("APFQueue[%s]: Submitted. Joblist is %s" % (self.apfqname, jobinfolist))
+                self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
                 for m in self.monitor_plugins:
                     self.log.debug('APFQueue[%s] run(): calling registerJobs for monitor plugin %s' % (self.apfqname, m))
                     m.registerJobs(self, jobinfolist)

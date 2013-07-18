@@ -67,7 +67,9 @@ class BaseAPFInfo(dict):
         if k in self.keys():
             return dict.__getitem__(self, k)
         else:
-            return self.default()
+            default_cls = self.default
+            # Make a new instance of whatever class is the default
+            return default_cls()
   
 
 class BaseQueueInfo(object):
@@ -259,6 +261,10 @@ class JobInfo(object):
         self.jobid = jobid
         self.state = state
         self.inittime = inittime
+
+    def __str__(self):
+        s = "JobInfo: jobid=%s state=%s" % (self.jobid, self.state)
+        return s
 
 
 class SiteStatusInfo(BaseAPFInfo):

@@ -1,5 +1,9 @@
 ChangeLog
 ---------
+* configloader converts None in conf to Python None object. Change in default_value logic--if no default_value is provided
+  then generic_get returns None. 
+
+* info major refactoring of Info class hierarchy. most objects now have overridden methods to avoid exception generation. 
 
 * passing queryargs from queues.conf to query.querycondor() call at Condor batchstatus plugin.
 
@@ -9,7 +13,7 @@ ChangeLog
 
 * generic_get() simplified
 
-* InfoContainer simplified. Only one argument to __init__(), and it is a class instead of an object.
+* InfoContainer removed. 
 
 * fake info classes imports removed, and importing from the right place (info.py instead of factory.py)
 

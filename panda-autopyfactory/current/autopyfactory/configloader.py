@@ -1,10 +1,6 @@
 #! /usr/bin/env python
-#
-# $Id: configloader.py 7686 2011-04-08 21:15:43Z jhover $
-#
 '''
     Configuration object loader and storage component for AutoPyFactory.
-
 '''
 
 import copy
@@ -16,19 +12,6 @@ from urllib import urlopen
 from ConfigParser import SafeConfigParser, NoSectionError, InterpolationMissingOptionError
 
 from autopyfactory.apfexceptions import ConfigFailure, ConfigFailureMandatoryAttr, FactoryConfigurationFailure
-
-
-# --------------------------------------------------------------------------
-# we want to allow the value for config variables to be None. 
-# That is not a bad thing, is just the value is None.
-# Therefore we need a way to distinguish a correct value None from variable not defined. 
-# 
-# As a temporary solution, lets use this `a la` macro:
-
-NotImplementedAttr = "NotImplementedAttr"
-
-# --------------------------------------------------------------------------
-
 
 
 class Config(SafeConfigParser, object):
@@ -44,7 +27,6 @@ class Config(SafeConfigParser, object):
     def __init__(self):
 
         self.log = logging.getLogger("main.config")
-
         self.optionxform = str
         super(Config, self).__init__()
 
@@ -205,40 +187,18 @@ class Config(SafeConfigParser, object):
         self.log.debug('generic_get: called for section %s option %s get_function %s default_value %s' % ( section,
                                                                                                            option,
                                                                                                            get_function,
-                                                                                                           default_value                                                                                                          
-                                                                                                          ))
-
+                                                                                                           default_value ))                                                                                                         
         has_option = self.has_option(section, option)
-
         if not has_option:
-            #if default_value is None:
-            #    self.log.debug('generic_get: option %s is not present in section %s. No default provided. Return None.' %(option, section))
-            #    return None
-            #else:
             self.log.debug('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
             return default_value
-
         else:
             get_f = getattr(self, get_function)
             value = get_f(section, option)
+            if value == "None":
+                value = None
             self.log.debug('generic_get: option %s in section %s has value %s' %(option, section, value))
             return value
-
-    def validate(*lists):
-        '''
-        method to validate that a series of mandatory variables have a real value.
-        *list is a list of lists. 
-        At least one of the lists must have all its items valid. 
-        '''
-
-        for l in lists:
-            for item in l:
-                if item is NotImplementedAttr:
-                    break
-            else:
-                return True
-
-        return False
 
 
     def getSection(self, section):
