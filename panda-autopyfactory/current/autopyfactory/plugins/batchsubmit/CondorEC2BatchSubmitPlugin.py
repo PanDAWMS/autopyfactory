@@ -115,15 +115,11 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         
         '''
         self.log.info("Beginning to unretire %d VM jobs..." % n)
-        jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo()
+        jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqueue.apfqname)
         if jobinfo:
-            try:
-                thisqueuejobs = jobinfo[self.apfqueue.apfqname]
-            except KeyError:
-                thisqueuejobs = []
             numtounretire = n
             numunretired = 0
-            for job in thisqueuejobs:
+            for job in jobinfo:
                 self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)
                 stat = job.executeinfo.getStatus()
                 if stat  == 'retiring':
