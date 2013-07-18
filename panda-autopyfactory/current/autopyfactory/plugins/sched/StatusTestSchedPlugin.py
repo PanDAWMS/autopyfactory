@@ -28,7 +28,7 @@ class StatusTestSchedPlugin(SchedInterface):
         self.siteinfo = self.apfqueue.wmsstatus_plugin.getSiteInfo(site=self.apfqueue.wmsqueue, maxtime = self.apfqueue.wmsstatusmaxtime)
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue=self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
 
-        if self.wmsqueueinfo is None or self.batchinfo or self.siteinfo is None:
+        if self.wmsqueueinfo is None or self.batchinfo is None or self.siteinfo is None:
             self.log.warning("wmsinfo, batchinfo, or siteinfo is None!")
             out = 0
             msg = "StatusTest:no wms/batch/siteinfo,ret=0"
