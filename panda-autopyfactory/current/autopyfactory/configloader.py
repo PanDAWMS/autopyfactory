@@ -189,7 +189,7 @@ class Config(SafeConfigParser, object):
                     pass
 
         
-    def generic_get(self, section, option, get_function='get', default_value = "None"):      
+    def generic_get(self, section, option, get_function='get', default_value = None):      
         '''
         generic get() method for Config objects.
         Inputs options are:
@@ -211,12 +211,12 @@ class Config(SafeConfigParser, object):
         has_option = self.has_option(section, option)
 
         if not has_option:
-            if not default_value:
-                self.log.debug('generic_get: option %s is not present in section %s.' %(option, section))
-                return None
-            else:
-                self.log.debug('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
-                return default_value
+            #if default_value is None:
+            #    self.log.debug('generic_get: option %s is not present in section %s. No default provided. Return None.' %(option, section))
+            #    return None
+            #else:
+            #    self.log.debug('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
+            return default_value
 
         else:
             get_f = getattr(self, get_function)
