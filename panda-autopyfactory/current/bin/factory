@@ -10,6 +10,7 @@ def main():
     to keep the RPM building system happy. 
     '''
     apf = FactoryCLI()
+    apf.presetups()
     apf.parseopts()
     apf.setuplogging()
     apf.platforminfo()
