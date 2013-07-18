@@ -800,9 +800,11 @@ class APFQueue(threading.Thread):
         # give information gathering, and proxy generation enough time to perhaps have info
         time.sleep(15)
         while not self.stopevent.isSet():
+            self.log.debug("APFQueue [%s] run(): Beginning submit cycle." % self.apfqname)
             try:
                 nsub = 0
                 fullmsg = ""
+                self.log.debug("APFQueue [%s] run(): Calling sched plugins..." % self.apfqname)
                 for sched_plugin in self.scheduler_plugins:
                     (nsub, msg) = sched_plugin.calcSubmitNum(nsub)
                     if msg:
@@ -811,10 +813,11 @@ class APFQueue(threading.Thread):
                         else:
                             fullmsg = msg
                         
-
+                self.log.debug("APFQueue[%s]: Plugins called. nsub=%s" % (self.apfqname, nsub))
                 jobinfolist = self._submitpilots(nsub)
+                self.log.debug("APFQueue[%s]: Submitted. Got joblist of %d jobs." % (self.apfqname, len(jobinfolist)))
                 for m in self.monitor_plugins:
-                    self.log.debug('run: calling registerJobs for monitor plugin %s' %m)
+                    self.log.debug('APFQueue[%s] run(): calling registerJobs for monitor plugin %s' %m)
                     m.registerJobs(self, jobinfolist)
                     if fullmsg:
                         self.log.debug('run: calling updateLabel for monitor plugin %s' %m)
@@ -824,8 +827,8 @@ class APFQueue(threading.Thread):
                           
             except Exception, e:
                 ms = str(e)
-                self.log.error("run: Caught exception: %s " % ms)
-                self.log.debug("run: Exception: %s" % traceback.format_exc())
+                self.log.error("APFQueue[%s] run(): Caught exception: %s " % (self.apfqname, ms))
+                self.log.debug("APFQueue[%s] run(): Exception: %s" % (self.apfqname, traceback.format_exc()))
             time.sleep(self.sleep)
 
     def _submitpilots(self, nsub):
