@@ -104,7 +104,7 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             return None    
         else:
             if cloud:
-                return self.currentcloudinfo[queue]
+                return self.currentcloudinfo[cloud]
             else:
                 self.log.debug('getInfo: Leaving. Returning info with %d items' %len(self.currentcloudinfo))
                 return self.currentcloudinfo
