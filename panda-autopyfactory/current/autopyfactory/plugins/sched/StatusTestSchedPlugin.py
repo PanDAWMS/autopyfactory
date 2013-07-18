@@ -44,4 +44,3 @@ class StatusTestSchedPlugin(SchedInterface):
 
         return (out, msg)
 
-

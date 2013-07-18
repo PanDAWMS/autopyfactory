@@ -40,7 +40,7 @@ class ReadySchedPlugin(SchedInterface):
             out = 0 
             msg = 'Invalid wmsinfo or batchinfo' 
         else:
-            (out, msg) = self._calc(input)
+            (out, msg) = self._calc(n)
         return (out, msg)
 
     def _calc(self, input):
