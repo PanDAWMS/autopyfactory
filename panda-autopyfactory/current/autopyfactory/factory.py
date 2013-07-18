@@ -817,10 +817,10 @@ class APFQueue(threading.Thread):
                 jobinfolist = self._submitpilots(nsub)
                 self.log.debug("APFQueue[%s]: Submitted. Joblist is %s" % (self.apfqname, jobinfolist))
                 for m in self.monitor_plugins:
-                    self.log.debug('APFQueue[%s] run(): calling registerJobs for monitor plugin %s' %m)
+                    self.log.debug('APFQueue[%s] run(): calling registerJobs for monitor plugin %s' % (self.apfqname, m))
                     m.registerJobs(self, jobinfolist)
                     if fullmsg:
-                        self.log.debug('run: calling updateLabel for monitor plugin %s' %m)
+                        self.log.debug('APFQueue[%s] run(): calling updateLabel for monitor plugin %s' % (self.apfqname, m))
                         m.updateLabel(self.apfqname, fullmsg)
                 self._exitloop()
                 self._logtime() 
