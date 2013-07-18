@@ -128,6 +128,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 return self.currentinfo
 
 
+
     def start(self):
         '''
         We override method start() to prevent the thread

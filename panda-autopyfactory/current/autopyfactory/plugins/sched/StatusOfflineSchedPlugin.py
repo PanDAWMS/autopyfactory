@@ -38,7 +38,7 @@ class StatusOfflineSchedPlugin(SchedInterface):
 
         if self.siteinfo:
             sitecloud = self.siteinfo.cloud
-            self.cloudinfo = self.apfqueue.batchstatus_plugin.getCloudInfo(cloud=sitecloud, 
+            self.cloudinfo = self.apfqueue.wmsstatus_plugin.getCloudInfo(cloud=sitecloud, 
                                                                   maxtime = self.apfqueue.batchstatusmaxtime)
 
         if self.wmsqueueinfo is None or self.batchinfo is None or self.cloudinfo is None:
