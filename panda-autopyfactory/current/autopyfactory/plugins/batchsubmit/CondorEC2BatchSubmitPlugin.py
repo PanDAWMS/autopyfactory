@@ -253,12 +253,11 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         
         '''
         self.log.info("Killretired process triggered. Searching...")
-        jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo()
+        jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqueue.apfqname)
         self.log.info("Finding and killing VM jobs in 'retired' state.")
         
         killlist = []
-        if jobinfo:
-            myjobs = jobinfo[self.apfqueue.apfqname]        
+        if jobinfo:        
             for j in myjobs:
                 self.log.debug("jobinfo is %s " % j)
                 if j.executeinfo:

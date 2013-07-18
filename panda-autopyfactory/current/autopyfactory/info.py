@@ -25,8 +25,7 @@ General info scheme:
                                                        .state1  -> 0
                                                        .state2  -> 123
        getJobInfo ->   BatchStatusInfo[apfqname] -> 
-             
-       
+                  
     WMSStatusPlugin
        getInfo   ->     WMSStatusInfo[wmsqname]  ->  JobsInfo(QueueInfo)
                                                            .state1 -> 0
