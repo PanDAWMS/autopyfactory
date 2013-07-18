@@ -189,7 +189,7 @@ class Config(SafeConfigParser, object):
                     pass
 
         
-    def generic_get(self, section, option, get_function='get', default_value):      
+    def generic_get(self, section, option, get_function='get', default_value=None):      
         '''
         generic get() method for Config objects.
         Inputs options are:
