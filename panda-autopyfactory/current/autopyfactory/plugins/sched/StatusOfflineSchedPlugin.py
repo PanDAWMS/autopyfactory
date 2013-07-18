@@ -50,7 +50,7 @@ class StatusOfflineSchedPlugin(SchedInterface):
             self.log.debug('calcSubmitNum: site status is %s' %sitestatus)
 
             cloudstatus = self.cloudinfo.status
-            self.log.debug('calcSubmitNum: cloud %s status is %s' %(cloud, cloudstatus))
+            self.log.debug('calcSubmitNum: cloud %s status is %s' %(sitecloud, cloudstatus))
 
             out = n
             msg = None
