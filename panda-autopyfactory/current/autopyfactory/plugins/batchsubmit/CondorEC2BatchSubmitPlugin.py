@@ -258,7 +258,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         
         killlist = []
         if jobinfo:        
-            for j in myjobs:
+            for j in jobinfo:
                 self.log.debug("jobinfo is %s " % j)
                 if j.executeinfo:
                     st = j.executeinfo.getStatus()
