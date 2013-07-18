@@ -215,7 +215,7 @@ class Config(SafeConfigParser, object):
             #    self.log.debug('generic_get: option %s is not present in section %s. No default provided. Return None.' %(option, section))
             #    return None
             #else:
-            #    self.log.debug('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
+            self.log.debug('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
             return default_value
 
         else:
