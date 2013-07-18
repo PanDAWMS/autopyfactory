@@ -50,6 +50,24 @@ class FactoryCLI(object):
         self.args = None
         self.log = None
         self.fcl = None
+
+    def presetups(self):
+        '''
+        we put here some preliminary steps that 
+        for one reason or another 
+        must be done before anything else
+        '''
+
+        # Adding custom TRACE level
+        # This must be done here, because parseopts()
+        # uses logging.TRACE, so it must be defined
+        # by that time
+        TRACE = 5
+        logging.addLevelName(TRACE, 'TRACE')
+        def trace(self, msg, *args, **kwargs):
+            self._log(TRACE, msg, args, **kwargs)
+        logging.Logger.trace = trace
+
     
     def parseopts(self):
         parser = OptionParser(usage='''%prog [OPTIONS]
@@ -65,6 +83,12 @@ Jose Caballero <jcaballero@bnl.gov>
 ''', version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $")
 
 
+        parser.add_option("--trace", 
+                          dest="logLevel", 
+                          default=logging.WARNING,
+                          action="store_const", 
+                          const=logging.TRACE, 
+                          help="Set logging level to TRACE [default WARNING], super verbose")
         parser.add_option("-d", "--debug", 
                           dest="logLevel", 
                           default=logging.WARNING,
@@ -179,12 +203,6 @@ Jose Caballero <jcaballero@bnl.gov>
 
         """
 
-        # Adding custom TRACE level
-        TRACE = 5
-        logging.addLevelName(TRACE, 'TRACE')
-        def trace(self, msg, *args, **kwargs):
-            self._log(TRACE, msg, args, **kwargs)
-        logging.Logger.trace = trace
 
 
         self.log = logging.getLogger()
