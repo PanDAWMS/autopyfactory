@@ -171,11 +171,21 @@ Jose Caballero <jcaballero@bnl.gov>
                 ERROR      Due to a more serious problem, the software has not been able to perform some function. 
                 CRITICAL   A serious error, indicating that the program itself may be unable to continue running. 
         
+        -- We add a new custom level -TRACE- to be more verbose than DEBUG.
+
         Info: 
         
           http://docs.python.org/howto/logging.html#logging-advanced-tutorial  
 
         """
+
+        # Adding custom TRACE level
+        TRACE = 5
+        logging.addLevelName(TRACE, 'TRACE')
+        def trace(self, msg, *args, **kwargs):
+            self._log(TRACE, msg, args, **kwargs)
+        logging.Logger.trace = trace
+
 
         self.log = logging.getLogger()
         if self.options.logfile == "stdout":
