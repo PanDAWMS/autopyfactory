@@ -202,6 +202,11 @@ class Config(SafeConfigParser, object):
         example of usage:
                 x = generic_get("Sec1", "x", get_function='getint', default_value=0  )
         '''
+        self.log.debug('generic_get: called for section %s option %s get_function %s default_value %s' % ( section,
+                                                                                                           option,
+                                                                                                           get_function,
+                                                                                                           default_value                                                                                                          
+                                                                                                          ))
 
         has_option = self.has_option(section, option)
 
