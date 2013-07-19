@@ -234,7 +234,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.log.error("_update: Exception: %s" % str(e))
                 self.log.debug("Exception: %s" % traceback.format_exc())            
 
-        self.log.debug('__update: Leaving.')
+        self.log.debug('_update: Leaving.')
 
 
 
