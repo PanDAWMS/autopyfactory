@@ -33,7 +33,7 @@ class MinPendingSchedPlugin(SchedInterface):
         msg = None
 
         pending_pilots = self.queueinfo.pending
-        if self.min_pilots_pending:
+        if self.min_pilots_pending is not None:
             out = max(n, self.min_pilots_pending - pending_pilots)     
             msg = "MinPending=%s,min=%s,pend=%s,ret=%s" %(n, self.min_pilots_pending, pending_pilots, out)
        
