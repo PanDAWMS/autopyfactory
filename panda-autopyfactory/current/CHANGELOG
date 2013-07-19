@@ -1,6 +1,10 @@
 ChangeLog
 ---------
 
+* fixed bug in some sched plugins, mixing None and 0 in the logic
+
+* add documentation to install.html (in verbatim, no html format)
+
 * removed all methods for FactoryCLI from bin/factory, and mainLoop() renamed to run()
 
 * added new custom logging level -TRACE- and using it for some long messages, like the output of condor_q in XML format
