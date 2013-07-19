@@ -34,7 +34,7 @@ class MaxToRunSchedPlugin(SchedInterface):
             pending_pilots = batchinfo.pending
             running_pilots = batchinfo.running
             all_pilots = pending_pilots + running_pilots
-            if self.max_to_run:
+            if self.max_to_run is not None:
                 out = min(n, self.max_to_run - all_pilots)
                 msg = "MaxToRun:in=%s,max=%s,pend=%s,run=%s,out=%s" % (n, 
                                                             self.max_to_run, 
