@@ -26,7 +26,7 @@ class MaxPerCycleSchedPlugin(SchedInterface):
         out = n
         msg = None
 
-        if self.max_pilots_per_cycle:
+        if self.max_pilots_per_cycle is not None:
             out = min(n, self.max_pilots_per_cycle)
             msg = "MaxPCycle:in=%s,max=%s,out=%s" %(orign, 
                                          self.max_pilots_per_cycle, 
