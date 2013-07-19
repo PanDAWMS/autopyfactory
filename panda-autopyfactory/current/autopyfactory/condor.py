@@ -187,7 +187,8 @@ def querycondor(queryargs=None):
     else:
         log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
         out = None
-    log.debug('_querycondor: Leaving. Out is %s' % out)
+    log.trace('_querycondor: Out is %s' % out)
+    log.debug('_querycondor: Leaving.')
     return out
 
 
@@ -198,7 +199,8 @@ def querycondorxml(queryargs=None):
     '''
     log = logging.getLogger()
     cmd = 'condor_q -xml '
-        # adding extra query args from queues.conf
+
+    # adding extra query args from queues.conf
     if queryargs:
         querycmd += queryargs 
        
@@ -215,7 +217,8 @@ def querycondorxml(queryargs=None):
     else:
         log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
         out = None
-    #log.debug('Leaving. Out is %s' % out)
+    log.trace('Out is %s' % out)
+    log.debug('Leaving.')
     return out
 
 
