@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* removed all methods for FactoryCLI from bin/factory, and mainLoop() renamed to run()
+
 * added new custom logging level: TRACE
 
 * configloader converts None in conf to Python None object. Change in default_value logic--if no default_value is provided
