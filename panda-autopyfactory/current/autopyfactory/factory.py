@@ -51,7 +51,15 @@ class FactoryCLI(object):
         self.log = None
         self.fcl = None
 
-    def presetups(self):
+        self.__presetups()
+        self.__parseopts()
+        self.__setuplogging()
+        self.__platforminfo()
+        self.__checkroot()
+        self.__createconfig()
+
+
+    def __presetups(self):
         '''
         we put here some preliminary steps that 
         for one reason or another 
@@ -69,7 +77,7 @@ class FactoryCLI(object):
         logging.Logger.trace = trace
 
     
-    def parseopts(self):
+    def __parseopts(self):
         parser = OptionParser(usage='''%prog [OPTIONS]
 autopyfactory is an ATLAS pilot factory.
 
@@ -151,7 +159,7 @@ Jose Caballero <jcaballero@bnl.gov>
 
         #self.options.confFiles = self.options.confFiles.split(',')
 
-    def setuplogging(self):
+    def __setuplogging(self):
         """ 
         Setup logging 
         
@@ -249,7 +257,7 @@ Jose Caballero <jcaballero@bnl.gov>
         self.log.debug('Environment : %s' %envmsg)
 
 
-    def platforminfo(self):
+    def __platforminfo(self):
         '''
         display basic info about the platform, for debugging purposes 
         '''
@@ -258,7 +266,7 @@ Jose Caballero <jcaballero@bnl.gov>
         self.log.info('platform: python version = %s' %platform.python_version())
         self._printenv()
 
-    def checkroot(self): 
+    def __checkroot(self): 
         """
         If running as root, drop privileges to --runas' account.
         """
@@ -327,7 +335,7 @@ Jose Caballero <jcaballero@bnl.gov>
         self.log.debug('_changewd: Switching working directory to %s' %runAs_home)
 
 
-    def createconfig(self):
+    def __createconfig(self):
         """Create config, add in options...
         """
         if self.options.confFiles != None:
@@ -341,7 +349,7 @@ Jose Caballero <jcaballero@bnl.gov>
         self.fcl.set("Factory", "sleepTime", str(self.options.sleepTime))
         self.fcl.set("Factory", "confFiles", self.options.confFiles)
            
-    def mainloop(self):
+    def run(self):
         """Create Factory and enter main loop
         """
 
