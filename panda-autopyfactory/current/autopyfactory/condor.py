@@ -374,6 +374,7 @@ def aggregateinfo(input):
             except KeyError:
                 qdict[attrkey][attrval] = 1
                    
+    log.debug('Aggregate: output is %s ' % queues)  # this could be trace() instead of debug()
     log.info('Aggregate: Created dict with %d queues.' % len(queues))
     return queues
 
