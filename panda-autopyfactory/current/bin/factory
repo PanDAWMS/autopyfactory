@@ -10,13 +10,15 @@ def main():
     to keep the RPM building system happy. 
     '''
     apf = FactoryCLI()
-    apf.presetups()
-    apf.parseopts()
-    apf.setuplogging()
-    apf.platforminfo()
-    apf.checkroot()
-    apf.createconfig()
-    apf.mainloop()
+    ###apf.presetups()
+    ###apf.parseopts()
+    ###apf.setuplogging()
+    ###apf.platforminfo()
+    ###apf.checkroot()
+    ###apf.createconfig()
+
+    #apf.mainloop()
+    apf.run()
         
 if __name__ == "__main__":
     main()
