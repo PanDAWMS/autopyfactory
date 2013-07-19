@@ -3,7 +3,7 @@ ChangeLog
 
 * removed all methods for FactoryCLI from bin/factory, and mainLoop() renamed to run()
 
-* added new custom logging level: TRACE
+* added new custom logging level -TRACE- and using it for some long messages, like the output of condor_q in XML format
 
 * configloader converts None in conf to Python None object. Change in default_value logic--if no default_value is provided
   then generic_get returns None. 
