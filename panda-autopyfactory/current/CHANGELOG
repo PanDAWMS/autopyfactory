@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* method name removed from log messages.
+
 * fixed bug in some sched plugins, mixing None and 0 in the logic
 
 * add documentation to install.html (in verbatim, no html format)
