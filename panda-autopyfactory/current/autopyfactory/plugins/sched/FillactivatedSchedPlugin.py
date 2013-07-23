@@ -89,9 +89,9 @@ class FillactivatedSchedPlugin(SchedInterface):
 
         out = max(0, activated_jobs - pending_pilots)
         
-        self.log.info('_calc_online (activated=%s; pending=%s; running=%s;) : Return=%s' %(activated_jobs, 
-                                                                                         pending_pilots, 
-                                                                                         running_pilots, 
-                                                                                         out))
+        self.log.info('activated=%s; pending=%s; running=%s; Return=%s' %(activated_jobs, 
+                                                                          pending_pilots, 
+                                                                          running_pilots, 
+                                                                          out))
         msg = "Fillactivated,act=%s,pend=%s,run=%s,ret=%s" %(activated_jobs, pending_pilots, running_pilots, out)
         return (out, msg)
