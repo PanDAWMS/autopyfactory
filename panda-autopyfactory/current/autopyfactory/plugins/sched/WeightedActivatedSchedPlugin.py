@@ -31,27 +31,27 @@ class WeightedActivatedSchedPlugin(SchedInterface):
         to both values: activated and pending
         """
 
-        self.log.debug('calcSubmitNum: Starting.')
+        self.log.debug('Starting.')
 
         self.wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
 
         if self.wmsinfo is None:
-            self.log.warning("calcSubmitNum: wsinfo is None!")
+            self.log.warning("wsinfo is None!")
             out = self.default
             msg = "Weighted,no wmsinfo,ret=%s" %out
         elif self.batchinfo is None:
-            self.log.warning("calcSubmitNum: self.batchinfo is None!")
+            self.log.warning("self.batchinfo is None!")
             out = self.default            
             msg = "Weighted,no batchinfo,ret=%s" %out
         elif not self.wmsinfo.valid() and self.batchinfo.valid():
             out = self.default
             msg = "Weighted,no wms/batchinfo,ret=%s" %out
-            self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
+            self.log.warn('a status is not valid, returning default = %s' %out)
         else:
             # Carefully get wmsinfo, activated. 
             self.wmsqueue = self.apfqueue.wmsqueue
-            self.log.info("calcSubmitNum: wmsqueue is %s" % self.wmsqueue)
+            self.log.info("wmsqueue is %s" % self.wmsqueue)
 
             (out, msg) = self._calc()
         return (out, msg)
@@ -63,15 +63,15 @@ class WeightedActivatedSchedPlugin(SchedInterface):
         pending_pilots = 0
 
         jobsinfo = self.wmsinfo.jobs
-        self.log.debug("_calc: jobsinfo class is %s" % jobsinfo.__class__ )
+        self.log.debug("jobsinfo class is %s" % jobsinfo.__class__ )
 
         try:
             sitedict = jobsinfo[self.wmsqueue]
-            self.log.debug("_calc: sitedict class is %s" % sitedict.__class__ )
+            self.log.debug("sitedict class is %s" % sitedict.__class__ )
             activated_jobs = sitedict.ready
         except KeyError:
             # This is OK--it just means no jobs in any state at the wmsqueue. 
-            self.log.error("_calc: wmsqueue %s not present in jobs info from WMS" % self.wmsqueue)
+            self.log.error("wmsqueue %s not present in jobs info from WMS" % self.wmsqueue)
             activated_jobs = 0
         try:
             pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending  # using the new info objects

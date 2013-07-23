@@ -102,19 +102,19 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         None is returned, as we understand that info is too old and 
         not reliable anymore.
         '''           
-        self.log.debug('getInfo: Starting with maxtime=%s' % maxtime)
+        self.log.debug('Starting with maxtime=%s' % maxtime)
         
         if self.currentinfo is None:
-            self.log.debug('getInfo: Not initialized yet. Returning None.')
+            self.log.debug('Not initialized yet. Returning None.')
             return None
         elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
-            self.log.debug('getInfo: Info too old. Leaving and returning None.')
+            self.log.debug('Info too old. Leaving and returning None.')
             return None
         else:
             if queue:
                 return self.currentinfo[queue]
             else:                    
-                self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentinfo))
+                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentinfo))
                 return self.currentinfo
 
     def getJobInfo(self, queue=None, maxtime=0):
@@ -148,21 +148,21 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         to be started more than once
         '''
 
-        self.log.debug('start: Starting')
+        self.log.debug('Starting')
 
         if not self.__started:
                 self.log.debug("Creating Condor batch status thread...")
                 self.__started = True
                 threading.Thread.start(self)
 
-        self.log.debug('start: Leaving.')
+        self.log.debug('Leaving.')
 
     def run(self):
         '''
         Main loop
         '''
 
-        self.log.debug('run: Starting')
+        self.log.debug('Starting')
         while not self.stopevent.isSet():
             try:
                 self._update()
@@ -170,7 +170,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.log.error("Main loop caught exception: %s " % str(e))
             self.log.debug("Sleeping for %d seconds..." % self.sleeptime)
             time.sleep(self.sleeptime)
-        self.log.debug('run: Leaving')
+        self.log.debug('Leaving')
 
 
     def _update(self):
@@ -183,7 +183,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             update currentinfo
                 
         '''
-        self.log.debug('_update: Starting.')
+        self.log.debug('Starting.')
 
         exelist = None
         slotlist = None
@@ -191,7 +191,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
        
         if not utils.checkDaemon('condor'):
-            self.log.warning('_update: condor daemon is not running. Doing nothing')
+            self.log.warning('condor daemon is not running. Doing nothing')
         else:
             try:
                 exelist = self._makeexelist()
@@ -272,7 +272,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             except Exception, e:
                 self.log.exception("Problem handling Condor info.")
 
-        self.log.debug('__update: Leaving.')
+        self.log.debug('_ Leaving.')
 
 
     def _makeexelist(self):
@@ -284,7 +284,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         exelist = None
         xmlout = statuscondormaster()
         if not xmlout:
-            self.log.warning('_makeexelist: output of statuscondormaster() is not valid. Not parsing it. Skip to next loop.') 
+            self.log.warning('output of statuscondormaster() is not valid. Not parsing it. Skip to next loop.') 
         else:
             dictlist = parseoutput(xmlout)
             exelist = self._dicttoexelist(dictlist)
@@ -296,7 +296,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         slotlist = []
         xmlout = statuscondor()
         if not xmlout:
-            self.log.warning('_makeslotlist: output of statuscondor() is not valid. Not parsing it. Skip to next loop.') 
+            self.log.warning('output of statuscondor() is not valid. Not parsing it. Skip to next loop.') 
         else:
             dictlist = parseoutput(xmlout)
             slotlist = self._dicttoslotlist(dictlist)
@@ -306,7 +306,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
     def _makejoblist(self, dictlist):
         joblist = {}
         if not dictlist:
-            self.log.warning('_makejoblist: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
+            self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
         else:
             joblist = self._dicttojoblist(dictlist)
             self.log.debug("Created indexed joblist of length %d" % len(joblist))
@@ -321,7 +321,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
         newinfo = None
         if not dictlist:
-            self.log.warning('_makeinfolist: output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
+            self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
         else:
             aggdict = aggregateinfo(dictlist)
             newinfo = self._map2info(aggdict)
@@ -512,7 +512,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
     
         
         '''
-        self.log.debug('_map2info: Starting.')
+        self.log.debug('Starting.')
         batchstatusinfo = BatchStatusInfo()
         for site in input.keys():
             qi = QueueInfo()
@@ -522,9 +522,9 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             qi.fill(valdict, mappings=self.jobstatus2info)
                     
         batchstatusinfo.lasttime = int(time.time())
-        self.log.debug('_map2info: Returning BatchStatusInfo: %s' % batchstatusinfo)
+        self.log.debug('Returning BatchStatusInfo: %s' % batchstatusinfo)
         for site in batchstatusinfo.keys():
-            self.log.debug('_map2info: Queue %s = %s' % (site, batchstatusinfo[site]))           
+            self.log.debug('Queue %s = %s' % (site, batchstatusinfo[site]))           
         return batchstatusinfo
 
     def join(self, timeout=None):
@@ -532,11 +532,11 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         Stop the thread. Overriding this method required to handle Ctrl-C from console.
         ''' 
 
-        self.log.debug('join: Starting with input %s' %timeout)
+        self.log.debug('Starting with input %s' %timeout)
         self.stopevent.set()
         self.log.debug('Stopping thread....')
         threading.Thread.join(self, timeout)
-        self.log.debug('join: Leaving')
+        self.log.debug('Leaving')
 
 
 

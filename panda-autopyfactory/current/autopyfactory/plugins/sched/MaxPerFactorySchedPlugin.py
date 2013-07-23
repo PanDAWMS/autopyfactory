@@ -28,7 +28,7 @@ class MaxPerFactorySchedPlugin(SchedInterface):
         """ 
         """
 
-        self.log.debug('calcSubmitNum: Starting.')
+        self.log.debug('Starting.')
 
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
 
@@ -36,7 +36,7 @@ class MaxPerFactorySchedPlugin(SchedInterface):
         for batchqueue in self.batchinfo.keys():  
             self.total_pilots += self.batchinfo[batchqueue].running
             self.total_pilots += self.batchinfo[batchqueue].pending
-        self.log.info('calcSubmitNum: the total number of current pending+running pilots being handled by the factory is %s' %self.total_pilots)
+        self.log.info('the total number of current pending+running pilots being handled by the factory is %s' %self.total_pilots)
 
         out = n
         msg = None
@@ -48,9 +48,9 @@ class MaxPerFactorySchedPlugin(SchedInterface):
 
         # Catch all to prevent negative numbers
         #if n < 0:
-        #    self.log.info('calcSubmitNum: calculated output was negative. Returning 0')
+        #    self.log.info('calculated output was negative. Returning 0')
         #    out = 0
 
-        self.log.info('calcSubmitNum: initial n = %s total_pilots = %s max_per_factory = %s Return=%s' %(n, self.total_pilots, self.max_pilots_per_factory, out))
+        self.log.info('initial n = %s total_pilots = %s max_per_factory = %s Return=%s' %(n, self.total_pilots, self.max_pilots_per_factory, out))
         msg = 'MaxPerFactory=%s,total=%s,max=%s,ret=%s' %(n, self.total_pilots, self.max_pilots_per_factory, out)
         return (out, msg)

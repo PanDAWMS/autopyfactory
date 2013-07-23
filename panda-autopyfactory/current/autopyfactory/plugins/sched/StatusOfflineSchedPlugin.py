@@ -26,7 +26,7 @@ class StatusOfflineSchedPlugin(SchedInterface):
 
     def calcSubmitNum(self, n=0):
         
-        self.log.debug('calcSubmitNum: Starting.')
+        self.log.debug('Starting.')
         self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue=self.apfqueue.wmsqueue, 
                                                                    maxtime = self.apfqueue.wmsstatusmaxtime)
         
@@ -47,17 +47,17 @@ class StatusOfflineSchedPlugin(SchedInterface):
             msg = "StatusOffline:no wms/batch/cloudinfo,ret=0"
         else:
             sitestatus = self.siteinfo.status
-            self.log.debug('calcSubmitNum: site status is %s' %sitestatus)
+            self.log.debug('site status is %s' %sitestatus)
 
             cloudstatus = self.cloudinfo.status
-            self.log.debug('calcSubmitNum: cloud %s status is %s' %(sitecloud, cloudstatus))
+            self.log.debug('cloud %s status is %s' %(sitecloud, cloudstatus))
 
             out = n
             msg = None
 
             # choosing algorithm 
             if cloudstatus == 'offline' or sitestatus == 'offline':
-                self.log.info('calcSubmitNum: Return=%s' %self.pilots_in_offline_mode)
+                self.log.info('Return=%s' %self.pilots_in_offline_mode)
                 out = self.pilots_in_offline_mode
                 msg = "StatusOffline,ret=%s" %(self.pilots_in_offline_mode)
 

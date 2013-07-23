@@ -21,7 +21,7 @@ class MinPerCycleSchedPlugin(SchedInterface):
 
     def calcSubmitNum(self, n=0):
 
-        self.log.debug('calcSubmitNum: Starting with n=%s' %n)
+        self.log.debug('Starting with n=%s' %n)
 
         out = n
         msg = None
@@ -31,5 +31,5 @@ class MinPerCycleSchedPlugin(SchedInterface):
             msg = "MinPerCycle=%s,min=%s,ret=%s" %(n, self.min_pilots_per_cycle, out)
 
                
-        self.log.info('calcSubmitNum: Return=%s' %out)
+        self.log.info('Return=%s' %out)
         return (out, msg)

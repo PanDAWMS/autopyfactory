@@ -23,7 +23,7 @@ class StatusTestSchedPlugin(SchedInterface):
 
     def calcSubmitNum(self, n=0):
         
-        self.log.debug('calcSubmitNum: Starting.')
+        self.log.debug('Starting.')
         self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue=self.apfqueue.wmsqueue, maxtime = self.apfqueue.wmsstatusmaxtime)
         self.siteinfo = self.apfqueue.wmsstatus_plugin.getSiteInfo(site=self.apfqueue.wmsqueue, maxtime = self.apfqueue.wmsstatusmaxtime)
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue=self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
@@ -34,11 +34,11 @@ class StatusTestSchedPlugin(SchedInterface):
             msg = "StatusTest:no wms/batch/siteinfo,ret=0"
         else:
             sitestatus = self.siteinfo.status
-            self.log.debug('calcSubmitNum: site status is %s' %sitestatus)
+            self.log.debug('site status is %s' %sitestatus)
             out = n
             msg = None
             if sitestatus == 'test':
-                self.log.info('calcSubmitNum: Return=%s' %self.pilots_in_test_mode)
+                self.log.info('Return=%s' %self.pilots_in_test_mode)
                 out= self.pilots_in_test_mode
                 msg='StatusTest,ret=%s' %self.pilots_in_test_mode
 

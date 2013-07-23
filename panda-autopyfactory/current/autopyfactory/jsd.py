@@ -35,7 +35,7 @@ class JSDFile(object):
         """
         """
 
-        self.log.debug('add: Starting.')
+        self.log.debug('Starting.')
 
         if len(k) == 1:
             line = k[0]
@@ -45,7 +45,7 @@ class JSDFile(object):
             value = k[1]
             self.directive_dict[key] = value
 
-        self.log.debug('add: Leaving.')
+        self.log.debug('Leaving.')
 
 
     def write(self, path, filename):
@@ -70,7 +70,7 @@ class JSDFile(object):
 
     def _dump(self, jsdfilename):
 
-        self.log.debug('_dump: Starting.')
+        self.log.debug('Starting.')
 
         jsdfile = open(jsdfilename, 'w')
 
@@ -81,7 +81,7 @@ class JSDFile(object):
 
         jsdfile.close()
 
-        self.log.debug('_dump: Leaving.')
+        self.log.debug('Leaving.')
 
 
 # ==============================================================================

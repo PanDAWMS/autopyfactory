@@ -184,20 +184,20 @@ class Config(SafeConfigParser, object):
         example of usage:
                 x = generic_get("Sec1", "x", get_function='getint', default_value=0  )
         '''
-        self.log.debug('generic_get: called for section %s option %s get_function %s default_value %s' % ( section,
+        self.log.debug('called for section %s option %s get_function %s default_value %s' % ( section,
                                                                                                            option,
                                                                                                            get_function,
                                                                                                            default_value ))                                                                                                         
         has_option = self.has_option(section, option)
         if not has_option:
-            self.log.debug('generic_get: option %s is not present in section %s. Return default %s' %(option, section, default_value))
+            self.log.debug('option %s is not present in section %s. Return default %s' %(option, section, default_value))
             return default_value
         else:
             get_f = getattr(self, get_function)
             value = get_f(section, option)
             if value == "None":
                 value = None
-            self.log.debug('generic_get: option %s in section %s has value %s' %(option, section, value))
+            self.log.debug('option %s in section %s has value %s' %(option, section, value))
             return value
 
 

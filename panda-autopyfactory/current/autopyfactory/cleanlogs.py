@@ -54,7 +54,7 @@ class CleanLogs(threading.Thread):
         '''
         Main loop
         '''
-        self.log.debug('run: Starting.')
+        self.log.debug('Starting.')
 
         while True:
             try:
@@ -62,24 +62,24 @@ class CleanLogs(threading.Thread):
                     self.__process()
                     self.__sleep()
             except Exception, e:
-                self.log.error("run: Main loop caught exception: %s " % str(e))
+                self.log.error("Main loop caught exception: %s " % str(e))
         
-        self.log.debug('run: Leaving.')
+        self.log.debug('Leaving.')
 
     def __process(self):
         '''
         loops over all directories to perform cleaning actions
         '''
 
-        self.log.debug("__process: Starting.")
+        self.log.debug("Starting.")
 
         dirmgr = DirMgr(self.logDir)
         dirs = dirmgr.dirs
         for dir in dirs:
             self.__processdir(dir)
-        self.log.debug("__process: Processed %d directories." % len(dirs))
+        self.log.debug("Processed %d directories." % len(dirs))
             
-        self.log.debug("__process: Leaving.")
+        self.log.debug("Leaving.")
 
 
     def __processdir(self, dir):
@@ -88,12 +88,12 @@ class CleanLogs(threading.Thread):
         dir is a Dir object
         ''' 
 
-        self.log.debug("__processdir: Starting with input %s." %dir.dir)
+        self.log.debug("Starting with input %s." %dir.dir)
 
         self.keepdays = KeepDays(self.fcl, self.qcl)
         dir.rm(self.keepdays)
 
-        self.log.debug("__processdir: Leaving.")
+        self.log.debug("Leaving.")
 
 
     def __sleep(self):
@@ -122,7 +122,7 @@ class KeepDays(object):
 
     def __inspect(self):
 
-        self.log.debug('__inspect: Starting.')
+        self.log.debug('Starting.')
 
         self.factory_keepdays = self.fcl.generic_get('Factory', 'cleanlogs.keepdays', 'getint')
         self.queues_keepdays = {}
@@ -130,7 +130,7 @@ class KeepDays(object):
             keepdays = self.qcl.generic_get(apfqname, 'cleanlogs.keepdays', 'getint')
             self.queues_keepdays[apfqname] = keepdays
 
-        self.log.debug('__inspect: Leaving.')
+        self.log.debug('Leaving.')
 
     def get(self, apfqname):
         return self.queues_keepdays.get(apfqname, self.factory_keepdays) 
@@ -152,9 +152,9 @@ class DirMgr(object):
     def getdirs(self):
  
         if not os.access(self.basedir, os.F_OK):
-            self.log.warning('getdirs: Base log directory %s does not exist - nothing to do',
+            self.log.warning('Base log directory %s does not exist - nothing to do',
                       self.basedir)
-            self.log.warning("getdirs: Leaving with no output.") 
+            self.log.warning("Leaving with no output.") 
             return []
         # else (==the base directory exists)
         dirs = []
@@ -163,7 +163,7 @@ class DirMgr(object):
             if dir_obj:
                 dirs.append(dir_obj)
 
-        self.log.debug('getdirs: Leaving return %s dirs' %len(dirs))
+        self.log.debug('Leaving return %s dirs' %len(dirs))
         return dirs
                 
            
@@ -234,7 +234,7 @@ class Dir(object):
 
         self.rm_subdirs(keepdays)
         if self.empty(): 
-            self.log.info('rm: Deleting directory: %s' %self.dir)
+            self.log.info('Deleting directory: %s' %self.dir)
             os.rmdir(self.path)     
 
         self.log.debug('rm for dir %s: Leaving.' %self.dir)
@@ -245,12 +245,12 @@ class Dir(object):
         keepdays is a KeepDays object
         '''
         
-        self.log.debug('rm_subdirs: Starting.')
+        self.log.debug('Starting.')
 
         for subdir in self.subdirs():
             subdir.rm(keepdays)
 
-        self.log.debug('rm_subdirs: Leaving.')
+        self.log.debug('Leaving.')
 
 
 class SubDir(object):
@@ -287,7 +287,7 @@ class SubDir(object):
         else:
             if delta_days > days:
                 if os.path.exists(self.path):
-                    self.log.info("rm: Deleting subdirectory %s ..." % self.path)
+                    self.log.info("Deleting subdirectory %s ..." % self.path)
                     shutil.rmtree(self.path)
 
         self.log.debug('rm for subdir %s: Leaving.' %self.subdir)

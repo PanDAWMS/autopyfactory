@@ -55,7 +55,7 @@ class ActivatedSchedPlugin(SchedInterface):
         then this min_pilots_per_cycle is the number of pilots 
         to be submitted.
         """
-        self.log.debug('calcSubmitNum: Starting.')
+        self.log.debug('Starting.')
 
         self.wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
@@ -68,7 +68,7 @@ class ActivatedSchedPlugin(SchedInterface):
             out = self.default            
         elif not self.wmsinfo.valid() and self.batchinfo.valid():
             out = self.default
-            self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
+            self.log.warn('a status is not valid, returning default = %s' %out)
         else:
             # Carefully get wmsinfo, activated. 
             self.wmsqueue = self.apfqueue.wmsqueue
@@ -76,12 +76,12 @@ class ActivatedSchedPlugin(SchedInterface):
 
             siteinfo = self.wmsinfo.site
             sitestatus = siteinfo[self.wmsqueue].status
-            self.log.info('calcSubmitNum: site status is %s' %sitestatus)
+            self.log.info('site status is %s' %sitestatus)
 
             cloud = siteinfo[self.wmsqueue].cloud
             cloudinfo = self.wmsinfo.cloud
             cloudstatus = cloudinfo[cloud].status
-            self.log.info('calcSubmitNum: cloud %s status is %s' %(cloud, cloudstatus))
+            self.log.info('cloud %s status is %s' %(cloud, cloudstatus))
 
             # choosing algorithm 
             if cloudstatus == 'offline':
@@ -161,7 +161,7 @@ class ActivatedSchedPlugin(SchedInterface):
         algorithm when wmssite is in test mode
         '''
         if not self.testmode:
-            self.log.info('_calc_test: testmode is not enabled. Calling the normal online algorithm')
+            self.log.info('testmode is not enabled. Calling the normal online algorithm')
             return self._calc_online()
 
         pending_pilots = 0
@@ -174,12 +174,12 @@ class ActivatedSchedPlugin(SchedInterface):
 
         if pending_pilots > self.max_pending_in_test_mode:
             out = 0
-            self.log.info('_calc_test: (pending=%s > max_pending=%s;) : Return=%s' %(pending_pilots,
+            self.log.info('(pending=%s > max_pending=%s;) : Return=%s' %(pending_pilots,
                                                                                    self.max_pending_in_test_mode,
                                                                                    out))
         else:
             out = self.pilots_in_test_mode
-            self.log.info('_calc_test: (pending=%s; max_pending=%s;) : Return=%s' %(pending_pilots,
+            self.log.info('(pending=%s; max_pending=%s;) : Return=%s' %(pending_pilots,
                                                                                   self.max_pending_in_test_mode,
                                                                                   out))
 

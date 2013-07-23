@@ -42,24 +42,24 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         '''
     
         # print condor version
-        self.log.debug('_checkCondor: condor version is: \n%s' %commands.getoutput('condor_version'))
+        self.log.debug('condor version is: \n%s' %commands.getoutput('condor_version'))
     
         # check env var $CONDOR_CONFIG
         CONDOR_CONFIG = os.environ.get('CONDOR_CONFIG', None)
         if CONDOR_CONFIG:
-            self.log.debug('_checkCondor: environment variable CONDOR_CONFIG set to %s' %CONDOR_CONFIG)
+            self.log.debug('environment variable CONDOR_CONFIG set to %s' %CONDOR_CONFIG)
         else:
             condor_config = '/etc/condor/condor_config'
             if os.path.isfile(condor_config):
-                self.log.debug('_checkCondor: using condor config file: %s' %condor_config)
+                self.log.debug('using condor config file: %s' %condor_config)
             else:
                 condor_config = '/usr/local/etc/condor_config'
                 if os.path.isfile(condor_config):
-                    self.log.debug('_checkCondor: using condor config file: %s' %condor_config)
+                    self.log.debug('using condor config file: %s' %condor_config)
                 else:
                     condor_config = os.path.expanduser('~condor/condor_config')
                     if os.path.isfile(condor_config):
-                        self.log.debug('_checkCondor: using condor config file: %s' %condor_config)
+                        self.log.debug('using condor config file: %s' %condor_config)
 
     def _readconfig(self, qcl):
         '''
@@ -112,7 +112,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         joblist = None
 
         if not utils.checkDaemon('condor'):
-            self.log.info('submit: condor daemon is not running. Doing nothing')
+            self.log.info('condor daemon is not running. Doing nothing')
             return joblist
 
         if n > 0:
@@ -120,19 +120,19 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             self.JSD = jsd.JSDFile()
             valid = self._readconfig()
             if not valid:
-                self.log.error('submit: self._readconfig returned False, we cannot submit.')
+                self.log.error('self._readconfig returned False, we cannot submit.')
             else:
-                self.log.debug('submit: self._readconfig returned True. Keep going...')
+                self.log.debug('self._readconfig returned True. Keep going...')
                 self._addJSD()
                 self._custom_attrs()
                 self._finishJSD(n)
                 jsdfile = self._writeJSD()
                 if jsdfile:
                     st, output = self.__submit(n, jsdfile)
-                    self.log.debug('submit: Got output (%s, %s).' %(st, output)) 
+                    self.log.debug('Got output (%s, %s).' %(st, output)) 
                     joblist = self._parseCondorSubmit(output)
                 else:
-                    self.log.info('submit: jsdfile has no value. Doing nothing')
+                    self.log.info('jsdfile has no value. Doing nothing')
         elif n < 0:
             # For certain plugins, this means to retire or terminate nodes...
             self.log.debug('Preparing to retire %s jobs' % abs(n))
@@ -253,7 +253,7 @@ x509UserProxyVOName = "atlas"
 
         '''
         
-        self.log.debug('_parseCondorSubmit: Starting')
+        self.log.debug('Starting')
 
         now = datetime.datetime.utcnow()
         joblist = []
@@ -267,10 +267,10 @@ x509UserProxyVOName = "atlas"
                 ji = JobInfo(procid, 'submitted', now)
                 joblist.append(ji)
         if not len(joblist) > 0:
-            self.log.debug('_parseCondorSubmit: joblist has length 0, returning None')
+            self.log.debug('joblist has length 0, returning None')
             joblist = None
 
-        self.log.debug('_parseCondorSubmit: Leaving with joblist = %s' %joblist )
+        self.log.debug('Leaving with joblist = %s' %joblist )
         return joblist
         
     
@@ -385,28 +385,28 @@ x509UserProxyVOName = "atlas"
         Submit pilots
         '''
 
-        self.log.debug('__submit: Starting.')
+        self.log.debug('Starting.')
 
         self.log.info('Attempt to submit %d pilots for queue %s' %(n, self.wmsqueue))
 
         cmd = 'condor_submit -verbose '
-        self.log.debug('__submit: submitting using executable condor_submit from PATH=%s' %utils.which('condor_submit'))
+        self.log.debug('submitting using executable condor_submit from PATH=%s' %utils.which('condor_submit'))
         # NOTE: -verbose is needed. 
         # The output generated with -verbose is parsed by the monitor code to determine the number of jobs submitted
         if self.submitargs:
             cmd += self.submitargs
         cmd += ' ' + jsdfile
-        self.log.info('__submit: command = %s' %cmd)
+        self.log.info('command = %s' %cmd)
 
         (exitStatus, output) = commands.getstatusoutput(cmd)
         if exitStatus != 0:
-            self.log.error('__submit: condor_submit command for %s failed (status %d): %s', self.wmsqueue, exitStatus, output)
+            self.log.error('condor_submit command for %s failed (status %d): %s', self.wmsqueue, exitStatus, output)
         else:
-            self.log.info('__submit: condor_submit command for %s succeeded', self.wmsqueue)
+            self.log.info('condor_submit command for %s succeeded', self.wmsqueue)
         st, out = exitStatus, output
 
 
-        self.log.debug('__submit: Leaving with output (%s, %s).' %(st, out))
+        self.log.debug('Leaving with output (%s, %s).' %(st, out))
         return st, out
 
 

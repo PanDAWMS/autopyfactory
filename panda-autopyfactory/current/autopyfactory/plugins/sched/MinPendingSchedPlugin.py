@@ -23,7 +23,7 @@ class MinPendingSchedPlugin(SchedInterface):
 
     def calcSubmitNum(self, n=0):
 
-        self.log.debug('calcSubmitNum: Starting with n=%s' %n)
+        self.log.debug('Starting with n=%s' %n)
 
         #self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
         self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, 
@@ -38,6 +38,6 @@ class MinPendingSchedPlugin(SchedInterface):
             msg = "MinPending=%s,min=%s,pend=%s,ret=%s" %(n, self.min_pilots_pending, pending_pilots, out)
        
            
-        self.log.info('calcSubmitNum: (min_pilots_pending=%s; pending=%s) : Return=%s' %(self.min_pilots_pending, 
+        self.log.info('(min_pilots_pending=%s; pending=%s) : Return=%s' %(self.min_pilots_pending, 
                                                                                          pending_pilots, out))
         return (out, msg) 

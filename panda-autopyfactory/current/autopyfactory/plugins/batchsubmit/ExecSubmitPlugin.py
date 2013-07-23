@@ -48,7 +48,7 @@ class ExecSubmitPlugin(BatchSubmitInterface):
         qcl is the QueueConfigLoader object
         '''
 
-        self.log.debug('submitPilots: Starting with inputs wmsqueue=%s nbpilots=%s fcl=%s qcl=%s' %(wmsqueue, nbpilots, fcl, qcl)) 
+        self.log.debug('Starting with inputs wmsqueue=%s nbpilots=%s fcl=%s qcl=%s' %(wmsqueue, nbpilots, fcl, qcl)) 
 
         self.wmsqueue = wmsqueue 
         self.nbpilots = nbpilots
@@ -67,7 +67,7 @@ class ExecSubmitPlugin(BatchSubmitInterface):
         else:
             st, output = (None, None)
 
-        self.log.debug('submitPilots: Leaving with output (%s, %s).' %(st, output))
+        self.log.debug('Leaving with output (%s, %s).' %(st, output))
         return st, output
     
     def cleanup(self):
@@ -79,7 +79,7 @@ class ExecSubmitPlugin(BatchSubmitInterface):
         copies the executable file inside
         '''
 
-        self.log.debug('__prepareExecutable: Starting.')
+        self.log.debug('Starting.')
 
         if not os.access(self.logDir, os.F_OK):
             try:
@@ -91,7 +91,7 @@ class ExecSubmitPlugin(BatchSubmitInterface):
                 self.log.error('__writeJSDFile: Cannot submit pilots for %s', self.wmsqueue)
                 return
 
-        self.log.debug('__prepareExecutable: Leaving.')
+        self.log.debug('Leaving.')
     
     
     def __run(self):
@@ -99,7 +99,7 @@ class ExecSubmitPlugin(BatchSubmitInterface):
         run jobs locally  
         '''
 
-        self.log.debug('__run: Starting.')
+        self.log.debug('Starting.')
 
         executable = os.path.basename(self.executable)
 
@@ -116,5 +116,5 @@ class ExecSubmitPlugin(BatchSubmitInterface):
         st, out = exitStatus, output
 
 
-        self.log.debug('__run: Leaving with output (%s, %s).' %(st, out))
+        self.log.debug('Leaving with output (%s, %s).' %(st, out))
         return st, out

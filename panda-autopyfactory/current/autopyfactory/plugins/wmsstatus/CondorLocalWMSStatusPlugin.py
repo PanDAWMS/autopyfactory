@@ -88,52 +88,52 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         None is returned, as we understand that info is too old and 
         not reliable anymore.
         '''           
-        self.log.debug('getInfo: Starting with maxtime=%s' % maxtime)
+        self.log.debug('Starting with maxtime=%s' % maxtime)
         
         if self.currentjobinfo is None:
-            self.log.debug('getInfo: Not initialized yet. Returning None.')
+            self.log.debug('Not initialized yet. Returning None.')
             return None
         elif maxtime > 0 and (int(time.time()) - self.currentjobinfo.lasttime) > maxtime:
-            self.log.debug('getInfo: Info too old. Leaving and returning None.')
+            self.log.debug('Info too old. Leaving and returning None.')
             return None
         else:
             if queue:
                 return self.currentjobinfo[queue]                    
             else:
-                self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentjobinfo))
+                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentjobinfo))
                 return self.currentjobinfo
 
     def getCloudInfo(self, cloud=None, maxtime=0):
-        self.log.debug('getCloudInfo: Starting with maxtime=%s' % maxtime)
+        self.log.debug('Starting with maxtime=%s' % maxtime)
         
         if self.currentcloudinfo is None:
-            self.log.debug('getCloudInfo: Not initialized yet. Returning None.')
+            self.log.debug('Not initialized yet. Returning None.')
             return None
         elif maxtime > 0 and (int(time.time()) - self.currentcloudinfo.lasttime) > maxtime:
-            self.log.debug('getCloudInfo: Info too old. Leaving and returning None.')
+            self.log.debug('Info too old. Leaving and returning None.')
             return None
         else:
             if cloud:
                 return self.currentcloudinfo[queue]                    
             else:
-                self.log.debug('getCloudInfo: Leaving and returning info of %d entries.' % len(self.currentcloudinfo))
+                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentcloudinfo))
                 return self.currentcloudinfo
 
 
     def getSiteInfo(self, site=None, maxtime=0):
-        self.log.debug('getSiteInfo: Starting with maxtime=%s' % maxtime)
+        self.log.debug('Starting with maxtime=%s' % maxtime)
         
         if self.currentsiteinfo is None:
-            self.log.debug('getSiteInfo: Not initialized yet. Returning None.')
+            self.log.debug('Not initialized yet. Returning None.')
             return None
         elif maxtime > 0 and (int(time.time()) - self.currentsiteinfo.lasttime) > maxtime:
-            self.log.debug('getSiteInfo: Info too old. Leaving and returning None.')
+            self.log.debug('Info too old. Leaving and returning None.')
             return None
         else:
             if site:
                 return self.currentsiteinfo[queue]                    
             else:
-                self.log.debug('getSiteInfo: Leaving and returning info of %d entries.' % len(self.currentsiteinfo))
+                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentsiteinfo))
                 return self.currentsiteinfo
 
   
@@ -143,21 +143,21 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         to be started more than once
         '''
 
-        self.log.debug('start: Starting')
+        self.log.debug('Starting')
 
         if not self.__started:
                 self.log.debug("Creating Condor batch status thread...")
                 self.__started = True
                 threading.Thread.start(self)
 
-        self.log.debug('start: Leaving.')
+        self.log.debug('Leaving.')
 
     def run(self):
         '''
         Main loop
         '''
 
-        self.log.debug('run: Starting')
+        self.log.debug('Starting')
         while not self.stopevent.isSet():
             try:
                 self._update()
@@ -165,7 +165,7 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 self.log.error("Main loop caught exception: %s " % str(e))
             self.log.debug("Sleeping for %d seconds..." % self.sleeptime)
             time.sleep(self.sleeptime)
-        self.log.debug('run: Leaving')
+        self.log.debug('Leaving')
 
     def _update(self):
         '''        
@@ -210,7 +210,7 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 128     STAGE_OUT 
         '''
 
-        self.log.debug('_update: Starting.')
+        self.log.debug('Starting.')
         
         try:
             strout = querycondor()
@@ -228,10 +228,10 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             self.currentsiteinfo = None
             
         except Exception, e:
-            self.log.error("_update: Exception: %s" % str(e))
+            self.log.error("Exception: %s" % str(e))
             self.log.debug("Exception: %s" % traceback.format_exc())            
 
-        self.log.debug('__update: Leaving.')
+        self.log.debug('_ Leaving.')
 
 
     def _map2info(self, input):
@@ -300,7 +300,7 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             A BatchStatusInfo object which maps attribute counts to generic APF
             queue attribute counts. 
         '''
-        self.log.debug('_map2info: Starting.')
+        self.log.debug('Starting.')
         wmsstatusinfo = WMSStatusInfo()
         for site in input.keys():
                 qi = WMSQueueInfo()
@@ -310,9 +310,9 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 qi.fill(valdict, mappings=self.jobstatus2info)
                         
         wmsstatusinfo.lasttime = int(time.time())
-        self.log.debug('_map2info: Returning WMSStatusInfo: %s' % wmsstatusinfo)
+        self.log.debug('Returning WMSStatusInfo: %s' % wmsstatusinfo)
         for site in wmsstatusinfo.keys():
-            self.log.debug('_map2info: Queue %s = %s' % (site, wmsstatusinfo[site]))           
+            self.log.debug('Queue %s = %s' % (site, wmsstatusinfo[site]))           
         return wmsstatusinfo
 
 
@@ -321,11 +321,11 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         Stop the thread. Overriding this method required to handle Ctrl-C from console.
         ''' 
 
-        self.log.debug('join: Starting with input %s' %timeout)
+        self.log.debug('Starting with input %s' %timeout)
         self.stopevent.set()
         self.log.debug('Stopping thread....')
         threading.Thread.join(self, timeout)
-        self.log.debug('join: Leaving')
+        self.log.debug('Leaving')
 
 
 def test():

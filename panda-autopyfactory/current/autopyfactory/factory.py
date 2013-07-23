@@ -318,7 +318,7 @@ Jose Caballero <jcaballero@bnl.gov>
         '''
         runAs_home = pwd.getpwnam(self.options.runAs).pw_dir 
         os.environ['HOME'] = runAs_home
-        self.log.debug('_changehome: Setting up environment variable HOME to %s' %runAs_home)
+        self.log.debug('Setting up environment variable HOME to %s' %runAs_home)
 
 
     def _changewd(self):
@@ -332,7 +332,7 @@ Jose Caballero <jcaballero@bnl.gov>
         '''
         runAs_home = pwd.getpwnam(self.options.runAs).pw_dir
         os.chdir(runAs_home)
-        self.log.debug('_changewd: Switching working directory to %s' %runAs_home)
+        self.log.debug('Switching working directory to %s' %runAs_home)
 
 
     def __createconfig(self):
@@ -544,7 +544,7 @@ class Factory(object):
                    stops all queues when that happens.
         '''
 
-        self.log.debug("mainLoop: Starting.")
+        self.log.debug("Starting.")
         self.log.info("Starting all Queue threads...")
 
         self.update()
@@ -561,7 +561,7 @@ class Factory(object):
             self.shutdown()
             raise
             
-        self.log.debug("mainLoop: Leaving.")
+        self.log.debug("Leaving.")
 
     def update(self):
         '''
@@ -574,22 +574,22 @@ class Factory(object):
         main loop code or from any method capturing specific signals.
         '''
 
-        self.log.debug("update: Starting")
+        self.log.debug("Starting")
 
         newqueues = self.qcl.sections()
         self.apfqueuesmanager.update(newqueues) 
 
-        self.log.debug("update: Leaving")
+        self.log.debug("Leaving")
 
     def __cleanlogs(self):
         '''
         starts the thread that will clean the condor logs files
         '''
 
-        self.log.debug('__cleanlogs: Starting')
+        self.log.debug('Starting')
         self.clean = CleanLogs(self)
         self.clean.start()
-        self.log.debug('__cleanlogs: Leaving')
+        self.log.debug('Leaving')
 
     def shutdown(self):
         '''
@@ -667,7 +667,7 @@ class APFQueuesManager(object):
         for q in self.queues.values():
             q.join()
             count += 1
-        self.log.debug('join: %d queues joined' %count)
+        self.log.debug('%d queues joined' %count)
 
     
     # ----------------------------------------------------------------------
@@ -696,7 +696,7 @@ class APFQueuesManager(object):
             try:
                 qobject = APFQueue(apfqname, self.factory)
             except Exception, ex:
-                self.log.error('_add: exception captured when calling apfqueue object %s' %apfqname)
+                self.log.error('exception captured when calling apfqueue object %s' %apfqname)
             else:
                 self.queues[apfqname] = qobject
                 qobject.start()
@@ -715,7 +715,7 @@ class APFQueuesManager(object):
             q.join()
             self.queues.pop(apfqname)
             count += 1
-        self.log.debug('_delqueues: %d queues joined and removed' %count)
+        self.log.debug('%d queues joined and removed' %count)
 
 
     def _del(self, apfqname):
@@ -735,7 +735,7 @@ class APFQueuesManager(object):
         for q in self.queues.values():
             q.refresh()
             count += 1
-        self.log.debug('_refresh: %d queues refreshed' %count)
+        self.log.debug('%d queues refreshed' %count)
 
 
 
@@ -872,10 +872,10 @@ class APFQueue(threading.Thread):
         submit using this number
         call for cleanup
         '''
-        self.log.debug("_submitpilots: Starting")
+        self.log.debug("Starting")
         msg = 'Attempt to submit %s pilots for queue %s' %(nsub, self.apfqname)
         jobinfolist = self.batchsubmit_plugin.submit(nsub)
-        self.log.debug("_submitpilots: Attempted submission of %d pilots and got jobinfolist %s" % (nsub,        
+        self.log.debug("Attempted submission of %d pilots and got jobinfolist %s" % (nsub,        
                                                                                                     jobinfolist))
         self.batchsubmit_plugin.cleanup()
         self.cyclesrun += 1
@@ -888,7 +888,7 @@ class APFQueue(threading.Thread):
         '''
         self.log.debug("__exitloop. Checking to see how many cycles to run.")
         if self.cycles and self.cyclesrun >= self.cycles:
-                self.log.debug('__exitloop: stopping the thread because high cyclesrun')
+                self.log.debug('_ stopping the thread because high cyclesrun')
                 self.stopevent.set()                        
         self.log.debug("__exitloop. Incrementing cycles...")
 
@@ -926,7 +926,7 @@ class APFQueue(threading.Thread):
         Stop the thread. Overriding this method required to handle Ctrl-C from console.
         '''
         self.stopevent.set()
-        self.log.debug('join: Stopping thread...')
+        self.log.debug('Stopping thread...')
         threading.Thread.join(self, timeout)
 
                  
@@ -1129,7 +1129,7 @@ class PluginDispatcher(object):
         First item is the name of the plugin.
         '''
 
-        self.log.debug("_getplugin: Starting for action %s" %action)
+        self.log.debug("Starting for action %s" %action)
 
         plugin_prefixes = {
                 'sched' : 'Sched',
@@ -1189,7 +1189,7 @@ class PluginDispatcher(object):
             # Example of plugin_module_name is CondorGT2 + BatchSubmit + Plugin => CondorGT2BatchSubmitPlugin
 
             plugin_path = "autopyfactory.plugins.%s.%s" % ( plugin_action, plugin_module_name)
-            self.log.debug("_getplugin: Attempting to import derived classnames: %s"
+            self.log.debug("Attempting to import derived classnames: %s"
                 % plugin_path)
 
             plugin_module = __import__(plugin_path,
@@ -1199,7 +1199,7 @@ class PluginDispatcher(object):
 
             plugin_class_name = plugin_module_name  #  the name of the class is always the name of the module
             
-            self.log.debug("_getplugin: Attempting to return plugin with classname %s" %plugin_class_name)
+            self.log.debug("Attempting to return plugin with classname %s" %plugin_class_name)
 
             plugin_class = getattr(plugin_module, plugin_class_name)  # with getattr() we extract the actual class from the module object
 

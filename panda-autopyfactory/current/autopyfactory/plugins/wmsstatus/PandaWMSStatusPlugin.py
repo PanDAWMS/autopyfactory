@@ -76,16 +76,16 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         '''
         self.log.debug('get: Starting with inputs maxtime=%s' % maxtime)
         if self.currentjobinfo is None:
-            self.log.debug('getInfo: Info not initialized. Return None.')
+            self.log.debug('Info not initialized. Return None.')
             return None    
         elif maxtime > 0 and (int(time.time()) - self.currentjobinfo.lasttime) > maxtime:
-            self.log.debug('getInfo: Info is too old. Maxtime = %d. Returning None' % maxtime)
+            self.log.debug('Info is too old. Maxtime = %d. Returning None' % maxtime)
             return None    
         else:
             if queue:
                 return self.currentjobinfo[queue]
             else:
-                self.log.debug('getInfo: Leaving. Returning info with %d items' %len(self.currentjobinfo))
+                self.log.debug('Leaving. Returning info with %d items' %len(self.currentjobinfo))
                 return self.currentjobinfo
 
 
@@ -97,10 +97,10 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
         '''
         if self.currentcloudinfo is None:
-            self.log.debug('getCloudInfo: Info not initialized. Return None.')
+            self.log.debug('Info not initialized. Return None.')
             return None    
         elif maxtime > 0 and (int(time.time()) - self.currentcloudinfo.lasttime) > maxtime:
-            self.log.debug('getCloudInfo: Info is too old. Maxtime = %d. Returning None' % maxtime)
+            self.log.debug('Info is too old. Maxtime = %d. Returning None' % maxtime)
             return None    
         else:
             if cloud:
@@ -116,7 +116,7 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         using method userinterface.Client.getSiteSpecs(siteType='all')
         '''
         if self.currentsiteinfo is None:
-            self.log.debug('getSiteInfo: Info not initialized. Return None.')
+            self.log.debug('Info not initialized. Return None.')
             return None    
         elif maxtime > 0 and (int(time.time()) - self.currentsiteinfo.lasttime) > maxtime:
             self.log.debug('getCloudInfo: Info is too old. Maxtime = %d. Returning None' % maxtime)
@@ -134,34 +134,34 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         to be started more than once
         '''
 
-        self.log.debug('start: Staring.')
+        self.log.debug('Staring.')
 
         if not self._started:
                 self._started = True
                 threading.Thread.start(self)
 
-        self.log.debug('start: Leaving.')
+        self.log.debug('Leaving.')
 
     def run(self):                
         '''
         Main loop
         '''
 
-        self.log.debug('run: Starting.')
+        self.log.debug('Starting.')
         while not self.stopevent.isSet():
             try:                       
                 self._update()
             except Exception, e:
                 self.log.error("Main loop caught exception: %s " % str(e))
             time.sleep(self.sleeptime)
-        self.log.debug('run: Leaving.')
+        self.log.debug('Leaving.')
 
     def _getmaxtimeinfo(self, infotype, maxtime):
         '''
         Grab requested info with maxtime. 
         Returns info if OK, None otherwise. 
         '''
-        self.log.debug('_getmaxtimeinfo: Start. infotype = %s, maxtime = %d' % (infotype, maxtime))
+        self.log.debug('Start. infotype = %s, maxtime = %d' % (infotype, maxtime))
         out = None
         now = int(time.time())
         delta = now - self.currentinfo.lasttime
@@ -172,7 +172,7 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 out = getattr(attrname)
             else:
                 self.log.info("_getMaxtimeinfo: Info too old. Delta is %d maxtime is %d" % (delta,maxtime))
-        self.log.debug('_getmaxtimeinfo: Leaving.')        
+        self.log.debug('Leaving.')        
         return out
 
     def _update(self):
@@ -182,7 +182,7 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 - Sites configuration
                 - Jobs status per site
         '''
-        self.log.debug('_update: Starting.')
+        self.log.debug('Starting.')
         
         try:
             newcloudinfo = self._updateclouds()
@@ -200,10 +200,10 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             self.currentsiteinfo = newsiteinfo
         
         except Exception, e:
-            self.log.error("_update: Exception: %s" % str(e))
+            self.log.error("Exception: %s" % str(e))
             self.log.debug("Exception: %s" % traceback.format_exc()) 
 
-        self.log.debug('_update: Leaving.')
+        self.log.debug('Leaving.')
 
 
     def _updateclouds(self):
@@ -296,8 +296,8 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         # get Clouds Specs
         clouds_err, all_clouds_config = Client.getCloudSpecs()
         delta = time.time() - before
-        self.log.debug('_updateclouds: it took %s seconds to perform the query' %delta)
-        self.log.info('_updateclouds: %s seconds to perform query' %delta)
+        self.log.debug('it took %s seconds to perform the query' %delta)
+        self.log.info('%s seconds to perform query' %delta)
         out = None
         if clouds_err:
             self.log.error('Client.getCloudSpecs() failed')
@@ -560,10 +560,10 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         '''
         stops the thread.
         '''
-        self.log.debug('join: Starting with input %s' %timeout)
+        self.log.debug('Starting with input %s' %timeout)
         self.stopevent.set()
         threading.Thread.join(self, timeout)
-        self.log.debug('join: Leaving.')
+        self.log.debug('Leaving.')
 
 
 

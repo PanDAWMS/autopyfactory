@@ -31,7 +31,7 @@ class ReadySchedPlugin(SchedInterface):
         It just returns nb of Activated Jobs - nb of Pending Pilots
         """
         out = n
-        self.log.debug('calcSubmitNum: Starting.')
+        self.log.debug('Starting.')
         self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue = self.apfqueue.wmsqueue, maxtime = self.apfqueue.wmsstatusmaxtime)
         self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
 

@@ -51,7 +51,7 @@ class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
             -- nordugridrsl.nordugridrsladd
         '''
  
-        self.log.debug('_nordugridrsl: Starting.')
+        self.log.debug('Starting.')
  
         out = ""
  
@@ -78,7 +78,7 @@ class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         if rsladd:
             out += rsladd
  
-        self.log.debug('_nordugridrsl: Leaving with value = %s.' %out)
+        self.log.debug('Leaving with value = %s.' %out)
         return out 
 
     def _nordugridrsl_env(self, qcl):

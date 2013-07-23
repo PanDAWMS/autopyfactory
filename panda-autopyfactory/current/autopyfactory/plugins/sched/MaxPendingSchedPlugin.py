@@ -22,7 +22,7 @@ class MaxPendingSchedPlugin(SchedInterface):
             raise ex
 
     def calcSubmitNum(self, n=0):
-        self.log.debug('calcSubmitNum: Starting with n=%s' %n)
+        self.log.debug('Starting with n=%s' %n)
         #batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
         queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
         out = n
@@ -37,5 +37,5 @@ class MaxPendingSchedPlugin(SchedInterface):
                 out = min(n, self.max_pilots_pending - pending_pilots)     
                 msg = "MaxPending:in=%s,pend=%s,max=%s,ret=%s" %(n, pending_pilots, self.max_pilots_pending, out)
             
-        self.log.info('calcSubmitNum: Return=%s' %out)
+        self.log.info('Return=%s' %out)
         return (out, msg)

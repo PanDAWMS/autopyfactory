@@ -34,7 +34,7 @@ class FixedSchedPlugin(SchedInterface):
         else:
             out = 0
             msg = "Fixed,noinfo,ret=0"
-            self.log.debug('calcSubmitNum: there is not a fixedPilotsPerCycle, returning 0')
+            self.log.debug('there is not a fixedPilotsPerCycle, returning 0')
 
         return (out, msg)
 

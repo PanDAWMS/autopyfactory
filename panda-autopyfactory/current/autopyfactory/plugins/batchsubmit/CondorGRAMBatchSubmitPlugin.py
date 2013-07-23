@@ -38,7 +38,7 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
             -- batchsubmit.condorgram.gram.globusrsl
             -- batchsubmit.condorgram.gram.globusrsladd
         '''
-        self.log.debug('_globusrsl: Starting.')
+        self.log.debug('Starting.')
 
         globus = "" 
 
@@ -64,7 +64,7 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         if globusrsladd:
             globus += globusrsladd
         
-        self.log.debug('_globusrsl: Leaving with value = %s.' %globus)
+        self.log.debug('Leaving with value = %s.' %globus)
         return globus
          
     def _addJSD(self):

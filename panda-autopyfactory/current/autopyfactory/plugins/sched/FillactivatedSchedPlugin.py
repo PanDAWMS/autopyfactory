@@ -27,7 +27,7 @@ class FillactivatedSchedPlugin(SchedInterface):
         """ 
         returns nb of Activated Jobs - nb of Pending Pilots
         """
-        self.log.debug('calcSubmitNum: Starting.')
+        self.log.debug('Starting.')
 
         self.wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
@@ -43,7 +43,7 @@ class FillactivatedSchedPlugin(SchedInterface):
         elif not self.wmsinfo.valid() and self.batchinfo.valid():
             out = self.default
             msg = "Invalid wms/batchinfo"
-            self.log.warn('calcSubmitNum: a status is not valid, returning default = %s' %out)
+            self.log.warn('a status is not valid, returning default = %s' %out)
         else:
             # Carefully get wmsinfo, activated. 
             self.wmsqueue = self.apfqueue.wmsqueue
