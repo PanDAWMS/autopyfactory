@@ -88,8 +88,8 @@ class WeightedActivatedSchedPlugin(SchedInterface):
 
         out = max(0, activated_jobs_w - pending_pilots_w)
 
-        self.log.info('_calc (activated=%s; pending=%s) : Return=%s' %(activated_jobs_w, 
-                                                                       pending_pilots_w, 
-                                                                       out))
+        self.log.info('activated=%s; pending=%s; Return=%s' %(activated_jobs_w, 
+                                                              pending_pilots_w, 
+                                                              out))
         msg = "Weighted,act=%s,actw=%s,pend=%s,pendw=%s,out=%s" %(activated_jobs, activated_jobs_w, pending_pilots, pending_pilots_w, out)
         return (out, msg)
