@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* configloader can read all config files included in a given directory (i.e. /etc/apf/queues.d/)
+
 * method name removed from log messages.
 
 * fixed bug in some sched plugins, mixing None and 0 in the logic
