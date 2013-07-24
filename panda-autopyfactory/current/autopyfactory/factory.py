@@ -421,11 +421,33 @@ class Factory(object):
         self.log = logging.getLogger('main.factory')
         self.log.info('AutoPyFactory version %s' %self.version)
         self.fcl = fcl
-        qcf = fcl.get('Factory', 'queueConf')
-        self.log.debug("queues.conf file(s) = %s" % qcf)
+
+        # Create config loader object for queues 
+        qcf = None
+        qcd = None
+
+        try: 
+            qcf = fcl.get('Factory', 'queueConf')    # the configuration files for queues are a list of URIs
+            self.log.debug("queues.conf file(s) = %s" % qcf)
+        except:
+            pass
+
+        if not qcf:
+            try:
+                qcd = fcl.get('Factory', 'queueDirConf') # the configuration files for queues are in a directory
+                self.log.debug("queues.conf directory = %s" % qcd)
+            except:
+                pass
 
         try:
-            self.qcl = ConfigManager().getConfig(qcf)
+            if qcf:
+                self.qcl = ConfigManager().getConfig(sources=qcf)
+            elif qcd:
+                self.qcl = ConfigManager().getConfig(configdir=qcf)
+            else:
+                self.log.error('no files or directory with queues configuration specified')
+                sys.exit(0)
+                
         except ConfigFailure, errMsg:
             self.log.error('Failed to create QueuesConfigLoader')
             sys.exit(0)
@@ -434,17 +456,17 @@ class Factory(object):
         usepman = fcl.getboolean('Factory', 'proxymanager.enabled')
         if usepman:      
             pcf = fcl.get('Factory','proxyConf')
-            self.log.debug("proxy.conf file(s) = %s" % qcf)
-            pconfig = ConfigParser()
+            self.log.debug("proxy.conf file(s) = %s" % pcf)
+            pcl = ConfigParser()
 
             try:
-                got_config = pconfig.read(pcf)
+                got_config = pcl.read(pcf)
             except Exception, e:
                 sys.log.error('Failed to create ProxyConfigLoader')
                 sys.exit(0)
 
             self.log.debug("Read config file %s, return value: %s" % (pcf, got_config)) 
-            self.proxymanager = ProxyManager(pconfig)
+            self.proxymanager = ProxyManager(pcl)
             self.log.info('ProxyManager initialized. Starting...')
             self.proxymanager.start()
             self.log.debug('ProxyManager thread started.')
