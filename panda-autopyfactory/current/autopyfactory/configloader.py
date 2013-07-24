@@ -255,12 +255,19 @@ class ConfigManager(object):
         pass
         
 
-    def getConfig(self, sources):
+    def getConfig(self, sources=None, dir=None):
         '''
         creates a Config object and returns it.
-        sources points to the info to feed the object:
-                - path to a phisical file on disk
+
+        -- sources is an split by comma string, 
+           where each items points to the info to feed the object:
+                - path to phisical file on disk
                 - an URL
+
+        -- dir is path to a directory with a 
+           set of configuration files, 
+           all of them to be proce
+
         '''
         try:
             config = Config()
