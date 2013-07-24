@@ -1,7 +1,7 @@
 ChangeLog
 ---------
 
-* configloader can read all config files included in a given directory (i.e. /etc/apf/queues.d/)
+* queues configuration files can be read from a directory (i.e. /etc/apf/queues.d/). configloader adapted to accept directories instead of list of URIs
 
 * method name removed from log messages.
 
