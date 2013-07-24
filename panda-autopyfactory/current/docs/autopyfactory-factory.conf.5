@@ -132,6 +132,15 @@ to determine if automatic proxy management is used or not.  Accepted values are 
 URI plus path to the configuration file for APF queues.
 
 .I NOTE: Must be expressed as a URI (file:// or http://)
+.I NOTE: Cannot be used at the same time that queueDirConf
+
+
+.B queueDirConf
+
+directory with a set of configuration files, all of them to be used at the same time. 
+i.e. /etc/apf/queues.d/
+
+.I NOTE: Cannot be used at the same time that queueConf
 
 
 
