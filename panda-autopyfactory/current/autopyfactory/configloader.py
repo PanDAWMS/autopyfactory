@@ -255,7 +255,7 @@ class ConfigManager(object):
         pass
         
 
-    def getConfig(self, sources=None, dir=None):
+    def getConfig(self, sources=None, configdir=None):
         '''
         creates a Config object and returns it.
 
@@ -264,17 +264,24 @@ class ConfigManager(object):
                 - path to phisical file on disk
                 - an URL
 
-        -- dir is path to a directory with a 
+        -- configdir is path to a directory with a 
            set of configuration files, 
-           all of them to be proce
+           all of them to be processed 
 
         '''
+
         try:
             config = Config()
-            for src in sources.split(','):
-                newconfig = self.__getConfig(src)
-                if newconfig:
+            if sources:
+                for src in sources.split(','):
+                    newconfig = self.__getConfig(src)
+                    if newconfig:
                         config.merge(newconfig)
+            elif configdir:
+                if os.path.isdir(configdir):
+                    config.read(os.listdir(configdir))
+                else:
+                    raise ConfigFailure('configuration directory %s does not exist' %configdir)
             return config
         except:
             raise ConfigFailure('creating config object from source %s failed' %sources)
