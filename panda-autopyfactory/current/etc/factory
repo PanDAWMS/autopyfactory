@@ -37,7 +37,13 @@ f_factdir(){
 }
 
 # Source function library.
-. /etc/rc.d/init.d/functions
+if [ -f /etc/rc.d/init.d/functions ]; then
+   . /etc/rc.d/init.d/functions
+fi
+
+if [ -f /lib/lsb/init-functions ]; then
+   . /lib/lsb/init-functions
+fi
 
 # Source standard environment
 for i in /etc/profile.d/*.sh; do

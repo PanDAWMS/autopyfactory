@@ -144,6 +144,11 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
                 
         for each desired retirement. 
         
+        We only retire by shutting down startds, never by terminating VM jobs directly. This is to
+        avoid race conditions/slight information mismatches due to time. E.g. just because the last condor_status 
+        showed a startd as idle, doesn't mean it is still idle during this queue cycle. 
+       
+        But we should preferentially retire nodes that are Idle over ones that we know are busy.         
         '''
         self.log.info("Beginning to retire %d VM jobs..." % n)
         jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo()
@@ -153,17 +158,24 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             except KeyError:
                 thisqueuejobs = []
             numtoretire = n
-            numretired = 0
+            numretired = 0           
+            idlelist = []
+            busylist = []            
             for job in thisqueuejobs:
-                self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)
+                self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)              
                 stat = job.executeinfo.getStatus()
-                if stat  == 'busy' or stat == 'idle':
-                    self._retirenode(job)
-                    numtoretire = numtoretire - 1
-                    numretired += 1
-                    self.log.debug("numtoretire = %d" % numtoretire)
-                    if numtoretire <= 0:
-                        break
+                if stat == 'busy':
+                    busylist.append(job)
+                elif stat == 'idle':
+                    idlelist.append(job)
+            sortedlist = idlelist + busylist
+            for job in sortedlist:
+                self._retirenode(job)
+                numtoretire = numtoretire - 1
+                numretired += 1
+                self.log.debug("numtoretire = %d" % numtoretire)
+                if numtoretire <= 0:
+                    break
             self.log.info("Retired %d VM jobs" % numretired)
         else:
             self.log.info("Some info unavailable. Do nothing.")
