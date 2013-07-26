@@ -37,10 +37,12 @@ f_factdir(){
 }
 
 # Source function library.
+# Standard RedHat
 if [ -f /etc/rc.d/init.d/functions ]; then
    . /etc/rc.d/init.d/functions
 fi
 
+# Use LSB locations for e.g. SuSE
 if [ -f /lib/lsb/init-functions ]; then
    . /lib/lsb/init-functions
 fi
