@@ -3,7 +3,7 @@
 # Setup prog for autopyfactory
 #
 #
-release_version='2.2.5'
+release_version='2.2.6'
 
 import commands
 import os
