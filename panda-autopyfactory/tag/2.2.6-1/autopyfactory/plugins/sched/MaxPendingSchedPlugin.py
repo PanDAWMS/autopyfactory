@@ -39,8 +39,9 @@ class MaxPendingSchedPlugin(SchedInterface):
             self.log.warning("self.batchinfo is None!")
         else:
             pending_pilots = self.batchinfo[self.apfqueue.apfqname].pending
-            if self.max_pilots_pending:
-                nsub = min(nsub, self.max_pilots_pending - pending_pilots)     
+            if pending_pilots != 0:
+                if self.max_pilots_pending:
+                    nsub = min(nsub, self.max_pilots_pending - pending_pilots)     
 
         # Catch all to prevent negative numbers
         #if nsub < 0:
