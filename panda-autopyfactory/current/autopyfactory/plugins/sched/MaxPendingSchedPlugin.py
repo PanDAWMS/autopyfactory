@@ -33,9 +33,15 @@ class MaxPendingSchedPlugin(SchedInterface):
             msg = "MaxPending: No queueinfo."
         else:
             pending_pilots = queueinfo.pending
-            if self.max_pilots_pending is not None:
-                out = min(n, self.max_pilots_pending - pending_pilots)     
-                msg = "MaxPending:in=%s,pend=%s,max=%s,ret=%s" %(n, pending_pilots, self.max_pilots_pending, out)
+            
+            if pending_pilots == 0:
+                # if no pending, there may be free slots, so we impose no limit
+                out = n
+                msg = "MaxPending:in=%s,pend=0,ret=%s" %(n, out)
+            else:
+                if self.max_pilots_pending is not None:
+                    out = min(n, self.max_pilots_pending - pending_pilots)     
+                    msg = "MaxPending:in=%s,pend=%s,max=%s,ret=%s" %(n, pending_pilots, self.max_pilots_pending, out)
             
         self.log.info('Return=%s' %out)
         return (out, msg)
