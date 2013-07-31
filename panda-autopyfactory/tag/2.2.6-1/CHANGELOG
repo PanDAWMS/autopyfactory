@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* bug in MaxPending sched plugin fixed
+
 * bug in condor.py not using queryargs fixed
 
 * print env also after switching ID
