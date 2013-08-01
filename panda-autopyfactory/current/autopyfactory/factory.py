@@ -39,17 +39,6 @@ import userinterface.Client as Client
 
 major, minor, release, st, num = sys.version_info
 
-
-TRACE = 5
-logging.addLevelName(TRACE, 'TRACE')
-def trace(self, msg, *args, **kwargs):
-    self._log(TRACE, msg, args, **kwargs)
-logging.Logger.trace = trace
-
-
-
-
-
 class FactoryCLI(object):
     """class to handle the command line invocation of APF. 
        parse the input options,
@@ -80,10 +69,10 @@ class FactoryCLI(object):
         # This must be done here, because parseopts()
         # uses logging.TRACE, so it must be defined
         # by that time
-        TRACE = 5
-        logging.addLevelName(TRACE, 'TRACE')
+        logging.TRACE = 5
+        logging.addLevelName(logging.TRACE, 'TRACE')
         def trace(self, msg, *args, **kwargs):
-            self._log(TRACE, msg, args, **kwargs)
+            self._log(logging.TRACE, msg, args, **kwargs)
         logging.Logger.trace = trace
 
     
