@@ -282,6 +282,7 @@ class ConfigManager(object):
                     config.read(os.listdir(configdir))
                 else:
                     raise ConfigFailure('configuration directory %s does not exist' %configdir)
+            config.fixpathvalues()
             return config
         except:
             raise ConfigFailure('creating config object from source %s failed' %sources)
@@ -296,7 +297,6 @@ class ConfigManager(object):
         if data:
             tmpconfig = Config()
             tmpconfig.readfp(data)
-            tmpconfig.fixpathvalues()
             return tmpconfig
         else:
             return None
