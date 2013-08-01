@@ -281,7 +281,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         of condor_status -master -xml
         
         '''
-        exelist = None
+        exelist = []
         xmlout = statuscondormaster()
         if not xmlout:
             self.log.warning('output of statuscondormaster() is not valid. Not parsing it. Skip to next loop.') 
