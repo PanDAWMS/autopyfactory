@@ -130,11 +130,12 @@ def statuscondormaster(queryargs = None):
     Return info about masters. 
     '''
     log = logging.getLogger()
-    cmd = 'condor_status -master -xml'
+    cmd = 'condor_status -master -xml '
     if queryargs:
         cmd += queryargs
     
-    log.debug('Querying cmd = %s' %cmd.replace('\n','\\n'))
+    #log.debug('Querying cmd = %s' % cmd.replace('\n','\\n'))
+    log.debug('Querying cmd = %s' % cmd)
     before = time.time()
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     out = None
