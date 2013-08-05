@@ -151,17 +151,13 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         But we should preferentially retire nodes that are Idle over ones that we know are busy.         
         '''
         self.log.info("Beginning to retire %d VM jobs..." % n)
-        jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo()
+        jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqueue.apfqname)
         if jobinfo:
-            try:
-                thisqueuejobs = jobinfo[self.apfqueue.apfqname]
-            except KeyError:
-                thisqueuejobs = []
             numtoretire = n
             numretired = 0           
             idlelist = []
             busylist = []            
-            for job in thisqueuejobs:
+            for job in jobinfo:
                 self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)              
                 stat = job.executeinfo.getStatus()
                 if stat == 'busy':
