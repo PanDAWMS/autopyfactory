@@ -158,12 +158,13 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             idlelist = []
             busylist = []            
             for job in jobinfo:
-                self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)              
-                stat = job.executeinfo.getStatus()
-                if stat == 'busy':
-                    busylist.append(job)
-                elif stat == 'idle':
-                    idlelist.append(job)
+                if job.executeinfo is not None:
+                    self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)              
+                    stat = job.executeinfo.getStatus()
+                    if stat == 'busy':
+                        busylist.append(job)
+                    elif stat == 'idle':
+                        idlelist.append(job)
             sortedlist = idlelist + busylist
             for job in sortedlist:
                 self._retirenode(job)
