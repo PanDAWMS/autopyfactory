@@ -69,6 +69,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             self.access_key_id = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.access_key_id')
             self.secret_access_key = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.secret_access_key')
             self.spot_price = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.spot_price')
+            self.usessh = gcl.generic_get(self.apfqname, 'batchsubmit.condorec2.usessh',get_function='getboolean', default_value = False)
             if self.spot_price:
                 self.spot_price = float(self.spot_price)
             self.security_groups = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.security_groups')
@@ -179,7 +180,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
 
 
     
-    def _retirenode(self, jobinfo, usessh=True):
+    def _retirenode(self, jobinfo):
         '''
         Do whatever is needed to tell the node to retire...
         '''
@@ -190,7 +191,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         machine = exeinfo.machine
         condorid = "%s.%s" % (jobinfo.clusterid, jobinfo.procid)
         
-        if usessh:
+        if self.usessh:
             self.log.info("Trying to use SSH to retire node %s" % publicip)
             cmd='ssh root@%s "condor_off -peaceful -startd"' % publicip
             self.log.debug("retire cmd is %s" % cmd) 
@@ -209,8 +210,22 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         else:
             # call condor_off locally
             self.log.info("Trying local retirement of node %s" % publicip)
+            cmd='condor_off -peaceful -startd -name %s' % machine
+            self.log.debug("retire cmd is %s" % cmd) 
+            before = time.time()
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            out = None
+            (out, err) = p.communicate()
+            delta = time.time() - before
+            self.log.debug('It took %s seconds to issue the command' %delta)
+            self.log.info('%s seconds to issue command' %delta)
+            if p.returncode == 0:
+                self.log.debug('Leaving with OK return code.')
+            else:
+                self.log.warning('Leaving with bad return code. rc=%s err=%s out=' %(p.returncode, err, out ))          
+                        
 
-    def _unretirenode(self, jobinfo, usessh=True):
+    def _unretirenode(self, jobinfo):
         '''
         Do whatever is needed to tell the node to un-retire...
         '''
@@ -221,7 +236,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         machine = exeinfo.machine
         condorid = "%s.%s" % (jobinfo.clusterid, jobinfo.procid)
         
-        if usessh:
+        if self.usessh:
             self.log.info("Trying to use SSH to retire node %s" % publicip)
             cmd='ssh root@%s "condor_on -startd"' % publicip
             self.log.debug("unretire cmd is %s" % cmd) 

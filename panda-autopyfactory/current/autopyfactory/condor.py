@@ -134,8 +134,8 @@ def statuscondormaster(queryargs = None):
     if queryargs:
         cmd += queryargs
     
-    #log.debug('Querying cmd = %s' % cmd.replace('\n','\\n'))
-    log.debug('Querying cmd = %s' % cmd)
+    log.debug('Querying cmd = %s' % cmd.replace('\n','\\n'))
+    #log.debug('Querying cmd = %s' % cmd)
     before = time.time()
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     out = None
