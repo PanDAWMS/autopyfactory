@@ -69,8 +69,8 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             self.access_key_id = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.access_key_id')
             self.secret_access_key = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.secret_access_key')
             self.spot_price = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.spot_price')
-            self.usessh = gcl.generic_get(self.apfqname, 'batchsubmit.condorec2.usessh',get_function='getboolean', default_value = False)
-            if self.spot_price:
+            self.usessh = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.usessh', 'getboolean', False)
+            if self.spot_price:                
                 self.spot_price = float(self.spot_price)
             self.security_groups = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.security_groups')
             return True
