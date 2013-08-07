@@ -69,12 +69,20 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             self.access_key_id = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.access_key_id')
             self.secret_access_key = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.secret_access_key')
             self.spot_price = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.spot_price')
-            self.usessh = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.usessh', 'getboolean', False)
+            self.usessh = qcl.generic_get( self.apfqname, 'batchsubmit.condorec2.usessh')
+            if self.usessh == "False":
+                self.usessh = False
+            elif self.usessh == "True":
+                self.usessh = True
+            else:
+                self.usessh = False
+            
             if self.spot_price:                
                 self.spot_price = float(self.spot_price)
             self.security_groups = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.security_groups')
             return True
         except:
+            self.log.error("Problem getting object configuration variables.")
             return False
 
 

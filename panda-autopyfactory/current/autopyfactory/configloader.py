@@ -185,9 +185,9 @@ class Config(SafeConfigParser, object):
                 x = generic_get("Sec1", "x", get_function='getint', default_value=0  )
         '''
         self.log.debug('called for section %s option %s get_function %s default_value %s' % ( section,
-                                                                                                           option,
-                                                                                                           get_function,
-                                                                                                           default_value ))                                                                                                         
+                                                                                              option,
+                                                                                              get_function,
+                                                                                              default_value ))                                                                                                         
         has_option = self.has_option(section, option)
         if not has_option:
             self.log.debug('option %s is not present in section %s. Return default %s' %(option, section, default_value))
