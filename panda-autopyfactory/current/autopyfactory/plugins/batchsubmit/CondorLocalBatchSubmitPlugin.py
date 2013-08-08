@@ -13,25 +13,17 @@ class CondorLocalBatchSubmitPlugin(CondorBaseBatchSubmitPlugin):
     This class is expected to have separate instances for each PandaQueue object. 
     '''
     
-    def __init__(self, apfqueue):
+    def __init__(self, apfqueue, config=None):
+        if not config:
+            qcl = apfqueue.factory.qcl            
+        else:
+            qcl = config
+        newqcl = qcl.clone().filterkeys('batchsubmit.condorlocal', 'batchsubmit.condorbase')
 
-        super(CondorLocalBatchSubmitPlugin, self).__init__(apfqueue) 
+        super(CondorLocalBatchSubmitPlugin, self).__init__(apfqueue, config=newqcl) 
         self.log.info('CondorLocalBatchSubmitPlugin: Object initialized.')
 
-    def _readconfig(self, qcl=None):
-        '''
-        read the config loader object
-        '''
-
-        # Chosing the queue config object, depending on 
-        if not qcl:
-            qcl = self.apfqueue.factory.qcl
-
-        # we rename the queue config variables to pass a new config object to parent class
-        newqcl = qcl.clone().filterkeys('batchsubmit.condorlocal', 'batchsubmit.condorbase')
-        valid = super(CondorLocalBatchSubmitPlugin, self)._readconfig(newqcl) 
-        return valid
-        
+       
     def _addJSD(self):
         '''
         add things to the JSD object
