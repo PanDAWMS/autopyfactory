@@ -20,9 +20,13 @@ import autopyfactory.utils as utils
 
 class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
     
-    def __init__(self, apfqueue):
-
-        self.log = logging.getLogger("main.batchsubmitplugin[%s]" %apfqueue.apfqname)
+    def __init__(self, apfqueue, config=None):
+        if not config:
+            qcl = apfqueue.factory.qcl            
+        else:
+            qcl = config
+        
+        self.log = logging.getLogger("main.batchsubmitplugin[%s]" % apfqueue.apfqname)
 
         self.apfqueue = apfqueue
         self.apfqname = apfqueue.apfqname
@@ -30,9 +34,40 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         self.fcl = apfqueue.factory.fcl
         self.mcl = apfqueue.factory.mcl
 
+        try:
+            self.wmsqueue = qcl.generic_get(self.apfqname, 'wmsqueue')
+            self.executable = qcl.generic_get(self.apfqname, 'executable')
+            self.factoryadminemail = self.fcl.generic_get('Factory', 'factoryAdminEmail')
+            self.x509userproxy = None
+            if qcl.has_option(self.apfqname,'batchsubmit.condorbase.proxy'):
+                proxy = qcl.get(self.apfqname,'batchsubmit.condorbase.proxy')
+                self.x509userproxy = self.factory.proxymanager.getProxyPath(proxy)
+                self.log.debug('proxy is %s. Loaded path from proxymanager: %s' % (proxy, self.x509userproxy))
+            else:
+                self.log.debug('proxy is None. No proxy configured.')
+            
+            self.factoryid = self.fcl.generic_get('Factory', 'factoryId')
+            self.monitorsection = qcl.generic_get(self.apfqname, 'monitorsection')
+            self.log.debug("monitorsection is %s" % self.monitorsection)            
+            self.monitorurl = self.mcl.generic_get(self.monitorsection, 'monitorURL')
+            self.log.debug("monitorURL is %s" % self.monitorurl)
+            
+            self.factoryuser = self.fcl.generic_get('Factory', 'factoryUser')
+            self.submitargs = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.submitargs')
+            self.environ = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.environ')
+            self.batchqueue = qcl.generic_get(self.apfqname, 'batchqueue')
+            self.arguments = qcl.generic_get(self.apfqname, 'executable.arguments')
+            self.condor_attributes = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.condor_attributes')
+            self.extra_condor_attributes = [(opt.replace('batchsubmit.condorbase.condor_attributes.',''),qcl.generic_get(self.apfqname, opt)) \
+                                            for opt in qcl.options(self.apfqname) \
+                                            if opt.startswith('batchsubmit.condorbase.condor_attributes.')]  # Note the . at the end of the pattern !!
+
+            self.log.info('BatchSubmitPlugin: Object properly initialized.')
+        except Exception, e:
+            self.log.error("Caught exception: %s " % str(e))
+
         self._checkCondor()
 
-        self.log.info('BatchSubmitPlugin: Object initialized.')
 
     def _checkCondor(self):
         '''
@@ -61,47 +96,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
                     if os.path.isfile(condor_config):
                         self.log.debug('using condor config file: %s' %condor_config)
 
-    def _readconfig(self, qcl):
-        '''
-        read the config loader object
-        '''
-
-        try:
-            self.wmsqueue = qcl.generic_get(self.apfqname, 'wmsqueue')
-
-            self.executable = qcl.generic_get(self.apfqname, 'executable')
-            self.factoryadminemail = self.fcl.generic_get('Factory', 'factoryAdminEmail')
-
-            self.x509userproxy = None
-            if qcl.has_option(self.apfqname,'batchsubmit.condorbase.proxy'):
-                proxy = qcl.get(self.apfqname,'batchsubmit.condorbase.proxy')
-                self.x509userproxy = self.factory.proxymanager.getProxyPath(proxy)
-                self.log.debug('proxy is %s. Loaded path from proxymanager: %s' % (proxy, self.x509userproxy))
-            else:
-                self.log.debug('proxy is None. No proxy configured.')
-            
-            self.factoryid = self.fcl.generic_get('Factory', 'factoryId')
-            self.monitorsection = qcl.generic_get(self.apfqname, 'monitorsection')
-            self.log.debug("monitorsection is %s" % self.monitorsection)            
-            self.monitorurl = self.mcl.generic_get(self.monitorsection, 'monitorURL')
-            self.log.debug("monitorURL is %s" % self.monitorurl)
-            
-            self.factoryuser = self.fcl.generic_get('Factory', 'factoryUser')
-            self.submitargs = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.submitargs')
-            self.environ = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.environ')
-            self.batchqueue = qcl.generic_get(self.apfqname, 'batchqueue')
-            self.arguments = qcl.generic_get(self.apfqname, 'executable.arguments')
-            self.condor_attributes = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.condor_attributes')
-            self.extra_condor_attributes = [(opt.replace('batchsubmit.condorbase.condor_attributes.',''),qcl.generic_get(self.apfqname, opt)) \
-                                            for opt in qcl.options(self.apfqname) \
-                                            if opt.startswith('batchsubmit.condorbase.condor_attributes.')]  # Note the . at the end of the pattern !!
-
-            return True
-        except Exception, e:
-            self.log.error("Caught exception: %s " % str(e))
-            return False
-
-
     def submit(self, n):
         '''
         n is the number of pilots to be submitted 
@@ -118,21 +112,16 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         if n > 0:
             self._calculateDateDir()
             self.JSD = jsd.JSDFile()
-            valid = self._readconfig()
-            if not valid:
-                self.log.error('self._readconfig returned False, we cannot submit.')
+            self._addJSD()
+            self._custom_attrs()
+            self._finishJSD(n)
+            jsdfile = self._writeJSD()
+            if jsdfile:
+                st, output = self.__submit(n, jsdfile)
+                self.log.debug('Got output (%s, %s).' %(st, output)) 
+                joblist = self._parseCondorSubmit(output)
             else:
-                self.log.debug('self._readconfig returned True. Keep going...')
-                self._addJSD()
-                self._custom_attrs()
-                self._finishJSD(n)
-                jsdfile = self._writeJSD()
-                if jsdfile:
-                    st, output = self.__submit(n, jsdfile)
-                    self.log.debug('Got output (%s, %s).' %(st, output)) 
-                    joblist = self._parseCondorSubmit(output)
-                else:
-                    self.log.info('jsdfile has no value. Doing nothing')
+                self.log.info('jsdfile has no value. Doing nothing')
         elif n < 0:
             # For certain plugins, this means to retire or terminate nodes...
             self.log.debug('Preparing to retire %s jobs' % abs(n))
