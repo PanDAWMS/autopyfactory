@@ -287,7 +287,5 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         else:
             self.log.info("No VM jobs to kill for apfqueue %s" % self.apfqueue.apfqname )
 
-
-    def __str__(self):
         
             
