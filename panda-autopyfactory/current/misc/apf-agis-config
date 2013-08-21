@@ -22,6 +22,7 @@ blacksites = [
               'CERN-P1',
               'CERN-RELEASE',
               'GRIDPP_CLOUD',
+              'IN2P3-CC_OPENSTACK',
 ]
 
 defaultsection = """\
@@ -48,11 +49,11 @@ sched.statusoffline.allowed = True
 sched.minpercycle.minimum = 0
 sched.maxpending.maximum = 25
 
-executable = /data/atlpan/libexec/runpilot3-wrapper-may31.sh
+executable = /data/atlpan/libexec/runpilot3-wrapper-jul09.sh
 executable.defaultarguments = -s %(wmsqueue)s -h %(batchqueue)s -p 25443 -w https://pandaserver.cern.ch -j false -k %(memory)s
 
-batchsubmit.condorcream.condor_attributes = periodic_hold=JobStatus==1 && gridjobstatus=?=UNDEFINED && CurrentTime-EnteredCurrentStatus>3600
-batchsubmit.condorcream.condor_attributes = periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
+hold = periodic_hold = JobStatus==1 && gridjobstatus=?=UNDEFINED && CurrentTime-EnteredCurrentStatus>3600
+remove = periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
 
 apfqueue.sleep = 300
 
@@ -133,6 +134,7 @@ specified cloud and activity type.
                 wmsqueue = d[key]['panda_resource']
                 cetype = d[key]['type']
                 memory = d[key]['memory']
+                corecount = d[key]['corecount']
                 
                 for q in d[key]['queues']:
                     gramqueue = None 
@@ -141,6 +143,7 @@ specified cloud and activity type.
                     submitpluginstring = None
                     gramqueue = None
                     gramversion = None
+                    creamenv = None
             
                     if q['ce_flavour'] == 'OSG-CE':
             
@@ -157,7 +160,6 @@ specified cloud and activity type.
                             gramqueue = q['ce_queue_name']
             
                     elif q['ce_flavour'] == 'CREAM-CE':
-            
                         gridresource = '%s/ce-cream/services/CREAM2 %s %s' %(q['ce_endpoint'], q['ce_jobmanager'], q['ce_queue_name'])
                         submitplugin = 'CondorCREAM'
                         submitpluginstring = 'condorcream'
@@ -174,10 +176,15 @@ specified cloud and activity type.
                         gramqueue = q['ce_queue_name']
                         
                     elif q['ce_flavour'] == 'ARC-CE':
-                        gridresource = q['ce_endpoint']
+                        # ignore :port part
+                        gridresource = q['ce_endpoint'].split(':')[0]
                         submitplugin = 'CondorNordugrid'
                         submitpluginstring = 'condornordugrid'
-                        nordugridrsl = '(memory=%s)(jobname = prod_pilot)(jobname = arc_pilot)' % memory
+                        nordugridrsl = '(jobname = arc_pilot)'
+                        rsladd = '(runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY)'
+                        rsladd += '(jobname = arc_pilot)(memory = %d)' % memory
+                        if corecount:
+                            rsladd += '(count = %d)' % corecount
                     else:
                         print
                         print "# Unknown ce_flavour for %s (%s)" % (q['ce_name'], q['ce_queue_id'])
@@ -192,12 +199,16 @@ specified cloud and activity type.
                     print 'batchsubmitplugin = %s' % submitplugin
                     print 'batchsubmit.%s.gridresource = %s' % (submitpluginstring, gridresource)
                     print 'sched.maxtorun.maximum = %d' % 9999
-                    print 'sched.maxpercycle.maximum = %d' % max(9, d[key]['nqueue'] * 2)
+                    print 'sched.maxpercycle.maximum = 25'
                     if creamenv:
                         print 'batchsubmit.condorcream.environ = %s' % creamenv
+                        if wmsqueue == 'NIKHEF-ELPROD_LONG':
+                            print 'batchsubmit.condorcream.condor_attributes = %(hold)s,%(remove)s,cream_attributes = CERequirements = "other.GlueCEPolicyMaxCPUTime >= 2520"'
+                        else:
+                            print 'batchsubmit.condorcream.condor_attributes = %(hold)s, %(remove)s'
                     if nordugridrsl:
                         print 'batchsubmit.condornordugrid.nordugridrsl = %s' % nordugridrsl
-                        print 'nordugridrsl.nordugridrsladd = (runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY)'
+                        print 'nordugridrsl.nordugridrsladd = %s' % rsladd
                         print 'nordugridrsl.queue = %s' % q['ce_queue_name']
 			print 'nordugridrsl.addenv.RUCIO_ACCOUNT = pilot'
 			print 'nordugridrsl.addenv.APF_PYTHON26 = 1'
