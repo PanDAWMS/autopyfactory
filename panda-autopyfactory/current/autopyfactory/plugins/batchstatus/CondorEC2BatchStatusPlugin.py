@@ -340,20 +340,27 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
            [ { a:b,
                b:c,
                },
-               {n:m,
-                x:y}
+              {n:m,
+               x:y}
             ]
         and returns a dictionary of EC2JobInfo objects, indexed by 'match_apf_queue' value. 
             { 'queue1' : [ EC2JobInfo, EC2JobInfo,],
               'queue2' : [ EC2JobInfo, EC2JobInfo,],
             }
+            
+        Note: ONLY creates EC2JobInfo objects from jobs that have an EC2InstanceName attribute!!    
         '''
         joblist = []
         qd = {}
         if len(nodelist) > 0:
             for n in nodelist:
-                j = CondorEC2JobInfo(n)
-                joblist.append(j)
+                try:
+                    ec2in = n['ec2instancename']
+                    j = CondorEC2JobInfo(n)
+                    joblist.append(j)
+                    self.log.debug("Found EC2 job with instancename %s" % ec2in)
+                except KeyError:
+                    self.log.debug("Discarding non-EC2 job...")
             
             indexhash = {}
             for j in joblist:
