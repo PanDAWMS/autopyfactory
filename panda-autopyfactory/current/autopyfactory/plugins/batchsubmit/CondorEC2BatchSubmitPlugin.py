@@ -217,7 +217,9 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             if p.returncode == 0:
                 self.log.debug('Leaving with OK return code.')
             else:
-                self.log.warning('Leaving with bad return code. rc=%s err=%s out=%s' %(p.returncode, err, out ))          
+                out = out.replace("\n", " ")
+                out = err.replace("\n", " ")
+                self.log.warning('Leaving with bad return code. rc=%s err="%s" out="%s"' %(p.returncode, err, out ))          
                         
 
     def _unretirenode(self, jobinfo):

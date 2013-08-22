@@ -136,9 +136,14 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             return None
         else:
             if queue:
-                return self.currentjobs[queue]                    
+                try:
+                    i =  self.currentjobs[queue]
+                    self.log.debug('getInfo: Leaving and returning queue-specific JobInfo list of %d entries.' % len(i))
+                    return i 
+                except KeyError:
+                    return None
             else:
-                self.log.debug('getInfo: Leaving and returning info of %d entries.' % len(self.currentjobs))
+                self.log.debug('getInfo: Leaving and returning all jobinfo w/ %d entries.' % len(self.currentjobs))
                 return self.currentjobs
 
 
