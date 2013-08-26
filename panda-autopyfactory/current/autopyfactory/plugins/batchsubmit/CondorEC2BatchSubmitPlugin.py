@@ -262,7 +262,6 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
                                                                                                           jobinfo.ec2instancename))
              
 
-
     def cleanup(self):
         '''
         
