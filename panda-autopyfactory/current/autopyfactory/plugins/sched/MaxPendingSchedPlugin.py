@@ -37,16 +37,18 @@ class MaxPendingSchedPlugin(SchedInterface):
             if pending_pilots == 0:
                 # if no pending, there may be free slots, so we impose no limit
                 out = n
-                msg = "MaxPending:in=%s,pend=0,ret=%s" %(n, out)
+                self.log.debug('No pending, submit full input %s' % n)
             else:
                 if self.max_pilots_pending is not None:
-                    pend = self.max_pilots_pending - pending_pilots                  
-                    if pend < 0 and self.allow_negative:
-                        pass
-                    elif pend < 0:
-                        pend = 0
-                    out = min(n, pend )     
-                    msg = "MaxPending:in=%s,pend=%s,max=%s,ret=%s" %(n, pending_pilots, self.max_pilots_pending, out)
-            
+                    tosubmit = self.max_pilots_pending - pending_pilots                   
+                    if not self.allow_negative and tosubmit < 0:
+                        self.log.debug('Negative output not allowed, and tosubmit less than 0, so 0.')
+                        tosubmit = 0
+                    out = min(n, tosubmit )
+                         
+            msg = "MaxPending:in=%s,pend=%s,max=%s,ret=%s" %(n, 
+                                                             pending_pilots, 
+                                                             self.max_pilots_pending, 
+                                                             out)
         self.log.info('Return=%s' %out)
         return (out, msg)
