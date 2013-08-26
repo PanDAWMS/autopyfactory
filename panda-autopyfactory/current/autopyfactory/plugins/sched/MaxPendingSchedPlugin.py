@@ -43,7 +43,7 @@ class MaxPendingSchedPlugin(SchedInterface):
                     pend = self.max_pilots_pending - pending_pilots                  
                     if pend < 0 and self.allow_negative:
                         pass
-                    else:
+                    elif pend < 0:
                         pend = 0
                     out = min(n, pend )     
                     msg = "MaxPending:in=%s,pend=%s,max=%s,ret=%s" %(n, pending_pilots, self.max_pilots_pending, out)
