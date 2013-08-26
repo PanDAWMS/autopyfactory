@@ -205,22 +205,26 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         else:
             # call condor_off locally
             self.log.info("Trying local retirement of node %s" % publicip)
-            cmd='condor_off -peaceful -startd -name %s' % machine
-            self.log.debug("retire cmd is %s" % cmd) 
-            before = time.time()
-            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-            out = None
-            (out, err) = p.communicate()
-            delta = time.time() - before
-            self.log.debug('It took %s seconds to issue the command' %delta)
-            self.log.info('%s seconds to issue command' %delta)
-            if p.returncode == 0:
-                self.log.debug('Leaving with OK return code.')
+            if machine.strip() != "":
+                cmd='condor_off -peaceful -startd -name %s' % machine
+                self.log.debug("retire cmd is %s" % cmd) 
+                before = time.time()
+                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                out = None
+                (out, err) = p.communicate()
+                delta = time.time() - before
+                self.log.debug('It took %s seconds to issue the command' %delta)
+                self.log.info('%s seconds to issue command' %delta)
+                if p.returncode == 0:
+                    self.log.debug('Leaving with OK return code.')
+                else:
+                    out = out.replace("\n", " ")
+                    out = err.replace("\n", " ")
+                    self.log.warning('Leaving with bad return code. rc=%s err="%s" out="%s"' %(p.returncode, err, out ))          
             else:
-                out = out.replace("\n", " ")
-                out = err.replace("\n", " ")
-                self.log.warning('Leaving with bad return code. rc=%s err="%s" out="%s"' %(p.returncode, err, out ))          
-                        
+                self.log.warning("Unable to retire node %s (%s) because it has an empty machine name." % (jobinfo.executeinfo.hostname,
+                                                                                                          jobinfo.ec2instancename))
+                
 
     def _unretirenode(self, jobinfo):
         '''
@@ -250,8 +254,13 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
                 self.log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))          
             # invoke ssh to retire node
         else:
-            # call condor_off locally
-            self.log.info("Trying local unretirement of node %s" % publicip)
+            if machine.strip() != "":
+                # call condor_off locally
+                self.log.info("Trying local unretirement of node %s" % publicip)
+            else:
+                self.log.warning("Unable to unretire node %s (%s) because it has an empty machine name." % (jobinfo.executeinfo.hostname,
+                                                                                                          jobinfo.ec2instancename))
+             
 
 
     def cleanup(self):
