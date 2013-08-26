@@ -15,7 +15,7 @@ class MaxPendingSchedPlugin(SchedInterface):
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
 
             self.max_pilots_pending = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.maxpending.maximum', 'getint')
-            self.allow_negative = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.maxpending.allow_negative', 'getboolean')
+            self.allow_negative = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.maxpending.allow_negative', 'getboolean', True)
             self.log.debug("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin: object initialization failed. Raising exception")
