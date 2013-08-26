@@ -33,7 +33,7 @@ class MaxPendingSchedPlugin(SchedInterface):
             msg = "MaxPending: No queueinfo."
         else:
             pending_pilots = queueinfo.pending
-            
+            self.log.debug('Pending is %s' % pending_pilots)
             if pending_pilots == 0:
                 # if no pending, there may be free slots, so we impose no limit
                 out = n
