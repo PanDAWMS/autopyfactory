@@ -701,7 +701,7 @@ class CondorExecuteInfo(object):
         Node is 'busy' if any slots are 'busy'
         Node is 'idle' only if all slots are 'idle'.
         Node is 'retiring' if any slot is 'retiring'.
-        Node if 'retired' if no slots appear in condor_status.   
+        Node is 'retired' if no slots appear in condor_status.   
         
         Valid statuses:
            idle
@@ -742,7 +742,7 @@ class CondorExecuteInfo(object):
                 overall = 'retiring'
             else:
                 self.log.warning('Difficulty calculating status for %s ' % self.instanceid)
-            self.log.debug("executeinfo overall is %s" % overall)
+            self.log.debug("[%s:%s] executeinfo overall is %s" % (self.machine, self.instanceid, overall))
         return overall
             
         
