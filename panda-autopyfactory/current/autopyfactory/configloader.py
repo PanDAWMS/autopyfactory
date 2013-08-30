@@ -274,6 +274,7 @@ class ConfigManager(object):
             config = Config()
             if sources:
                 for src in sources.split(','):
+                    src = src.strip()
                     newconfig = self.__getConfig(src)
                     if newconfig:
                         config.merge(newconfig)
