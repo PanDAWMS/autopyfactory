@@ -1,0 +1,41 @@
+#!/usr/bin/python
+
+#
+#  First draft for a monitor script
+#  It checks for "FAILED" string in 
+#  condor output files
+#
+    
+import os
+import commands
+import threading
+
+DATE = "2013-09-03"
+
+class CMD(threading.Thread):
+        def __init__(self, dir):
+                threading.Thread.__init__(self)
+                self.dir = dir
+
+        def run(self):
+                self.out = commands.getoutput('grep FAILED %s/*out' %self.dir)
+
+
+threads = {}
+outputs = {}
+
+DIRS = os.listdir(DATE)
+for APFQUEUE in DIRS:
+	t = CMD('%s/%s' %(DATE, APFQUEUE))
+	threads[APFQUEUE] = t
+	t.start()
+
+for APFQUEUE in DIRS:
+	threads[APFQUEUE].join()
+
+	outputs[APFQUEUE] = threads[APFQUEUE].out
+	if outputs[APFQUEUE]:
+		print('directory : %s'%APFQUEUE)
+		for line in outputs[APFQUEUE].split('\n'):
+			print('  %s' %line)
+
