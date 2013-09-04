@@ -6,11 +6,17 @@
 #  condor output files
 #
     
-import os
 import commands
+import os
+import sys
 import threading
 
-DATE = "2013-09-03"
+#  !!!! NEED A CHECK THAN LEN(ARGV)==3  !!!!!
+DATE=sys.argv[1]
+STRING=sys.argv[2]
+STRING=STRING.replace(' ','\ ')
+STRING=STRING.replace(':','\:')
+
 
 class CMD(threading.Thread):
         def __init__(self, dir):
@@ -18,7 +24,7 @@ class CMD(threading.Thread):
                 self.dir = dir
 
         def run(self):
-                self.out = commands.getoutput('grep FAILED %s/*out' %self.dir)
+                self.out = commands.getoutput('grep %s %s/*out' %(STRING, self.dir))
 
 
 threads = {}
