@@ -26,17 +26,17 @@ outputs = {}
 
 DIRS = os.listdir(DATE)
 for APFQUEUE in DIRS:
-	t = CMD('%s/%s' %(DATE, APFQUEUE))
-	threads[APFQUEUE] = t
-	t.start()
+        t = CMD('%s/%s' %(DATE, APFQUEUE))
+        threads[APFQUEUE] = t
+        t.start()
 
 for APFQUEUE in DIRS:
-	threads[APFQUEUE].join()
+        threads[APFQUEUE].join()
 
-	outputs[APFQUEUE] = threads[APFQUEUE].out
-	if outputs[APFQUEUE]:
-		print('directory : %s'%APFQUEUE)
-		for line in outputs[APFQUEUE].split('\n'):
-			print('  %s' %line)
-        print('')
+        outputs[APFQUEUE] = threads[APFQUEUE].out
+        if outputs[APFQUEUE]:
+                print('directory : %s'%APFQUEUE)
+                for line in outputs[APFQUEUE].split('\n'):
+                        print('  %s' %line)
+                print('')
 
