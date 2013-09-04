@@ -38,4 +38,5 @@ for APFQUEUE in DIRS:
 		print('directory : %s'%APFQUEUE)
 		for line in outputs[APFQUEUE].split('\n'):
 			print('  %s' %line)
+        print('')
 
