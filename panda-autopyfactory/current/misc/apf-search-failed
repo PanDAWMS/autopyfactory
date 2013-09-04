@@ -46,3 +46,27 @@ for APFQUEUE in DIRS:
                         print('  %s' %line)
                 print('')
 
+#
+#   ------- for HTML ---------
+#    
+#    print ('<body>')
+#    
+#    for APFQUEUE in DIRS:
+#            if outputs[APFQUEUE]:
+#            print ('<table border="2" frame="hsides" rules="groups">')
+#            print('<tr><td align="center">')
+#                    print(APFQUEUE)
+#            print('<TBODY>')
+#    
+#                    for line in outputs[APFQUEUE].split('\n'):
+#                print('<tr><td>')
+#                            print(line)
+#                print('</table>')  
+#            print('<br>')
+#                                    
+#    print ('</body>')
+#    
+
+
+
+
