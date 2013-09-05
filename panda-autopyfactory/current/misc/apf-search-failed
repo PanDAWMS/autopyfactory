@@ -6,16 +6,63 @@
 #  condor output files
 #
     
-import commands
-import os
-import sys
-import threading
+###  import commands
+###  import os
+###  import sys
+###  import threading
+###  
+###  #  !!!! NEED A CHECK THAN LEN(ARGV)==3  !!!!!
+###  DATE=sys.argv[1]
+###  STRING=sys.argv[2]
+###  STRING=STRING.replace(' ','\ ')
+###  STRING=STRING.replace(':','\:')
+###  
+###  
+###  class CMD(threading.Thread):
+###          def __init__(self, dir):
+###                  threading.Thread.__init__(self)
+###                  self.dir = dir
+###  
+###          def run(self):
+###                  self.out = commands.getoutput('grep %s %s/*out' %(STRING, self.dir))
+###  
+###  threads = {}
+###  outputs = {}
+###  
+###  DIRS = os.listdir(DATE)
+###  for APFQUEUE in DIRS:
+###          t = CMD('%s/%s' %(DATE, APFQUEUE))
+###          threads[APFQUEUE] = t
+###          t.start()
+###  
+###  for APFQUEUE in DIRS:
+###          threads[APFQUEUE].join()
+###  
+###          outputs[APFQUEUE] = threads[APFQUEUE].out
+###          if outputs[APFQUEUE]:
+###                  print('directory : %s'%APFQUEUE)
+###                  for line in outputs[APFQUEUE].split('\n'):
+###                          print('  %s' %line)
+###                  print('')
+###  
 
-#  !!!! NEED A CHECK THAN LEN(ARGV)==3  !!!!!
+import os
+import commands
+import threading
+import sys
+import time
+
+NOW = int(time.time())
+
 DATE=sys.argv[1]
 STRING=sys.argv[2]
 STRING=STRING.replace(' ','\ ')
 STRING=STRING.replace(':','\:')
+
+PRINTMODE="html"
+if len(sys.argv) == 4:
+	# PRINTMODE = html|ascii
+	PRINTMODE = sys.argv[3]
 
 
 class CMD(threading.Thread):
@@ -24,49 +71,63 @@ class CMD(threading.Thread):
                 self.dir = dir
 
         def run(self):
-                self.out = commands.getoutput('grep %s %s/*out' %(STRING, self.dir))
+
+		listfiles = os.listdir(self.dir)
+		listfiles = [file for file in listfiles if file.endswith(".out") and NOW - os.stat('%s/%s' %(self.dir, file))[8] < 3600 ]
+		listfiles = ['%s/%s' %(self.dir, file) for file in listfiles ]
+		listfiles = " ".join(listfiles)
+
+	 	if listfiles != "":
+
+			cmd = 'grep %s %s' %(STRING, listfiles)
+			self.out = commands.getoutput(cmd)	
+		else:
+			self.out = ""	
 
 
 threads = {}
 outputs = {}
 
 DIRS = os.listdir(DATE)
+DIRS.sort()
+
 for APFQUEUE in DIRS:
         t = CMD('%s/%s' %(DATE, APFQUEUE))
         threads[APFQUEUE] = t
         t.start()
 
+
 for APFQUEUE in DIRS:
         threads[APFQUEUE].join()
-
         outputs[APFQUEUE] = threads[APFQUEUE].out
-        if outputs[APFQUEUE]:
-                print('directory : %s'%APFQUEUE)
-                for line in outputs[APFQUEUE].split('\n'):
-                        print('  %s' %line)
-                print('')
 
-#
-#   ------- for HTML ---------
-#    
-#    print ('<body>')
-#    
-#    for APFQUEUE in DIRS:
-#            if outputs[APFQUEUE]:
-#            print('<table border="2" frame="hsides" rules="groups" style="font-size:small">')
-#            print('<tr><td align="center">')
-#                    print(APFQUEUE)
-#            print('<TBODY>')
-#    
-#                    for line in outputs[APFQUEUE].split('\n'):
-#                print('<tr><td>')
-#                            print(line)
-#                print('</table>')  
-#            print('<br>')
-#                                    
-#    print ('</body>')
-#    
 
+if PRINTMODE == "html":
+
+	print ('<body>')
+	
+	for APFQUEUE in DIRS:
+	        if outputs[APFQUEUE]:
+			print ('<table border="2" frame="hsides" rules="groups" style="font-size:small" width="100%">')
+			print('<tr><td bgcolor="#99FFFF">')
+	                print(APFQUEUE)
+			print('<TBODY>')
+	
+	                for line in outputs[APFQUEUE].split('\n'):
+				print('<tr><td>')
+	                        print(line)
+	      		print('</table>')  
+			print('<br>')
+	                                
+	print ('</body>')
+
+if PRINTMODE == "ascii":
+
+	for APFQUEUE in DIRS:
+	        if outputs[APFQUEUE]:
+	                print(APFQUEUE)
+	                for line in outputs[APFQUEUE].split('\n'):
+	                        print(line)
 
 
 
