@@ -46,6 +46,15 @@
 ###                  print('')
 ###  
 
+
+
+
+# examples of usage:
+#
+# ./apf-search-failed /home/apf/factory/logs/2013-09-05 FAILED\|ERROR
+# ./apf-search-failed /home/apf/factory/logs/2013-09-05 FAILED  ascii
+
+
 import os
 import commands
 import threading
@@ -79,7 +88,7 @@ class CMD(threading.Thread):
 
 	 	if listfiles != "":
 
-			cmd = 'grep %s %s' %(STRING, listfiles)
+			cmd = 'egrep "%s" %s' %(STRING, listfiles)
 			self.out = commands.getoutput(cmd)	
 		else:
 			self.out = ""	
