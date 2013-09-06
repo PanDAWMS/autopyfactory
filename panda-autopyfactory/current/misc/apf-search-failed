@@ -63,6 +63,8 @@ import time
 
 NOW = int(time.time())
 
+NHOURS = 1
+
 DATE=sys.argv[1]
 STRING=sys.argv[2]
 STRING=STRING.replace(' ','\ ')
@@ -82,7 +84,7 @@ class CMD(threading.Thread):
         def run(self):
 
 		listfiles = os.listdir(self.dir)
-		listfiles = [file for file in listfiles if file.endswith(".out") and NOW - os.stat('%s/%s' %(self.dir, file))[8] < 3600 ]
+		listfiles = [file for file in listfiles if file.endswith(".out") and NOW - os.stat('%s/%s' %(self.dir, file))[8] < NHOURS*3600 ]
 		listfiles = ['%s/%s' %(self.dir, file) for file in listfiles ]
 		listfiles = " ".join(listfiles)
 
