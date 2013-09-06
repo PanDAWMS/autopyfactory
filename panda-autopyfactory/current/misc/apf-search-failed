@@ -55,6 +55,8 @@
 # ./apf-search-failed /home/apf/factory/logs/2013-09-05 FAILED  ascii
 
 
+
+import getopt
 import os
 import commands
 import threading
@@ -63,17 +65,33 @@ import time
 
 NOW = int(time.time())
 
+
+#  ====================== parsing input options  ========================
+
+# --- DEFAULTS ---
+STRING = "FAILED"
+FORMAT = "html"
 NHOURS = 1
 
-DATE=sys.argv[1]
-STRING=sys.argv[2]
+opts, args = getopt.getopt(sys.argv[1:], "",
+                          ["string=",
+                           "format=",
+                           "time="]
+                          )
+
+for k,v in opts:
+        if k == "--string":
+                STRING = v
+        if k == "--format":
+                FORMAT = v
+        if k == "--time":
+                NHOURS = int(v)
+
 STRING=STRING.replace(' ','\ ')
 STRING=STRING.replace(':','\:')
 
-PRINTMODE="html"
-if len(sys.argv) == 4:
-	# PRINTMODE = html|ascii
-	PRINTMODE = sys.argv[3]
+#  ======================================================================
+
 
 
 class CMD(threading.Thread):
