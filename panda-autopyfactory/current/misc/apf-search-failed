@@ -144,7 +144,11 @@ if PRINTMODE == "html":
 	
 	                for line in outputs[APFQUEUE].split('\n'):
 				print('<tr><td>')
-	                        print(line)
+	                        #print(line)
+                            fields = line.split(':')
+                            filename = fields[0]
+                            msg = ":".join(fields[1:])
+                            print('<b>%s</b> %s' %(filename, msg))
 	      		print('</table>')  
 			print('<br>')
 	                                
