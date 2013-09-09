@@ -50,7 +50,7 @@ class CMD(threading.Thread):
 
 	 	if listfiles != "":
 
-			cmd = 'egrep "%s" %s' %(STRING, listfiles)
+			cmd = 'egrep -H "%s" %s' %(STRING, listfiles)
 			#print cmd
 			self.out = commands.getoutput(cmd)	
 		else:
@@ -60,23 +60,37 @@ class CMD(threading.Thread):
 threads = {}
 outputs = {}
 
-#DIRS = os.listdir(DATE)
-#DIRS.sort()
+class Dir(object):
+	def __init__(self, dir, date, apfqueue):
+		self.dir = dir
+		self.date = date
+		self.apfqueue = apfqueue
+
+	def abs(self):
+		return '%s/%s/%s' %(self.dir, self.date, self.apfqueue)
+	def relatve(self):
+		return '%s/%s' %(self.date, self.apfqueue)
+
 
 DIR = "/tmp/TESTING"
 DATES = os.listdir(DIR)
 dirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")
 DATES = [DATE for DATE in DATES if dirRe.match(DATE)]
 DIRS = []
+APFQUEUES = []
+
+
 
 for DATE in DATES:
 	for APFQUEUE in os.listdir(DATE):
-		subdir = '%s/%s/%s' %(DIR, DATE, APFQUEUE)
-		DIRS.append( subdir )
+		if APFQUEUE not in APFQUEUES:
+			APFQUEUES.append(APFQUEUE)
+		dir = Dir(DIR, DATE, APFQUEUE)
+		DIRS.append(dir)
 
 
 for DIR in DIRS:
-        t = CMD(DIR)
+        t = CMD(DIR.abs())
         threads[DIR] = t
         t.start()
 
@@ -89,32 +103,62 @@ for DIR in DIRS:
 if FORMAT == "html":
 
 	print ('<body>')
-	
-	for DIR in DIRS:
-	        if outputs[DIR]:
-			print ('<table border="2" frame="hsides" rules="groups" style="font-size:small" width="100%">')
-			print('<tr><td bgcolor="#99FFFF">')
-	                print(DIR)
-			print('<TBODY>')
-	
-	                for line in outputs[DIR].split('\n'):
-				print('<tr><td>')
-                             	#print(line)
-                             	fields = line.split(':')
-                             	filename = fields[0]
-                             	msg = ":".join(fields[1:])
-                             	print('<b>%s</b> %s' %(filename, msg))
 
-	      		print('</table>')  
-			print('<br>')
-	                                
+	for APFQUEUE in APFQUEUES:		
+
+		for DIR in DIRS:
+                   if DIR.apfqueue == APFQUEUE:
+		        if outputs[DIR]:
+
+				print ('<table border="2" frame="hsides" rules="groups" style="font-size:small" width="100%">')
+				print('<tr><td bgcolor="#99FFFF">')
+				print(DIR.apfqueue)
+				print('<TBODY>')
+
+		                for line in outputs[DIR].split('\n'):
+					print('<tr><td>')
+        	                     	#print(line)
+        	                     	fields = line.split(':')
+        	                     	filename = fields[0]
+        	                     	msg = ":".join(fields[1:])
+        	                     	print('<b>%s</b> %s' %(filename, msg))
+
+				print('</table>')  
+				print('<br>')
+		                                
 	print ('</body>')
+
+
+#if FORMAT == "html":
+#
+#	print ('<body>')
+#	
+#	for DIR in DIRS:
+#	        if outputs[DIR]:
+#			print ('<table border="2" frame="hsides" rules="groups" style="font-size:small" width="100%">')
+#			print('<tr><td bgcolor="#99FFFF">')
+#	                print(DIR.abs())
+#			print('<TBODY>')
+#	
+#	                for line in outputs[DIR].split('\n'):
+#				print('<tr><td>')
+#                             	#print(line)
+#                             	fields = line.split(':')
+#                             	filename = fields[0]
+#                             	msg = ":".join(fields[1:])
+#                             	print('<b>%s</b> %s' %(filename, msg))
+#
+#	      		print('</table>')  
+#			print('<br>')
+#	                                
+#	print ('</body>')
+
 
 if FORMAT == "ascii":
 
 	for DIR in DIRS:
 	        if outputs[DIR]:
-	                print(DIR)
+	                print(DIR.abs())
 	                for line in outputs[DIR].split('\n'):
 	                        print(line)
 
