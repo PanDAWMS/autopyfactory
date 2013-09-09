@@ -99,6 +99,7 @@ for DIR in DIRS:
         threads[DIR].join()
         outputs[DIR] = threads[DIR].out
 
+APFQUEUES.sort()
 
 if FORMAT == "html":
 
