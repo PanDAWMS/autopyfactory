@@ -524,6 +524,10 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         #            jobType='test,prod,managed,user,panda,ddm,rc_test,prod_test'
         #            ) 
         jobs_err, all_jobs_config = Client.getJobStatisticsWithLabel()
+        # NOTE: reason to use getJobStatisticsWithLabel()
+        #       is because by default PanDA does not give info on all labels.
+        #       Jobs info for labels like "rc-test" is hidden,
+        #       so we ask explicitly for all labels.
                                                                                    
         delta = time.time() - before
         self.log.info('_updateJobs: %s seconds to perform query' %delta)
