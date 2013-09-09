@@ -1,97 +1,39 @@
 #!/usr/bin/python
 
-#
-#  First draft for a monitor script
-#  It checks for "FAILED" string in 
-#  condor output files
-#
-    
-###  import commands
-###  import os
-###  import sys
-###  import threading
-###  
-###  #  !!!! NEED A CHECK THAN LEN(ARGV)==3  !!!!!
-###  DATE=sys.argv[1]
-###  STRING=sys.argv[2]
-###  STRING=STRING.replace(' ','\ ')
-###  STRING=STRING.replace(':','\:')
-###  
-###  
-###  class CMD(threading.Thread):
-###          def __init__(self, dir):
-###                  threading.Thread.__init__(self)
-###                  self.dir = dir
-###  
-###          def run(self):
-###                  self.out = commands.getoutput('grep %s %s/*out' %(STRING, self.dir))
-###  
-###  threads = {}
-###  outputs = {}
-###  
-###  DIRS = os.listdir(DATE)
-###  for APFQUEUE in DIRS:
-###          t = CMD('%s/%s' %(DATE, APFQUEUE))
-###          threads[APFQUEUE] = t
-###          t.start()
-###  
-###  for APFQUEUE in DIRS:
-###          threads[APFQUEUE].join()
-###  
-###          outputs[APFQUEUE] = threads[APFQUEUE].out
-###          if outputs[APFQUEUE]:
-###                  print('directory : %s'%APFQUEUE)
-###                  for line in outputs[APFQUEUE].split('\n'):
-###                          print('  %s' %line)
-###                  print('')
-###  
-
-
-
-
-# examples of usage:
-#
-# ./apf-search-failed /home/apf/factory/logs/2013-09-05 FAILED\|ERROR
-# ./apf-search-failed /home/apf/factory/logs/2013-09-05 FAILED  ascii
-
-
-
-import getopt
 import os
 import commands
 import threading
+import re
 import sys
 import time
 
+import getopt
+
 NOW = int(time.time())
 
-
-#  ====================== parsing input options  ========================
-
 # --- DEFAULTS ---
+
 STRING = "FAILED"
 FORMAT = "html"
 NHOURS = 1
 
+
 opts, args = getopt.getopt(sys.argv[1:], "",
-                          ["string=",
+			  ["string=",
                            "format=",
                            "time="]
-                          )
+			  )	
 
 for k,v in opts:
-        if k == "--string":
-                STRING = v
-        if k == "--format":
-                FORMAT = v
-        if k == "--time":
-                NHOURS = int(v)
-
+	if k == "--string":
+		STRING = v
+	if k == "--format":
+		FORMAT = v
+	if k == "--time":
+		NHOURS = int(v)
+	
 STRING=STRING.replace(' ','\ ')
 STRING=STRING.replace(':','\:')
-
-#  ======================================================================
-
 
 
 class CMD(threading.Thread):
@@ -109,6 +51,7 @@ class CMD(threading.Thread):
 	 	if listfiles != "":
 
 			cmd = 'egrep "%s" %s' %(STRING, listfiles)
+			#print cmd
 			self.out = commands.getoutput(cmd)	
 		else:
 			self.out = ""	
@@ -117,50 +60,61 @@ class CMD(threading.Thread):
 threads = {}
 outputs = {}
 
-DIRS = os.listdir(DATE)
-DIRS.sort()
+#DIRS = os.listdir(DATE)
+#DIRS.sort()
 
-for APFQUEUE in DIRS:
-        t = CMD('%s/%s' %(DATE, APFQUEUE))
-        threads[APFQUEUE] = t
+DIR = "/tmp/TESTING"
+DATES = os.listdir(DIR)
+dirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")
+DATES = [DATE for DATE in DATES if dirRe.match(DATE)]
+DIRS = []
+
+for DATE in DATES:
+	for APFQUEUE in os.listdir(DATE):
+		subdir = '%s/%s/%s' %(DIR, DATE, APFQUEUE)
+		DIRS.append( subdir )
+
+
+for DIR in DIRS:
+        t = CMD(DIR)
+        threads[DIR] = t
         t.start()
 
 
-for APFQUEUE in DIRS:
-        threads[APFQUEUE].join()
-        outputs[APFQUEUE] = threads[APFQUEUE].out
+for DIR in DIRS:
+        threads[DIR].join()
+        outputs[DIR] = threads[DIR].out
 
 
-if PRINTMODE == "html":
+if FORMAT == "html":
 
 	print ('<body>')
 	
-	for APFQUEUE in DIRS:
-	        if outputs[APFQUEUE]:
+	for DIR in DIRS:
+	        if outputs[DIR]:
 			print ('<table border="2" frame="hsides" rules="groups" style="font-size:small" width="100%">')
 			print('<tr><td bgcolor="#99FFFF">')
-	                print(APFQUEUE)
+	                print(DIR)
 			print('<TBODY>')
 	
-	                for line in outputs[APFQUEUE].split('\n'):
+	                for line in outputs[DIR].split('\n'):
 				print('<tr><td>')
-	                        #print(line)
-                            fields = line.split(':')
-                            filename = fields[0]
-                            msg = ":".join(fields[1:])
-                            print('<b>%s</b> %s' %(filename, msg))
+                             	#print(line)
+                             	fields = line.split(':')
+                             	filename = fields[0]
+                             	msg = ":".join(fields[1:])
+                             	print('<b>%s</b> %s' %(filename, msg))
+
 	      		print('</table>')  
 			print('<br>')
 	                                
 	print ('</body>')
 
-if PRINTMODE == "ascii":
+if FORMAT == "ascii":
 
-	for APFQUEUE in DIRS:
-	        if outputs[APFQUEUE]:
-	                print(APFQUEUE)
-	                for line in outputs[APFQUEUE].split('\n'):
+	for DIR in DIRS:
+	        if outputs[DIR]:
+	                print(DIR)
+	                for line in outputs[DIR].split('\n'):
 	                        print(line)
-
-
 
