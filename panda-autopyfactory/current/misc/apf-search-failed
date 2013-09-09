@@ -123,11 +123,13 @@ if FORMAT == "html":
         	                     	filename = fields[0]
 
 					link = '' + '/'.join( filename.split('/')[-3:] )
+					linkerr = link[:-3]+"err"
+					linklog = link[:-3]+"log"
 
         	                     	msg = ":".join(fields[1:])
 
         	                     	#print('<b>%s</b> %s' %(filename, msg))
-        	                     	print('<b><a href="%s">%s</a></b> %s' %(link, filename, msg))
+        	                     	print('<a href="%s">%s</a> (<a href="%s">err</a>, <a href="%s">log</a>) %s' %(link, filename, linkerr, linklog, msg))
 
 				print('</table>')  
 				print('<br>')
