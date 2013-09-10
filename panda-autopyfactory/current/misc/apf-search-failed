@@ -110,9 +110,12 @@ if FORMAT == "html":
     print ('<body>')
 
 
-    for DIR in DIRS:
-        if outputs[DIR]:
-            print('<a href="#%s">%s</a><br>' %(DIR.apfqueue, DIR.apfqueue))
+    for APFQUEUE in APFQUEUES:
+        for DIR in DIRS:
+            if DIR.apfqueue == APFQUEUE:
+                if outputs[DIR]:
+                    print('<a href="#%s">%s</a><br>' %(DIR.apfqueue, DIR.apfqueue))
+
 
     print('<br>')
     for APFQUEUE in APFQUEUES:      
