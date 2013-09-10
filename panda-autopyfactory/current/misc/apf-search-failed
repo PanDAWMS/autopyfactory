@@ -72,7 +72,9 @@ class Dir(object):
 		return '%s/%s' %(self.date, self.apfqueue)
 
 
+#  !!!!! harcoded  !!!!!!!
 DIR = "/tmp/TESTING"
+
 DATES = os.listdir(DIR)
 dirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")
 DATES = [DATE for DATE in DATES if dirRe.match(DATE)]
