@@ -84,7 +84,7 @@ APFQUEUES = []
 
 
 for DATE in DATES:
-	for APFQUEUE in os.listdir(DATE):
+	for APFQUEUE in os.listdir('%s/%s' %(DIR, DATE)):
 		if APFQUEUE not in APFQUEUES:
 			APFQUEUES.append(APFQUEUE)
 		dir = Dir(DIR, DATE, APFQUEUE)
