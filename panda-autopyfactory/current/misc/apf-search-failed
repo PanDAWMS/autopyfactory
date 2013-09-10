@@ -107,7 +107,7 @@ APFQUEUES.sort()
 
 if FORMAT == "html":
 
-    print ('<body>')
+    print ('<body style="font-size:small">')
 
 
     for APFQUEUE in APFQUEUES:
@@ -124,7 +124,9 @@ if FORMAT == "html":
                    if DIR.apfqueue == APFQUEUE:
                 if outputs[DIR]:
 
-                print ('<table border="2" frame="hsides" rules="groups" style="font-size:small" width="100%">')
+                #print ('<table border="2" frame="hsides" rules="groups" style="font-size:small" width="100%">')
+                print ('<table border="2" frame="hsides" rules="groups" width="100%">')
+
                 print('<tr><td bgcolor="#99FFFF">')
                 print(DIR.apfqueue)
                 print('<TBODY>')
