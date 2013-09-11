@@ -134,7 +134,7 @@ if FORMAT == "html":
                         fields = line.split(':')
                         filename = fields[0]
 
-                        link = '' + '/'.join( filename.split('/')[-3:] )
+                        link = '/'.join( filename.split('/')[-3:] )
                         linkerr = link[:-3]+"err"
                         linklog = link[:-3]+"log"
 
