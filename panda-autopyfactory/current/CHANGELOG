@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* scripts and config files added for logs monitor apf-search-failed
+
 * strip() after split by comma in configloader, to allow things like 'x = foo, bar' with whitespace after comma
 
 * bug in MaxPending sched plugin logic fixed. Now no limit imposed when there are no pending pilots.
