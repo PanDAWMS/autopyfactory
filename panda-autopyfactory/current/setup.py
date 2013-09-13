@@ -34,7 +34,10 @@ etc_files = ['etc/factory.conf-example',
              'etc/queues.conf-example',
              'etc/proxy.conf-example',
              'etc/monitor.conf-example',
-             'etc/factory.sysconfig-example',]
+             'etc/factory.sysconfig-example',
+             'etc/logsmonitor.rotate.conf-example',
+             'etc/apf-search-filed.sh-example',
+             ]
 
 initd_files = ['etc/factory',]
 
@@ -51,6 +54,7 @@ utils_files = ['misc/apf-agis-config',
                'misc/apf-queue-jobs-by-status.sh',
                'misc/apf-test-pandaclient',
                'misc/apf-check-old-pilots',
+               'misc/apf-search-failed',
                ]
 
 # -----------------------------------------------------------
