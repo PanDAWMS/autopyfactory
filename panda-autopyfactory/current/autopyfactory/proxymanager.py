@@ -12,6 +12,7 @@ import time
 
 from subprocess import Popen, PIPE, STDOUT
 
+from autopyfactory.apfexceptions import ProxyInvalidFailure
 
 
 class ProxyManager(threading.Thread):
@@ -160,6 +161,15 @@ class ProxyHandler(threading.Thread):
             self.log.error("[%s] Command RC = 1. Error = %s" % (self.name, stderr))
         else:
             raise Exception("Strange error using command voms-proxy-init. Return code = %d" % p.returncode)
+
+    def _retrieveMyProxyCredential(self):
+        '''
+        Try to retrieve valid credentail from MyProxy server as configured for this handler. 
+        
+        '''
+            
+            
+            
             
 
     def _checkTimeleft(self):

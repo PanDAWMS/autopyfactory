@@ -1,4 +1,4 @@
-#!/bin/env python
+q#!/bin/env python
 #
 # AutoPyfactory batch plugin for Condor
 #
@@ -39,13 +39,13 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             self.executable = qcl.generic_get(self.apfqname, 'executable')
             self.factoryadminemail = self.fcl.generic_get('Factory', 'factoryAdminEmail')
             self.x509userproxy = None
+            self.proxylist = None
             if qcl.has_option(self.apfqname,'batchsubmit.condorbase.proxy'):
-                proxy = qcl.get(self.apfqname,'batchsubmit.condorbase.proxy')
-                self.x509userproxy = self.factory.proxymanager.getProxyPath(proxy)
-                self.log.debug('proxy is %s. Loaded path from proxymanager: %s' % (proxy, self.x509userproxy))
-            else:
-                self.log.debug('proxy is None. No proxy configured.')
-            
+                plist = qcl.get(self.apfqname,'batchsubmit.condorbase.proxy')
+                # This is alist of proxy profile names specified in proxy.conf
+                # We will only attempt to derive proxy file path during submission
+                self.proxylist = [x.strip() for x in plist.split(',')]
+                          
             self.factoryid = self.fcl.generic_get('Factory', 'factoryId')
             self.monitorsection = qcl.generic_get(self.apfqname, 'monitorsection')
             self.log.debug("monitorsection is %s" % self.monitorsection)            
@@ -96,6 +96,18 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
                     if os.path.isfile(condor_config):
                         self.log.debug('using condor config file: %s' %condor_config)
 
+    def _getX509Proxy(self):
+        '''
+        Goes through configured proxy profiles and won't stop until either 
+        1) We have gotten a valid proxy. Name of file is placed in self.x509proxy 
+        2) Run out of profiles to try
+        '''
+     
+        
+        
+        
+
+
     def submit(self, n):
         '''
         n is the number of pilots to be submitted 
@@ -108,26 +120,34 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         if not utils.checkDaemon('condor'):
             self.log.info('condor daemon is not running. Doing nothing')
             return joblist
-
-        if n > 0:
-            self._calculateDateDir()
-            self.JSD = jsd.JSDFile()
-            self._addJSD()
-            self._custom_attrs()
-            self._finishJSD(n)
-            jsdfile = self._writeJSD()
-            if jsdfile:
-                st, output = self.__submit(n, jsdfile)
-                self.log.debug('Got output (%s, %s).' %(st, output)) 
-                joblist = self._parseCondorSubmit(output)
+        
+        try:
+            if n > 0:
+                self._calculateDateDir()
+                self.JSD = jsd.JSDFile()
+                self._getX509Proxy()
+                self._addJSD()
+                self._custom_attrs()
+                self._finishJSD(n)
+                jsdfile = self._writeJSD()
+                if jsdfile:
+                    st, output = self.__submit(n, jsdfile)
+                    self.log.debug('Got output (%s, %s).' %(st, output)) 
+                    joblist = self._parseCondorSubmit(output)
+                else:
+                    self.log.info('jsdfile has no value. Doing nothing')
+            elif n < 0:
+                # For certain plugins, this means to retire or terminate nodes...
+                self.log.debug('Preparing to retire %s jobs' % abs(n))
+                self.retire(abs(n))
             else:
-                self.log.info('jsdfile has no value. Doing nothing')
-        elif n < 0:
-            # For certain plugins, this means to retire or terminate nodes...
-            self.log.debug('Preparing to retire %s jobs' % abs(n))
-            self.retire(abs(n))
-        else:
-            self.log.debug("Asked to submit 0. Doing nothing...")
+                self.log.debug("Asked to submit 0. Doing nothing...")
+        except InvalidProxyException, ipe:
+            self.log.error('Unable to get valid proxy file.')
+        
+        except Exception, e:
+            self.log.error('Exception during submit processing.')
+        
         
         self.log.debug('Done. Returning joblist %s.' %joblist)
         return joblist

@@ -14,7 +14,8 @@ class CondorGridBatchSubmitPlugin(CondorBaseBatchSubmitPlugin):
             qcl = apfqueue.factory.qcl            
         else:
             qcl = config
-                
+       
+               
         newqcl = qcl.clone().filterkeys('batchsubmit.condorgrid', 'batchsubmit.condorbase')
         super(CondorGridBatchSubmitPlugin, self).__init__(apfqueue, newqcl) 
         self.log.info('CondorGridBatchSubmitPlugin: Object initialized.')

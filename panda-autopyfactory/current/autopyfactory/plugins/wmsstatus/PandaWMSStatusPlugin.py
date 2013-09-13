@@ -1,4 +1,11 @@
 #! /usr/bin/env python
+# Added to support running module as script from arbitrary location. 
+from os.path import dirname, realpath, sep, pardir
+fullpathlist = realpath(__file__).split(sep)
+prepath = sep.join(fullpathlist[:-4])
+import sys
+sys.path.insert(0, prepath)
+
 
 import logging
 import threading
@@ -570,5 +577,12 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         self.log.debug('Leaving.')
 
 
+def runstandalone():
+    print("Running standalone...")
+
+
+
+if __name__=='__main__':
+    runstandalone()
 
             
