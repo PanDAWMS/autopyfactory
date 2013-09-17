@@ -123,7 +123,7 @@ function get_pilot_http() {
             APF_PYTHON26=1
         else
             echo "DEBUG: Normal production pilot code used." 
-            PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25085/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
+            PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25085/cache/pilot/pilotcode.tar.gz"
             PILOT_TYPE=PR
         fi
     fi
