@@ -35,7 +35,7 @@ class ConfigFailureMandatoryAttr(Exception):
     def __str__(self):
         return self.value
 
-class ProxyInvalidFailure(Exception):
+class InvalidProxyFailure(Exception):
     def __init__(self, value):
         self.value = value
     def __str__(self):

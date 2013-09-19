@@ -5,9 +5,13 @@
 
 from CondorGridBatchSubmitPlugin import CondorGridBatchSubmitPlugin
 from autopyfactory import jsd 
-from autopyfactory.condor import killids
+from autopyfactory.condor import killids, mincondorversion
 import subprocess
 import time
+import commands
+import logging
+
+mincondorversion(8,1,2)
 
 
 class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):

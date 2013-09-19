@@ -64,11 +64,37 @@ class ProxyManager(threading.Thread):
             names.append(h.name)
         return names
 
-    def getProxyPath(self,name):
+    def getProxyPath(self, profiles):
+        '''
+        Check all the handlers for matching profile name(s).
+        profiles argument may be a string, or a list.  
+        
+        '''
         for h in self.handlers:
             if h.name == name:
                 return h._getProxyPath()
         return None
+
+
+    def _getX509Proxy(self):
+        '''
+        Goes through configured proxy profiles and won't stop until either 
+        1) We have gotten a valid proxy. Name of file is placed in self.x509proxy 
+        2) Run out of profiles to try
+        '''
+        
+        for profile in self.proxylist:
+            try:
+                self.log.debug("Getting proxy for profile %s " % profile)
+                self.x509userproxy= self.getProxyPath(profile)
+                self.log.info("Got valid proxy path: %s from profile [%s]" % (self.x509userproxy, profile))
+                # Since we have got a good proxy, break from the profile loop
+                break
+            except InvalidProxyFailure, ipfe:
+                self.log.warning("Got invalid proxy from profile [%s]" % profile)
+        if not self.x509userproxy:
+            self.log.error("Ran out of proxy profiles! No valid proxy!")
+            
 
     def join(self,timeout=None):
             '''
@@ -84,33 +110,50 @@ class ProxyManager(threading.Thread):
         
 class ProxyHandler(threading.Thread):
     '''
-    Checks, creates, and renews a VOMS proxy.    
+    Checks, creates, and renews a VOMS proxy. 
+    or retrieves suitable credential from MyProxy 
+           
     '''
     def __init__(self,config,section ):
         threading.Thread.__init__(self) # init the thread
         self.log = logging.getLogger('main.proxyhandler')
         self.name = section
         
-        # Handle potential paths with expanduser
-        self.baseproxy = config.get(section,'baseproxy' ) 
-        if self.baseproxy.lower().strip() == "none":
-            self.baseproxy = None
-        else:
-            self.baseproxy = os.path.expanduser(self.baseproxy)
+        
+        # Vars for all flavors
         self.proxyfile = os.path.expanduser(config.get(section,'proxyfile'))
-        self.usercert = os.path.expanduser(config.get(section, 'usercert'))
-        self.userkey = os.path.expanduser(config.get(section, 'userkey'))
-       
-        # Handle strings       
-        self.vorole = config.get(section, 'vorole' ) 
+        self.vorole = config.get(section, 'vorole' )         
         
-        # Handle booleans
-        renewstr = config.get(section, 'renew').lower().strip()
-        if renewstr == 'true':
-            self.renew = True
-        else:
-            self.renew = False
+        # Flavors are 'voms' or 'myproxy'
+        self.flavor = config.get(section, 'flavor')
         
+        if self.flavor == 'voms':        
+            self.baseproxy = config.get(section,'baseproxy' ) 
+            if self.baseproxy.lower().strip() == "none":
+                self.baseproxy = None
+            else:
+                self.baseproxy = os.path.expanduser(self.baseproxy)
+            
+            
+            self.usercert = os.path.expanduser(config.get(section, 'usercert'))
+            self.userkey = os.path.expanduser(config.get(section, 'userkey'))
+            
+            # Handle booleans
+            renewstr = config.get(section, 'renew').lower().strip()
+            if renewstr == 'true':
+                self.renew = True
+            else:
+                self.renew = False
+        
+        if self.flavor == 'myproxy':
+            self.passphrase = None
+            # Name of a proxymanager section whic will be used as the retreival credential
+            self.retriever_profile = None
+            self.myproxy_servername = None
+            self.myproxy_
+                        
+            self.retriever_profile = config.get(section, 'retriever_profile')
+                  
         # Handle numerics
         self.lifetime = int(config.get(section, 'lifetime'))
         self.checktime = int(config.get(section, 'checktime'))
@@ -122,10 +165,9 @@ class ProxyHandler(threading.Thread):
 
         self.log.info("[%s] ProxyHandler initialized." % self.name)
 
-
     def _generateProxy(self):
         '''
-        Unconditionally generates new proxy using current configuration settings for this Handler. 
+        Unconditionally generates new VOMS proxy using current configuration settings for this Handler. 
         Uses existing baseproxy if configured. 
         
         '''
@@ -162,15 +204,42 @@ class ProxyHandler(threading.Thread):
         else:
             raise Exception("Strange error using command voms-proxy-init. Return code = %d" % p.returncode)
 
+
     def _retrieveMyProxyCredential(self):
         '''
-        Try to retrieve valid credentail from MyProxy server as configured for this handler. 
+        Try to retrieve valid credential from MyProxy server as configured for this handler. 
         
+myproxy-init --certfile ~/.globus/cern/usercert.pem 
+              --keyfile ~/.globus/cern/userkey.pem 
+               -s myproxy.cern.ch 
+                -Z "John Hover 241" 
+                -r "John Hover 241" 
+                -R "John Hover 241"
+
+
+[jhover@cloudy ~]$ grid-proxy-init 
+Enter GRID pass phrase for this identity:
+Your identity: /DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=John Hover 241
+Creating proxy ....................................................... Done
+Your proxy is valid until: Thu Sep 19 02:30:59 2013
+[jhover@cloudy ~]$ grid-proxy-info
+subject  : /DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=John Hover 241/CN=1587635606
+issuer   : /DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=John Hover 241
+identity : /DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=John Hover 241
+type     : RFC 3820 compliant impersonation proxy
+strength : 1024 bits
+path     : /tmp/x509up_u1000
+timeleft : 11:59:55
+
+myproxy-get-delegation 
+  -a /tmp/x509up_u1000  
+  -m atlas:/atlas/usatlas 
+  -N -n 
+  -o /tmp/myproxy-delegated
+   
+              
         '''
-            
-            
-            
-            
+
 
     def _checkTimeleft(self):
         '''

@@ -96,17 +96,17 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
                     if os.path.isfile(condor_config):
                         self.log.debug('using condor config file: %s' %condor_config)
 
+
+
     def _getX509Proxy(self):
         '''
-        Goes through configured proxy profiles and won't stop until either 
-        1) We have gotten a valid proxy. Name of file is placed in self.x509proxy 
-        2) Run out of profiles to try
+        
         '''
-     
-        
-        
-        
-
+        try:
+            self.x509userproxy = self.factory.proxymanager.getProxyPath(self.proxylist)
+        except InvalidProxyFailure, ipfe:
+                self.log.error("Unable to get a valid proxy for our list.")
+                
 
     def submit(self, n):
         '''

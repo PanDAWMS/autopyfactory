@@ -81,6 +81,32 @@ def classad2dict(outlist):
     return out 
 
 
+def mincondorversion(major, minor, release):
+    '''
+    Call which sets a minimum HTCondor version. If the existing version is too low, it throws an exception.
+    
+    '''
+
+    log = logging.getLogger()
+    s,o = commands.getstatusoutput('condor_version')
+    if s == 0:
+        cvstr = o.split()[1]
+        log.debug('Condor version is: %s' % cvstr)
+        maj, min, rel = cvstr.split('.')
+        maj = int(maj)
+        min = int(min)
+        rel = int(rel)
+        
+        if maj < major:
+            raise Exception("HTCondor version %s too low for the CondorEC2BatchSubmitPlugin. Requires 8.1.2 or above." % cvstr)
+        if maj == major and min < minor:
+            raise Exception("HTCondor version %s too low for the CondorEC2BatchSubmitPlugin. Requires 8.1.2 or above." % cvstr)
+        if maj == major and min == minor and rel < release:
+            raise Exception("HTCondor version %s too low for the CondorEC2BatchSubmitPlugin. Requires 8.1.2 or above." % cvstr)
+    else:
+        ec2log.error('condor_version program not available!')
+        raise Exception("HTCondor required but not present!")
+
 
 def checkCondor():
     '''

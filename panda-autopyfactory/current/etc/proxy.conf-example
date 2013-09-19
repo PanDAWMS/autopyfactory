@@ -62,6 +62,8 @@
 #
 baseproxy = None
 
+# flavor = voms OR myproxy
+flavor = voms
 
 usercert=~/.globus/usercert.pem
 userkey=~/.globus/userkeynopw.pem

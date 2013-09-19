@@ -1,5 +1,8 @@
 ChangeLog
 ---------
+* minimum Condor version check. Allows particular plugins to specify minimum. Failure aborts. 
+
+* multiproxy functionality. Allow multiple proxy profiles. proxymanager tries all until one is found. failure generates email.  
 
 * scripts and config files added for logs monitor apf-search-failed
 
