@@ -28,7 +28,12 @@ class ScaleSchedPlugin(SchedInterface):
     def calcSubmitNum(self, n=0):
 
         self.log.debug('Starting with n=%s' %n)
+
         out = int(n * self.factor)
+        # it could happen that n*factor < 1, so int() will give 0. 
+        if n>0 and out==0:
+            out = 1
+
         self.log.info('Return=%s' %out)
         msg = "Scale=%s,factor=%s,ret=%s" %(n, self.factor, out )
         return (out, msg) 
