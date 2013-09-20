@@ -105,3 +105,10 @@ proxyfile = /tmp/prodProxy
 
 #[osgvo]
 #vorole = osg:/osg
+
+[atlas-userproxy-one]
+flavor = myproxy
+myproxy_server = myproxy.cern.ch
+vorole = atlas:/atlas/usatlas
+proxyfile = /tmp/userProxyOne
+retriever_profile = atlas-production

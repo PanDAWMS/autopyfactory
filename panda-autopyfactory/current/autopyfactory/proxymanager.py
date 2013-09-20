@@ -10,9 +10,17 @@ import os
 import threading
 import time
 
+# Added to support running module as script from arbitrary location. 
+from os.path import dirname, realpath, sep, pardir
+fullpathlist = realpath(__file__).split(sep)
+prepath = sep.join(fullpathlist[:-2])
+import sys
+sys.path.insert(0, prepath)
+
+
 from subprocess import Popen, PIPE, STDOUT
 
-from autopyfactory.apfexceptions import ProxyInvalidFailure
+from autopyfactory.apfexceptions import InvalidProxyFailure
 
 
 class ProxyManager(threading.Thread):
@@ -27,7 +35,7 @@ class ProxyManager(threading.Thread):
         self.handlers = []
         self.stopevent = threading.Event()
         for sect in self.pconfig.sections():
-            ph = ProxyHandler(pconfig, sect)
+            ph = ProxyHandler(pconfig, sect, self)
             self.handlers.append(ph)
         
        
@@ -46,7 +54,7 @@ class ProxyManager(threading.Thread):
         
         try:
             while not self.stopevent.isSet():
-                #self.log.debug('Checking for interrupt.')
+                self.log.debug('Checking for interrupt.')
                 time.sleep(3)                  
         except (KeyboardInterrupt): 
                 self.log.info("Shutdown via Ctrl-C or -INT signal.")
@@ -64,16 +72,26 @@ class ProxyManager(threading.Thread):
             names.append(h.name)
         return names
 
-    def getProxyPath(self, profiles):
+    def getProxyPath(self, profilelist):
         '''
         Check all the handlers for matching profile name(s).
-        profiles argument may be a string, or a list.  
-        
+        profiles argument is a list 
         '''
-        for h in self.handlers:
-            if h.name == name:
-                return h._getProxyPath()
-        return None
+        pp = None
+        for profile in profilelist:
+            self.log.debug("Getting proxy path for profile %s" % profile)
+            ph = None
+            for h in self.handlers:
+                self.log.debug("Finding handler. Checking %s" % h.name)
+                if h.name == profile:
+                    ph = h
+                    break
+            if ph:  
+                self.log.debug("Found handler %s. Getting proxypath..." % ph.name)
+                pp = ph._getProxyPath()
+                if pp:
+                    break
+        return pp
 
 
     def _getX509Proxy(self):
@@ -114,15 +132,17 @@ class ProxyHandler(threading.Thread):
     or retrieves suitable credential from MyProxy 
            
     '''
-    def __init__(self,config,section ):
+    def __init__(self,config, section, manager ):
         threading.Thread.__init__(self) # init the thread
         self.log = logging.getLogger('main.proxyhandler')
         self.name = section
-        
+        self.manager = manager
         
         # Vars for all flavors
         self.proxyfile = os.path.expanduser(config.get(section,'proxyfile'))
         self.vorole = config.get(section, 'vorole' )         
+        
+             
         
         # Flavors are 'voms' or 'myproxy'
         self.flavor = config.get(section, 'flavor')
@@ -146,14 +166,37 @@ class ProxyHandler(threading.Thread):
                 self.renew = False
         
         if self.flavor == 'myproxy':
-            self.passphrase = None
-            # Name of a proxymanager section whic will be used as the retreival credential
-            self.retriever_profile = None
+            ''' Mandatory values:
+                .vorole                atlas:/atlas/usatlas
+                .myproxy_hostname      myproxy.cern.ch
+                .myproxy_username
+                .proxyfile             target proxy for this handler. 
+        
+            Optional values:
+               -- Passphrase retrieval
+                 .myproxy_passphrase 
+           
+               -- Proxy-based retrieval
+                 .baseproxy
+                 .retriever_list
+                 
+                 '''
+            self.renew = True
+            self.passphrase = None            
+            self.retriever_list = None
             self.myproxy_servername = None
-            self.myproxy_
-                        
-            self.retriever_profile = config.get(section, 'retriever_profile')
-                  
+            self.myproxy_username = None
+            self.baseproxy = None
+            
+            if config.has_option(section, 'retriever_list'):
+                plist = config.get(section,'retriever_list')
+                # This is alist of proxy profile names specified in proxy.conf
+                # We will only attempt to derive proxy file path during submission
+                self.retriever_list = [x.strip() for x in plist.split(',')]
+            self.myproxy_hostname = config.get(section,'myproxy_hostname')
+            self.myproxy_username = config.get(section,'myproxy_username')
+            
+                                      
         # Handle numerics
         self.lifetime = int(config.get(section, 'lifetime'))
         self.checktime = int(config.get(section, 'checktime'))
@@ -208,37 +251,60 @@ class ProxyHandler(threading.Thread):
     def _retrieveMyProxyCredential(self):
         '''
         Try to retrieve valid credential from MyProxy server as configured for this handler. 
+
+       
         
-myproxy-init --certfile ~/.globus/cern/usercert.pem 
+    myproxy-init --certfile ~/.globus/cern/usercert.pem 
               --keyfile ~/.globus/cern/userkey.pem 
+               -u apf-user1
                -s myproxy.cern.ch 
                 -Z "John Hover 241" 
                 -r "John Hover 241" 
                 -R "John Hover 241"
 
-
-[jhover@cloudy ~]$ grid-proxy-init 
-Enter GRID pass phrase for this identity:
-Your identity: /DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=John Hover 241
-Creating proxy ....................................................... Done
-Your proxy is valid until: Thu Sep 19 02:30:59 2013
-[jhover@cloudy ~]$ grid-proxy-info
-subject  : /DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=John Hover 241/CN=1587635606
-issuer   : /DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=John Hover 241
-identity : /DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=John Hover 241
-type     : RFC 3820 compliant impersonation proxy
-strength : 1024 bits
-path     : /tmp/x509up_u1000
-timeleft : 11:59:55
-
 myproxy-get-delegation 
   -a /tmp/x509up_u1000  
   -m atlas:/atlas/usatlas 
-  -N -n 
-  -o /tmp/myproxy-delegated
-   
-              
+  -n 
+  -o /tmp/myproxy-delegated              
         '''
+        self.log.debug("[%s] Begin..." % self.name)
+        
+        self.baseproxy = self.manager.getProxyPath(self.retriever_list)       
+        cmd = 'myproxy-get-delegation'
+                
+        cmd += ' --voms %s ' % self.vorole
+        cmd += ' --username %s ' % self.myproxy_username
+        cmd += ' --pshost %s ' % self.myproxy_hostname
+        
+        if self.baseproxy:
+            cmd += ' --no_passphrase '        
+            cmd += ' --authorization %s ' % self.baseproxy
+                     
+        elif self.passphrase:
+            cmd += ' ----stdin_pass '            
+            cmd = "echo %s | %s" % ( self.passphrase, cmd)
+
+        vomshours = ((self.lifetime / 60 )/ 60)
+        vomshours = int(math.floor((self.lifetime / 60.0 ) / 60.0))
+        if vomshours == 0:
+            vomshours = 1
+        cmd += ' --proxy_lifetime %d ' % vomshours
+        cmd += ' --out %s ' % self.proxyfile
+             
+        # Run command
+        self.log.debug("[%s] Running Command: %s" % (self.name, cmd))
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
+        stdout, stderr = p.communicate()
+        if p.returncode == 0:
+            self.log.debug("[%s] Command OK. Output = %s" % (self.name, stdout))
+            self.log.debug("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))
+        elif p.returncode == 1:
+            self.log.error("[%s] Command RC = 1. Error = %s" % (self.name, stderr))
+        else:
+            raise Exception("Strange error using command myproxy_get_delegation. Return code = %d" % p.returncode)
+
+        self.log.debug("[%s] End." % self.name)
 
 
     def _checkTimeleft(self):
@@ -299,19 +365,31 @@ myproxy-get-delegation
         '''
         Create proxy if timeleft is less than minimum...
         '''
-        if self.renew:
+        if self.flavor == 'voms':
+            if self.renew:
+                tl = self._checkTimeleft()
+                self.log.debug("[%s] Time left is %d" % (self.name, tl))
+                if tl < self.minlife:
+                    self.log.info("[%s] Need proxy. Generating..." % self.name)
+                    self._generateProxy()
+                    self.log.info("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))    
+                else:
+                    self.log.debug("[%s] Time left %d seconds." % (self.name, self._checkTimeleft() ))
+                    self.log.info("[%s] Proxy OK (Timeleft %ds)." % ( self.name, self._checkTimeleft()))
+            else:
+                self.log.info("Proxy checking and renewal disabled in config.")
+        elif self.flavor == 'myproxy':
             tl = self._checkTimeleft()
             self.log.debug("[%s] Time left is %d" % (self.name, tl))
             if tl < self.minlife:
-                self.log.info("[%s] Need proxy. Generating..." % self.name)
-                self._generateProxy()
-                self.log.info("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))    
+                self.log.info("[%s] Need proxy. Retrieving..." % self.name)
+                self._retrieveMyProxyCredential()
+                self.log.info("[%s] Credential retrieved and proxy renewed successfully. Timeleft = %d" % (self.name, 
+                                                                                                           self._checkTimeleft()))    
             else:
                 self.log.debug("[%s] Time left %d seconds." % (self.name, self._checkTimeleft() ))
                 self.log.info("[%s] Proxy OK (Timeleft %ds)." % ( self.name, self._checkTimeleft()))
-        else:
-            self.log.info("Proxy checking and renewal disabled in config.")
-        
+            
         
     def _getProxyPath(self):
         '''
@@ -327,6 +405,8 @@ myproxy-get-delegation
 
  
 if __name__ == '__main__':
+
+   
     import getopt
     import sys
     import os
@@ -336,7 +416,7 @@ if __name__ == '__main__':
     info = 0
     pconfig_file = None
     default_configfile = os.path.expanduser("~/etc/proxy.conf")     
-    usage = """Usage: main.py [OPTIONS]  
+    usage = """Usage: proxymanager.py [OPTIONS]  
     OPTIONS: 
         -h --help                   Print this message
         -d --debug                  Debug messages
@@ -416,5 +496,12 @@ if __name__ == '__main__':
     pm = ProxyManager(pconfig)
     pm.start()
     
+    try:
+        while True:
+            time.sleep(2)
+            log.debug('Checking for interrupt.')
+    except (KeyboardInterrupt): 
+        log.info("Shutdown via Ctrl-C or -INT signal.")
+        pm.stopevent.set()
     
     

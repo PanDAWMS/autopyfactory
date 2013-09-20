@@ -102,11 +102,8 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         '''
         
         '''
-        try:
-            self.x509userproxy = self.factory.proxymanager.getProxyPath(self.proxylist)
-        except InvalidProxyFailure, ipfe:
-                self.log.error("Unable to get a valid proxy for our list.")
-                
+        self.x509userproxy = self.factory.proxymanager.getProxyPath(self.proxylist)
+               
 
     def submit(self, n):
         '''
