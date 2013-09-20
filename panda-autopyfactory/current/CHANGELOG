@@ -1,5 +1,8 @@
 ChangeLog
 ---------
+
+* fixed bug in Scale sched plugin returning 0 when n*factor < 1. 
+
 * minimum Condor version check. Allows particular plugins to specify minimum. Failure aborts. 
 
 * multiproxy functionality. Allow multiple proxy profiles. proxymanager tries all until one is found. failure generates email.  
