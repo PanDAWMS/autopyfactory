@@ -3,51 +3,54 @@
 #
 
 # =========================================================================== 
-#               VARIABLES
-# =========================================================================== 
-
-# baseproxy 
-# proxyfile
-# lifetime 
-# checktime 
-# minlife
-# interruptcheck 
-# renew 
-# usercert
-# userkey
-# vorole
-
-# =========================================================================== 
 #               DESCRIPTION 
 # =========================================================================== 
 
-# baseproxy = if used, create a very long-lived proxy, e.g.
+# baseproxy     If used, create a very long-lived proxy, e.g.
 #               grid-proxy-init -valid 720:0 -out /tmp/plainProxy
 #               Note that maintenance of this proxy must 
 #               occur completely outside of APF. 
 #
-# proxyfile = path to the user grid proxy file.
+# proxyfile     Target proxy path.
 #
-# lifetime = initial voms lifetime, in seconds (604800 = 7 days)
+# lifetime      Initial voms lifetime, in seconds (604800 = 7 days)
 #               345600 is ATLAS VOMS maximum
 #
-# checktime = How often to check proxy validity, in seconds
+# checktime     How often to check proxy validity, in seconds
 #
-# minlife = Minimum lifetime of proxy (renew if less) in seconds
+# minlife       Minimum lifetime of proxy (renew if less) in seconds
 #
-# interruptcheck = Frequency to check for keyboard/signal interrupts, in seconds
+# interruptcheck Frequency to check for keyboard/signal interrupts, in seconds
 #
-# renew = If you do not want to use ProxyManager to renew proxies, 
+# renew         If you do not want to use ProxyManager to renew proxies, 
 #               set this  False and only define 'proxyfile'
 #               If renew is set to false, 
 #               then no grid client setup is necessary. 
 #
-# usercert = path to the user grid certificate file
+# usercert      Path to the user grid certificate file
 #
-# userkey = path to the user grid key file
+# userkey       Path to the user grid key file
 #
-# vorole = user VO role
-
+# vorole        User VO role for target proxy. 
+#
+# flavor        voms or myproxy. voms directly generates proxy using cert or baseproxy
+#               myproxy retrieves a proxy from myproxy, then generates the target proxy against
+#               voms using it as baseproxy.
+#
+# myproxy_hostname     Myproxy server host.   
+#
+# myproxy_username     User name to be used on MyProxy service
+# 
+# myproxy_passphrase   Passphrase for proxy retrieval from MyProxy
+#
+# retriever_profile    A list of other proxymanager profiles to be used to authorize proxy
+#                      retrieval from MyProxy. 
+#
+# initdelay            In seconds, how long to wait before generating. Needed for
+#                      MyProxy when using cert authentication--we need to allow time
+#                      for the auth credential to be generated (by another proxymanager profile). 
+#
+#
 
 # =========================================================================== 
 
@@ -109,7 +112,7 @@ vorole = atlas:/atlas/usatlas
 proxyfile = /tmp/userProxyOne
 retriever_profile = atlas-production
 
-
+# MyProxy proxy retrieved by passphrase authentication
 [atlas-userproxy-two]
 flavor = myproxy
 # No init delay needed for passphrase retrieval
@@ -118,5 +121,4 @@ myproxy_hostname = myproxy.cern.ch
 vorole = atlas:/atlas/usatlas
 proxyfile = /tmp/userProxyTwo
 myproxy_passphrase = ppfortwo
-
 
