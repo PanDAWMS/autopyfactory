@@ -79,7 +79,8 @@ checktime = 3600
 minlife = 259200
 # Frequency to check for keyboard/signal interrupts, in seconds
 interruptcheck = 1
-
+# Allow for init delay for MyProxy proxies that rely on other profiles. 
+initdelay = 0
 
 #
 # If you don't want to use ProxyManager to renew proxies, set this  False
@@ -96,19 +97,26 @@ proxyfile = /tmp/atlasProxy
 vorole = atlas:/atlas/Role=production
 proxyfile = /tmp/prodProxy
 
-#[atlas-analysis]
-#
-#vorole = atlas:/atlas/Role=pilot
-#usercert=~/.globus/usercert.pem
-#userkey=~/.globus/userkeynopw.pem
-#proxyfile = /tmp/analProxy
-
 #[osgvo]
 #vorole = osg:/osg
 
+# MyProxy proxy retrieved by certificate authentication
 [atlas-userproxy-one]
 flavor = myproxy
-myproxy_server = myproxy.cern.ch
+initdelay = 15
+myproxy_hostname = myproxy.cern.ch
 vorole = atlas:/atlas/usatlas
 proxyfile = /tmp/userProxyOne
 retriever_profile = atlas-production
+
+
+[atlas-userproxy-two]
+flavor = myproxy
+# No init delay needed for passphrase retrieval
+initdelay = 0
+myproxy_hostname = myproxy.cern.ch
+vorole = atlas:/atlas/usatlas
+proxyfile = /tmp/userProxyTwo
+myproxy_passphrase = ppfortwo
+
+

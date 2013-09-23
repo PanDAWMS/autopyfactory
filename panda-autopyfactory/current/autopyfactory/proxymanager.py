@@ -141,8 +141,8 @@ class ProxyHandler(threading.Thread):
         # Vars for all flavors
         self.proxyfile = os.path.expanduser(config.get(section,'proxyfile'))
         self.vorole = config.get(section, 'vorole' )         
-        
-             
+        initdelaystr = config.get(section, 'initdelay')
+        self.initdelay = int(initdelaystr)     
         
         # Flavors are 'voms' or 'myproxy'
         self.flavor = config.get(section, 'flavor')
@@ -182,20 +182,21 @@ class ProxyHandler(threading.Thread):
                  
                  '''
             self.renew = True
-            self.passphrase = None            
             self.retriever_list = None
+            self.myproxy_passphrase = None 
             self.myproxy_servername = None
             self.myproxy_username = None
             self.baseproxy = None
             
+            self.myproxy_hostname = config.get(section,'myproxy_hostname')
+            self.myproxy_username = config.get(section,'myproxy_username')
             if config.has_option(section, 'retriever_list'):
                 plist = config.get(section,'retriever_list')
                 # This is alist of proxy profile names specified in proxy.conf
                 # We will only attempt to derive proxy file path during submission
                 self.retriever_list = [x.strip() for x in plist.split(',')]
-            self.myproxy_hostname = config.get(section,'myproxy_hostname')
-            self.myproxy_username = config.get(section,'myproxy_username')
-            
+            if config.has_option(section, 'myproxy_passphrase'):
+                self.myproxy_passphrase = config.get(section,'myproxy_passphrase')
                                       
         # Handle numerics
         self.lifetime = int(config.get(section, 'lifetime'))
@@ -252,38 +253,38 @@ class ProxyHandler(threading.Thread):
         '''
         Try to retrieve valid credential from MyProxy server as configured for this handler. 
 
-       
-        
-    myproxy-init --certfile ~/.globus/cern/usercert.pem 
+        Placed in MyProxy for certificate-based retrieval via:        
+            myproxy-init --certfile ~/.globus/cern/usercert.pem 
+                 --keyfile ~/.globus/cern/userkey.pem 
+                 -u apf-user1
+                 -s myproxy.cern.ch 
+                 -Z "John Hover 241" 
+                 -r "John Hover 241" 
+                 -R "John Hover 241"
+                 
+        Place in MyProxy for passphrase-based retrieval via:
+            myproxy-init --username apfproxy 
+              --allow_anonymous_retrievers 
+              --certfile ~/.globus/cern/usercert.pem 
               --keyfile ~/.globus/cern/userkey.pem 
-               -u apf-user1
-               -s myproxy.cern.ch 
-                -Z "John Hover 241" 
-                -r "John Hover 241" 
-                -R "John Hover 241"
-
-myproxy-get-delegation 
-  -a /tmp/x509up_u1000  
-  -m atlas:/atlas/usatlas 
-  -n 
-  -o /tmp/myproxy-delegated              
+              -s myproxy.cern.ch
+                   
         '''
         self.log.debug("[%s] Begin..." % self.name)
-        
-        self.baseproxy = self.manager.getProxyPath(self.retriever_list)       
-        cmd = 'myproxy-get-delegation'
-                
+                      
+        cmd = 'myproxy-get-delegation'       
         cmd += ' --voms %s ' % self.vorole
         cmd += ' --username %s ' % self.myproxy_username
         cmd += ' --pshost %s ' % self.myproxy_hostname
         
-        if self.baseproxy:
+        if self.retriever_list:
+            self.baseproxy = self.manager.getProxyPath(self.retriever_list)
             cmd += ' --no_passphrase '        
             cmd += ' --authorization %s ' % self.baseproxy
                      
-        elif self.passphrase:
-            cmd += ' ----stdin_pass '            
-            cmd = "echo %s | %s" % ( self.passphrase, cmd)
+        elif self.myproxy_passphrase:
+            cmd += ' --stdin_pass '            
+            cmd = "echo %s | %s" % ( self.myproxy_passphrase, cmd)
 
         vomshours = ((self.lifetime / 60 )/ 60)
         vomshours = int(math.floor((self.lifetime / 60.0 ) / 60.0))
@@ -348,6 +349,10 @@ myproxy-get-delegation
         '''
         Main thread loop. 
         '''
+        # Delay running to allow for other profiles to complete
+        self.log.debug("Delaying %d seconds..." % self.initdelay)
+        time.sleep(self.initdelay)
+        
         # Always run the first time!
         lastrun = int(time.time()) - 10000000
         while not self.stopevent.isSet():
