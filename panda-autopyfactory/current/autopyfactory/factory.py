@@ -716,12 +716,12 @@ class APFQueuesManager(object):
         if enabled:
             try:
                 qobject = APFQueue(apfqname, self.factory)
-            except Exception, ex:
-                self.log.error('exception captured when calling apfqueue object %s' %apfqname)
-            else:
                 self.queues[apfqname] = qobject
                 qobject.start()
                 self.log.info('Queue %s enabled.' %apfqname)
+            except Exception, ex:
+                self.log.error('exception captured when calling apfqueue object %s' %apfqname)
+
         else:
             self.log.debug('Queue %s not enabled.' %apfqname)
             

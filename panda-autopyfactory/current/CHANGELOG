@@ -1,6 +1,8 @@
 ChangeLog
 ---------
 
+* MyProxy support in proxymanager. Allows retrieval of base proxy from MyProxy using passphrase, or using another proxymanager profile proxy for auth.
+
 * fixed bug in Scale sched plugin returning 0 when n*factor < 1. 
 
 * minimum Condor version check. Allows particular plugins to specify minimum. Failure aborts. 

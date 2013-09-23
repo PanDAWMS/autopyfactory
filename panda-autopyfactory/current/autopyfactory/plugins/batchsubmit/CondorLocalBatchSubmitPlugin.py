@@ -14,6 +14,7 @@ class CondorLocalBatchSubmitPlugin(CondorBaseBatchSubmitPlugin):
     '''
     
     def __init__(self, apfqueue, config=None):
+        
         if not config:
             qcl = apfqueue.factory.qcl            
         else:

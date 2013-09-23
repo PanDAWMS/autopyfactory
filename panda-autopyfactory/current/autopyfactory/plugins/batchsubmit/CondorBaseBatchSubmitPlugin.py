@@ -65,6 +65,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             self.log.info('BatchSubmitPlugin: Object properly initialized.')
         except Exception, e:
             self.log.error("Caught exception: %s " % str(e))
+            raise
 
         self._checkCondor()
 
