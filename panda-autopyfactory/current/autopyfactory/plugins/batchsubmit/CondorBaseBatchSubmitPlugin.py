@@ -1,4 +1,4 @@
-q#!/bin/env python
+#!/bin/env python
 #
 # AutoPyfactory batch plugin for Condor
 #
