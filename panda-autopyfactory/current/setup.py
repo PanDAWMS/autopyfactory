@@ -36,7 +36,7 @@ etc_files = ['etc/factory.conf-example',
              'etc/monitor.conf-example',
              'etc/factory.sysconfig-example',
              'etc/logsmonitor.rotate.conf-example',
-             'etc/apf-search-filed.sh-example',
+             'etc/apf-search-failed.sh-example',
              ]
 
 initd_files = ['etc/factory',]
