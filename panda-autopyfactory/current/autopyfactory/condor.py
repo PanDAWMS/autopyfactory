@@ -17,9 +17,11 @@ import traceback
 import xml.dom.minidom
 
 import autopyfactory.utils as utils
+from autopyfactory.apfexceptioins import ConfigFailure
 
 from datetime import datetime
 from pprint import pprint
+
 
 def querycondorlib():
     '''
@@ -117,15 +119,17 @@ def checkCondor():
     
     # print condor version
     log = logging.getLogger()
-    log.debug('Condor version is: \n%s' % commands.getoutput('condor_version'))       
-
-    # check env var $CONDOR_CONFIG
-    CONDOR_CONFIG = os.environ.get('CONDOR_CONFIG', None)
-    if CONDOR_CONFIG:
-        log.debug('Environment variable CONDOR_CONFIG set to %s' %CONDOR_CONFIG)
+    (s,o) = commands.getstatusoutput('condor_version')
+    if s == 0:
+        log.debug('Condor version is: \n%s' % o )       
+        CONDOR_CONFIG = os.environ.get('CONDOR_CONFIG', None)
+        if CONDOR_CONFIG:
+            log.debug('Environment variable CONDOR_CONFIG set to %s' %CONDOR_CONFIG)
+        else:
+            log.debug("Condor config is: \n%s" % commands.getoutput('condor_config_val -config'))
     else:
-        log.debug("Condor config is: \n%s" % commands.getoutput('condor_config_val -config'))
-    
+        log.error('checkCondor() has been called, but not Condor is available on system.')
+        raise ConfigFailure("No Condor available on system.")
 
 
 def statuscondor(queryargs = None):

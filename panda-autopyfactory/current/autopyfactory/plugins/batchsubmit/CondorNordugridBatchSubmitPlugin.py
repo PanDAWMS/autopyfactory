@@ -14,34 +14,23 @@ class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
     This class is expected to have separate instances for each PandaQueue object. 
     '''
    
-    def __init__(self, apfqueue):
-
-        super(CondorNordugridBatchSubmitPlugin, self).__init__(apfqueue) 
-        self.log.info('CondorNordugridBatchSubmitPlugin: Object initialized.')
-
-    def _readconfig(self, qcl=None):
-        ''' 
-        read the config loader object
-        ''' 
-
-        # Chosing the queue config object, depending on 
-        if not qcl:
-            qcl = self.apfqueue.factory.qcl
-
-        # we rename the queue config variables to pass a new config object to parent class
+    def __init__(self, apfqueue, config=None):
+        if not config:
+            qcl = apfqueue.factory.qcl            
+        else:
+            qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condornordugrid', 'batchsubmit.condorce')
-        valid = super(CondorNordugridBatchSubmitPlugin, self)._readconfig(newqcl) 
-        if not valid:
-            return False
+        super(CondorNordugridBatchSubmitPlugin, self).__init__(apfqueue) 
         try:
             self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condornordugrid.gridresource') 
             self.nordugridrsl = self._nordugridrsl(qcl)
             self.nordugridrsl_env = self._nordugridrsl_env(qcl)
-
-            return True
-        except:
-            return False
-            
+        except Exception, e:
+            self.log.error("Caught exception: %s " % str(e))
+            raise
+        
+        self.log.info('CondorNordugridBatchSubmitPlugin: Object initialized.')
+          
 
     def _nordugridrsl(self, qcl):
         '''

@@ -1,5 +1,8 @@
 ChangeLog
 ---------
+* Added email notification of factory owner when no valid proxy can be retrieved from the proxymanager. 
+
+* Eliminated all _readconfig() methods in submit plugins. Switched to full initialization during __init__.
 
 * MyProxy support in proxymanager. Allows retrieval of base proxy from MyProxy using passphrase, or using another proxymanager profile proxy for auth.
 

@@ -13,30 +13,20 @@ class CondorOSGCEBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
     This class is expected to have separate instances for each PandaQueue object. 
     '''
    
-    def __init__(self, apfqueue):
-
-        super(CondorOSGCEBatchSubmitPlugin, self).__init__(apfqueue) 
-        self.log.info('CondorOSGCEBatchSubmitPlugin: Object initialized.')
-
-    def _readconfig(self, qcl=None):
-        ''' 
-        read the config loader object
-        ''' 
-        # Chosing the queue config object, depending on 
-        if not qcl:
-            qcl = self.apfqueue.factory.qcl
-
-        # we rename the queue config variables to pass a new config object to parent class
+    def __init__(self, apfqueue, config=None):
+        if not config:
+            qcl = apfqueue.factory.qcl            
+        else:
+            qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorosgce', 'batchsubmit.condorce')
-        valid = super(CondorOSGCEBatchSubmitPlugin, self)._readconfig(newqcl)
-        if not valid:
-            return False
+        super(CondorOSGCEBatchSubmitPlugin, self).__init__(apfqueue) 
         try:
             self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorosgce.gridresource') 
-            return True
-        except:
-            return False
-
+        except Exception, e:
+            self.log.error("Caught exception: %s " % str(e))
+            raise
+        
+        self.log.info('CondorOSGCEBatchSubmitPlugin: Object initialized.')
 
     def _addJSD(self):
         '''

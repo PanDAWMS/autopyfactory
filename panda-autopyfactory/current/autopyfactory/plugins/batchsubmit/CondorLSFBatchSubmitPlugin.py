@@ -10,25 +10,15 @@ from autopyfactory import jsd
 class CondorLSFBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
     id = 'condorlsf'
     
-    def __init__(self, apfqueue):
-
-        super(CondorLSFBatchSubmitPlugin, self).__init__(apfqueue)
-        self.log.info('CondorLSFBatchSubmitPlugin: Object initialized.')
-
-    def _readconfig(self, qcl=None):
-        '''
-        read the config file
-        '''
-
-        # Chosing the queue config object, depending on 
-        if not qcl:
-            qcl = self.apfqueue.factory.qcl
-
-        # we rename the queue config variables to pass a new config object to parent class
+    def __init__(self, apfqueue, config=None):
+         if not config:
+            qcl = apfqueue.factory.qcl            
+        else:
+            qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorlsf', 'batchsubmit.condorgrid')
-        valid = super(CondorLSFBatchSubmitPlugin, self)._readconfig(qcl)
-        return valid
+        super(CondorLSFBatchSubmitPlugin, self).__init__(apfqueue, config=newqcl)        
 
+        self.log.info('CondorLSFBatchSubmitPlugin: Object initialized.')
 
     def _addJSD(self):
         '''

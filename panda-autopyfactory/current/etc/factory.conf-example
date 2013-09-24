@@ -19,6 +19,7 @@
 # enablequeues 
 # factoryId
 # factoryAdminEmail
+# factorySMTPServer
 # factory.sleep
 # factoryUser
 # maxperfactory.maximum
@@ -79,6 +80,8 @@
 # factoryAdminEmail = Email of the local admin to contact in case of a problem
 #               with an specific APF instance.
 #
+# factorySMTPServer = Server to use to send alert emails to admin. 
+#
 # factory.sleep = sleep time between cycles in mainLoop in Factory object
 #               Value is in seconds.
 #
@@ -132,6 +135,7 @@
 
 factoryAdminEmail = neo@matrix.net
 factoryId = BNL-gridui11-jhover
+factorySMTPServer = mail.matrix.net
 factoryUser = apf
 enablequeues = True
 
@@ -150,7 +154,7 @@ wmsstatus.panda.sleep = 150
 batchstatus.condor.sleep = 150
 
 baseLogDir = /home/apf/factory/logs
-baseLogDirUrl = http://my.host.domain:25880
+baseLogDirUrl = http://myhost.matrix.net:25880
 
 logserver.enabled = True
 logserver.index = True

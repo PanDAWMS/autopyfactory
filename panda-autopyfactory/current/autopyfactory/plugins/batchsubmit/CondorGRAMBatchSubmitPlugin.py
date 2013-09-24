@@ -9,27 +9,16 @@ from autopyfactory import jsd
 
 class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
    
-    def __init__(self, apfqueue):
-
-        super(CondorGRAMBatchSubmitPlugin, self).__init__(apfqueue) 
+    def __init__(self, apfqueue, config=None):
+        if not config:
+            qcl = apfqueue.factory.qcl            
+        else:
+            qcl = config
+        newqcl = qcl.clone().filterkeys('batchsubmit.condorgram', 'batchsubmit.condorce')    
+        super(CondorGRAMBatchSubmitPlugin, self).__init__(apfqueue, config=newqcl) 
+        
         self.log.info('CondorGRAMBatchSubmitPlugin: Object initialized.')
   
-    def _readconfig(self, qcl):
-        '''
-        read the config loader object
-        '''
-
-        # we rename the queue config variables to pass a new config object to parent class
-        newqcl = qcl.clone().filterkeys('batchsubmit.condorgram', 'batchsubmit.condorce')
-        valid = super(CondorGRAMBatchSubmitPlugin, self)._readconfig(newqcl) 
-        if not valid:
-            return False
-        try:
-            self.globus = self._globusrsl(qcl)
-            return True
-        except:
-            return False
-
     def _globusrsl(self, qcl):
         '''
         tries to build globusrsl line.

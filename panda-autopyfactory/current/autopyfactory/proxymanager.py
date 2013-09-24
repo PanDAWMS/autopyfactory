@@ -17,9 +17,7 @@ prepath = sep.join(fullpathlist[:-2])
 import sys
 sys.path.insert(0, prepath)
 
-
 from subprocess import Popen, PIPE, STDOUT
-
 from autopyfactory.apfexceptions import InvalidProxyFailure
 
 
@@ -28,10 +26,11 @@ class ProxyManager(threading.Thread):
         Manager to maintain multiple ProxyHandlers, one for each target proxy. 
     
     '''
-    def __init__(self, pconfig):
+    def __init__(self, pconfig, factory=None):
         threading.Thread.__init__(self) # init the thread 
         self.log = logging.getLogger('main.proxymanager')
         self.pconfig = pconfig
+        self.factory = factory
         self.handlers = []
         self.stopevent = threading.Event()
         for sect in self.pconfig.sections():
@@ -91,28 +90,14 @@ class ProxyManager(threading.Thread):
                 pp = ph._getProxyPath()
                 if pp:
                     break
-        return pp
-
-
-    def _getX509Proxy(self):
-        '''
-        Goes through configured proxy profiles and won't stop until either 
-        1) We have gotten a valid proxy. Name of file is placed in self.x509proxy 
-        2) Run out of profiles to try
-        '''
+        if not pp:
+            subject = "Proxy problem on %s" % self.factory.factoryid
+            messagestring = "Unable to get valid proxy from configured profiles: %s" % profilelist
+            self.factory.sendAdminEmail(subject, messagestring)
+            raise InvalidProxyFailure()
         
-        for profile in self.proxylist:
-            try:
-                self.log.debug("Getting proxy for profile %s " % profile)
-                self.x509userproxy= self.getProxyPath(profile)
-                self.log.info("Got valid proxy path: %s from profile [%s]" % (self.x509userproxy, profile))
-                # Since we have got a good proxy, break from the profile loop
-                break
-            except InvalidProxyFailure, ipfe:
-                self.log.warning("Got invalid proxy from profile [%s]" % profile)
-        if not self.x509userproxy:
-            self.log.error("Ran out of proxy profiles! No valid proxy!")
-            
+        return pp
+           
 
     def join(self,timeout=None):
             '''
@@ -125,6 +110,7 @@ class ProxyManager(threading.Thread):
             self.stopevent.set()
             self.log.info('Stopping thread...')
             threading.Thread.join(self, timeout)
+
         
 class ProxyHandler(threading.Thread):
     '''

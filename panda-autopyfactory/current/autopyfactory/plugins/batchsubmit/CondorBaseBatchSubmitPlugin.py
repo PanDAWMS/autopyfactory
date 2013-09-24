@@ -11,11 +11,12 @@ import re
 import string
 import time
 
+from autopyfactory import condor 
 from autopyfactory import jsd
 from autopyfactory.interfaces import BatchSubmitInterface
 from autopyfactory.info import JobInfo
 import autopyfactory.utils as utils
- 
+
 
 
 class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
@@ -62,41 +63,11 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
                                             for opt in qcl.options(self.apfqname) \
                                             if opt.startswith('batchsubmit.condorbase.condor_attributes.')]  # Note the . at the end of the pattern !!
 
+            condor.checkCondor()
             self.log.info('BatchSubmitPlugin: Object properly initialized.')
         except Exception, e:
             self.log.error("Caught exception: %s " % str(e))
             raise
-
-        self._checkCondor()
-
-
-    def _checkCondor(self):
-        '''
-        Perform sanity check on condor environment.
-        Does condor_q exist?
-        Is Condor running?
-        '''
-    
-        # print condor version
-        self.log.debug('condor version is: \n%s' %commands.getoutput('condor_version'))
-    
-        # check env var $CONDOR_CONFIG
-        CONDOR_CONFIG = os.environ.get('CONDOR_CONFIG', None)
-        if CONDOR_CONFIG:
-            self.log.debug('environment variable CONDOR_CONFIG set to %s' %CONDOR_CONFIG)
-        else:
-            condor_config = '/etc/condor/condor_config'
-            if os.path.isfile(condor_config):
-                self.log.debug('using condor config file: %s' %condor_config)
-            else:
-                condor_config = '/usr/local/etc/condor_config'
-                if os.path.isfile(condor_config):
-                    self.log.debug('using condor config file: %s' %condor_config)
-                else:
-                    condor_config = os.path.expanduser('~condor/condor_config')
-                    if os.path.isfile(condor_config):
-                        self.log.debug('using condor config file: %s' %condor_config)
-
 
 
     def _getX509Proxy(self):

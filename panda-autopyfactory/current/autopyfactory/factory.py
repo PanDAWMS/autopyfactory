@@ -22,6 +22,7 @@ import traceback
 import os
 import platform
 import pwd
+import smtplib
 import socket
 import sys
 
@@ -29,13 +30,17 @@ from pprint import pprint
 from optparse import OptionParser
 from ConfigParser import ConfigParser
 
+try:
+    from email.mime.text import MIMEText
+except:
+    from email.MIMEText import MIMEText
+
+
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure, ConfigFailure
 from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
 from autopyfactory.proxymanager import ProxyManager
-
-import userinterface.Client as Client
 
 major, minor, release, st, num = sys.version_info
 
@@ -414,17 +419,13 @@ class Factory(object):
         '''
         fcl is a FactoryConfigLoader object. 
         '''
-
         self.version = __version__
-
         self.log = logging.getLogger('main.factory')
         self.log.info('AutoPyFactory version %s' %self.version)
         self.fcl = fcl
-
         # Create config loader object for queues 
         qcf = None
         qcd = None
-
         try: 
             qcf = fcl.get('Factory', 'queueConf')    # the configuration files for queues are a list of URIs
             self.log.debug("queues.conf file(s) = %s" % qcf)
@@ -465,7 +466,7 @@ class Factory(object):
                 sys.exit(0)
 
             self.log.debug("Read config file %s, return value: %s" % (pcf, got_config)) 
-            self.proxymanager = ProxyManager(pcl)
+            self.proxymanager = ProxyManager(pcl, self)
             self.log.info('ProxyManager initialized. Starting...')
             self.proxymanager.start()
             self.log.debug('ProxyManager thread started.')
@@ -497,6 +498,13 @@ class Factory(object):
 
         # APF Queues Manager 
         self.apfqueuesmanager = APFQueuesManager(self)
+        
+        # Collect other factory attibutes
+        self.adminemail = self.fcl.get('Factory','factoryAdminEmail')
+        self.factoryid = self.fcl.get('Factory','factoryId')
+        self.smtpserver = self.fcl.get('Factory','factorySMTPServer')
+        self.hostname = socket.gethostname()
+        self.username = os.getlogin()  
         
         # Log some info...
         self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )     
@@ -629,14 +637,23 @@ class Factory(object):
             self.log.info("Shutting down Logserver...")
             self.logserver.join()
             self.log.info("Logserver stopped.")            
+            
                             
+    def sendAdminEmail(self, subject, messagestring):
+        msg = MIMEText(messagestring)
+        msg['Subject'] = subject
+        email_from = "%s@%s" % ( self.username, self.hostname)
+        msg['From'] = email_from
+        msg['To'] = self.adminemail
+        tolist = self.adminemail.split(",")
+        
+        # Send the message via our own SMTP server, but don't include the
+        # envelope header.
+        s = smtplib.SMTP(self.smtp_host)
+        self.log.info("Sending email: %s" % msg.as_string())
+        s.sendmail(email_from , tolist , msg.as_string())
+        s.quit()
             
-            
-
-            
-            
-            
-
 # ==============================================================================                                
 #                       QUEUES MANAGEMENT
 # ==============================================================================                                
