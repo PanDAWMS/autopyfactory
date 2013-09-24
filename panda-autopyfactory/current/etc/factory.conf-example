@@ -28,6 +28,7 @@
 # logserver.excluderobots
 # proxyConf
 # proxymanager.enabled = True
+# proxymanager.sleep = True
 # queueConf
 # queueDirConf
 # monitorConf
@@ -109,6 +110,8 @@
 #
 # proxymanager.enabled = to determine if automatic proxy management is used or not.
 #               Accepted values are True|False
+#
+# proxymanager.sleep =  Sleep interval for proxymanager thread. 
 #
 # queueConf = URI plus path to the configuration file for APF queues.
 #             NOTE: Must be expressed as a URI (file:// or http://)

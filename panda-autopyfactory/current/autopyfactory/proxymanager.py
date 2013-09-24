@@ -33,6 +33,7 @@ class ProxyManager(threading.Thread):
         self.factory = factory
         self.handlers = []
         self.stopevent = threading.Event()
+        self.sleep = int(self.factory.fcl.get('Factory', 'proxymanager.sleep'))
         for sect in self.pconfig.sections():
             ph = ProxyHandler(pconfig, sect, self)
             self.handlers.append(ph)
@@ -54,7 +55,7 @@ class ProxyManager(threading.Thread):
         try:
             while not self.stopevent.isSet():
                 self.log.debug('Checking for interrupt.')
-                time.sleep(3)                  
+                time.sleep(self.sleep)                  
         except (KeyboardInterrupt): 
                 self.log.info("Shutdown via Ctrl-C or -INT signal.")
                 self.log.debug("Shutting down all threads...")
