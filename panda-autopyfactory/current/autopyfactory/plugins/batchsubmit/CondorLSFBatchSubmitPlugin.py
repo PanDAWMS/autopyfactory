@@ -11,7 +11,7 @@ class CondorLSFBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
     id = 'condorlsf'
     
     def __init__(self, apfqueue, config=None):
-         if not config:
+        if not config:
             qcl = apfqueue.factory.qcl            
         else:
             qcl = config
