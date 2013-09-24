@@ -17,7 +17,7 @@ import traceback
 import xml.dom.minidom
 
 import autopyfactory.utils as utils
-from autopyfactory.apfexceptioins import ConfigFailure
+from autopyfactory.apfexceptions import ConfigFailure
 
 from datetime import datetime
 from pprint import pprint
