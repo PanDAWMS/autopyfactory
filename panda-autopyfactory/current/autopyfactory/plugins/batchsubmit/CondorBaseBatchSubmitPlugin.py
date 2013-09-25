@@ -37,13 +37,15 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         self.factory = apfqueue.factory
         self.fcl = apfqueue.factory.fcl
         self.mcl = apfqueue.factory.mcl
-
+        
+        self.x509userproxy = None
+        self.proxylist = None
+        
         try:
             self.wmsqueue = qcl.generic_get(self.apfqname, 'wmsqueue')
             self.executable = qcl.generic_get(self.apfqname, 'executable')
             self.factoryadminemail = self.fcl.generic_get('Factory', 'factoryAdminEmail')
-            self.x509userproxy = None
-            self.proxylist = None
+
             if qcl.has_option(self.apfqname,'batchsubmit.condorbase.proxy'):
                 plist = qcl.get(self.apfqname,'batchsubmit.condorbase.proxy')
                 # This is alist of proxy profile names specified in proxy.conf
@@ -77,8 +79,11 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         '''
         
         '''
-        self.x509userproxy = self.factory.proxymanager.getProxyPath(self.proxylist)
-               
+        self.log.debug("Determining proxy, if necessary. Profile: %s" % self.proxylist)
+        if self.proxylist:
+            self.x509userproxy = self.factory.proxymanager.getProxyPath(self.proxylist)
+        else:
+            self.log.debug("No proxy profile defined.") 
 
     def submit(self, n):
         '''
