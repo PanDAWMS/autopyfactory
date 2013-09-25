@@ -649,7 +649,7 @@ class Factory(object):
         
         # Send the message via our own SMTP server, but don't include the
         # envelope header.
-        s = smtplib.SMTP(self.smtp_host)
+        s = smtplib.SMTP(self.smtpserver)
         self.log.info("Sending email: %s" % msg.as_string())
         s.sendmail(email_from , tolist , msg.as_string())
         s.quit()
