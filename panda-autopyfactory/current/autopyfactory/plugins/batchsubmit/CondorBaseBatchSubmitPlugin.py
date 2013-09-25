@@ -15,6 +15,7 @@ from autopyfactory import condor
 from autopyfactory import jsd
 from autopyfactory.interfaces import BatchSubmitInterface
 from autopyfactory.info import JobInfo
+from autopyfacotry.apfexceptions import InvalidProxyException
 import autopyfactory.utils as utils
 
 
