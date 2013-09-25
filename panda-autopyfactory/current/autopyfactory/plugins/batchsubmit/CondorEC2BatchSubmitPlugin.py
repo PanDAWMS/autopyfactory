@@ -46,9 +46,9 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             self.security_groups = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.security_groups')
             self.log.debug("Successfully got all config values for EC2BatchSubmit plugin.")
             self.log.info('CondorEC2BatchSubmitPlugin: Object properly initialized.')
-        except:
+        except Exception, e:
             self.log.error("Problem getting object configuration variables.")
-       
+            self.log.debug("Exception: %s" % traceback.format_exc())
 
     def submit(self, num):
         '''

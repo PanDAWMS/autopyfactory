@@ -119,8 +119,8 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             self.log.error('Unable to get valid proxy file.')
         
         except Exception, e:
-            self.log.error('Exception during submit processing.')
-        
+            self.log.error('Exception during submit processing. Exception: %s' % e)
+            self.log.debug("Exception: %s" % traceback.format_exc())
         return joblist
         
 
