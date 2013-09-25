@@ -112,15 +112,17 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
                 self.retire(abs(n))
             else:
                 self.log.debug("Asked to submit 0. Doing nothing...")
-        except InvalidProxyException, ipe:
+            
+            self.log.debug('Done. Returning joblist %s.' %joblist)
+                
+        except InvalidProxyFailure, ipf:
             self.log.error('Unable to get valid proxy file.')
         
         except Exception, e:
             self.log.error('Exception during submit processing.')
         
-        
-        self.log.debug('Done. Returning joblist %s.' %joblist)
         return joblist
+        
 
     def retire(self, num):
         '''
