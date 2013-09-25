@@ -10,6 +10,8 @@ import os
 import re
 import string
 import time
+import traceback
+
 
 from autopyfactory import condor 
 from autopyfactory import jsd
