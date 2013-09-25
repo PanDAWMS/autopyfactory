@@ -86,16 +86,18 @@ class ProxyManager(threading.Thread):
                 if h.name == profile:
                     ph = h
                     break
+                
             if ph:  
                 self.log.debug("Found handler %s. Getting proxypath..." % ph.name)
                 pp = ph._getProxyPath()
+                self.log.debug("Proxypath is %s" % pp)
                 if pp:
                     break
         if not pp:
             subject = "Proxy problem on %s" % self.factory.factoryid
             messagestring = "Unable to get valid proxy from configured profiles: %s" % profilelist
             self.factory.sendAdminEmail(subject, messagestring)
-            raise InvalidProxyFailure()
+            raise InvalidProxyFailure("Problem getting proxy for profile %s" % profilelist)
         
         return pp
            
