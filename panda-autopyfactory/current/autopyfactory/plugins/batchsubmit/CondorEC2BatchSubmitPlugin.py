@@ -10,6 +10,7 @@ import subprocess
 import time
 import commands
 import logging
+import traceback
 
 mincondorversion(8,1,2)
 
