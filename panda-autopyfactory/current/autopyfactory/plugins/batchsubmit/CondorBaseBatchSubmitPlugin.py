@@ -46,10 +46,10 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             self.executable = qcl.generic_get(self.apfqname, 'executable')
             self.factoryadminemail = self.fcl.generic_get('Factory', 'factoryAdminEmail')
 
-            if qcl.has_option(self.apfqname,'batchsubmit.condorbase.proxy'):
-                plist = qcl.get(self.apfqname,'batchsubmit.condorbase.proxy')
-                # This is alist of proxy profile names specified in proxy.conf
-                # We will only attempt to derive proxy file path during submission
+            plist = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.proxy')
+            # This is alist of proxy profile names specified in proxy.conf
+            # We will only attempt to derive proxy file path during submission
+            if plist:
                 self.proxylist = [x.strip() for x in plist.split(',')]
                           
             self.factoryid = self.fcl.generic_get('Factory', 'factoryId')
