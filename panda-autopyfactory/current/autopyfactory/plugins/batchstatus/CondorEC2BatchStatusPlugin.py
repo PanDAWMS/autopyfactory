@@ -16,6 +16,7 @@ import sys
 
 from datetime import datetime
 from pprint import pprint
+
 from autopyfactory.interfaces import BatchStatusInterface
 from autopyfactory.factory import Singleton, CondorSingleton
 from autopyfactory.info import BatchStatusInfo
@@ -24,8 +25,12 @@ from autopyfactory.info import QueueInfo
 from autopyfactory.condor import checkCondor, querycondorxml, statuscondor, statuscondormaster
 from autopyfactory.condor import parseoutput, xml2nodelist, node2dict 
 from autopyfactory.condor import listnodesfromxml, aggregateinfo, killids
+from autopyfactory.condor import mincondorversion
 
 import autopyfactory.utils as utils
+
+
+mincondorversion(8,1,1)
 
 
 class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):

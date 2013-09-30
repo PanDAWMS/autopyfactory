@@ -17,7 +17,7 @@ import traceback
 import xml.dom.minidom
 
 import autopyfactory.utils as utils
-from autopyfactory.apfexceptions import ConfigFailure
+from autopyfactory.apfexceptions import ConfigFailure, CondorVersionFailure
 
 from datetime import datetime
 from pprint import pprint
@@ -100,14 +100,14 @@ def mincondorversion(major, minor, release):
         rel = int(rel)
         
         if maj < major:
-            raise Exception("HTCondor version %s too low for the CondorEC2BatchSubmitPlugin. Requires 8.1.2 or above." % cvstr)
+            raise CondorVersionFailure("HTCondor version %s too low for the CondorEC2BatchSubmitPlugin. Requires 8.1.2 or above." % cvstr)
         if maj == major and min < minor:
-            raise Exception("HTCondor version %s too low for the CondorEC2BatchSubmitPlugin. Requires 8.1.2 or above." % cvstr)
+            raise CondorVersionFailure("HTCondor version %s too low for the CondorEC2BatchSubmitPlugin. Requires 8.1.2 or above." % cvstr)
         if maj == major and min == minor and rel < release:
-            raise Exception("HTCondor version %s too low for the CondorEC2BatchSubmitPlugin. Requires 8.1.2 or above." % cvstr)
+            raise CondorVersionFailure("HTCondor version %s too low for the CondorEC2BatchSubmitPlugin. Requires 8.1.2 or above." % cvstr)
     else:
         ec2log.error('condor_version program not available!')
-        raise Exception("HTCondor required but not present!")
+        raise CondorVersionFailure("HTCondor required but not present!")
 
 
 def checkCondor():

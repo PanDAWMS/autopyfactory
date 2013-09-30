@@ -36,7 +36,8 @@ except:
     from email.MIMEText import MIMEText
 
 
-from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure, ConfigFailure
+from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
+from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailure
 from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
@@ -737,8 +738,7 @@ class APFQueuesManager(object):
                 qobject.start()
                 self.log.info('Queue %s enabled.' %apfqname)
             except Exception, ex:
-                self.log.error('exception captured when calling apfqueue object %s' %apfqname)
-
+                self.log.error('Exception captured when initializing [%s]. Queue omitted. ' %apfqname)
         else:
             self.log.debug('Queue %s not enabled.' %apfqname)
             
@@ -842,6 +842,10 @@ class APFQueue(threading.Thread):
 
         try:
             self._plugins()
+        
+        except CondorVersionFailure, cvf:
+            self.log.error('APFQueue: No condor or bad version: %s' % str(ex))
+            raise ex
         
         except Exception, ex:
             self.log.error('APFQueue: Exception getting plugins: %s' % str(ex))
