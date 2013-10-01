@@ -323,9 +323,9 @@ echo
 
 # Add DQ2 clients to the PYTHONPATH
 echo "---- DDM setup ----"
-if [ -n "$APF_PYTHON26" ] && [ -f /cvmfs/atlas.cern.ch/repo/sw/ddm/2.3.0/setup.sh ]; then
-  echo "Sourcing /cvmfs/atlas.cern.ch/repo/sw/ddm/2.3.0/setup.sh"
-  source /cvmfs/atlas.cern.ch/repo/sw/ddm/2.3.0/setup.sh
+if [ -n "$APF_PYTHON26" ] && [ -f /cvmfs/atlas.cern.ch/repo/sw/ddm/latest/setup.sh ]; then
+  echo "Sourcing /cvmfs/atlas.cern.ch/repo/sw/ddm/latest/setup.sh"
+  source /cvmfs/atlas.cern.ch/repo/sw/ddm/latest/setup.sh
 elif [ -f $ATLAS_AREA/ddm/latest/setup.sh ]; then
   echo "Sourcing $ATLAS_AREA/ddm/latest/setup.sh"
   source $ATLAS_AREA/ddm/latest/setup.sh
