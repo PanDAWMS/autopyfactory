@@ -8,7 +8,10 @@ from autopyfactory.interfaces import SchedInterface
 class KeepNRunningSchedPlugin(SchedInterface):
     '''
     This plugin strives to keep a certain number of jobs/pilots/VMs running, regardless 
-    of ready/activated or input. 
+    of ready/activated or input.
+    
+    If config keep_running is None, then it changes the sense of input from 
+    new jobs (relative) to a target number (absolute) 
     
     Understands Retiring VM job state. 
     
@@ -61,8 +64,13 @@ class KeepNRunningSchedPlugin(SchedInterface):
 
         # 
         # Output is simply keep_running, minus potentially or currently running, while ignoring retiring jobs
-        # 
-        out = self.keep_running - ( running_pilots  + pending_pilots)
+        #
+        if self.keep_running:
+            self.log.debug("keep_running is set %d, use it." % self.keep_running) 
+            out = self.keep_running - ( running_pilots  + pending_pilots)
+        else:
+            self.log.debug("keep_running is set not set, use input." % self.keep_running)
+            out = input - ( running_pilots + pending_pilots )
 
         self.log.info('input=%s (ignored); keep_running=%s; pending=%s; running=%s; retiring=%s; Return=%s' %(input,
                                                                                          self.keep_running, 
