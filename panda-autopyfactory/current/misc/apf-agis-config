@@ -13,18 +13,6 @@ try:
 except ImportError, err:
     import simplejson as json
 
-blacksites = [
-              'IAAS',
-              'Australia-NECTAR',
-              'HELIX',
-              'HELIX_NEBULA_CLOUD',
-              'CERN-CLOUD',
-              'CERN-P1',
-              'CERN-RELEASE',
-              'GRIDPP_CLOUD',
-              'IN2P3-CC_OPENSTACK',
-]
-
 defaultsection = """\
 
 [DEFAULT]
@@ -49,7 +37,7 @@ sched.statusoffline.allowed = True
 sched.minpercycle.minimum = 0
 sched.maxpending.maximum = 25
 
-executable = /data/atlpan/libexec/runpilot3-wrapper-jul09.sh
+executable = /data/atlpan/libexec/runpilot3-wrapper-oct02.sh
 executable.defaultarguments = -s %(wmsqueue)s -h %(batchqueue)s -p 25443 -w https://pandaserver.cern.ch -j false -k %(memory)s
 
 hold = periodic_hold = JobStatus==1 && gridjobstatus=?=UNDEFINED && CurrentTime-EnteredCurrentStatus>3600
@@ -121,13 +109,13 @@ specified cloud and activity type.
     
     for key in sorted(d):
         try:
+            if d[key]['resource_type'] != 'GRID':
+                print
+                print "# Excluded: %s/%s resource_type = %s" % (d[key]['site'], key, d[key]['resource_type'])
+                continue
             if d[key]['vo_name'] != 'atlas':
                 print
-                print "# NOT ATLAS: %s" % d[key]['site']
-                continue
-            if d[key]['site'] in blacksites:
-                print
-                print "# Excluded: %s" % key
+                print "# NOT ATLAS: %s" % key
                 continue
             if d[key]['site_state'] == 'ACTIVE' and d[key]['type'] == options.activity:
 
