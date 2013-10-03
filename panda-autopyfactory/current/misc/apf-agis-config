@@ -125,6 +125,10 @@ specified cloud and activity type.
                 corecount = d[key]['corecount']
                 
                 for q in d[key]['queues']:
+                    if q['ce_state'] != 'ACTIVE':
+                        print
+                        print "# CE not active: %s (%s)" % (q['ce_name'], q['ce_state'])
+                        continue
                     gramqueue = None 
                     nordugridrsl = None 
                     submitplugin = None
@@ -175,7 +179,7 @@ specified cloud and activity type.
                             rsladd += '(count = %d)' % corecount
                     else:
                         print
-                        print "# Unknown ce_flavour for %s (%s)" % (q['ce_name'], q['ce_queue_id'])
+                        print "# Unknown ce_flavour (%s) for %s (%s)" % (q['ce_flavour'], q['ce_name'], q['ce_queue_id'])
                         continue
             
                     print
