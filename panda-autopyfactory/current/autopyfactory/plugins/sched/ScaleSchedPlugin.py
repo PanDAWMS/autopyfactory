@@ -2,6 +2,7 @@
 #
 
 from autopyfactory.interfaces import SchedInterface
+import math
 import logging
 
 
@@ -29,10 +30,8 @@ class ScaleSchedPlugin(SchedInterface):
 
         self.log.debug('Starting with n=%s' %n)
 
-        out = int(n * self.factor)
-        # it could happen that n*factor < 1, so int() will give 0. 
-        if n>0 and out==0:
-            out = 1
+        out = math.ceil(n * self.factor)
+        out = int(out)  #because the output of ceil() is float
 
         self.log.info('Return=%s' %out)
         msg = "Scale=%s,factor=%s,ret=%s" %(n, self.factor, out )
