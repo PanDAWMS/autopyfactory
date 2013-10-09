@@ -6,7 +6,6 @@
 chmod ugo+x /etc/init.d/factory
 #chmod ugo+x /usr/libexec/wrapper.sh
 /sbin/chkconfig --add factory
-/sbin/chkconfig --add proxymanager
 
 #  check that factory.sysconfig has been placed in /etc/sysconfig/factory.sysconfig 
 SYSCONF=/etc/sysconfig/factory.sysconfig
