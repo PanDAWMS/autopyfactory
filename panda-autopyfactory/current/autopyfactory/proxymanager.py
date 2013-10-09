@@ -59,7 +59,7 @@ class ProxyManager(threading.Thread):
         
         try:
             while not self.stopevent.isSet():
-                self.log.debug('Checking for interrupt.')
+                #self.log.debug('Checking for interrupt.')
                 time.sleep(self.sleep)                  
         except (KeyboardInterrupt): 
                 self.log.info("Shutdown via Ctrl-C or -INT signal.")
