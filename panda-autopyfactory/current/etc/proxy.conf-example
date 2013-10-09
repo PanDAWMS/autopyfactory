@@ -62,7 +62,7 @@
 #     grid-proxy-init -valid 720:0 -out /tmp/plainProxy
 # Note that maintenance of this proxy must occur completely outside of APF. 
 # baseproxy = /tmp/plainProxy
-#
+
 baseproxy = None
 
 # flavor = voms OR myproxy
@@ -84,6 +84,12 @@ minlife = 259200
 interruptcheck = 1
 # Allow for init delay for MyProxy proxies that rely on other profiles. 
 initdelay = 0
+
+
+# If set, proxymanager will try to set the UNIX owner of the target proxy file accordingly. 
+# If unset, proxymanager will leave it owned by whatever user APF or the proxymanager is already 
+# running as. 
+# owner = apf
 
 #
 # If you don't want to use ProxyManager to renew proxies, set this  False

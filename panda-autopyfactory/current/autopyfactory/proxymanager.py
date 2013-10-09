@@ -7,6 +7,7 @@
 import logging
 import math
 import os
+import pwd, grp
 import threading
 import time
 
@@ -126,12 +127,24 @@ class ProxyHandler(threading.Thread):
         self.log = logging.getLogger('main.proxyhandler')
         self.name = section
         self.manager = manager
+        self.owner = None
+        self.group = None
         
         # Vars for all flavors
         self.proxyfile = os.path.expanduser(config.get(section,'proxyfile'))
         self.vorole = config.get(section, 'vorole' )         
         initdelaystr = config.get(section, 'initdelay')
         self.initdelay = int(initdelaystr)     
+        if config.has_option(section, 'owner'):
+            o = config.get(section, 'owner')
+            try:
+                
+                p = pwd.getpwnam(o)
+                self.group = grp.getgrgid(p[3])[0]
+                self.owner = o
+            except Exception, e:
+                self.log.error("Problem getting user and group info for 'owner' = %s" % o)
+        
         
         # Flavors are 'voms' or 'myproxy'
         self.flavor = config.get(section, 'flavor')
@@ -231,12 +244,32 @@ class ProxyHandler(threading.Thread):
         stdout, stderr = p.communicate()
         if p.returncode == 0:
             self.log.debug("[%s] Command OK. Output = %s" % (self.name, stdout))
+            self._setProxyOwner()
             self.log.debug("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))
         elif p.returncode == 1:
             self.log.error("[%s] Command RC = 1. Error = %s" % (self.name, stderr))
         else:
             raise Exception("Strange error using command voms-proxy-init. Return code = %d" % p.returncode)
 
+
+    def _setProxyOwner(self):
+        '''
+        If owner is set, try to switch ownership of the file to the provided user and group. 
+        '''
+        if self.owner:
+            uid = pwd.getpwnam(self.owner).pw_uid
+            gid = grp.getgrnam(self.group).gr_gid            
+            try:
+                os.chown(self.proxyfile, uid, gid)
+                self.log.debug("Successfully set ownership for %s to %s:%s" % (self.proxyfile,
+                                                                               self.owner, 
+                                                                               self.group) )
+            except Exception, e:
+                self.log.error("Something wrong trying to do chown %s:%s %s" % (self.owner, 
+                                                                                self.group, 
+                                                                                self.proxyfile))
+        else:
+            self.log.debug("No owner requested. Doing nothing.")
 
     def _retrieveMyProxyCredential(self):
         '''
@@ -288,6 +321,7 @@ class ProxyHandler(threading.Thread):
         stdout, stderr = p.communicate()
         if p.returncode == 0:
             self.log.debug("[%s] Command OK. Output = %s" % (self.name, stdout))
+            self._setProxyOwner()
             self.log.debug("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))
         elif p.returncode == 1:
             self.log.error("[%s] Command RC = 1. Error = %s" % (self.name, stderr))
