@@ -11,7 +11,7 @@ import logging
 import sys
 import os
 from ConfigParser import ConfigParser
-
+from autopyfactory.proxymanager import ProxyManager
 
 def main():
    
