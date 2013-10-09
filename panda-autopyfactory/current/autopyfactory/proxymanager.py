@@ -248,19 +248,18 @@ class ProxyHandler(threading.Thread):
         stdout, stderr = p.communicate()
         if p.returncode == 0:
             self.log.debug("[%s] Command OK. Output = %s" % (self.name, stdout))
-            self._setProxyOwner()
             self.log.debug("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))
         elif p.returncode == 1:
             self.log.error("[%s] Command RC = 1. Error = %s" % (self.name, stderr))
         else:
             raise Exception("Strange error using command voms-proxy-init. Return code = %d" % p.returncode)
-
+        self._setProxyOwner()
 
     def _setProxyOwner(self):
         '''
         If owner is set, try to switch ownership of the file to the provided user and group. 
         '''
-        if self.owner:
+        if self.owner and os.access(self.proxyfile, os.F_OK):
             uid = pwd.getpwnam(self.owner).pw_uid
             gid = grp.getgrnam(self.group).gr_gid            
             try:
@@ -273,7 +272,7 @@ class ProxyHandler(threading.Thread):
                                                                                 self.group, 
                                                                                 self.proxyfile))
         else:
-            self.log.debug("No owner requested. Doing nothing.")
+            self.log.debug("No owner requested or proxy file doesn't exist. Doing nothing.")
 
     def _retrieveMyProxyCredential(self):
         '''
@@ -325,13 +324,12 @@ class ProxyHandler(threading.Thread):
         stdout, stderr = p.communicate()
         if p.returncode == 0:
             self.log.debug("[%s] Command OK. Output = %s" % (self.name, stdout))
-            self._setProxyOwner()
             self.log.debug("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))
         elif p.returncode == 1:
             self.log.error("[%s] Command RC = 1. Error = %s" % (self.name, stderr))
         else:
             raise Exception("Strange error using command myproxy_get_delegation. Return code = %d" % p.returncode)
-
+        self._setProxyOwner()
         self.log.debug("[%s] End." % self.name)
 
 
