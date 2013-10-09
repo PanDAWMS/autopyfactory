@@ -34,7 +34,11 @@ class ProxyManager(threading.Thread):
         self.factory = factory
         self.handlers = []
         self.stopevent = threading.Event()
-        self.sleep = int(self.factory.fcl.get('Factory', 'proxymanager.sleep'))
+        if factory:
+            self.sleep = int(self.factory.fcl.get('Factory', 'proxymanager.sleep'))
+        else:
+            self.sleep = 5
+        
         for sect in self.pconfig.sections():
             ph = ProxyHandler(pconfig, sect, self)
             self.handlers.append(ph)
