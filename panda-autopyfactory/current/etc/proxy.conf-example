@@ -50,7 +50,7 @@
 #                      MyProxy when using cert authentication--we need to allow time
 #                      for the auth credential to be generated (by another proxymanager profile). 
 #
-#
+# owner                If running standalone (as root) and you want the proxy to be owned by another account. 
 
 # =========================================================================== 
 
