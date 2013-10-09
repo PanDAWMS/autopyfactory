@@ -81,7 +81,7 @@ def main():
             formatstr = FORMAT26
     
     log = logging.getLogger()
-    if logfile = sys.stdout:
+    if logfile == sys.stdout:
         hdlr = logging.StreamHandler(logfile)
     else:
         hdlr = logging.FileHandler(filename=logfile) 
