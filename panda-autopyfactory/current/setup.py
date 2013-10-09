@@ -39,7 +39,8 @@ etc_files = ['etc/factory.conf-example',
              'etc/apf-search-failed.sh-example',
              ]
 
-initd_files = ['etc/factory',]
+initd_files = ['etc/factory',
+               'etc/proxymanager']
 
 logrotate_files = ['etc/factory.logrotate',]
 
@@ -121,6 +122,7 @@ setup(
               ],
     scripts = [ # Utilities and main script
                'bin/factory',
+               'bin/proxymanager'
               ],
     
     data_files = choose_data_files()
