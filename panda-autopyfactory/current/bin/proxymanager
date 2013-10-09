@@ -7,9 +7,11 @@
 #
 #
 import getopt
+import logging
 import sys
 import os
 from ConfigParser import ConfigParser
+
 
 def main():
    
