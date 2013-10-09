@@ -6,9 +6,9 @@
 #
 # chkconfig: 345 26 74
 # description: Submit pilot jobs to grid sites. 
-# processname: factory
-# config: /etc/apf/factory.conf 
-# pidfile: /var/run/factory.pid
+# processname: proxymanager
+# config: /etc/apf/proxy.conf 
+# pidfile: /var/run/proxymanager.pid
 #
 #
 
