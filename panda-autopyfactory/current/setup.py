@@ -35,6 +35,7 @@ etc_files = ['etc/factory.conf-example',
              'etc/proxy.conf-example',
              'etc/monitor.conf-example',
              'etc/factory.sysconfig-example',
+             'etc/proxymanager.sysconfig-example',
              'etc/logsmonitor.rotate.conf-example',
              'etc/apf-search-failed.sh-example',
              ]
