@@ -675,7 +675,7 @@ class APFQueuesManager(object):
         Initializes a container of APFQueue objects
         '''
 
-        self.log = logging.getLogger('main.apfquuesmanager')
+        self.log = logging.getLogger('main.apfqueuesmanager')
         self.queues = {}
         self.factory = factory
         self.log.debug('APFQueuesManager: Object initialized.')
