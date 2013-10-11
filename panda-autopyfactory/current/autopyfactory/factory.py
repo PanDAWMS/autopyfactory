@@ -463,7 +463,8 @@ class Factory(object):
             try:
                 got_config = pcl.read(pcf)
             except Exception, e:
-                sys.log.error('Failed to create ProxyConfigLoader')
+                self.log.error('Failed to create ProxyConfigLoader')
+                self.log.debug("Exception: %s" % traceback.format_exc())
                 sys.exit(0)
 
             self.log.debug("Read config file %s, return value: %s" % (pcf, got_config)) 
@@ -739,6 +740,7 @@ class APFQueuesManager(object):
                 self.log.info('Queue %s enabled.' %apfqname)
             except Exception, ex:
                 self.log.error('Exception captured when initializing [%s]. Queue omitted. ' %apfqname)
+                self.log.debug("Exception: %s" % traceback.format_exc())
         else:
             self.log.debug('Queue %s not enabled.' %apfqname)
             
@@ -1101,6 +1103,7 @@ class PluginDispatcher(object):
                 monitor_plugins.append(monitor_plugin)
             except Exception, e:
                 self.log.error("Problem getting monitor plugin %s" % monitor_ph.plugin_name)
+                self.log.debug("Exception: %s" % traceback.format_exc())
         return monitor_plugins
 
 
