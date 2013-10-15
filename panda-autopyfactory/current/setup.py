@@ -57,6 +57,7 @@ utils_files = ['misc/apf-agis-config',
                'misc/apf-test-pandaclient',
                'misc/apf-check-old-pilots',
                'misc/apf-search-failed',
+               'misc/apf-simulate-scheds',
                ]
 
 # -----------------------------------------------------------
