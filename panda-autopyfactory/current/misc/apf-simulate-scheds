@@ -33,6 +33,14 @@ for o, a in opts:
         status = a
 
 
+# -------------------------------------------------------------------------------------------------
+#           OPEN THE CONF FILE  
+# -------------------------------------------------------------------------------------------------
+
+conf = SafeConfigParser()
+conf.readfp(open('conf'))
+section_name = conf.sections()[0]
+
 
 # -------------------------------------------------------------------------------------------------
 #           MOCKS
@@ -46,21 +54,21 @@ class sitedic(object):
 class sitestatus(object):
     def __init__(self):
         self.status = status
-        self.cloud = 'fake'
+        self.cloud = section_name 
 siteinfo = {}
-siteinfo['fake'] = sitestatus()
+siteinfo[section_name] = sitestatus()
 
 class cloudstatus(object):
     def __init__(self):
         self.status = status
 cloudinfo = {}
-cloudinfo['fake'] = cloudstatus()
+cloudinfo[section_name] = cloudstatus()
 
 class wmsinfo(object):
     def __init__(self):
         self.jobs = {}
-        self.jobs['fake'] = sitedic()
-        self.wmsqueue = 'fake'
+        self.jobs[section_name] = sitedic()
+        self.wmsqueue = section_name 
         self.site = siteinfo
         self.cloud = cloudinfo
 
@@ -83,14 +91,14 @@ class wmsstatus_plugin(object):
 class batchstatus_plugin(object):
     def getInfo(self, maxtime=0):
         batchinfo = {}
-        batchinfo['fake'] = batch()
+        batchinfo[section_name] = batch()
         return batchinfo
 
 class apfqueue(object):
 
     def __init__(self):
 
-        self.apfqname = "fake"
+        self.apfqname = section_name 
         self.qcl = ConfigManager().getConfig('conf')
 
         self.log = logging.getLogger()
@@ -106,8 +114,8 @@ class apfqueue(object):
         self.wmsstatusmaxtime = 0
         self.batchstatusmaxtime = 0
     
-        self.wmsqueue = 'fake'
-        self.siteid = 'fake'
+        self.wmsqueue = section_name 
+        self.siteid = section_name
 
 
 apf = apfqueue()    
@@ -117,11 +125,9 @@ apf = apfqueue()
 # -------------------------------------------------------------------------------------------------
 #   SCHED PLUGINS   
 # -------------------------------------------------------------------------------------------------
-        
+
 scheds = []
-conf = SafeConfigParser()
-conf.readfp(open('conf'))
-scheds_names = conf.get('fake', 'sched').split(',')
+scheds_names = conf.get(section_name, 'sched').split(',')
 scheds_names = [name.strip() for name in scheds_names]
 for name in scheds_names:
     plugin_module_name = '%sSchedPlugin' %name
@@ -144,7 +150,7 @@ print '   pending   : ', pending
 print '   running   : ', running
 print '   status    : ', status
 
-items = conf.items('fake')
+items = conf.items(section_name)
 n = 0
 for sched in scheds:
     print ''
@@ -161,5 +167,4 @@ for sched in scheds:
 print ''
 print 'Final output %s' %n
 print ''
-
 
