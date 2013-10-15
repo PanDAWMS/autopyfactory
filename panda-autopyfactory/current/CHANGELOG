@@ -1,5 +1,8 @@
 ChangeLog
 ---------
+
+* created apf-simulated-scheds in misc/
+
 * Proxymanager now able to be run standalone as standard system init daemon. This is so base certs need not be owned or readable by the APF user. 
 
 * Added email notification of factory owner when no valid proxy can be retrieved from the proxymanager. 
