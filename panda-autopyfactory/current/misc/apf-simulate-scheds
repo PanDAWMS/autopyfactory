@@ -4,7 +4,6 @@
 import logging
 import logging.handlers
 
-from ConfigParser import SafeConfigParser
 from autopyfactory.configloader import Config, ConfigManager
 
 
@@ -40,8 +39,7 @@ for o, a in opts:
 #           OPEN THE CONF FILE  
 # -------------------------------------------------------------------------------------------------
 
-conf = SafeConfigParser()
-conf.readfp(open(conffile))
+conf = ConfigManager().getConfig(conffile)
 section_name = conf.sections()[0]
 
 
@@ -102,7 +100,7 @@ class apfqueue(object):
     def __init__(self):
 
         self.apfqname = section_name 
-        self.qcl = ConfigManager().getConfig(conffile)
+        self.qcl = conf 
 
         self.log = logging.getLogger()
         logStream = logging.FileHandler('/dev/null')    
