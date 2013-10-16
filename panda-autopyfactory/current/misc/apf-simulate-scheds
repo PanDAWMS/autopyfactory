@@ -15,14 +15,17 @@ from autopyfactory.configloader import Config, ConfigManager
 import getopt
 import sys
 
-opts, args = getopt.getopt(sys.argv[1:], '', ['activated=', 'running=', 'pending=', 'status='])
+opts, args = getopt.getopt(sys.argv[1:], '', ['conf=', 'activated=', 'running=', 'pending=', 'status='])
 
+conffile = ""
 activated = 0
 pending = 0
 running = 0
 status = 'online'
 
 for o, a in opts:
+    if o == '--conf':
+        conffile = a
     if o == '--activated':
         activated = int(a)
     if o == '--pending':
@@ -38,7 +41,7 @@ for o, a in opts:
 # -------------------------------------------------------------------------------------------------
 
 conf = SafeConfigParser()
-conf.readfp(open('conf'))
+conf.readfp(open(conffile))
 section_name = conf.sections()[0]
 
 
@@ -99,7 +102,7 @@ class apfqueue(object):
     def __init__(self):
 
         self.apfqname = section_name 
-        self.qcl = ConfigManager().getConfig('conf')
+        self.qcl = ConfigManager().getConfig(conffile)
 
         self.log = logging.getLogger()
         logStream = logging.FileHandler('/dev/null')    
