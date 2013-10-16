@@ -164,7 +164,7 @@ for sched in scheds:
             if k.split('.')[1] == sched.__class__.__name__.replace('SchedPlugin','').lower():
                 print '      %s = %s ' %(k,v)
 
-    n = sched.calcSubmitNum(n)
+    (n, msg) = sched.calcSubmitNum(n)
     print '   output %s ' % n
 
 print ''
