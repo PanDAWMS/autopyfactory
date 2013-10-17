@@ -33,6 +33,9 @@
 #
 # vorole        User VO role for target proxy. 
 #
+#             MyProxy Retrieval Functionality: Assumes you have created a long-lived
+#               proxy in a MyProxy server, out of band. 
+#
 # flavor        voms or myproxy. voms directly generates proxy using cert or baseproxy
 #               myproxy retrieves a proxy from myproxy, then generates the target proxy against
 #               voms using it as baseproxy.
@@ -51,7 +54,17 @@
 #                      for the auth credential to be generated (by another proxymanager profile). 
 #
 # owner                If running standalone (as root) and you want the proxy to be owned by another account. 
-
+#
+#             Remote Proxy Maintenance: Assumes you have enabled ssh-agent key-based access
+#               to the remote host where you want to maintain a proxy file. 
+#
+# remote_host          If defined, copy proxyfile to same path on remote host
+# remote_user          User to connect as? 
+# remote_owner         If connect user is root, what account should own the file?
+# remote_group         If connect user is root, what group should own the file?
+#
+#
+#
 # =========================================================================== 
 
 [DEFAULT]

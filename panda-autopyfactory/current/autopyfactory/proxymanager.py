@@ -139,6 +139,11 @@ class ProxyHandler(threading.Thread):
         self.vorole = config.get(section, 'vorole' )         
         initdelaystr = config.get(section, 'initdelay')
         self.initdelay = int(initdelaystr)     
+        self.remote_host = config.get(section, 'remote_host')
+        self.remote_user = config.get(section, 'remote_user')
+        self.remote_owner = config.get(section, 'remote_owner')
+        self.remote_group = config.get(section, 'remote_group')
+        
         if config.has_option(section, 'owner'):
             o = config.get(section, 'owner')
             try:
