@@ -81,3 +81,71 @@ path to the user grid key file
 
 user VO role
 
+
+.B flavor
+
+
+voms or myproxy. voms directly generates proxy using cert or baseproxy myproxy retrieves a proxy from myproxy, then generates the target proxy against voms using it as baseproxy.
+
+
+.B myproxy_hostname
+
+
+Myproxy server host.
+
+
+.B myproxy_username
+
+
+User name to be used on MyProxy service
+
+
+.B myproxy_passphrase
+
+
+Passphrase for proxy retrieval from MyProxy
+
+
+.B retriever_profile
+
+
+A list of other proxymanager profiles to be used to authorize proxy retrieval from MyProxy.
+
+
+.B initdelay
+
+
+In seconds, how long to wait before generating. Needed for MyProxy when using cert authentication--we need to allow time for the auth credential to be generated (by another proxymanager profile).
+
+
+.B owner
+
+
+If running standalone (as root) and you want the proxy to be owned by another account.
+
+
+.B remote_host
+
+
+If defined, copy proxyfile to same path on remote host
+
+
+.B remote_user
+
+
+User to connect as?
+
+
+.B remote_owner
+
+
+If connect user is root, what account should own the file?
+
+
+.B remote_group
+
+
+If connect user is root, what group should own the file?
+
+
+
