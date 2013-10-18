@@ -2,8 +2,8 @@
   missingok
   notifempty
   sharedscripts
-  size 500M
-  rotate 6
+  size 100M
+  rotate 10 
   prerotate
     [ -e /etc/init.d/factory ] && /etc/init.d/factory stop >/dev/null 2>&1 || true
     sleep 5
