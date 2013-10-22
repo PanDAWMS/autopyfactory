@@ -71,7 +71,7 @@ class KeepNRunningSchedPlugin(SchedInterface):
             self.log.debug("keep_running is set %d, use it." % self.keep_running) 
             out = self.keep_running - ( running_pilots  + pending_pilots)
         else:
-            self.log.debug("keep_running is set not set, use input." % self.keep_running)
+            self.log.debug("keep_running is set not set, use input.")
             out = input - ( running_pilots + pending_pilots )
 
         self.log.info('input=%s (ignored); keep_running=%s; pending=%s; running=%s; retiring=%s; Return=%s' %(input,
