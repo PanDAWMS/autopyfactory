@@ -445,7 +445,7 @@ if __name__ == '__main__':
     import getopt
     import sys
     import os
-    from ConfigParser import ConfigParser
+    from ConfigParser import ConfigParser, SafeConfigParser
     
     debug = 0
     info = 0
