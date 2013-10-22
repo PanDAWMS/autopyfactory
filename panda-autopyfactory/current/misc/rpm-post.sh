@@ -7,6 +7,9 @@ chmod ugo+x /etc/init.d/factory
 #chmod ugo+x /usr/libexec/wrapper.sh
 /sbin/chkconfig --add factory
 
+# By default on install set factory off?
+#/sbin/chkconfig factory off
+
 #  check that factory.sysconfig has been placed in /etc/sysconfig/factory.sysconfig 
 SYSCONF=/etc/sysconfig/factory.sysconfig
 SYSCONFEXAMPLE=/etc/apf/factory.sysconfig-example
