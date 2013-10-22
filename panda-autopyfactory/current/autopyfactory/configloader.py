@@ -195,7 +195,7 @@ class Config(SafeConfigParser, object):
         else:
             get_f = getattr(self, get_function)
             value = get_f(section, option)
-            if value == "None":
+            if value.lower() == "none":
                 value = None
             self.log.debug('option %s in section %s has value %s' %(option, section, value))
             return value

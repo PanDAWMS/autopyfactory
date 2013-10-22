@@ -62,6 +62,7 @@ done
 f_factdir
 
 if [ `id -u` = 0 ]; then
+    APFHEAD=/
     SYSCONF=/etc/sysconfig/factory.sysconfig
     BINDIR=/usr/bin
     ETCDIR=/etc/apf
@@ -113,11 +114,21 @@ create_var_run(){
     fi
 }
 
+create_var_log(){
+    # function to create directory  $APFHEAD/var/log/apf 
+    # if it does not exist. 
+    if [ ! -d $APFHEAD/var/log/apf ]; then
+        mkdir -p $APFHEAD/var/log/apf/
+    fi
+}
+
+
 start() {
 	# Check if it is already running
 	if [ ! -f $PIDFILE ]; then
 		echo -n $"Starting APF daemon: "	
         create_var_run
+        create_var_log
 	    # daemon --pidfile=${PIDFILE} "$BINDIR/factory --conf $CONFFILE $OPTIONS "
         if [ -n "$CONSOLE_LOG" ]; then
         	$BINDIR/factory --conf $CONFFILE $OPTIONS >> $CONSOLE_LOG 2>&1 &
