@@ -136,6 +136,7 @@ specified cloud and activity type.
                     gramqueue = None
                     gramversion = None
                     creamenv = None
+                    creamattr = None
             
                     if q['ce_flavour'] == 'OSG-CE':
             
@@ -156,6 +157,8 @@ specified cloud and activity type.
                         submitplugin = 'CondorCREAM'
                         submitpluginstring = 'condorcream'
                         creamenv = 'APF_PYTHON26=1 RUCIO_ACCOUNT=pilot'
+                        if corecount:
+                            creamattr = 'CpuNumber = %d' % corecount
             
                     elif q['ce_flavour'] == 'LCG-CE':
                         print
@@ -195,7 +198,10 @@ specified cloud and activity type.
                     if creamenv:
                         print 'batchsubmit.condorcream.environ = %s' % creamenv
                         if wmsqueue == 'NIKHEF-ELPROD_LONG':
-                            print 'batchsubmit.condorcream.condor_attributes = %(hold)s,%(remove)s,cream_attributes = CERequirements = "other.GlueCEPolicyMaxCPUTime >= 2520"'
+                            print 'batchsubmit.condorcream.condor_attributes = %(hold)s,%(remove)s, cream_attributes = CERequirements = "other.GlueCEPolicyMaxCPUTime >= 2520"'
+                        if creamattr:
+                            print 'creamattr = %s' % creamattr
+                            print 'batchsubmit.condorcream.condor_attributes = %(hold)s, %(remove)s, cream_attributes = %(creamattr)s'
                         else:
                             print 'batchsubmit.condorcream.condor_attributes = %(hold)s, %(remove)s'
                     if nordugridrsl:
