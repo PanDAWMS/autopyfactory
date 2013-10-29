@@ -71,10 +71,10 @@ class FactoryCLI(object):
         must be done before anything else
         '''
 
-        self.__addloggertrace()
+        self.__addloggingtrace()
 
 
-    def __addloggertrace(self):
+    def __addloggingtrace(self):
         """
         Adding custom TRACE level
         This must be done here, because parseopts()
