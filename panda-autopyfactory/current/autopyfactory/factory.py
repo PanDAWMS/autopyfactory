@@ -78,7 +78,7 @@ class FactoryCLI(object):
         logging.TRACE = 5
         logging.addLevelName(logging.TRACE, 'TRACE')
         def trace(self, msg, *args, **kwargs):
-            self._log(logging.TRACE, msg, args, **kwargs)
+            self.log(logging.TRACE, msg, *args, **kwargs)
         logging.Logger.trace = trace
 
     
