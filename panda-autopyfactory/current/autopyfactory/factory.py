@@ -71,15 +71,43 @@ class FactoryCLI(object):
         must be done before anything else
         '''
 
-        # Adding custom TRACE level
-        # This must be done here, because parseopts()
-        # uses logging.TRACE, so it must be defined
-        # by that time
+        self.__addloggertrace()
+
+
+    def __addloggertrace(self):
+        """
+        Adding custom TRACE level
+        This must be done here, because parseopts()
+        uses logging.TRACE, so it must be defined
+        by that time
+        """
+
         logging.TRACE = 5
         logging.addLevelName(logging.TRACE, 'TRACE')
         def trace(self, msg, *args, **kwargs):
             self.log(logging.TRACE, msg, *args, **kwargs)
         logging.Logger.trace = trace
+
+        #
+        #   NOTE:
+        #
+        #   apparently, the best way to do it is
+        #   with a dedicated Logger class:
+        #   
+        #           class MyLogger(logging.getLoggerClass()):
+        #           
+        #               TRACE = 5
+        #               logging.addLevelName(TRACE, "TRACE")
+        #           
+        #               def trace(self, msg, *args, **kwargs):
+        #                   self.log(self.TRACE, msg, *args, **kwargs)
+        #           
+        #           logging.setLoggerClass(MyLogger)
+        #
+        #
+        #   but that only works fine is we never 
+        #   call the logger root, as we are doing
+        #   Also, it has the problem that logging.TRACE would not be defined.
 
     
     def __parseopts(self):
