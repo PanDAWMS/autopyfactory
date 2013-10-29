@@ -16,18 +16,16 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
             qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorgram', 'batchsubmit.condorce')    
 
-        ###   BEGIN TEST ###
-        #try:
-        #    self.globus = self._globusrsl(newqcl)   # ??  newqcl or qcl ??
-        #except:
-        #    return False
-        ###   END TEST ###
+        try:
+            self.globus = self._globusrsl(apfqueue, qcl) 
+        except:
+            return False
 
         super(CondorGRAMBatchSubmitPlugin, self).__init__(apfqueue, config=newqcl) 
         
         self.log.info('CondorGRAMBatchSubmitPlugin: Object initialized.')
   
-    def _globusrsl(self, qcl):
+    def _globusrsl(self, apfqueue, qcl):
         '''
         tries to build globusrsl line.
         Entries have been renamed by the subplugins (e.g. CondorGT2), with new patterns:
@@ -35,8 +33,10 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
             -- batchsubmit.condorgram.gram.globusrsl
             -- batchsubmit.condorgram.gram.globusrsladd
         '''
-        self.log.debug('Starting.')
+        #self.log.debug('Starting.')  # with new architecture there is no logger yet
 
+        self.apfqname = apfqueue.apfqname
+    
         globus = "" 
 
         optlist = []
@@ -61,7 +61,7 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         if globusrsladd:
             globus += globusrsladd
         
-        self.log.debug('Leaving with value = %s.' %globus)
+        #self.log.debug('Leaving with value = %s.' %globus)  # with new architecture there is no logger yet
         return globus
          
     def _addJSD(self):
