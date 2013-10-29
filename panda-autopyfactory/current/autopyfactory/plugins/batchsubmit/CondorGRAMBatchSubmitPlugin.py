@@ -16,10 +16,12 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
             qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorgram', 'batchsubmit.condorce')    
 
-        try:
-            self.globus = self._globusrsl(newqcl)   # ??  newqcl or qcl ??
-        except:
-            return False
+        ###   BEGIN TEST ###
+        #try:
+        #    self.globus = self._globusrsl(newqcl)   # ??  newqcl or qcl ??
+        #except:
+        #    return False
+        ###   END TEST ###
 
         super(CondorGRAMBatchSubmitPlugin, self).__init__(apfqueue, config=newqcl) 
         
