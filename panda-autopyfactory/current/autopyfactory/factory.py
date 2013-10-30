@@ -108,6 +108,15 @@ class FactoryCLI(object):
         #   but that only works fine is we never 
         #   call the logger root, as we are doing
         #   Also, it has the problem that logging.TRACE would not be defined.
+        #
+        #   However, I have been told that this way, messing with the root logging,
+        #   can have problems with multi-threaded applications...
+        #
+        #   Another option is
+        #       
+        #           logging.trace = functools.partial(logging.log, logging.TRACE)
+        #
+
 
     
     def __parseopts(self):
