@@ -91,7 +91,9 @@ class FactoryCLI(object):
         #
         #   NOTE:
         #
-        #   apparently, the best way to do it is
+        #   I have been told that this way, messing with the root logging,
+        #   can have problems with multi-threaded applications...
+        #   Apparently, the best way to do it is
         #   with a dedicated Logger class:
         #   
         #           class MyLogger(logging.getLoggerClass()):
@@ -104,17 +106,18 @@ class FactoryCLI(object):
         #           
         #           logging.setLoggerClass(MyLogger)
         #
-        #
         #   but that only works fine is we never 
         #   call the logger root, as we are doing
         #   Also, it has the problem that logging.TRACE would not be defined.
         #
-        #   However, I have been told that this way, messing with the root logging,
-        #   can have problems with multi-threaded applications...
         #
         #   Another option is
         #       
         #           logging.trace = functools.partial(logging.log, logging.TRACE)
+        #
+        #   Related documentation on partial() can be found here
+        #
+        #           http://docs.python.org/2/library/functools.html
         #
 
 
