@@ -114,7 +114,7 @@ for DIR in DIRS:
 
 if FORMAT == "html":
 
-       print ('<body style="font-size:small">')
+        print ('<body style="font-size:small">')
 
         apfqueues = lines_d.keys()
         apfqueues.sort()
