@@ -989,7 +989,9 @@ globusrsl.gram5.two_phase = ""
 globusrsl.gram5.username = ""
 
 
-batchsubmit.condorgt2.condor_attributes = periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30),periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400) || (JobStatus == 2 && (CurrentTime - EnteredCurrentStatus) > 604800)
+periodic_hold = periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)
+periodic_remove = periodic_remove=(JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400) || (JobStatus == 2 && (CurrentTime - EnteredCurrentStatus) > 604800)
+batchsubmit.condorgt2.condor_attributes = %(periodic_hold)s,%(periodic_remove)s 
 
 apfqueue.sleep = 360
 
