@@ -51,14 +51,17 @@ logrotate_files = ['etc/factory.logrotate',]
 docs_files = ['docs/%s' %file for file in os.listdir('docs') if os.path.isfile('docs/%s' %file)]
 docs_files.append('RELEASE_NOTES')
 
-utils_files = ['misc/apf-agis-config',
-               'misc/apf-queue-status',
-               'misc/apf-queue-jobs-by-status.sh',
-               'misc/apf-test-pandaclient',
-               'misc/apf-check-old-pilots',
-               'misc/apf-search-failed',
-               'misc/apf-simulate-scheds',
-               ]
+# NOTE: these utils are going to be distributed from now on 
+#       in a separated RPM
+#
+#utils_files = ['misc/apf-agis-config',
+#               'misc/apf-queue-status',
+#               'misc/apf-queue-jobs-by-status.sh',
+#               'misc/apf-test-pandaclient',
+#               'misc/apf-check-old-pilots',
+#               'misc/apf-search-failed',
+#               'misc/apf-simulate-scheds',
+#               ]
 
 # -----------------------------------------------------------
 
@@ -67,14 +70,14 @@ rpm_data_files=[('/etc/apf',           libexec_files),
                 ('/etc/init.d',        initd_files),
                 ('/etc/logrotate.d',   logrotate_files),                                        
                 ('/usr/share/doc/apf', docs_files),                                        
-                ('/usr/share/apf',     utils_files),                                        
+                #('/usr/share/apf',     utils_files),                                        
                ]
 
 home_data_files=[('etc',       libexec_files),
                  ('etc',       etc_files),
                  ('etc',       initd_files),
                  ('doc/apf',   docs_files ),
-                 ('share/apf', utils_files),                                        
+                 #('share/apf', utils_files),                                        
                 ]
 
 # -----------------------------------------------------------
