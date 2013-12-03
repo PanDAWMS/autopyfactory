@@ -36,12 +36,13 @@ class StatusOfflineSchedPlugin(SchedInterface):
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue=self.apfqueue.apfqname, 
                                                                   maxtime = self.apfqueue.batchstatusmaxtime)
 
-        if self.siteinfo:
-            sitecloud = self.siteinfo.cloud
-            self.cloudinfo = self.apfqueue.wmsstatus_plugin.getCloudInfo(cloud=sitecloud, 
-                                                                  maxtime = self.apfqueue.batchstatusmaxtime)
+        #if self.siteinfo:
+            #sitecloud = self.siteinfo.cloud
+            #self.cloudinfo = self.apfqueue.wmsstatus_plugin.getCloudInfo(cloud=sitecloud, 
+            #                                                      maxtime = self.apfqueue.batchstatusmaxtime)
 
-        if self.wmsqueueinfo is None or self.batchinfo is None or self.cloudinfo is None:
+        #if self.wmsqueueinfo is None or self.batchinfo is None or self.cloudinfo is None:
+        if self.wmsqueueinfo is None or self.batchinfo is None:
             self.log.warning("wmsinfo, batchinfo, or cloudinfo is None!")
             out = 0
             msg = "StatusOffline:no wms/batch/cloudinfo,ret=0"
@@ -49,14 +50,15 @@ class StatusOfflineSchedPlugin(SchedInterface):
             sitestatus = self.siteinfo.status
             self.log.debug('site status is %s' %sitestatus)
 
-            cloudstatus = self.cloudinfo.status
-            self.log.debug('cloud %s status is %s' %(sitecloud, cloudstatus))
+            #cloudstatus = self.cloudinfo.status
+            #self.log.debug('cloud %s status is %s' %(sitecloud, cloudstatus))
 
             out = n
             msg = None
 
             # choosing algorithm 
-            if cloudstatus == 'offline' or sitestatus == 'offline':
+            #if cloudstatus == 'offline' or sitestatus == 'offline':
+            if sitestatus == 'offline':
                 self.log.info('Return=%s' %self.pilots_in_offline_mode)
                 out = self.pilots_in_offline_mode
                 msg = "StatusOffline,ret=%s" %(self.pilots_in_offline_mode)

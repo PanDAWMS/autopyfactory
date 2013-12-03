@@ -78,14 +78,14 @@ class ActivatedSchedPlugin(SchedInterface):
             sitestatus = siteinfo[self.wmsqueue].status
             self.log.info('site status is %s' %sitestatus)
 
-            cloud = siteinfo[self.wmsqueue].cloud
-            cloudinfo = self.wmsinfo.cloud
-            cloudstatus = cloudinfo[cloud].status
-            self.log.info('cloud %s status is %s' %(cloud, cloudstatus))
+            #cloud = siteinfo[self.wmsqueue].cloud
+            #cloudinfo = self.wmsinfo.cloud
+            #cloudstatus = cloudinfo[cloud].status
+            #self.log.info('cloud %s status is %s' %(cloud, cloudstatus))
 
             # choosing algorithm 
-            if cloudstatus == 'offline':
-                return self._calc_offline()
+            #if cloudstatus == 'offline':
+            #    return self._calc_offline()
 
             #if sitestatus == 'online':
             #    out = self._calc_online()

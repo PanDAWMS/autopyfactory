@@ -1,5 +1,7 @@
-ChangeLog
+ChangeLog 2013-12-03
 ---------
+
+* Removed reference to Panda cloud status in StatusOfflineSchedPlugin
 
 * created apf-simulated-scheds in misc/
 
