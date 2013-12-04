@@ -1,4 +1,23 @@
 ------------------------------------------
+      version 2.3.0
+------------------------------------------
+
+* variable 'flavor' mandatory in DEFAULT section in proxy.conf
+  Values are voms or myproxy
+
+* In case flavor=myproxy in proxy.conf, then variables
+    remote_host
+    remote_user
+    remote_owner
+    remote_group
+  are needed too.
+
+* New variable factorySMTPServer  in factory.conf
+
+* New variable proxymanager.sleep in factory.conf
+
+
+------------------------------------------
       version 2.2.0-1
 ------------------------------------------
 
