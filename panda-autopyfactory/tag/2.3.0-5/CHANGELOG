@@ -1,6 +1,8 @@
 ChangeLog 2013-12-03
 ---------
 
+* utils not distributed anymore within the RPM. They will be distributed with a dedicated one.
+
 * Removed reference to Panda cloud status in StatusOfflineSchedPlugin
 
 * created apf-simulated-scheds in misc/
