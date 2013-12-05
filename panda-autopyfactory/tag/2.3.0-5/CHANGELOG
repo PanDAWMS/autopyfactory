@@ -1,6 +1,10 @@
 ChangeLog 2013-12-03
 ---------
 
+* CondorEC2 BatchSubmit and BatchStatus plugins usable, supporting standard Condor ec2 grid type. Assuming VMs join local pool as startds, features correlation of VM jobs and corresponding startd. VM retirement via 'condor_off -peaceful' and VM shutdown when stard is retired. 
+
+* KeepNRunning sched plugin to convert absolute to relative numbers. 
+
 * utils not distributed anymore within the RPM. They will be distributed with a dedicated one.
 
 * Removed reference to Panda cloud status in StatusOfflineSchedPlugin
