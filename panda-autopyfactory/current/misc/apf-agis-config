@@ -2,6 +2,26 @@
 
 """
 Output a factory config file only outputs ACTIVE sites
+
+Parameters taken from AGIS include:
+resource_type
+vo_name
+site_state
+panda_resource
+type
+memory
+corecount
+nickname
+queues
+  ce_state
+  ce_flavour
+  ce_name
+  ce_endpoint
+  ce_jobmanager
+  ce_queue_name
+  ce_queue_id
+  
+
 """
 
 import logging
@@ -107,6 +127,7 @@ specified cloud and activity type.
 
     print defaultsection
     
+    # loop through PandaQueues
     for key in sorted(d):
         try:
             if d[key]['resource_type'] != 'GRID':
@@ -122,6 +143,8 @@ specified cloud and activity type.
                 wmsqueue = d[key]['panda_resource']
                 cetype = d[key]['type']
                 memory = d[key]['memory']
+                maxtime = d[key]['maxtime']
+                maxmemory = d[key]['maxmemory']
                 corecount = d[key]['corecount']
                 
                 for q in d[key]['queues']:
@@ -177,9 +200,17 @@ specified cloud and activity type.
                         submitpluginstring = 'condornordugrid'
                         nordugridrsl = '(jobname = arc_pilot)'
                         rsladd = '(runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY)'
-                        rsladd += '(jobname = arc_pilot)(memory = %d)' % memory
+                        rsladd += '(jobname = arc_pilot)'
+                        if memory:
+                            rsladd += '(memory = %d)' % memory
                         if corecount:
                             rsladd += '(count = %d)' % corecount
+                            rsladd += '(countpernode = %d)' % corecount
+                        if maxmemory and corecount:
+                            percore = maxmemory/corecount
+                            rsladd += '(maxmemory = %d)' % percore
+                        if maxtime:
+                            rsladd += '(wallTime = %d)' % maxtime
                     else:
                         print
                         print "# Unknown ce_flavour (%s) for %s (%s)" % (q['ce_flavour'], q['ce_name'], q['ce_queue_id'])
