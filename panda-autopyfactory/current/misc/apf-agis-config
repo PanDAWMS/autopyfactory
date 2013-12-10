@@ -202,16 +202,19 @@ specified cloud and activity type.
                         nordugridrsl = '(jobname = arc_pilot)'
                         rsladd = '(runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY)'
                         rsladd += '(jobname = arc_pilot)'
-                        if memory:
-                            rsladd += '(memory = %d)' % memory
                         if corecount:
                             rsladd += '(count = %d)' % corecount
                             rsladd += '(countpernode = %d)' % corecount
                         if maxmemory and corecount:
                             percore = maxmemory/corecount
-                            rsladd += '(maxmemory = %d)' % percore
+                            rsladd += '(memory = %d)' % percore
+                        elif memory:
+                            rsladd += '(memory = %d)' % memory
                         if maxtime:
-                            rsladd += '(wallTime = %d)' % maxtime
+                            rsladd += '(walltime = %d)' % maxtime
+                        if maxtime and corecount:
+                            totaltime = maxtime*corecount
+                            rsladd += '(cputime = %d)' % totaltime
                     else:
                         print
                         print "# Unknown ce_flavour (%s) for %s (%s)" % (q['ce_flavour'], q['ce_name'], q['ce_queue_id'])
