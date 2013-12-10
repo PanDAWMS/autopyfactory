@@ -230,12 +230,12 @@ specified cloud and activity type.
                     if creamenv:
                         print 'batchsubmit.condorcream.environ = %s' % creamenv
                         if wmsqueue == 'NIKHEF-ELPROD_LONG':
-                            print 'batchsubmit.condorcream.condor_attributes = %(req),%(hold)s,%(remove)s,cream_attributes = CERequirements = "other.GlueCEPolicyMaxCPUTime >= 2520"'
+                            print 'batchsubmit.condorcream.condor_attributes = %(req)s,%(hold)s,%(remove)s,cream_attributes = CERequirements = "other.GlueCEPolicyMaxCPUTime >= 2520"'
                         if creamattr:
                             print 'creamattr = %s' % creamattr
-                            print 'batchsubmit.condorcream.condor_attributes = %(req),%(hold)s,%(remove)s,cream_attributes = %(creamattr)s'
+                            print 'batchsubmit.condorcream.condor_attributes = %(req)s,%(hold)s,%(remove)s,cream_attributes = %(creamattr)s'
                         else:
-                            print 'batchsubmit.condorcream.condor_attributes = %(req),%(hold)s,%(remove)s'
+                            print 'batchsubmit.condorcream.condor_attributes = %(req)s,%(hold)s,%(remove)s'
                     if nordugridrsl:
                         print 'batchsubmit.condornordugrid.nordugridrsl = %s' % nordugridrsl
                         print 'nordugridrsl.nordugridrsladd = %s' % rsladd
