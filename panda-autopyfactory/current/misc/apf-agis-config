@@ -182,7 +182,8 @@ specified cloud and activity type.
                         submitpluginstring = 'condorcream'
                         creamenv = 'APF_PYTHON26=1 RUCIO_ACCOUNT=pilot'
                         if corecount:
-                            creamattr = 'CpuNumber = %d' % corecount
+                            creamattr = 'CpuNumber=%d;WholeNodes=false;SMPGranularity=%d' % (corecount, corecount)
+                        
             
                     elif q['ce_flavour'] == 'LCG-CE':
                         print
