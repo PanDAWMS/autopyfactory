@@ -60,7 +60,8 @@ sched.maxpending.maximum = 25
 executable = /data/atlpan/libexec/runpilot3-wrapper-oct02.sh
 executable.defaultarguments = -s %(wmsqueue)s -h %(batchqueue)s -p 25443 -w https://pandaserver.cern.ch -j false -k %(memory)s
 
-hold = periodic_hold = JobStatus==1 && gridjobstatus=?=UNDEFINED && CurrentTime-EnteredCurrentStatus>3600
+req = requirements = JobRunCount == 0
+hold = periodic_hold = ( JobStatus==1 && gridjobstatus=?=UNDEFINED && CurrentTime-EnteredCurrentStatus>3600 ) || ( JobStatus == 1 && JobRunCount > 0 )
 remove = periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
 
 apfqueue.sleep = 300
@@ -229,12 +230,12 @@ specified cloud and activity type.
                     if creamenv:
                         print 'batchsubmit.condorcream.environ = %s' % creamenv
                         if wmsqueue == 'NIKHEF-ELPROD_LONG':
-                            print 'batchsubmit.condorcream.condor_attributes = %(hold)s,%(remove)s,cream_attributes = CERequirements = "other.GlueCEPolicyMaxCPUTime >= 2520"'
+                            print 'batchsubmit.condorcream.condor_attributes = %(req),%(hold)s,%(remove)s,cream_attributes = CERequirements = "other.GlueCEPolicyMaxCPUTime >= 2520"'
                         if creamattr:
                             print 'creamattr = %s' % creamattr
-                            print 'batchsubmit.condorcream.condor_attributes = %(hold)s,%(remove)s,cream_attributes = %(creamattr)s'
+                            print 'batchsubmit.condorcream.condor_attributes = %(req),%(hold)s,%(remove)s,cream_attributes = %(creamattr)s'
                         else:
-                            print 'batchsubmit.condorcream.condor_attributes = %(hold)s,%(remove)s'
+                            print 'batchsubmit.condorcream.condor_attributes = %(req),%(hold)s,%(remove)s'
                     if nordugridrsl:
                         print 'batchsubmit.condornordugrid.nordugridrsl = %s' % nordugridrsl
                         print 'nordugridrsl.nordugridrsladd = %s' % rsladd
