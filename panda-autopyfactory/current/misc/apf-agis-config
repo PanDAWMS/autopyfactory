@@ -115,7 +115,7 @@ specified cloud and activity type.
     logging.info(msg)
     msg = 'Activity: %s' % options.activity
     logging.info(msg)
-    url = 'http://atlas-agis-api.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'
+    url = 'http://atlas-agis-api.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all&vo_name=atlas'
     if options.cloud.upper() != 'ALL':
         url += '&cloud=%s' % options.cloud.upper()
     logging.info(url)
