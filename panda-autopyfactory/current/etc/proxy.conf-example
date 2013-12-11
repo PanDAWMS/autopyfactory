@@ -124,6 +124,7 @@ proxyfile = /tmp/prodProxy
 
 # MyProxy proxy retrieved by certificate authentication
 [atlas-userproxy-one]
+myproxy_username = apfuser1
 flavor = myproxy
 initdelay = 15
 myproxy_hostname = myproxy.cern.ch
@@ -133,6 +134,7 @@ retriever_profile = atlas-production
 
 # MyProxy proxy retrieved by passphrase authentication
 [atlas-userproxy-two]
+myproxy_username = apfproxy
 flavor = myproxy
 # No init delay needed for passphrase retrieval
 initdelay = 0
