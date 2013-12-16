@@ -115,6 +115,10 @@ class BaseQueueInfo(object):
                 if mappings:
                     if mappings.has_key(k):
                         k = mappings[k]
+                    else:
+                        # a key in the dictionary is not in the mapping
+                        # we ignore that case
+                        continue
             except KeyError, e:
                 log = logging.getLogger('main.info')
                 log.error("fill(): Exception: %s" % str(e))
