@@ -2,6 +2,8 @@
       version 2.3.0
 ------------------------------------------
 
+* utils not distributed anymore within the RPM. They will be distributed with a dedicated one.
+
 * variable 'flavor' mandatory in DEFAULT section in proxy.conf
   Values are voms or myproxy
 
