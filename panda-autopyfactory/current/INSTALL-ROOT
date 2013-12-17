@@ -70,7 +70,12 @@ This performs several setup steps that otherwise would need to be done manually:
     -- Check to be sure jobs are being submitted by whatever account APF is using by 
          executing condor_q manually:  
              condor_q | grep apf
-     
+
+9) IF you intend to use the ATLAS/OSG/EGI modular wrapper, it will need to be installed. 
+  yum install wrapper
+  
+  
+       
 
 
  
