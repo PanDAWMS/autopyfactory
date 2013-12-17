@@ -118,6 +118,8 @@ class BaseQueueInfo(object):
                     else:
                         # a key in the dictionary is not in the mapping
                         # we ignore that case
+                        log = logging.getLogger('main.info')
+                        log.warning('ignoring unkown key %s in the dictionary' %k)
                         continue
             except KeyError, e:
                 log = logging.getLogger('main.info')
