@@ -1,6 +1,8 @@
 ChangeLog 2013-12-03
 ---------
 
+* bug fixed in method fill() in info.py to prevent an Exception when the dictionary has an unknown key.
+
 * CondorEC2 BatchSubmit and BatchStatus plugins usable, supporting standard Condor ec2 grid type. Assuming VMs join local pool as startds, features correlation of VM jobs and corresponding startd. VM retirement via 'condor_off -peaceful' and VM shutdown when stard is retired. 
 
 * KeepNRunning sched plugin to convert absolute to relative numbers. 
