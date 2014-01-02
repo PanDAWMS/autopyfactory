@@ -156,6 +156,7 @@ start() {
 		else
 			echo "$0: daemon dead but PID file exists: $PIDFILE" && failure $"factory startup"
 	    	PROGRETVAL=1
+	    fi
 	fi
 
 	return $PROGRETVAL
