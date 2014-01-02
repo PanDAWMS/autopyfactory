@@ -153,6 +153,7 @@ start() {
 	else
 		if checkpid $PID; then
 			echo "$0: daemon with PID $PID already running." && success $"factory startup"
+			PROGRETVAL=0
 		else
 			echo "$0: daemon dead but PID file exists: $PIDFILE" && failure $"factory startup"
 	    	PROGRETVAL=1
