@@ -125,6 +125,7 @@ create_var_log(){
 
 start() {
 	# Check if it is already running
+	PROGRETVAL=0
 	if [ ! -f $PIDFILE ]; then
 		echo -n $"Starting APF daemon: "	
         create_var_run
@@ -136,14 +137,28 @@ start() {
             $BINDIR/factory --conf $CONFFILE $OPTIONS &
         fi
         RETVAL=$?
-
+		PID=$!
 	    [ "$RETVAL" -eq 0 ] && echo $! > $PIDFILE        
-        [ "$RETVAL" -eq 0 ] && success $"factory startup" || failure $"factory startup"
+
+		sleep 3
+		if checkpid $PID; then
+			PROGRETVAL=0
+		else
+			wait $PID
+			PROGRETVAL=$?
+			rm -f $PIDFILE
+		fi
+        [ "$PROGRETVAL" -eq 0 ] && success $"factory startup" || failure $"factory startup"
 	    echo
 	else
-	    echo "$0: PID file exists: $PIDFILE" && failure $"factory startup"
+		if checkpid $PID; then
+			echo "$0: daemon with PID $PID already running." && success $"factory startup"
+		else
+			echo "$0: daemon dead but PID file exists: $PIDFILE" && failure $"factory startup"
+	    	PROGRETVAL=1
 	fi
-	return $RETVAL
+
+	return $PROGRETVAL
 }
 
 stop() {
@@ -179,9 +194,11 @@ reload() {
 case "$1" in
 start)
 	start
+	RETVAL=$?
 	;;
 stop)
 	stop
+    RETVAL=$?
 	;;
 reload)
 	echo "$0: Unimplemented feature."
@@ -193,11 +210,13 @@ force-reload)
 	;;
 restart)
 	restart
+	RETVAL=$?
 	;;
 condrestart)
 	if [ -f /var/lock/subsys/factory ]; then
 	    restart
 	fi
+	RETVAL=$?
 	;;
 status)
 	status factory
