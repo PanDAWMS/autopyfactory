@@ -135,11 +135,10 @@ start() {
         else
             $BINDIR/factory --conf $CONFFILE $OPTIONS &
         fi
-        
-        # NOTE: $OPTIONS is defined in factory.sysconfig
         RETVAL=$?
-	    [ $RETVAL -eq 0 ] && echo $! > $PIDFILE
-	    [ $RETVAL -eq 0 ] && success $"factory startup" || failure $"factory startup"
+
+	    [ "$RETVAL" -eq 0 ] && echo $! > $PIDFILE        
+        [ "$RETVAL" -eq 0 ] && success $"factory startup" || failure $"factory startup"
 	    echo
 	else
 	    echo "$0: PID file exists: $PIDFILE" && failure $"factory startup"
