@@ -139,7 +139,7 @@ start() {
         # NOTE: $OPTIONS is defined in factory.sysconfig
         RETVAL=$?
 	    [ $RETVAL -eq 0 ] && echo $! > $PIDFILE
-	    [ "$?" -eq 0 ] && success $"factory startup" || failure $"factory startup"
+	    [ $RETVAL -eq 0 ] && success $"factory startup" || failure $"factory startup"
 	    echo
 	else
 	    echo "$0: PID file exists: $PIDFILE" 

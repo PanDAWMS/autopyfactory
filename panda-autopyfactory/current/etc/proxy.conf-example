@@ -80,6 +80,12 @@ baseproxy = None
 
 # flavor = voms OR myproxy
 flavor = voms
+remote_host =          
+remote_user =          
+remote_owner =         
+remote_group =
+
+
 
 usercert=~/.globus/usercert.pem
 userkey=~/.globus/userkeynopw.pem

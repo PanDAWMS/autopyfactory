@@ -27,8 +27,8 @@
 # logserver.index 
 # logserver.excluderobots
 # proxyConf
-# proxymanager.enabled = True
-# proxymanager.sleep = True
+# proxymanager.enabled
+# proxymanager.sleep
 # queueConf
 # queueDirConf
 # monitorConf
@@ -146,6 +146,7 @@ queueConf = file:///etc/apf/queues.conf
 queueDirConf = /etc/apf/queues.d/
 proxyConf = /etc/apf/proxy.conf
 proxymanager.enabled = True
+proxymanager.sleep = 30
 
 monitorConf = /etc/apf/monitor.conf
 

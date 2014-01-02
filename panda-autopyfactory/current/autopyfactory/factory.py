@@ -385,7 +385,7 @@ Jose Caballero <jcaballero@bnl.gov>
                 self.fcl = ConfigManager().getConfig(self.options.confFiles)
             except ConfigFailure, errMsg:
                 self.log.error('Failed to create FactoryConfigLoader')
-                sys.exit(0)
+                sys.exit(1)
         
         self.fcl.set("Factory","cyclesToDo", str(self.options.cyclesToDo))
         self.fcl.set("Factory", "sleepTime", str(self.options.sleepTime))
@@ -402,15 +402,16 @@ Jose Caballero <jcaballero@bnl.gov>
 
             f = Factory(self.fcl)
             f.mainLoop()
+            
         except KeyboardInterrupt:
             self.log.info('Caught keyboard interrupt - exitting')
             sys.exit(0)
         except FactoryConfigurationFailure, errMsg:
             self.log.error('Factory configuration failure: %s', errMsg)
-            sys.exit(0)
+            sys.exit(1)
         except ImportError, errorMsg:
             self.log.error('Failed to import necessary python module: %s' % errorMsg)
-            sys.exit(0)
+            sys.exit(1)
         except:
             # TODO - make this a logger.exception() call
             self.log.error('''Unexpected exception! \
@@ -424,9 +425,8 @@ please send output from this message onwards. \
 Exploding in 5...4...3...2...1... Have a nice day!''')
             # The following line prints the exception to the logging module
             self.log.error(traceback.format_exc(None))
-            raise
-
-
+            print(traceback.format_exc(None))
+            sys.exit(1)          
           
 class Factory(object):
     '''
