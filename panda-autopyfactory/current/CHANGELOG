@@ -1,3 +1,11 @@
+ChangeLog 2014-01-02
+
+* adjustments to init.d script to improve error codes/detection
+
+* proxymanager.sleep and remote_* config vars added to -example files. 
+
+
+
 ChangeLog 2013-12-03
 ---------
 
