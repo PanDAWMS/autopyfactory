@@ -80,12 +80,10 @@ baseproxy = None
 
 # flavor = voms OR myproxy
 flavor = voms
-remote_host =          
-remote_user =          
-remote_owner =         
-remote_group =
-
-
+remote_host = None         
+remote_user = None         
+remote_owner = None        
+remote_group = None
 
 usercert=~/.globus/usercert.pem
 userkey=~/.globus/userkeynopw.pem
@@ -136,7 +134,7 @@ initdelay = 15
 myproxy_hostname = myproxy.cern.ch
 vorole = atlas:/atlas/usatlas
 proxyfile = /tmp/userProxyOne
-retriever_profile = atlas-production
+retriever_list = atlas-production
 
 # MyProxy proxy retrieved by passphrase authentication
 [atlas-userproxy-two]

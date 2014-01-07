@@ -286,7 +286,7 @@ class ProxyHandler(threading.Thread):
         Placed in MyProxy for certificate-based retrieval via:        
             myproxy-init --certfile ~/.globus/cern/usercert.pem 
                  --keyfile ~/.globus/cern/userkey.pem 
-                 -u apf-user1
+                 --username apf-user1
                  -s myproxy.cern.ch 
                  -Z "John Hover 241" 
                  -r "John Hover 241" 
@@ -310,7 +310,7 @@ class ProxyHandler(threading.Thread):
         if self.retriever_list:
             self.baseproxy = self.manager.getProxyPath(self.retriever_list)
             cmd += ' --no_passphrase '        
-            cmd += ' --authorization %s ' % self.baseproxy
+            #cmd += ' --authorization %s ' % self.baseproxy
                      
         elif self.myproxy_passphrase:
             cmd += ' --stdin_pass '            
