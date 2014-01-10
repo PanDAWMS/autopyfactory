@@ -54,6 +54,7 @@ schedplugin = Ready, StatusTest, MaxToRun, MinPerCycle, MaxPerCycle, MaxPending,
 sched.statustest.allowed = True
 sched.statustest.pilots = 1
 sched.statusoffline.allowed = True
+sched.statusoffline.pilots = 0
 sched.minpercycle.minimum = 0
 sched.maxpending.maximum = 25
 
