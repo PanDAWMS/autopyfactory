@@ -152,7 +152,11 @@ specified cloud and activity type.
                 for q in d[key]['queues']:
                     if q['ce_state'] != 'ACTIVE':
                         print
-                        print "# CE not active: %s (%s)" % (q['ce_name'], q['ce_state'])
+                        print "# Queue ce_state not 'ACTIVE': %s (%s)" % (q['ce_name'], q['ce_state'])
+                        continue
+                    if q['ce_status'] != 'production':
+                        print
+                        print "# Queue ce_status not 'production': %s (%s)" % (q['ce_name'], q['ce_status'])
                         continue
                     gramqueue = None 
                     nordugridrsl = None 
