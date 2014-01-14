@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 __author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
-__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2013 John Hover; 2010-2013 Jose Caballero"
+__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2014 John Hover; 2010-2014 Jose Caballero"
 __credits__ = []
 __license__ = "GPL"
 __version__ = "2.3.0"
