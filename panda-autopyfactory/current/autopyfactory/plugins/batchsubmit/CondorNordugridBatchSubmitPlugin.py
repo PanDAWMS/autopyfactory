@@ -20,7 +20,7 @@ class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         else:
             qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condornordugrid', 'batchsubmit.condorce')
-        super(CondorNordugridBatchSubmitPlugin, self).__init__(apfqueue) 
+        super(CondorNordugridBatchSubmitPlugin, self).__init__(apfqueue, config=newqcl) 
         try:
             self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condornordugrid.gridresource') 
             self.nordugridrsl = self._nordugridrsl(qcl)
@@ -30,7 +30,7 @@ class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
             raise
         
         self.log.info('CondorNordugridBatchSubmitPlugin: Object initialized.')
-          
+                 
 
     def _nordugridrsl(self, qcl):
         '''
@@ -39,11 +39,8 @@ class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
             -- nordugridrsl.nordugridrsl
             -- nordugridrsl.nordugridrsladd
         '''
- 
         self.log.debug('Starting.')
- 
         out = ""
- 
         optlist = []
         for opt in qcl.options(self.apfqname):
             if opt.startswith('nordugridrsl.') and\

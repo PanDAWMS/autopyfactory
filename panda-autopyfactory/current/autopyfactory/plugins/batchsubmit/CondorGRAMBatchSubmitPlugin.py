@@ -19,8 +19,9 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         
         try:
             self.globus = self._globusrsl(apfqueue, qcl) 
-        except:
-            return False
+        except Exception, e:
+            self.log.error("Caught exception: %s " % str(e))
+            raise
 
         self.log.info('CondorGRAMBatchSubmitPlugin: Object initialized.')
   
