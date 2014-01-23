@@ -19,7 +19,7 @@ class CondorOSGCEBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         else:
             qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorosgce', 'batchsubmit.condorce')
-        super(CondorOSGCEBatchSubmitPlugin, self).__init__(apfqueue) 
+        super(CondorOSGCEBatchSubmitPlugin, self).__init__(apfqueue, config=newqcl) 
         try:
             self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorosgce.gridresource') 
         except Exception, e:
