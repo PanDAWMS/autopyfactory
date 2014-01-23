@@ -543,7 +543,8 @@ class Factory(object):
         self.factoryid = self.fcl.get('Factory','factoryId')
         self.smtpserver = self.fcl.get('Factory','factorySMTPServer')
         self.hostname = socket.gethostname()
-        self.username = os.getlogin()  
+        #self.username = os.getlogin()
+        self.username = pwd.getpwuid(os.getuid()).pw_name   
         
         # Log some info...
         self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )     
