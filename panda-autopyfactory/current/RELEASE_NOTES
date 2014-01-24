@@ -1,4 +1,11 @@
 ------------------------------------------
+      version 2.3.1
+------------------------------------------
+* Minor fixes to Condor submit plugin initialization. 
+
+* Fix to determining username for email. 
+
+------------------------------------------
       version 2.3.0
 ------------------------------------------
 
