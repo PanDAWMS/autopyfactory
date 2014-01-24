@@ -68,6 +68,9 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
                                             for opt in qcl.options(self.apfqname) \
                                             if opt.startswith('batchsubmit.condorbase.condor_attributes.')]  # Note the . at the end of the pattern !!
 
+            self.baselogdir = self.fcl.generic_get('Factory', 'baseLogDir') 
+            self.baselogdirurl = self.fcl.generic_get('Factory', 'baseLogDirUrl') 
+            
             condor.checkCondor()
             self.log.info('BatchSubmitPlugin: Object properly initialized.')
         except Exception, e:
@@ -265,14 +268,15 @@ x509UserProxyVOName = "atlas"
     def _calculateDateDir(self):
         '''
         a new directory is created for each day. 
+        Sets logDir and logUrl
         Here we calculate it.
         '''
-
         now = time.gmtime() # gmtime() is like localtime() but in UTC
         timePath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2])
         logPath = timePath + self.apfqname.translate(string.maketrans('/:','__'))
-        self.logDir = self.fcl.generic_get('Factory', 'baseLogDir') + logPath
-        self.logUrl = self.fcl.generic_get('Factory', 'baseLogDirUrl') + logPath
+        self.logDir = self.baselogdir + logPath
+        self.logUrl = self.baselogdirurl + logPath
+        
  
     def _addJSD(self):
 
