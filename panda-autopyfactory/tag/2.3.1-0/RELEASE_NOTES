@@ -1,0 +1,69 @@
+------------------------------------------
+      version 2.3.1
+------------------------------------------
+* Minor fixes to Condor submit plugin initialization. 
+
+* Fix to determining username for email. 
+
+------------------------------------------
+      version 2.3.0
+------------------------------------------
+
+* utils not distributed anymore within the RPM. They will be distributed with a dedicated one.
+
+* variable 'flavor' mandatory in DEFAULT section in proxy.conf
+  Values are voms or myproxy
+
+* In case flavor=myproxy in proxy.conf, then variables
+    remote_host
+    remote_user
+    remote_owner
+    remote_group
+  are needed too.
+
+* New variable factorySMTPServer  in factory.conf
+
+* New variable proxymanager.sleep in factory.conf
+
+
+------------------------------------------
+      version 2.2.0-1
+------------------------------------------
+
+* examples of executables (a.k.a. wrappers) 
+  are placed underneath the '/etc/apf/' directory.
+  They are not copied directly into '/usr/libexec/' anymore.
+
+  'wrapper-0.9.9.sh' has a different set of
+  input options than previous one. 
+  Read carefully the inline documentation before using it.
+
+* Config plugins have been removed. 
+  Any configuration variable in 'queues.conf'
+  related 'PandaConfig' or 'AGISConfig' plugins 
+  are not valid anymore. 
+  Therefore the variable 'configplugin' is gone too.
+
+  Variables 'override' and 'autofill' are also gone.
+
+* There is a new configuration file called 'monitor.conf'
+  An example is provided underneath '/etc/apf/'
+
+  Old variable in 'factory.conf' pointing to the monitor URL
+  is now in 'monitor.conf'  
+
+  The 'monitor.conf' contains sections
+  for different monitor configurations.
+  The name of the section is setup in 'queues.conf' via
+  the new variable 'monitorsection'
+
+  Read carefully the inline documentation in
+  'monitor.conf' before using it.
+
+* Utils, including script to generate 'queues.conf'
+  with information from AGIS, have changed name and location.
+  New scripts are place underneath '/usr/share/apf'
+
+------------------------------------------
+      version 2.1.1-3
+------------------------------------------
