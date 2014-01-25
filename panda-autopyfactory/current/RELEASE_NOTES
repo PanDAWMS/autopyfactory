@@ -1,3 +1,42 @@
+=============================================================================
+                    RELEASE SEMANTICS
+=============================================================================
+
+AutoPyFactory release versions are composed by 4 numbers:
+
+        major.minor.release-build
+
+For example: 1.2.3-4
+
+* A change in the major number means the entire architecture of 
+  AutoPyFactory has been redesign. It implies a change at the conceptual
+  level. In other words, changing the major number means a new project. 
+
+* A change in the configuration files that requires sys admins intervention
+  after updating implies a change in the minor number.
+
+* Implementing a new relevant feature implies changing the minor number.
+
+* A significative amount of code refactoring that may affect the performance
+  of AutoPyFactory -including speed, memory usage, disk usage, etc-
+  implies changing the minor number.
+
+* Small features and bug fixes imply changing the release number. 
+
+* A change in the RPM package but not in the code are reflected in the
+  build number.
+
+* Not all new releases are placed in the production RPM repository. 
+  Many of them are available at the development and testing repositories, 
+  but only those that have been verified to work are moved 
+  to the production repository. 
+
+* Same RPM will have always the same numbers in all repositories. 
+
+=============================================================================
+
+
+
 ------------------------------------------
       version 2.3.1
 ------------------------------------------
