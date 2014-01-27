@@ -158,6 +158,10 @@ specified cloud and activity type.
                         print
                         print "# Queue ce_status not 'production': %s (%s)" % (q['ce_name'], q['ce_status'])
                         continue
+                    if q['ce_queue_status'] != 'Production':
+                        print
+                        print "# Queue ce_queue_status not 'Production': %s (%s)" % (q['ce_name'], q['ce_queue_status'])
+                        continue
                     gramqueue = None 
                     nordugridrsl = None 
                     submitplugin = None
