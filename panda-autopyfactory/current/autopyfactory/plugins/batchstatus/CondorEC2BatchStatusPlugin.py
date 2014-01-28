@@ -29,9 +29,7 @@ from autopyfactory.condor import mincondorversion
 
 import autopyfactory.utils as utils
 
-
 mincondorversion(8,1,1)
-
 
 class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
     '''
@@ -89,13 +87,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         # variable to record when was last time info was updated
         # the info is recorded as seconds since epoch
         self.lasttime = 0
-        #self._checkCondor()
         self.log.info('BatchStatusPlugin: Object initialized.')
-        
-        #except Exception, ex:
-        #    self.log.error("BatchStatusPlugin object initialization failed. Raising exception")
-        #    raise ex
-
 
     def getInfo(self, queue=None, maxtime=0):
         '''
@@ -293,7 +285,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
         exelist = []
         xmlout = statuscondormaster()
-        if not xmlout:
+        if xmlout is None:
             self.log.warning('output of statuscondormaster() is not valid. Not parsing it. Skip to next loop.') 
         else:
             dictlist = parseoutput(xmlout)
@@ -305,7 +297,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
     def _makeslotlist(self):
         slotlist = []
         xmlout = statuscondor()
-        if not xmlout:
+        if xmlout is None:
             self.log.warning('output of statuscondor() is not valid. Not parsing it. Skip to next loop.') 
         else:
             dictlist = parseoutput(xmlout)
@@ -315,7 +307,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
    
     def _makejoblist(self, dictlist):
         joblist = {}
-        if not dictlist:
+        if dictlist is None:
             self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
         else:
             joblist = self._dicttojoblist(dictlist)
@@ -330,7 +322,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         Input may be None        
         '''
         newinfo = None
-        if not dictlist:
+        if dictlist is None:
             self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
         else:
             aggdict = aggregateinfo(dictlist)
