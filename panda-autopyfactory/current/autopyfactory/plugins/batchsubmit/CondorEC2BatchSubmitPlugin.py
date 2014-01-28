@@ -60,7 +60,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         
         '''
         if num < 1:
-            self.log.debug("Number to submit is negative, calling parent...")
+            self.log.debug("Number to submit is zero or negative, calling parent...")
             super(CondorEC2BatchSubmitPlugin, self).submit(num)
         else:
             self.log.debug("Checking for jobs in 'retiring' state...")
