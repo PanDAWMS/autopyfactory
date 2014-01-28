@@ -58,7 +58,7 @@ sched.statusoffline.pilots = 0
 sched.minpercycle.minimum = 0
 sched.maxpending.maximum = 5
 
-executable = /data/atlpan/libexec/runpilot3-wrapper-oct02.sh
+executable = /etc/apf/runpilot3-wrapper-oct02.sh
 executable.defaultarguments = -s %(wmsqueue)s -h %(batchqueue)s -p 25443 -w https://pandaserver.cern.ch -j false -k %(memory)s
 
 req = requirements = JobRunCount == 0
