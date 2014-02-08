@@ -97,7 +97,9 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         self.JSD.add("executable", "%s" % self.apfqueue.apfqname)
         self.JSD.add("ec2_instance_type", "%s" % self.instance_type) 
         if self.user_data:
-            self.JSD.add('ec2_user_data', '%s' % self.user_data)          
+            self.JSD.add('ec2_user_data', '%s' % self.user_data)
+        if self.user_data_file:
+            self.JSD.add('ec2_user_data_file', '%s' % self.user_data_file)      
         if self.spot_price:
             self.JSD.add('ec2_spot_price', '%f' % self.spot_price)
         if self.security_groups:
