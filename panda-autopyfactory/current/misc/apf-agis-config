@@ -170,7 +170,8 @@ specified cloud and activity type.
                     gramqueue = None
                     gramversion = None
                     creamenv = None
-                    creamattr = None
+                    creamattr = ''
+                    maxwctime = q['ce_queue_maxwctime']
             
                     if q['ce_flavour'] == 'OSG-CE':
             
@@ -192,9 +193,13 @@ specified cloud and activity type.
                         submitpluginstring = 'condorcream'
                         creamenv = 'APF_PYTHON26=1 RUCIO_ACCOUNT=pilot'
                         if corecount:
-                            creamattr = 'CpuNumber=%d;WholeNodes=false;SMPGranularity=%d' % (corecount, corecount)
-                        
-            
+                            creamattr = 'CpuNumber=%d;WholeNodes=false;SMPGranularity=%d;' % (corecount, corecount)
+                            # only on MCORE initially
+                            if maxmemory:
+                                creamattr += 'CERequirements = "other.GlueHostMainMemoryRAMSize=%d";' % maxmemory
+                            if maxwctime:
+                                creamattr += 'CERequirements = "other.GlueHostPolicyMaxWallClockTime=%d";' % maxwctime
+                            
                     elif q['ce_flavour'] == 'LCG-CE':
                         print
                         print "# Skipping GT2 queue: %s (%s)" % (key, q['ce_queue_id'])
