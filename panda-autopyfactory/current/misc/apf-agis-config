@@ -197,11 +197,11 @@ specified cloud and activity type.
                             # only on MCORE initially
                             if maxmemory and maxwctime:
                                 creamattr += 'CERequirements = "other.GlueHostMainMemoryRAMSize > %d ' % maxmemory
-                                creamattr += '&& other.GlueHostPolicyMaxWallClockTime = %d";' % maxwctime
+                                creamattr += '&& other.GlueHostPolicyMaxWallClockTime >= %d";' % maxwctime
                             elif maxmemory:
                                 creamattr += 'CERequirements = "other.GlueHostMainMemoryRAMSize > %d";' % maxmemory
                             elif maxwctime:
-                                creamattr += 'CERequirements = "other.GlueHostPolicyMaxWallClockTime = %d";' % maxwctime
+                                creamattr += 'CERequirements = "other.GlueHostPolicyMaxWallClockTime >= %d";' % maxwctime
 
                             
                     elif q['ce_flavour'] == 'LCG-CE':
