@@ -183,15 +183,6 @@ restart() {
 	return $RETVAL
 }	
 
-reload() {
-
-	check
-	
-	trap "" SIGHUP
-	action $"Reloading APF daemon:" killall -HUP factory.py
-	RETVAL=$?
-	return $RETVAL
-}	
 
 case "$1" in
 start)
@@ -201,14 +192,6 @@ start)
 stop)
 	stop
     RETVAL=$?
-	;;
-reload)
-	echo "$0: Unimplemented feature."
-    RETVAL=3
-	;;
-force-reload)
-	echo "$0: Unimplemented feature."
-	RETVAL=3
 	;;
 restart)
 	restart
@@ -225,7 +208,7 @@ status)
 	RETVAL=$?
 	;;
 *)
-	echo $"Usage: $0 {start|stop|status|restart|condrestart|reload|force-reload}"
+	echo $"Usage: $0 {start|stop|status|restart|condrestart}"
 	RETVAL=2
 esac
 
