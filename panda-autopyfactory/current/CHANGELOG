@@ -1,4 +1,6 @@
 
+* created submit plugin CondorPBS
+
 * removed reload() function from the init script
 
 ChangeLog 2014-01-24
