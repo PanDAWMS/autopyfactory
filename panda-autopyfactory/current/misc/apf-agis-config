@@ -59,7 +59,7 @@ sched.minpercycle.minimum = 0
 sched.maxpending.maximum = 5
 
 executable = /etc/apf/runpilot3-wrapper-oct02.sh
-executable.defaultarguments = -s %(wmsqueue)s -h %(batchqueue)s -p 25443 -w https://pandaserver.cern.ch -j false -k %(memory)s
+executable.defaultarguments = -s %(wmsqueue)s -h %(batchqueue)s -p 25443 -w https://pandaserver.cern.ch -k %(memory)s
 
 req = requirements = JobRunCount == 0
 hold = periodic_hold = ( JobStatus==1 && gridjobstatus=?=UNDEFINED && CurrentTime-EnteredCurrentStatus>3600 ) || ( JobStatus == 1 && (JobRunCount =!= UNDEFINED && JobRunCount > 0) )
