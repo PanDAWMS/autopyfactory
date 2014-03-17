@@ -1,4 +1,6 @@
 
+* bug in manpage autopyfactory.1 fixed
+
 * created submit plugin CondorPBS
 
 * removed reload() function from the init script
