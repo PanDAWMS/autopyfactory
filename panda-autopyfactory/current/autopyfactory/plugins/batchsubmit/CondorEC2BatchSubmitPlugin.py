@@ -32,6 +32,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             self.ami_id = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.ami_id')
             self.instance_type  = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.instance_type')
             self.user_data = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.user_data')
+            self.user_data_file = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.user_data_file')
             self.access_key_id = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.access_key_id')
             self.secret_access_key = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.secret_access_key')
             self.spot_price = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.spot_price')
