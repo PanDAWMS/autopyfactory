@@ -11,7 +11,7 @@ To install locally in a user's home directory, and run as that user, read INSTAL
 Once installed, before running read CONFIGURATION to understand how to configure APF. 
 
 DEVELOPERS
-Jose Caballero <caballer@bnl.gov>             APF and wrapper code. 
+Jose Caballero <jcaballero@bnl.gov>           APF and wrapper code. 
 Peter Love <p.love@lancaster.ac.uk>           APF Monitor code. 
 John Hover <jhover@bnl.gov>                   Proxy manager, Logserver. Multi-threading design. 
 Graeme Stewart <g.stewart@physics.gla.ac.uk>  Original APF author. 
