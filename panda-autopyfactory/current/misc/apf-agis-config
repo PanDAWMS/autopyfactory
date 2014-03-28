@@ -59,7 +59,7 @@ sched.minpercycle.minimum = 0
 sched.maxpending.maximum = 5
 
 executable = /etc/apf/runpilot3-wrapper-oct02.sh
-executable.defaultarguments = -s %(wmsqueue)s -h %(batchqueue)s -p 25443 -w https://pandaserver.cern.ch -k %(memory)s
+executable.defaultarguments = -s %(wmsqueue)s -h %(batchqueue)s -p 25443 -w https://pandaserver.cern.ch
 
 req = requirements = JobRunCount == 0
 hold = periodic_hold = ( JobStatus==1 && gridjobstatus=?=UNDEFINED && CurrentTime-EnteredCurrentStatus>3600 ) || ( JobStatus == 1 && (JobRunCount =!= UNDEFINED && JobRunCount > 0) )
@@ -133,9 +133,14 @@ specified cloud and activity type.
     # loop through PandaQueues
     for key in sorted(d):
         try:
+                
+            if d[key]['pilot_manager'] != 'APF':
+                print
+                print "# Excluded: %s/%s (pilot_manager = %s)" % (d[key]['site'], key, d[key]['pilot_manager'])
+                continue
             if d[key]['resource_type'] != 'GRID':
                 print
-                print "# Excluded: %s/%s resource_type = %s" % (d[key]['site'], key, d[key]['resource_type'])
+                print "# Excluded: %s/%s (resource_type = %s)" % (d[key]['site'], key, d[key]['resource_type'])
                 continue
             if d[key]['vo_name'] != 'atlas':
                 print
@@ -148,6 +153,7 @@ specified cloud and activity type.
                 memory = d[key]['memory']
                 maxtime = d[key]['maxtime']
                 maxmemory = d[key]['maxmemory']
+                minmemory = d[key]['minmemory']
                 corecount = d[key]['corecount']
                 
                 for q in d[key]['queues']:
@@ -192,6 +198,8 @@ specified cloud and activity type.
                         submitplugin = 'CondorCREAM'
                         submitpluginstring = 'condorcream'
                         creamenv = 'APF_PYTHON26=1 RUCIO_ACCOUNT=pilot'
+
+                        # https://wiki.italiangrid.it/twiki/bin/view/CREAM/UserGuideEMI2#Forward_of_requirements_to_the_b
                         if corecount:
                             creamattr = 'CpuNumber=%d;WholeNodes=false;SMPGranularity=%d;' % (corecount, corecount)
                         if maxmemory and maxwctime:
@@ -201,6 +209,16 @@ specified cloud and activity type.
                             creamattr += 'CERequirements = "other.GlueHostMainMemoryRAMSize > %d";' % maxmemory
                         elif maxwctime:
                             creamattr += 'CERequirements = "other.GlueHostPolicyMaxWallClockTime >= %d";' % maxwctime
+
+#                        if maxmemory and maxwctime:
+#                            creamattr += 'CERequirements = "other.GlueHostMainMemoryRAMSize > %d \
+#                                          && other.GlueHostMainMemoryRAMSize < %d ' % (minmemory,maxmemory)
+#                            creamattr += '&& other.GlueHostPolicyMaxWallClockTime >= %d";' % maxwctime
+#                        elif maxmemory:
+#                            creamattr += 'CERequirements = "other.GlueHostMainMemoryRAMSize > %d \
+#                                          && other.GlueHostMainMemoryRAMSize < %d;' % (minmemory,maxmemory)
+#                        elif maxwctime:
+#                            creamattr += 'CERequirements = "other.GlueHostPolicyMaxWallClockTime >= %d";' % maxwctime
 
                             
                     elif q['ce_flavour'] == 'LCG-CE':
