@@ -280,6 +280,7 @@ specified cloud and activity type.
                         print 'nordugridrsl.queue = %s' % q['ce_queue_name']
                         print 'nordugridrsl.addenv.RUCIO_ACCOUNT = pilot'
                         print 'nordugridrsl.addenv.APF_PYTHON26 = 1'
+                        print 'batchsubmit.condornordugrid.condor_attributes = %(req)s,%(hold)s,%(remove)s'
                     if gramqueue:
                         print 'globusrsl.%s.queue = %s' % (gramversion, gramqueue)
                     if cetype == 'analysis':
