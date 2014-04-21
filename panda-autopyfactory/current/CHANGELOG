@@ -1,4 +1,6 @@
 
+* reading self.cloud from queues.conf removed
+
 * bug in manpage autopyfactory.1 fixed
 
 * created submit plugin CondorPBS
