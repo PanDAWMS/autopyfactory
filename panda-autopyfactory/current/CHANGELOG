@@ -1,5 +1,6 @@
 
 * reading self.cloud from queues.conf removed
+  Variables not used anymore deleted from queues.conf-example
 
 * bug in manpage autopyfactory.1 fixed
 
