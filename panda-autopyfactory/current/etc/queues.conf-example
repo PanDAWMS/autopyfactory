@@ -14,13 +14,13 @@
 # =========================================================================== 
 
 #
-# grid
-# vo
-# cloud
+# grid DEPRECATED
+# vo DEPRECATED
+# cloud DEPRECATED
 # batchqueue 
 # wmsqueue 
 # enabled
-# status
+# status DEPRECATED
 # apfqueue.sleep
 #
 # cleanlogs.keepdays
@@ -887,13 +887,6 @@
 
 
 [DEFAULT]
-
-grid = OSG
-vo = ATLAS
-cloud = US
-country = US
-group = None
-status = online
 
 cleanlogs.keepdays = 7
 
