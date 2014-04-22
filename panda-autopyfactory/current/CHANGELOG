@@ -1,4 +1,7 @@
 
+* Adding a log message in StatusTest and StatusOffline Sched Plugins 
+  when the queue is not test or offline.
+
 * reading self.cloud from queues.conf removed
   Variables not used anymore deleted from queues.conf-example
 
