@@ -62,6 +62,8 @@ class StatusOfflineSchedPlugin(SchedInterface):
                 self.log.info('Return=%s' %self.pilots_in_offline_mode)
                 out = self.pilots_in_offline_mode
                 msg = "StatusOffline,ret=%s" %(self.pilots_in_offline_mode)
+            else:
+                self.log.info('[Queue is not offline] input=%s; Return=%s' %(n, out))
 
         return (out, msg) 
             
