@@ -271,16 +271,16 @@ specified cloud and activity type.
                         print 'batchsubmit.condorcream.environ = %s' % creamenv
                         if creamattr:
                             print 'creamattr = %s' % creamattr
-                            print 'batchsubmit.condorcream.condor_attributes = Notification=Never,%(req)s,%(hold)s,%(remove)s,cream_attributes = %(creamattr)s'
+                            print 'batchsubmit.condorcream.condor_attributes = %(req)s,%(hold)s,%(remove)s,cream_attributes = %(creamattr)s,notification=Never'
                         else:
-                            print 'batchsubmit.condorcream.condor_attributes = Notification=Never,%(req)s,%(hold)s,%(remove)s'
+                            print 'batchsubmit.condorcream.condor_attributes = %(req)s,%(hold)s,%(remove)s,notification=Never'
                     if nordugridrsl:
                         print 'batchsubmit.condornordugrid.nordugridrsl = %s' % nordugridrsl
                         print 'nordugridrsl.nordugridrsladd = %s' % rsladd
                         print 'nordugridrsl.queue = %s' % q['ce_queue_name']
                         print 'nordugridrsl.addenv.RUCIO_ACCOUNT = pilot'
                         print 'nordugridrsl.addenv.APF_PYTHON26 = 1'
-                        print 'batchsubmit.condornordugrid.condor_attributes = Notification=Never,%(req)s,%(hold)s,%(remove)s'
+                        print 'batchsubmit.condornordugrid.condor_attributes = %(req)s,%(hold)s,%(remove)s,notification=Never'
                     if gramqueue:
                         print 'globusrsl.%s.queue = %s' % (gramversion, gramqueue)
                     if cetype == 'analysis':
