@@ -1,4 +1,6 @@
 
+* Using queryargs in WMS Status plugin CondorLocal
+
 * Adding a log message in StatusTest and StatusOffline Sched Plugins 
   when the queue is not test or offline.
 
