@@ -94,6 +94,12 @@ will be kept
 
 WMS Status Plugin.
 
+.B wmsstatus.condorlocal.queryargs
+
+list of command line input options
+to be included in the query command *verbatim*. E.g. 
+wmsstatus.condorlocal.queryargs = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]>
+
 
 
 .SH CONFIG PLUGIN VARIABLES
@@ -119,7 +125,7 @@ Batch Status Plugin.
 
 list of command line input options
 to be included in the query command *verbatim*. E.g. 
-batchstatus.condor.query = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]>
+batchstatus.condor.queryargs = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]>
 
 
 
