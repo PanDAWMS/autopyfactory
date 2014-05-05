@@ -11,6 +11,7 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Generic variables">Generic variables</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#WMS Status Plugin variables">WMS Status Plugin variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when wmsstatusplugin is CondorLocal">Configuration when wmsstatusplugin is CondorLocal</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Config Plugin variables">Config Plugin variables</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Batch Status Plugin variables">Batch Status Plugin variables</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Sched Plugin variables">Sched Plugin variables</a><br>
@@ -333,6 +334,21 @@ WMS Status Plugin.
 <br>
 </ul>
 
+
+
+<a name="Configuration when wmsstatusplugin is CondorLocal"><h3><span style="color: black; "><span>Configuration when wmsstatusplugin is CondorLocal</span></span></h3></a>
+<ul>
+<li><strong>wmsstatus.condorlocal.queryargs</strong><br>
+list of command line input options
+to be included in the query command *verbatim*. E.g. 
+wmsstatus.condorlocal.queryargs = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]>
+<br>
+</ul>
+
+
+
+
+
 <a name="Config Plugin variables"><h3><span style="color: black; "><span>Config Plugin variables</span></span></h3></a>
 <ul>
 <li><strong>configplugin</strong><br>
@@ -351,7 +367,7 @@ Batch Status Plugin.
 <li><strong>batchstatus.condor.queryargs</strong><br>
 list of command line input options
 to be included in the query command *verbatim*. E.g. 
-batchstatus.condor.query = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]>
+batchstatus.condor.queryargs = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]>
 <br>
 </ul>
 
