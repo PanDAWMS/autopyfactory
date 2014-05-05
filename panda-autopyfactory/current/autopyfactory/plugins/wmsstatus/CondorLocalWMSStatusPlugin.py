@@ -53,6 +53,7 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         #self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
         #self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
         self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.condor.sleep')
+        self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condorlocal.queryargs')
 
         self.currentcloudinfo = None
         self.currentjobinfo = None
@@ -213,7 +214,7 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         self.log.debug('Starting.')
         
         try:
-            strout = querycondor()
+            strout = querycondor(self.queryargs)
             outlist = parseoutput(strout)
             aggdict = aggregateinfo(outlist)
             newjobinfo = self._map2info(aggdict)
