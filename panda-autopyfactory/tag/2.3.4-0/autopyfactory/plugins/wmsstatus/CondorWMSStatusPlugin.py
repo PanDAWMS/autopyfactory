@@ -24,7 +24,7 @@ from autopyfactory.condor import checkCondor, querycondor, querycondorxml
 from autopyfactory.condor import parseoutput, aggregateinfo
 
 
-class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
+class CondorWMSStatusPlugin(threading.Thread, WMSStatusInterface):
     '''
     -----------------------------------------------------------------------
     This class is expected to have separate instances for each object. 
@@ -53,7 +53,7 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         #self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
         #self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
         self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.condor.sleep')
-        self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condorlocal.queryargs')
+        self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queryargs')
 
         self.currentcloudinfo = None
         self.currentjobinfo = None
