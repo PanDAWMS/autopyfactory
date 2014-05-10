@@ -34,14 +34,14 @@ class CondorWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             the interfaces inherited from Thread and from BatchStatusInterface
     -----------------------------------------------------------------------
     '''
+   
+    __metaclass__ = CondorSingleton 
     
-    __metaclass__ = Singleton 
-    
-    def __init__(self, apfqueue):
+    def __init__(self, apfqueue, **kw):
         #try:
         threading.Thread.__init__(self) # init the thread
         
-        self.log = logging.getLogger("main.wmsstatusplugin[singleton created by %s]" %apfqueue.apfqname)
+        self.log = logging.getLogger("main.wmsstatusplugin[singleton created by %s with condor_q_id: %s]" %(apfqueue.apfqname, kw['condor_q_id']))
         self.log.debug('Initializing object...')
         self.stopevent = threading.Event()
 
