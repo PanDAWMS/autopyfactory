@@ -1,4 +1,10 @@
 
+* condorlocal -> condor for WMS Status plugin in queues.conf-example and documentation
+
+* adding Condor WMS Status plugin, which is a multi-singleton, to replace old  CondorLocal WMS Status plugin
+
+* allow getwmsstatusplugin() to return a multi-singleton plugin object
+
 * Using queryargs in WMS Status plugin CondorLocal
 
 * Adding a log message in StatusTest and StatusOffline Sched Plugins 
