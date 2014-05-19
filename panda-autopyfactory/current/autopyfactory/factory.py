@@ -1106,27 +1106,56 @@ class PluginDispatcher(object):
         
         return batchstatus_plugin
 
+
+
+    ###def getwmsstatusplugin(self):
+    ###
+    ###    wmsstatus_plugin_handler = self._getplugin('wmsstatus')[0]
+    ###    wmsstatus_cls = wmsstatus_plugin_handler.plugin_class
+    ###
+    ###    # calls __init__() to instantiate the class
+    ###    wmsstatus_plugin = wmsstatus_cls(self.apfqueue)  
+    ###
+    ###    # starts the thread
+    ###    wmsstatus_plugin.start()   
+    ###
+    ###    return wmsstatus_plugin
+
     def getwmsstatusplugin(self):
+
+        condor_q_id = 'local'
+        if self.qcl.generic_get(self.apfqname, 'wmsstatusplugin') == 'Condor':
+            queryargs = self.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queryargs')
+            if queryargs:
+                    condor_q_id = self.__queryargs2condorqid(queryargs)
 
         wmsstatus_plugin_handler = self._getplugin('wmsstatus')[0]
         wmsstatus_cls = wmsstatus_plugin_handler.plugin_class
 
         # calls __init__() to instantiate the class
-        wmsstatus_plugin = wmsstatus_cls(self.apfqueue)  
+        # In this case the call accepts a second arguments:
+        #    an ID used to allow the creation of more than one Singleton
+        #    of this category. Remember the WMSStatusPlugin class is a Singleton. 
+        #    Therefore, we can have more than one
+        #    Batch Status Plugin objects, each one shared by a different
+        #    bunch of APF Queues.
+        wmsstatus_plugin = wmsstatus_cls(self.apfqueue, condor_q_id=condor_q_id)
 
         # starts the thread
-        wmsstatus_plugin.start()   
+        wmsstatus_plugin.start()
 
         return wmsstatus_plugin
 
-    def getsubmitplugin(self):
 
+
+    def getsubmitplugin(self):
+    
         batchsubmit_plugin_handler = self._getplugin('batchsubmit')[0]
         batchsubmit_cls = batchsubmit_plugin_handler.plugin_class
-
+    
         # calls __init__() to instantiate the class
         batchsubmit_plugin = batchsubmit_cls(self.apfqueue)  
-
+    
         return batchsubmit_plugin
 
     def getmonitorplugins(self):
