@@ -26,7 +26,7 @@
 # cleanlogs.keepdays
 #
 # wmsstatusplugin
-# wmsstatusplugin.condorlocal.queryargs
+# wmsstatusplugin.condor.queryargs
 #
 # batchstatusplugin
 # batchstatus.condor.queryargs
@@ -233,9 +233,9 @@
 
 # wmsstatusplugin = WMS Status Plugin.
 #
-# wmsstatus.condorlocal.queryargs = list of command line input options
+# wmsstatus.condor.queryargs = list of command line input options
 #               to be included in the query command *verbatim*. E.g.
-#               wmsstatus.condorlocal.queryargs = -name <schedd_name> ... 
+#               wmsstatus.condorqueryargs = -name <schedd_name> ... 
 
 #  --------------------------------------------------------------------
 #       Batch Status Plugin variables 
