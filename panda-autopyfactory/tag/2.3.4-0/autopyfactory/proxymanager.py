@@ -144,12 +144,6 @@ class ProxyHandler(threading.Thread):
         self.remote_owner = config.get(section, 'remote_owner')
         self.remote_group = config.get(section, 'remote_group')
 
-        # extra argument
-        self.voms_args = None
-        if config.has_option(section, 'voms.args'):
-            self.voms_args = onfig.get(section, 'voms.args')
-
-        
         if config.has_option(section, 'owner'):
             o = config.get(section, 'owner')
             try:
@@ -252,9 +246,6 @@ class ProxyHandler(threading.Thread):
             vomshours = 1
         cmd += ' -valid %d:00 ' % vomshours
         cmd += ' -out %s ' % self.proxyfile
-        # add extra arguments if needed
-        if self.voms_args:
-            cmd += self.voms_args
 
              
         # Run command
