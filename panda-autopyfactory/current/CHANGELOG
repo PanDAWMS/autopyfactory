@@ -1,4 +1,6 @@
 
+* added voms.args to proxymanager.py
+
 * condorlocal -> condor for WMS Status plugin in queues.conf-example and documentation
 
 * adding Condor WMS Status plugin, which is a multi-singleton, to replace old  CondorLocal WMS Status plugin
