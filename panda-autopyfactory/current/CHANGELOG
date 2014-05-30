@@ -1,4 +1,13 @@
 
+
+* added boolean variable remote to proxy.conf
+  and related variables renamed as 
+
+        remote.remote_host
+        remote.remote_user
+        remote.remote_owner
+        remote.remote_group
+
 * added voms.args to proxymanager.py
 
 * condorlocal -> condor for WMS Status plugin in queues.conf-example and documentation
