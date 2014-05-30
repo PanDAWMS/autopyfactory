@@ -1336,27 +1336,33 @@ If running standalone (as root) and you want the proxy to be owned by another ac
 <br>
 
 <br>
-<li><strong> remote_host</strong>
+<li><strong> remote</strong>
 <br>
-If defined, copy proxyfile to same path on remote host
-<br>
-
-<br>
-<li><strong> remote_user</strong>
-<br>
-User to connect as? 
+Boolean variable to say if the proxy needs to be transfer to a remote host. 
 <br>
 
 <br>
-<li><strong> remote_owner</strong>
+<li><strong> remote.remote_host</strong>
 <br>
-If connect user is root, what account should own the file?
+If remote=True: copy proxyfile to same path on remote host
 <br>
 
 <br>
-<li><strong> remote_group</strong>
+<li><strong> remote.remote_user</strong>
 <br>
-If connect user is root, what group should own the file?
+If remote=True: user to connect as? 
+<br>
+
+<br>
+<li><strong> remote.remote_owner</strong>
+<br>
+If remote=True: if connect user is root, what account should own the file?
+<br>
+
+<br>
+<li><strong> remote.remote_group</strong>
+<br>
+If remote=True: If connect user is root, what group should own the file?
 <br>
 
 <br>
