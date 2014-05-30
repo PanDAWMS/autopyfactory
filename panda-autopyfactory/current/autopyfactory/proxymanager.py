@@ -379,14 +379,22 @@ class ProxyHandler(threading.Thread):
             self.log.info('No proxy file at path %s.' % self.proxyfile)
             r = 0
         return r
+
+    def _transferproxy(self):
+        '''
+        transfer proxy to a remote host
+        '''
+        # TO BE IMPLEMENTED
+        pass
+
     
     def join(self,timeout=None):
-            '''
-            Stop the thread. Overriding this method required to handle Ctrl-C from console.
-            '''
-            self.stopevent.set()
-            self.log.info('Stopping thread...')
-            threading.Thread.join(self, timeout)
+        '''
+        Stop the thread. Overriding this method required to handle Ctrl-C from console.
+        '''
+        self.stopevent.set()
+        self.log.info('Stopping thread...')
+        threading.Thread.join(self, timeout)
 
    
     def run(self):
@@ -438,6 +446,10 @@ class ProxyHandler(threading.Thread):
             else:
                 self.log.debug("[%s] Time left %d seconds." % (self.name, self._checkTimeleft() ))
                 self.log.info("[%s] Proxy OK (Timeleft %ds)." % ( self.name, self._checkTimeleft()))
+
+        # transfer?
+        if self.remote == True:
+            self._transferproxy()
             
         
     def _getProxyPath(self):
