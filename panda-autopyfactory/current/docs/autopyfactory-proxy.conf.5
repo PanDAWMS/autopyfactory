@@ -124,28 +124,34 @@ In seconds, how long to wait before generating. Needed for MyProxy when using ce
 If running standalone (as root) and you want the proxy to be owned by another account.
 
 
-.B remote_host
+.B remote
 
 
-If defined, copy proxyfile to same path on remote host
+Boolean variable to say if the proxy needs to be transfer to a remote host.
 
 
-.B remote_user
+.B remote.remote_host
 
 
-User to connect as?
+If remote=True: If defined, copy proxyfile to same path on remote host
 
 
-.B remote_owner
+.B remote.remote_user
 
 
-If connect user is root, what account should own the file?
+If remote=True: User to connect as?
 
 
-.B remote_group
+.B remote.remote_owner
 
 
-If connect user is root, what group should own the file?
+If remote=True: If connect user is root, what account should own the file?
+
+
+.B remote.remote_group
+
+
+If remote=True: If connect user is root, what group should own the file?
 
 
 .B
