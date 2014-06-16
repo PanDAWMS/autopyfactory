@@ -990,6 +990,10 @@ globusrsl.gram5.username = ""
 periodic_hold = periodic_hold=GlobusResourceUnavailableTime =!= UNDEFINED &&(CurrentTime-GlobusResourceUnavailableTime>30)
 periodic_remove = periodic_remove=(JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400) || (JobStatus == 2 && (CurrentTime - EnteredCurrentStatus) > 604800)
 batchsubmit.condorgt2.condor_attributes = %(periodic_hold)s,%(periodic_remove)s 
+# GlobusResourceUnavailableTime =!= UNDEFINED means GlobusResourceUnavailableTime is not identical to UNDEFINED
+# (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600)  means job in Held for longer than 1 hour
+# (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400) means job Idle and globusstatus is not identical to 1 (PENDING) for longer than 1 day
+# (JobStatus == 2 && (CurrentTime - EnteredCurrentStatus) > 604800)  means job running for longer than 7 days
 
 apfqueue.sleep = 360
 
