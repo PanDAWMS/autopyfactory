@@ -64,6 +64,8 @@ class StatusOfflineSchedPlugin(SchedInterface):
             cloudstatus = cloudinfo[cloud].status
             self.log.debug('calcSubmitNum: cloud %s status is %s' %(cloud, cloudstatus))
 
+            out = nsub
+
             # choosing algorithm 
             if cloudstatus == 'offline' or sitestatus == 'offline':
                 if self.testmode:

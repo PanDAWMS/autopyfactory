@@ -11,7 +11,7 @@ import traceback
 import xml.dom.minidom
 
 from autopyfactory.interfaces import WMSStatusInterface
-from autopyfactory.factory import Singleton 
+from autopyfactory.factory import Singleton, CondorSingleton
 
 from autopyfactory.info import CloudInfo
 from autopyfactory.info import SiteInfo
@@ -24,7 +24,7 @@ from autopyfactory.condor import checkCondor, querycondor, querycondorxml
 from autopyfactory.condor import parseoutput, aggregateinfo
 
 
-class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
+class CondorWMSStatusPlugin(threading.Thread, WMSStatusInterface):
     '''
     -----------------------------------------------------------------------
     This class is expected to have separate instances for each object. 
@@ -34,14 +34,14 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             the interfaces inherited from Thread and from BatchStatusInterface
     -----------------------------------------------------------------------
     '''
+   
+    __metaclass__ = CondorSingleton 
     
-    __metaclass__ = Singleton 
-    
-    def __init__(self, apfqueue):
+    def __init__(self, apfqueue, **kw):
         #try:
         threading.Thread.__init__(self) # init the thread
         
-        self.log = logging.getLogger("main.wmsstatusplugin[singleton created by %s]" %apfqueue.apfqname)
+        self.log = logging.getLogger("main.wmsstatusplugin[singleton created by %s with condor_q_id: %s]" %(apfqueue.apfqname, kw['condor_q_id']))
         self.log.debug('Initializing object...')
         self.stopevent = threading.Event()
 
@@ -53,7 +53,7 @@ class CondorLocalWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         #self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
         #self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
         self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.condor.sleep')
-        self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condorlocal.queryargs')
+        self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queryargs')
 
         self.currentcloudinfo = None
         self.currentjobinfo = None
