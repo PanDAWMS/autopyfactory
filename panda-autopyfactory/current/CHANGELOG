@@ -1,4 +1,6 @@
 
+* removed WMS Status plugin CondorLocal (moved to attic)
+
 * new grid_resource line in Condor-CE submit plugin. 
 
 * added boolean variable remote to proxy.conf
