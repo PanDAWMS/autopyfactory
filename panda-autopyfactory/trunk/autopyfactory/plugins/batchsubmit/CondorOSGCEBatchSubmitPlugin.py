@@ -35,7 +35,12 @@ class CondorOSGCEBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
 
         self.log.debug('CondorOSGCEBatchSubmitPlugin.addJSD: Starting.')
 
-        self.JSD.add('grid_resource', 'condor %s' % self.gridresource) 
+        self.JSD.add('grid_resource', 'condor %s %s:9619' % (self.gridresource, self.gridresource))
+        # in a line like  grid_resource condor neo.matrix.net neo.matrix.net:9619
+        #   the first field is the schedd host
+        #   the second field is the central manager host
+        # we can assume for the time being they are the same. 
+
         #self.JSD.add('remote_universe ', ' Local')
         self.JSD.add('+TransferOutput', '""')
         super(CondorOSGCEBatchSubmitPlugin, self)._addJSD()
