@@ -41,7 +41,12 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
     __metaclass__ = Singleton
 
-    def __init__(self, apfqueue):
+    def __init__(self, apfqueue, **kw):
+        # NOTE:
+        # the **kw is not needed at this time,
+        # but we use it to keep compatibility with WMS Status Condor plugin
+        # However, it would allow for more than one PanDA server.
+
         try:
             self.apfqueue = apfqueue
             self.log = logging.getLogger("main.pandawmsstatusplugin[%s]" %apfqueue.apfqname)
