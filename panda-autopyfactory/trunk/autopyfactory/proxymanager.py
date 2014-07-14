@@ -40,9 +40,8 @@ class ProxyManager(threading.Thread):
             self.sleep = 5
         
         for sect in self.pconfig.sections():
-            if self.pconfig.getboolean(sect, 'enabled'):
-                ph = ProxyHandler(pconfig, sect, self)
-                self.handlers.append(ph)
+            ph = ProxyHandler(pconfig, sect, self)
+            self.handlers.append(ph)
         
        
     def run(self):
