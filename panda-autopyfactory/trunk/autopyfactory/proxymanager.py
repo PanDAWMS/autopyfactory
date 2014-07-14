@@ -143,10 +143,10 @@ class ProxyHandler(threading.Thread):
         # transfer proxy to remote host?
         self.remote = config.getboolean(section, 'remote')
         if self.remote == True:
-            self.remote_host = config.get(section, 'remote.remote_host')
-            self.remote_user = config.get(section, 'remote.remote_user')
-            self.remote_owner = config.get(section, 'remote.remote_owner')
-            self.remote_group = config.get(section, 'remote.remote_group')
+            self.remote_host = config.get(section, 'remote_host')
+            self.remote_user = config.get(section, 'remote_user')
+            self.remote_owner = config.get(section, 'remote_owner')
+            self.remote_group = config.get(section, 'remote_group')
 
         # extra argument
         self.voms_args = None
