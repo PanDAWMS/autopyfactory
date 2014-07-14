@@ -7,8 +7,6 @@
 # =========================================================================== 
 
 #
-# enabled       True/False. Enabled or disabled each section.
-#
 # baseproxy     If used, create a very long-lived proxy, e.g.
 #               grid-proxy-init -valid 720:0 -out /tmp/plainProxy
 #               Note that maintenance of this proxy must 
@@ -73,8 +71,6 @@
 # =========================================================================== 
 
 [DEFAULT]
-
-enabled = True
 
 #envset_KEY = VALUE
 #envunset = VAR1,VAR2,VAR3
