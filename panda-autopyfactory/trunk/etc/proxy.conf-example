@@ -59,10 +59,10 @@
 #               to the remote host where you want to maintain a proxy file. 
 #
 # remote               True/False. Default is False.
-# remote.remote_host          If defined, copy proxyfile to same path on remote host
-# remote.remote_user          User to connect as? 
-# remote.remote_owner         If connect user is root, what account should own the file?
-# remote.remote_group         If connect user is root, what group should own the file?
+# remote_host          If defined, copy proxyfile to same path on remote host
+# remote_user          User to connect as? 
+# remote_owner         If connect user is root, what account should own the file?
+# remote_group         If connect user is root, what group should own the file?
 #
 # voms.args     Any extra arbitrary input option to be added to voms-proxy-init command
 #
@@ -85,10 +85,10 @@ flavor = voms
 
 # transfer
 remote = False
-remote.remote_host = None         
-remote.remote_user = None         
-remote.remote_owner = None        
-remote.remote_group = None
+remote_host = None         
+remote_user = None         
+remote_owner = None        
+remote_group = None
         
 usercert=~/.globus/usercert.pem
 userkey=~/.globus/userkeynopw.pem
