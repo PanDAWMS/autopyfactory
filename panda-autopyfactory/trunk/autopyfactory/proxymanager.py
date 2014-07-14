@@ -40,8 +40,9 @@ class ProxyManager(threading.Thread):
             self.sleep = 5
         
         for sect in self.pconfig.sections():
-            ph = ProxyHandler(pconfig, sect, self)
-            self.handlers.append(ph)
+            if self.pconfig.getboolean(sect, 'enabled'):
+                ph = ProxyHandler(pconfig, sect, self)
+                self.handlers.append(ph)
         
        
     def run(self):
@@ -133,7 +134,7 @@ class ProxyHandler(threading.Thread):
         self.manager = manager
         self.owner = None
         self.group = None
-        
+
         # Vars for all flavors
         self.proxyfile = os.path.expanduser(config.get(section,'proxyfile'))
         self.vorole = config.get(section, 'vorole' )         
