@@ -280,6 +280,7 @@ class ProxyHandler(threading.Thread):
     def _setProxyOwner(self):
         '''
         If owner is set, try to switch ownership of the file to the provided user and group. 
+        NOTE: this only makes sense when proxymanager is run standalone by root
         '''
         if self.owner and os.access(self.proxyfile, os.F_OK):
             uid = pwd.getpwnam(self.owner).pw_uid
