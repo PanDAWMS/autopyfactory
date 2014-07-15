@@ -274,6 +274,9 @@ class ProxyHandler(threading.Thread):
             raise Exception("Strange error using command voms-proxy-init. Return code = %d" % p.returncode)
         self._setProxyOwner()
 
+        # FIXME
+        return 0
+
     def _setProxyOwner(self):
         '''
         If owner is set, try to switch ownership of the file to the provided user and group. 
@@ -380,6 +383,17 @@ class ProxyHandler(threading.Thread):
             r = 0
         return r
 
+
+    def _validateproxy(self):
+        '''
+        verify the proxy generated
+        is valid, has the right expiration time, VOMS attributes, etc.
+        '''
+
+        return 0
+
+
+
     def _transferproxy(self):
         '''
         transfer proxy to a remote host
@@ -428,8 +442,11 @@ class ProxyHandler(threading.Thread):
                 self.log.debug("[%s] Time left is %d" % (self.name, tl))
                 if tl < self.minlife:
                     self.log.info("[%s] Need proxy. Generating..." % self.name)
-                    self._generateProxy()
-                    self.log.info("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))    
+                    rc = self._generateProxy()
+                    if rc == 0:
+                        self.log.info("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))    
+                    else:
+                        self.log.critical("[%s] Proxy not generated successfully" % self.name)    
                 else:
                     self.log.debug("[%s] Time left %d seconds." % (self.name, self._checkTimeleft() ))
                     self.log.info("[%s] Proxy OK (Timeleft %ds)." % ( self.name, self._checkTimeleft()))
