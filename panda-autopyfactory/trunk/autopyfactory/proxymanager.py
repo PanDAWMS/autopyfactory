@@ -419,29 +419,32 @@ class ProxyHandler(threading.Thread):
 
         email_subject = "Proxy problem on %s" % self.manager.factory.factoryid
         
-        err_msg = '%s-%s-%s %s:%s:%s (UTC)' %time.gmtime()[:6]
-        err_msg += '[%s] : ' %socket.gethostname()
+        timestamp = '%s-%s-%s %s:%s:%s (UTC)' %time.gmtime()[:6]
+        host = '[%s] : ' %socket.gethostname()
 
         # check the file exists
         if not os.path.exists(self.proxyfile):
-            err_msg += "proxy file %s does not exist" %self.proxyfile
+            err_msg = "proxy file %s does not exist" %self.proxyfile
             self.log.critical(err_msg)
+            err_msg = timestamp + host + err_msg
             self.manager.factory.sendAdminEmail(email_subject, err_msg)
             return 1
         
         # check time of the proxy
         timeleft = self._checkTimeleft()
         if timeleft < self.minlife:
-            err_msg += "proxy file %s has too short timeleft = %s" %(self.proxyfile, timeleft)
+            err_msg = "proxy file %s has too short timeleft = %s" %(self.proxyfile, timeleft)
             self.log.critical(err_msg)
+            err_msg = timestamp + host + err_msg
             self.manager.factory.sendAdminEmail(email_subject, err_msg)
             return 1
 
         # check VOMS attributes of the proxy
         rc = self._validateVOMS()
         if rc:
-            err_msg += "proxy file %s does not have VOMS attribute" %(self.proxyfile, self.vorole)
+            err_msg = "proxy file %s does not have VOMS attribute" %(self.proxyfile, self.vorole)
             self.log.critical(err_msg)
+            err_msg = timestamp + host + err_msg
             self.manager.factory.sendAdminEmail(email_subject, err_msg)
             return 1
 
