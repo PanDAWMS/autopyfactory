@@ -417,7 +417,7 @@ class ProxyHandler(threading.Thread):
         is valid, has the right expiration time, VOMS attributes, etc.
         '''
 
-        email_subject = "Proxy problem on %s" % self.manager.factory.factoryid
+        email_subject = "AutoPyFactory on %s: problem with X509 proxy" % self.manager.factory.factoryid
         
         timestamp = '%s-%s-%s %s:%s:%s (UTC)' %time.gmtime()[:6]
         host = '[%s] : ' %socket.gethostname()
