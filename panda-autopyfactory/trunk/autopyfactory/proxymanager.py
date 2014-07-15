@@ -422,7 +422,7 @@ class ProxyHandler(threading.Thread):
         if not os.path.exists(self.proxyfile):
             err_msg = "proxy file %s does not exist" %self.proxyfile
             self.log.critical(err_msg)
-            self.factory.sendAdminEmail(email_subject, err_msg)
+            self.manager.factory.sendAdminEmail(email_subject, err_msg)
             return 1
         
         # check time of the proxy
@@ -430,7 +430,7 @@ class ProxyHandler(threading.Thread):
         if timeleft < self.minlife:
             err_msg = "proxy file %s has too short timeleft = %s" %(self.proxyfile, timeleft)
             self.log.critical(err_msg)
-            self.factory.sendAdminEmail(email_subject, err_msg)
+            self.manager.factory.sendAdminEmail(email_subject, err_msg)
             return 1
 
         # check VOMS attributes of the proxy
@@ -438,7 +438,7 @@ class ProxyHandler(threading.Thread):
         if rc:
             err_msg = "proxy file %s does not have VOMS attribute" %(self.proxyfile, self.vorole)
             self.log.critical(err_msg)
-            self.factory.sendAdminEmail(email_subject, err_msg)
+            self.manager.factory.sendAdminEmail(email_subject, err_msg)
             return 1
 
         self.log.debug('proxy %s validated' %self.proxyfile)
