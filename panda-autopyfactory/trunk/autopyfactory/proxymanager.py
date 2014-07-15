@@ -400,12 +400,18 @@ class ProxyHandler(threading.Thread):
 
         # check the file exists
         if not os.path.exists(self.proxyfile):
-            err_msg = "proxy file %s does not exist" %err_msg
+            err_msg = "proxy file %s does not exist" %self.proxyfile
             self.log.critical(err_msg)
             self.factory.sendAdminEmail(subject, err_msg)
             return 1
         
         # check time of the proxy
+        timeleft = self._checkTimeleft()
+        if timeleft < self.minlife:
+            err_msg = "proxy file %s has too short timeleft = %s" %(self.proxyfile, timeleft)
+            self.log.critical(err_msg)
+            self.factory.sendAdminEmail(subject, err_msg)
+            return 1
 
         # check VOMS attributes of the proxy
 
