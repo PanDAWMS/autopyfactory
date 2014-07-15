@@ -385,24 +385,44 @@ class ProxyHandler(threading.Thread):
         return r
 
 
+    def _validateVOMS(self):
+        '''
+        returns the VOMS attributes of the proxy
+        '''
+
+        cmd = 'voms-proxy-info -fqan -file %s' %self.proxyfile
+        # output is a list of strings
+
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
+        out, err = p.communicate()
+        if p.returncode == 0:
+            out = out.split('\n')
+            for fqan in out:
+                if fqan.startswith(self.vorole):
+                    self.log.debug('vorole %s found in proxy list of FQANs' %self.vorole)
+                    return 0
+            else:
+                self.log.erro('vorole %s not found in proxy' %self.vorole)
+                return 1
+
+        elif p.returncode == 1:
+            self.log.error('command %s failed' %cmd)
+            return 1
+
+
     def _validateProxy(self):
         '''
         verify the proxy generated
         is valid, has the right expiration time, VOMS attributes, etc.
         '''
 
-        #self.proxyfile
-        #self.vorole
-        #self.lifetime
-        #self.minlife
-
-        subject = "Proxy problem on %s" % self.factory.factoryid
+        email_subject = "Proxy problem on %s" % self.factory.factoryid
 
         # check the file exists
         if not os.path.exists(self.proxyfile):
             err_msg = "proxy file %s does not exist" %self.proxyfile
             self.log.critical(err_msg)
-            self.factory.sendAdminEmail(subject, err_msg)
+            self.factory.sendAdminEmail(email_subject, err_msg)
             return 1
         
         # check time of the proxy
@@ -410,11 +430,18 @@ class ProxyHandler(threading.Thread):
         if timeleft < self.minlife:
             err_msg = "proxy file %s has too short timeleft = %s" %(self.proxyfile, timeleft)
             self.log.critical(err_msg)
-            self.factory.sendAdminEmail(subject, err_msg)
+            self.factory.sendAdminEmail(email_subject, err_msg)
             return 1
 
         # check VOMS attributes of the proxy
+        rc = self._validateVOMS()
+        if rc:
+            err_msg = "proxy file %s does not have VOMS attribute" %(self.proxyfile, self.vorole)
+            self.log.critical(err_msg)
+            self.factory.sendAdminEmail(email_subject, err_msg)
+            return 1
 
+        self.log.debug('proxy %s validated' %self.proxyfile)
         return 0
 
 
