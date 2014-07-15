@@ -275,8 +275,8 @@ class ProxyHandler(threading.Thread):
             raise Exception("Strange error using command voms-proxy-init. Return code = %d" % p.returncode)
         self._setProxyOwner()
 
-        # FIXME
-        return 0
+        rc = self._validateProxy() 
+        return rc
 
     def _setProxyOwner(self):
         '''
