@@ -384,11 +384,29 @@ class ProxyHandler(threading.Thread):
         return r
 
 
-    def _validateproxy(self):
+    def _validateProxy(self):
         '''
         verify the proxy generated
         is valid, has the right expiration time, VOMS attributes, etc.
         '''
+
+        #self.proxyfile
+        #self.vorole
+        #self.lifetime
+        #self.minlife
+
+        subject = "Proxy problem on %s" % self.factory.factoryid
+
+        # check the file exists
+        if not os.path.exists(self.proxyfile):
+            err_msg = "proxy file %s does not exist" %err_msg
+            self.log.critical(err_msg)
+            self.factory.sendAdminEmail(subject, err_msg)
+            return 1
+        
+        # check time of the proxy
+
+        # check VOMS attributes of the proxy
 
         return 0
 
