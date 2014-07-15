@@ -416,7 +416,7 @@ class ProxyHandler(threading.Thread):
         is valid, has the right expiration time, VOMS attributes, etc.
         '''
 
-        email_subject = "Proxy problem on %s" % self.factory.factoryid
+        email_subject = "Proxy problem on %s" % self.manager.factory.factoryid
 
         # check the file exists
         if not os.path.exists(self.proxyfile):
