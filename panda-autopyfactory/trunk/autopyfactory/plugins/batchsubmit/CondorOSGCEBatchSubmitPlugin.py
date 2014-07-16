@@ -43,6 +43,8 @@ class CondorOSGCEBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
 
         #self.JSD.add('remote_universe ', ' Local')
         self.JSD.add('+TransferOutput', '""')
+        self.JSD.add('getenv', 'True')
+    
         super(CondorOSGCEBatchSubmitPlugin, self)._addJSD()
 
         self.log.debug('CondorOSGCEBatchSubmitPlugin.addJSD: Leaving.')
