@@ -213,21 +213,20 @@ class CondorWMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
         self.log.debug('Starting.')
         
+        # These are not meaningful for WMS Status plugin 
+        self.currentcloudinfo = None
+        self.currentsiteinfo = None
+
         try:
             strout = querycondor(self.queryargs)
-            outlist = parseoutput(strout)
-            aggdict = aggregateinfo(outlist)
-            newjobinfo = self._map2info(aggdict)
-
-            
-
-            self.log.info("Replacing old info with newly generated info.")
-            self.currentjobinfo = newjobinfo
-            
-            # These are not meaningful for Local Condor
-            self.currentcloudinfo = None
-            self.currentsiteinfo = None
-            
+            if not strout:
+                self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
+            else:
+                outlist = parseoutput(strout)
+                aggdict = aggregateinfo(outlist)
+                newjobinfo = self._map2info(aggdict)
+                self.log.info("Replacing old info with newly generated info.")
+                self.currentjobinfo = newjobinfo
         except Exception, e:
             self.log.error("Exception: %s" % str(e))
             self.log.debug("Exception: %s" % traceback.format_exc())            
