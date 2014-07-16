@@ -1197,7 +1197,10 @@ class PluginDispatcher(object):
         if '-pool' in l:
             pool = l[l.index('-pool') + 1]
 
-        return '%s:%s' %(name, pool)
+        if name == '' and pool == '':
+            return 'local'
+        else:
+            return '%s:%s' %(name, pool)
 
 
     def _getplugin(self, action, config=None):
