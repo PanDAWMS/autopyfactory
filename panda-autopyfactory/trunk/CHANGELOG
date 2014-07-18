@@ -1,6 +1,10 @@
 
 * checking if the output of condor_q in querycondor() is still XML even when RC != 0
 
+* if -name and -pool are empty, the condor_q_id is again "local"
+
+* checking output of condor_q() is not None in WMS Status plugin Condor
+
 * removed WMS Status plugin CondorLocal (moved to attic)
 
 * new grid_resource line in Condor-CE submit plugin. 
