@@ -1,0 +1,158 @@
+#!/usr/bin/python
+
+import os
+import commands
+import threading
+import re
+import sys
+import time
+
+import getopt
+
+NOW = int(time.time())
+
+# --- DEFAULTS ---
+
+STRING = "FAILED"
+FORMAT = "html"
+NHOURS = 1
+BASEDIR = "/home/apf/factory/logs"
+
+
+opts, args = getopt.getopt(sys.argv[1:], "",
+              ["string=",
+               "format=",
+               "time=",
+               "basedir="]
+              ) 
+
+for k,v in opts:
+    if k == "--string":
+        STRING = v
+    if k == "--format":
+        FORMAT = v
+    if k == "--time":
+        NHOURS = int(v)
+    if k == "--basedir":
+        BASEDIR = v
+    
+STRING=STRING.replace(' ','\ ')
+STRING=STRING.replace(':','\:')
+
+
+class CMD(threading.Thread):
+        def __init__(self, dir):
+                threading.Thread.__init__(self)
+                self.dir = dir
+
+        def run(self):
+
+            listfiles = os.listdir(self.dir)
+            listfiles = [file for file in listfiles if file.endswith(".out") and NOW - os.stat('%s/%s' %(self.dir, file))[8] < NHOURS*3600 ]
+            listfiles = ['%s/%s' %(self.dir, file) for file in listfiles ]
+            listfiles = " ".join(listfiles)
+
+            if listfiles != "":
+
+                cmd = 'egrep -H "%s" %s' %(STRING, listfiles)
+                #print cmd
+                self.out = commands.getoutput(cmd)  
+            else:
+                self.out = ""   
+
+
+class Dir(object):
+    def __init__(self, dir, date, apfqueue):
+        self.dir = dir
+        self.date = date
+        self.apfqueue = apfqueue
+
+    def abs(self):
+        return '%s/%s/%s' %(self.dir, self.date, self.apfqueue)
+    def relatve(self):
+        return '%s/%s' %(self.date, self.apfqueue)
+
+
+threads = {}
+outputs = {}
+
+DATES = os.listdir(BASEDIR)
+dirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")
+DATES = [DATE for DATE in DATES if dirRe.match(DATE)]
+DIRS = []
+
+for DATE in DATES:
+    for APFQUEUE in os.listdir('%s/%s' %(BASEDIR, DATE)):
+        dir = Dir(BASEDIR, DATE, APFQUEUE)
+        DIRS.append(dir)
+
+
+for DIR in DIRS:
+        t = CMD(DIR.abs())
+        threads[DIR] = t
+        t.start()
+
+
+for DIR in DIRS:
+        threads[DIR].join()
+        outputs[DIR] = threads[DIR].out
+
+#  ------------------------------------------------
+# merge and process all outputs starts 
+
+lines_d = {}
+
+for DIR in DIRS:
+        if outputs[DIR]:
+                if DIR.apfqueue not in lines_d.keys():
+                        lines_d[DIR.apfqueue] = []
+                for line in outputs[DIR].split('\n'):
+                        lines_d[DIR.apfqueue].append(line)
+
+#  ------------------------------------------------
+
+
+if FORMAT == "html":
+
+        print ('<body style="font-size:small">')
+
+        apfqueues = lines_d.keys()
+        apfqueues.sort()
+
+        for apfqueue in apfqueues:
+                print('<a href="#%s">%s</a><br>' %(apfqueue, apfqueue))
+        print('<br>')
+
+        for apfqueue in apfqueues:
+                print ('<table border="2" frame="hsides" rules="groups" style="font-size:small" width="100%">')
+                print('<tr><td bgcolor="#99FFFF">')
+                print('<a name="%s">%s</a>' %(apfqueue, apfqueue))
+                print('<TBODY>')
+                for line in lines_d[apfqueue]:
+
+                        print('<tr><td>')
+                        fields = line.split(':')
+                        filename = fields[0]
+
+                        link = '/' + '/'.join( filename.split('/')[-3:] )
+                        linkerr = link[:-3]+"err"
+                        linklog = link[:-3]+"log"
+
+                        msg = ":".join(fields[1:])
+                        print('<a href="%s">%s</a> (<a href="%s">err</a>, <a href="%s">log</a>) %s' %(link, filename, linkerr, linklog, msg))
+
+                print('</table>')
+                print('<br>')
+
+        print ('</body>')
+
+
+
+if FORMAT == "ascii":
+
+    for DIR in DIRS:
+            if outputs[DIR]:
+                    print(DIR.abs())
+                    for line in outputs[DIR].split('\n'):
+                            print(line)
+
