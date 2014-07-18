@@ -1,4 +1,6 @@
 
+* checking if the output of condor_q in querycondor() is still XML even when RC != 0
+
 * removed WMS Status plugin CondorLocal (moved to attic)
 
 * new grid_resource line in Condor-CE submit plugin. 
