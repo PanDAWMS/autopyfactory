@@ -214,14 +214,18 @@ def querycondor(queryargs=None):
     log.info('condor_q: %s seconds to perform the query' %delta)
 
     if p.returncode == 0:
-        log.debug('Leaving with OK return code.') 
+        log.debug('Leaving with OK return code.')
     else:
-        log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
-        out = None
+        # lets try again. Sometimes RC!=0 does not mean the output was bad
+        if out.startswith('<?xml version="1.0"?>'):
+            log.warning('RC was %s but output is still valid' %p.returncode)
+        else:
+            log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
+            out = None
     log.trace('_querycondor: Out is %s' % out)
     log.debug('_querycondor: Leaving.')
     return out
-
+    
 
 
 def querycondorxml(queryargs=None):
