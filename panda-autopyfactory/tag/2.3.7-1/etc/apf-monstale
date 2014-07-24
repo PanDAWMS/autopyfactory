@@ -1,1 +1,0 @@
-* * * * * flock -xn /tmp/LCK_mon-stale.py -c '/opt/panda/autopyfactory/bin/mon-stale.py -q'
