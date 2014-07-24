@@ -280,7 +280,8 @@ class ConfigManager(object):
                         config.merge(newconfig)
             elif configdir:
                 if os.path.isdir(configdir):
-                    config.read(os.listdir(configdir))
+                    conffiles = [os.path.join(configdir, f) for f in os.listdir(configdir)]
+                    config.read(conffiles)
                 else:
                     raise ConfigFailure('configuration directory %s does not exist' %configdir)
             config.fixpathvalues()
