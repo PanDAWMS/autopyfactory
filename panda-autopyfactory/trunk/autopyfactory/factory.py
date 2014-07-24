@@ -481,7 +481,7 @@ class Factory(object):
             if qcf:
                 self.qcl = ConfigManager().getConfig(sources=qcf)
             elif qcd:
-                self.qcl = ConfigManager().getConfig(configdir=qcf)
+                self.qcl = ConfigManager().getConfig(configdir=qcd)
             else:
                 self.log.error('no files or directory with queues configuration specified')
                 sys.exit(0)
