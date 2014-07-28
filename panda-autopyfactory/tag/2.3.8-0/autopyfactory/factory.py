@@ -1125,13 +1125,16 @@ class PluginDispatcher(object):
         wmsstatus_cls = wmsstatus_plugin_handler.plugin_class
 
         # calls __init__() to instantiate the class
-        # In this case the call accepts a second arguments:
-        #    an ID used to allow the creation of more than one Singleton
-        #    of this category. Remember the WMSStatusPlugin class is a Singleton. 
-        #    Therefore, we can have more than one
-        #    Batch Status Plugin objects, each one shared by a different
-        #    bunch of APF Queues.
-        wmsstatus_plugin = wmsstatus_cls(self.apfqueue, condor_q_id=condor_q_id)  
+        if self.qcl.generic_get(self.apfqname, 'wmsstatusplugin') == 'Condor':
+            # In this case the call accepts a second arguments:
+            #    an ID used to allow the creation of more than one Singleton
+            #    of this category. Remember the WMSStatusPlugin class is a Singleton. 
+            #    Therefore, we can have more than one
+            #    Batch Status Plugin objects, each one shared by a different
+            #    bunch of APF Queues.
+            wmsstatus_plugin = wmsstatus_cls(self.apfqueue, condor_q_id=condor_q_id)  
+        else:
+            wmsstatus_plugin = wmsstatus_cls(self.apfqueue)  
 
         # starts the thread
         wmsstatus_plugin.start() 
