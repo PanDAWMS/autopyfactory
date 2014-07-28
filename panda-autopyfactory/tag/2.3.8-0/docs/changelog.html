@@ -1,0 +1,1481 @@
+<body>
+<a href=index.html>Index<a>
+<a name='changelog'><h1>ChangeLog</h1></a>
+<a href="#2013-12-05">2013-12-05</a><br>
+<a href="#2013-05-06">2013-05-06</a><br>
+<a href="#2012-07-23">2012-07-23</a><br>
+<a href="#2012-06-07">2012-06-07</a><br>
+<a href="#2012-03-30">2012-03-30</a><br>
+<a href="#2011-12-02">2011-12-02</a><br>
+<a href="#2011-03-28">2011-03-28</a><br>
+<a href="#2011-03-17">2011-03-17</a><br>
+<a href="#2011-03-16">2011-03-16</a><br>
+<a href="#2011-01-13">2011-01-13</a><br>
+<a href="#2010-12-15">2010-12-15</a><br>
+<a href="#2010-11-22">2010-11-22</a><br>
+<a href="#2010-11-05">2010-11-05</a><br>
+<a href="#2010-09-15">2010-09-15</a><br>
+<a href="#2010-07-24">2010-07-24</a><br>
+<a href="#2010-06-01">2010-06-01</a><br>
+<a href="#2010-04-09">2010-04-09</a><br>
+<a href="#2010-03-22">2010-03-22</a><br>
+<a href="#2010-03-19">2010-03-19</a><br>
+<a href="#2010-03-18">2010-03-18</a><br>
+<a href="#2010-02-11">2010-02-11 "Tyger! Tyger!" Release (r130 factory.py; r128 runpilot3-wrapper.sh)</a><br>
+<a href="#2009-11-24">2009-11-24 "900" Release (r35 runpilot3-wrapper.sh)</a><br>
+<a href="#2009-11-05">2009-11-05 "Gunpowder" Release (r25)</a><br>
+<a href="#2009-07-08">2009-07-08 "Totoro" Release (r635)</a><br>
+<a href="#2008-10-08">2008-10-08 "Dawn Treader" Release (r485)</a><br>
+<a href="#2008-06-17">2008-06-17 "Moominsummer Madness" Release (r458)</a><br>
+<a href="#2008-04-16">2008-04-16 "Umber Hulk" Release. (r442)</a><br>
+<a href="#2008-02-28">2008-02-28 "Ice Moon" Release. (r436)</a><br>
+<a href="#2008-02-08">2008-02-08 "It's REALLY all about me" Release. (r416)</a><br>
+<a href="#2008-02-08">2008-02-08 "It's all about me" Release. (r410)</a><br>
+
+
+<a name="2013-12-05"><h2><span style="color: black; "><span>2013-12-05</span></span></h2></a>
+
+<UL>
+
+<LI><PRE>
+sched plugin Activated deleted
+
+</PRE>
+
+<LI><PRE>
+bug fixed in method fill() in info.py to prevent an Exception when the dictionary has an unknown key
+
+</PRE>
+
+<LI><PRE>
+CondorEC2 BatchSubmit and BatchStatus plugins usable, supporting standard Condor ec2 grid type. 
+Assuming VMs join local pool as startds, features correlation of VM jobs and corresponding startd. 
+VM retirement via 'condor_off -peaceful' and VM shutdown when stard is retired.
+
+</PRE>
+
+<LI><PRE>
+KeepNRunning sched plugin to convert absolute to relative numbers.
+
+</PRE>
+ 
+<LI><PRE>
+utils not distributed anymore within the RPM. They will be distributed with a dedicated one.
+
+</PRE>
+ 
+<LI><PRE>
+Removed reference to Panda cloud status in StatusOfflineSchedPlugin
+
+</PRE>
+
+<LI><PRE>
+ created apf-simulated-scheds in misc/
+
+</PRE>
+
+<LI><PRE>
+ Proxymanager now able to be run standalone as standard system init daemon. This is so base certs need not be owned or readable by the APF user. 
+
+</PRE>
+
+<LI><PRE>
+ Added email notification of factory owner when no valid proxy can be retrieved from the proxymanager. 
+
+</PRE>
+
+<LI><PRE>
+ Eliminated all _readconfig() methods in submit plugins. Switched to full initialization during __init__.
+
+</PRE>
+
+<LI><PRE>
+ MyProxy support in proxymanager. Allows retrieval of base proxy from MyProxy using passphrase, or using another proxymanager profile proxy for auth.
+
+</PRE>
+
+<LI><PRE>
+ fixed bug in Scale sched plugin returning 0 when n*factor < 1. 
+
+</PRE>
+
+<LI><PRE>
+ minimum Condor version check. Allows particular plugins to specify minimum. Failure aborts. 
+
+</PRE>
+
+<LI><PRE>
+ multiproxy functionality. Allow multiple proxy profiles. proxymanager tries all until one is found. failure generates email.  
+
+</PRE>
+
+<LI><PRE>
+ scripts and config files added for logs monitor apf-search-failed
+
+</PRE>
+
+<LI><PRE>
+ strip() after split by comma in configloader, to allow things like 'x = foo, bar' with whitespace after comma
+
+</PRE>
+
+<LI><PRE>
+ bug in MaxPending sched plugin logic fixed. Now no limit imposed when there are no pending pilots.
+
+</PRE>
+
+<LI><PRE>
+ queues configuration files can be read from a directory (i.e. /etc/apf/queues.d/). configloader adapted to accept directories instead of list of URIs
+
+</PRE>
+
+<LI><PRE>
+ method name removed from log messages.
+
+</PRE>
+
+<LI><PRE>
+ fixed bug in some sched plugins, mixing None and 0 in the logic
+
+</PRE>
+
+<LI><PRE>
+ add documentation to install.html (in verbatim, no html format)
+
+</PRE>
+
+<LI><PRE>
+ removed all methods for FactoryCLI from bin/factory, and mainLoop() renamed to run()
+
+</PRE>
+
+<LI><PRE>
+ added new custom logging level -TRACE- and using it for some long messages, like the output of condor_q in XML format
+
+</PRE>
+
+<LI><PRE>
+ configloader converts None in conf to Python None object. Change in default_value logic--if no default_value is provided then generic_get returns None. 
+
+</PRE>
+
+<LI><PRE>
+ info major refactoring of Info class hierarchy. most objects now have overridden methods to avoid exception generation. 
+
+</PRE>
+
+<LI><PRE>
+ passing queryargs from queues.conf to query.querycondor() call at Condor batchstatus plugin.
+
+</PRE>
+
+<LI><PRE>
+ siteid removed from several places and replaced by wmsqueue.
+
+</PRE>
+
+<LI><PRE>
+ generic_get() simplified
+
+</PRE>
+
+<LI><PRE>
+ InfoContainer removed. 
+
+</PRE>
+
+<LI><PRE>
+ fake info classes imports removed, and importing from the right place (info.py instead of factory.py)
+
+</PRE>
+
+<LI><PRE>
+ log messages in sched plugins more homogeneous. Now all of them are "Return=123".
+
+</PRE>
+
+<LI><PRE>
+ created a script in misc/ to search for pilots running (in theory) for more than 8 days.
+
+</PRE>
+
+<LI><PRE>
+ Removed allowed variables for Test and Offline Sched plugins, and from the queues.conf. If the plugin is used, we assume it is allowed. 
+
+</PRE>
+
+<LI><PRE>
+ more robust code to deal with scenario where condor_q gives no output
+
+</PRE>
+
+<LI><PRE>
+ all JSD.add() method replaced to use the new format (2 inputs instead of 1)
+
+</PRE>
+
+<LI><PRE>
+ jsd.py and jsd3.py moved to attic/ and jsd4.py moved to jsd.py
+
+</PRE>
+
+<LI><PRE>
+ logserver2.py moved to logserver.py, and old one moved to attic/
+
+</PRE>
+
+<LI><PRE>
+ using method merge() instead of deepcopy() in configloader.py
+
+</PRE>
+
+<LI><PRE>
+ method section2dict() created in configloader. It will be usefull to generate the mappings from config files
+
+</PRE>
+
+<LI><PRE>
+ getConfig() method in configloader.py embedded in a try - except block and all config loader object creation in factory.py embedded in try - except blocks
+
+</PRE>
+
+<LI><PRE>
+ Exception class ConfigFailure renamed ConfigFailureMandatoryAttr
+
+</PRE>
+
+<LI><PRE>
+ Cleaning info.py code:
+    -- method dict() removed
+    -- method getconfig() removed
+    -- method __add__() removed
+    -- method set() removed
+    -- method get() removed
+    -- property total removed
+    -- class attribute valid = [] removed from all classes:
+        -- therefore method reset() removed
+        -- therefore method __setattr__() removed
+    -- method __getattribute__() is created
+    -- method valid() in class InfoContainer deleted
+    -- no longer importing Config from configloader 
+    -- no longer self.default_value
+    -- all __init__() methods now hardcode the entire list of attributes
+
+</PRE>
+
+<LI><PRE>
+ Removed logger from the input options in method generic_get()
+
+</PRE>
+
+<LI><PRE>
+ As temporary solution, NotImplementedAttr defined in configloader.py
+
+</PRE>
+
+<LI><PRE>
+ Documentation on old Sched Plugin SimpleNQueue deleted.
+
+</PRE>
+
+<LI><PRE>
+ First draft for manpages created, and rpm-post script adapted to install them.
+
+</PRE>
+
+<LI><PRE>
+ Printing env again after switching ID.
+
+</PRE>
+
+<LI><PRE>
+ Bug fixed in CREAM example in queues.conf-example
+
+</PRE>
+
+<LI><PRE>
+ created misc/apf-panda-jobs-info.py 
+
+</PRE>
+
+<LI><PRE>
+ INFO messages in configloader for missing non-mandatory variables moved to DEBUG.
+
+</PRE>
+
+<LI><PRE>
+ all __XYZ__ module names deleted, except in factory.py
+
+</PRE>
+
+<LI><PRE>
+ Fixed setup.cfg
+
+</PRE>
+
+<LI><PRE>
+ Adjusted sysconfig, factory init, and logrotate to use a console.log for python interpreter-level debugging. 
+
+</PRE>
+
+<LI><PRE>
+ Added a log message with the APF version number.
+
+</PRE>
+
+<LI><PRE>
+ All Sched Plugins returns a tuple (number of pilots, message). 
+
+</PRE>
+  
+<LI><PRE>
+ Sending to the monitor the messages returned by Sched Plugins.
+
+</PRE>
+
+<LI><PRE>
+ Changed setup.py, factory.py and plugins/monitor/APFMonitorPlugin.py to use release version info directly
+  from factory.py rather than requiring that it be correctly placed in a config file. 
+  versionTag removed from factory.conf
+
+</PRE>
+
+<LI><PRE>
+ Added logserver2.py, to create directory listing similar to Apache one.
+
+</PRE>
+
+<LI><PRE>
+ Port number is got from URL instead of from config variable baseLogHttpPort
+
+</PRE>
+
+<LI><PRE>
+ Method setuppandaenv() deleted from factory.py
+
+</PRE>
+
+</UL>
+
+
+<a name="2013-05-06"><h2><span style="color: black; "><span>2013-05-06</span></span></h2></a>
+
+<UL>
+<LI><PRE>
+ copy_to_spool set to True
+
+</PRE>
+
+<LI><PRE>
+ Dumping the content of queues.conf on start
+
+</PRE>
+
+<LI><PRE>
+ Allowing raw = True or False in getContent() method in configloader.py
+
+</PRE>
+
+<LI><PRE>
+  Utils distributed via /usr/share/apf instead of /usr/bin, and have different names.
+
+</PRE>
+
+<LI><PRE>
+ Created RELEASE_NOTES. 
+
+</PRE>
+
+<LI><PRE>
+ Everything related euca and persistence removed from config files.
+
+</PRE>
+
+<LI><PRE>
+ created test.py, to start creating unittest-like code
+
+</PRE>
+
+<LI><PRE>
+ should_transfer_files = NO.
+
+</PRE>
+
+<LI><PRE>
+ Split plugins into their own directories. 
+
+</PRE>
+
+<LI><PRE>
+ No more Config Plugins.
+
+</PRE>
+
+<LI><PRE>
+ ReadySchedPlugin created -> Activated decommissioned
+
+</PRE>
+
+<LI><PRE>
+ KeepNRunningSchedPlugin created.
+
+</PRE>
+
+<LI><PRE>
+ CondorNordugrid Batch Submit plugin created.
+
+</PRE>
+
+<LI><PRE>
+ CondorLSF Submit plugin created.
+
+</PRE>
+
+
+<LI><PRE>
+ New configuration file for monitor plugins.
+
+</PRE>
+
+<LI><PRE>
+ New type of plugins for monitor added.
+
+</PRE>
+
+<LI><PRE>
+ ScaleSchedPlugin created.
+
+</PRE>
+
+<LI><PRE>
+ Euca plugins improved. Still under development. NOTE: not distributed, most probably they will be removed and never used.
+
+</PRE>
+
+<LI><PRE>
+ module condor.py created. It includes htcondor python bindings. 
+
+</PRE>
+
+<LI><PRE>
+ wrapper examples are placed in /etc/apf/ instead of /usr/libexec/
+
+</PRE>
+
+<LI><PRE>
+ Non plugin modules (jsd.py, persistence.py) moved to main directory.
+
+</PRE>
+
+<LI><PRE>
+ version number for panda userinterface package in setup.cfg
+
+</PRE>
+
+<LI><PRE>
+ bugs in CondorLocalWMSStatusPlugin fixed
+
+</PRE>
+
+<LI><PRE>
+ Removing self._valid from all plugins (work in progress)
+
+</PRE>
+
+<LI><PRE>
+ ConfigFailure moved to apfexceptions.
+
+</PRE>
+
+<LI><PRE>
+ Removed hardcoded setup of periodic_remove directive from CondorLocal Batch Submit plugin.
+
+</PRE>
+
+<LI><PRE>
+ Not trying to create robot.txt is logserver is disabled.
+
+</PRE>
+
+<LI><PRE>
+ Changing directory to new HOME directory after switching identity.
+
+</PRE>
+
+<LI><PRE>
+ Checking condor daemon is running in CondorBase Batch Submit Plugin and Condor Batch Status Plugin.
+
+</PRE>
+
+<LI><PRE>
+ Created a Singleton metaclass factory. It creates metaclasses for regular Singletons and multi Singletons.
+
+</PRE>
+
+<LI><PRE>
+ Printing the path to executable condor_q and condor_submit in debug mode.
+
+</PRE>
+
+<LI><PRE>
+ Added __add__() method to BatchQueueInfo and WMSQueueInfo classes.
+
+</PRE>
+
+<LI><PRE>
+ Added factory config variable 'enablequeues'.
+
+</PRE>
+
+<LI><PRE>
+ Sched plugins do not check for negative outputs. It has been left up to the Submit Plugin to decide what to do in that case. 
+
+</PRE>
+
+<LI><PRE>
+ Added some DEBUG logging messages.
+
+</PRE>
+
+<LI><PRE>
+ Some messages in Activated Sched Plugin moved from DEBUG logging level to INFO level.
+
+</PRE>
+
+<LI><PRE>
+ Bug fixed: getboolean() instead of get() when reading value of proxymanager.enabled and logmanager.enabled.
+
+</PRE>
+
+<LI><PRE>
+ Top logger configured as root, instead of "main".
+
+</PRE>
+
+<LI><PRE>
+ Log messages format includes method name for python > 2.4
+
+</PRE>
+
+</UL>
+
+<a name="2012-07-23"><h2><span style="color: black; "><span>2012-07-23</span></span></h2></a>
+<UL>
+
+<LI><PRE>
+ Using new PanDA client API method getJobStatisticsWithLabel.
+
+</PRE>
+<LI><PRE>
+ GRAM CE is called OSG-CE in AGIS, instead of CE. Changed in AGISConfig Plugin. 
+
+</PRE>
+<LI><PRE>
+ Pilots in STAGE-IN status are now considered to be PENDING instead or RUNNING.
+
+</PRE>
+<LI><PRE>
+ All get() calls in configloader.py have now raw=True, so interpolations wait until the very end.
+
+</PRE>
+<LI><PRE>
+ wmsqueue can be read from SchedConfig via PandaConfig Plugin, and from AGIS via AGISConfig Plugin.
+
+</PRE>
+<LI><PRE>
+ PandaConfig Plugin reads from SchedConfig variables related to CREAM CE.
+
+</PRE>
+<LI><PRE>
+ MaxToRun sched plugin created.
+
+</PRE>
+<LI><PRE>
+ CondorOSGCE submit plugin created. 
+
+</PRE>
+<LI><PRE>
+ CondorDeltaCloud submit plugin created.
+
+</PRE>
+<LI><PRE>
+ Documentation in HTML format under doc/ directory.
+
+</PRE>
+</UL>
+
+<a name="2012-06-07"><h2><span style="color: black; "><span>2012-06-07</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Bumped minor release version to reflect scale of several new features, and cloud submit plugin. 
+
+</PRE>
+<LI><PRE>
+ Two new Sched Plugins to handle test queues and offline queues
+
+</PRE>
+<LI><PRE>
+ Bug in monitor.py fixed. 
+
+</PRE>
+<LI><PRE>
+ Creates robots.txt file in base of logserver docroot. 
+
+</PRE>
+<LI><PRE>
+ Added create_run_var() to init script factory. 
+ It creates the subdirectory var/run/ if it does not exist, to place factory.pid
+
+</PRE>
+<LI><PRE>
+ Added $APFHEAD to init script factory. 
+ This allows for user deployment on any directory, not necessarily $HOME
+
+</PRE>
+<LI><PRE>
+ Fixed the bug in Activated plugin, not returning anything under some circumstances. 
+
+</PRE>
+<LI><PRE>
+ Creating multiple Sched plugins (MinPerCycle, MaxPerCycle, MinPending, MaxPending, MaxPerFactory), 
+ and code in factory.py to allow chaining more than one sched plugin.
+
+</PRE>
+<LI><PRE>
+ PandaConfig Plugin refactored to query SchedConfig in a singleton thread. 
+ This is possible because it now uses an URL that delivers the entire SchedConfig content.
+ Also more variables added: jdladd, environ, and special_pars.
+
+</PRE>
+<LI><PRE>
+ First draft for Euca Submit Plugin created. NOTE: not distributed, most probably they will be removed and never used.
+
+</PRE>
+<LI><PRE>
+ This release is the 'The Hellion' v. 2.1.1
+ http://www.darylgregory.com/pandemonium/Review_NYRSF.aspx
+
+</PRE>
+</UL>
+<a name="2012-03-30"><h2><span style="color: black; "><span>2012-03-30</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Refactored scheduler log cleanup. Now handled in a separate thread, one for entire factory. 
+ Defaults may be specified globally in factory.conf or per-queue in queues.conf 
+
+</PRE>
+<LI><PRE>
+ Added grid and vo queue attributes, and added executable.defaultarguments and executable.arguments 
+ interpolation. These changes were to support wrapper.sh, runpilot3.sh, and arbitrary executables in 
+ a general way. This feature uses standard Python ConfigParser interpolation. See
+    http://docs.python.org/library/configparser.html
+
+</PRE>
+<LI><PRE>
+ Made Monitor object a singleton, to avoid repeated timeout delays (during queue initialization) 
+ when APF monitor is unresponsive. Now there is a single attempt when single Monitor is initialized. 
+
+</PRE>
+<LI><PRE>
+ Move to wrapper 0.9.5, which checks that retrieved tarball is indeed a tarball (and not an HTML error message
+ from a misbehaving HTTP proxy.  
+
+</PRE>
+<LI><PRE>
+ Fixed logic problem in Activated plugin. Now correctly assuming that Running jobs are no longer
+ Activated. 
+
+</PRE>
+<LI><PRE>
+ Added specific Submit plugin for Cloud.
+
+</PRE>
+<LI><PRE>
+ Configuration objects handled as python native ConfigParser objects instead of custom
+ APF objects.
+
+</PRE>
+<LI><PRE>
+ Refined running as user rather than from RPM. 'setup.py install --home=/path/to/home' does a
+ user-based setup. All libs are in ~/lib/python, configs and init script in ~/etc/, and so on.
+
+</PRE>
+<LI><PRE>
+ Added an external queue configuration information plugin mechanism to enable plugin-based 
+ auto-fill/overriding of config information. 
+
+</PRE>
+<LI><PRE>
+ Consolidated all plugins into hierarchical inheritance tree, to eliminate duplicated code 
+ (especially the Condor plugins). 
+ 
+</PRE>
+<LI><PRE>
+ This release is the 'Sleeper Service' v. 2.1.0
+ http://en.wikipedia.org/wiki/GSV_Sleeper_Service
+
+</PRE>
+</UL>
+<a name="2011-12-02"><h2><span style="color: black; "><span>2011-12-02</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Major refactorization to integrate BNL changes. Full object-oriented functional 
+ plugin architecture, each running in a distinct thread. Allows for 
+ end-user/third-party customization without touching core code. 
+
+</PRE>
+<LI><PRE>
+ Refined distutils usage to allow deployment as non-root in a home directory, 
+ or as root in system paths. Added functionality to drop privs even when run as
+ root. 
+
+</PRE>
+<LI><PRE>
+ Added typical init script and sysconfig functionality to handle shell-level/UNIX 
+ concerns. 
+
+</PRE>
+<LI><PRE>
+ Added standard Linux logrotate configuration. 
+
+</PRE>
+<LI><PRE>
+ Split config system into main source for APF instance (factory.conf), proxy 
+ management (proxy.conf), individual queue configuration (queue.conf). The latter 
+ can be accessed as URI, paving the way to queue configuration via remote DB+URL.
+ 
+</PRE>
+<LI><PRE>
+ The previous change involved passing ConfigLoader objects to classes, rather than 
+ passing through lists of config files. 
+
+</PRE>
+<LI><PRE>
+ Integrated batch system log export via HTTP; now uses embedded Python HTTP server. 
+
+</PRE>
+<LI><PRE>
+ Integrated proxy handling and renewal, integrated submit system log file rotation. 
+
+</PRE>
+<LI><PRE>
+ Adjusted module, file, and class names to follow Python recommended guidelines. See PEP 8:
+ http://www.python.org/dev/peps/pep-0008/ 
+ 
+</PRE>
+<LI><PRE>
+ Moved all filehandling to factory.py script from Factory class. Factory is now purely 
+ object-oriented suitable for embedding (e.g. in a web application). 
+
+</PRE>
+<LI><PRE>
+ Added copy of Jose's generic top-level wrapper to libexec/.  
+
+</PRE>
+<LI><PRE>
+ IMPORTANT: For various reasons, it was very difficult to maintain the ability to automatically
+ reload configs by detecting file mtime changes. So for now simply restart if you change a file.
+ This feature  can be re-enabled soon. 
+
+</PRE>
+<LI><PRE>
+ This release is "The Clockmaker". v2.0.0
+ http://en.wikipedia.org/wiki/List_of_Revelation_Space_characters#The_Clockmaker
+
+
+</PRE>
+</UL>
+<a name="2011-03-28"><h2><span style="color: black; "><span>2011-03-28</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Update configuration example to Peter's new monitoring URl.
+
+</PRE>
+<LI><PRE>
+ If this is a ptest pilot use Paul's development pilot code (override with
+ PILOT_HTTP_SOURCES still possible).
+
+</PRE>
+<LI><PRE>
+ This release is "The Captain". v1.2.0.
+
+ Now the Captain called me to his bed 
+ He fumbled for my hand 
+ "Take these silver bars," he said 
+ "I'm giving you command." 
+ "Command of what, there's no one here 
+ There's only you and me -
+ All the rest are dead or in retreat 
+ Or with the enemy." 
+
+</PRE>
+</UL>
+<a name="2011-03-17"><h2><span style="color: black; "><span>2011-03-17</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Only try to use python2.6 if the env var APF_PYTHON26 is defined.
+
+</PRE>
+</UL>
+<a name="2011-03-16"><h2><span style="color: black; "><span>2011-03-16</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Prepended "FACTORY DEBUG:" to the setup of the panda client environment
+ variables which get set before logging is enabled (this confused
+ some people).
+ 
+</PRE>
+<LI><PRE>
+ Use traceback.format_exc() to dump exceptions properly into the 
+ configured factory logger ("raise" sends output to stderr).
+
+</PRE>
+</UL>
+<a name="2011-01-13"><h2><span style="color: black; "><span>2011-01-13</span></span></h2></a>
+<UL>
+<LI><PRE>
+ If PANDA_URL_CONF or PANDA_URL are set then do not alter them.
+
+</PRE>
+</UL>
+<a name="2010-12-15"><h2><span style="color: black; "><span>2010-12-15</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Support 'allowothercountry" for beyond the pledge resources. (Default False).
+
+</PRE>
+<LI><PRE>
+ Set the PANDA_URL_CONF and PANDA_URL environment variables to use the 
+ panda server squid port (25085). Suppress this by setting the APF_NOSQUID
+ environment variable.
+ 
+</PRE>
+<LI><PRE>
+ Download of queue data also now happens via the squid cache.
+
+</PRE>
+<LI><PRE>
+ Monitoring improvement to help scale better. Removal of monitoring cron jobs.
+
+</PRE>
+<LI><PRE>
+ This is the "Silent Running" release. Look after the plants, Dewey.
+ http://en.wikipedia.org/wiki/Silent_Running
+
+</PRE>
+</UL>
+<a name="2010-11-22"><h2><span style="color: black; "><span>2010-11-22</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Changed default sleep time to 120s.
+
+</PRE>
+<LI><PRE>
+ N.B. Monitoring requires pycurl (install standard python-curl RPM).
+
+</PRE>
+</UL>
+<a name="2010-11-05"><h2><span style="color: black; "><span>2010-11-05</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Wrapper now supports environment variables starting with APF_FORCE_ 
+ which set the environment variable with APF_FORCE_ stripped off.
+ This is needed when setting the normal environment variable via
+ condor-g fails because it gets overwritten by the site shell setup.
+
+</PRE>
+</UL>
+<a name="2010-09-15"><h2><span style="color: black; "><span>2010-09-15</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Removed deprecated code from runpilot3-wrapper.sh (uudecode and broken
+ site hacks).
+
+</PRE>
+<LI><PRE>
+ This is the "Time Out of Joint" release. This pilot factory does not 
+ exist. It is a small text file on your computer containing the words
+ "Pilot Factory":
+ http://en.wikipedia.org/wiki/Time_Out_of_Joint
+
+</PRE>
+</UL>
+<a name="2010-07-24"><h2><span style="color: black; "><span>2010-07-24</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Corrected bug where "site" parameter was used instead of "siteid" to get
+ panda job states (broke ANALY sites for which these are different). 
+ Reported by Xavi, diagnosed by Graeme, fixed by Peter.
+
+</PRE>
+<LI><PRE>
+ Reintroduced support for CREAM CEs - factory now detects CREAM CEs and
+ provides the correct JDL to condor (recommended only for use with 
+ condor >= 7.5.3). See configuration example for how to support this.
+ 
+</PRE>
+<LI><PRE>
+ Changed JDL for gt2 GRAM sumbission from anachronistic "universe = globus"
+ to "universe = grid; grid_resource = gt2 GATEKEEPER_URL".
+
+</PRE>
+<LI><PRE>
+ Changed from 'jdl' field in schedconfig to 'queue', which is a better name 
+ and has the correct value for condor sites ('jdl' supported but 
+ deprecated).
+
+</PRE>
+<LI><PRE>
+ Changed default proxy location to /tmp/prodRoleProxy and pilotRoleProxy.
+ This can still be inherited from X509_USER_PROXY.
+ 
+</PRE>
+<LI><PRE>
+ Changed the default source proxy to /tmp/plainProxy.
+
+</PRE>
+<LI><PRE>
+ Changed handling of deprecated keys to rewrite the configuration objects
+ themselves, which gives more robust and consistent handling. Unknown
+ keys are deleted and a warning printed.
+ 
+</PRE>
+<LI><PRE>
+ Schedconfig download failures are now errors (not warnings).
+
+</PRE>
+</UL>
+<a name="2010-06-01"><h2><span style="color: black; "><span>2010-06-01</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Changed argument passed to pilot from 'site' to 'siteid', which is correct
+ and necessary for ANALY_ sites.
+ 
+</PRE>
+<LI><PRE>
+ Added new internal status of 'error' where queue has siteid=None. This 
+ suppresses pilot submission to that queue.
+ 
+</PRE>
+<LI><PRE>
+ Added new configuration option for the [QueueDefaults] section 
+ 'analysisGridProxy' which is the default proxy used for ANALY_ sites.
+
+</PRE>
+<LI><PRE>
+ Default setting for 'user' of ANALY queues is now 'user' (can still be
+ overwritten). 
+ 
+</PRE>
+<LI><PRE>
+ ATLAS software release areas are now ordered correctly by a python code
+ snippet in the wrapper which correctly compares 'rel_M-N'. 
+ 
+</PRE>
+<LI><PRE>
+ Updated release number to 1.0.1.
+
+</PRE>
+<LI><PRE>
+ This is the "Feersum Endjinn" release:
+ http://en.wikipedia.org/wiki/Feersum_Endjinn
+
+</PRE>
+</UL>
+<a name="2010-04-09"><h2><span style="color: black; "><span>2010-04-09</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Added protection in submission logic against None value for 
+ depthboost.
+
+</PRE>
+<LI><PRE>
+ Updated example configuration file.
+
+</PRE>
+<LI><PRE>
+ Changed configuration logic so that override = True prevents loading
+ of schedconfig values only for those values set in the factory
+ configuration (previously this completely supressed schedconfig
+ loading).
+
+</PRE>
+<LI><PRE>
+ Renamed various parameters to their new schedconfig names (Oracle 
+ column names are case insensitive, so become lower case). 
+ 	pilotDepth -> nqueue
+   pilotDepthBoost -> depthboost
+   idlePilotSuppression -> idlepilotsuppression
+   pilotLimit -> pilotlimit
+   transferringLimit -> transferringlimit
+   env -> environ
+ Old names are still supported for now, but generate a warning message.
+
+</PRE>
+<LI><PRE>
+ Changed submission logic for sites in test mode to keep one pilot
+ queued, but up to nqueue running (better throughput for site
+ revalidation).
+
+</PRE>
+<LI><PRE>
+ Moved import exception handling to main factory.py script.
+
+</PRE>
+</UL>
+<a name="2010-03-22"><h2><span style="color: black; "><span>2010-03-22</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Restructured logging to inherit from main logging class (deprecated
+ global logging to console). Logging now definable as an option
+ (syslog, rotating file, stdout). N.B. Default logging is now to
+ syslog - if you want the old behaviour set --output=stdout.
+
+</PRE>
+<LI><PRE>
+ Rewrote JDL to have separate condor log file for each individual job.
+ Will help integrate with panda monitoring.
+ 
+</PRE>
+<LI><PRE>
+ Added limit setting code. Wrapper will always set a file size of 20GB to 
+ prevent mad jobs from killing a worker node. If the queue has a memory
+ limit set, then the pilot also sets this as the VMEM limit in the
+ shell.
+
+</PRE>
+<LI><PRE>
+ Removed panda server Client.getSiteSpecs() call. Better to get individual
+ queue statuses from schedconfig (fixes https://savannah.cern.ch/bugs/?62751) 
+ 
+</PRE>
+<LI><PRE>
+ Deprecated status=ok,disabled (should be online, offline). Prints warning
+ for now, but remains supported.
+
+</PRE>
+</UL>
+<a name="2010-03-19"><h2><span style="color: black; "><span>2010-03-19</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Internal merge with latest pyfactory trunk (the old release).
+
+</PRE>
+</UL>
+<a name="2010-03-18"><h2><span style="color: black; "><span>2010-03-18</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Setting filesize limit (20GB) and optionally memory limit in pilot wrapper.
+
+</PRE>
+</UL>
+<a name="2010-02-11"><h2><span style="color: black; "><span>2010-02-11 "Tyger! Tyger!" Release (r130 factory.py; r128 runpilot3-wrapper.sh)</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Incorporated Rod's patch to support CREAM CEs.
+
+</PRE>
+<LI><PRE>
+ Corrected handling of X509_USER_PROXY environment variable and added
+ explicit addition of x509userproxy to JDL.
+
+</PRE>
+<LI><PRE>
+ Proxy is now defined per queue, enabling support for multi-role pilot
+ factories with recent condor versions.
+
+</PRE>
+<LI><PRE>
+ Pilot tarball now downloaded from pandaserver.cern.ch, removing one
+ dependency of job workflow on the panda monitor.
+
+</PRE>
+<LI><PRE>
+ Revised runpilot3-wrapper.sh which removed explict addition of
+ python library installation from the ATLAS s/w area (reversed part 2
+ of change 2 from "gunpowder").
+
+</PRE>
+<LI><PRE>
+ Corrected an error in detecting OSG sites in runpilot3-wrapper.sh
+ (thanks to Rod).
+
+</PRE>
+<LI><PRE>
+ Reintroduced the idlePilotNumber parameter, which controls how many
+ pilots are send during an idling cycle (it's useful for stress
+ testing sites).
+
+</PRE>
+<LI><PRE>
+ Fixed a race condition in the vomsrenew.sh script.
+
+</PRE>
+<LI><PRE>
+ This release is for William Blake smoking opium at Chinese New Year.
+
+
+</PRE>
+</UL>
+<a name="2009-11-24"><h2><span style="color: black; "><span>2009-11-24 "900" Release (r35 runpilot3-wrapper.sh)</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Define ATLAS_AREA internal variable
+ =$VO_ATLAS_SW_DIR for EGEE sites
+ =$OSG_APP/atlas_app/atlas_rel for OSG sites
+
+</PRE>
+<LI><PRE>
+ Source $ATLAS_AREA/local/setup.sh if it exists.
+
+</PRE>
+<LI><PRE>
+ This release inspired by 900GeV collisions:
+ http://atlas.web.cern.ch/Atlas/public/EVTDISPLAY/atlas2009-collision-atlantis-141749-406601-hits-web.png
+
+
+</PRE>
+</UL>
+<a name="2009-11-05"><h2><span style="color: black; "><span>2009-11-05 "Gunpowder" Release (r25)</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Changed SVN repository to svn.cern.ch/reps/scotgrid/atlas/pyfactory.
+ (Verison number plunged down!)
+
+</PRE>
+<LI><PRE>
+ Made wrapper more intelligent in changing system PYTHONPATH to get
+ 32 bit lfc module, which helps on sites with 64 bit middleware. Also
+ added ATLAS python library explicitly ahead of system python to
+ prevent old libraries from being loaded by accident.
+
+</PRE>
+<LI><PRE>
+ Updated wrapper script to prefer TMPDIR over EDG_WL_SCRATCH (later
+ is an anachronism from the lcg-RB).
+
+</PRE>
+<LI><PRE>
+ Source DDM setup.sh to ensure pilot has access to dq2 modules.
+
+</PRE>
+<LI><PRE>
+ http://en.wikipedia.org/wiki/Gunpowder_Plot
+
+
+</PRE>
+</UL>
+<a name="2009-07-08"><h2><span style="color: black; "><span>2009-07-08 "Totoro" Release (r635)</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Introduced "country" and "group" parameters for queues. These map to
+ the pilot's -o and -v options allowing for pilots which only pick up
+ particular types of jobs.
+
+</PRE>
+<LI><PRE>
+ Polling for queues now intelligently uses the country and group
+ options above to only send pilots when activated jobs of that type
+ are present at a site.
+
+</PRE>
+<LI><PRE>
+ Introduced "cloud" option to tag a queue to a panda cloud.
+
+</PRE>
+<LI><PRE>
+ Site and cloud status are polled and if 'offline' then pilot
+ submission is supressed; if a site/cloud is in 'test' status then
+ the pyfactory status flips to 'test' as well (limits pilot flow).
+
+</PRE>
+<LI><PRE>
+ Introuduced 'pilotDepthBoost' parameter (default 2), which allows
+ the factory to submit up to queueDepth * pilotDepthBoost into a
+ non-started state if there are sufficient jobs activated. This helps
+ a lot if the site has short jobs where the lags in job status
+ updates mean that sites can run short of pilots. You may want to set
+ this higher at T1s (especially when doing reco).
+ This is a more controlled version of the short job patch which was
+ released in June 2009.
+
+</PRE>
+<LI><PRE>
+ Corrected a small bug in the default queue specification so that it
+ works properly.
+
+</PRE>
+<LI><PRE>
+ Renamed the 'suppression' option to 'idlePilotSuppression'.
+
+</PRE>
+<LI><PRE>
+ Distributed wrapper script is now called "runpilot3-wrapper.sh",
+ which is a much more sensible name.
+
+</PRE>
+<LI><PRE>
+ Default server is now pandaserver.cern.ch.
+
+</PRE>
+<LI><PRE>
+ Updated INSTALLATION file for new panda client location in SVN.
+
+</PRE>
+<LI><PRE>
+ Updates to README, INSTALLATION, Makefile corresponding to the above
+ changes.
+
+</PRE>
+<LI><PRE>
+ Eilish wanted this release called 'Totoro', after one of her
+ favourite Hayao Miyazaki films,
+ http://en.wikipedia.org/wiki/My_Neighbour_Totoro.
+
+
+</PRE>
+</UL>
+<a name="2008-10-08"><h2><span style="color: black; "><span>2008-10-08 "Dawn Treader" Release (r485)</span></span></h2></a>
+<UL>
+<LI><PRE>
+ GPL license.
+
+</PRE>
+<LI><PRE>
+ Internal defaults now work properly.
+
+</PRE>
+<LI><PRE>
+ Support for multiple gatekeepers on the same site. These are
+ configured as space separated lists and the factory round robins
+ between them each cycle (see sample configuration file). If you use
+ this a lot then an expansion syntax could be supported - ask.
+
+</PRE>
+<LI><PRE>
+ Added a new parameter "supression". If this is > 1 then an idling
+ pilot is only submitted to a site every "supression" cycles. Use
+ this to mollify sysadmins in your cloud who get grumpy when pilots
+ don't pick up. (When the site has activated jobs submission is as
+ it was before.) Caveat Emptor: this will affect brokering.
+
+</PRE>
+<LI><PRE>
+ Added new panda server parameters "server" and "port" which let the
+ pilot look for jobs from a different panda server. These do not need
+ to be set for most factories (default settings:
+ https://pandasrv.usatlas.bnl.gov:25443).
+
+</PRE>
+<LI><PRE>
+ Added a new parameter "env" which can list extra environment
+ variables to be set for the pilot by condor. (N.B. be careful if you
+ set a [QueueDefaults] value for "env" - the site's value will
+ _overwrite_, not add to, the environment. If there is sufficient
+ demand I can change this behaviour.)
+
+</PRE>
+<LI><PRE>
+ Changed runpilot3-script-stub.sh to unset all https_proxy
+ environment variables at a site as this proxy mechanism is broken
+ and rarely necessary for panda server ports.
+
+</PRE>
+<LI><PRE>
+ Support for multiple configuration files. These are all loaded and
+ all are reloaded if any of them change. e.g.,
+ --conf=generic.conf,uk.conf,analysis.conf
+ N.B. Configuration files are loaded left to right and latter
+ (re)defined options overwrite earlier ones.
+
+</PRE>
+<LI><PRE>
+ Print a warning if queue "status" value is invalid.
+
+</PRE>
+<LI><PRE>
+ Ruben named this release "Dawn Treader" after his favourite Narnia
+ book so far. http://en.wikipedia.org/wiki/Dawn_Treader.
+
+
+</PRE>
+</UL>
+<a name="2008-06-17"><h2><span style="color: black; "><span>2008-06-17 "Moominsummer Madness" Release (r458)</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Updated pilot http download to pandamon.usatlas.bnl.gov.
+
+</PRE>
+<LI><PRE>
+ Added a timeout to curl for pilot tarball download (30s on
+ connection, 180s total).
+
+</PRE>
+<LI><PRE>
+ Fixed the cleanLogs.py script so it now deletes old archived log
+ files.
+
+</PRE>
+<LI><PRE>
+ Minor changes to documentation.
+
+</PRE>
+<LI><PRE>
+ No longer including a wrapper with a pilot uuencoded into it as it's
+ recommended to download the latest pilot on the fly.
+
+</PRE>
+<LI><PRE>
+ Dedication: http://en.wikipedia.org/wiki/Tove_Jansson
+
+
+</PRE>
+</UL>
+<a name="2008-04-16"><h2><span style="color: black; "><span>2008-04-16 "Umber Hulk" Release. (r442)</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Upgraded runpilot3.sh to UHURA 18f pilot.
+
+</PRE>
+<LI><PRE>
+ Modified the order of the search for an LFC compatible python. The
+ ATLAS release python is now tested first (it's usually more recent
+ than the OS version). N.B. This may provoke a run time python
+ warning about an API mismatch between the python versions.
+
+</PRE>
+<LI><PRE>
+ Added factoryId to configuration. This allows multiple factories to
+ run on the same machine. This factory ID is used as the PANDA_JSID
+ passed to the panda dashboard.
+
+</PRE>
+<LI><PRE>
+ Added baseLogFileUrl to pass the correct URL for the pilot wrapper's
+ logfiles to the panda dashboard.
+
+</PRE>
+<LI><PRE>
+ Added optional "user" field to allow pilots to be sent to pick up
+ particular types of jobs from panda, using the "-u USER" argument.
+ If this is absent or None then nothing is passed with the pilot
+ arguments (i.e., pickup normal production jobs).
+
+</PRE>
+<LI><PRE>
+ Changed configuration so that each configuration section is a
+ "queue" which can have a gatekeeper section. This allows pilots to
+ be sent to the same queue on the CE, but having different "user"
+ parameters. If there is no "gatekeeper" specified then the name of
+ the configuration section name is the gatekeeper contact string, as
+ before.
+
+</PRE>
+<LI><PRE>
+ New example factory configuration file, factory.conf-example makes
+ use of the above clearer.
+
+</PRE>
+<LI><PRE>
+ Many internal changes to support the above feature.
+
+</PRE>
+<LI><PRE>
+ Modified the main submit code to sort alphabetically by queue name.
+
+</PRE>
+<LI><PRE>
+ cleanLogs.py now much improved. Will read factory log file directory
+ location from factory.conf. Options for verbosity, days to compress
+ after and days to delete after.
+
+</PRE>
+<LI><PRE>
+ This release is dedicated to Gary Gygax. d20... 19 hit!
+ http://en.wikipedia.org/wiki/Gary_Gygax
+
+
+</PRE>
+</UL>
+<a name="2008-02-28"><h2><span style="color: black; "><span>2008-02-28 "Ice Moon" Release. (r436)</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Upgraded tarball to UHURA12a pilot.
+
+</PRE>
+<LI><PRE>
+ Added makefile target to rebuild the wrapper script with pilot
+ tarball downloaded from subversion (you need svn installed!).
+
+</PRE>
+<LI><PRE>
+ Changed tarball http download to use BNL cache first, with fallback
+ to Glasgow (Glasgow will rebuild nightly).
+
+</PRE>
+<LI><PRE>
+ Much better exception handling if there is a problem polling condor
+ status or panda status - factory raises an internal exception and
+ then skips a cycle.
+
+</PRE>
+<LI><PRE>
+ Added an outer level exception handler which gives instructions as
+ to how to report the error then reraises error.
+
+
+</PRE>
+</UL>
+<a name="2008-02-08"><h2><span style="color: black; "><span>2008-02-08 "It's REALLY all about me" Release. (r416)</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Updated to UHURA11b2-2 pilot.
+
+
+</PRE>
+</UL>
+<a name="2008-02-08"><h2><span style="color: black; "><span>2008-02-08 "It's all about me" Release. (r410)</span></span></h2></a>
+<UL>
+<LI><PRE>
+ Major change to pilot delivery mechanism, attaching pilot tarball as
+ a uuencoded suffix of the wrapper script. This cures problems with
+ batch systems which do not deliver "input" files properly on STDIN
+ (bqs - there was nothing there; condor - crashes job).
+
+ *** YOU SHOULD REMOVE THE input PARAMETER FROM factory.conf.
+
+</PRE>
+<LI><PRE>
+ Added GTAG environment variable to move towards integration with
+ panda dashboard (as autopilot does).
+
+</PRE>
+<LI><PRE>
+ Fixed a bug where the factory would crash if the condor_q query
+ failed (factory now raises a CondorStatusFailure exception, catches
+ it and skips a cycle).
+
+</PRE>
+<LI><PRE>
+ Fixed a bug where exception arguments were improperly specified.
+
+</PRE>
+<LI><PRE>
+ Added the "-k MEM" flag to pilot where a site has a memory limit
+ specified (should be used for sites lacking memory).
+
+</PRE>
+<LI><PRE>
+ Cosmetic: print timestamp at the beginning of each submit cycle.
+
+</PRE>
+<LI><PRE>
+ Upgraded to UHURA11a pilot as default.
+
+</PRE>
+<LI><PRE>
+ Improved cleanLogs.py script and renamed mkPilotWrapper.py.
+
+</PRE>
+</UL>
+</body>
