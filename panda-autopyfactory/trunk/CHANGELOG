@@ -1,4 +1,6 @@
 
+* added getenv=True to the CondorOSGCE Batch Submit plugin, in order to get $HOME in the job environment
+
 * checking if the output of condor_q in querycondor() is still XML even when RC != 0
 
 * if -name and -pool are empty, the condor_q_id is again "local"
