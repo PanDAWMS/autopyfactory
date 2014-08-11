@@ -41,9 +41,7 @@ class CondorOSGCEBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         #   the second field is the central manager host
         # we can assume for the time being they are the same. 
 
-        #self.JSD.add('remote_universe ', ' Local')
         self.JSD.add('+TransferOutput', '""')
-        self.JSD.add('getenv', 'True')
     
         super(CondorOSGCEBatchSubmitPlugin, self)._addJSD()
 
