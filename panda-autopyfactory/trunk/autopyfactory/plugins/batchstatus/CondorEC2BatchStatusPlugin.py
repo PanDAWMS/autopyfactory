@@ -285,7 +285,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
         exelist = []
         xmlout = statuscondormaster()
-        if xmlout is None:
+        if not xmlout:
             self.log.warning('output of statuscondormaster() is not valid. Not parsing it. Skip to next loop.') 
         else:
             dictlist = parseoutput(xmlout)
@@ -297,7 +297,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
     def _makeslotlist(self):
         slotlist = []
         xmlout = statuscondor()
-        if xmlout is None:
+        if not xmlout:
             self.log.warning('output of statuscondor() is not valid. Not parsing it. Skip to next loop.') 
         else:
             dictlist = parseoutput(xmlout)
@@ -307,7 +307,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
    
     def _makejoblist(self, dictlist):
         joblist = {}
-        if dictlist is None:
+        if not dictlist:
             self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
         else:
             joblist = self._dicttojoblist(dictlist)
@@ -322,7 +322,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         Input may be None        
         '''
         newinfo = None
-        if dictlist is None:
+        if not dictlist:
             self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
         else:
             aggdict = aggregateinfo(dictlist)
