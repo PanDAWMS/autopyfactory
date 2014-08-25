@@ -59,8 +59,6 @@
 #             Remote Proxy Maintenance: Assumes you have enabled ssh-agent key-based access
 #               to the remote host where you want to maintain a proxy file. 
 #
-# remote               True/False. Default is False.
-#
 # remote_host          copy proxyfile to same path on remote host 
 #                      MANDATORY only when remote is True.
 #
@@ -94,7 +92,6 @@ baseproxy = None
 flavor = voms
 
 # transfer
-remote = False
 remote_host = None         
 remote_user = None         
 remote_owner = None        
