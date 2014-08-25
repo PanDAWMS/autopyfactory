@@ -213,7 +213,7 @@ class CondorWMSStatusPlugin(threading.Thread, WMSStatusInterface):
 
         self.log.debug('Starting.')
         
-        # These are not meaningful for WMS Status plugin 
+        # These are not meaningful for Local Condor as WMS
         self.currentcloudinfo = None
         self.currentsiteinfo = None
 
