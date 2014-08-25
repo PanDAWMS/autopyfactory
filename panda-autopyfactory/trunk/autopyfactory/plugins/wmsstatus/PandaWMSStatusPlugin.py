@@ -132,7 +132,7 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
             self.log.debug('Info not initialized. Return None.')
             return None    
         elif maxtime > 0 and (int(time.time()) - self.currentsiteinfo.lasttime) > maxtime:
-            self.log.debug('getCloudInfo: Info is too old. Maxtime = %d. Returning None' % maxtime)
+            self.log.debug('Info is too old. Maxtime = %d. Returning None' % maxtime)
             return None    
         else:
             if site:
