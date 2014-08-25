@@ -9,8 +9,7 @@
 
 * new grid_resource line in Condor-CE submit plugin: CondorOSGCE
 
-* added boolean variable remote to proxy.conf
-  and related variables renamed as 
+* variables renamed as 
 
         remote.remote_host
         remote.remote_user
