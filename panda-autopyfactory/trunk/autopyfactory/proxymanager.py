@@ -142,12 +142,10 @@ class ProxyHandler(threading.Thread):
         self.initdelay = int(initdelaystr)     
 
         # transfer proxy to remote host?
-        self.remote = config.getboolean(section, 'remote')
-        if self.remote == True:
-            self.remote_host = config.get(section, 'remote_host')
-            self.remote_user = config.get(section, 'remote_user')
-            self.remote_owner = config.get(section, 'remote_owner')
-            self.remote_group = config.get(section, 'remote_group')
+        self.remote_host = config.get(section, 'remote_host')
+        self.remote_user = config.get(section, 'remote_user')
+        self.remote_owner = config.get(section, 'remote_owner')
+        self.remote_group = config.get(section, 'remote_group')
 
         # extra argument
         self.voms_args = None
@@ -456,7 +454,7 @@ class ProxyHandler(threading.Thread):
 
     def _transferproxy(self):
         '''
-        transfer proxy to a remote host
+        transfer proxy to a remote host, if needed
         '''
         # TO BE IMPLEMENTED
         pass
@@ -524,9 +522,8 @@ class ProxyHandler(threading.Thread):
                 self.log.debug("[%s] Time left %d seconds." % (self.name, self._checkTimeleft() ))
                 self.log.info("[%s] Proxy OK (Timeleft %ds)." % ( self.name, self._checkTimeleft()))
 
-        # transfer?
-        if self.remote == True:
-            self._transferproxy()
+        # transfer
+        self._transferproxy()
             
         
     def _getProxyPath(self):
