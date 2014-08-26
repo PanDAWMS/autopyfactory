@@ -324,7 +324,8 @@ def _out2list(xmldoc):
 
     # we assume the header of each part of the output starts
     # with string '<?xml version="1.0"?>'
-    indexes = [m.start() for m in re.finditer('<\?xml version="1.0"\?>',  xmldoc )]
+    #indexes = [m.start() for m in re.finditer('<\?xml version="1.0"\?>',  xmldoc )]
+    indexes = [m.start() for m in re.finditer('<\?xml',  xmldoc )]
     if len(indexes)==1:
         outs = [xmldoc]
     else:
