@@ -1,4 +1,6 @@
 
+* accept multiple XML docs as output of "condor_q -g". 
+
 * checking if the output of condor_q in querycondor() is still XML even when RC != 0
 
 * if -name and -pool are empty, the condor_q_id is again "local"
