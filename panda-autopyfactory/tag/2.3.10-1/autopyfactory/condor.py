@@ -214,7 +214,7 @@ def querycondor(queryargs=None):
     log.info('condor_q: %s seconds to perform the query' %delta)
 
     if p.returncode == 0:
-        log.debug('Leaving with OK return code.') 
+        log.debug('Leaving with OK return code.')
     else:
         # lets try again. Sometimes RC!=0 does not mean the output was bad
         if out.startswith('<?xml version="1.0"?>'):
@@ -225,7 +225,7 @@ def querycondor(queryargs=None):
     log.trace('_querycondor: Out is %s' % out)
     log.debug('_querycondor: Leaving.')
     return out
-
+    
 
 
 def querycondorxml(queryargs=None):
@@ -297,15 +297,47 @@ def parseoutput(output):
     If the query has no 'c' elements, returns empty list
     
     '''
+
     log=logging.getLogger()
     log.debug('Starting.')                
-    xmldoc = xml.dom.minidom.parseString(output).documentElement
+
+    # first convert the XML output into a list of XML docs
+    outputs = self._out2list(output)
+
     nodelist = []
-    for c in listnodesfromxml(xmldoc, 'c') :
-        node_dict = node2dict(c)
-        nodelist.append(node_dict)            
+    for output in outputs:
+        xmldoc = xml.dom.minidom.parseString(output).documentElement
+        for c in listnodesfromxml(xmldoc, 'c') :
+            node_dict = node2dict(c)
+            nodelist.append(node_dict)            
     log.info('Got list of %d entries.' %len(nodelist))       
     return nodelist
+
+
+def _out2list(xmldoc):
+    '''
+    converts the xml output of condor_q into a list.
+    This is in case the output is a multiple XML doc, 
+    as it happens when condor_q -g 
+    So each part of the output is one element of the list
+    '''
+
+    # we assume the header of each part of the output starts
+    # with string '<?xml version="1.0"?>'
+    #indexes = [m.start() for m in re.finditer('<\?xml version="1.0"\?>',  xmldoc )]
+    indexes = [m.start() for m in re.finditer('<\?xml',  xmldoc )]
+    if len(indexes)==1:
+        outs = [xmldoc]
+    else:
+        outs = []
+        for i in range(len(indexes)):
+            if i == len(indexes)-1:
+                tmp = xmldoc[indexes[i]:]
+            else:
+                tmp = xmldoc[indexes[i]:indexes[i+1]]
+            outs.append(tmp)
+    return outs
+
 
 
 def listnodesfromxml( xmldoc, tag):
