@@ -1,7 +1,0 @@
-/home/apf/factory/logs/logsmonitor/error.lasthour.html {
-    rotate 23 
-    extension .html
-    missingok
-}
-
-
