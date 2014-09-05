@@ -1,0 +1,158 @@
+<body>
+<a href=index.html>Index<a>
+<a name='RELEASENOTES'><h1>RELEASE NOTES</h1></a>
+<a href="#semantics">SEMANTICS</a><br>
+<a href="#2.3.1">Version 2.3.1</a><br>
+<a href="#2.3.0">Version 2.3.0</a><br>
+<a href="#2.2.0-1">Version 2.2.0-1</a><br>
+<a href="#2.1.1-3">Version 2.1.1-3</a><br>
+
+<a name="semantics"><h2><span style="color: black; "><span>SEMANTICS</span></span></h2></a>
+
+<UL>
+<LI><PRE>
+AutoPyFactory release versions are composed by 4 numbers:
+
+        major.minor.release-build
+
+For example: 1.2.3-4
+</PRE>
+
+<LI><PRE>
+A change in the major number means the entire architecture of AutoPyFactory has been redesign. 
+It implies a change at the conceptual level. 
+In other words, changing the major number means a new project.
+</PRE>
+
+<LI><PRE>
+A change in the configuration files that requires sys admins intervention after updating implies a change in the minor number.
+</PRE>
+
+<LI><PRE>
+Implementing a new relevant feature implies changing the minor number.
+</PRE>
+
+<LI><PRE>
+A significative amount of code refactoring that may affect the performance of AutoPyFactory 
+-including speed, memory usage, disk usage, etc- 
+implies changing the minor number.
+</PRE>
+
+<LI><PRE>
+Small features and bug fixes imply changing the release number.
+</PRE>
+
+<LI><PRE>
+A change in the RPM package but not in the code are reflected in the build number.
+</PRE>
+
+<LI><PRE>
+Not all new releases are placed in the production RPM repository.  
+Many of them are available at the development and testing repositories, 
+but only those that have been verified to work are moved to the production repository.
+</PRE>
+
+<LI><PRE>
+Same RPM will have always the same numbers in all repositories.
+</PRE>
+
+
+</UL>
+
+<a name="2.3.1"><h2><span style="color: black; "><span>2.3.1</span></span></h2></a>
+
+<UL>
+<LI><PRE>
+Minor fixes to Condor submit plugin initialization.
+</PRE>
+
+<LI><PRE>
+</PRE>
+Fix to determining username for email.
+</UL>
+
+
+<a name="2.3.0"><h2><span style="color: black; "><span>2.3.0</span></span></h2></a>
+
+<UL>
+
+<LI><PRE>
+utils not distributed anymore within the RPM. They will be distributed with a dedicated one.
+</PRE>
+
+<LI><PRE>
+  variable 'flavor' mandatory in DEFAULT section in proxy.conf
+  Values are voms or myproxy
+</PRE>
+
+<LI><PRE>
+  In case flavor=myproxy in proxy.conf, then variables
+    remote_host
+    remote_user
+    remote_owner
+    remote_group
+  are needed too.
+</PRE>
+
+<LI><PRE>
+  New variable factorySMTPServer  in factory.conf
+</PRE>
+
+<LI><PRE>
+  New variable proxymanager.sleep in factory.conf
+</PRE>
+
+</UL>
+
+
+<a name="2.2.0-1"><h2><span style="color: black; "><span>2.2.0-1</span></span></h2></a>
+
+<UL>
+<LI><PRE>
+  examples of executables (a.k.a. wrappers)
+  are placed underneath the '/etc/apf/' directory.
+  They are not copied directly into '/usr/libexec/' anymore.
+
+  'wrapper-0.9.9.sh' has a different set of
+  input options than previous one.
+  Read carefully the inline documentation before using it.
+</PRE>
+
+<LI><PRE>
+  Config plugins have been removed.
+  Any configuration variable in 'queues.conf'
+  related 'PandaConfig' or 'AGISConfig' plugins
+  are not valid anymore.
+  Therefore the variable 'configplugin' is gone too.
+
+  Variables 'override' and 'autofill' are also gone.
+</PRE>
+
+<LI><PRE>
+  There is a new configuration file called 'monitor.conf'
+  An example is provided underneath '/etc/apf/'
+
+  Old variable in 'factory.conf' pointing to the monitor URL
+  is now in 'monitor.conf'
+
+  The 'monitor.conf' contains sections
+  for different monitor configurations.
+  The name of the section is setup in 'queues.conf' via
+  the new variable 'monitorsection'
+
+  Read carefully the inline documentation in
+  'monitor.conf' before using it.
+</PRE>
+
+<LI><PRE>
+  Utils, including script to generate 'queues.conf'
+  with information from AGIS, have changed name and location.
+  New scripts are place underneath 'usr/share/apf'
+
+</PRE>
+
+</UL>
+
+<a name="2.1.1-3"><h2><span style="color: black; "><span>2.1.1-3</span></span></h2></a>
+
+</body>
