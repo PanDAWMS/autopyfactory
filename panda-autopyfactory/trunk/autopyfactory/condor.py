@@ -302,7 +302,7 @@ def parseoutput(output):
     log.debug('Starting.')                
 
     # first convert the XML output into a list of XML docs
-    outputs = self._out2list(output)
+    outputs = _out2list(output)
 
     nodelist = []
     for output in outputs:
