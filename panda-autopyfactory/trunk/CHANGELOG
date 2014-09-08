@@ -1,3 +1,4 @@
+* Bugs and typos fixed
 
 * changed nomenclature: everything now is called "autopyfactory" instead of "apf" or "factory"
   .sysconfig removed from  /etc/sysconfig/autopyfactory.sysconfig
