@@ -7,13 +7,13 @@
 # chkconfig: 345 26 74
 # description: Submit pilot jobs to grid sites. 
 # processname: proxymanager
-# config: /etc/apf/proxy.conf 
+# config: /etc/autopyfactory/proxy.conf 
 # pidfile: /var/run/proxymanager.pid
 #
 #
 
 ### BEGIN INIT INFO
-# Provides: factory.py
+# Provides: autopyfactory.py
 # Required-Start: $syslog $local_fs
 # Required-Stop: $syslog $local_fs
 # Default-Start:  2 3 4 5
@@ -64,7 +64,7 @@ f_factdir
 if [ `id -u` = 0 ]; then
     SYSCONF=/etc/sysconfig/proxymanager.sysconfig
     BINDIR=/usr/bin
-    ETCDIR=/etc/apf
+    ETCDIR=/etc/autopyfactory
     PIDFILE=/var/run/proxymanager.pid
 else
     APFHEAD=`dirname $FACTDIR`
@@ -107,7 +107,7 @@ check() {
 create_var_run(){
     # function to create directory  $APFHEAD/var/run 
     # if it does not exist. 
-    # It is needed to place the file factory.pid 
+    # It is needed to place the file autopyfactory.pid 
     if [ ! -d $APFHEAD/var/run/ ]; then
         mkdir -p $APFHEAD/var/run/
     fi
@@ -140,7 +140,7 @@ stop() {
 
 	check
 	echo -n $"Stopping Proxymanager daemon: "
-	killproc -p $PIDFILE factory
+	killproc -p $PIDFILE autopyfactory
 	RETVAL=$?
 	[ $RETVAL -eq 0 ] && rm -f $PIDFILE
 	echo
@@ -190,7 +190,7 @@ condrestart)
 	fi
 	;;
 status)
-	status factory
+	status autopyfactory
 	RETVAL=$?
 	;;
 *)
