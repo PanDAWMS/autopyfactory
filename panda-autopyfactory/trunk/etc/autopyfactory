@@ -63,7 +63,7 @@ f_factdir
 
 if [ `id -u` = 0 ]; then
     APFHEAD=/
-    SYSCONF=/etc/sysconfig/autopyfactory.sysconfig
+    SYSCONF=/etc/sysconfig/autopyfactory
     BINDIR=/usr/bin
     ETCDIR=/etc/autopyfactory
     PIDFILE=/var/run/autopyfactory.pid
