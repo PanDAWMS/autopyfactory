@@ -4,7 +4,6 @@
   panda- removed from package name
   no wrappers copied to the /etc/ directory
 
-
 * accept multiple XML docs as output of "condor_q -g". 
 
 * checking if the output of condor_q in querycondor() is still XML even when RC != 0
