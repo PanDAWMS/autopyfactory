@@ -10,6 +10,7 @@ import sys
 import signal
 import subprocess
 import commands
+import re
 import subprocess
 import logging
 import time
