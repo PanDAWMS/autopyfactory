@@ -2,6 +2,7 @@
 * changed nomenclature: everything now is called "autopyfactory" instead of "apf" or "factory"
   .sysconfig removed from  /etc/sysconfig/autopyfactory.sysconfig
   panda- removed from package name
+  no wrappers copied to the /etc/ directory
 
 
 * accept multiple XML docs as output of "condor_q -g". 
