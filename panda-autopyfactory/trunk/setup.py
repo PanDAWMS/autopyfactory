@@ -30,20 +30,20 @@ if major == 2:
 
 libexec_files = ['libexec/%s' %file for file in os.listdir('libexec') if os.path.isfile('libexec/%s' %file)]
 
-etc_files = ['etc/factory.conf-example',
+etc_files = ['etc/autofactory.conf-example',
              'etc/queues.conf-example',
              'etc/proxy.conf-example',
              'etc/monitor.conf-example',
-             'etc/factory.sysconfig-example',
+             'etc/autopyfactory.sysconfig-example',
              'etc/proxymanager.sysconfig-example',
              'etc/logsmonitor.rotate.conf-example',
-             'etc/apf-search-failed.sh-example',
+             #'etc/apf-search-failed.sh-example',
              ]
 
-initd_files = ['etc/factory',
+initd_files = ['etc/autopyfactory',
                'etc/proxymanager']
 
-logrotate_files = ['etc/factory.logrotate',]
+logrotate_files = ['etc/autopyfactory.logrotate',]
 
 # docs files:
 #   --everything in the docs/ directory
@@ -65,19 +65,19 @@ docs_files.append('RELEASE_NOTES')
 
 # -----------------------------------------------------------
 
-rpm_data_files=[('/etc/apf',           libexec_files),
-                ('/etc/apf',           etc_files),
+rpm_data_files=[('/etc/autopyfactory',           libexec_files),
+                ('/etc/autopyfactory',           etc_files),
                 ('/etc/init.d',        initd_files),
                 ('/etc/logrotate.d',   logrotate_files),                                        
-                ('/usr/share/doc/apf', docs_files),                                        
-                #('/usr/share/apf',     utils_files),                                        
+                ('/usr/share/doc/autopyfactory', docs_files),                                        
+                #('/usr/share/autopyfactory',     utils_files),                                        
                ]
 
 home_data_files=[('etc',       libexec_files),
                  ('etc',       etc_files),
                  ('etc',       initd_files),
-                 ('doc/apf',   docs_files ),
-                 #('share/apf', utils_files),                                        
+                 ('doc/autopyfactory',   docs_files ),
+                 #('share/autopyfactory', utils_files),                                        
                 ]
 
 # -----------------------------------------------------------
@@ -126,7 +126,7 @@ setup(
               'autopyfactory.plugins.wmsstatus',
               ],
     scripts = [ # Utilities and main script
-               'bin/factory',
+               'bin/autopyfactory',
                'bin/proxymanager'
               ],
     
