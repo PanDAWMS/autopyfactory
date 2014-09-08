@@ -107,9 +107,9 @@ def choose_data_files():
 
 # setup for distutils
 setup(
-    name="panda-autopyfactory",
+    name="autopyfactory",
     version=release_version,
-    description='panda-autopyfactory package',
+    description='autopyfactory package',
     long_description='''This package contains autopyfactory''',
     license='GPL',
     author='Panda Team',
