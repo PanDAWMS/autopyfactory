@@ -1,6 +1,8 @@
 #
 # Sysconfig file for autopyfactory
 #
+# place this file under /etc/sysconfig/autopyfactory
+#
 
 #  OPTIONS:
 # 
