@@ -26,6 +26,8 @@
 
 * Using queryargs in WMS Status plugin CondorLocal
 
+* Email sent when the generated X509 proxy is not valid: does not exist, too old, or not proper VOMS attributes
+
 * Adding a log message in StatusTest and StatusOffline Sched Plugins 
   when the queue is not test or offline.
 
