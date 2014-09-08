@@ -65,7 +65,7 @@ docs_files.append('RELEASE_NOTES')
 
 # -----------------------------------------------------------
 
-rpm_data_files=[('/etc/autopyfactory',           libexec_files),
+rpm_data_files=[#('/etc/autopyfactory',           libexec_files),
                 ('/etc/autopyfactory',           etc_files),
                 ('/etc/init.d',        initd_files),
                 ('/etc/logrotate.d',   logrotate_files),                                        
@@ -73,7 +73,7 @@ rpm_data_files=[('/etc/autopyfactory',           libexec_files),
                 #('/usr/share/autopyfactory',     utils_files),                                        
                ]
 
-home_data_files=[('etc',       libexec_files),
+home_data_files=[#('etc',       libexec_files),
                  ('etc',       etc_files),
                  ('etc',       initd_files),
                  ('doc/autopyfactory',   docs_files ),
