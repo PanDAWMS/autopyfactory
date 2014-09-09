@@ -1,4 +1,3 @@
-
 batchstatus/CondorBatchStatusPlugin.py
 
  self.globusstatus2info = {'1':   'pending',
@@ -19,8 +18,6 @@ batchstatus/CondorBatchStatusPlugin.py
                         '6': 'running'}
 
 
-
-
 batchstatus/CondorEC2BatchStatusPlugin.py
  
 self.jobstatus2info = {'0': 'pending',
@@ -30,10 +27,6 @@ self.jobstatus2info = {'0': 'pending',
                        '4': 'done',
                        '5': 'suspended',
                        '6': 'running'}
-
-
-
-
 
 wmsstatus/PandaWMSStatusPlugin.py
 
@@ -50,9 +43,6 @@ self.jobsstatisticspersite2info = {'pending'     : 'notready',
                                    'finished'    : 'done',
                                    'failed'      : 'failed',
                                    'cancelled'   : 'failed'}
-
-
-
 
 wmsstatus/CondorWMSStatusPlugin.py
 
