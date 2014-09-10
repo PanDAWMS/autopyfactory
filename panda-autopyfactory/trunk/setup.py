@@ -36,8 +36,6 @@ etc_files = ['etc/autopyfactory.conf-example',
              'etc/monitor.conf-example',
              'etc/autopyfactory.sysconfig-example',
              'etc/proxymanager.sysconfig-example',
-             'etc/logsmonitor.rotate.conf-example',
-             #'etc/apf-search-failed.sh-example',
              ]
 
 initd_files = ['etc/autopyfactory',
@@ -51,18 +49,6 @@ logrotate_files = ['etc/autopyfactory.logrotate',]
 docs_files = ['docs/%s' %file for file in os.listdir('docs') if os.path.isfile('docs/%s' %file)]
 docs_files.append('RELEASE_NOTES')
 
-# NOTE: these utils are going to be distributed from now on 
-#       in a separated RPM
-#
-#utils_files = ['misc/apf-agis-config',
-#               'misc/apf-queue-status',
-#               'misc/apf-queue-jobs-by-status.sh',
-#               'misc/apf-test-pandaclient',
-#               'misc/apf-check-old-pilots',
-#               'misc/apf-search-failed',
-#               'misc/apf-simulate-scheds',
-#               ]
-
 # -----------------------------------------------------------
 
 rpm_data_files=[#('/etc/autopyfactory',           libexec_files),
@@ -70,14 +56,12 @@ rpm_data_files=[#('/etc/autopyfactory',           libexec_files),
                 ('/etc/init.d',        initd_files),
                 ('/etc/logrotate.d',   logrotate_files),                                        
                 ('/usr/share/doc/autopyfactory', docs_files),                                        
-                #('/usr/share/autopyfactory',     utils_files),                                        
                ]
 
 home_data_files=[#('etc',       libexec_files),
                  ('etc',       etc_files),
                  ('etc',       initd_files),
                  ('doc/autopyfactory',   docs_files ),
-                 #('share/autopyfactory', utils_files),                                        
                 ]
 
 # -----------------------------------------------------------
