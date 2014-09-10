@@ -139,7 +139,7 @@
 factoryAdminEmail = neo@matrix.net
 factoryId = BNL-gridui11-jhover
 factorySMTPServer = mail.matrix.net
-factoryUser = apf
+factoryUser = autopyfactory
 enablequeues = True
 
 queueConf = file:///etc/autopyfactory/queues.conf
@@ -157,7 +157,7 @@ factory.sleep=30
 wmsstatus.panda.sleep = 150
 batchstatus.condor.sleep = 150
 
-baseLogDir = /home/apf/factory/logs
+baseLogDir = /home/autopyfactory/factory/logs
 baseLogDirUrl = http://myhost.matrix.net:25880
 
 logserver.enabled = True
