@@ -465,8 +465,7 @@ class Factory(object):
         qcf = None
         qcd = None
         try: 
-            qcfstr = fcl.get('Factory', 'queueConf')    # the configuration files for queues are a list of URIs
-            qcf = qcfstr.split(',')
+            qcf = fcl.get('Factory', 'queueConf')    # the configuration files for queues are a list of URIs
             self.log.debug("queues.conf file(s) = %s" % qcf)
             
         except:
