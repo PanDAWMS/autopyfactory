@@ -1,4 +1,4 @@
-/var/log/apf/apf.log {
+/var/log/autopyfactory/apf.log {
   missingok
   notifempty
   sharedscripts
@@ -14,7 +14,7 @@
     [ -e /etc/init.d/factory ] && /etc/init.d/factory start >/dev/null 2>&1 || true
   endscript
 }
-/var/log/apf/console.log {
+/var/log/autopyfactory/console.log {
   missingok
   notifempty
   sharedscripts
