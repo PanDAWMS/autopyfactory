@@ -219,7 +219,7 @@ class MyNoListingHTTPRequestHandler(MySimpleHTTPRequestHandler):
 
 class LogServer(threading.Thread):
     
-    def __init__(self, port=25880, docroot="/home/apf/factory/logs", index = True):
+    def __init__(self, port=25880, docroot="/home/autopyfactory/factory/logs", index = True):
         '''
         docroot is the path to the base directory of the files to be served. 
         '''
@@ -263,8 +263,6 @@ class LogServer(threading.Thread):
     def run(self):
         self.log.info("Initializing HTTP server...")
         self._init_socketserver()
-        
-        
         os.chdir(self.docroot)
         self.log.debug("Changing working dir to %s"%  self.docroot)
         while not self.stopevent.isSet():

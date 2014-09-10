@@ -487,7 +487,7 @@ class Factory(object):
                 sys.exit(0)
                 
         except ConfigFailure, errMsg:
-            self.log.error('Failed to create QueuesConfigLoader')
+            self.log.error('Failed to create QueuesConfigLoader, err: %s' % str(errMsg))
             sys.exit(0)
         
         # Handle ProxyManager configuration
