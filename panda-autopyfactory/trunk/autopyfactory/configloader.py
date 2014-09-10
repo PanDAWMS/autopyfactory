@@ -269,25 +269,25 @@ class ConfigManager(object):
            all of them to be processed 
 
         '''
-        log.debug("Beginning with sources=%s and configdir=%s" % (sources,configdir))
+        self.log.debug("Beginning with sources=%s and configdir=%s" % (sources,configdir))
         try:
             config = Config()
             if sources:
                 for src in sources.split(','):
                     src = src.strip()
-                    log.debug("Calling _getConfig for source %s" % src)
+                    self.log.debug("Calling _getConfig for source %s" % src)
                     newconfig = self.__getConfig(src)
                     if newconfig:
                         config.merge(newconfig)
             elif configdir:
-                log.debug("Processing  configs for dir %s" % configdir)
+                self.log.debug("Processing  configs for dir %s" % configdir)
                 if os.path.isdir(configdir):
                     conffiles = [os.path.join(configdir, f) for f in os.listdir(configdir)]
                     config.read(conffiles)
                 else:
                     raise ConfigFailure('configuration directory %s does not exist' %configdir)
             config.fixpathvalues()
-            log.debug("Finished creating config object.")
+            self.log.debug("Finished creating config object.")
             return config
         except:
             raise ConfigFailure('creating config object from source %s failed' %sources)
