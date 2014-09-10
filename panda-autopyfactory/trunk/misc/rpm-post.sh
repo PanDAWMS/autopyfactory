@@ -11,7 +11,7 @@ chmod ugo+x /etc/init.d/autopyfactory
 #/sbin/chkconfig autopyfactory off
 
 #  check that factory.sysconfig has been placed in /etc/sysconfig/factory.sysconfig 
-SYSCONF=/etc/sysconfig/autopyfactory.sysconfig
+SYSCONF=/etc/sysconfig/autopyfactory
 SYSCONFEXAMPLE=/etc/autopyfactory/autopyfactory.sysconfig-example
 if [ ! -f $SYSCONF ] ; then 
         cp $SYSCONFEXAMPLE $SYSCONF
