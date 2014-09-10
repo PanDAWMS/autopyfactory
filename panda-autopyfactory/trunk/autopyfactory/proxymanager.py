@@ -402,7 +402,7 @@ class ProxyHandler(threading.Thread):
                     self.log.debug('vorole %s found in proxy list of FQANs' %self.vorole)
                     return 0
             else:
-                self.log.erro('vorole %s not found in proxy' %self.vorole)
+                self.log.error('vorole %s not found in proxy' %self.vorole)
                 return 1
 
         elif p.returncode == 1:
