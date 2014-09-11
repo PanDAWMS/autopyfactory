@@ -183,7 +183,7 @@ Jose Caballero <jcaballero@bnl.gov>
                           metavar="TIME", 
                           help="Sleep TIME seconds between cycles [default %default]")
         parser.add_option("--conf", dest="confFiles", 
-                          default="/etc/autopyfactory/factory.conf",
+                          default="/etc/autopyfactory/autofactory.conf",
                           action="store", 
                           metavar="FILE1[,FILE2,FILE3]", 
                           help="Load configuration from FILEs (comma separated list)")
