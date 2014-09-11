@@ -4,7 +4,7 @@ __author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
 __copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2014 John Hover; 2010-2014 Jose Caballero"
 __credits__ = []
 __license__ = "GPL"
-__version__ = "2.3.12"
+__version__ = "2.4.0"
 __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
@@ -355,7 +355,7 @@ Jose Caballero <jcaballero@bnl.gov>
         in order to renew proxy.   
         The thing is that expanduser() uses the value of $HOME
         as it is stored in os.environ, and that value still is /root/
-        Ergo, if we want the path to be expanded to a different user, i.e. apf,
+        Ergo, if we want the path to be expanded to a different user, i.e. autopyfactory,
         we need to change by hand the value of $HOME in the environment
         '''
         runAs_home = pwd.getpwnam(self.options.runAs).pw_dir 
@@ -366,7 +366,7 @@ Jose Caballero <jcaballero@bnl.gov>
     def _changewd(self):
         '''
         changing working directory to the HOME directory of the new user,
-        typically "apf". 
+        typically "autopyfactory". 
         When APF starts as a daemon, working directory may be "/".
         If APF was called from the command line as root, working directory is "/root".
         It is better is current working directory is just the HOME of the running user,
