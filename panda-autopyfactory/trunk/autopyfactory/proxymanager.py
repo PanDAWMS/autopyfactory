@@ -441,7 +441,7 @@ class ProxyHandler(threading.Thread):
         # check VOMS attributes of the proxy
         rc = self._validateVOMS()
         if rc:
-            err_msg = "proxy file %s does not have VOMS attribute" %(self.proxyfile, self.vorole)
+            err_msg = "proxy file %s does not have VOMS attribute %s" %(self.proxyfile, self.vorole)
             self.log.critical(err_msg)
             err_msg = timestamp + host + err_msg
             self.manager.factory.sendAdminEmail(email_subject, err_msg)
