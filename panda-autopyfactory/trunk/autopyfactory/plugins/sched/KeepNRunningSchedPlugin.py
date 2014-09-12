@@ -64,6 +64,14 @@ class KeepNRunningSchedPlugin(SchedInterface):
         running_pilots = self.queueinfo.running  # using the new info object
         retiring_pilots = self.queueinfo.retiring # using the new info objects
 
+        # Fix. Negative numbers for these values are wrong. Until we can track
+        # down the source, explicitly check...
+        if pending_pilots < 0: 
+            pending_pilots = 0
+        if running_pilots < 0: 
+            running_pilots = 0        
+        if retiring_pilots < 0: 
+            retiring_pilots = 0
         # 
         # Output is simply keep_running, minus potentially or currently running, while ignoring retiring jobs
         #
