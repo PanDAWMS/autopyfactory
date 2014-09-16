@@ -391,18 +391,30 @@ class ProxyHandler(threading.Thread):
         '''
 
         cmd = 'voms-proxy-info -fqan -file %s' %self.proxyfile
-        # output is a list of strings
+        # output is a list of strings like:
+        #       /atlas/usatlas/Role=production/Capability=NULL
+        #       /atlas/lcg1/Role=NULL/Capability=NULL
+        #       /atlas/usatlas/Role=NULL/Capability=NULL
+        #       /atlas/Role=NULL/Capability=NULL
+
+        # attribute self.vorole is like 
+        #       "atlas:/atlas/usatlas/Role=production"
+        # so we need to get the second part
+        if ':' in self.vorole:
+            vorole = self.vorole.split(':')[1]
+        else:
+            vorole = self.vorole
 
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
         out, err = p.communicate()
         if p.returncode == 0:
             out = out.split('\n')
             for fqan in out:
-                if fqan.startswith(self.vorole):
-                    self.log.debug('vorole %s found in proxy list of FQANs' %self.vorole)
+                if fqan.startswith(vorole):
+                    self.log.debug('vorole %s found in proxy list of FQANs' %vorole)
                     return 0
             else:
-                self.log.error('vorole %s not found in proxy' %self.vorole)
+                self.log.error('vorole %s not found in proxy' %vorole)
                 return 1
 
         elif p.returncode == 1:
