@@ -1,7 +1,7 @@
 * explanation for "lifetime" and "minlife" fixed in proxy.conf-example, 
   and variable "vomshours" renamed as "hours" in proxymanager.
   doc updated.
-  method _checkTimeleft() renamed  _checkVOMSTimeLeft()
+  method _checkTimeleft() renamed  _checkVOMSTimeLeft(). Log messages fixed accordingly.
 
 * Bugs and typos fixed
 
