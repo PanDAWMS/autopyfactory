@@ -265,7 +265,7 @@ class ProxyHandler(threading.Thread):
         stdout, stderr = p.communicate()
         if p.returncode == 0:
             self.log.debug("[%s] Command OK. Output = %s" % (self.name, stdout))
-            self.log.debug("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))
+            self.log.debug("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkVOMSTimeLeft()))
         elif p.returncode == 1:
             self.log.error("[%s] Command RC = 1. Error = %s" % (self.name, stderr))
         else:
@@ -345,7 +345,7 @@ class ProxyHandler(threading.Thread):
         stdout, stderr = p.communicate()
         if p.returncode == 0:
             self.log.debug("[%s] Command OK. Output = %s" % (self.name, stdout))
-            self.log.debug("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))
+            self.log.debug("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkVOMSTimeLeft()))
         elif p.returncode == 1:
             self.log.error("[%s] Command RC = 1. Error = %s" % (self.name, stderr))
         else:
@@ -354,7 +354,7 @@ class ProxyHandler(threading.Thread):
         self.log.debug("[%s] End." % self.name)
 
 
-    def _checkTimeleft(self):
+    def _checkVOMSTimeLeft(self):
         '''
         Checks status of current proxy.         
         Returns timeleft in seconds (0 for expired or non-existent proxy)
@@ -363,7 +363,6 @@ class ProxyHandler(threading.Thread):
         r = 0
         if os.path.exists(self.proxyfile):
             cmd = 'voms-proxy-info -dont-verify-ac -actimeleft '
-            #cmd = 'voms-proxy-info -dont-verify-ac -timeleft '
             cmd += ' -file %s ' % self.proxyfile
             
             # Run command
@@ -441,7 +440,7 @@ class ProxyHandler(threading.Thread):
             return 1
         
         # check time of the VOMS part of a proxy
-        timeleft = self._checkTimeleft()
+        timeleft = self._checkVOMSTimeLeft()
         if timeleft < self.minlife:
             err_msg = "VOMS attributes for file %s has too short timeleft = %s" %(self.proxyfile, timeleft)
             self.log.critical(err_msg)
@@ -507,31 +506,31 @@ class ProxyHandler(threading.Thread):
         '''
         if self.flavor == 'voms':
             if self.renew:
-                tl = self._checkTimeleft()
+                tl = self._checkVOMSTimeLeft()
                 self.log.debug("[%s] Time left is %d" % (self.name, tl))
                 if tl < self.minlife:
                     self.log.info("[%s] Need proxy. Generating..." % self.name)
                     rc = self._generateProxy()
                     if rc == 0:
-                        self.log.info("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkTimeleft()))    
+                        self.log.info("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkVOMSTimeLeft()))    
                     else:
                         self.log.critical("[%s] Proxy not generated successfully" % self.name)    
                 else:
-                    self.log.debug("[%s] Time left %d seconds." % (self.name, self._checkTimeleft() ))
-                    self.log.info("[%s] Proxy OK (Timeleft %ds)." % ( self.name, self._checkTimeleft()))
+                    self.log.debug("[%s] Time left %d seconds." % (self.name, self._checkVOMSTimeLeft() ))
+                    self.log.info("[%s] Proxy OK (Timeleft %ds)." % ( self.name, self._checkVOMSTimeLeft()))
             else:
                 self.log.info("Proxy checking and renewal disabled in config.")
         elif self.flavor == 'myproxy':
-            tl = self._checkTimeleft()
+            tl = self._checkVOMSTimeLeft()
             self.log.debug("[%s] Time left is %d" % (self.name, tl))
             if tl < self.minlife:
                 self.log.info("[%s] Need proxy. Retrieving..." % self.name)
                 self._retrieveMyProxyCredential()
                 self.log.info("[%s] Credential retrieved and proxy renewed successfully. Timeleft = %d" % (self.name, 
-                                                                                                           self._checkTimeleft()))    
+                                                                                                           self._checkVOMSTimeLeft()))    
             else:
-                self.log.debug("[%s] Time left %d seconds." % (self.name, self._checkTimeleft() ))
-                self.log.info("[%s] Proxy OK (Timeleft %ds)." % ( self.name, self._checkTimeleft()))
+                self.log.debug("[%s] Time left %d seconds." % (self.name, self._checkVOMSTimeLeft() ))
+                self.log.info("[%s] Proxy OK (Timeleft %ds)." % ( self.name, self._checkVOMSTimeLeft()))
 
         # transfer
         self._transferproxy()
