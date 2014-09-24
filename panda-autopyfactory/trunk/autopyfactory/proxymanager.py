@@ -265,7 +265,7 @@ class ProxyHandler(threading.Thread):
         stdout, stderr = p.communicate()
         if p.returncode == 0:
             self.log.debug("[%s] Command OK. Output = %s" % (self.name, stdout))
-            self.log.debug("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkVOMSTimeLeft()))
+            self.log.debug("[%s] Proxy generated successfully. VOMS Timeleft = %d" % (self.name, self._checkVOMSTimeLeft()))
         elif p.returncode == 1:
             self.log.error("[%s] Command RC = 1. Error = %s" % (self.name, stderr))
         else:
@@ -370,7 +370,7 @@ class ProxyHandler(threading.Thread):
             p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
             stdout, stderr = p.communicate()
             if p.returncode == 0:
-                self.log.debug("[%s] Command OK. Timeleft = %s" % (self.name, stdout.strip() ))
+                self.log.debug("[%s] Command OK. VOMS Timeleft = %s" % (self.name, stdout.strip() ))
                 r = int(stdout.strip())
             elif p.returncode == 1:
                 self.log.warn("[%s] Command RC = 1" % self.name)
