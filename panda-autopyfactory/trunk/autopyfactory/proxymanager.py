@@ -478,6 +478,15 @@ class ProxyHandler(threading.Thread):
             self.manager.factory.sendAdminEmail(email_subject, err_msg)
             return 1
 
+        # check proxy timeleft is higher than VOMS timeleft
+        proxytimeleft = self._checkProxyTimeLeft()
+        vomstimeleft = self._checkVOMSTimeLeft()
+        if proxytimeleft < vomstimeleft:
+            err_msg = "proxy timeleft (%s) is shorter than VOMS timelife (%s) for file %s" %(proxytimeleft, vomstimeleft, self.proxyfile)
+            self.log.warning(err_msg)
+            err_msg = timestamp + host + err_msg
+            self.manager.factory.sendAdminEmail(email_subject, err_msg)
+
         # check VOMS attributes of the proxy
         rc = self._validateVOMS()
         if rc:
