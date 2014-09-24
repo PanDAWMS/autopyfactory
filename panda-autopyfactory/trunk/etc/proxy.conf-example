@@ -18,7 +18,7 @@
 #
 # checktime     How often to check proxy validity, in seconds
 #
-# minlife       Minimum lifetime of proxy (renew if less) in seconds
+# minlife       Minimum lifetime of VOMS attributes for a proxy (renew if less) in seconds
 #
 # interruptcheck Frequency to check for keyboard/signal interrupts, in seconds
 #
