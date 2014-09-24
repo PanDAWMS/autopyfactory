@@ -1,5 +1,6 @@
-* explanation for "lifetime" fixed in proxy.conf-example, 
+* explanation for "lifetime" and "minlife" fixed in proxy.conf-example, 
   and variable "vomshours" renamed as "hours" in proxymanager.
+  doc updated.
 
 * Bugs and typos fixed
 
