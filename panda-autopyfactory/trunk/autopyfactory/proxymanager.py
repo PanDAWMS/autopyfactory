@@ -357,7 +357,7 @@ class ProxyHandler(threading.Thread):
     def _checkVOMSTimeLeft(self):
         '''
         Checks status of current proxy.         
-        Returns timeleft in seconds (0 for expired or non-existent proxy)
+        Returns VOMS timeleft in seconds (0 for expired or non-existent proxy)
         '''
         self.log.debug("[%s] Begin..." % self.name)
         r = 0
@@ -381,6 +381,36 @@ class ProxyHandler(threading.Thread):
             self.log.info('No proxy file at path %s.' % self.proxyfile)
             r = 0
         return r
+
+
+    def _checkProxyTimeLeft(self):
+        '''
+        Checks status of current proxy.         
+        Returns proxy timeleft in seconds (0 for expired or non-existent proxy)
+        '''
+        self.log.debug("[%s] Begin..." % self.name)
+        r = 0
+        if os.path.exists(self.proxyfile):
+            cmd = 'voms-proxy-info -dont-verify-ac -timeleft '
+            cmd += ' -file %s ' % self.proxyfile
+            
+            # Run command
+            self.log.debug("[%s] Running Command: %s" % (self.name, cmd))
+            p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
+            stdout, stderr = p.communicate()
+            if p.returncode == 0:
+                self.log.debug("[%s] Command OK. Proxy Timeleft = %s" % (self.name, stdout.strip() ))
+                r = int(stdout.strip())
+            elif p.returncode == 1:
+                self.log.warn("[%s] Command RC = 1" % self.name)
+                r = 0
+            else:
+                raise Exception("Strange error using command voms-proxy-info -timeleft. Return code = %d" % p.returncode)
+        else:
+            self.log.info('No proxy file at path %s.' % self.proxyfile)
+            r = 0
+        return r
+
 
 
     def _validateVOMS(self):
