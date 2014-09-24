@@ -2,6 +2,7 @@
   and variable "vomshours" renamed as "hours" in proxymanager.
   doc updated.
   method _checkTimeleft() renamed  _checkVOMSTimeLeft(). Log messages fixed accordingly.
+  created method _checkProxyTimeLeft()
 
 * Bugs and typos fixed
 
