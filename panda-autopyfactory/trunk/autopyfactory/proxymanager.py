@@ -363,6 +363,7 @@ class ProxyHandler(threading.Thread):
         r = 0
         if os.path.exists(self.proxyfile):
             cmd = 'voms-proxy-info -dont-verify-ac -actimeleft '
+            #cmd = 'voms-proxy-info -dont-verify-ac -timeleft '
             cmd += ' -file %s ' % self.proxyfile
             
             # Run command
