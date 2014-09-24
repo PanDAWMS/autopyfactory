@@ -440,10 +440,10 @@ class ProxyHandler(threading.Thread):
             self.manager.factory.sendAdminEmail(email_subject, err_msg)
             return 1
         
-        # check time of the proxy
+        # check time of the VOMS part of a proxy
         timeleft = self._checkTimeleft()
         if timeleft < self.minlife:
-            err_msg = "proxy file %s has too short timeleft = %s" %(self.proxyfile, timeleft)
+            err_msg = "VOMS attributes for file %s has too short timeleft = %s" %(self.proxyfile, timeleft)
             self.log.critical(err_msg)
             err_msg = timestamp + host + err_msg
             self.manager.factory.sendAdminEmail(email_subject, err_msg)
