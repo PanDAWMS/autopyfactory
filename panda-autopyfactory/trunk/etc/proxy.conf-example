@@ -14,8 +14,7 @@
 #
 # proxyfile     Target proxy path.
 #
-# lifetime      Initial voms lifetime, in seconds (604800 = 7 days)
-#               345600 is ATLAS VOMS maximum
+# lifetime      Initial lifetime, in seconds (604800 = 7 days)
 #
 # checktime     How often to check proxy validity, in seconds
 #
