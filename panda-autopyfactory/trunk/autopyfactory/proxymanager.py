@@ -512,12 +512,12 @@ class ProxyHandler(threading.Thread):
                     self.log.info("[%s] Need proxy. Generating..." % self.name)
                     rc = self._generateProxy()
                     if rc == 0:
-                        self.log.info("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkVOMSTimeLeft()))    
+                        self.log.info("[%s] Proxy generated successfully. VOMS Timeleft = %d" % (self.name, self._checkVOMSTimeLeft()))    
                     else:
                         self.log.critical("[%s] Proxy not generated successfully" % self.name)    
                 else:
-                    self.log.debug("[%s] Time left %d seconds." % (self.name, self._checkVOMSTimeLeft() ))
-                    self.log.info("[%s] Proxy OK (Timeleft %ds)." % ( self.name, self._checkVOMSTimeLeft()))
+                    self.log.debug("[%s] VOMS Time left %d seconds." % (self.name, self._checkVOMSTimeLeft() ))
+                    self.log.info("[%s] Proxy OK (VOMS Timeleft %ds)." % ( self.name, self._checkVOMSTimeLeft()))
             else:
                 self.log.info("Proxy checking and renewal disabled in config.")
         elif self.flavor == 'myproxy':
@@ -526,11 +526,11 @@ class ProxyHandler(threading.Thread):
             if tl < self.minlife:
                 self.log.info("[%s] Need proxy. Retrieving..." % self.name)
                 self._retrieveMyProxyCredential()
-                self.log.info("[%s] Credential retrieved and proxy renewed successfully. Timeleft = %d" % (self.name, 
+                self.log.info("[%s] Credential retrieved and proxy renewed successfully. VOMS Timeleft = %d" % (self.name, 
                                                                                                            self._checkVOMSTimeLeft()))    
             else:
-                self.log.debug("[%s] Time left %d seconds." % (self.name, self._checkVOMSTimeLeft() ))
-                self.log.info("[%s] Proxy OK (Timeleft %ds)." % ( self.name, self._checkVOMSTimeLeft()))
+                self.log.debug("[%s] VOMS Time left %d seconds." % (self.name, self._checkVOMSTimeLeft() ))
+                self.log.info("[%s] Proxy OK (VOMS Timeleft %ds)." % ( self.name, self._checkVOMSTimeLeft()))
 
         # transfer
         self._transferproxy()
