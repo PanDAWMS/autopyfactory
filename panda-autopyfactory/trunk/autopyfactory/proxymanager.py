@@ -249,11 +249,10 @@ class ProxyHandler(threading.Thread):
             cmd += ' -key %s ' % self.userkey
         
         cmd += ' -voms %s ' % self.vorole
-        vomshours = ((self.lifetime / 60 )/ 60)
-        vomshours = int(math.floor((self.lifetime / 60.0 ) / 60.0))
-        if vomshours == 0:
-            vomshours = 1
-        cmd += ' -valid %d:00 ' % vomshours
+        hours = int(math.floor((self.lifetime / 60.0 ) / 60.0))
+        if hours == 0:
+            hours = 1
+        cmd += ' -valid %d:00 ' % hours
         cmd += ' -out %s ' % self.proxyfile
         # add extra arguments if needed
         if self.voms_args:
@@ -334,11 +333,10 @@ class ProxyHandler(threading.Thread):
             cmd += ' --stdin_pass '            
             cmd = "echo %s | %s" % ( self.myproxy_passphrase, cmd)
 
-        vomshours = ((self.lifetime / 60 )/ 60)
-        vomshours = int(math.floor((self.lifetime / 60.0 ) / 60.0))
-        if vomshours == 0:
-            vomshours = 1
-        cmd += ' --proxy_lifetime %d ' % vomshours
+        hours = int(math.floor((self.lifetime / 60.0 ) / 60.0))
+        if hours == 0:
+            hours = 1
+        cmd += ' --proxy_lifetime %d ' % hours
         cmd += ' --out %s ' % self.proxyfile
              
         # Run command
