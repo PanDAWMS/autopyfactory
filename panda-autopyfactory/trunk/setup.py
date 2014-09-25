@@ -34,6 +34,7 @@ etc_files = ['etc/autopyfactory.conf-example',
              'etc/queues.conf-example',
              'etc/proxy.conf-example',
              'etc/monitor.conf-example',
+             'etc/mappings.conf-example',
              'etc/autopyfactory.sysconfig-example',
              'etc/proxymanager.sysconfig-example',
              ]
