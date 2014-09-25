@@ -77,6 +77,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         # ================================================================          
        
         self.jobstatus2info = self.apfqueue.factory.mappingscl.section2dict('CONDOREC2BATCHSTATUS-JOBSTATUS2INFO')
+        self.log.info('jobstatus2info mappings are %s' %self.jobstatus2info)
 
         ###self.jobstatus2info = {'0': 'pending',
         ###                       '1': 'pending',
