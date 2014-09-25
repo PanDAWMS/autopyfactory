@@ -388,6 +388,9 @@ class ProxyHandler(threading.Thread):
         Checks status of current proxy.         
         Returns proxy timeleft in seconds (0 for expired or non-existent proxy)
         '''
+        # FIXME: this method is almost 100% identical to _checkVOMSTimeLeft()
+        #        figure out how to eliminate so much duplicate code
+
         self.log.debug("[%s] Begin..." % self.name)
         r = 0
         if os.path.exists(self.proxyfile):
