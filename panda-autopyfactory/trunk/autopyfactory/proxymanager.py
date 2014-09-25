@@ -461,6 +461,9 @@ class ProxyHandler(threading.Thread):
         timestamp = '%s-%s-%s %s:%s:%s (UTC)' %time.gmtime()[:6]
         host = '[%s] : ' %socket.gethostname()
 
+        proxytimeleft = self._checkVOMSTimeLeft()
+        vomstimeleft = self._checkVOMSTimeLeft()
+
         # check the file exists
         if not os.path.exists(self.proxyfile):
             err_msg = "proxy file %s does not exist" %self.proxyfile
@@ -470,9 +473,8 @@ class ProxyHandler(threading.Thread):
             return 1
         
         # check time of the VOMS part of a proxy
-        timeleft = self._checkVOMSTimeLeft()
-        if timeleft < self.minlife:
-            err_msg = "VOMS attributes for file %s has too short timeleft = %s" %(self.proxyfile, timeleft)
+        if proxytimeleft < self.minlife:
+            err_msg = "VOMS attributes for file %s has too short timeleft = %s" %(self.proxyfile, proxytimeleft)
             self.log.critical(err_msg)
             err_msg = timestamp + host + err_msg
             self.manager.factory.sendAdminEmail(email_subject, err_msg)
@@ -480,7 +482,6 @@ class ProxyHandler(threading.Thread):
 
         # check proxy timeleft is higher than VOMS timeleft
         proxytimeleft = self._checkProxyTimeLeft()
-        vomstimeleft = self._checkVOMSTimeLeft()
         if proxytimeleft < vomstimeleft:
             err_msg = "proxy timeleft (%s) is shorter than VOMS timelife (%s) for file %s" %(proxytimeleft, vomstimeleft, self.proxyfile)
             self.log.warning(err_msg)
