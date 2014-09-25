@@ -65,7 +65,7 @@ class CondorWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         # ================================================================
         
         self.jobstatus2info = self.apfqueue.factory.mappingscl.section2dict('CONDORWMSSTATUS-JOBSTATUS2INFO')
-        self.log.info('jobstatus2info mappings are %s' self.jobstatus2info)
+        self.log.info('jobstatus2info mappings are %s' %self.jobstatus2info)
         ###self.jobstatus2info = {'0': 'ready',
         ###                       '1': 'ready',
         ###                       '2': 'running',
