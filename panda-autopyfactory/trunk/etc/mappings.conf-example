@@ -1,3 +1,10 @@
+#
+# mappings between the different systems (Panda, Condor...) 
+# and internal AutoPyFactory nomenclature.
+# Do not touch it unless you really know what you are doing. 
+# Changes in these mappings can change completely the behavior of the factory.
+#
+
 [CONDORBATCHSTATUS-GLOBUSSTATUS2INFO]
 1   = pending
 2   = running
