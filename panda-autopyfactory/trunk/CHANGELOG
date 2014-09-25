@@ -1,3 +1,6 @@
+* mappings.conf created.
+  plugins now read the mappings from that config file, instead of having hardcoded dictionaries.
+
 * explanation for "lifetime" and "minlife" fixed in proxy.conf-example, 
   and variable "vomshours" renamed as "hours" in proxymanager.
   doc updated.
