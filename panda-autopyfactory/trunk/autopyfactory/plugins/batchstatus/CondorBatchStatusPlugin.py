@@ -74,22 +74,26 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         #                     M A P P I N G S 
         # ================================================================
         
-        self.globusstatus2info = {'1':   'pending',
-                                  '2':   'running',
-                                  '4':   'done',
-                                  '8':   'done',
-                                  '16':  'suspended',
-                                  '32':  'pending',
-                                  '64':  'pending',
-                                  '128': 'running'}
-        
-        self.jobstatus2info = {'0': 'pending',
-                               '1': 'pending',
-                               '2': 'running',
-                               '3': 'done',
-                               '4': 'done',
-                               '5': 'suspended',
-                               '6': 'running'}
+
+        self.globusstatus2info = self.apfqueue.factory.mappingscl.section2dict('CONDORBATCHSTATUS-GLOBUSSTATUS2INFO')
+        self.jobstatus2info = self.apfqueue.factory.mappingscl.section2dict('CONDORBATCHSTATUS-JOBSTATUS2INFO')
+
+        ###self.globusstatus2info = {'1':   'pending',
+        ###                          '2':   'running',
+        ###                          '4':   'done',
+        ###                          '8':   'done',
+        ###                          '16':  'suspended',
+        ###                          '32':  'pending',
+        ###                          '64':  'pending',
+        ###                          '128': 'running'}
+        ###
+        ###self.jobstatus2info = {'0': 'pending',
+        ###                       '1': 'pending',
+        ###                       '2': 'running',
+        ###                       '3': 'done',
+        ###                       '4': 'done',
+        ###                       '5': 'suspended',
+        ###                       '6': 'running'}
 
 
         # variable to record when was last time info was updated

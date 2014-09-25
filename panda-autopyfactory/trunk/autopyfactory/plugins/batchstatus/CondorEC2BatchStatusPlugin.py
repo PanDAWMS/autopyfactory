@@ -76,13 +76,15 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         #                     M A P P I N G S 
         # ================================================================          
        
-        self.jobstatus2info = {'0': 'pending',
-                               '1': 'pending',
-                               '2': 'running',
-                               '3': 'done',
-                               '4': 'done',
-                               '5': 'suspended',
-                               '6': 'running'}
+        self.jobstatus2info = self.apfqueue.factory.mappingscl.section2dict('CONDOREC2BATCHSTATUS-JOBSTATUS2INFO')
+
+        ###self.jobstatus2info = {'0': 'pending',
+        ###                       '1': 'pending',
+        ###                       '2': 'running',
+        ###                       '3': 'done',
+        ###                       '4': 'done',
+        ###                       '5': 'suspended',
+        ###                       '6': 'running'}
 
         # variable to record when was last time info was updated
         # the info is recorded as seconds since epoch
