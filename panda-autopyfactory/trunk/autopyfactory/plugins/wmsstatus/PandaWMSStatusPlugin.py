@@ -551,6 +551,7 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 return None 
                 
         self.jobsstatisticspersite2info = self.apfqueue.factory.mappingscl.section2dict('PANDAWMSSTATUS-JOBSSTATISTICSPERSITE2INFO')
+        self.log.info('jobsstatisticspersite2info mappings are %s' %self.jobsstatisticspersite2info)
         ###self.jobsstatisticspersite2info = {'pending'     : 'notready',
         ###                                   'defined'     : 'notready',
         ###                                   'assigned'    : 'notready',
