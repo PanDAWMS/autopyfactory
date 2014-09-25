@@ -64,13 +64,14 @@ class CondorWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         #                     M A P P I N G S 
         # ================================================================
         
-        self.jobstatus2info = {'0': 'ready',
-                               '1': 'ready',
-                               '2': 'running',
-                               '3': 'done',
-                               '4': 'done',
-                               '5': 'failed',
-                               '6': 'running'}
+        self.jobstatus2info = self.apfqueue.factory.mappingscl.section2dict('CONDORWMSSTATUS-JOBSTATUS2INFO')
+        ###self.jobstatus2info = {'0': 'ready',
+        ###                       '1': 'ready',
+        ###                       '2': 'running',
+        ###                       '3': 'done',
+        ###                       '4': 'done',
+        ###                       '5': 'failed',
+        ###                       '6': 'running'}
 
         # variable to record when was last time info was updated
         # the info is recorded as seconds since epoch

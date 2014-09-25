@@ -550,19 +550,20 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
                 self.log.error('Client.getJobStatisticsPerSite() failed.')
                 return None 
                 
-        self.jobsstatisticspersite2info = {'pending'     : 'notready',
-                                           'defined'     : 'notready',
-                                           'assigned'    : 'notready',
-                                           'waiting'     : 'notready',
-                                           'activated'   : 'ready',
-                                           'starting'    : 'running',
-                                           'sent'        : 'running',
-                                           'running'     : 'running',
-                                           'holding'     : 'running',
-                                           'transferring': 'running',
-                                           'finished'    : 'done',
-                                           'failed'      : 'failed',
-                                           'cancelled'   : 'failed'}
+        self.jobsstatisticspersite2info = self.apfqueue.factory.mappingscl.section2dict('PANDAWMSSTATUS-JOBSSTATISTICSPERSITE2INFO')
+        ###self.jobsstatisticspersite2info = {'pending'     : 'notready',
+        ###                                   'defined'     : 'notready',
+        ###                                   'assigned'    : 'notready',
+        ###                                   'waiting'     : 'notready',
+        ###                                   'activated'   : 'ready',
+        ###                                   'starting'    : 'running',
+        ###                                   'sent'        : 'running',
+        ###                                   'running'     : 'running',
+        ###                                   'holding'     : 'running',
+        ###                                   'transferring': 'running',
+        ###                                   'finished'    : 'done',
+        ###                                   'failed'      : 'failed',
+        ###                                   'cancelled'   : 'failed'}
 
         wmsstatusinfo = WMSStatusInfo()
         for wmssite in all_jobs_config.keys():
