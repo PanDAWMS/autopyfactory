@@ -32,6 +32,7 @@
 # queueConf
 # queueDirConf
 # monitorConf
+# mappingsConf
 # wmsstatus.maxtime
 # wmsstatus.panda.sleep
 
@@ -124,6 +125,9 @@
 #
 # monitorConf = local path to the configuration file for Monitor plugins.
 #
+# mappingsConf = local path to the configuration file with the mappings:
+#                for example, globus2info, jobstatus2info, etc.
+#
 # wmsstatus.maximum = maximum time while the info is considered reasonable. 
 #               If info stored is older than that, is considered not valid, 
 #               and some NULL output will be returned.
@@ -149,6 +153,8 @@ proxymanager.enabled = True
 proxymanager.sleep = 30
 
 monitorConf = /etc/autopyfactory/monitor.conf
+
+mappingsConf = /etc/autopyfactory/mappings.conf
 
 cycles = None
 cleanlogs.keepdays = 14
