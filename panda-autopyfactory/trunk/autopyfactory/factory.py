@@ -526,6 +526,20 @@ class Factory(object):
 
         self.log.debug("mcl is %s" % self.mcl)
 
+        # Handle mappings configuration
+        self.mappingscl = None      # mappings config loader object
+        self.mappingscf = self.fcl.generic_get('Factory', 'mappingsConf') 
+        self.log.debug("mappings.conf file(s) = %s" % self.mappingscf)
+
+        try:
+            self.mappingscl = ConfigManager().getConfig(self.mappingscf)
+        except ConfigFailure, e:
+            self.log.error('Failed to create ConfigLoader object for mappings')
+            sys.exit(0)
+        
+        self.log.debug("mappingscl is %s" % self.mappingscl)
+
+
         # Handle Log Serving
         self._initLogserver()
 
