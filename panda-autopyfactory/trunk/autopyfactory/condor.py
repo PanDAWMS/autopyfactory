@@ -358,13 +358,18 @@ def node2dict(node):
     
     
     '''
+    log = logging.getLogger()
     dic = {}
     for child in node.childNodes:
         if child.nodeType == child.ELEMENT_NODE:
             key = child.attributes['n'].value
+            #log.debug("child 'n' key is %s" % key)
             if len(child.childNodes[0].childNodes) > 0:
-                value = child.childNodes[0].firstChild.data
-                dic[key.lower()] = str(value)
+                try:
+                    value = child.childNodes[0].firstChild.data
+                    dic[key.lower()] = str(value)
+                except AttributeError:
+                    dic[key.lower()] = 'NONE'
     return dic
 
 
