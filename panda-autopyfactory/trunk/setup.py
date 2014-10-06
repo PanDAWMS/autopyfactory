@@ -60,7 +60,7 @@ rpm_data_files=[#('/etc/autopyfactory', libexec_files),
                 ('/etc/init.d', initd_files),
                 ('/etc/sysconfig', sysconfig_files),
                 ('/etc/logrotate.d', logrotate_files),                                        
-                ('/usr/share/doc/autopyfactory', docs_files),                                        
+                ('/usr/share/doc/autopyfactory-%s' % (release_version), docs_files),                                        
                ]
 
 home_data_files=[#('etc', libexec_files),
