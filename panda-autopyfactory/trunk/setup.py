@@ -38,14 +38,14 @@ etc_files = ['etc/autopyfactory.conf',
              ]
 
 sysconfig_files = [
-             'etc/autopyfactory.sysconfig',
-             'etc/proxymanager.sysconfig',
+             'etc/sysconfig/autopyfactory',
+             'etc/sysconfig/proxymanager',
 ]
 
 initd_files = ['etc/autopyfactory',
                'etc/proxymanager']
 
-logrotate_files = ['etc/autopyfactory.logrotate',]
+logrotate_files = ['etc/logrotate/autopyfactory',]
 
 # docs files:
 #   --everything in the docs/ directory
