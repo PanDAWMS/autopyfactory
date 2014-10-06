@@ -1,3 +1,5 @@
+* removed the handling of sysconfig files in rpm-post.sh
+
 * removed suffix -example from every file in etc/ and in setup.py
 
 * moving sysconfig files directly into /etc/sysconfig in setup.py
