@@ -35,9 +35,12 @@ etc_files = ['etc/autopyfactory.conf',
              'etc/proxy.conf',
              'etc/monitor.conf',
              'etc/mappings.conf',
+             ]
+
+sysconfig_files = [
              'etc/autopyfactory.sysconfig',
              'etc/proxymanager.sysconfig',
-             ]
+]
 
 initd_files = ['etc/autopyfactory',
                'etc/proxymanager']
@@ -52,17 +55,19 @@ docs_files.append('RELEASE_NOTES')
 
 # -----------------------------------------------------------
 
-rpm_data_files=[#('/etc/autopyfactory',           libexec_files),
-                ('/etc/autopyfactory',           etc_files),
-                ('/etc/init.d',        initd_files),
-                ('/etc/logrotate.d',   logrotate_files),                                        
+rpm_data_files=[#('/etc/autopyfactory', libexec_files),
+                ('/etc/autopyfactory', etc_files),
+                ('/etc/init.d', initd_files),
+                ('/etc/sysconfig', sysconfig_files),
+                ('/etc/logrotate.d', logrotate_files),                                        
                 ('/usr/share/doc/autopyfactory', docs_files),                                        
                ]
 
-home_data_files=[#('etc',       libexec_files),
-                 ('etc',       etc_files),
-                 ('etc',       initd_files),
-                 ('doc/autopyfactory',   docs_files ),
+home_data_files=[#('etc', libexec_files),
+                 ('etc', etc_files),
+                 ('etc', initd_files),
+                 ('etc', sysconfig_files),
+                 ('doc/autopyfactory', docs_files),
                 ]
 
 # -----------------------------------------------------------
