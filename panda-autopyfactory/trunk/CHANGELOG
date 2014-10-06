@@ -1,3 +1,5 @@
+* removed suffix -example from every file in /etc/ 
+
 * mappings.conf created.
   plugins now read the mappings from that config file, instead of having hardcoded dictionaries.
 
