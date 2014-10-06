@@ -4,3 +4,5 @@ include etc/*
 include libexec/*
 include misc/*
 include docs/*
+include etc/sysconfig/*
+include etc/logrotate/*
