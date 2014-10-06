@@ -1,4 +1,6 @@
-* removed suffix -example from every file in /etc/ 
+* removed suffix -example from every file in etc/ and in setup.py
+
+* moving sysconfig files directly into /etc/sysconfig in setup.py
 
 * mappings.conf created.
   plugins now read the mappings from that config file, instead of having hardcoded dictionaries.
