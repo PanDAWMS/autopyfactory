@@ -30,13 +30,13 @@ if major == 2:
 
 libexec_files = ['libexec/%s' %file for file in os.listdir('libexec') if os.path.isfile('libexec/%s' %file)]
 
-etc_files = ['etc/autopyfactory.conf-example',
-             'etc/queues.conf-example',
-             'etc/proxy.conf-example',
-             'etc/monitor.conf-example',
-             'etc/mappings.conf-example',
-             'etc/autopyfactory.sysconfig-example',
-             'etc/proxymanager.sysconfig-example',
+etc_files = ['etc/autopyfactory.conf',
+             'etc/queues.conf',
+             'etc/proxy.conf',
+             'etc/monitor.conf',
+             'etc/mappings.conf',
+             'etc/autopyfactory.sysconfig',
+             'etc/proxymanager.sysconfig',
              ]
 
 initd_files = ['etc/autopyfactory',
