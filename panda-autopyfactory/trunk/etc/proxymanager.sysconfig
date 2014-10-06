@@ -13,11 +13,11 @@
 #
 # Override default conffile path if desired. 
 #
-# CONFFILE=/etc/apf/proxy.conf
+# CONFFILE=/etc/autopyfactory/proxy.conf
 # CONFFILE="/usatlas/us/caballer/etc/proxy.conf"
 
-OPTIONS="--debug --log=/var/log/apf/proxymanager.log"
-CONSOLE_LOG=/var/log/apf/proxyconsole.log
+OPTIONS="--debug --log=/var/log/autopyfactory/proxymanager.log"
+CONSOLE_LOG=/var/log/autopyfactory/proxyconsole.log
 
 #
 # Use this to provide voms-proxy-* on the path if it is not pre-setup by
