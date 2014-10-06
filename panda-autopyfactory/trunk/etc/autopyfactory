@@ -63,14 +63,14 @@ f_factdir
 
 if [ `id -u` = 0 ]; then
     APFHEAD=/
-    SYSCONF=/etc/sysconfig/autopyfactory.sysconfig
+    SYSCONF=/etc/sysconfig/autopyfactory
     BINDIR=/usr/bin
     ETCDIR=/etc/autopyfactory
     PIDFILE=/var/run/autopyfactory.pid
 else
     APFHEAD=`dirname $FACTDIR`
 
-    SYSCONF=$APFHEAD/etc/autopyfactory.sysconfig
+    SYSCONF=$APFHEAD/etc/autopyfactory
     BINDIR=$APFHEAD/bin
     ETCDIR=$APFHEAD/etc
     PIDFILE=$APFHEAD/var/run/autopyfactory.pid

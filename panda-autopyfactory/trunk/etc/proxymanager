@@ -62,14 +62,14 @@ done
 f_factdir
 
 if [ `id -u` = 0 ]; then
-    SYSCONF=/etc/sysconfig/proxymanager.sysconfig
+    SYSCONF=/etc/sysconfig/proxymanager
     BINDIR=/usr/bin
     ETCDIR=/etc/autopyfactory
     PIDFILE=/var/run/proxymanager.pid
 else
     APFHEAD=`dirname $FACTDIR`
 
-    SYSCONF=$APFHEAD/etc/proxymanager.sysconfig
+    SYSCONF=$APFHEAD/etc/proxymanager
     BINDIR=$APFHEAD/bin
     ETCDIR=$APFHEAD/etc
     PIDFILE=$APFHEAD/var/run/proxymanager.pid
@@ -107,7 +107,7 @@ check() {
 create_var_run(){
     # function to create directory  $APFHEAD/var/run 
     # if it does not exist. 
-    # It is needed to place the file autopyfactory.pid 
+    # It is needed to place the file proxymanager.pid 
     if [ ! -d $APFHEAD/var/run/ ]; then
         mkdir -p $APFHEAD/var/run/
     fi
@@ -125,7 +125,7 @@ start() {
             $BINDIR/proxymanager --conf $CONFFILE $OPTIONS &
         fi
         
-        # NOTE: $OPTIONS is defined in proxymanager.sysconfig
+        # NOTE: $OPTIONS is defined in proxymanager
         RETVAL=$?
 	    [ $RETVAL -eq 0 ] && echo $! > $PIDFILE
 	    [ "$?" -eq 0 ] && success $"proxymanager startup" || failure $"proxymanager startup"
@@ -140,7 +140,7 @@ stop() {
 
 	check
 	echo -n $"Stopping Proxymanager daemon: "
-	killproc -p $PIDFILE autopyfactory
+	killproc -p $PIDFILE proxymanager
 	RETVAL=$?
 	[ $RETVAL -eq 0 ] && rm -f $PIDFILE
 	echo
@@ -190,7 +190,7 @@ condrestart)
 	fi
 	;;
 status)
-	status autopyfactory
+	status proxymanager
 	RETVAL=$?
 	;;
 *)
