@@ -51,7 +51,7 @@ logrotate_files = ['etc/logrotate/autopyfactory',]
 #   --everything in the docs/ directory
 #   -- RELEASE_NOTES file 
 docs_files = ['docs/%s' %file for file in os.listdir('docs') if os.path.isfile('docs/%s' %file)]
-#docs_files.append('RELEASE_NOTES')
+
 
 # -----------------------------------------------------------
 
@@ -60,7 +60,7 @@ rpm_data_files=[#('/etc/autopyfactory', libexec_files),
                 ('/etc/init.d', initd_files),
                 ('/etc/sysconfig', sysconfig_files),
                 ('/etc/logrotate.d', logrotate_files),                                        
-                ('/usr/share/doc/autopyfactory-%s' % release_version, docs_files),                                        
+                ('/usr/share/doc/autopyfactory', docs_files),                                        
                ]
 
 
