@@ -10,13 +10,13 @@ chmod ugo+x /etc/init.d/autopyfactory
 # By default on install set factory off?
 #/sbin/chkconfig autopyfactory off
 
-#  check that factory.sysconfig has been placed in /etc/sysconfig/factory.sysconfig 
-SYSCONF=/etc/sysconfig/autopyfactory
-SYSCONFEXAMPLE=/etc/autopyfactory/autopyfactory.sysconfig-example
-if [ ! -f $SYSCONF ] ; then 
-        cp $SYSCONFEXAMPLE $SYSCONF
-fi
-
+####  check that factory.sysconfig has been placed in /etc/sysconfig/factory.sysconfig 
+###SYSCONF=/etc/sysconfig/autopyfactory
+###SYSCONFEXAMPLE=/etc/autopyfactory/autopyfactory.sysconfig-example
+###if [ ! -f $SYSCONF ] ; then 
+###        cp $SYSCONFEXAMPLE $SYSCONF
+###fi
+   
 
 # --- install the man pages, only if root  ---
 gzip /usr/share/doc/autopyfactory/autopyfactory.1
