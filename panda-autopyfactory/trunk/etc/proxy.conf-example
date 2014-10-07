@@ -125,36 +125,41 @@ initdelay = 0
 #  If renew is set to false, then no grid client setup is necessary. 
 renew = True
 
-[atlas-usatlas]
-vorole = atlas:/atlas/usatlas
-proxyfile = /tmp/atlasProxy
 
-[atlas-production]
-# baseproxy = /tmp/plainProxy
-vorole = atlas:/atlas/Role=production
-proxyfile = /tmp/prodProxy
 
-#[osgvo]
-#vorole = osg:/osg
+# ------------------------------------------
+#  pre - configured sections as examples
+# ------------------------------------------
 
-# MyProxy proxy retrieved by certificate authentication
-[atlas-userproxy-one]
-myproxy_username = apfuser1
-flavor = myproxy
-initdelay = 15
-myproxy_hostname = myproxy.cern.ch
-vorole = atlas:/atlas/usatlas
-proxyfile = /tmp/userProxyOne
-retriever_list = atlas-production
-
-# MyProxy proxy retrieved by passphrase authentication
-[atlas-userproxy-two]
-myproxy_username = apfproxy
-flavor = myproxy
-# No init delay needed for passphrase retrieval
-initdelay = 0
-myproxy_hostname = myproxy.cern.ch
-vorole = atlas:/atlas/usatlas
-proxyfile = /tmp/userProxyTwo
-myproxy_passphrase = ppfortwo
-
+#   [atlas-usatlas]
+#   vorole = atlas:/atlas/usatlas
+#   proxyfile = /tmp/atlasProxy
+#   
+#   [atlas-production]
+#   vorole = atlas:/atlas/Role=production
+#   proxyfile = /tmp/prodProxy
+#   
+#   [osgvo]
+#   vorole = osg:/osg
+#   
+#   # MyProxy proxy retrieved by certificate authentication
+#   [atlas-userproxy-one]
+#   myproxy_username = apfuser1
+#   flavor = myproxy
+#   initdelay = 15
+#   myproxy_hostname = myproxy.cern.ch
+#   vorole = atlas:/atlas/usatlas
+#   proxyfile = /tmp/userProxyOne
+#   retriever_list = atlas-production
+#   
+#   # MyProxy proxy retrieved by passphrase authentication
+#   [atlas-userproxy-two]
+#   myproxy_username = apfproxy
+#   flavor = myproxy
+#   # No init delay needed for passphrase retrieval
+#   initdelay = 0
+#   myproxy_hostname = myproxy.cern.ch
+#   vorole = atlas:/atlas/usatlas
+#   proxyfile = /tmp/userProxyTwo
+#   myproxy_passphrase = ppfortwo
+#   

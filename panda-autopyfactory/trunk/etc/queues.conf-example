@@ -1022,25 +1022,25 @@ enabled = True
 #               Local Condor example
 # ---------------------------------------------------------------------- 
 
-[ANALY_BNL_CLOUD-sl6]
-enabled = False
-
-wmsqueue = ANALY_BNL_CLOUD
-batchqueue = ANALY_BNL_CLOUD
-
-batchstatusplugin = Condor
-batchsubmit = CondorLocal
-
-batchsubmit.condorlocal.condor_attributes =  Requirements = ( Arch == "X86_64" && OpSysAndVer == "SL6" && NodeType == "atlas" ) ,request_memory = 1699 ,+AccountingGroup = "group_analy.apf"
-batchsubmit.condorlocal.proxy = atlas-production
-
-schedplugin = Ready, MinPerCycle, MaxPerCycle, MaxPending
-sched.minpercycle.minimum = 10
-sched.maxpercycle.maximum = 20
-sched.maxpending.maximum = 50
-
-# These arguments are passed through to the payload job (e.g., the Panda pilot). 
-executable.arguments = %(executable.defaultarguments)s --script=pilot.py --libcode=pilotcode.tar.gz,pilotcode-rc.tar.gz --pilotsrcurl=http://panda.cern.ch:25880/cache --user user
+#   [ANALY_BNL_CLOUD-sl6]
+#   enabled = False
+#   
+#   wmsqueue = ANALY_BNL_CLOUD
+#   batchqueue = ANALY_BNL_CLOUD
+#   
+#   batchstatusplugin = Condor
+#   batchsubmit = CondorLocal
+#   
+#   batchsubmit.condorlocal.condor_attributes =  Requirements = ( Arch == "X86_64" && OpSysAndVer == "SL6" && NodeType == "atlas" ) ,request_memory = 1699 ,+AccountingGroup = "group_analy.apf"
+#   batchsubmit.condorlocal.proxy = atlas-production
+#   
+#   schedplugin = Ready, MinPerCycle, MaxPerCycle, MaxPending
+#   sched.minpercycle.minimum = 10
+#   sched.maxpercycle.maximum = 20
+#   sched.maxpending.maximum = 50
+#   
+#   # These arguments are passed through to the payload job (e.g., the Panda pilot). 
+#   executable.arguments = %(executable.defaultarguments)s --script=pilot.py --libcode=pilotcode.tar.gz,pilotcode-rc.tar.gz --pilotsrcurl=http://panda.cern.ch:25880/cache --user user
 
 
 
@@ -1048,80 +1048,80 @@ executable.arguments = %(executable.defaultarguments)s --script=pilot.py --libco
 #               GRAM example
 # ---------------------------------------------------------------------- 
 
-[ANALY_BNL_ATLAS_1]
-enabled = False
-
-wmsqueue = ANALY_BNL_ATLAS_1
-batchqueue = ANALY_BNL_ATLAS_1-condor
-
-batchsubmit.condorgt2.gridresource = gridgk05.racf.bnl.gov/jobmanager-condor
-batchsubmit.condorgt2.queue = short
-batchsubmit.condorgt2.condor_attributes = periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
-batchsubmit.condorgt2.proxy = atlas-production
-
-schedplugin = Ready, MinPerCycle, MaxPerCycle, MaxPending
-sched.minpercycle.minimum = 10
-sched.maxpercycle.maximum = 20
-sched.maxpending.maximum = 50
-
-# These arguments are passed through to the payload job (e.g., the Panda pilot). 
-executable.arguments = %(executable.defaultarguments)s --script=pilot.py --libcode=pilotcode.tar.gz,pilotcode-rc.tar.gz --pilotsrcurl=http://panda.cern.ch:25880/cache --user user
-
-# If using runpilot3.sh, you only need the defaultarguments, as it seems the payload args are not necessary. 
-# executable.arguments = %(executable.defaultarguments)s
+#   [ANALY_BNL_ATLAS_1]
+#   enabled = False
+#   
+#   wmsqueue = ANALY_BNL_ATLAS_1
+#   batchqueue = ANALY_BNL_ATLAS_1-condor
+#   
+#   batchsubmit.condorgt2.gridresource = gridgk05.racf.bnl.gov/jobmanager-condor
+#   batchsubmit.condorgt2.queue = short
+#   batchsubmit.condorgt2.condor_attributes = periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
+#   batchsubmit.condorgt2.proxy = atlas-production
+#   
+#   schedplugin = Ready, MinPerCycle, MaxPerCycle, MaxPending
+#   sched.minpercycle.minimum = 10
+#   sched.maxpercycle.maximum = 20
+#   sched.maxpending.maximum = 50
+#   
+#   # These arguments are passed through to the payload job (e.g., the Panda pilot). 
+#   executable.arguments = %(executable.defaultarguments)s --script=pilot.py --libcode=pilotcode.tar.gz,pilotcode-rc.tar.gz --pilotsrcurl=http://panda.cern.ch:25880/cache --user user
+#   
+#   # If using runpilot3.sh, you only need the defaultarguments, as it seems the payload args are not necessary. 
+#   # executable.arguments = %(executable.defaultarguments)s
 
 
 # ---------------------------------------------------------------------- 
 #               CREAM example
 # ---------------------------------------------------------------------- 
 
-[RAL-LCG2-lcgce04-grid3000M-pbs-3379]
-enabled = False
-
-batchqueue = RAL-LCG2-lcgce04-grid3000M-pbs
-wmsqueue = RAL-LCG2
-
-batchsubmitplugin = CondorCREAM
-
-batchsubmit.condorcream.webservice = lcgce04.gridpp.rl.ac.uk
-batchsubmit.condorcream.port = 8443
-batchsubmit.condorcream.batch = pbs
-batchsubmit.condorcream.queue = grid3000M 
-batchsubmit.condorcream.condor_attributes = periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
-batchsubmit.condorcream.proxy = atlas-production
-
-schedplugin = Ready, MinPerCycle, MaxPerCycle, MaxPending
-sched.minpercycle.minimum = 10
-sched.maxpercycle.maximum = 20
-sched.maxpending.maximum = 50
-
-# These arguments are passed through to the payload job (e.g., the Panda pilot). 
-executable.arguments = %(executable.defaultarguments)s --script=pilot.py --libcode=pilotcode.tar.gz,pilotcode-rc.tar.gz --pilotsrcurl=http://panda.cern.ch:25880/cache --user user
-
-# If using runpilot3.sh, you only need the defaultarguments, as it seems the payload args are not necessary. 
-# executable.arguments = %(executable.defaultarguments)s
+#   [RAL-LCG2-lcgce04-grid3000M-pbs-3379]
+#   enabled = False
+#   
+#   batchqueue = RAL-LCG2-lcgce04-grid3000M-pbs
+#   wmsqueue = RAL-LCG2
+#   
+#   batchsubmitplugin = CondorCREAM
+#   
+#   batchsubmit.condorcream.webservice = lcgce04.gridpp.rl.ac.uk
+#   batchsubmit.condorcream.port = 8443
+#   batchsubmit.condorcream.batch = pbs
+#   batchsubmit.condorcream.queue = grid3000M 
+#   batchsubmit.condorcream.condor_attributes = periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
+#   batchsubmit.condorcream.proxy = atlas-production
+#   
+#   schedplugin = Ready, MinPerCycle, MaxPerCycle, MaxPending
+#   sched.minpercycle.minimum = 10
+#   sched.maxpercycle.maximum = 20
+#   sched.maxpending.maximum = 50
+#   
+#   # These arguments are passed through to the payload job (e.g., the Panda pilot). 
+#   executable.arguments = %(executable.defaultarguments)s --script=pilot.py --libcode=pilotcode.tar.gz,pilotcode-rc.tar.gz --pilotsrcurl=http://panda.cern.ch:25880/cache --user user
+#   
+#   # If using runpilot3.sh, you only need the defaultarguments, as it seems the payload args are not necessary. 
+#   # executable.arguments = %(executable.defaultarguments)s
 
 
 # ---------------------------------------------------------------------- 
 #               Nordugrid example
 # ---------------------------------------------------------------------- 
 
-[ANALY_LRZ]
-enabled = False
-
-wmsqueue = ANALY_LRZ 
-batchqueue = ANALY_LRZ
-
-batchsubmitplugin = CondorNordugrid
-batchsubmit.condornordugrid.gridresource = lcg-lrz-ce2.grid.lrz.de 
-nordugridrsl.jobname = 'analy_pilot'
-nordugridrsl.queue = lcg
-nordugridrsl.nordugridrsladd = (runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY )
-nordugridrsl.addenv.RUCIO_ACCOUNT = pilot
-
-schedplugin = Ready, MinPerCycle, MaxPerCycle, MaxPending
-sched.minpercycle.minimum = 10
-sched.maxpercycle.maximum = 20
-sched.maxpending.maximum = 50
-
-executable.arguments = %(executable.defaultarguments)s --script=pilot.py --libcode=pilotcode.tar.gz,pilotcode-rc.tar.gz --pilotsrcurl=http://panda.cern.ch:25880/cache --user user
+#   [ANALY_LRZ]
+#   enabled = False
+#   
+#   wmsqueue = ANALY_LRZ 
+#   batchqueue = ANALY_LRZ
+#   
+#   batchsubmitplugin = CondorNordugrid
+#   batchsubmit.condornordugrid.gridresource = lcg-lrz-ce2.grid.lrz.de 
+#   nordugridrsl.jobname = 'analy_pilot'
+#   nordugridrsl.queue = lcg
+#   nordugridrsl.nordugridrsladd = (runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY )
+#   nordugridrsl.addenv.RUCIO_ACCOUNT = pilot
+#   
+#   schedplugin = Ready, MinPerCycle, MaxPerCycle, MaxPending
+#   sched.minpercycle.minimum = 10
+#   sched.maxpercycle.maximum = 20
+#   sched.maxpending.maximum = 50
+#   
+#   executable.arguments = %(executable.defaultarguments)s --script=pilot.py --libcode=pilotcode.tar.gz,pilotcode-rc.tar.gz --pilotsrcurl=http://panda.cern.ch:25880/cache --user user

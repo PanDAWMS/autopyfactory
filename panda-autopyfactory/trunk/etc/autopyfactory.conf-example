@@ -141,7 +141,7 @@
 [Factory]
 
 factoryAdminEmail = neo@matrix.net
-factoryId = BNL-gridui11-jhover
+factoryId = MYSITE-hostname-sysadminname
 factorySMTPServer = mail.matrix.net
 factoryUser = autopyfactory
 enablequeues = True
