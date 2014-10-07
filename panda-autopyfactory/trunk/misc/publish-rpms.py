@@ -14,7 +14,7 @@ import re
 import shutil
 
 
-PKGNAME="panda-autopyfactory"
+PKGNAME="autopyfactory"
 REPOROOT="/afs/usatlas.bnl.gov/mgmt/repo/grid"
 REGENCMD="/afs/usatlas.bnl.gov/mgmt/repo/regen-repos.py"
 ARCHS=['i386','x86_64']
