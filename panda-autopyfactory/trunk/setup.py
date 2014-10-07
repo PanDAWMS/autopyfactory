@@ -30,23 +30,24 @@ if major == 2:
 
 libexec_files = ['libexec/%s' %file for file in os.listdir('libexec') if os.path.isfile('libexec/%s' %file)]
 
-etc_files = ['etc/autopyfactory.conf',
-             'etc/queues.conf',
-             'etc/proxy.conf',
-             'etc/monitor.conf',
-             'etc/mappings.conf',
+etc_files = ['etc/autopyfactory.conf-example',
+             'etc/queues.conf-example',
+             'etc/proxy.conf-example',
+             'etc/monitor.conf-example',
+             'etc/mappings.conf-example',
              ]
 
 sysconfig_files = [
-             'etc/sysconfig/autopyfactory',
-             'etc/sysconfig/proxymanager',
+             'etc/sysconfig/autopyfactory-example',
+             'etc/sysconfig/proxymanager-example',
 ]
+
+logrotate_files = ['etc/logrotate/autopyfactory-example',]
 
 initd_files = ['etc/autopyfactory',
                'etc/proxymanager']
 
-logrotate_files = ['etc/logrotate/autopyfactory',]
-
+# NOTES: the docs are actually handled by setup.cfg. They are moved directory under /usr/share/doc/autopyfactory-<version>/
 docs_files = ['docs/%s' %file for file in os.listdir('docs') if os.path.isfile('docs/%s' %file)]
 
 man_files = ['docs/man/%s' %file for file in os.listdir('docs/man') if os.path.isfile('docs/man/%s' %file)]
@@ -54,10 +55,10 @@ man_files = ['docs/man/%s' %file for file in os.listdir('docs/man') if os.path.i
 # -----------------------------------------------------------
 
 rpm_data_files=[#('/etc/autopyfactory', libexec_files),
-                ('/etc/autopyfactory', etc_files),
+                #('/etc/autopyfactory', etc_files),
+                #('/etc/sysconfig', sysconfig_files),
+                #('/etc/logrotate.d', logrotate_files),                                        
                 ('/etc/init.d', initd_files),
-                ('/etc/sysconfig', sysconfig_files),
-                ('/etc/logrotate.d', logrotate_files),                                        
                 #('/usr/share/doc/autopyfactory', docs_files),                                        
                 ('/tmp', man_files),                                        
                ]
