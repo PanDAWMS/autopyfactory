@@ -1,12 +1,13 @@
 #!/bin/bash
+
 #if [ -f /etc/autopyfactory/autopyfactory.conf.bak ] ; then
 #	cp -f /etc/autopyfactory/autopyfactory.conf /etc/autopyfactory/autopyfactory.conf.rpmnew
 #	cp -f /etc/autopyfactory/autopyfactory.conf.bak /etc/autopyfactory/autopyfactory.conf
 #fi
+
 chmod ugo+x /etc/init.d/autopyfactory
 #chmod ugo+x /usr/libexec/wrapper.sh
 /sbin/chkconfig --add autopyfactory
-
 # By default on install set factory off?
 #/sbin/chkconfig autopyfactory off
 
@@ -17,6 +18,11 @@ chmod ugo+x /etc/init.d/autopyfactory
 ###        cp $SYSCONFEXAMPLE $SYSCONF
 ###fi
    
+
+# WARNING: this should be done by the spec file, in %files section
+if [ ! -d /etc/autopyfactory/ ] ; then
+    mkdir /etc/autopyfactory/
+fi
 
 # --- install the man pages, only if root  ---
 gzip /tmp/autopyfactory.1
