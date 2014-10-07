@@ -127,7 +127,7 @@ start() {
 	# Check if it is already running
 	PROGRETVAL=0
 	if [ ! -f $PIDFILE ]; then
-		echo -n $"Starting APF daemon: "	
+		echo -n $"Starting AutoPyFactory daemon: "	
         create_var_run
         create_var_log
 	    # daemon --pidfile=${PIDFILE} "$BINDIR/autopyfactory --conf $CONFFILE $OPTIONS "
@@ -166,7 +166,7 @@ start() {
 stop() {
 
 	check
-	echo -n $"Stopping APF daemon: "
+	echo -n $"Stopping AutoPyFactory daemon: "
 	killproc -p $PIDFILE autopyfactory
 	RETVAL=$?
 	[ $RETVAL -eq 0 ] && rm -f $PIDFILE && success $"autopyfactory shutdown" || failure $"autopyfactory shutdown"
