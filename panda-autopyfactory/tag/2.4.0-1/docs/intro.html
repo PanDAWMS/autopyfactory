@@ -1,0 +1,27 @@
+<body>
+<a href=index.html>Index<a>
+
+<a name='introduction'><h1><span style="color: black; "><span>Introduction</span></span></h1></a>
+
+<p>ATLAS, one of the experiments at LHC at CERN, is one of the largest  users of grid computing infrastructure.  
+As this infrastructure is now a central part of the experiment's computing operations, 
+considerable efforts have been made to use this technology in the most efficient and effective way, including extensive use of pilot job based frameworks.</p>
+
+<p>In this model the experiment submits 'pilot' jobs to sites without  payload. When these jobs begin to run they contact a central service  to pick-up a real payload to execute.</p>
+
+<p>The first generation of pilot factories were usually specific to a single VO, and were very bound to the particular architecture of that VO. 
+A second generation is creating factories which are more flexible, not tied to any particular VO, 
+and provide for more features other than just pilot submission (such as monitoring, logging, profiling, etc.)</p>
+
+<p>AutoPyFactory has a modular design and is highly configurable. It is able to send different types of pilots to sites, able to exploit  
+different submission mechanisms and different charateristics of queues at sites. 
+It has excellent integration with the PanDA job submission framework, 
+tying pilot flows closely to the amount of work the site has to run. 
+It is able to gather information from many sources, in order to correctly conigure itself for a site and its decision logic can easily be updated.</p>
+
+<p>Integrated into AutoPyFactory is a very flexible system for delivering both 
+generic and specific wrappers which can perform many useful actions before starting to run end-user scientific applications, 
+e.g., validation of the middleware, node profiling and diagnostics, monitoring and deciding what is the best end-user application that fits the resource.</p>
+
+<p>AutoPyFactory now also has a robust monitoring system and we show how this has helped setup a reliable pilot factory service for ATLAS.</p>
+</body>
