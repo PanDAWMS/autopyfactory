@@ -117,7 +117,7 @@ initdelay = 0
 # If set, proxymanager will try to set the UNIX owner of the target proxy file accordingly. 
 # If unset, proxymanager will leave it owned by whatever user APF or the proxymanager is already 
 # running as. 
-# owner = apf
+# owner = autopyfactory
 
 #
 # If you don't want to use ProxyManager to renew proxies, set this  False
