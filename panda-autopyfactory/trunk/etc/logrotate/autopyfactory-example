@@ -1,4 +1,4 @@
-/var/log/autopyfactory/apf.log {
+/var/log/autopyfactory/autopyfactory.log {
   missingok
   notifempty
   sharedscripts
