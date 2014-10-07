@@ -1,12 +1,8 @@
-* reorganizing the docs/* files and the man/* files
+* reorganizing the docs/* files, etc/* files,  and the man/* files
 
 * added requirements from voms-clients and myproxy in setup.cfg
 
 * removed the handling of sysconfig files in rpm-post.sh
-
-* removed suffix -example from every file in etc/ and in setup.py
-
-* moving sysconfig files directly into /etc/sysconfig in setup.py
 
 * mappings.conf created.
   plugins now read the mappings from that config file, instead of having hardcoded dictionaries.
