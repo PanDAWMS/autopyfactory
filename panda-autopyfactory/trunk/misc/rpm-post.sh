@@ -19,17 +19,17 @@ chmod ugo+x /etc/init.d/autopyfactory
    
 
 # --- install the man pages, only if root  ---
-gzip /usr/share/doc/autopyfactory/autopyfactory.1
-mv -f /usr/share/doc/autopyfactory/autopyfactory.1.gz /usr/share/man/man1/
+gzip /tmp/autopyfactory.1
+mv -f /tmp/autopyfactory.1.gz /usr/share/man/man1/
 
-gzip /usr/share/doc/autopyfactory/autopyfactory-queues.conf.5
-mv -f /usr/share/doc/autopyfactory/autopyfactory-queues.conf.5.gz /usr/share/man/man5/
+gzip /tmp/autopyfactory-queues.conf.5
+mv -f /tmp/autopyfactory-queues.conf.5.gz /usr/share/man/man5/
 
-gzip /usr/share/doc/autopyfactory/autopyfactory-factory.conf.5
-mv -f /usr/share/doc/autopyfactory/autopyfactory-factory.conf.5.gz /usr/share/man/man5/ 
+gzip /tmp/autopyfactory-factory.conf.5
+mv -f /tmp/autopyfactory-factory.conf.5.gz /usr/share/man/man5/ 
 
-gzip /usr/share/doc/autopyfactory/autopyfactory-proxy.conf.5
-mv -f /usr/share/doc/autopyfactory/autopyfactory-proxy.conf.5.gz /usr/share/man/man5/ 
+gzip /tmp/autopyfactory-proxy.conf.5
+mv -f /tmp/autopyfactory-proxy.conf.5.gz /usr/share/man/man5/ 
 
-gzip /usr/share/doc/autopyfactory/autopyfactory-monitor.conf.5
-mv -f /usr/share/doc/autopyfactory/autopyfactory-monitor.conf.5.gz /usr/share/man/man5/  
+gzip /tmp/autopyfactory-monitor.conf.5
+mv -f /tmp/autopyfactory-monitor.conf.5.gz /usr/share/man/man5/  
