@@ -1,1 +1,1 @@
-17 3 * * * /usr/bin/cleanLogs.py --compress=3 --delete=10 --conf=/etc/apf/factory.conf
+17 3 * * * /usr/bin/cleanLogs.py --compress=3 --delete=10 --conf=/etc/autopyfactory/factory.conf
