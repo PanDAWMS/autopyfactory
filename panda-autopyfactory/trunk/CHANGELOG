@@ -1,3 +1,5 @@
+* reorganizing the docs/* files and the man/* files
+
 * added requirements from voms-clients and myproxy in setup.cfg
 
 * removed the handling of sysconfig files in rpm-post.sh
