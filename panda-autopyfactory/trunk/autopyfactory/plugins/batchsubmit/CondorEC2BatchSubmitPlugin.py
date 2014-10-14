@@ -234,7 +234,6 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
                 self.log.warning("Unable to retire node %s (%s) because it has an empty machine name." % (jobinfo.executeinfo.hostname,
                                                                                                           jobinfo.ec2instancename))
                 
-
     def _unretirenode(self, jobinfo):
         '''
         Do whatever is needed to tell the node to un-retire...
@@ -264,13 +263,23 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             # invoke ssh to retire node
         else:
             if machine.strip() != "":
-                # call condor_off locally
                 self.log.info("Trying local unretirement of node %s" % publicip)
+                cmd='condor_on -startd -name %s ' % machine  
+                self.log.debug("unretire cmd is %s" % cmd) 
+                before = time.time()
+                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                out = None
+                (out, err) = p.communicate()
+                delta = time.time() - before
+                self.log.debug('It took %s seconds to issue the command' %delta)
+                self.log.info('%s seconds to issue command' %delta)
+                if p.returncode == 0:
+                    self.log.debug('Leaving with OK return code.')
+                else:
+                    self.log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))          
             else:
                 self.log.warning("Unable to unretire node %s (%s) because it has an empty machine name." % (jobinfo.executeinfo.hostname,
                                                                                                           jobinfo.ec2instancename))
-             
-
     def cleanup(self):
         '''
         
