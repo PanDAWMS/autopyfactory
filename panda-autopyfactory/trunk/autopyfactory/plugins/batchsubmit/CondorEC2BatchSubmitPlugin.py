@@ -121,15 +121,16 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
                 numtounretire = n
                 numunretired = 0
                 for job in jobinfo:
-                    self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)
-                    stat = job.executeinfo.getStatus()
-                    if stat  == 'retiring':
-                        self._unretirenode(job)
-                        numtounretire = numtounretire - 1
-                        numunretired += 1
-                        self.log.debug("numtounretire = %d" % numtounretire)
-                        if numtounretire <= 0:
-                            break
+                    if job.executeinfo is not None:
+                        self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)
+                        stat = job.executeinfo.getStatus()
+                        if stat  == 'retiring':
+                            self._unretirenode(job)
+                            numtounretire = numtounretire - 1
+                            numunretired += 1
+                            self.log.debug("numtounretire = %d" % numtounretire)
+                    if numtounretire <= 0:
+                        break
                 self.log.info("Unretired %d VM jobs" % numunretired)
             else:
                 self.log.info("Some info unavailable. Do nothing.")    
