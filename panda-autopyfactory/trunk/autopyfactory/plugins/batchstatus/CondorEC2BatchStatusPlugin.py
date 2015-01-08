@@ -206,7 +206,10 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
 
                 # Query condor once
                 xmlout = querycondorxml()
+                # With no jobs, xmlout is empty string. 
                 dictlist = parseoutput(xmlout)
+                # With no jobs, dictlist is empty list '[]'
+
 
                 # use it to for stats and job-by-job processing...
                 newinfo = self._makeinfolist(dictlist)
@@ -270,7 +273,6 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                             # OK, not all jobs will be ec2 jobs. 
                                
                 # Update current info references
-                # curr
                 self.currentjobs = joblist
                 self.currentinfo = newinfo
             
@@ -325,11 +327,13 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         Input may be None        
         '''
         newinfo = None
-        if not dictlist:
-            self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
+        if dictlist is None:
+            self.log.warning('dictlist argument is None, Something wrong.') 
         else:
             aggdict = aggregateinfo(dictlist)
+            # Output of empty list is emptly dictionary
             newinfo = self._map2info(aggdict)
+            
         return newinfo
 
 
@@ -521,9 +525,11 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         Output:
             A BatchStatusInfo object which maps attribute counts to generic APF
             queue attribute counts.
-            
-    
         
+        An empty inbound dictionary results in returning 
+        default empty BatchStatusInfo object. 
+        
+                  
         '''
         self.log.debug('Starting.')
         batchstatusinfo = BatchStatusInfo()
@@ -646,8 +652,6 @@ class CondorSlotInfo(object):
     def __repr__(self):
         s = str(self)
         return s    
-
-
 
 
 class CondorExecuteInfo(object):
