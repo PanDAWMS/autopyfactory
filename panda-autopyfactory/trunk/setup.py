@@ -60,7 +60,7 @@ rpm_data_files=[#('/etc/autopyfactory', libexec_files),
                 #('/etc/logrotate.d', logrotate_files),                                        
                 ('/etc/init.d', initd_files),
                 #('/usr/share/doc/autopyfactory', docs_files),                                        
-                ('/tmp', man_files),                                        
+                #('/tmp', man_files),                                        
                ]
 
 
