@@ -24,18 +24,18 @@ if [ ! -d /etc/autopyfactory/ ] ; then
     mkdir /etc/autopyfactory/
 fi
 
-# --- install the man pages, only if root  ---
-gzip /tmp/autopyfactory.1
-mv -f /tmp/autopyfactory.1.gz /usr/share/man/man1/
-
-gzip /tmp/autopyfactory-queues.conf.5
-mv -f /tmp/autopyfactory-queues.conf.5.gz /usr/share/man/man5/
-
-gzip /tmp/autopyfactory-factory.conf.5
-mv -f /tmp/autopyfactory-factory.conf.5.gz /usr/share/man/man5/ 
-
-gzip /tmp/autopyfactory-proxy.conf.5
-mv -f /tmp/autopyfactory-proxy.conf.5.gz /usr/share/man/man5/ 
-
-gzip /tmp/autopyfactory-monitor.conf.5
-mv -f /tmp/autopyfactory-monitor.conf.5.gz /usr/share/man/man5/  
+#### --- install the man pages, only if root  ---
+###gzip /tmp/autopyfactory.1
+###mv -f /tmp/autopyfactory.1.gz /usr/share/man/man1/
+###
+###gzip /tmp/autopyfactory-queues.conf.5
+###mv -f /tmp/autopyfactory-queues.conf.5.gz /usr/share/man/man5/
+###
+###gzip /tmp/autopyfactory-factory.conf.5
+###mv -f /tmp/autopyfactory-factory.conf.5.gz /usr/share/man/man5/ 
+###
+###gzip /tmp/autopyfactory-proxy.conf.5
+###mv -f /tmp/autopyfactory-proxy.conf.5.gz /usr/share/man/man5/ 
+###
+###gzip /tmp/autopyfactory-monitor.conf.5
+###mv -f /tmp/autopyfactory-monitor.conf.5.gz /usr/share/man/man5/  
