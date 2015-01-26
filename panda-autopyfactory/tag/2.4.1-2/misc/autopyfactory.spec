@@ -6,7 +6,7 @@
 Summary: autopyfactory package
 Name: %{name}
 Version: %{version}
-Release: %{release}
+Release: %{release}%{?dist}
 Source0: %{name}-%{unmangled_version}.tar.gz
 License: GPL
 Group: Development/Libraries
