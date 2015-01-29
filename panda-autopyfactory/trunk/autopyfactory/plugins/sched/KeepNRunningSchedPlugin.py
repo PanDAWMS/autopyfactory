@@ -33,7 +33,7 @@ class KeepNRunningSchedPlugin(SchedInterface):
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
-    def calcSubmitNum(self, nsub=0):
+    def calcSubmitNum(self, n=0):
         """ 
         It just returns nb of Activated Jobs - nb of Pending Pilots
         """
@@ -46,7 +46,7 @@ class KeepNRunningSchedPlugin(SchedInterface):
             out = 0
             msg = "Invalid queueinfo"
         else:
-            (out, msg) = self._calc(nsub)
+            (out, msg) = self._calc(n)
             self.log.debug("Returning %d" % out)
         return (out, msg)
 
