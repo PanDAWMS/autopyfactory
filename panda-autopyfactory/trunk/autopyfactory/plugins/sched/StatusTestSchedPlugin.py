@@ -39,8 +39,8 @@ class StatusTestSchedPlugin(SchedInterface):
             msg = None
             if sitestatus == 'test':
                 self.log.info('Return=%s' %self.pilots_in_test_mode)
-                out= self.pilots_in_test_mode
-                msg='StatusTest,ret=%s' %self.pilots_in_test_mode
+                out = self.pilots_in_test_mode
+                msg = 'StatusTest,ret=%s' %self.pilots_in_test_mode
             else:
                 self.log.info('[Queue is not test] input=%s; Return=%s' %(n, out))
 
