@@ -15,7 +15,7 @@ import shutil
 
 
 PKGNAME="autopyfactory"
-REPOROOT="/afs/usatlas.bnl.gov/mgmt/repo/grid"
+REPOROOT="/afs/usatlas.bnl.gov/mgmt/repo/autopyfactory"
 REGENCMD="/afs/usatlas.bnl.gov/mgmt/repo/regen-repos.py"
 ARCHS=['i386','x86_64']
 PLATFORMS=['fedora','rhel']
@@ -30,7 +30,7 @@ RELEASEMAP={ 'Fedora release 14 (Laughlin)' : ('fedora','14'),
              'Red Hat Enterprise Linux Workstation release 6.3 (Santiago)' : ('rhel','6Workstation'),            
              'Red Hat Enterprise Linux Workstation release 6.4 (Santiago)' : ('rhel','6Workstation'),            
              'Red Hat Enterprise Linux Workstation release 6.5 (Santiago)' : ('rhel','6Workstation'),            
-
+             'Red Hat Enterprise Linux Workstation release 6.6 (Santiago)' : ('rhel','6Workstation'), 
             }
 RPMGLOB='.*.noarch.rpm$'
 RPMRE=re.compile(RPMGLOB, re.IGNORECASE)
