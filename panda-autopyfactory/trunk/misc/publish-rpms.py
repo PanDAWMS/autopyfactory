@@ -15,7 +15,7 @@ import shutil
 
 
 PKGNAME="autopyfactory"
-REPOROOT="/afs/usatlas.bnl.gov/mgmt/repo/autopyfactory"
+REPOROOTS=["/afs/usatlas.bnl.gov/mgmt/repo/autopyfactory","/afs/usatlas.bnl.gov/mgmt/repo/autopyfactory"]
 REGENCMD="/afs/usatlas.bnl.gov/mgmt/repo/regen-repos.py"
 ARCHS=['i386','x86_64']
 PLATFORMS=['fedora','rhel']
@@ -82,16 +82,17 @@ class DeployManager(object):
         
         # copy them to appropriate places. 
         for f in matches:
-            for r in self.repos:
-                for a in ARCHS:
-                    src = 'dist/%s' % f
-                    dst = "%s/%s/%s/%s/%s/" % ( REPOROOT, 
-                                          r ,
-                                          self.dist,
-                                          self.distver,
-                                          a ) 
-                    logging.info("%s -> %s" % (src,dst))
-                    shutil.copy(src,dst)
+            for o in REPOROOTS:
+                for r in self.repos:
+                    for a in ARCHS:
+                        src = 'dist/%s' % f
+                        dst = "%s/%s/%s/%s/%s/" % ( o, 
+                                                    r,
+                                                    self.dist,
+                                                    self.distver,
+                                                    a ) 
+                        logging.info("%s -> %s" % (src,dst))
+                        shutil.copy(src,dst)
     
     def regen(self):
         '''
