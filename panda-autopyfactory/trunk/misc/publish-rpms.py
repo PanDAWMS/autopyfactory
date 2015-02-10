@@ -17,7 +17,7 @@ import shutil
 PKGNAME="autopyfactory"
 REPOROOTS=["/afs/usatlas.bnl.gov/mgmt/repo/autopyfactory","/afs/usatlas.bnl.gov/mgmt/repo/autopyfactory"]
 REGENCMD="/afs/usatlas.bnl.gov/mgmt/repo/regen-repos.py"
-ARCHS=['i386','x86_64']
+ARCHS=['x86_64']
 PLATFORMS=['fedora','rhel']
 REPOS=['development','testing','production']
 USAGE="apf-deploy.py <repos>"
