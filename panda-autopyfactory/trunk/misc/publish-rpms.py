@@ -15,8 +15,8 @@ import shutil
 
 
 PKGNAME="autopyfactory"
-REPOROOTS=["/afs/usatlas.bnl.gov/mgmt/repo/autopyfactory","/afs/usatlas.bnl.gov/mgmt/repo/autopyfactory"]
-REGENCMD="/afs/usatlas.bnl.gov/mgmt/repo/regen-repos.py"
+REPOROOTS=["/afs/usatlas.bnl.gov/mgmt/repo/grid","/afs/usatlas.bnl.gov/mgmt/repo/autopyfactory"]
+REGENCMD="/afs/usatlas.bnl.gov/mgmt/repo/regen-autopyfactory-repos.py"
 ARCHS=['x86_64']
 PLATFORMS=['fedora','rhel']
 REPOS=['development','testing','production']
