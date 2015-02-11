@@ -20,7 +20,7 @@ REGENCMD="/afs/usatlas.bnl.gov/mgmt/repo/regen-autopyfactory-repos.py"
 ARCHS=['x86_64']
 PLATFORMS=['fedora','rhel']
 REPOS=['development','testing','production']
-USAGE="apf-deploy.py <repos>"
+USAGE="publish-rpms.py <repos>"
 RELEASEMAP={ 'Fedora release 14 (Laughlin)' : ('fedora','14'),
              'Fedora release 16 (Verne)' : ('fedora','16'),
              'Red Hat Enterprise Linux Client release 5.7 (Tikanga)' : ('rhel','5Client'),
