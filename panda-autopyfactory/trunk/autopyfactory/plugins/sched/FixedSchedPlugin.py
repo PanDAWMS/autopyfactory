@@ -30,10 +30,10 @@ class FixedSchedPlugin(SchedInterface):
 
         if self.pilotspercycle:
             out = self.pilotspercycle
-            msg = "Fixed,ret=%s" %out
+            msg = "Fixed:in=%s;ret=%s" %(n, out)
         else:
             out = 0
-            msg = "Fixed,noinfo,ret=0"
+            msg = "Fixed[nosetup]:in=%s;ret=0" %(n)
             self.log.debug('there is not a fixedPilotsPerCycle, returning 0')
 
         return (out, msg)

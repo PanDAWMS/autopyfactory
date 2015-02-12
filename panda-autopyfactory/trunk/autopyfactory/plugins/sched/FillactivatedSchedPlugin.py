@@ -49,10 +49,10 @@ class FillactivatedSchedPlugin(SchedInterface):
             self.wmsqueue = self.apfqueue.wmsqueue
             self.log.info("Siteid is %s" % self.wmsqueue)
 
-        (out, msg) = _calc_online() 
+        (out, msg) = _calc_online(n) 
         return (out, msg)
 
-    def _calc_online(self):
+    def _calc_online(self, n):
         '''
         algorithm when wmssite is in online mode
         '''
@@ -93,5 +93,5 @@ class FillactivatedSchedPlugin(SchedInterface):
                                                                           pending_pilots, 
                                                                           running_pilots, 
                                                                           out))
-        msg = "Fillactivated,act=%s,pend=%s,run=%s,ret=%s" %(activated_jobs, pending_pilots, running_pilots, out)
+        msg = "Fillactivated:in=%s;activated=%s,pending=%s,running=%s;ret=%s" %(n, activated_jobs, pending_pilots, running_pilots, out)
         return (out, msg)

@@ -31,7 +31,7 @@ class StatusTestSchedPlugin(SchedInterface):
         if self.wmsqueueinfo is None or self.batchinfo is None or self.siteinfo is None:
             self.log.warning("wmsinfo, batchinfo, or siteinfo is None!")
             out = 0
-            msg = "StatusTest:no wms/batch/siteinfo,ret=0"
+            msg = "StatusTest[no wms/batch/siteinfo]:in=%s;ret=0" %n
         else:
             sitestatus = self.siteinfo.status
             self.log.debug('site status is %s' %sitestatus)
@@ -40,7 +40,7 @@ class StatusTestSchedPlugin(SchedInterface):
             if sitestatus == 'test':
                 self.log.info('Return=%s' %self.pilots_in_test_mode)
                 out = self.pilots_in_test_mode
-                msg = 'StatusTest,ret=%s' %self.pilots_in_test_mode
+                msg = 'StatusTest:in=%s;ret=%s' %(n, self.pilots_in_test_mode)
             else:
                 self.log.info('[Queue is not test] input=%s; Return=%s' %(n, out))
 

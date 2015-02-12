@@ -28,7 +28,7 @@ class MinPerCycleSchedPlugin(SchedInterface):
 
         if self.min_pilots_per_cycle is not None:
             out = max(n, self.min_pilots_per_cycle)
-            msg = "MinPerCycle=%s,min=%s,ret=%s" %(n, self.min_pilots_per_cycle, out)
+            msg = "MinPerCycle:in=%s;minpercycle=%s;ret=%s" %(n, self.min_pilots_per_cycle, out)
 
                
         self.log.info('Return=%s' %out)

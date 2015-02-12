@@ -45,7 +45,7 @@ class StatusOfflineSchedPlugin(SchedInterface):
         if self.wmsqueueinfo is None or self.batchinfo is None:
             self.log.warning("wmsinfo, batchinfo, or cloudinfo is None!")
             out = 0
-            msg = "StatusOffline:no wms/batch/cloudinfo,ret=0"
+            msg = "StatusOffline[no wms/batch/cloudinfo]:in=%s;ret=0" %n
         else:
             sitestatus = self.siteinfo.status
             self.log.debug('site status is %s' %sitestatus)
@@ -61,7 +61,7 @@ class StatusOfflineSchedPlugin(SchedInterface):
             if sitestatus == 'offline':
                 self.log.info('Return=%s' %self.pilots_in_offline_mode)
                 out = self.pilots_in_offline_mode
-                msg = "StatusOffline,ret=%s" %(self.pilots_in_offline_mode)
+                msg = "StatusOffline:in=%s;ret=%s" %(n, self.pilots_in_offline_mode)
             else:
                 self.log.info('[Queue is not offline] input=%s; Return=%s' %(n, out))
 

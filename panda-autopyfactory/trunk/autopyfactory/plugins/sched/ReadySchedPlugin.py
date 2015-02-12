@@ -66,5 +66,5 @@ class ReadySchedPlugin(SchedInterface):
                                                                                          pending_pilots, 
                                                                                          running_pilots, 
                                                                                          out))
-        msg = "ready=%d,offset=%d,pend=%d,ret=%d" % (activated_jobs, self.offset, pending_pilots, out)
+        msg = "Ready:in=%s;activated=%d,offset=%d,pending=%d,ret=%d" % (input, activated_jobs, self.offset, pending_pilots, out)
         return (out,msg)

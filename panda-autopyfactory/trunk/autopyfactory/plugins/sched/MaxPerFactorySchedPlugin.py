@@ -52,5 +52,5 @@ class MaxPerFactorySchedPlugin(SchedInterface):
         #    out = 0
 
         self.log.info('initial n = %s total_pilots = %s max_per_factory = %s Return=%s' %(n, self.total_pilots, self.max_pilots_per_factory, out))
-        msg = 'MaxPerFactory=%s,total=%s,max=%s,ret=%s' %(n, self.total_pilots, self.max_pilots_per_factory, out)
+        msg = 'MaxPerFactory:in=%s,total=%s,maxperfactory=%s;ret=%s' %(n, self.total_pilots, self.max_pilots_per_factory, out)
         return (out, msg)

@@ -53,10 +53,10 @@ class WeightedActivatedSchedPlugin(SchedInterface):
             self.wmsqueue = self.apfqueue.wmsqueue
             self.log.info("wmsqueue is %s" % self.wmsqueue)
 
-            (out, msg) = self._calc()
+            (out, msg) = self._calc(n)
         return (out, msg)
 
-    def _calc(self):
+    def _calc(self, n):
         
         # initial default values. 
         activated_jobs = 0
@@ -91,5 +91,5 @@ class WeightedActivatedSchedPlugin(SchedInterface):
         self.log.info('activated=%s; pending=%s; Return=%s' %(activated_jobs_w, 
                                                               pending_pilots_w, 
                                                               out))
-        msg = "Weighted,act=%s,actw=%s,pend=%s,pendw=%s,out=%s" %(activated_jobs, activated_jobs_w, pending_pilots, pending_pilots_w, out)
+        msg = "WeightedActivated:in=%s;activated=%s,weightedactivated=%s,pending=%s,weightedpending=%s;ret=%s" %(n, activated_jobs, activated_jobs_w, pending_pilots, pending_pilots_w, out)
         return (out, msg)

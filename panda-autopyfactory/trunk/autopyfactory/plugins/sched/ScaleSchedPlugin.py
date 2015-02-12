@@ -34,5 +34,5 @@ class ScaleSchedPlugin(SchedInterface):
         out = int(out)  #because the output of ceil() is float
 
         self.log.info('Return=%s' %out)
-        msg = "Scale=%s,factor=%s,ret=%s" %(n, self.factor, out )
+        msg = "Scale:in=%s;factor=%s;ret=%s" %(n, self.factor, out )
         return (out, msg) 
