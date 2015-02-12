@@ -48,8 +48,9 @@ python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
 
 mkdir -pm0755 $RPM_BUILD_ROOT%{_var}/log/autopyfactory
 
-# add .gz extension to man files
-sed -i '/\/man\/man[1-9]\/.*\.[1-9]/s/$/\.gz/' INSTALLED_FILES
+# at least for the time being, we are not going to distribute manpages, given disutils does not support them properly
+## add .gz extension to man files
+#sed -i '/\/man\/man[1-9]\/.*\.[1-9]/s/$/\.gz/' INSTALLED_FILES
 
 %clean
 rm -rf $RPM_BUILD_ROOT
