@@ -1,3 +1,5 @@
+* normalized the format of the messages returned by the Sched plugins
+
 * no manpages distribution.
 
 --------
