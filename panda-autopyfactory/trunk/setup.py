@@ -50,9 +50,10 @@ initd_files = ['etc/autopyfactory',
 # NOTES: the docs are actually handled by setup.cfg. They are moved directory under /usr/share/doc/autopyfactory-<version>/
 docs_files = ['docs/%s' %file for file in os.listdir('docs') if os.path.isfile('docs/%s' %file)]
 
+# at least for the time being, we are not going to distribute manpages, given disutils does not support them properly
 #man_files = ['docs/man/%s' %file for file in os.listdir('docs/man') if os.path.isfile('docs/man/%s' %file)]
-man1_files = ['docs/man/%s' %file for file in os.listdir('docs/man') if os.path.isfile('docs/man/%s' %file) and file.endswith('.1')]
-man5_files = ['docs/man/%s' %file for file in os.listdir('docs/man') if os.path.isfile('docs/man/%s' %file) and file.endswith('.5')]
+#man1_files = ['docs/man/%s' %file for file in os.listdir('docs/man') if os.path.isfile('docs/man/%s' %file) and file.endswith('.1')]
+#man5_files = ['docs/man/%s' %file for file in os.listdir('docs/man') if os.path.isfile('docs/man/%s' %file) and file.endswith('.5')]
 
 
 # -----------------------------------------------------------
@@ -64,8 +65,8 @@ rpm_data_files=[#('/etc/autopyfactory', libexec_files),
                 ('/etc/init.d', initd_files),
                 #('/usr/share/doc/autopyfactory', docs_files),                                        
                 #('/tmp', man_files),                                        
-                ('/usr/share/man/man1', man1_files),
-                ('/usr/share/man/man5', man5_files),
+                #('/usr/share/man/man1', man1_files),
+                #('/usr/share/man/man5', man5_files),
                ]
 
 
