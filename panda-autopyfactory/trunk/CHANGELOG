@@ -1,3 +1,7 @@
+* no manpages distribution.
+
+--------
+
 * reorganizing the docs/* files, etc/* files,  and the man/* files
 
 * added requirements from voms-clients and myproxy in setup.cfg
