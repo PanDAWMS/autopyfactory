@@ -3,17 +3,17 @@
 # apf puppet module
 
 
-# create, if needed, UNIX account 'autopyfactory'
-
-user { 'autopyfactory':
-  ensure     => present,
-  comment    => 'service account for AutoPyFactory',
-  home       => '/home/autopyfactory',
-  managehome => true,
-}
 
 
 class autopyfactory{
+
+    # create, if needed, UNIX account 'autopyfactory'
+    user {'autopyfactory':
+      ensure     => present,
+      comment    => 'service account for AutoPyFactory',
+      home       => '/home/autopyfactory',
+      managehome => true,
+    }
 
     # installation
     package {'autopyfactory':
@@ -25,5 +25,21 @@ class autopyfactory{
     service { 'autopyfactory':
         ensure  => running,
         require => Package['autopyfactory'],
+        require => User['autopyfactory'],
+        require => File['']
 
+    # APF config files
+    file {'/etc/autopyfactory/queues.conf':
+        source => blah blah
+        notify => Service['autopyfactory'],
+    }
+
+}
+
+
+class condor{
+
+    package{'condor':
+        ensure => installed,
+    }
 }
