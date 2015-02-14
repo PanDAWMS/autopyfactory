@@ -26,7 +26,7 @@ class autopyfactory{
         ensure  => running,
         require => Package['autopyfactory'],
         require => User['autopyfactory'],
-        require => File['']
+        require => File['/etc/autopyfactory/queues.conf'],
 
     # APF config files
     file {'/etc/autopyfactory/queues.conf':
@@ -41,5 +41,16 @@ class condor{
 
     package{'condor':
         ensure => installed,
+    }
+
+    service {'condor':
+        ensure => running,
+        require => Package['condor'],
+        require => File['/etc/condor/config.d/99autopyfactory.conf'],
+
+    # APF-specific config files
+    file {'/etc/condor/config.d/99autopyfactory.conf':
+        source => blah blah
+        notify => Service['condor'],
     }
 }
