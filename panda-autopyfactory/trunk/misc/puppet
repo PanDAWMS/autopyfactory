@@ -13,8 +13,17 @@ user { 'autopyfactory':
 }
 
 
-# installation
+class autopyfactory{
 
-package {'autopyfactory':
-    ensure => installed,
+    # installation
+    package {'autopyfactory':
+        ensure => installed,
+        require => Package['condor'],
+    }
+    
+    # service
+    service { 'autopyfactory':
+        ensure  => running,
+        require => Package['autopyfactory'],
+
 }
