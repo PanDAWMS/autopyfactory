@@ -20,7 +20,9 @@ class autopyfactory{
         ensure => installed,
         require => Package['condor'],
     }
-    
+    # ?? how to install the yum repo file ??   
+
+ 
     # service
     service { 'autopyfactory':
         ensure  => running,
