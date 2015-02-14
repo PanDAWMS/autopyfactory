@@ -1,0 +1,20 @@
+# format-free (for the time being) 
+# to start putting together content for a future
+# apf puppet module
+
+
+# create, if needed, UNIX account 'autopyfactory'
+
+user { 'autopyfactory':
+  ensure     => present,
+  comment    => 'service account for AutoPyFactory',
+  home       => '/home/autopyfactory',
+  managehome => true,
+}
+
+
+# installation
+
+package {'autopyfactory':
+    ensure => installed,
+}
