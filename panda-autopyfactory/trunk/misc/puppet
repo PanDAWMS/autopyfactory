@@ -7,57 +7,57 @@
 
 class autopyfactory{
 
-    # create, if needed, UNIX account 'autopyfactory'
-    user {'autopyfactory':
-      ensure     => present,
-      comment    => 'service account for AutoPyFactory',
-      home       => '/home/autopyfactory',
-      managehome => true,
-    }
+  # create, if needed, UNIX account 'autopyfactory'
+  user {'autopyfactory':
+    ensure     => present,
+    comment    => 'service account for AutoPyFactory',
+    home       => '/home/autopyfactory',
+    managehome => true,
+  }
 
-    # installation
-    package {"autopyfactoryyumrepofile":
-        ensure => present,
-        provider => rpm,
-        source => "http://dev.racf.bnl.gov/yum/autopyfactory-release/", #?????
-    }
-    package {'autopyfactory':
-        ensure => installed,
-        require => Package['condor'],
-    }
+  # installation
+  package {"autopyfactoryyumrepofile":
+    ensure   => present,
+    provider => rpm,
+    source   => "http://dev.racf.bnl.gov/yum/autopyfactory-release/", #?????
+  }
+  package {'autopyfactory':
+    ensure  => installed,
+    require => Package['condor'],
+  }
  
-    # service
-    service { 'autopyfactory':
-        ensure  => running,
-        require => Package['autopyfactory'],
-        require => User['autopyfactory'],
-        require => File['/etc/autopyfactory/queues.conf'],
+  # service
+  service { 'autopyfactory':
+    ensure  => running,
+    require => Package['autopyfactory'],
+    require => User['autopyfactory'],
+    require => File['/etc/autopyfactory/queues.conf'],
 
-    # APF config files
-    file {'/etc/autopyfactory/queues.conf':
-        source => blah blah
-        notify => Service['autopyfactory'],
-    }
+  # APF config files
+  file {'/etc/autopyfactory/queues.conf':
+    source => blah blah
+    notify => Service['autopyfactory'],
+  }
 
 }
 
 
 class condor{
 
-    # installation
-    # ??? do we need to install the yum repo file ??? From where? OSG, WISC???
-    package{'condor':
-        ensure => installed,
-    }
+  # installation
+  # ??? do we need to install the yum repo file ??? From where? OSG, WISC???
+  package{'condor':
+    ensure => installed,
+  }
 
-    service {'condor':
-        ensure => running,
-        require => Package['condor'],
-        require => File['/etc/condor/config.d/99autopyfactory.conf'],
+  service {'condor':
+    ensure => running,
+    require => Package['condor'],
+    require => File['/etc/condor/config.d/99autopyfactory.conf'],
 
-    # APF-specific config files
-    file {'/etc/condor/config.d/99autopyfactory.conf':
-        source => blah blah
-        notify => Service['condor'],
-    }
+  # APF-specific config files
+  file {'/etc/condor/config.d/99autopyfactory.conf':
+    source => blah blah
+    notify => Service['condor'],
+  }
 }
