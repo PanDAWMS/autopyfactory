@@ -20,14 +20,11 @@ class autopyfactory{
         ensure => present,
         provider => rpm,
         source => "http://dev.racf.bnl.gov/yum/autopyfactory-release/", #?????
-   }
-
+    }
     package {'autopyfactory':
         ensure => installed,
         require => Package['condor'],
     }
-    # ?? how to install the yum repo file ??   
-
  
     # service
     service { 'autopyfactory':
