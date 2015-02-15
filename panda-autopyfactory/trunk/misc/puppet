@@ -44,6 +44,8 @@ class autopyfactory{
 
 class condor{
 
+    # installation
+    # ??? do we need to install the yum repo file ??? From where? OSG, WISC???
     package{'condor':
         ensure => installed,
     }
