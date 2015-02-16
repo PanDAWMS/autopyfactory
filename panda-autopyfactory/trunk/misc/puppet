@@ -19,7 +19,7 @@ class autopyfactory{
   package {"autopyfactoryyumrepofile":
     ensure   => present,
     provider => rpm,
-    source   => "http://dev.racf.bnl.gov/yum/autopyfactory-release/", #?????
+    source   => "http://dev.racf.bnl.gov/yum/autopyfactory-release/autopyfactory-release-0.9-1.noarch.rpm",
   }
   package {'autopyfactory':
     ensure  => installed,
