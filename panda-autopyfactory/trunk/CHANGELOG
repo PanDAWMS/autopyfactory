@@ -1,3 +1,5 @@
+* Added the '*' to etc/sysconfig/* and etc/logrotate/* in setup.cfg
+
 * normalized the format of the messages returned by the Sched plugins
 
 * no manpages distribution.
