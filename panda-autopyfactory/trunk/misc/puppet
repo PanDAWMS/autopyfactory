@@ -16,11 +16,14 @@ class autopyfactory{
   }
 
   # installation
+  # gives this warning message:
+  #  Warning: The package type's allow_virtual parameter will be changing its default value from false to true in a future release. If you do not want to allow virtual packages, please explicitly set allow_virtual to false.
   package {"autopyfactoryyumrepofile":
     ensure   => present,
     provider => rpm,
     source   => "http://dev.racf.bnl.gov/yum/autopyfactory-release/autopyfactory-release-0.9-1.noarch.rpm",
   }
+
   # ?? how to make it to update when there is a new version ??
   package {'autopyfactory':
     ensure  => installed,
