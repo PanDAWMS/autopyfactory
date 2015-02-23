@@ -1,3 +1,5 @@
+* bug fixed: usercert and userkey only needed in proxymanager.py when baseproxy is none, not always
+
 * changes in the logrotate config file:
   no prerotate script, post rotate only restart daemon when there is a PID file
 
