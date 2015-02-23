@@ -171,12 +171,10 @@ class ProxyHandler(threading.Thread):
             self.baseproxy = config.get(section,'baseproxy' ) 
             if self.baseproxy.lower().strip() == "none":
                 self.baseproxy = None
+                self.usercert = os.path.expanduser(config.get(section, 'usercert'))
+                self.userkey = os.path.expanduser(config.get(section, 'userkey'))
             else:
                 self.baseproxy = os.path.expanduser(self.baseproxy)
-            
-            
-            self.usercert = os.path.expanduser(config.get(section, 'usercert'))
-            self.userkey = os.path.expanduser(config.get(section, 'userkey'))
             
             # Handle booleans
             renewstr = config.get(section, 'renew').lower().strip()
