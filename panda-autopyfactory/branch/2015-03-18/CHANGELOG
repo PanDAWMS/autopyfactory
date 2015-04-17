@@ -1,4 +1,4 @@
-* new import path to find Clients.py  in WMS Panda plugin
+* new import path to find Clients.py  in WMSStatus Panda plugin
 * bug fixed: usercert and userkey only needed in proxymanager.py when baseproxy is none, not always
 * changes in the logrotate config file:
   no prerotate script, post rotate only restart daemon when there is a PID file
