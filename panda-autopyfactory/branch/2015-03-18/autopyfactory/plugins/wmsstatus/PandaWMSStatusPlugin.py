@@ -23,7 +23,7 @@ from autopyfactory.info import SiteInfo
 from autopyfactory.info import CloudInfo
 import autopyfactory.utils as utils
 
-import userinterface.Client as Client
+import pandaserver.userinterface.Client as Client
 
 
 
