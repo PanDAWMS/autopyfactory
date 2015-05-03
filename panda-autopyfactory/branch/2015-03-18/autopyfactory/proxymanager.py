@@ -150,7 +150,7 @@ class ProxyHandler(threading.Thread):
         # extra argument
         self.voms_args = None
         if config.has_option(section, 'voms.args'):
-            self.voms_args = onfig.get(section, 'voms.args')
+            self.voms_args = config.get(section, 'voms.args')
 
         
         if config.has_option(section, 'owner'):
