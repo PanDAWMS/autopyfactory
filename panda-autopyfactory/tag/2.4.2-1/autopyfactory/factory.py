@@ -4,7 +4,7 @@ __author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
 __copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2014 John Hover; 2010-2014 Jose Caballero"
 __credits__ = []
 __license__ = "GPL"
-__version__ = "2.4.1"
+__version__ = "2.4.2"
 __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
@@ -882,7 +882,7 @@ class APFQueue(threading.Thread):
    
         try: 
             self.wmsqueue = self.qcl.generic_get(apfqname, 'wmsqueue')
-            self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue')
+            self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue', default_value=None)
             #self.cloud = self.qcl.generic_get(apfqname, 'cloud')
             self.cycles = self.fcl.generic_get("Factory", 'cycles' )
             self.sleep = self.qcl.generic_get(apfqname, 'apfqueue.sleep', 'getint')

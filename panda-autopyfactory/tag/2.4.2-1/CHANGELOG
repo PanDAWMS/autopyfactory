@@ -1,3 +1,10 @@
+2.4.2
+
+* batchqueue not mandatory in config files
+* typo fixed in proxymanager.py
+
+2.4.1
+
 * reorganizing the docs/* files, etc/* files,  and the man/* files
 
 * added requirements from voms-clients and myproxy in setup.cfg
