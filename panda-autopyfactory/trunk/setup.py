@@ -48,7 +48,8 @@ rpm_data_files=[('/etc/init.d', initd_files),
                 ('/usr/share/man/man5', man5_files),
                ]
 
-home_data_files=[('etc', etc_files),
+home_data_files=[
+                 #('etc', etc_files),
                  ('etc', initd_files),
                  ('etc', sysconfig_files),
                  ('doc/autopyfactory', docs_files),
