@@ -42,7 +42,7 @@ etc_files = ['etc/autopyfactory.conf-example',
              'etc/mappings.conf-example',]
 
 sysconfig_files = ['etc/sysconfig/autopyfactory-example',
-                   'etc/sysconfig/proxyamanger-example'
+                   'etc/sysconfig/proxymanager-example'
                    ]
 
 # NOTES: the docs are actually handled by setup.cfg. They are moved directory under /usr/share/doc/autopyfactory-<version>/
