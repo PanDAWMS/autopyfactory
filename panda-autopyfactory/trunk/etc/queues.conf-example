@@ -236,7 +236,7 @@
 #
 # wmsstatus.condor.queryargs = list of command line input options
 #               to be included in the query command *verbatim*. E.g.
-#               wmsstatus.condorqueryargs = -name <schedd_name> ... 
+#               wmsstatus.condor.queryargs = -name <schedd_name> ... 
 
 #  --------------------------------------------------------------------
 #       Batch Status Plugin variables 
