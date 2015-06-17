@@ -51,7 +51,7 @@ rpm_data_files=[('/etc/init.d', initd_files),
 home_data_files=[
                  #('etc', etc_files),
                  ('etc', initd_files),
-                 ('etc', sysconfig_files),
+                 #('etc', sysconfig_files),
                  ('doc/autopyfactory', docs_files),
                 ]
 
