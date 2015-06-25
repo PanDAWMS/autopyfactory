@@ -1,6 +1,8 @@
 #! /usr/bin/env python
-#
+
+import datetime
 import logging
+import htcondor
 
 from autopyfactory.interfaces import SchedInterface
 
@@ -41,6 +43,36 @@ class ThrottleSchedPlugin(SchedInterface):
         algorithm 
         '''
         
+
+
+
+        # configuration variables we need:
+        #   -- the interval window to look at: last 30 minutes?, last 60 minutes?, ...
+        #   -- the max Wall Time to call a WN a black hole: jobs run in less than 5 minutes?, than 30 minutes?, ...
+        #   -- the minimum number of black hole type jobs to start paying attention
+        #           -- by number or by fraction?
+        #   -- how much to throttle is a black hole is detected.
+
+
+
+        # to convert the current date into seconds since Epoch
+        now_sec_epoch = datetime.datetime.now().strftime('%s')
+
+        # condor_history using the python bindings
+        schedd = htcondor.Schedd()
+        out = schedd.history("RemoteWallClockTime < 600 && MATCH_APF_QUEUE == \"ANALY_BNL_LONG-gridgk03-htcondor\"", ['ClusterId, ProcID'], 0)
+        n_pilots = sum(1 for o in out)
+
+        # in the constraint expression we need to add the pilot was queued after a given time
+        # that given time is  
+        #           now_sec_epoch - interval
+        # and the Condor ClassAd to look at is QDate, or JobStartDate
+
+
+
+
+         
+
         out = max(0, ( activated_jobs - self.offset)  - pending_pilots )
         self.log.info('input=%s; activated=%s; offset=%s pending=%s; running=%s; Return=%s' %(input,
                                                                                          activated_jobs,
