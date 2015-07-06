@@ -1,5 +1,3 @@
-* variable batchqueue not mandatory
-* typo fixed in proxymanager.py
 * commented out the line reading x509userproxy from ProxyManager in BatchSubmit Exec plugin
 * new import path to find Clients.py  in WMSStatus Panda plugin
 * bug fixed: usercert and userkey only needed in proxymanager.py when baseproxy is none, not always
@@ -9,7 +7,12 @@
 * normalized the format of the messages returned by the Sched plugins
 * no manpages distribution.
 
---------
+2.4.2
+
+* variable batchqueue not mandatory
+* typo fixed in proxymanager.py
+
+2.4.1
 
 * reorganizing the docs/* files, etc/* files,  and the man/* files
 * added requirements from voms-clients and myproxy in setup.cfg
