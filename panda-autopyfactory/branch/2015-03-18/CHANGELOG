@@ -1,3 +1,5 @@
+* variable batchqueue not mandatory
+* typo fixed in proxymanager.py
 * commented out the line reading x509userproxy from ProxyManager in BatchSubmit Exec plugin
 * new import path to find Clients.py  in WMSStatus Panda plugin
 * bug fixed: usercert and userkey only needed in proxymanager.py when baseproxy is none, not always
