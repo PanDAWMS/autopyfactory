@@ -1,0 +1,108 @@
+*WORK IN PROGRESS!!!*
+
+*WORK IN PROGRESS!!!*
+
+---+!! !AutoPyFactory
+<!--
+%DOC_STATUS_TABLE%
+-->
+%TOC{depth="3"}%
+
+---# About this Document
+
+This document describes what is !AutoPyFactory (a.k.a. APF)
+
+---# Applicable versions
+*?Do we need this section here? It is in the Deployment page also?*
+
+The applicable software versions for this document is !AutoPyFactory  2.4.1
+
+---# Description
+
+*FIXME: so far it is just copy and paste from the original docs*
+
+ATLAS, one of the experiments at LHC at CERN, is one of the largest users of grid computing infrastructure. As this infrastructure is now a central part of the experiment's computing operations, considerable efforts have been made to use this technology in the most efficient and effective way, including extensive use of pilot job based frameworks.
+
+In this model the experiment submits 'pilot' jobs to sites without payload. When these jobs begin to run they contact a central service to pick-up a real payload to execute.
+
+The first generation of pilot factories were usually specific to a single VO, and were very bound to the particular architecture of that VO. A second generation is creating factories which are more flexible, not tied to any particular VO, and provide for more features other than just pilot submission (such as monitoring, logging, profiling, etc.)
+
+!AutoPyFactory has a modular design and is highly configurable. It is able to send different types of pilots to sites, able to exploit different submission mechanisms and different characteristics of queues at sites. It has excellent integration with the !PanDA job submission framework, tying pilot flows closely to the amount of work the site has to run. It is able to gather information from many sources, in order to correctly configure itself for a site and its decision logic can easily be updated.
+
+Integrated into !AutoPyFactory is a very flexible system for delivering both generic and specific wrappers which can perform many useful actions before starting to run end-user scientific applications, e.g., validation of the middleware, node profiling and diagnostics, monitoring and deciding what is the best end-user application that fits the resource.
+
+!AutoPyFactory now also has a robust monitoring system and we show how this has helped setup a reliable pilot factory service for ATLAS.
+
+
+---# Major features:
+
+*FILL ME*
+
+---## policy based behavior governed by queue setup.
+
+*FILL ME*
+
+---## scheduling algorithm composition via config file (not code).
+
+*FILL ME*
+
+---##  extensible via plugins
+
+*FILL ME*
+
+---# Side features:
+
+*FILL ME*
+
+---## proxy management
+
+*FILL ME*
+
+---## log export via http
+
+*FILL ME*
+
+---# Use cases
+
+*FILL ME*
+
+---##  Pilot submission via Grid for experiment-specific workload system (e.g. Panda0
+
+*FILL ME*
+
+---##  Local pilot submission based on waiting workload
+
+*FILL ME*
+
+---##  VM job submission/batch cluster creation based on local or remote waiting workload.
+
+*FILL ME*
+
+---## Glidein submission via Grid based on local/remote waiting workload.
+
+*FILL ME*
+
+---# Deployment and Configuration
+
+Instructions to deploy and configure !AutoPyFactory are [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/AutoPyFactoryDeployment][here]]
+
+---# Contact
+
+There is a mailing list. To join follow [[https://lists.bnl.gov/mailman/listinfo/autopyfactory-l][instructions here]]
+
+---# Talks and Publications
+
+[[https://indico.cern.ch/getFile.py/access?contribId=15&sessionId=11&resId=0&materialId=slides&confId=119171][Talk at ATLAS S&amp;C Week, 17 October 2011 to 21 October 2011]]
+
+[[https://indico.cern.ch/contributionDisplay.py?contribId=329&sessionId=8&confId=149557][Poster at CHEP 2012, NY]]
+
+[[http://iopscience.iop.org/1742-6596/396/3/032016][Paper at CHEP 2012, NY]]
+
+[[https://indico.fnal.gov/getFile.py/access?contribId=41&sessionId=10&resId=0&materialId=slides&confId=5610][Talk at Open Science Grid All Hands Meeting, 2013]]
+
+[[https://indico.cern.ch/contributionDisplay.py?confId=214784&contribId=280][Poster at CHEP 2013, Amsterdam]]
+
+
+
+
+-- Main.JoseCaballero - 21 Oct 2014
