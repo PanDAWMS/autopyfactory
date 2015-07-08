@@ -29,6 +29,10 @@ python setup.py build
 
 %install
 python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
+# --- playing with the INSTALLED_FILES: BEGIN ---
+cp INSTALLED_FILES CORE_FILES
+# --- playing with the INSTALLED_FILES: END ---
+
 
 mkdir -pm0755 $RPM_BUILD_ROOT%{_var}/log/autopyfactory
 
@@ -59,7 +63,10 @@ Group: Development/Libraries
 %description -n core
 This package contains autopyfactory core
 
-%files -n core -f INSTALLED_FILES
+# --- playing with the INSTALLED_FILES: BEGIN ---
+#%files -n core -f INSTALLED_FILES
+%files -n core -f CORE_FILES
+# --- playing with the INSTALLED_FILES: END ---
 %defattr(-,root,root)
 %doc docs/* etc/*-example etc/logrotate/ etc/sysconfig/ README
 
