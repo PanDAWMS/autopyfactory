@@ -99,6 +99,8 @@ fi
 %package -n autopyfactory-core
 Summary: autopyfactory core 
 Group: Development/Libraries
+Requires: autopyfactory-proxymanager
+Requires: autopyfactory-plugins-condor
 %description -n autopyfactory-core
 This package contains autopyfactory core
 
