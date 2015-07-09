@@ -29,9 +29,16 @@ python setup.py build
 
 %install
 python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
-# --- playing with the INSTALLED_FILES: BEGIN ---
+
+# --- Files for autopyfactory-core subpackage
 cp INSTALLED_FILES CORE_FILES
-# --- playing with the INSTALLED_FILES: END ---
+sed -i '/proxymanager/d' CORE_FILES
+
+# --- Files for autopyfactory-proxymanager subpackage
+cp INSTALLED_FILES PROXYMANAGER_FILES
+sed -i '/proxymanager/!d' PROXYMANAGER_FILES
+
+
 
 
 mkdir -pm0755 $RPM_BUILD_ROOT%{_var}/log/autopyfactory
@@ -57,21 +64,29 @@ fi
 
 ####################################
 
-%package -n core
+%package -n autopyfactory-core
 Summary: autopyfactory core 
 Group: Development/Libraries
-%description -n core
+%description -n autopyfactory-core
 This package contains autopyfactory core
 
-# --- playing with the INSTALLED_FILES: BEGIN ---
-#%files -n core -f INSTALLED_FILES
-%files -n core -f CORE_FILES
-# --- playing with the INSTALLED_FILES: END ---
+#%files -n autopyfactory-core -f INSTALLED_FILES
+%files -n autopyfactory-core -f CORE_FILES
 %defattr(-,root,root)
 %doc docs/* etc/*-example etc/logrotate/ etc/sysconfig/ README
 
 ####################################
 
+%package -n autopyfactory-proxymanager
+Summary: autopyfactory proxymanager 
+Group: Development/Libraries
+%description -n autopyfactory-proxymanager
+This package contains autopyfactory proxymanger 
 
+%files -n autopyfactory-proxymanager -f PROXYMANAGER_FILES
+%defattr(-,root,root)
+%doc docs/* etc/*-example etc/logrotate/ etc/sysconfig/ README
+
+####################################
 
 
