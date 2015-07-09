@@ -42,6 +42,10 @@ python setup.py build
 %install
 python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
 
+# ----- treat the config files properly:
+#       with a non-override policy on RPM update 
+sed -i '/\/etc\/autopyfactory\/.*\.conf/ s/^/%config(noreplace) /'  INSTALLED_FILES
+
 # ----- Files for autopyfactory-core subpackage
 cp INSTALLED_FILES CORE_FILES
 sed -i '/proxymanager/d' CORE_FILES
@@ -161,6 +165,37 @@ This package contains autopyfactory plugins cloud
 
 %files -n autopyfactory-plugins-cloud -f PLUGINS-CLOUD_FILES
 %defattr(-,root,root)
+
+
+##############################################
+#   META RPMs
+##############################################
+
+%package -n autopyfactory-panda
+Summary: META RPM for PanDA
+Group: Development/Libraries
+Requires: autopyfactory-core
+Requires: autopyfactory-plugins-panda
+Requires: panda-client
+#Requires: autopyfactory-wrappers, voms-client, myproxy
+%description -n meta rpm autopyfactory-panda
+
+
+%package -n autopyfactory-wms
+Summary: META RPM for autopyfactory-wms 
+Group: Development/Libraries
+Requires: autopyfactory-core
+#Requires: autopyfactory-wrappers, voms-client
+%description -n meta rpm autopyfactory-wms
+
+
+%package -n autopyfactory-cloud
+Summary: META RPM for autopyfactory-cloud
+Group: Development/Libraries
+Requires: autopyfactory-core
+Requires: autopyfactory-plugins-cloud
+#Requires: autopyfactory-wrappers
+%description -n meta rpm autopyfactory-cloud
 
 ##############################################
 
