@@ -1,8 +1,3 @@
 python setup.python install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
 
-sed -i '/\/etc\/autopyfactory\/autopyfactory.configuration/ s/^/%config(noreplace) /'  INSTALLED_FILES
-sed -i '/\/etc\/autopyfactory\/queues.configuration/ s/^/%config(noreplace) /'  INSTALLED_FILES
-sed -i '/\/etc\/autopyfactory\/proxy.configuration/ s/^/%config(noreplace) /'  INSTALLED_FILES
-sed -i '/\/etc\/autopyfactory\/monitor.configuration/ s/^/%config(noreplace) /'  INSTALLED_FILES
-sed -i '/\/etc\/autopyfactory\/mappings.configuration/ s/^/%config(noreplace) /'  INSTALLED_FILES
-
+sed -i '/\/etc\/autopyfactory\/.*\.conf/ s/^/%config(noreplace) /'  INSTALLED_FILES
