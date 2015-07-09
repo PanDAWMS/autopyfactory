@@ -45,6 +45,7 @@ python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
 # ----- Files for autopyfactory-core subpackage
 cp INSTALLED_FILES CORE_FILES
 sed -i '/proxymanager/d' CORE_FILES
+sed -i '/plugins\/.*\/.*Condor.*/d' CORE_FILES
 
 # ----- Files for autopyfactory-proxymanager subpackage
 cp INSTALLED_FILES PROXYMANAGER_FILES
@@ -54,7 +55,13 @@ sed -i '/proxymanager/!d' PROXYMANAGER_FILES
 cp INSTALLED_FILES PLUGINS-CONDOR_FILES
 sed -i '/plugins\/.*\/.*Condor.*/!d' PLUGINS-CONDOR_FILES
 
+# ----- Files for autopyfactory-plugins-panda subpackage
+cp INSTALLED_FILES PLUGINS-PANDA_FILES
+sed -i '/plugins\/wmsstatus\/.*Panda.*/!d' PLUGINS-PANDA_FILES
 
+# ----- Files for autopyfactory-plugins-cloud subpackage
+cp INSTALLED_FILES PLUGINS-CLOUD_FILES
+sed -i '/plugins\/.*\/.*EC2.*/!d' PLUGINS-CLOUD_FILES
 
 mkdir -pm0755 $RPM_BUILD_ROOT%{_var}/log/autopyfactory
 
@@ -128,5 +135,30 @@ This package contains autopyfactory plugins condor
 %defattr(-,root,root)
 
 ##############################################
+#   SUB PACKAGE AUTOPYFACTORY-PLUGINS-PANDA
+##############################################
 
+%package -n autopyfactory-plugins-panda
+Summary: autopyfactory plugins panda 
+Group: Development/Libraries
+%description -n autopyfactory-plugins-panda
+This package contains autopyfactory plugins panda 
+
+%files -n autopyfactory-plugins-panda -f PLUGINS-PANDA_FILES
+%defattr(-,root,root)
+
+##############################################
+#   SUB PACKAGE AUTOPYFACTORY-PLUGINS-CLOUD
+##############################################
+
+%package -n autopyfactory-plugins-cloud
+Summary: autopyfactory plugins cloud 
+Group: Development/Libraries
+%description -n autopyfactory-plugins-cloud
+This package contains autopyfactory plugins cloud 
+
+%files -n autopyfactory-plugins-cloud -f PLUGINS-CLOUD_FILES
+%defattr(-,root,root)
+
+##############################################
 
