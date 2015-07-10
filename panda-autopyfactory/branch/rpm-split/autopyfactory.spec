@@ -182,6 +182,7 @@ Requires: panda-client
 #Requires: autopyfactory-wrappers, voms-client, myproxy
 %description -n autopyfactory-panda
 meta rpm autopyfactory-panda
+%files -n autopyfactory-panda
 
 
 %package -n autopyfactory-wms
@@ -191,6 +192,7 @@ Requires: autopyfactory-core
 #Requires: autopyfactory-wrappers, voms-client
 %description -n autopyfactory-wms
 meta rpm autopyfactory-wms
+%files -n autopyfactory-wms
 
 
 %package -n autopyfactory-cloud
@@ -201,6 +203,7 @@ Requires: autopyfactory-plugins-cloud
 #Requires: autopyfactory-wrappers
 %description -n autopyfactory-cloud
 meta rpm autopyfactory-cloud
+%files -n autopyfactory-cloud
 
 ##############################################
 
