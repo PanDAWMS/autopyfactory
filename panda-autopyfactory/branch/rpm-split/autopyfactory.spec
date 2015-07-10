@@ -111,7 +111,9 @@ This package contains autopyfactory core
 #%files -n autopyfactory-core -f INSTALLED_FILES
 %files -n autopyfactory-core -f CORE_FILES
 %defattr(-,root,root)
-###  FIXME  %doc docs/* etc/*-example etc/logrotate/ etc/sysconfig/ README
+## FIXME !!!
+%doc docs/* etc/logrotate/ etc/sysconfig/ README    
+
 
 ##############################################
 #   SUB PACKAGE AUTOPYFACTORY-PROXYMANAGER
