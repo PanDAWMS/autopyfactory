@@ -178,7 +178,8 @@ Requires: autopyfactory-core
 Requires: autopyfactory-plugins-panda
 Requires: panda-client
 #Requires: autopyfactory-wrappers, voms-client, myproxy
-%description -n meta rpm autopyfactory-panda
+%description -n autopyfactory-panda
+meta rpm autopyfactory-panda
 
 
 %package -n autopyfactory-wms
@@ -186,7 +187,8 @@ Summary: META RPM for autopyfactory-wms
 Group: Development/Libraries
 Requires: autopyfactory-core
 #Requires: autopyfactory-wrappers, voms-client
-%description -n meta rpm autopyfactory-wms
+%description -n autopyfactory-wms
+meta rpm autopyfactory-wms
 
 
 %package -n autopyfactory-cloud
@@ -195,7 +197,8 @@ Group: Development/Libraries
 Requires: autopyfactory-core
 Requires: autopyfactory-plugins-cloud
 #Requires: autopyfactory-wrappers
-%description -n meta rpm autopyfactory-cloud
+%description -n autopyfactory-cloud
+meta rpm autopyfactory-cloud
 
 ##############################################
 
