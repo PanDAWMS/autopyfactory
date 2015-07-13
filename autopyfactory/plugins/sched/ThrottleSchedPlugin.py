@@ -48,15 +48,6 @@ class ThrottleSchedPlugin(SchedInterface):
         algorithm 
         '''
 
-        # configuration variables we need:
-        #   -- the interval window to look at: last 30 minutes?, last 60 minutes?, ...
-        #   -- the max Wall Time to call a WN a black hole: jobs run in less than 5 minutes?, than 30 minutes?, ...
-        #   -- the minimum number of black hole type jobs to start paying attention
-        #           -- by number or by fraction?
-        #   -- how much to throttle when a black hole is detected.
-
-
-
         # to convert the current date into seconds since Epoch
         now_sec_epoch = datetime.datetime.now().strftime('%s')
 
@@ -66,14 +57,23 @@ class ThrottleSchedPlugin(SchedInterface):
 
         timeinterval = int(now_sec_epoch) - self.interval
         condor_constraint_expr = "JobStartDate > %s" timeinterval
-        out = schedd.history(condor_constraint_expr, ['RemoteWallClockTime', 'MATCH_APF_QUEUE'], 0)
+        pilots = schedd.history(condor_constraint_expr, ['RemoteWallClockTime', 'MATCH_APF_QUEUE'], 0)
 
-        n_pilots = sum(1 for o in out)
+        # process the output of condor_history 
+        # we need, for each queue (MATCH_APF_QUEUE), the total number of pilots, 
+        # and the number of pilots that finished too fast (RemoteWallClockTime < maxtime)
 
-        # in the constraint expression we need to add the pilot was queued after a given time
-        # that given time is  
-        #           now_sec_epoch - interval
-        # and the Condor ClassAd to look at is QDate, or JobStartDate
+        #n_pilots = sum(1 for p in pilots)
+        d = {}
+        for pilot in pilots:
+            q = pilot['MATCH_APF_QUEUE']
+            if q not in d.keys():
+                d[q] = {'total':0, 'short':0}
+            d[q]['total'] += 1
+            w = pilot['RemoteWallClockTime']
+            if w < self.maxtime:
+                d[q]['short'] += 1
+
 
 
 
