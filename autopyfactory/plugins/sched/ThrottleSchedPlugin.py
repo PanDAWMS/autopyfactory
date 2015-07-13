@@ -18,6 +18,9 @@ class ThrottleSchedPlugin(SchedInterface):
             try:
                 self.interval = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.throttle.interval', 'getint', default_value=3600)
                 self.maxtime = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.throttle.maxtime', 'getint', default_value=600)
+                self.minevents = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.throttle.minevents', 'getint', default_value=0)
+                self.ratioevents = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.throttle.minevents', 'getfloat', default_value=0.5)
+                self.throttle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.throttle.throttle', 'getfloat', default_value=0.5)
 
                 self.log.debug("SchedPlugin: offset = %d" % self.offset)
             except:
@@ -50,7 +53,7 @@ class ThrottleSchedPlugin(SchedInterface):
         #   -- the max Wall Time to call a WN a black hole: jobs run in less than 5 minutes?, than 30 minutes?, ...
         #   -- the minimum number of black hole type jobs to start paying attention
         #           -- by number or by fraction?
-        #   -- how much to throttle is a black hole is detected.
+        #   -- how much to throttle when a black hole is detected.
 
 
 
@@ -62,8 +65,8 @@ class ThrottleSchedPlugin(SchedInterface):
         #out = schedd.history("RemoteWallClockTime < 600 && MATCH_APF_QUEUE == \"ANALY_BNL_LONG-gridgk03-htcondor\"", ['ClusterId, ProcID'], 0)
 
         timeinterval = int(now_sec_epoch) - self.interval
-        condor_constraint_expr = "RemoteWallClockTime < %s && JobStartDate > %s" %(self.maxtime, timeinterval)
-        out = schedd.history(condor_constraint_expr, ['MATCH_APF_QUEUE'], 0)
+        condor_constraint_expr = "JobStartDate > %s" timeinterval
+        out = schedd.history(condor_constraint_expr, ['RemoteWallClockTime', 'MATCH_APF_QUEUE'], 0)
 
         n_pilots = sum(1 for o in out)
 
