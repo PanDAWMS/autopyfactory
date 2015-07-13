@@ -16,7 +16,9 @@ class ThrottleSchedPlugin(SchedInterface):
             self.apfqueue = apfqueue                
             self.log = logging.getLogger("main.schedplugin[%s]" % apfqueue.apfqname)
             try:
-                self.offset = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.ready.offset', 'getint', default_value=0)
+                self.interval = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.throttle.interval', 'getint', default_value=3600)
+                self.maxtime = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.throttle.maxtime', 'getint', default_value=600)
+
                 self.log.debug("SchedPlugin: offset = %d" % self.offset)
             except:
                 pass 
@@ -42,9 +44,6 @@ class ThrottleSchedPlugin(SchedInterface):
         '''
         algorithm 
         '''
-        
-
-
 
         # configuration variables we need:
         #   -- the interval window to look at: last 30 minutes?, last 60 minutes?, ...
@@ -60,7 +59,12 @@ class ThrottleSchedPlugin(SchedInterface):
 
         # condor_history using the python bindings
         schedd = htcondor.Schedd()
-        out = schedd.history("RemoteWallClockTime < 600 && MATCH_APF_QUEUE == \"ANALY_BNL_LONG-gridgk03-htcondor\"", ['ClusterId, ProcID'], 0)
+        #out = schedd.history("RemoteWallClockTime < 600 && MATCH_APF_QUEUE == \"ANALY_BNL_LONG-gridgk03-htcondor\"", ['ClusterId, ProcID'], 0)
+
+        timeinterval = int(now_sec_epoch) - self.interval
+        condor_constraint_expr = "RemoteWallClockTime < %s && JobStartDate > %s" %(self.maxtime, timeinterval)
+        out = schedd.history(condor_constraint_expr, ['MATCH_APF_QUEUE'], 0)
+
         n_pilots = sum(1 for o in out)
 
         # in the constraint expression we need to add the pilot was queued after a given time
