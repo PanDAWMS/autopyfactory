@@ -59,7 +59,7 @@ class ThrottleSchedPlugin(SchedInterface):
         #out = schedd.history("RemoteWallClockTime < 600 && MATCH_APF_QUEUE == \"ANALY_BNL_LONG-gridgk03-htcondor\"", ['ClusterId, ProcID'], 0)
 
         timeinterval = int(now_sec_epoch) - self.interval
-        condor_constraint_expr = "JobStartDate > %s" timeinterval
+        condor_constraint_expr = "JobStartDate > %s" %timeinterval
         pilots = schedd.history(condor_constraint_expr, ['RemoteWallClockTime', 'MATCH_APF_QUEUE'], 0)
 
         # process the output of condor_history 
