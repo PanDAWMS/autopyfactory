@@ -1,3 +1,4 @@
+* for clarity, code for plugins management in a separate module pluginsmgmt.py
 * first draft for sched plugin Throttle 
 * the config files, logrotate file and sysconfig files are not treated as documentation anymore
 * commented out the line reading x509userproxy from ProxyManager in BatchSubmit Exec plugin

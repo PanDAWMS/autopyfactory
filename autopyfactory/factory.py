@@ -1177,6 +1177,7 @@ class PluginDispatcher(object):
     
         return batchsubmit_plugin
 
+
     def getmonitorplugins(self):
         monitor_plugin_handlers = self._getplugin('monitor', self.apfqueue.mcl)  # list of classes 
         self.log.debug("monitor_plugin_handlers =   %s" % monitor_plugin_handlers)
