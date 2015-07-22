@@ -462,28 +462,35 @@ class Factory(object):
         self.log = logging.getLogger('main.factory')
         self.log.info('AutoPyFactory version %s' %self.version)
         self.fcl = fcl
+
         # Create config loader object for queues 
+        # 1. we try to read the list of files in queueConf and create a config loader
         qcf = None
-        qcd = None
         try: 
             qcf = fcl.get('Factory', 'queueConf')    # the configuration files for queues are a list of URIs
             self.log.debug("queues.conf file(s) = %s" % qcf)
-            
+            qcl_files = ConfigManager().getConfig(sources=qcf)
         except:
             pass
 
-        if not qcf:
-            try:
-                qcd = fcl.get('Factory', 'queueDirConf') # the configuration files for queues are in a directory
-                self.log.debug("queues.conf directory = %s" % qcd)
-            except:
-                pass
-
+        # 2. we try to read the directory in queueDirConf and create a config loader
+        qcd = None
         try:
-            if qcf:
-                self.qcl = ConfigManager().getConfig(sources=qcf)
-            elif qcd:
-                self.qcl = ConfigManager().getConfig(configdir=qcd)
+            qcd = fcl.get('Factory', 'queueDirConf') # the configuration files for queues are in a directory
+            self.log.debug("queues.conf directory = %s" % qcd)
+            qcl_dir = ConfigManager().getConfig(configdir=qcd)
+        except:
+            pass
+
+        # 3. we merge both loader objects
+        try:
+            if qcf and qcd:
+                self.qcl = qcl_f
+                self.qcl.merge(qcl_dir)
+            elif qcf and not qcd:
+                self.qcl = qcl_f
+            elif not qcf and qcd:
+                self.qcl = qcl_dir
             else:
                 self.log.error('no files or directory with queues configuration specified')
                 sys.exit(0)
@@ -492,6 +499,8 @@ class Factory(object):
             self.log.error('Failed to create QueuesConfigLoader, err: %s' % str(errMsg))
             sys.exit(0)
         
+
+
         # Handle ProxyManager configuration
         usepman = fcl.getboolean('Factory', 'proxymanager.enabled')
         if usepman:      
