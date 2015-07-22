@@ -30,7 +30,7 @@ class Config(SafeConfigParser, object):
         self.optionxform = str
         super(Config, self).__init__()
 
-    def merge(self, config, override=None, includemissing=True):
+    def merge(self, config, override=False, includemissing=True):
         '''
         merge the current Config object 
         with the content of another Config object.
