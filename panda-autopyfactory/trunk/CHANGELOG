@@ -1,3 +1,4 @@
+* creating the directory baseLogDir if it does not exist yet (for example, first time APF is installed)
 * allowing both queues.conf and queues.d/ at the same time, each one with its own merging mechanism
 * for clarity, code for plugins management in a separate module pluginsmgmt.py
 * first draft for sched plugin Throttle 
