@@ -98,6 +98,12 @@ class Config(SafeConfigParser, object):
                 # when no one knows what to do...
                 _override = False
 
+        # NOTE:
+        #   since we set default value of override=False in 
+        #   method merge( ) the last else block is never executed
+        #   therefore, the config variable 'override' is useless
+        #   But we keep the code just in case we need it in the future
+
         for opt in config.options(section):
             value = config.get(section, opt, raw=True)        
             if opt not in self.options(section):
