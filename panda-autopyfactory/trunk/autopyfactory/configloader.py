@@ -67,6 +67,7 @@ class Config(SafeConfigParser, object):
                 if includemissing:
                     self.__clonesection(section, config)
             else:
+                self.log.warning('section %s is duplicated. Being merged anyway.' %section)
                 self.__mergesection(section, config, override, includemissing)
     
     def __clonesection(self, section, config):
