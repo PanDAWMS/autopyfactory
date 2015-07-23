@@ -4,7 +4,6 @@
 #
 
 from CondorGridBatchSubmitPlugin import CondorGridBatchSubmitPlugin
-import jsd 
 
 
 class CondorDeltaCloudBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
@@ -42,27 +41,26 @@ class CondorDeltaCloudBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
 
         self.log.debug('CondorDeltaCloudBatchSubmitPlugin.addJSD: Starting.')
 
-        self.JSD.add('grid_resource', 'deltacloud %s' % self.gridresource) 
-
-        self.JSD.add("deltacloud_username", "%s" % self.username) 
-        self.JSD.add("deltacloud_password_file", "%s" % self.password_file) 
+        self.classads['GridResource'] = 'deltacloud %s' % self.gridresource
+        self.classads['DeltacloudUsername'] = self.username
+        self.classads['DeltacloudPasswordFile'] = self.password_file
 
         if self.image_id:
-            self.JSD.add('deltacloud_image_id', '%s' % self.image_id)          
+            self.classads['DeltacloudImageId'] = self.image_id
         if self.keyname:
-            self.JSD.add('deltacloud_keyname', '%s' % self.keyname)          
+            self.classads['DeltacloudKeyname'] = self.keyname
         if self.realm_id:
-            self.JSD.add('delta_realm_id', '%s' %self.realm_id)
+            self.classads['DeltaRealmId'] = self.realm_id
         if self.hardware_profile:
-            self.JSD.add('delta_hardware_profile', '%s' %self.hardware_profile)
+            self.classads['DeltaHardwareProfile'] = self.hardware_profile
         if self.hardware_profile_memory:
-            self.JSD.add('delta_hardware_profile_memory', '%s' %self.hardware_profile_memory)
+            self.classads['DeltaHardwareProfileMemory'] = self.hardware_profile_memory
         if self.hardware_profile_cpu:
-            self.JSD.add('delta_hardware_profile_cpu', '%s' %self.hardware_profile_cpu)
+            self.classads['DeltaHardwareProfileCpu'] = self.hardware_profile_cpu
         if self.hardware_profile_storage:
-            self.JSD.add('delta_hardware_profile_storage', '%s' %self.hardware_profile_storage)
+            self.classads['DeltaHardwareProfileStorage'] = self.hardware_profile_storage
         if self.user_data:
-            self.JSD.add('delta_user_data', '%s' %self.user_data)
+            self.classads['DeltacloudUserData'] = self.user_data
 
         super(CondorDeltaCloudBatchSubmitPlugin, self)._addJSD()
 

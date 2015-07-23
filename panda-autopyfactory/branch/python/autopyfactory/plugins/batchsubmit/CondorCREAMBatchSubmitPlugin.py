@@ -5,7 +5,6 @@
 
 from CondorCEBatchSubmitPlugin import CondorCEBatchSubmitPlugin 
 import autopyfactory.utils as utils
-from autopyfactory import jsd 
 
 
 class CondorCREAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
@@ -44,9 +43,9 @@ class CondorCREAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         # then we can assume the grid resource line is meant to be built from pieces.
         # Otherwise, we will assume its entire value comes from gridresource variable. 
         if self.webservice:
-                self.JSD.add('grid_resource', 'cream %s:%d/ce-cream/services/CREAM2 %s %s' % (self.webservice, self.creamport, self.creambatch, self.queue))
+                self.classads['GridResource'] = 'cream %s:%d/ce-cream/services/CREAM2 %s %s' % (self.webservice, self.creamport, self.creambatch, self.queue)
         else:
-                self.JSD.add('grid_resource', 'cream %s' %self.gridresource)
+                self.classads['grid_resource'] = 'cream %s' %self.gridresource
         super(CondorCREAMBatchSubmitPlugin, self)._addJSD() 
         self.log.debug('CondorCREAMBatchSubmitPlugin.addJSD: Leaving.')
 

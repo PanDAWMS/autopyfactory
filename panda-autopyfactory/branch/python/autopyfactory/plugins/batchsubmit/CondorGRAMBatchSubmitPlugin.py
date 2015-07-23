@@ -4,7 +4,6 @@
 #
 
 from CondorCEBatchSubmitPlugin import CondorCEBatchSubmitPlugin 
-from autopyfactory import jsd 
 
 
 class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
@@ -69,14 +68,11 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
    
         # -- globusrsl -- 
         if self.globus:
-            self.JSD.add('globusrsl', '%s' %self.globus)
-        ###globusrsl = "globusrsl=(jobtype=%s)" %self.jobtype
-        ###if self.queue:
-        ###     globusrsl += "(queue=%s)" % self.queue
-        ###self.JSD.add(globusrsl)
+            self.classads('GlobusRSL'] = %self.globus
 
         # -- fixed stuffs --
-        self.JSD.add('copy_to_spool', 'True')
+        #### FIXME !!!!  ####
+        self.classads('copy_to_spool', 'True')
 
         super(CondorGRAMBatchSubmitPlugin, self)._addJSD() 
     

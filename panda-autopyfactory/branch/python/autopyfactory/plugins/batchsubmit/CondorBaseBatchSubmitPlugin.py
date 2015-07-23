@@ -20,6 +20,8 @@ from autopyfactory.info import JobInfo
 from autopyfactory.apfexceptions import InvalidProxyFailure
 import autopyfactory.utils as utils
 
+import classad
+
 
 
 class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
@@ -282,17 +284,16 @@ x509UserProxyVOName = "atlas"
 
         self.log.debug('addJSD: Starting.')
 
-        self.JSD.add("Dir", "%s/" % self.logDir)
-        self.JSD.add("notify_user", "%s" % self.factoryadminemail)
+        self.classads['NotifyUser'] = self.factoryadminemail
 
         # -- MATCH_APF_QUEUE --
         # this token is very important, since it will be used by other plugins
         # to identify this pilot from others when running condor_q
-        self.JSD.add('+MATCH_APF_QUEUE', '"%s"' % self.apfqname)
+        self.classads['+MATCH_APF_QUEUE'] = self.apfqname
 
         # -- proxy path --
         if self.x509userproxy:
-            self.JSD.add("x509userproxy", "%s" % self.x509userproxy)
+            self.classads['x509userproxy'] = self.x509userproxy
 
         ### Environment
         environment = '"PANDA_JSID=%s' % self.factoryid
@@ -308,20 +309,19 @@ x509UserProxyVOName = "atlas"
             if self.environ != 'None' and self.environ != '':
                     environment += " " + self.environ
         environment += '"'
-        self.JSD.add('environment', environment)
+        self.classads['Environment'] = environment
 
 
-        self.JSD.add("executable", "%s" % self.executable)
-        self.JSD.add('arguments', '%s' % self.arguments)
+        self.classads['Cmd'] = self.executable
+        self.classads['Arguments'] = self.arguments
 
         # -- fixed stuffs -- 
-        self.JSD.add("output", "$(Dir)/$(Cluster).$(Process).out")
-        self.JSD.add("error", "$(Dir)/$(Cluster).$(Process).err")
-        self.JSD.add("log", "$(Dir)/$(Cluster).$(Process).log")
-        self.JSD.add("stream_output", "False")
-        self.JSD.add("stream_error", "False")
-        self.JSD.add("notification", "Error")
-        self.JSD.add("transfer_executable", "True")
+        self.classads['Out'] = classad.Function("strcat", self.logDir, '/', ClusterId, ProcId, '.out')
+        self.classads['Err'] = classad.Function("strcat", self.logDir, '/', ClusterId, ProcId, '.err')
+        self.classads['UserLog'] = classad.Function("strcat", self.logDir, '/', ClusterId, ProcId, '.log')
+        self.classads['StreamOut'] = "false"
+        self.classads['StreamErr'] = "false"
+        self.classads['JobNotification'] = 3
         
         self.log.debug('addJSD: Leaving.')
    

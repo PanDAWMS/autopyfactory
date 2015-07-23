@@ -4,7 +4,6 @@
 #
 
 from CondorGridBatchSubmitPlugin import CondorGridBatchSubmitPlugin
-from autopyfactory import jsd
 
 
 class CondorLSFBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
@@ -27,7 +26,7 @@ class CondorLSFBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
 
         self.log.debug('CondorLSFBatchSubmitPlugin.addJSD: Starting.')
 
-        self.JSD.add('grid_resource', 'lsf') 
+        self.classads['GridResource'] = 'lsf'
         super(CondorLSFBatchSubmitPlugin, self)._addJSD()
 
         self.log.debug('CondorLSFBatchSubmitPlugin.addJSD: Leaving.')

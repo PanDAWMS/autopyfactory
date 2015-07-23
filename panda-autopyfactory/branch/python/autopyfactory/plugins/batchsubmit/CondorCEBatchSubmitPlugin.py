@@ -4,7 +4,6 @@
 #
 
 from CondorGridBatchSubmitPlugin import CondorGridBatchSubmitPlugin 
-from autopyfactory import jsd 
 
 
 class CondorCEBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
@@ -30,7 +29,8 @@ class CondorCEBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         self.log.debug('CondorCEBatchSubmitPlugin.addJSD: Starting.')
    
         # -- fixed stuffs -- 
-        self.JSD.add('+Nonessential', 'True')
+        # FIXME !!  is it 'true' or True or true ???
+        self.classads['Nonessential'] = 'true'
 
         super(CondorCEBatchSubmitPlugin, self)._addJSD() 
     

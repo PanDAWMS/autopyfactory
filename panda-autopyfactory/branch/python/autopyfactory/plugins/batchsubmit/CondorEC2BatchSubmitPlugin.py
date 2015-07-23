@@ -4,7 +4,6 @@
 #
 
 from CondorGridBatchSubmitPlugin import CondorGridBatchSubmitPlugin
-from autopyfactory import jsd 
 from autopyfactory.condor import killids, mincondorversion
 import subprocess
 import time
@@ -87,24 +86,25 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         self.log.debug('CondorEC2BatchSubmitPlugin.addJSD: Starting.')
         super(CondorEC2BatchSubmitPlugin, self)._addJSD()
 
-        self.JSD.add('grid_resource', 'ec2 %s' % self.gridresource) 
+        self.classads['grid_resource'] = 'ec2 %s' %self.gridresource
 
         # -- proxy path --
-        self.JSD.add("ec2_access_key_id", "%s" % self.access_key_id) 
-        self.JSD.add("ec2_secret_access_key", "%s" % self.secret_access_key) 
+        self.classads['EC2AccessKeyId'] = self.access_key_id
+
+        self.JSD.add['EC2SecretAccessKey'] = self.secret_access_key
 
         # -- EC2 specific parameters --
-        self.JSD.add("ec2_ami_id", "%s" % self.ami_id) 
-        self.JSD.add("executable", "%s" % self.apfqueue.apfqname)
-        self.JSD.add("ec2_instance_type", "%s" % self.instance_type) 
+        self.classads['EC2AmiID'] = self.ami_id
+        self.classads['Cmd'] = self.apfqueue.apfqname
+        self.classads['ec2_instance_type'] = self.instance_type
         if self.user_data:
-            self.JSD.add('ec2_user_data', '%s' % self.user_data)
+            self.classads['EC2UserData'] = self.user_data
         if self.user_data_file:
-            self.JSD.add('ec2_user_data_file', '%s' % self.user_data_file)      
+            self.classads['EC2UserDataFlle'] = self.user_data_file
         if self.spot_price:
-            self.JSD.add('ec2_spot_price', '%f' % self.spot_price)
+            self.classads['EC2SpotPrice'] =  self.spot_price
         if self.security_groups:
-            self.JSD.add('ec2_security_groups', '%s' % self.security_groups)
+            self.classads['EC2SecurityGroups'] = self.security_groups
 
         self.log.debug('CondorEC2BatchSubmitPlugin.addJSD: Leaving.')
 

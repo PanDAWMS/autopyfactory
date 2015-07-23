@@ -4,7 +4,6 @@
 #
 
 from CondorBaseBatchSubmitPlugin import CondorBaseBatchSubmitPlugin 
-from autopyfactory import jsd 
 
 
 class CondorGridBatchSubmitPlugin(CondorBaseBatchSubmitPlugin):
@@ -27,7 +26,7 @@ class CondorGridBatchSubmitPlugin(CondorBaseBatchSubmitPlugin):
  
         self.log.debug('CondorGridBatchSubmitPlugin.addJSD: Starting.')
    
-        self.JSD.add("universe", "grid")
+        self.classads["JobUniverse"] = 9
         super(CondorGridBatchSubmitPlugin, self)._addJSD()
     
         self.log.debug('CondorGridBatchSubmitPlugin.addJSD: Leaving.')

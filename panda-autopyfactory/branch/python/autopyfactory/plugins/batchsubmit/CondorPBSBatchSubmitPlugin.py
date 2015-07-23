@@ -4,7 +4,6 @@
 #
 
 from CondorGridBatchSubmitPlugin import CondorGridBatchSubmitPlugin
-from autopyfactory import jsd
 
 
 class CondorPBSBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
@@ -27,7 +26,7 @@ class CondorPBSBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
 
         self.log.debug('CondorPBSBatchSubmitPlugin.addJSD: Starting.')
 
-        self.JSD.add('grid_resource', 'pbs') 
+        self.classads['GridResource'] = 'pbs'
         super(CondorPBSBatchSubmitPlugin, self)._addJSD()
 
         self.log.debug('CondorPBSBatchSubmitPlugin.addJSD: Leaving.')

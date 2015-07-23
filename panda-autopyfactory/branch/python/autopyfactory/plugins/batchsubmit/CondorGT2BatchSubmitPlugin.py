@@ -4,7 +4,6 @@
 #
 
 from CondorGRAMBatchSubmitPlugin import CondorGRAMBatchSubmitPlugin
-from autopyfactory import jsd
 
 
 class CondorGT2BatchSubmitPlugin(CondorGRAMBatchSubmitPlugin):
@@ -32,7 +31,7 @@ class CondorGT2BatchSubmitPlugin(CondorGRAMBatchSubmitPlugin):
         add things to the JSD object
         '''
         self.log.debug('CondorGT2BatchSubmitPlugin.addJSD: Starting.')
-        self.JSD.add('grid_resource', 'gt2 %s' % self.gridresource) 
+        self.classads['GridResource'] = 'gt2 %s' % self.gridresource
         super(CondorGT2BatchSubmitPlugin, self)._addJSD()
         self.log.debug('CondorGT2BatchSubmitPlugin.addJSD: Leaving.')
 
