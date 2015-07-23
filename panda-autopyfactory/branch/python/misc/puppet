@@ -1,0 +1,67 @@
+# format-free (for the time being) 
+# to start putting together content for a future
+# apf puppet module
+
+
+
+
+class autopyfactory{
+
+  # create, if needed, UNIX account 'autopyfactory'
+  user {'autopyfactory':
+    ensure     => present,
+    comment    => 'service account for AutoPyFactory',
+    home       => '/home/autopyfactory',
+    managehome => true,
+  }
+
+  # installation
+  # gives this warning message:
+  #  Warning: The package type's allow_virtual parameter will be changing its default value from false to true in a future release. If you do not want to allow virtual packages, please explicitly set allow_virtual to false.
+  package {"autopyfactoryyumrepofile":
+    ensure   => present,
+    provider => rpm,
+    source   => "http://dev.racf.bnl.gov/yum/autopyfactory-release/autopyfactory-release-0.9-1.noarch.rpm",
+  }
+
+  # ?? how to make it to update when there is a new version ??
+  package {'autopyfactory':
+    ensure  => installed,
+    require => Package['condor'],
+  }
+ 
+  # service
+  service { 'autopyfactory':
+    ensure  => running,
+    require => Package['autopyfactory'],
+    require => User['autopyfactory'],
+    require => File['/etc/autopyfactory/queues.conf'],
+
+  # APF config files
+  file {'/etc/autopyfactory/queues.conf':
+    source => blah blah
+    notify => Service['autopyfactory'],
+  }
+
+}
+
+
+class condor{
+
+  # installation
+  # ??? do we need to install the yum repo file ??? From where? OSG, WISC???
+  package{'condor':
+    ensure => installed,
+  }
+
+  service {'condor':
+    ensure => running,
+    require => Package['condor'],
+    require => File['/etc/condor/config.d/99autopyfactory.conf'],
+
+  # APF-specific config files
+  file {'/etc/condor/config.d/99autopyfactory.conf':
+    source => blah blah
+    notify => Service['condor'],
+  }
+}
