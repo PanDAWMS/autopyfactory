@@ -22,7 +22,7 @@ class ThrottleSchedPlugin(SchedInterface):
                 # ratio is the minimum ratio too short pilots over total pilots to decide there is a blackhole
                 # submit is the number of pilots to submit when a blackhole is detected
                 self.interval = self.apfqueue.qcl.generic_get(self.apfqname, 'sched.throttle.interval', 'getint', default_value=3600)
-                self.maxtime = self.apfqueue.qcl.generic_get(self.apfqname, 'sched.throttle.maxtime', 'getint', default_value=1800)
+                self.maxtime = self.apfqueue.qcl.generic_get(self.apfqname, 'sched.throttle.maxtime', 'getint', default_value=10)
                 self.ratio = self.apfqueue.qcl.generic_get(self.apfqname, 'sched.throttle.ratio', 'getfloat', default_value=0.5)
                 self.submit = self.apfqueue.qcl.generic_get(self.apfqname, 'sched.throttle.submit', 'getint', default_value=1)
 
