@@ -78,8 +78,8 @@ class ThrottleSchedPlugin(SchedInterface):
                 pilots_dict[q]['short'] += 1
 
         # now, we have a look to what happened with this queue:
-        total = d[self.apfqueue.apfqname]['total']
-        short = d[self.apfqueue.apfqname]['short']
+        total = pilots_dict[self.apfqueue.apfqname]['total']
+        short = pilots_dict[self.apfqueue.apfqname]['short']
         
         #self.ratioevents 
         #self.throttle 
