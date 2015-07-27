@@ -29,7 +29,6 @@ class CondorCEBatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         self.log.debug('CondorCEBatchSubmitPlugin.addJSD: Starting.')
    
         # -- fixed stuffs -- 
-        # FIXME !!  is it 'true' or True or true ???
         self.classads['Nonessential'] = 'true'
 
         super(CondorCEBatchSubmitPlugin, self)._addJSD() 
