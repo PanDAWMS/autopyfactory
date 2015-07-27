@@ -71,7 +71,7 @@ class CondorGRAMBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
             self.classads('GlobusRSL'] = %self.globus
 
         # -- fixed stuffs --
-        #### FIXME !!!!  ####
+        #### FIXME 
         self.classads('copy_to_spool', 'True')
 
         super(CondorGRAMBatchSubmitPlugin, self)._addJSD() 

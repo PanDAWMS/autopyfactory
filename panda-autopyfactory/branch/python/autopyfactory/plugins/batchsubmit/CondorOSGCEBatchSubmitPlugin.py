@@ -41,8 +41,8 @@ class CondorOSGCEBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         # we can assume for the time being they are the same. 
 
         # FIXME !!!
-        #self.classads['TransferOutput'] = '""'
-        self.classads['+TransferOutput'] = '""'
+        #self.classads['+TransferOutput'] = '""'
+        self.classads['TransferOutput'] = '""'
     
         super(CondorOSGCEBatchSubmitPlugin, self)._addJSD()
 
