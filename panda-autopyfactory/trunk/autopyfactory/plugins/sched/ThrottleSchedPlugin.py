@@ -14,16 +14,17 @@ class ThrottleSchedPlugin(SchedInterface):
 
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger("main.schedplugin[%s]" % apfqueue.apfqname)
+            self.apfqname = self.apfqueue.apfqname
+            self.log = logging.getLogger("main.schedplugin[%s]" % self.apfqname)
             try:
                 # interval is the time windows we observe. Default, last hour
                 # maxtime is the maximum WallTime for a pilot to be declared "too short" 
                 # ratio is the minimum ratio too short pilots over total pilots to decide there is a blackhole
                 # submit is the number of pilots to submit when a blackhole is detected
-                self.interval = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.throttle.interval', 'getint', default_value=3600)
-                self.maxtime = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.throttle.maxtime', 'getint', default_value=1800)
-                self.ratio = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.throttle.ratio', 'getfloat', default_value=0.5)
-                self.submit = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.throttle.submit', 'getint', default_value=1)
+                self.interval = self.apfqueue.qcl.generic_get(self.apfqname, 'sched.throttle.interval', 'getint', default_value=3600)
+                self.maxtime = self.apfqueue.qcl.generic_get(self.apfqname, 'sched.throttle.maxtime', 'getint', default_value=1800)
+                self.ratio = self.apfqueue.qcl.generic_get(self.apfqname, 'sched.throttle.ratio', 'getfloat', default_value=0.5)
+                self.submit = self.apfqueue.qcl.generic_get(self.apfqname, 'sched.throttle.submit', 'getint', default_value=1)
 
                 self.log.debug("SchedPlugin: offset = %d" % self.offset)
             except:
@@ -78,26 +79,30 @@ class ThrottleSchedPlugin(SchedInterface):
                 pilots_dict[q]['short'] += 1
 
         # now, we have a look to what happened with this queue:
-        total = pilots_dict[self.apfqueue.apfqname]['total']
-        short = pilots_dict[self.apfqueue.apfqname]['short']
-        
-        #self.ratioevents 
-        #self.throttle 
-        
-        ratio = float(short)/total
-        if ratio > self.ratio:
-            self.log.warning('the ratio short pilots over total pilots %s is higher than limit %s. Submitting just %s' %(ratio, self.ratio, self.submit))
-            out = self.submit
+        if self.apfqname in pilots_dict.keys():
+            total = pilots_dict[self.apfqname]['total']
+            short = pilots_dict[self.apfqname]['short']
+            
+            
+            ratio = float(short)/total
+            if ratio > self.ratio:
+                self.log.warning('the ratio short pilots over total pilots %s is higher than limit %s. Submitting just %s' %(ratio, self.ratio, self.submit))
+                out = self.submit
+            else:
+                out = input
+            
+            self.log.info('input=%s; totalpilots=%s; shortpilots=%s; ratio=%s; submit=%s; Return=%s' %(input,
+                                                                                             total,
+                                                                                             short, 
+                                                                                             self.ratio, 
+                                                                                             self.submit, 
+                                                                                             out))
+
+            msg = 'Throttle:in=%s;total=%s;short=%s;ratio=%s;submit=%s;ret=%s' %(input, total, short, self.ratio, self.submit, out)
         else:
+            self.log.warning('there is no info for queue %s' %self.apfqname)
+            msg = 'Throttle:in=%s;ret=%s' %(input, out)
             out = input
-        
 
-        self.log.info('input=%s; totalpilots=%s; shortpilots=%s; ratio=%s; submit=%s; Return=%s' %(input,
-                                                                                         total,
-                                                                                         short, 
-                                                                                         self.ratio, 
-                                                                                         self.submit, 
-                                                                                         out))
-
-        msg = 'Throttle:in=%s;total=%s;short=%s;ratio=%s;submit=%s;ret=%s' %(input, total, short, self.ratio, self.submit, out)
         return (out,msg)
+        
