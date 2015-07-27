@@ -414,12 +414,13 @@ x509UserProxyVOName = "atlas"
                     #key = attr.split('=')[0]
                     #value = '='.join( attr.split('=')[1:] )
                     key, value = attr.split('=', 1)
-                    self.JSD.add(key, value)
+                    self.classads[key] = value
                 else:
+                    # FIXME: how do I convert this to classAd
                     self.JSD.add(attr)
 
         for item in self.extra_condor_attributes:
-            self.JSD.add(item[0], item[1])
+            self.classads[item[0]] = item[1]
 
         self.log.debug('Leaving.')
 

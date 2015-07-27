@@ -91,7 +91,7 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         # -- proxy path --
         self.classads['EC2AccessKeyId'] = self.access_key_id
 
-        self.JSD.add['EC2SecretAccessKey'] = self.secret_access_key
+        self.classads['EC2SecretAccessKey'] = self.secret_access_key
 
         # -- EC2 specific parameters --
         self.classads['EC2AmiID'] = self.ami_id

@@ -33,7 +33,7 @@ class CondorLocalBatchSubmitPlugin(CondorBaseBatchSubmitPlugin):
         self.log.debug('CondorLocalBatchSubmitPlugin.addJSD: Starting.')
 
         self.classads['JobUniverse'] = 5
-        self.classads['should_transfer_files'] = "IF_NEEDED"
+        self.classads['ShouldTransferFiles'] = "IF_NEEDED"
         self.classads['+TransferOutput'] = '""'
 
         super(CondorLocalBatchSubmitPlugin, self)._addJSD()

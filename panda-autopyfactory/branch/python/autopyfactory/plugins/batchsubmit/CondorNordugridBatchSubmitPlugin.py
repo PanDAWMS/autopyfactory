@@ -5,7 +5,6 @@
 
 from CondorCEBatchSubmitPlugin import CondorCEBatchSubmitPlugin 
 import autopyfactory.utils as utils
-from autopyfactory import jsd 
 
 
 class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
@@ -111,14 +110,14 @@ class CondorNordugridBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         '''
         self.log.debug('CondorNordugridBatchSubmitPlugin.addJSD: Starting.')
    
-        self.JSD.add('grid_resource', 'nordugrid %s' %self.gridresource)
+        self.classads['GridResource'] = 'nordugrid %s' %self.gridresource
 
         nordugridrsl = "" 
         if self.nordugridrsl:
             nordugridrsl = self.nordugridrsl
             nordugridrsl += self._nordugridrsl_env()
         
-        self.JSD.add('nordugrid_rsl', '%s' % nordugridrsl) 
+        self.classads['NordugridRSL'] = nordugridrsl
 
         super(CondorNordugridBatchSubmitPlugin, self)._addJSD() 
     
