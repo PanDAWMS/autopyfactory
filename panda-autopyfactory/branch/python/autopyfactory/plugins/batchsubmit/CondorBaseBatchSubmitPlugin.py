@@ -319,8 +319,8 @@ x509UserProxyVOName = "atlas"
         self.classads['Out'] = classad.Function("strcat", self.logDir, '/', ClusterId, ProcId, '.out')
         self.classads['Err'] = classad.Function("strcat", self.logDir, '/', ClusterId, ProcId, '.err')
         self.classads['UserLog'] = classad.Function("strcat", self.logDir, '/', ClusterId, ProcId, '.log')
-        self.classads['StreamOut'] = "false"
-        self.classads['StreamErr'] = "false"
+        self.classads['StreamOut'] = False
+        self.classads['StreamErr'] = False
         self.classads['JobNotification'] = 3
         
         self.log.debug('addJSD: Leaving.')
