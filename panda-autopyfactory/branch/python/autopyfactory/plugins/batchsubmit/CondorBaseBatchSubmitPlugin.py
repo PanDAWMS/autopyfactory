@@ -371,6 +371,30 @@ x509UserProxyVOName = "atlas"
         
         return fields
 
+
+    # FIXME !! This should be in the condor.py module
+    def _attribute_to_classad(self, key):
+        '''
+        reads the table [JDL-CLASSAD] in mappings.conf to 
+        convert condor submit file attributes to ClassAds
+        '''
+
+        jdl2classad = self.apfqueue.factory.mappingscl.section2dict('JDL-CLASSAD')
+        self.log.info('jdl2classad are %s' %jdl2classad)
+ 
+        if key in jdl2classad.keys():
+            classad = jdl2classad[key]
+            self.log.info('classad for attribute %s is %s' %(key, classad))
+            return classad
+        else:
+            self.log.critical('no classad found for attribute %s' %key )
+            # FIXME: 
+            #       any particular exception ? Do we need one ad-hoc for this ?
+            #       where should I capture this exception ?
+            raise Exception
+
+
+
  
     def __submit(self, n, jsdfile):
         '''
@@ -414,13 +438,18 @@ x509UserProxyVOName = "atlas"
                     #key = attr.split('=')[0]
                     #value = '='.join( attr.split('=')[1:] )
                     key, value = attr.split('=', 1)
+                    key = self._attribute_to_classad(key)
                     self.classads[key] = value
                 else:
-                    # FIXME: how do I convert this to classAd
-                    self.JSD.add(attr)
+                    # I think this never happens
+                    #self.JSD.add(attr)
+                    pass
 
         for item in self.extra_condor_attributes:
-            self.classads[item[0]] = item[1]
+            key = item[0]
+            value = item[1]
+            key = self._attribute_to_classad(key)
+            self.classads[key] = value
 
         self.log.debug('Leaving.')
 
