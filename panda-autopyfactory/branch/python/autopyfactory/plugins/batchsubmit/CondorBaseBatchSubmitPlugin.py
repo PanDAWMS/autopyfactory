@@ -377,11 +377,20 @@ x509UserProxyVOName = "atlas"
         '''
         reads the table [JDL-CLASSAD] in mappings.conf to 
         convert condor submit file attributes to ClassAds
+    
+        Note that when the key is like +maxWallTime,
+        it is already expressed as a classAd, 
+        we only need to remove the + sign
         '''
 
         jdl2classad = self.apfqueue.factory.mappingscl.section2dict('JDL-CLASSAD')
         self.log.info('jdl2classad are %s' %jdl2classad)
  
+        if key.startswith('+'):
+            classad = key[1:]
+            self.log.info('classad for attribute %s is %s' %(key, classad))
+            return classad
+
         if key in jdl2classad.keys():
             classad = jdl2classad[key]
             self.log.info('classad for attribute %s is %s' %(key, classad))
@@ -393,7 +402,30 @@ x509UserProxyVOName = "atlas"
             #       where should I capture this exception ?
             raise Exception
 
+    # FIXME !! This should be in the condor.py module
+    def _value_to_classad(self, value):
+        '''
+        when using classAds via the python bindings,
+        integers must be integers,
+        floats must be floats,
+        and booleans must be booleans.
+        '''
 
+        # int ?
+        try:
+            return int(value)
+        # float ?
+        except:
+            try:
+                return float(value)
+            except:
+                # is string. Boolean ?
+                if value = 'true'
+                    return True
+                elif value = 'false'
+                    return False
+                else:
+                    return value
 
  
     def __submit(self, n, jsdfile):
@@ -439,6 +471,7 @@ x509UserProxyVOName = "atlas"
                     #value = '='.join( attr.split('=')[1:] )
                     key, value = attr.split('=', 1)
                     key = self._attribute_to_classad(key)
+                    value = self._value_to_classad(value)
                     self.classads[key] = value
                 else:
                     # I think this never happens
@@ -449,6 +482,7 @@ x509UserProxyVOName = "atlas"
             key = item[0]
             value = item[1]
             key = self._attribute_to_classad(key)
+            value = self._value_to_classad(value)
             self.classads[key] = value
 
         self.log.debug('Leaving.')
