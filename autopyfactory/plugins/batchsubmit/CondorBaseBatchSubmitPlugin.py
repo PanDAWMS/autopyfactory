@@ -416,6 +416,7 @@ x509UserProxyVOName = "atlas"
                     key, value = attr.split('=', 1)
                     self.JSD.add(key, value)
                 else:
+                    # I think this will never happens
                     self.JSD.add(attr)
 
         for item in self.extra_condor_attributes:
