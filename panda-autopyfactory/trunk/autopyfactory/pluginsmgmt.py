@@ -162,7 +162,7 @@ class PluginDispatcher(object):
 
 
     def getmonitorplugins(self):
-        monitor_plugin_handlers = self._getplugin('monitor', self.apfqueue.mcl)  # list of classes 
+        monitor_plugin_handlers = self._getplugin('monitor', self.mcl)  # list of classes 
         self.log.debug("monitor_plugin_handlers =   %s" % monitor_plugin_handlers)
         monitor_plugins = []
         for monitor_ph in monitor_plugin_handlers:
