@@ -34,11 +34,11 @@ class PluginHandler(object):
         return s
 
 
-class PluginDispatcher(object):
+class QueuePluginDispatcher(object):
     '''
-    class to create a deliver, on request, the different plug-ins.
+    class to create and deliver, on request, the different plug-ins needed for the APFQueues.
     Does not really implement any generic API, each plugin has different characteristics.
-    It is just to take all the code out of the APFQueue class. 
+    It is just to take all the code for all APFQueue plugins in a separate class.
     '''
 
     def __init__(self, apfqueue):
@@ -65,7 +65,7 @@ class PluginDispatcher(object):
         self.monitorplugins = self.getmonitorplugins()
         self.log.debug("Got %d monitor plugins" % len(self.monitorplugins))
 
-        self.log.info('PluginDispatcher: Object initialized.')
+        self.log.info('QueuePluginDispatcher: Object initialized.')
 
     def getschedplugins(self):
 

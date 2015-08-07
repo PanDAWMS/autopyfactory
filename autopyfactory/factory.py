@@ -42,7 +42,7 @@ from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
 from autopyfactory.proxymanager import ProxyManager
-from autopyfactory.pluginsmgmt import PluginDispatcher
+from autopyfactory.pluginsmgmt import QueuePluginDispatcher
 
 major, minor, release, st, num = sys.version_info
 
@@ -931,7 +931,7 @@ class APFQueue(threading.Thread):
          method just to instantiate the plugin objects
         '''
 
-        pd = PluginDispatcher(self)
+        pd = QueuePluginDispatcher(self)
         self.scheduler_plugins = pd.schedplugins        # a list of 1 or more plugins
         self.wmsstatus_plugin = pd.wmsstatusplugin      # a single WMSStatus plugin
         self.batchsubmit_plugin = pd.submitplugin       # a single BatchSubmit plugin
