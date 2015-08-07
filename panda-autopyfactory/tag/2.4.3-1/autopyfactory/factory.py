@@ -546,7 +546,8 @@ class Factory(object):
         # dump the content of queues.conf 
         qclstr = self.qcl.getContent(raw=False)
         logpath = self.fcl.get('Factory', 'baseLogDir')
-        # the directory does not exist yet. Let's create it
+        if not os.path.isdir(logpath):
+            # the directory does not exist yet. Let's create it
             os.makedirs(logpath)
         qclfile = open('%s/queues.conf' %logpath, 'w')
         print >> qclfile, qclstr
