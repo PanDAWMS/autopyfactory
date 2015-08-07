@@ -477,18 +477,21 @@ class Factory(object):
         qcd = None
         try:
             qcd = fcl.get('Factory', 'queueDirConf') # the configuration files for queues are in a directory
-            self.log.debug("queues.conf directory = %s" % qcd)
-            qcl_dir = ConfigManager().getConfig(configdir=qcd)
+            if qcd == "None" or qcd == "":
+                qcd = None
+            if qcd:
+                self.log.debug("queues.conf directory = %s" % qcd)
+                qcl_dir = ConfigManager().getConfig(configdir=qcd)
         except:
             pass
 
         # 3. we merge both loader objects
         try:
             if qcf and qcd:
-                self.qcl = qcl_f
+                self.qcl = qcl_files
                 self.qcl.merge(qcl_dir)
             elif qcf and not qcd:
-                self.qcl = qcl_f
+                self.qcl = qcl_files
             elif not qcf and qcd:
                 self.qcl = qcl_dir
             else:
