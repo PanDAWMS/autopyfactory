@@ -463,6 +463,13 @@ class Factory(object):
         self.log.info('AutoPyFactory version %s' %self.version)
         self.fcl = fcl
 
+        ##########
+        # NOTE
+        # the following code to create self.qcl
+        # is now in FileConfigPlugin
+        # so this code here is to be deleted
+        ##########
+
         # Create config loader object for queues 
         # 1. we try to read the list of files in queueConf and create a config loader
         qcf = None
