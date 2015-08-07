@@ -87,15 +87,16 @@ class WMSStatusInterface(object):
 class ConfigInterface(object):
     '''
     -----------------------------------------------------------------------
-    Returns info to complete the queues config objects
+    Reads configuration from different sources to create a ConfigLoader
+    object for the APFQueues configuration
     -----------------------------------------------------------------------
     Public Interface:
-            getInfo()
+            getConfig()
     -----------------------------------------------------------------------
     '''
     def getConfig(self):
         '''
-        returns info 
+        returns a ConfigLoader object 
         '''
         raise NotImplementedError
 
