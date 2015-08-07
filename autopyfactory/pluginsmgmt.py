@@ -43,7 +43,7 @@ class QueuePluginDispatcher(object):
 
     def __init__(self, apfqueue):
 
-        self.log = logging.getLogger('main.plugindispatcher')
+        self.log = logging.getLogger('main.queueplugindispatcher')
 
         self.apfqueue = apfqueue
         self.qcl = apfqueue.qcl
@@ -326,4 +326,34 @@ class QueuePluginDispatcher(object):
             ph.plugin_class = plugin_class
 
         return plugin_handlers
+
+
+
+
+class FactoryPluginDispatcher(object):
+    '''
+    class to create and deliver, on request, the different plug-ins needed for the Factory object.
+    Does not really implement any generic API, each plugin has different characteristics.
+    It is just to take all the code for all Factory plugins in a separate class.
+    '''
+
+    def __init__(self, factory):
+
+        self.log = logging.getLogger('main.factoryplugindispatcher')
+        self.fcl = factory.fcl
+        self.log.info('QueuePluginDispatcher: Object initialized.')
+
+
+    def getconfigplugin(self):
+        """
+        return a Config plugin to read the APFQueues configuration.
+        Typically from queues.conf or from an URL
+        """
+
+        config_plugin_handler = self._getplugin('config')[0]
+        config_cls = config_plugin_handler.plugin_class
+        # calls __init__() to instantiate the class
+        config_plugin = config_cls(self.apfqueue)  
+    
+        return config_plugin
 
