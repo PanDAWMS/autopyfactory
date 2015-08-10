@@ -52,13 +52,19 @@ def _add():
 
         data = [] 
 
+        #label = {}
+        #label['name'] = 'name' 
+        #label['factory'] = 'ui18' 
+        #label['wmsqueue'] = '' 
+        #label['batchqueue'] = ''
+        #label['resource'] = '' 
+        #label['localqueue'] = '' 
+
         label = {}
-        label['name'] = 'name' 
         label['factory'] = 'ui18' 
-        label['wmsqueue'] = '' 
-        label['batchqueue'] = ''
-        label['resource'] = '' 
-        label['localqueue'] = '' 
+        label['queues'] = ['ANALY_BNL', 'ANALY_PROD', 'ANALY_MWT2']
+        
+
 
         data.append(label)
         data = json.dumps(data)

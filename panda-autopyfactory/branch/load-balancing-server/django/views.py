@@ -1,23 +1,24 @@
 # Create your views here.
 
 from django.http import HttpResponse
-from polls.mycode import C
-import json
+import polls.factories as factories
+#import json
 
 def add(request):
-    c = C()
+    info = factories.InfoManager()
     #print request.method
     #print request.body
     #print request.read()
-    c.data = request.body
+    info.add( request.body )
+    #info.data = request.body
     #data = json.loads(request.body)
     #print data
     return HttpResponse("Hello, world." )
 
 def get(request):
-    c = C()
-    data = c.data
+    info = factories.InfoManager()
+    data = info.get()
+    #data = info.data
     #print data
     return HttpResponse(data, content_type="application/json")
-
 
