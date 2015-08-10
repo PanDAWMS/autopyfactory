@@ -4,6 +4,8 @@ from django.http import HttpResponse
 import polls.factories as factories
 #import json
 
+# FIXME : add a logger here 
+
 def add(request):
     info = factories.InfoManager()
     #print request.method

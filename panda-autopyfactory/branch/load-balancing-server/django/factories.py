@@ -1,6 +1,10 @@
 import json
 import time
 
+
+# FIXME : add a logger here 
+
+
 class Singleton(type):
     def __init__(cls, name, bases, dct):
         cls.__instance = None
@@ -93,4 +97,6 @@ class InfoManager:
         # convert out to JSON
         out = json.dumps( out ) 
         return out
+
+
 
