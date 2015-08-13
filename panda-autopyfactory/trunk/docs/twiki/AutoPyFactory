@@ -374,4 +374,3 @@ env | sort >> $CONSOLE_LOG
 | *Variable* | *Description* |
 | =monitorplugin= | the type of plugin to handle this monitor instance |
 | =monitorURL= | URL for the web monitor |
-
