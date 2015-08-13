@@ -429,7 +429,7 @@ For example: 1.2.3-4
 
    * Same RPM will have always the same numbers in all repositories. 
 
----### version 2.4.0
+---## version 2.4.0
 
 
 Version 2.4.0 introduces major changes in name of files and directories, 
@@ -638,11 +638,11 @@ And to avoid problems, delete the current X509 that may still be in =/tmp/=
 That means no one will now clean the old directories =/var/log/apf/= and =~apf/factory/logs/=
 You may delete them at some point (not right away, since they will include condor logs for still running pilots)
         
----### version 2.3.2
+---## version 2.3.2
 
    * RPM built incorrectly. Rebuilt against correct copy of code.  
 
----### version 2.3.0
+---## version 2.3.0
 
    * utils not distributed anymore within the RPM. They will be distributed with a dedicated one.
    * variable 'flavor' mandatory in DEFAULT section in =proxy.conf= Values are voms or myproxy
@@ -654,7 +654,7 @@ You may delete them at some point (not right away, since they will include condo
    * New variable ==factorySMTPServer== in =factory.conf=
    * New variable ==proxymanager.sleep== in =factory.conf=
 
----### version 2.2.0-1
+---## version 2.2.0-1
 
    * examples of executables (a.k.a. wrappers) 
 are placed underneath the =/etc/apf/= directory.
