@@ -21,7 +21,7 @@ class ExecSubmitPlugin(BatchSubmitInterface):
             self.log = logging.getLogger("main.batchsubmitplugin[%s]" %apfqueue.apfqname)
             self.apfqname = apfqueue.apfqname
             self.factory = apfqueue.factory
-            self.qcl = apfqueue.factory.qcl
+            self.qcl = apfqueue.qcl
             self.fcl = apfqueue.factory.fcl
 
             self.executable = self.qcl.generic_get(self.apfqname, 'executable')

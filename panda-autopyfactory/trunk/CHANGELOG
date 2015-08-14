@@ -1,3 +1,4 @@
+* in APFQueue.__init__() use a self.qcl with only one section (current queue), and in every Batch Submit plugin __init__() get apfqueue.qcl instead of apfqueue.factory.qcl
 * default value for queuesDirConf set to None to allow start just from install
 * printing a WARNING log message when merging two sections with the same name
 * set the default value of "override" to False (the new object has precedence over the current one)
