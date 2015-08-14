@@ -899,6 +899,7 @@ class APFQueue(threading.Thread):
         self.factory = factory
         self.fcl = self.factory.fcl 
         self.qcl = self.factory.qcl 
+        self.qcl = self.qcl.getSection(self.apfqname)  # so self.qcl only has one section (this queue) instead of all sections
         self.mcl = self.factory.mcl
 
         self.log.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(apfqname).getContent())

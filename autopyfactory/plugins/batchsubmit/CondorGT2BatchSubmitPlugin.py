@@ -15,7 +15,7 @@ class CondorGT2BatchSubmitPlugin(CondorGRAMBatchSubmitPlugin):
    
     def __init__(self, apfqueue, config=None):
         if not config:
-            qcl = apfqueue.factory.qcl            
+            qcl = apfqueue.qcl            
         else:
             qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorgt2', 'batchsubmit.condorgram').filterkeys('globusrsl.gram2', 'batchsubmit.condorgram.gram')
