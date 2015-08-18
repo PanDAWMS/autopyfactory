@@ -45,9 +45,9 @@ python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
 # ----- treat the config files properly:
 #       with a non-override policy on RPM update 
 sed -i '/\/etc\/autopyfactory\/.*\.conf/ s/^/%config(noreplace) /'  INSTALLED_FILES
-sed -i '/\/etc\/logrotate\.d\/autopyfactory s/^/%config(noreplace) /'  INSTALLED_FILES
-sed -i '/\/etc\/sysconfig\/autopyfactory s/^/%config(noreplace) /'  INSTALLED_FILES
-sed -i '/\/etc\/sysconfig\/proxymanager s/^/%config(noreplace) /'  INSTALLED_FILES
+sed -i '/\/etc\/logrotate\.d\/autopyfactory/ s/^/%config(noreplace) /'  INSTALLED_FILES
+sed -i '/\/etc\/sysconfig\/autopyfactory/ s/^/%config(noreplace) /'  INSTALLED_FILES
+sed -i '/\/etc\/sysconfig\/proxymanager/ s/^/%config(noreplace) /'  INSTALLED_FILES
 
 # ----- Files for autopyfactory-core subpackage
 cp INSTALLED_FILES CORE_FILES
