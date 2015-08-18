@@ -15,7 +15,7 @@ class CondorOSGCEBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
    
     def __init__(self, apfqueue, config=None):
         if not config:
-            qcl = apfqueue.factory.qcl            
+            qcl = apfqueue.qcl            
         else:
             qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorosgce', 'batchsubmit.condorce')
