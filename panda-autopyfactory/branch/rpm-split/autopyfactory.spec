@@ -16,6 +16,7 @@ BuildArch: noarch
 Vendor: Jose Caballero <jcaballero@bnl.gov>
 Provides: autopyfactory
 Obsoletes: panda-autopyfactory
+Obsoletes: autopyfactory
 Url: https://twiki.cern.ch/twiki/bin/view/Atlas/PanDA
 
 %description
@@ -181,7 +182,7 @@ Summary: META RPM for PanDA
 Group: Development/Libraries
 Requires: autopyfactory-core
 Requires: autopyfactory-plugins-panda
-Requires: panda-client
+#Requires: panda-client
 #Requires: autopyfactory-wrappers, voms-client, myproxy
 %description -n autopyfactory-panda
 meta rpm autopyfactory-panda
