@@ -50,10 +50,10 @@ sed -i '/\/etc\/logrotate\.d\/autopyfactory/ s/^/%config(noreplace) /'  INSTALLE
 sed -i '/\/etc\/sysconfig\/autopyfactory/ s/^/%config(noreplace) /'  INSTALLED_FILES
 sed -i '/\/etc\/sysconfig\/proxymanager/ s/^/%config(noreplace) /'  INSTALLED_FILES
 
-# ----- Files for autopyfactory-core subpackage
-cp INSTALLED_FILES CORE_FILES
-sed -i '/proxymanager/d' CORE_FILES
-sed -i '/plugins\/.*\/.*Condor.*/d' CORE_FILES
+# ----- Files for autopyfactory-common subpackage
+cp INSTALLED_FILES COMMON_FILES
+sed -i '/proxymanager/d' COMMON_FILES
+sed -i '/plugins\/.*\/.*Condor.*/d' COMMON_FILES
 
 # ----- Files for autopyfactory-proxymanager subpackage
 cp INSTALLED_FILES PROXYMANAGER_FILES
@@ -101,19 +101,19 @@ fi
 
 
 ##############################################
-#   SUB PACKAGE AUTOPYFACTORY-CORE
+#   SUB PACKAGE AUTOPYFACTORY-COMMON
 ##############################################
 
-%package -n autopyfactory-core
-Summary: autopyfactory core 
+%package -n autopyfactory-common
+Summary: autopyfactory common 
 Group: Development/Libraries
 Requires: autopyfactory-proxymanager
 Requires: autopyfactory-plugins-condor
-%description -n autopyfactory-core
-This package contains autopyfactory core
+%description -n autopyfactory-common
+This package contains autopyfactory common
 
-#%files -n autopyfactory-core -f INSTALLED_FILES
-%files -n autopyfactory-core -f CORE_FILES
+#%files -n autopyfactory-common -f INSTALLED_FILES
+%files -n autopyfactory-common -f COMMON_FILES
 %defattr(-,root,root)
 ## FIXME !!!
 %doc docs/* etc/logrotate/ etc/sysconfig/ README    
@@ -180,7 +180,7 @@ This package contains autopyfactory plugins cloud
 %package -n autopyfactory-panda
 Summary: META RPM for PanDA
 Group: Development/Libraries
-Requires: autopyfactory-core
+Requires: autopyfactory-common
 Requires: autopyfactory-plugins-panda
 #Requires: panda-client
 #Requires: autopyfactory-wrappers, voms-client, myproxy
@@ -192,7 +192,7 @@ meta rpm autopyfactory-panda
 %package -n autopyfactory-wms
 Summary: META RPM for autopyfactory-wms 
 Group: Development/Libraries
-Requires: autopyfactory-core
+Requires: autopyfactory-common
 #Requires: autopyfactory-wrappers, voms-client
 %description -n autopyfactory-wms
 meta rpm autopyfactory-wms
@@ -202,7 +202,7 @@ meta rpm autopyfactory-wms
 %package -n autopyfactory-cloud
 Summary: META RPM for autopyfactory-cloud
 Group: Development/Libraries
-Requires: autopyfactory-core
+Requires: autopyfactory-common
 Requires: autopyfactory-plugins-cloud
 #Requires: autopyfactory-wrappers
 %description -n autopyfactory-cloud
