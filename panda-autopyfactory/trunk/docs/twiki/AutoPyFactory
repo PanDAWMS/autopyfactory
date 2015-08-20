@@ -431,7 +431,6 @@ For example: 1.2.3-4
 
 ---## version 2.4.0
 
-
 Version 2.4.0 introduces major changes in name of files and directories, 
 programs, users accounts, processes, etc. 
 This recipe should help with a step by step migration:
@@ -638,6 +637,16 @@ And to avoid problems, delete the current X509 that may still be in =/tmp/=
 That means no one will now clean the old directories =/var/log/apf/= and =~apf/factory/logs/=
 You may delete them at some point (not right away, since they will include condor logs for still running pilots)
         
+
+---## upgrading a factory from 2.3.1 to 2.4.0
+
+In order to upgrade a factory from old stable version 2.3.1 to latest 2.4.x series, a few things need to be taken into account.
+
+   * The name of files, directories, and processes has changed. A detailed explanation is in the above section [[#5_2_version_2_4_0][version 2.4.0]]
+   * a new optional variable has been included in the file =proxy.conf=: ==voms.args==
+   * a new mandatory option has been added to the new file =autopyfactory.conf=: ==mappingsConf==
+
+
 ---## version 2.3.2
 
    * RPM built incorrectly. Rebuilt against correct copy of code.  
@@ -1066,7 +1075,7 @@ ChangeLog 2013-12-03
   loading).
 * Renamed various parameters to their new schedconfig names (Oracle 
   column names are case insensitive, so become lower case). 
-  	pilotDepth -> nqueue
+    pilotDepth -> nqueue
     pilotDepthBoost -> depthboost
     idlePilotSuppression -> idlepilotsuppression
     pilotLimit -> pilotlimit
@@ -1299,3 +1308,4 @@ ChangeLog 2013-12-03
 * Upgraded to UHURA11a pilot as default.
 * Improved cleanLogs.py script and renamed mkPilotWrapper.py.
 </pre>
+
