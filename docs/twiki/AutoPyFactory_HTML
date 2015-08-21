@@ -295,7 +295,8 @@ env | sort >> $CONSOLE_LOG
     <th class="tg-header">variable</th>
     <th class="tg-header">description</th>
   </tr>
-<!-- DEPRECATED
+
+ <!-- DEPRECATED
 <tr>
     <td class="tg-raw1">cloud</td>
     <td class="tg-031e"> is the cloud this queue is in. You should set this to suppress pilot submission when the cloud goes offline N.B. Panda clouds are UPPER CASE, e.g., UK </td>
@@ -309,6 +310,7 @@ env | sort >> $CONSOLE_LOG
     <td class="tg-031e"> Grid middleware flavor at the site. (e.g. OSG, EGI, !NorduGrid)  </td>
   </tr>
 -->
+
 <tr>
     <td class="tg-raw1">batchqueue</td>
     <td class="tg-031e"> the Batch system related queue name.  E.g. the !PanDA queue name (formerly called nickname) </td>
@@ -1850,3 +1852,4 @@ ChangeLog 2013-12-03
 * Upgraded to UHURA11a pilot as default.
 * Improved cleanLogs.py script and renamed mkPilotWrapper.py.
 </pre>
+
