@@ -338,41 +338,13 @@ env | sort >> $CONSOLE_LOG
     <td class="tg-raw1">cleanlogs.keepdays</td>
     <td class="tg-031e"> maximum number of days the condor logs will be kept </td>
   </tr>
-</table>
-
-
-Monitor Section 
-
-<table class="tg">
-  <tr>
-    <th class="tg-header">variable</th>
-    <th class="tg-header">description</th>
-  </tr>
 <tr>
-    <td class="tg-raw1">monitorplugin</td>
-    <td class="tg-031e"> the type of plugin to handle this monitor instance </td>
-  </tr>
-<tr>
-    <td class="tg-raw1">monitorURL</td>
-    <td class="tg-031e"> URL for the web monitor </td>
-  </tr>
-</table>
-
-
-Executable variables 
-
-As the purpose of the factory is to submit jobs to the different resources (local batch queues, grid sites, etc.) an executable, with its corresponding list of input arguments, is needed.
-This executable can be anything.
-Details on how to install the executable and the list of arguments are out of the scope of this documentation.
-
-<table class="tg">
-  <tr>
-    <th class="tg-header">variable</th>
-    <th class="tg-header">description</th>
+    <td class="tg-raw1">monitorsection</td>
+    <td class="tg-031e"> section in monitor.conf where info about the actual monitor plugin can be found.  The value can be a single section or a split by comma list of sections.  Monitor plugins handle job info publishing to one or more web monitor/dashboards.  </td>
   </tr>
 <tr>
     <td class="tg-raw1">executable</td>
-    <td class="tg-031e"> path to the script which will be run by condor. </td>
+    <td class="tg-031e"> path to the script which will be executed.  As the purpose of the factory is to submit jobs to the different resources (local batch queues, grid sites, etc.) an executable, with its corresponding list of input arguments, is needed.  This executable can be anything.  Details on how to install the executable and the list of arguments are out of the scope of this documentation, though.</td>
   </tr>
 <tr>
     <td class="tg-raw1">executable.arguments</td>
