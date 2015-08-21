@@ -177,6 +177,7 @@ env | sort >> $CONSOLE_LOG
     <th class="tg-header">variable</th>
     <th class="tg-header">description</th>
   </tr>
+
 <tr>
     <td class="tg-raw1">baseLogDir</td>
     <td class="tg-031e"> where outputs from pilots are stored NOTE: No trailing '/'!!! </td>
@@ -290,13 +291,15 @@ env | sort >> $CONSOLE_LOG
 *FIXME: fix the fake wiki words*
 -->
 
+---### generic variables
+
 <table class="tg">
   <tr>
     <th class="tg-header">variable</th>
     <th class="tg-header">description</th>
   </tr>
 
- <!-- DEPRECATED
+<!-- DEPRECATED
 <tr>
     <td class="tg-raw1">cloud</td>
     <td class="tg-031e"> is the cloud this queue is in. You should set this to suppress pilot submission when the cloud goes offline N.B. Panda clouds are UPPER CASE, e.g., UK </td>
@@ -335,9 +338,57 @@ env | sort >> $CONSOLE_LOG
     <td class="tg-raw1">cleanlogs.keepdays</td>
     <td class="tg-031e"> maximum number of days the condor logs will be kept </td>
   </tr>
-<tr>
-    <td colspan="2" class="tg-splitheader">WMS Status Plugin variables</td>
+</table>
+
+
+Monitor Section 
+
+<table class="tg">
+  <tr>
+    <th class="tg-header">variable</th>
+    <th class="tg-header">description</th>
   </tr>
+<tr>
+    <td class="tg-raw1">monitorplugin</td>
+    <td class="tg-031e"> the type of plugin to handle this monitor instance </td>
+  </tr>
+<tr>
+    <td class="tg-raw1">monitorURL</td>
+    <td class="tg-031e"> URL for the web monitor </td>
+  </tr>
+</table>
+
+
+Executable variables 
+
+As the purpose of the factory is to submit jobs to the different resources (local batch queues, grid sites, etc.) an executable, with its corresponding list of input arguments, is needed.
+This executable can be anything.
+Details on how to install the executable and the list of arguments are out of the scope of this documentation.
+
+<table class="tg">
+  <tr>
+    <th class="tg-header">variable</th>
+    <th class="tg-header">description</th>
+  </tr>
+<tr>
+    <td class="tg-raw1">executable</td>
+    <td class="tg-031e"> path to the script which will be run by condor. </td>
+  </tr>
+<tr>
+    <td class="tg-raw1">executable.arguments</td>
+    <td class="tg-031e"> input options to be passed verbatim to the executable script. </td>
+  </tr>
+</table>
+
+
+---### WMS Status Plugin variables
+
+<table class="tg">
+  <tr>
+    <th class="tg-header">variable</th>
+    <th class="tg-header">description</th>
+  </tr>
+
 <tr>
     <td class="tg-raw1">wmsstatusplugin</td>
     <td class="tg-031e"> WMS Status Plugin. </td>
@@ -346,9 +397,16 @@ env | sort >> $CONSOLE_LOG
     <td class="tg-raw1">wmsstatus.condor.queryargs</td>
     <td class="tg-031e"> list of command line input options to be included in the query command *verbatim*. E.g.  wmsstatus.condorqueryargs = -name <schedd_name> ...  </td>
   </tr>
-<tr>
-    <td colspan="2" class="tg-splitheader">Batch Status Plugin variables</td>
+</table>
+
+---### Batch Status Plugin variables
+
+<table class="tg">
+  <tr>
+    <th class="tg-header">variable</th>
+    <th class="tg-header">description</th>
   </tr>
+
 <tr>
     <td class="tg-raw1">batchstatusplugin</td>
     <td class="tg-031e"> Batch Status Plugin. </td>
@@ -357,9 +415,16 @@ env | sort >> $CONSOLE_LOG
     <td class="tg-raw1">batchstatus.condor.queryargs</td>
     <td class="tg-031e"> list of command line input options to be included in the query command *verbatim*. E.g.  batchstatus.condor.queryargs = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]> </td>
   </tr>
-<tr>
-    <td colspan="2" class="tg-splitheader">Sched Plugin variables</td>
+</table>
+
+---### Sched Plugin variables
+
+<table class="tg">
+  <tr>
+    <th class="tg-header">variable</th>
+    <th class="tg-header">description</th>
   </tr>
+
 <tr>
     <td class="tg-raw1">schedplugin</td>
     <td class="tg-031e"> specific Scheduler Plugin implementing the algorithm deciding how many new pilots to submit next cycle.  The value can be a single Plugin or a split by comma list of Plugins.  In the case of more than one plugin, each one will acts as a filter with respect to the value returned by the previous one.  By selecting the right combination of Plugins in a given order, a complex algorithm can be built. <BR> E.g., the algorithm can start by using Ready Plugin, which will determine the number of pilots based on the number of activated jobs in the WMS queue and the number of already submitted pilots.  After that, this number can be filtered to a maximum (!MaxPerCycleSchedPlugin) or a minimum (!MinPerCycleSchedPlugin) number of pilots.  Or even can be filtered to a maximum number of pilots per factory (!MaxPerFactorySchedPlugin) Also it can be filtered depending on the status of the wmsqueue (!StatusTestSchedPlugin, !StatusOfflineSchedPlugin). </td>
@@ -463,9 +528,16 @@ env | sort >> $CONSOLE_LOG
     <td class="tg-raw1">sched.keepnrunning.keep_running</td>
     <td class="tg-031e"> number of total jobs to keep running and/or pending </td>
   </tr>
-<tr>
-    <td colspan="2" class="tg-splitheader">Batch Submit Plugin variables</td>
+</table>
+
+---### Batch Submit Plugin variables
+
+<table class="tg">
+  <tr>
+    <th class="tg-header">variable</th>
+    <th class="tg-header">description</th>
   </tr>
+
 <tr>
     <td class="tg-raw1">batchsubmitplugin</td>
     <td class="tg-031e"> Batch Submit Plugin.  Currently available options are: !CondorGT2, !CondorGT5, !CondorCREAM, !CondorLocal, !CondorLSF, !CondorEC2, !CondorDeltaCloud. </td>
@@ -757,45 +829,6 @@ env | sort >> $CONSOLE_LOG
   </tr>
 </table>
 
-
-  Monitor Section 
-
-<table class="tg">
-  <tr>
-    <th class="tg-header">variable</th>
-    <th class="tg-header">description</th>
-  </tr>
-<tr>
-    <td class="tg-raw1">monitorplugin</td>
-    <td class="tg-031e"> the type of plugin to handle this monitor instance </td>
-  </tr>
-<tr>
-    <td class="tg-raw1">monitorURL</td>
-    <td class="tg-031e"> URL for the web monitor </td>
-  </tr>
-</table>
-
-
-  Executable variables 
-
-As the purpose of the factory is to submit jobs to the different resources (local batch queues, grid sites, etc.) an executable, with its corresponding list of input arguments, is needed.
-This executable can be anything.
-Details on how to install the executable and the list of arguments are out of the scope of this documentation.
-
-<table class="tg">
-  <tr>
-    <th class="tg-header">variable</th>
-    <th class="tg-header">description</th>
-  </tr>
-<tr>
-    <td class="tg-raw1">executable</td>
-    <td class="tg-031e"> path to the script which will be run by condor. </td>
-  </tr>
-<tr>
-    <td class="tg-raw1">executable.arguments</td>
-    <td class="tg-031e"> input options to be passed verbatim to the executable script. </td>
-  </tr>
-</table>
 
 <!--
  This variable can be built making use of an auxiliar variable called executable.defaultarguments This proposed ancilla works as a template, and its content is created on the fly from the value of other variables.  This mechanism is called "interpolation", docs can be found here: http://docs.python.org/library/configparser.html 
@@ -1852,4 +1885,3 @@ ChangeLog 2013-12-03
 * Upgraded to UHURA11a pilot as default.
 * Improved cleanLogs.py script and renamed mkPilotWrapper.py.
 </pre>
-
