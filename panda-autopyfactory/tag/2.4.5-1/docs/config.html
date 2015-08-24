@@ -1,0 +1,1393 @@
+<body>
+
+<a href=index.html>Index<a>
+<br>
+<br>
+
+
+                        <a href='#configuration'>Configuration</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href='#factoryconf'>factory.conf</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href='#queuesconf'>queues.conf</a><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Generic variables">Generic variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#WMS Status Plugin variables">WMS Status Plugin variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when wmsstatusplugin is CondorLocal">Configuration when wmsstatusplugin is CondorLocal</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Batch Status Plugin variables">Batch Status Plugin variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Sched Plugin variables">Sched Plugin variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Activated">Configuration when schedplugin is Activated</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Ready">Configuration when schedplugin is Ready</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Fixed">Configuration when schedplugin is Fixed</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is MaxPerCycle">Configuration when schedplugin is MaxPerCycle</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is MinPerCycle">Configuration when schedplugin is MinPerCycle</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is MaxPending">Configuration when schedplugin is MaxPending</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is MinPending">Configuration when schedplugin is MinPending</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is MaxToRun">Configuration when schedplugin is MaxToRun</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is StatusTest">Configuration when schedplugin is StatusTest</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is StatusOffline">Configuration when schedplugin is StatusOffline</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Simple">Configuration when schedplugin is Simple</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Trivial">Configuration when schedplugin is Trivial</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Scale">Configuration when schedplugin is Scale</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is KeepNRunning">Configuration when schedplugin is KeepNRunning</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Batch Submit Plugin variables">Batch Submit Plugin variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when batchsubmitplugin is condorgt2">Configuration when batchsubmitplugin is condorgt2</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#GlobusRSL GRAM2 variables">GlobusRSL GRAM2 variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when batchsubmitplugin is condorgt5">Configuration when batchsubmitplugin is condorgt5</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#GlobusRSL GRAM5 variables">GlobusRSL GRAM5 variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when batchsubmitplugin is condorcream">Configuration when batchsubmitplugin is condorcream</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when batchsubmitplugin is condorosgce">Configuration when batchsubmitplugin is condorosgce</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when batchsubmitplugin is condorec2">Configuration when batchsubmitplugin is condorec2</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when batchsubmitplugin is condordeltacloud">Configuration when batchsubmitplugin is condordeltacloud</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when batchsubmitplugin is condorlocal">Configuration when batchsubmitplugin is condorlocal</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Monitor section">Monitor section</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Executable variables">Executable variables</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href='#proxyconf'>proxy.conf</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href='#monitorconf'>monitor.conf</a><br>
+
+<a name='configuration'><h1><span style="color: black; "><span>Configuration</span></span></h1></a>
+
+<a name='factoryconf'><h2><span style="color: black; "><span>factory.conf</span></span></h2></a>
+
+<ul>
+
+<li><strong>baseLogDir</strong>
+<br>
+where outputs from pilots are stored
+<br>
+NOTE: No trailing '/'!!!
+<br>
+
+<br>
+<li><strong>baseLogDirUrl</strong>
+<br>
+where outputs from pilots are available via http
+<br>
+NOTE: It must include the port.
+<br>
+NOTE: No trailing '/'!!!
+<br>
+
+<br>
+<li><strong>batchstatus.condor.sleep</strong>
+<br>
+time the Condor BatchStatus Plugin waits between cycles
+<br>
+Value is in seconds.
+<br>
+
+<br>
+<li><strong>batchstatus.maxtime</strong>
+<br>
+maximum time while the info is considered reasonable.
+<br>
+If info stored is older than that, is considered not valid,
+<br>
+and some NULL output will be returned.
+<br>
+
+<br>
+<li><strong>cycles</strong>
+<br>
+maximum number of times the queues will loop.
+<br>
+None means forever.
+<br>
+
+<br>
+<li><strong>cleanlogs.keepdays</strong>
+<br>
+maximum number of days the condor logs
+<br>
+will be kept, in case they are placed in a subdirectory
+<br>
+for an APFQueue that is not being currently managed by
+<br>
+AutoPyFactory.
+<br>
+For example, an apfqueue that has been created and used for a short
+<br>
+amount of time, and it does not exist anymore.
+<br>
+Still the created logs have to be cleaned at some point...
+<br>
+
+<br>
+<li><strong>factoryId</strong>
+<br>
+Name that the factory instance will have in the APF web monitor.
+<br>
+Make factoryId something descriptive and unique for your factory,
+<br>
+for example <site>-<host>-<admin> (e.g. BNL-gridui11-jhover)
+<br>
+
+<br>
+<li><strong>factoryAdminEmail</strong>
+<br>
+Email of the local admin to contact in case of a problem
+<br>
+with an specific APF instance.
+<br>
+
+<br>
+<li><strong>factorySMTPServer</strong>
+<br>
+Server to use to send alert emails to admin.
+<br>
+
+<br>
+<li><strong>factory.sleep</strong>
+<br>
+sleep time between cycles in mainLoop in Factory object
+<br>
+Value is in seconds.
+<br>
+
+<br>
+<li><strong>factoryUser</strong>
+<br>
+account under which APF will run
+<br>
+
+<br>
+<li><strong>maxperfactory.maximum</strong>
+<br>
+maximum number of condor jobs
+<br>
+to be running at the same time per Factory.
+<br>
+It is a global number, used by all APFQueues submitting
+<br>
+pilots with condor.
+<br>
+The value will be used by MaxPerFactorySchedPlugin plugin
+<br>
+
+<br>
+<li><strong>monitorURL</strong>
+<br>
+URL for the web monitor
+<br>
+
+<br>
+<li><strong>logserver.enabled</strong>
+<br>
+determines if batch logs are exported via HTTP.
+<br>
+Valid values are True|False
+<br>
+
+<br>
+<li><strong>logserver.index</strong>
+<br>
+determines if automatic directory indexing is allowed
+<br>
+when log directories are browsed.
+<br>
+Valid values are True|False
+<br>
+
+<br>
+<li><strong>logserver.allowrobots</strong>
+<br>
+if false, creates a robots.txt file in the docroot.
+<br>
+Valid valudes are True|False
+<br>
+
+<br>
+<li><strong>proxyConf</strong>
+<br>
+local path to the configuration file for automatic proxy management.
+<br>
+NOTE: must be a local path, not a URI.
+<br>
+
+<br>
+<li><strong>proxymanager.enabled</strong>
+<br>
+to determine if automatic proxy management is used or not.
+<br>
+Accepted values are True|False
+<br>
+
+<br>
+<li><strong>proxymanager.sleep</strong>
+<br>
+Sleep interval for proxymanager thread. 
+<br>
+
+<br>
+<li><strong>queueConf</strong>
+<br>
+URI plus path to the configuration file for APF queues.
+<br>
+NOTE: Must be expressed as a URI (file:// or http://)
+<br>
+Cannot be used at the same time that queueDirConf
+<br>
+
+<br>
+<li><strong>queueDirConf</strong>
+<br>
+directory with a set of configuration files, all of them to be used at the same time. 
+<br>
+i.e.  /etc/apf/queues.d/
+<br>
+Cannot be used at the same time that queueConf
+<br>
+
+
+<br>
+<li><strong>monitorConf</strong>
+<br>
+local path to the configuration file for Monitor plugins.
+<br>
+
+<br>
+<li><strong>mappingsConf</strong>
+<br>
+local path to the configuration file with the mappings:
+<br>
+for example, globus2info, jobstatus2info, etc.
+<br>
+
+<br>
+<li><strong>wmsstatus.maximum</strong>
+<br>
+maximum time while the info is considered reasonable.
+<br>
+If info stored is older than that, is considered not valid,
+<br>
+and some NULL output will be returned.
+<br>
+
+<br>
+<li><strong>wmsstatus.panda.sleep</strong>
+<br>
+time the WMSStatus Plugin waits between cycles
+<br>
+Value is in seconds.
+<br>
+
+</ul>
+
+
+<a name='queuesconf'><h2><span style="color: black; "><span>queues.conf</span></span></h2></a>
+
+
+<a name="Generic variables"><h3><span style="color: black; "><span>Generic variables</span></span></h3></a>
+<ul>
+<li><strong>override</strong><br>
+determines if values from this config file have precedence over
+the same values comming from different sources of information.
+If True then schedconfig does not clobber configuration file values.
+Valid values are True|False.
+<br>
+<br>
+<li><strong>cloud</strong><br>
+is the cloud this queue is in. You should set this to suppress pilot
+submission when the cloud goes offline
+N.B. Panda clouds are UPPER CASE, e.g., UK
+<br>
+<br>
+<li><strong>vo</strong><br>
+Virtual Organization
+<br>
+<br>
+<li><strong>grid</strong><br>
+Grid middleware flavor at the site. (e.g. OSG, EGI, NorduGrid)
+<br>
+<br>
+<li><strong>batchqueue</strong><br>
+the Batch system related queue name.
+E.g. the PanDA queue name (formerly called nickname)
+<br>
+<br>
+<li><strong>wmsqueue</strong><br>
+the WMS system queue name.
+E.g. the PanDA siteid name
+<br>
+<br>
+<li><strong>enabled</strong><br>
+determines if each queue section must be used by AutoPyFactory
+or not. Allows to disable a queue without commenting out all the values. 
+Valid values are True|False.
+<br>
+<br>
+<li><strong>status</strong><br>
+can be "test", "offline" or "online"
+<br>
+<br>
+<li><strong>apfqueue.sleep</strong><br>
+sleep time between cycles in APFQueue object.
+Value is in seconds.   
+<br>
+<br>
+<li><strong>autofill</strong><br>
+says if the info from this filled should be completed
+with info from a ConfigPlugin object
+<br>
+<br>
+<li><strong>cleanlogs.keepdays</strong><br>
+maximum number of days the condor logs
+will be kept
+<br>
+</ul>
+
+<a name="WMS Status Plugin variables"><h3><span style="color: black; "><span>WMS Status Plugin variables</span></span></h3></a>
+<ul>
+<li><strong>wmsstatusplugin</strong><br>
+WMS Status Plugin.
+<br>
+</ul>
+
+
+
+<a name="Configuration when wmsstatusplugin is CondorLocal"><h3><span style="color: black; "><span>Configuration when wmsstatusplugin is CondorLocal</span></span></h3></a>
+<ul>
+<li><strong>wmsstatus.condor.queryargs</strong><br>
+list of command line input options
+to be included in the query command *verbatim*. E.g. 
+wmsstatus.condor.queryargs = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]>
+<br>
+</ul>
+
+
+
+<a name="Batch Status Plugin variables"><h3><span style="color: black; "><span>Batch Status Plugin variables</span></span></h3></a>
+<ul>
+<li><strong>batchstatusplugin</strong><br>
+Batch Status Plugin.
+<br>
+<br>
+<li><strong>batchstatus.condor.queryargs</strong><br>
+list of command line input options
+to be included in the query command *verbatim*. E.g. 
+batchstatus.condor.queryargs = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]>
+<br>
+</ul>
+
+<a name="Sched Plugin variables"><h3><span style="color: black; "><span>Sched Plugin variables</span></span></h3></a>
+<ul>
+<li><strong>schedplugin</strong><br>
+specific Scheduler Plugin implementing
+the algorithm deciding how many new pilots
+to submit next cycle.
+The value can be a single Plugin or a split by comma
+list of Plugins.
+In the case of more than one plugin, 
+each one will acts as a filter with respect to the
+value returned by the previous one.
+By selecting the right combination of Plugins in a given order,
+a complex algorithm can be built.
+E.g., the algorithm can start by using Activated Plugin,
+which will determine the number of pilots based on 
+the number of activated jobs in the WMS queue and 
+the number of already submitted pilots.
+After that, this number can be filtered to 
+a maximum (MaxPerCycleSchedPlugin) or a minimum (MinPerCycleSchedPlugin)
+number of pilots.
+Or even can be filtered to a maximum number of pilots
+per factory (MaxPerFactorySchedPlugin)
+Also it can be filtered depending on the status of the wmsqueue 
+(StatusTestSchedPlugin, StatusOfflineSchedPlugin).
+<br>
+</ul>
+
+<a name="Configuration when schedplugin is Activated"><h3><span style="color: black; "><span>Configuration when schedplugin is Activated</span></span></h3></a>
+<br>
+<b>IMPORTANT NOTE: Deprecated. Activated Plugin is not maintained anymore. Instead, suggested option is to use Ready Plugin plus a chain of limiting plugins (MaxPerCycle, MinPerCycle...)</b>
+<ul>
+<li><strong>sched.activated.default</strong><br>
+default number of pilots to be submitted
+when the context information 
+does not exist is not reliable 
+To be used in Activated Scheduler Plugin.
+<br>
+<br>
+<li><strong>sched.activated.max_jobs_torun</strong><br>
+maximum number of jobs running
+simoultaneously. 
+To be used in Activated Scheduler Plugin.
+<br>
+<br>
+<li><strong>sched.activated.max_pilots_per_cycle</strong><br>
+maximum number of pilots
+to be submitted per cycle.
+To be used in Activated Scheduler Plugin.
+<br>
+<br>
+<li><strong>sched.activated.min_pilots_per_cycle</strong><br>
+minimum number of pilots
+to be submitted per cycle.
+To be used in Activated Scheduler Plugin.
+<br>
+<br>
+<li><strong>sched.activated.min_pilots_pending</strong><br>
+minimum number of pilots
+to be idle on queue waiting to start execution.
+To be used in Activated Scheduler Plugin.
+<br>
+<br>
+<li><strong>sched.activated.max_pilots_pending</strong><br>
+maximum number of pilots
+to be idle on queue waiting to start execution.
+To be used in Activated Scheduler Plugin.
+<br>
+<br>
+<li><strong>sched.activated.testmode.allowed</strong><br>
+Boolean variable to trigger
+special mode of operation when the wmsqueue is in
+in status = test
+<br>
+<br>
+<li><strong>sched.activated.testmode.pilots</strong><br>
+number of pilots to submit
+when the wmsqueue is in status = test
+and sched.activated.testmode.allowed is True
+<br>
+</ul>
+
+<a name="Configuration when schedplugin is Ready"><h3><span style="color: black; "><span>Configuration when schedplugin is Ready</span></span></h3></a>
+<ul>
+<li><strong>sched.ready.offset</strong>
+<br>
+the minimum value in the number of ready jobs to trigger submission.
+<br>
+</ul>
+
+<a name="Configuration when schedplugin is Fixed"><h3><span style="color: black; "><span>Configuration when schedplugin is Fixed</span></span></h3></a>
+<ul>
+<li><strong>sched.fixed.pilotspercycle</strong><br>
+fixed number of pilots to be submitted
+each cycle, when using the Fixed Scheduler Plugin.
+<br>
+</ul>
+
+<a name="Configuration when schedplugin is MaxPerCycle"><h3><span style="color: black; "><span>Configuration when schedplugin is MaxPerCycle</span></span></h3></a>
+<ul>
+<li><strong>sched.maxpercycle.maximum</strong><br>
+maximum number of pilots to be submitted
+per cycle
+<br>
+</ul>
+
+<a name="Configuration when schedplugin is MinPerCycle"><h3><span style="color: black; "><span>Configuration when schedplugin is MinPerCycle</span></span></h3></a>
+<ul>
+<li><strong>sched.minpercycle.minimum</strong><br>
+minimum number of pilots to be submitted
+per cycle
+<br>
+</ul>
+
+<a name="Configuration when schedplugin is MaxPending"><h3><span style="color: black; "><span>Configuration when schedplugin is MaxPending</span></span></h3></a>
+<ul>
+<li><strong>sched.maxpending.maximum</strong><br>
+maximum number of pilots to be pending
+<br>
+</ul>
+
+<a name="Configuration when schedplugin is MinPending"><h3><span style="color: black; "><span>Configuration when schedplugin is MinPending</span></span></h3></a>
+<ul>
+<li><strong>sched.minpending.minimum</strong><br>
+minimum number of pilots to be pending
+<br>
+</ul>
+
+<a name="Configuration when schedplugin is MaxToRun"><h3><span style="color: black; "><span>Configuration when schedplugin is MaxToRun</span></span></h3></a>
+<ul>
+<li><strong>sched.maxtorun.maximum</strong><br>
+maximum number of pilots allowed to, potentially,
+be running at a time. 
+<br>
+</ul>
+
+<a name="Configuration when schedplugin is StatusTest"><h3><span style="color: black; "><span>Configuration when schedplugin is StatusTest</span></span></h3></a>
+<ul>
+<li><strong>sched.statustest.pilots</strong><br>
+number of pilots to submit
+when the wmsqueue is in status = test
+<br>
+</ul>
+
+<a name="Configuration when schedplugin is StatusOffline"><h3><span style="color: black; "><span>Configuration when schedplugin is StatusOffline</span></span></h3></a>
+<ul>
+<li><strong>sched.statusoffline.pilots</strong><br>
+number of pilots to submit
+when the wmsqueue or the cloud is in status = offline
+<br>
+</ul>
+
+<a name="Configuration when schedplugin is Simple"><h3><span style="color: black; "><span>Configuration when schedplugin is Simple</span></span></h3></a>
+<ul>
+<li><strong>sched.simple.default</strong><br>
+default number of pilots to be submitted
+when the context information does not exist
+or is not reliable.
+To be used in Simple Scheduler Plugin.
+<br>
+<br>
+<li><strong>sched.simple.maxpendingpilots</strong><br>
+maximum number of pilots
+to be idle on queue waiting to start execution.
+To be used in Simple Scheduler Plugin.
+<br>
+<br>
+<li><strong>sched.simple.maxpilotspercycle</strong><br>
+maximum number of pilots
+to be submitted per cycle.
+To be used in Simple Scheduler Plugin.
+<br>
+</ul>
+
+
+<a name="Configuration when schedplugin is Trivial"><h3><span style="color: black; "><span>Configuration when schedplugin is Trivial</span></span></h3></a>
+<ul>
+<li><strong>sched.trivial.default</strong><br>
+default number of pilots
+to be submitted when the context information
+does not exist or is not reliable.
+To be used in Trivial Scheduler Plugin.
+<br>
+</ul>
+
+<a name="Configuration when schedplugin is Scale"><h3><span style="color: black; "><span>Configuration when schedplugin is Scale</span></span></h3></a>
+<ul>
+<li><strong>sched.scale.factor</strong><br>
+scale factor to correct the previous value
+of the number of pilots.
+<br>
+Value is a float number.
+<br>
+</ul>
+
+<a name="Configuration when schedplugin is KeepNRunning"><h3><span style="color: black; "><span>Configuration when schedplugin is KeepNRunning</span></span></h3></a>
+<ul>
+<li><strong>sched.keepnrunning.keep_running</strong><br>
+number of total jobs to keep running and/or pending.
+
+<br>
+</ul>
+
+<a name="Batch Submit Plugin variables"><h3><span style="color: black; "><span>Batch Submit Plugin variables</span></span></h3></a>
+<ul>
+<li><strong>batchsubmitplugin</strong><br>
+Batch Submit Plugin.
+Currently available options are: 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CondorGT2,&nbsp;
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CondorGT5,&nbsp;
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CondorCREAM,&nbsp;
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CondorLocal,&nbsp;
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CondorEC2,&nbsp;
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CondorDeltaCloud.
+<br>
+</ul>
+
+<a name="Configuration when batchsubmitplugin is condorgt2"><h3><span style="color: black; "><span>Configuration when batchsubmitplugin is condorgt2</span></span></h3></a>
+<ul>
+<li><strong>batchsubmit.condorgt2.gridresource</strong><br>
+name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor)
+<br>
+<br>
+<li><strong>batchsubmit.condorgt2.submitargs</strong><br>
+list of command line input options
+to be included in the submission command *verbatim*
+e.g. 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;batchsubmit.condorgt2.submitargs&nbsp;=&nbsp;-remote&nbsp;my_schedd&nbsp;
+will drive into a command like
+<br>&nbsp;&nbsp;&nbsp;&nbsp;condor_submit&nbsp;-remote&nbsp;my_schedd&nbsp;submit.jdl
+<br>
+<br>
+<li><strong>batchsubmit.condorgt2.condor_attributes</strong><br>
+list of condor attributes,
+splited by comma, 
+to be included in the condor submit file *verbatim*
+e.g. +Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas"
+Can be used to include any line in the Condor-G file
+that is not otherwise added programmatically by AutoPyFactory.
+Note the following directives are added by default:
+<br>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transfer_executable&nbsp;=&nbsp;True
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stream_output=False
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stream_error=False
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notification=Error
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;copy_to_spool&nbsp;=&nbsp;false
+<br>
+<br>
+<li><strong>batchsubmit.condorgt2.environ</strong><br>
+list of environment variables,
+splitted by white spaces, 
+to be included in the condor attribute environment *verbatim*
+Therefore, the format should be env1=var1 env2=var2 envN=varN
+split by whitespaces.
+<br>
+<br>
+<li><strong>batchsubmit.condorgt2.proxy</strong><br>
+name of the proxy handler in proxymanager for automatic proxy renewal
+(See etc/proxy.conf)
+None if no automatic proxy renewal is desired.
+<br>
+</ul>
+
+<a name="GlobusRSL GRAM2 variables"><h3><span style="color: black; "><span>GlobusRSL GRAM2 variables</span></span></h3></a>
+<ul>
+<li><strong>gram2</strong><br>
+The following are GRAM2 RSL variables.
+They are just used to build batchsubmit.condorgt2.globusrsl 
+(if needed)
+The globusrsl directive in the condor submission file looks like
+<br>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;globusrsl=(jobtype=single)(queue=short)
+<br>
+Documentation can be found here:
+<br>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.globus.org/toolkit/docs/2.4/gram/gram_rsl_parameters.html
+<br>
+<br>
+<li><strong>globusrsl.gram2.arguments</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.count</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.directory</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.dryRun</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.environment</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.executable</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.gramMyJob</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.hostCount</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.jobType</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.maxCpuTime</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.maxMemory</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.maxTime</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.maxWallTime</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.minMemory</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.project</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.queue</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.remote_io_url</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.restart</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.save_state</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.stderr</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.stderr_position</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.stdin</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.stdout</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.stdout_position</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.two_phase</strong><br>
+
+<br>
+<li><strong>globusrsl.gram2.globusrsl</strong><br>
+GRAM RSL directive.
+If this variable is not setup, then it will be built
+programmatically from all non empty globusrsl.gram2.XYZ variables.
+If this variable is setup, then its value
+will be taken *verbatim*, and all possible values
+for globusrsl.gram2.XYZ variables will be ignored. 
+<br>
+<br>
+<li><strong>globusrsl.gram2.globusrsladd</strong><br>
+custom fields to be added
+*verbatim* to the GRAM RSL directive,
+after it has been built either from 
+globusrsl.gram2.globusrsl value
+or from all globusrsl.gram2.XYZ variables.
+e.g. (condorsubmit=('+AccountingGroup' '\"group_atlastest.usatlas1\"')('+Requirements' 'True'))
+<br>
+</ul>
+
+<a name="Configuration when batchsubmitplugin is condorgt5"><h3><span style="color: black; "><span>Configuration when batchsubmitplugin is condorgt5</span></span></h3></a>
+<ul>
+<li><strong>batchsubmit.condorgt5.gridresource</strong><br>
+name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor)
+<br>
+<br>
+<li><strong>batchsubmit.condorgt5.submitargs</strong><br>
+list of command line input options
+to be included in the submission command *verbatim*
+e.g. 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;batchsubmit.condorgt2.submitargs&nbsp;=&nbsp;-remote&nbsp;my_schedd&nbsp;
+will drive into a command like
+<br>&nbsp;&nbsp;&nbsp;&nbsp;condor_submit&nbsp;-remote&nbsp;my_schedd&nbsp;submit.jdl
+<br>
+<br>
+<li><strong>batchsubmit.condorgt5.condor_attributes</strong><br>
+list of condor attributes,
+splited by comma, 
+to be included in the condor submit file *verbatim*
+e.g. +Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas"
+Can be used to include any line in the Condor-G file
+that is not otherwise added programmatically by AutoPyFactory.
+Note the following directives are added by default:
+<br>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transfer_executable&nbsp;=&nbsp;True
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stream_output=False
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stream_error=False
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notification=Error
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;copy_to_spool&nbsp;=&nbsp;false
+<br>
+<br>
+<li><strong>batchsubmit.condorgt5.environ</strong><br>
+list of environment variables,
+splitted by white spaces, 
+to be included in the condor attribute environment *verbatim*
+Therefore, the format should be env1=var1 env2=var2 envN=varN
+split by whitespaces.
+<br>
+<br>
+<li><strong>batchsubmit.condorgt5.proxy</strong><br>
+name of the proxy handler in proxymanager for automatic proxy renewal
+(See etc/proxy.conf)
+None if no automatic proxy renewal is desired.
+<br>
+</ul>
+
+<a name="GlobusRSL GRAM5 variables"><h3><span style="color: black; "><span>GlobusRSL GRAM5 variables</span></span></h3></a>
+<ul>
+<li><strong>gram5</strong><br>
+The following are GRAM5 RSL variables.
+They are just used to build batchsubmit.condorgt5.globusrsl 
+(if needed)
+The globusrsl directive in the condor submission file looks like
+<br>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;globusrsl=(jobtype=single)(queue=short)
+<br>
+Documentation can be found here:
+<br>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.globus.org/toolkit/docs/5.2/5.2.0/gram5/user/#gram5-user-rsl&nbsp;
+<br>
+<br>
+<li><strong>globusrsl.gram5.arguments</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.count</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.directory</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.dry_run</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.environment</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.executable</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.file_clean_up</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.file_stage_in</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.file_stage_in_shared</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.file_stage_out</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.gass_cache</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.gram_my_job</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.host_count</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.job_type</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.library_path</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.loglevel</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.logpattern</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.max_cpu_time</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.max_memory</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.max_time</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.max_wall_time</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.min_memory</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.project</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.proxy_timeout</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.queue</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.remote_io_url</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.restart</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.rsl_substitution</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.savejobdescription</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.save_state</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.scratch_dir</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.stderr</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.stderr_position</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.stdin</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.stdout</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.stdout_position</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.two_phase</strong><br>
+
+<br>
+<li><strong>globusrsl.gram5.username</strong><br>
+
+<br>
+<br>
+<li><strong>globusrsl.gram5.globusrsl</strong><br>
+GRAM RSL directive.
+If this variable is not setup, then it will be built
+programmatically from all non empty globusrsl.gram5.XYZ variables.
+If this variable is setup, then its value
+will be taken *verbatim*, and all possible values
+for globusrsl.gram5.XYZ variables will be ignored. 
+<br>
+<br>
+<li><strong>globusrsl.gram5.globusrsladd</strong><br>
+custom fields to be added
+*verbatim* to the GRAM RSL directive,
+after it has been built either from 
+globusrsl.gram5.globusrsl value
+or from all globusrsl.gram5.XYZ variables.
+e.g. (condorsubmit=('+AccountingGroup' '\"group_atlastest.usatlas1\"')('+Requirements' 'True'))
+<br>
+</ul>
+
+<a name="Configuration when batchsubmitplugin is condorcream"><h3><span style="color: black; "><span>Configuration when batchsubmitplugin is condorcream</span></span></h3></a>
+<ul>
+<li><strong>batchsubmit.condorcream.webservice</strong><br>
+web service address (e.g. ce04.esc.qmul.ac.uk:8443/ce-cream/services/CREAM2)
+<br>
+<br>
+<li><strong>batchsubmit.condorcream.submitargs</strong><br>
+list of command line input options
+to be included in the submission command *verbatim*
+e.g. 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;batchsubmit.condorgt2.submitargs&nbsp;=&nbsp;-remote&nbsp;my_schedd&nbsp;
+will drive into a command like
+<br>&nbsp;&nbsp;&nbsp;&nbsp;condor_submit&nbsp;-remote&nbsp;my_schedd&nbsp;submit.jdl
+<br>
+<br>
+<li><strong>batchsubmit.condorcream.condor_attributes</strong><br>
+list of condor attributes,
+splited by comma, 
+to be included in the condor submit file *verbatim*
+e.g. +Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas"
+Can be used to include any line in the Condor-G file
+that is not otherwise added programmatically by AutoPyFactory.
+Note the following directives are added by default:
+<br>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transfer_executable&nbsp;=&nbsp;True
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stream_output=False
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stream_error=False
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notification=Error
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;copy_to_spool&nbsp;=&nbsp;false
+<br>
+<br>
+<li><strong>batchsubmit.condorcream.environ</strong><br>
+list of environment variables,
+splitted by white spaces, 
+to be included in the condor attribute environment *verbatim*
+Therefore, the format should be env1=var1 env2=var2 envN=varN
+split by whitespaces.
+<br>
+<br>
+<li><strong>batchsubmit.condorcream.queue</strong><br>
+queue within the local batch system (e.g. short)
+<br>
+<br>
+<li><strong>batchsubmit.condorcream.port</strong><br>
+port number.
+<br>
+<br>
+<li><strong>batchsubmit.condorcream.batch</strong><br>
+local batch system (pbs, sge...)
+<br>
+<br>
+<li><strong>batchsubmit.condorcream.gridresource</strong><br>
+grid resource, built from other vars using interpolation:
+batchsubmit.condorcream.gridresource = %(batchsubmit.condorcream.webservice)s:%(batchsubmit.condorcream.port)s/ce-cream/services/CREAM2 %(batchsubmit.condorcream.batch)s %(batchsubmit.condorcream.queue)s
+<br>
+<br>
+<li><strong>batchsubmit.condorcream.proxy</strong><br>
+name of the proxy handler in proxymanager for automatic proxy renewal
+(See etc/proxy.conf)
+None if no automatic proxy renewal is desired.
+<br>
+</ul>
+
+<a name="Configuration when batchsubmitplugin is condorosgce"><h3><span style="color: black; "><span>Configuration when batchsubmitplugin is condorosgce</span></span></h3></a>
+<ul>
+<li><strong>batchsubmit.condorosgce.remote_condor_schedd</strong><br>
+condor schedd
+<br>
+<br>
+<li><strong>batchsubmit.condorosgce.remote_condor_collector</strong><br>
+condor collector
+<br>
+<br>
+<li><strong>batchsubmit.condorosgce.gridresource</strong><br>
+grid resource, built from other vars using interpolation
+batchsubmit.condorosgce.gridresource = %(batchsubmit.condorosgce.remote_condor_schedd) %(batchsubmit.condorosgce.remote_condor_collector)    
+<br>
+<li><strong>batchsubmit.condorosgce.proxy</strong><br>
+name of the proxy handler in proxymanager for automatic proxy renewal
+(See etc/proxy.conf)
+None if no automatic proxy renewal is desired.
+<br>
+</ul>
+
+<a name="Configuration when batchsubmitplugin is condorec2"><h3><span style="color: black; "><span>Configuration when batchsubmitplugin is condorec2</span></span></h3></a>
+<ul>
+<li><strong>batchsubmit.condorec2.gridresource</strong><br>
+ec2 service's URL (e.g. https://ec2.amazonaws.com/ )
+<br>
+<br>
+<li><strong>batchsubmit.condorec2.submitargs</strong><br>
+list of command line input options
+to be included in the submission command *verbatim*
+e.g. 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;batchsubmit.condorgt2.submitargs&nbsp;=&nbsp;-remote&nbsp;my_schedd&nbsp;
+will drive into a command like
+<br>&nbsp;&nbsp;&nbsp;&nbsp;condor_submit&nbsp;-remote&nbsp;my_schedd&nbsp;submit.jdl
+<br>
+<br>
+<li><strong>batchsubmit.condorec2.condor_attributes</strong><br>
+list of condor attributes,
+splited by comma, 
+to be included in the condor submit file *verbatim*
+<br>
+<br>
+<li><strong>batchsubmit.condorec2.environ</strong><br>
+list of environment variables,
+splitted by white spaces, 
+to be included in the condor attribute environment *verbatim*
+Therefore, the format should be env1=var1 env2=var2 envN=varN
+split by whitespaces.
+<br>
+<br>
+<li><strong>batchsubmit.condorec2.ami_id</strong><br>
+identifier for the VM image,
+previously registered in one of Amazon's storage service (S3 or EBS)
+<br>
+<br>
+<li><strong>batchsubmit.condorec2.instance_type</strong><br>
+hardware configurations for instances to run on.
+<br>
+<br>
+<li><strong>batchsubmit.condorec2.user_data</strong><br>
+up to 16Kbytes of contextualization data.
+This makes it easy for many instances to share the same VM image, but perform different work.
+<br>
+<br>
+<li><strong>batchsubmit.condorec2.access_key_id</strong><br>
+path to file with the EC2 Access Key ID
+<br>
+<br>
+<li><strong>batchsubmit.condorec2.secret_access_key</strong><br>
+path to file with the EC2 Secret Access Key
+<br>
+<br>
+<li><strong>batchsubmit.condorec2.proxy</strong><br>
+name of the proxy handler in proxymanager for automatic proxy renewal
+(See etc/proxy.conf)
+None if no automatic proxy renewal is desired.
+<br>
+</ul>
+
+<a name="Configuration when batchsubmitplugin is condordeltacloud"><h3><span style="color: black; "><span>Configuration when batchsubmitplugin is condordeltacloud</span></span></h3></a>
+<ul>
+<li><strong>batchsubmit.condordeltacloud.gridresource</strong><br>
+ec2 service's URL (e.g. https://deltacloud.foo.org/api )
+<br>
+<br>
+<li><strong>batchsubmit.condordeltacloud.username</strong><br>
+credentials in DeltaCloud
+<br>
+<br>
+<li><strong>batchsubmit.condordeltacloud.password_file</strong><br>
+path to the file with the password
+<br>
+<br>
+<li><strong>batchsubmit.condordeltacloud.image_id</strong><br>
+identifier for the VM image,
+previously registered with the cloud service.
+<br>
+<br>
+<li><strong>batchsubmit.condordeltacloud.keyname</strong><br>
+in case of using SSH,
+the command keyname specifies the identifier of the SSH key pair to use. 
+<br>
+<br>
+<li><strong>batchsubmit.condordeltacloud.realm_id</strong><br>
+selects one between multiple locations the cloud service may have.
+<br>
+<br>
+<li><strong>batchsubmit.condordeltacloud.hardware_profile</strong><br>
+selects one between the multiple hardware profiles
+the cloud service may provide
+<br>
+<br>
+<li><strong>batchsubmit.condordeltacloud.hardware_profile_memory</strong><br>
+customize the hardware profile
+<br>
+<br>
+<li><strong>batchsubmit.condordeltacloud.hardware_profile_cpu</strong><br>
+customize the hardware profile
+<br>
+<br>
+<li><strong>batchsubmit.condordeltacloud.hardware_profile_storage</strong><br>
+customize the hardware profile
+<br>
+<br>
+<li><strong>batchsubmit.condordeltacloud.user_data</strong><br>
+contextualization data
+<br>
+</ul>
+
+<a name="Configuration when batchsubmitplugin is condorlocal"><h3><span style="color: black; "><span>Configuration when batchsubmitplugin is condorlocal</span></span></h3></a>
+<ul>
+<li><strong>batchsubmit.condorlocal.submitargs</strong><br>
+list of command line input options
+to be included in the submission command *verbatim*
+e.g. 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;batchsubmit.condorgt2.submitargs&nbsp;=&nbsp;-remote&nbsp;my_schedd&nbsp;
+will drive into a command like
+<br>&nbsp;&nbsp;&nbsp;&nbsp;condor_submit&nbsp;-remote&nbsp;my_schedd&nbsp;submit.jdl
+<br>
+<br>
+<li><strong>batchsubmit.condorlocal.condor_attributes</strong><br>
+list of condor attributes,
+splited by comma, 
+to be included in the condor submit file *verbatim*
+e.g. +Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas"
+Can be used to include any line in the Condor-G file
+that is not otherwise added programmatically by AutoPyFactory.
+Note the following directives are added by default:
+<br>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;universe&nbsp;=&nbsp;vanilla
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transfer_executable&nbsp;=&nbsp;True
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;should_transfer_files&nbsp;=&nbsp;IF_NEEDED
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+TransferOutput&nbsp;=&nbsp;""
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stream_output=False
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stream_error=False
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notification=Error
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;periodic_remove&nbsp;=&nbsp;(JobStatus&nbsp;==&nbsp;5&nbsp;&&&nbsp;(CurrentTime&nbsp;-&nbsp;EnteredCurrentStatus)&nbsp;>&nbsp;3600)&nbsp;||&nbsp;(JobStatus&nbsp;==&nbsp;1&nbsp;&&&nbsp;globusstatus&nbsp;=!=&nbsp;1&nbsp;&&&nbsp;(CurrentTime&nbsp;-&nbsp;EnteredCurrentStatus)&nbsp;>&nbsp;86400)
+<br>
+To be used in CondorLocal Batch Submit Plugin.
+<br>
+<br>
+<li><strong>batchsubmit.condorlocal.environ</strong><br>
+list of environment variables,
+splitted by white spaces, 
+to be included in the condor attribute environment *verbatim*
+To be used by CondorLocal Batch Submit Plugin.
+Therefore, the format should be env1=var1 env2=var2 envN=varN
+split by whitespaces.
+<br>
+<br>
+<li><strong>batchsubmit.condorlocal.proxy</strong><br>
+name of the proxy handler in proxymanager for automatic proxy renewal
+(See etc/proxy.conf)
+None if no automatic proxy renewal is desired.
+<br>
+</ul>
+
+
+<a name="Monitor section"><h3><span style="color: black; "><span>Monitor section</span></span></h3></a>
+<ul>
+<li><strong>monitorsection</strong>
+<br>
+section in monitor.conf where info 
+about the actual monitor plugin can be found.
+The value can be a single section or a split by comma
+list of sections.
+Monitor plugins handle job info publishing 
+to one or more web monitor/dashboards. 
+To specify more than one (sections) 
+simply use a comma-separated list.   
+<br>
+</ul>
+
+<a name="Executable variables"><h3><span style="color: black; "><span>Executable variables</span></span></h3></a>
+<ul>
+<li><strong>executable</strong><br>
+path to the script which will be run by condor.
+The executable can be anything, however, 
+two possible executables are distributed with AutoPyFactory:
+<br>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;libexec/wrapper.sh&nbsp;
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;libexec/runpilot3-wrapper.sh&nbsp;
+<br>
+<br>
+<li><strong>executable.arguments</strong><br>
+input options to be passed verbatim to the executable script.
+This variable can be built making use of an auxiliar variable
+called executable.defaultarguments
+This proposed ancilla works as a template, and its content is
+created on the fly from the value of other variables.
+This mechanism is called "interpolation", docs can be found here:
+<br>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;http://docs.python.org/library/configparser.html
+<br>
+These are two examples of this type of templates 
+(included in the DEFAULTS block):
+<br>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;executable.defaultarguments&nbsp;=&nbsp;--wrappergrid=%(grid)s&nbsp;\
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--wrapperwmsqueue=%(wmsqueue)s&nbsp;\
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--wrapperbatchqueue=%(batchqueue)s&nbsp;\
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--wrappervo=%(vo)s&nbsp;\
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--wrappertarballurl=http://dev.racf.bnl.gov/dist/wrapper/wrapper.tar.gz&nbsp;\
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--wrapperserverurl=http://pandaserver.cern.ch:25080/cache/pilot&nbsp;\
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--wrapperloglevel=debug
+<br>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;executable.defaultarguments&nbsp;=&nbsp;&nbsp;-s&nbsp;%(wmsqueue)s&nbsp;\
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-h&nbsp;%(batchqueue)s&nbsp;-p&nbsp;25443&nbsp;\
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-w&nbsp;https://pandaserver.cern.ch&nbsp;&nbsp;-j&nbsp;false&nbsp;&nbsp;-k&nbsp;0&nbsp;&nbsp;-u&nbsp;user
+<br>
+</ul>
+
+<a name='proxyconf'><h2><span style="color: black; "><span>proxy.conf</span></span></h2></a>
+<ul>
+<li><strong>baseproxy</strong>
+<br>
+if used, create a very long-lived proxy, e.g.
+<br>
+grid-proxy-init -valid 720:0 -out /tmp/plainProxy
+<br>
+Note that maintenance of this proxy must 
+occur completely outside of APF. 
+<br>
+
+<br>
+<li><strong>proxyfile</strong>
+<br>
+path to the user grid proxy file.
+<br>
+
+<br>
+<li><strong>checktime</strong>
+<br>
+How often to check proxy validity, in seconds
+<br>
+
+<br>
+<li><strong>interruptcheck</strong>
+<br>
+Frequency to check for keyboard/signal interrupts, in seconds
+<br>
+
+<br>
+<li><strong>lifetime</strong>
+<br>
+initial lifetime, in seconds (604800 = 7 days).
+345600 is ATLAS VOMS maximum
+<br>
+
+<br>
+<li><strong>minlife</strong>
+<br>
+Minimum lifetime of VOMS attributes for a proxy (renew if less) in seconds
+<br>
+
+<br>
+<li><strong>renew</strong>
+<br>
+If you do not want to use ProxyManager to renew proxies, 
+set this  False and only define 'proxyfile'.
+If renew is set to false, 
+then no grid client setup is necessary. 
+<br>
+
+<br>
+<li><strong>usercert</strong>
+<br>
+path to the user grid certificate file
+<br>
+
+<br>
+<li><strong>userkey</strong>
+<br>
+path to the user grid key file
+<br>
+
+<br>
+<li><strong>vorole</strong>
+<br>
+user VO role
+<br>
+
+
+<br>
+<li><strong> flavor</strong>
+<br>
+voms or myproxy. voms directly generates proxy using cert or baseproxy
+myproxy retrieves a proxy from myproxy, then generates the target proxy against
+voms using it as baseproxy.
+<br>
+
+<br>
+<li><strong> myproxy_hostname</strong>
+<br>
+Myproxy server host.   
+<br>
+
+<br>
+<li><strong> myproxy_username</strong>
+<br>
+User name to be used on MyProxy service
+<br>
+
+<br>
+<li><strong> myproxy_passphrase</strong>
+<br>
+Passphrase for proxy retrieval from MyProxy
+<br>
+
+<br>
+<li><strong> retriever_profile</strong>
+<br>
+A list of other proxymanager profiles to be used to authorize proxy retrieval from MyProxy. 
+<br>
+
+<br>
+<li><strong> initdelay</strong>
+<br>
+In seconds, how long to wait before generating. 
+Needed for MyProxy when using cert authentication--we need to allow time for the auth credential to be generated (by another proxymanager profile). 
+<br>
+
+<br>
+<li><strong> owner</strong>
+<br>
+If running standalone (as root) and you want the proxy to be owned by another account. 
+<br>
+
+<br>
+<li><strong> remote.remote_host</strong>
+<br>
+If remote=True: copy proxyfile to same path on remote host
+<br>
+
+<br>
+<li><strong> remote.remote_user</strong>
+<br>
+If remote=True: user to connect as? 
+<br>
+
+<br>
+<li><strong> remote.remote_owner</strong>
+<br>
+If remote=True: if connect user is root, what account should own the file?
+<br>
+
+<br>
+<li><strong> remote.remote_group</strong>
+<br>
+If remote=True: If connect user is root, what group should own the file?
+<br>
+
+<br>
+<li><strong> voms.args</strong>
+<br>
+Any extra arbitrary input option to be added to voms-proxy-init command
+<br>
+
+</ul>
+
+<a name='monitorconf'><h2><span style="color: black; "><span>monitor.conf</span></span></h2></a>
+<ul>
+<li><strong>monitorplugin</strong>
+<br>
+the type of plugin to handle this monitor instance
+<br>
+<br>
+
+<li><strong>monitorURL</strong>
+<br>
+ URL for the web monitor
+<br>
+
+</ul>
+
+</body>

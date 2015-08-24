@@ -1,0 +1,41 @@
+<body>
+
+<a href=index.html>Index<a>
+
+<a name='design'><h1><span style="color: black; "><span>Design</span></span></h1></a>
+
+AutoPyFactory can serve to different queues in different ways thanks to its modular design based on plug-ins. There are currently 5 types of plug-ins:
+<br>
+<br>
+<b>WMS Status Plug-in:</b> 
+it queries a given WMS system. 
+E.g. PandaWMSStatusPlugin queries PanDA. 
+The only requirements is the WMS must provide for an API. 
+This API has to return the number of jobs in different status (ready, running, finished...) per queue, 
+in such a way that information can be converted internally into APF nomenclature. 
+<br>
+<br>
+<b>Batch Status Plug-in:</b> 
+it queries the specific batch system being used to submit jobs (or pilots). 
+E.g. CondorBatchStatusPlugin queries condor (condor_q)
+<br>
+<br>
+<b>Scheduler Plug-in:</b> 
+it is the component in charge of making a decision based on the information provided by the two Status Plug-ins. 
+It implements a given algorithm to decide how many jobs (or pilots) should be submitted next cyle. 
+E.g. ActivatedSchedPlugin decides the number of new jobs based on the number of jobs in a ready status in the WMS service, 
+with some restrictions to prevent burning a CE. 
+FixedSchedPlugin always submits a fixed number of jobs. Etc.
+<br>
+<br>
+<b>Execution Plug-in:</b> 
+It is the component in charge of submitting new jobs (or pilots), 
+based on the decision made by the Sched Plug-in. 
+Examples are CondorGT2BatchSubmitPlugin, CondorGT5BatchSubmitPlugin, CondorLocalBatchSubmitPlugin, CondorCREAMBatchSubmitPlugin, and CondorEC2BatchSubmitPlugin.
+<br>
+<br>
+<b>Configuration Plug-in:</b> 
+a plug-in to retrieve extra configuration files. 
+E.g PandaConfigPlugin queries SchedConfig. 
+
+</body>
