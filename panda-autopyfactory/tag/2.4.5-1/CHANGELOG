@@ -1,3 +1,7 @@
+2.4.5 
+
+* trying several paths to import panda Client.py
+
 2.4.4
 
 * each APFQueue carrying only one section in the config loader object qcl, instead of all sections, to avoid scalability issues.
