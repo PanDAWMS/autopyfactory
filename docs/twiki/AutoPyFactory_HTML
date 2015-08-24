@@ -12,7 +12,7 @@
 
 <!-- some useful definitions  (need 3 white spaces before * to enable it)
    * Set UCL_PROMPT_ROOT = [root@factory ~]$
-   * Set VERSION = 2.4.3
+   * Set VERSION = 2.4.5
 -->
 
 ---+!! Deployment of !AutoPyFactory
@@ -1239,6 +1239,19 @@ They are not copied directly into =/usr/libexec/= anymore.
 
 ---# CHANGELOG
 <pre>
+2.4.5 
+
+* trying several paths to import panda Client.py
+
+2.4.4
+
+* each APFQueue carrying only one section in the config loader object qcl, instead of all sections, to avoid scalability issues.
+
+2.4.3
+
+* creating the directory baseLogDir if it does not exist yet (for example, first time APF is installed)
+* removed manpages management from rpm-post.sh script
+
 2.4.2
 
 * variable batchqueue not mandatory
