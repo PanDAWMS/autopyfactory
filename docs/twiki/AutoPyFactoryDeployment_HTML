@@ -51,12 +51,16 @@ will be needed. Make sure voms-proxy-* commands work properly.
 3) Add the racf-grid YUM repo to your system
 
 <pre class="rootscreen">
-%UCL_PROMPT_ROOT% rpm -ivh http://dev.racf.bnl.gov/yum/grid/production/rhel/6Workstation/x86_64/racf-grid-release-latest.noarch.rpm</pre>
+%UCL_PROMPT_ROOT% rpm -ivh http://dev.racf.bnl.gov/yum/autopyfactory/production/rhel/6Workstation/x86_64/autopyfactory-release-latest.noarch.rpm</pre>
+
+<!--
+%UCL_PROMPT_ROOT% rpm -ivh http://dev.racf.bnl.gov/yum/grid/production/rhel/6Workstation/x86_64/racf-grid-release-latest.noarch.rpm
+-->
 
 The warning about NOKEY is expected. This release RPM sets up YUM to point at our 
 repository, and installs the GPG key with which all our RPMs are signed. By default
 the racf-grid-release RPM sets our production repository to enabled (see 
-=/etc/yum.repos.d/racf-grid-production.repo=). 
+=/etc/yum.repos.d/autopyfactory.repo=). 
 
 *NOTE*: If you are testing APF and want to run
 a pre-release version, enable the racf-grid-development or racf-grid-testing repository. 
