@@ -31,7 +31,7 @@ for lib in libs:
     except:
         pass
 else:
-   raise Exception 
+    raise Exception 
 
 
 class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
