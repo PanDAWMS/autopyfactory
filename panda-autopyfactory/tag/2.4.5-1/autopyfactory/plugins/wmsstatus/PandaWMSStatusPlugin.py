@@ -23,16 +23,6 @@ from autopyfactory.info import SiteInfo
 from autopyfactory.info import CloudInfo
 import autopyfactory.utils as utils
 
-#try:
-#    import pandaclient.Client as Client
-#except:
-#    try:
-#        import pandaserver.userinterface.Client as Client
-#    except:
-#        try:
-#            import userinterface.Client as Client
-#        except:
-#            raise Exception
 
 libs = ("pandaclient.Client", "pandaserver.userinterface.Client", "userinterface.Client")
 for lib in libs:
@@ -42,7 +32,7 @@ for lib in libs:
     except:
         pass
 else:
-   raise Exception 
+    raise Exception 
 
 
 class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
