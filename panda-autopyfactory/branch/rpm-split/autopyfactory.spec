@@ -273,6 +273,19 @@ This package contains autopyfactory plugins monitor
 #   META RPMs
 ##############################################
 
+%package -n autopyfactory
+Summary: META RPM for more standard scenarios
+Group: Development/Libraries
+Requires: autopyfactory-common
+Requires: autopyfactory-proxymanager
+Requires: autopyfactory-plugins-remote
+Requires: panda-client
+#Requires: autopyfactory-wrappers, voms-client, myproxy
+%description -n autopyfactory
+meta rpm autopyfactory
+%files -n autopyfactory
+
+
 %package -n autopyfactory-panda
 Summary: META RPM for PanDA
 Group: Development/Libraries
