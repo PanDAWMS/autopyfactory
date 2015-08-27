@@ -1,6 +1,6 @@
 %define name autopyfactory
-%define version 2.4.4
-%define unmangled_version 2.4.4
+%define version 2.4.5
+%define unmangled_version 2.4.5
 %define release 1
 
 Summary: autopyfactory package
