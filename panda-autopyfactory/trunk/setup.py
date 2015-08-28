@@ -113,6 +113,8 @@ setup(
               'autopyfactory.plugins.monitor',
               'autopyfactory.plugins.sched',
               'autopyfactory.plugins.wmsstatus',
+              'autopyfactory.external',
+              'autopyfactory.external.panda',
               ],
     scripts = [ # Utilities and main script
                'bin/autopyfactory',
