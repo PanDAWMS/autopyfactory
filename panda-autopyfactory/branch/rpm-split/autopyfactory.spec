@@ -42,14 +42,18 @@ python setup.py build
 %install
 python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
 
-# ----- treat the config files properly:
+# ----------------------------------------------------------------------------
+#       treat the config files properly:
 #       with a non-override policy on RPM update 
+# ----------------------------------------------------------------------------
 sed -i '/\/etc\/autopyfactory\/.*\.conf/ s/^/%config(noreplace) /'  INSTALLED_FILES
 sed -i '/\/etc\/logrotate\.d\/autopyfactory/ s/^/%config(noreplace) /'  INSTALLED_FILES
 sed -i '/\/etc\/sysconfig\/autopyfactory/ s/^/%config(noreplace) /'  INSTALLED_FILES
 sed -i '/\/etc\/sysconfig\/proxymanager/ s/^/%config(noreplace) /'  INSTALLED_FILES
 
-# ----- Files for autopyfactory-common subpackage
+# ----------------------------------------------------------------------------
+#       Files for autopyfactory-common subpackage
+# ----------------------------------------------------------------------------
 cp INSTALLED_FILES COMMON_FILES
 sed -i '/proxymanager/d' COMMON_FILES
 sed -i '/plugins\/sched/d' COMMON_FILES
@@ -62,52 +66,62 @@ grep '/plugins/wmsstatus/__init__' INSTALLED_FILES >> COMMON_FILES
 sed -i '/plugins\/batchsubmit/d' COMMON_FILES
 grep '/plugins/batchsubmit/__init__' INSTALLED_FILES >> COMMON_FILES
 sed -i '/\etc\/autopyfactory\/proxy\.conf/d' COMMON_FILES
+sed -i '/external\/panda/d' COMMON_FILES
 
-# ----- Files for autopyfactory-proxymanager subpackage
+
+# ----------------------------------------------------------------------------
+#       Files for autopyfactory-proxymanager subpackage
+# ----------------------------------------------------------------------------
 cp INSTALLED_FILES PROXYMANAGER_FILES
 sed -i '/proxymanager/!d' PROXYMANAGER_FILES
 grep '/etc/autopyfactory/proxy\.conf' INSTALLED_FILES >> PROXYMANAGER_FILES
 
-### # ----- Files for autopyfactory-plugins-condor subpackage
-### cp INSTALLED_FILES PLUGINS-CONDOR_FILES
-### sed -i '/plugins\/.*\/.*Condor.*/!d' PLUGINS-CONDOR_FILES
 
-
-# ----- Files for autopyfactory-plugins-monitor subpackage
+# ----------------------------------------------------------------------------
+#       Files for autopyfactory-plugins-monitor subpackage
+# ----------------------------------------------------------------------------
 cp INSTALLED_FILES PLUGINS-MONITOR_FILES
 sed -i '/plugins\/monitor\//!d' PLUGINS-MONITOR_FILES
 
 
-
-# ----- Files for autopyfactory-plugins-local subpackage
+# ----------------------------------------------------------------------------
+#       Files for autopyfactory-plugins-local subpackage
+# ----------------------------------------------------------------------------
 cp INSTALLED_FILES PLUGINS-LOCAL_FILES
 sed -i '/plugins\/batchsubmit\/.*Local.*/!d' PLUGINS-LOCAL_FILES
 grep "/plugins/wmsstatus/CondorWMSStatusPlugin" INSTALLED_FILES >> PLUGINS-LOCAL_FILES
 grep "/plugins/batchsubmit/.*Exec.*" INSTALLED_FILES >> PLUGINS-LOCAL_FILES
 
 
-# ----- Files for autopyfactory-plugins-remote subpackage
+# ----------------------------------------------------------------------------
+#       Files for autopyfactory-plugins-remote subpackage
+# ----------------------------------------------------------------------------
 cp INSTALLED_FILES PLUGINS-REMOTE_FILES
 sed -i '/plugins\/batchsubmit\/.*Condor.*/!d' PLUGINS-REMOTE_FILES
 sed -i '/plugins\/batchsubmit\/.*EC2.*/d' PLUGINS-REMOTE_FILES
 sed -i '/plugins\/batchsubmit\/.*Local.*/d' PLUGINS-REMOTE_FILES
 
-# ----- Files for autopyfactory-plugins-cloud subpackage
+
+# ----------------------------------------------------------------------------
+#       Files for autopyfactory-plugins-cloud subpackage
+# ----------------------------------------------------------------------------
 cp INSTALLED_FILES PLUGINS-CLOUD_FILES
 sed -i '/plugins\/.*\/.*EC2.*/!d' PLUGINS-CLOUD_FILES
 
 
-
-
-
-# ----- Files for autopyfactory-plugins-scheds subpackage
+# ----------------------------------------------------------------------------
+#       Files for autopyfactory-plugins-scheds subpackage
+# ----------------------------------------------------------------------------
 cp INSTALLED_FILES PLUGINS-SCHEDS_FILES
 sed -i '/plugins\/sched\//!d' PLUGINS-SCHEDS_FILES
 
 
-# ----- Files for autopyfactory-plugins-panda subpackage
+# ----------------------------------------------------------------------------
+#       Files for autopyfactory-plugins-panda subpackage
+# ----------------------------------------------------------------------------
 cp INSTALLED_FILES PLUGINS-PANDA_FILES
 sed -i '/plugins\/wmsstatus\/.*Panda.*/!d' PLUGINS-PANDA_FILES
+grep '/external/panda/' INSTALLED_FILES >> PLUGINS-PANDA_FILES
 
 
 mkdir -pm0755 $RPM_BUILD_ROOT%{_var}/log/autopyfactory
@@ -147,14 +161,14 @@ fi
 Summary: autopyfactory common 
 Group: Development/Libraries
 Requires: autopyfactory-proxymanager
-Requires: autopyfactory-plugins-condor
+Requires: condor
+Requires: python-simplejson
+Requires: python-pycurl
 %description -n autopyfactory-common
 This package contains autopyfactory common
 
-#%files -n autopyfactory-common -f INSTALLED_FILES
 %files -n autopyfactory-common -f COMMON_FILES
 %defattr(-,root,root)
-## FIXME !!!
 %doc README    
 
 
@@ -165,25 +179,13 @@ This package contains autopyfactory common
 %package -n autopyfactory-proxymanager
 Summary: autopyfactory proxymanager 
 Group: Development/Libraries
+Requires: voms-clients
+Requires: myproxy
 %description -n autopyfactory-proxymanager
 This package contains autopyfactory proxymanger 
 
 %files -n autopyfactory-proxymanager -f PROXYMANAGER_FILES
-%defattr(-,root,root)
-#%doc docs/* etc/*-example etc/logrotate/ etc/sysconfig/ README  # ?? 
 
-###     ##############################################
-###     #   SUB PACKAGE AUTOPYFACTORY-PLUGINS-CONDOR
-###     ##############################################
-###     
-###     %package -n autopyfactory-plugins-condor
-###     Summary: autopyfactory plugins condor 
-###     Group: Development/Libraries
-###     %description -n autopyfactory-plugins-condor
-###     This package contains autopyfactory plugins condor
-###     
-###     %files -n autopyfactory-plugins-condor -f PLUGINS-CONDOR_FILES
-###     %defattr(-,root,root)
 
 ##############################################
 #   SUB PACKAGE AUTOPYFACTORY-PLUGINS-PANDA
@@ -225,7 +227,6 @@ This package contains autopyfactory plugins remote
 
 %files -n autopyfactory-plugins-remote -f PLUGINS-REMOTE_FILES
 %defattr(-,root,root)
-
 
 
 ##############################################
@@ -273,17 +274,14 @@ This package contains autopyfactory plugins monitor
 #   META RPMs
 ##############################################
 
-%package -n autopyfactory
-Summary: META RPM for more standard scenarios
+%package -n autopyfactory-remote
+Summary: META RPM for more standard scenario
 Group: Development/Libraries
 Requires: autopyfactory-common
-Requires: autopyfactory-proxymanager
 Requires: autopyfactory-plugins-remote
-Requires: panda-client
-#Requires: autopyfactory-wrappers, voms-client, myproxy
-%description -n autopyfactory
-meta rpm autopyfactory
-%files -n autopyfactory
+%description -n autopyfactory-remote
+meta rpm autopyfactory-remote
+%files -n autopyfactory-remote
 
 
 %package -n autopyfactory-panda
@@ -291,8 +289,6 @@ Summary: META RPM for PanDA
 Group: Development/Libraries
 Requires: autopyfactory-common
 Requires: autopyfactory-plugins-panda
-Requires: panda-client
-#Requires: autopyfactory-wrappers, voms-client, myproxy
 %description -n autopyfactory-panda
 meta rpm autopyfactory-panda
 %files -n autopyfactory-panda
@@ -302,7 +298,7 @@ meta rpm autopyfactory-panda
 Summary: META RPM for autopyfactory-wms 
 Group: Development/Libraries
 Requires: autopyfactory-common
-#Requires: autopyfactory-wrappers, voms-client
+Requires: autopyfactory-plugins-local
 %description -n autopyfactory-wms
 meta rpm autopyfactory-wms
 %files -n autopyfactory-wms
@@ -313,7 +309,6 @@ Summary: META RPM for autopyfactory-cloud
 Group: Development/Libraries
 Requires: autopyfactory-common
 Requires: autopyfactory-plugins-cloud
-#Requires: autopyfactory-wrappers
 %description -n autopyfactory-cloud
 meta rpm autopyfactory-cloud
 %files -n autopyfactory-cloud
