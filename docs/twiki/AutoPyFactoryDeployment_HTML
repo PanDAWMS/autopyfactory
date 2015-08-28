@@ -45,79 +45,176 @@ configuration is beyond the scope of this documentation. Ensure that it is worki
 properly before proceeding. 
 
 2) Install a grid client and set up the grid certificate+key under the user APF will run as. 
+See  [[#4_2_sysconfig_autopyfactory][sysconfig section]] for details.
 Please read the section [[#4_4_proxy_conf][proxy.conf]] regarding the proxy.conf file, so you see what 
 will be needed. Make sure voms-proxy-* commands work properly. 
 
-3) Add the racf-grid YUM repo to your system
+3) We distribute now !AutoPyFactory RPMs using the Open Science Grid (OSG) yum infrastructure. 
+Install the OSG yum repo files:
 
 <pre class="rootscreen">
-%UCL_PROMPT_ROOT% rpm -ivh http://dev.racf.bnl.gov/yum/autopyfactory/production/rhel/6Workstation/x86_64/autopyfactory-release-latest.noarch.rpm</pre>
+%UCL_PROMPT_ROOT% rpm -Uhv  http://repo.grid.iu.edu/osg/3.2/osg-3.2-el6-release-latest.rpm
+Retrieving http://repo.grid.iu.edu/osg/3.2/osg-3.2-el6-release-latest.rpm
+Preparing...                ########################################### [100%]
+   1:osg-release            ########################################### [100%]
+</pre>
 
-<!--
-%UCL_PROMPT_ROOT% rpm -ivh http://dev.racf.bnl.gov/yum/grid/production/rhel/6Workstation/x86_64/racf-grid-release-latest.noarch.rpm
--->
+More extensive documentation on how to install the OSG yum files can be found [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/YumRepositories][here]].
+                                                  
+*IMPORTANT*: due the internal OSG yum repositories architecture, the !AutoPyFactory RPMs are currently being distributed via the development repo. 
+Therefore, you may want to enabled it, as it is disabled by default, by setting ==enabled=1== in the file =/etc/yum.repos.dosg-el6-development.repo/=:
 
-The warning about NOKEY is expected. This release RPM sets up YUM to point at our 
-repository, and installs the GPG key with which all our RPMs are signed. By default
-the racf-grid-release RPM sets our production repository to enabled (see 
-=/etc/yum.repos.d/autopyfactory.repo=). 
+<pre class="file">
+[osg-development]
+name=OSG Software for Enterprise Linux 6 - Development - $basearch
+#baseurl=http://repo.grid.iu.edu/osg/3.2/el6/development/$basearch
+mirrorlist=http://repo.grid.iu.edu/mirror/osg/3.2/el6/development/$basearch
+failovermethod=priority
+priority=98
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-OSG
+consider_as_osg=yes
 
-*NOTE*: If you are testing APF and want to run
-a pre-release version, enable the racf-grid-development or racf-grid-testing repository. 
+[osg-development-source]
+name=OSG Software for Enterprise Linux 6 - Development - $basearch - Source
+baseurl=http://repo.grid.iu.edu/osg/3.2/el6/development/source/SRPMS
+failovermethod=priority
+priority=98
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-OSG
+
+[osg-development-debuginfo]
+name=OSG Software for Enterprise Linux 6 - Development - $basearch - Debug
+baseurl=http://repo.grid.iu.edu/osg/3.2/el6/development/$basearch/debug
+failovermethod=priority
+priority=98
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-OSG
+
+</pre>
+
 
 4) If you will be performing *local* batch system submission (as opposed to remote submission
 via grid interfaces) you must confirm that whatever account you'll be submitting as exists on
-the batch cluster. This is also the user you should set APF to run as. 
+the batch cluster. This is also the user you should set !AutoPyFactory to run as. 
 
 *NOTE*: You do not want local batch logs being written to NFS, so you will need to define a 
-local directory for logs and be sure the APF user can write there. 
+local directory for logs and be sure the !AutoPyFactory user can write there. 
 
 
-5) Install the APF RPM:
 
+
+
+5) Install the !AutoPyFactory RPMs:
+
+!AutoPyFactory is now distributed as a set of RPMs, rather than a single one. 
+The complete list of available RPMs is described in the following table:
+
+<table class="tg">
+  <tr>
+    <th class="tg-header">RPM</th>
+    <th class="tg-header">content</th>
+    <th class="tg-header">dependencies</th>
+  </tr>
+<tr>
+    <td class="tg-raw1">autopyfactory-common</td>
+    <td class="tg-031e"> All core files and directories needed to make !AutoPyFactory work </td>
+    <td class="tg-031e"> autopyfactory-proxymanager <br> condor <br> python-simplejson <br> python-pycurl </td>
+  </tr>
+<tr>
+    <td class="tg-raw1">autopyfactory-proxymanager</td>
+    <td class="tg-031e"> The files to install the proxy management tool, standalone </td>
+    <td class="tg-031e"> voms-clients <br> myproxy </td>
+  </tr>
+<tr>
+    <td class="tg-raw1">autopyfactory-plugins-panda</td>
+    <td class="tg-031e"> The files needed to allow !AutoPyFactory to interact with !PanDA </td>
+    <td class="tg-031e"> </td>
+  </tr>
+<tr>
+    <td class="tg-raw1">autopyfactory-plugins-local</td>
+    <td class="tg-031e"> The files needed to allow !AutoPyFactory to submit locally or to query a local condor pool </td>
+    <td class="tg-031e"> </td>
+  </tr>
+<tr>
+    <td class="tg-raw1">autopyfactory-plugins-remote</td>
+    <td class="tg-031e"> All files needed by !AutoPyFactory to submit pilots to the grid </td>
+    <td class="tg-031e"> </td>
+  </tr>
+<tr>
+    <td class="tg-raw1">autopyfactory-plugins-cloud</td>
+    <td class="tg-031e"> All files needed by !AutoPyFactory to submit pilots to the cloud </td>
+    <td class="tg-031e"> </td>
+  </tr>
+<tr>
+    <td class="tg-raw1">autopyfactory-plugins-scheds</td>
+    <td class="tg-031e"> The complete set of scheduler plugins </td>
+    <td class="tg-031e"> </td>
+  </tr>
+<tr>
+    <td class="tg-raw1">autopyfactory-plugins-monitor</td>
+    <td class="tg-031e"> The complete set of monitor plugins </td>
+    <td class="tg-031e"> </td>
+  </tr>
+
+</table>
+
+
+You can select the set of RPMs needed according to the particular purpose of your factory (submitting to a cloud, to the grid based on idle jobs in a local condor pool, etc.)
+In all cases installing autopyfactory-common is required, as it contains the core functionalities of !AutoPyFactory.
 <pre class="rootscreen">
-%UCL_PROMPT_ROOT% yum install autopyfactory</pre>
+%UCL_PROMPT_ROOT% yum install autopyfactory-common</pre>
    
-
 This performs several setup steps that otherwise would need to be done manually:
 
-   * Creates 'autopyfactory' user that APF will run under.
+   * Creates 'autopyfactory' user that !AutoPyFactory will run under by default.
    * Enables the factory init script via chkconfig.
-   * Pulls in the panda userinterface Python library RPM from our repository. 
-   * Pulls in the python-simplejson RPM from the standard repository.
+   * Installs condor.
+   * Installs python-simplejson and python-pycurl.
+   * Installs RPM autopyfactory-proxymanager.
 
-*NOTE*: If the yum install command did not work as expected, and no package was installed, or the version is too old, you should probably want to enable the development repository. 
-Edit the file =/etc/yum.repos.d/racf-grid-development.repo=  and set 
-<pre class="file">
-enabled=1
-</pre>   
 
-6) Copy the configuration files to the right place.
+In order to facilitate the installation process, a set of META-RPMs are also available for the more common use cases:
+
+<table class="tg">
+  <tr>
+    <th class="tg-header">META RPM</th>
+    <th class="tg-header">Installs</th>
+  </tr>
+<tr>
+    <td class="tg-raw1">autopyfactory-remote</td>
+    <td class="tg-031e"> autopyfactory-common <br> autopyfactory-plugins-remote </td>
+  </tr>
+<tr>
+    <td class="tg-raw1">autopyfactory-panda</td>
+    <td class="tg-031e"> autopyfactory-common <br> autopyfactory-plugins-panda  </td>
+  </tr>
+<tr>
+    <td class="tg-raw1">autopyfactory-wms</td>
+    <td class="tg-031e"> autopyfactory-common <br> autopyfactory-plugins-local </td>
+  </tr>
+<tr>
+    <td class="tg-raw1">autopyfactory-cloud</td>
+    <td class="tg-031e"> autopyfactory-common <br> autopyfactory-plugins-cloud </td>
+  </tr>
+</table>
+
+
+6) Start !AutoPyFactory:
 
 <pre class="rootscreen">
-%UCL_PROMPT_ROOT% cp /usr/share/doc/autopyfactory-%VERSION%/sysconfig/autopyfactory-example /etc/sysconfig/autopyfactory
-%UCL_PROMPT_ROOT% cp /usr/share/doc/autopyfactory-%VERSION%/logrotate/autopyfactory-example /etc/logrotate.d/autopyfactory
-%UCL_PROMPT_ROOT% cp /usr/share/doc/autopyfactory-%VERSION%/autopyfactory.conf-example  /etc/autopyfactory/autopyfactory.conf
-%UCL_PROMPT_ROOT% cp /usr/share/doc/autopyfactory-%VERSION%/queues.conf-example  /etc/autopyfactory/queues.conf
-%UCL_PROMPT_ROOT% cp /usr/share/doc/autopyfactory-%VERSION%/proxy.conf-example  /etc/autopyfactory/proxy.conf
-%UCL_PROMPT_ROOT% cp /usr/share/doc/autopyfactory-%VERSION%/monitor.conf-example  /etc/autopyfactory/monitor.conf
-%UCL_PROMPT_ROOT% cp /usr/share/doc/autopyfactory-%VERSION%/mappings.conf-example  /etc/autopyfactory/mappings.conf</pre>
-
-Configure APF queues/job submission as desired. Read the CONFIGURATION documentation in 
-   order to do this. Be sure to configure at least one queue in order to test function. 
-
-7) Start APF:
-
-<pre class="rootscreen">
-%UCL_PROMPT_ROOT% /etc/init.d/factory start</pre>
+%UCL_PROMPT_ROOT% /etc/init.d/autopyfactory start</pre>
     
-8) Confirm that everything is OK:
+7) Confirm that everything is OK:
 
    *  Check to see if APF is running:
 <pre class="rootscreen">
 %UCL_PROMPT_ROOT% /etc/init.d/factory status</pre>
 
-   * Look at the output of ps to see that APF is running under the expected user. 
+   * Look at the output of ps to see that !AutoPyFactory is running under the expected user. 
      This should show who it is running as, and the arguments in 
      =/etc/sysconfig/factory=: 
 
@@ -131,7 +228,7 @@ Configure APF queues/job submission as desired. Read the CONFIGURATION documenta
  <pre class="rootscreen">
 %UCL_PROMPT_ROOT% tail -f /var/log/autopyfactory/autopyfactory.log</pre>
  
-   * Check to be sure jobs are being submitted by whatever account APF is using by executing condor_q manually:  
+   * Check to be sure jobs are being submitted by whatever account !AutoPyFactory is using by executing condor_q manually:  
 
  <pre class="rootscreen">
 %UCL_PROMPT_ROOT% condor_q | grep autopyfactory</pre>
@@ -1874,3 +1971,4 @@ ChangeLog 2013-12-03
 * Upgraded to UHURA11a pilot as default.
 * Improved cleanLogs.py script and renamed mkPilotWrapper.py.
 </pre>
+
