@@ -1,25 +1,17 @@
 AutoPyFactory README
 
 INTRO
-AutoPyFactory (APF) is a general-purpose pilot job factory, written to
+AutoPyFactory (APF) is a general-purpose pilot job factory, written originally to
 serve as the primary production factory for the ATLAS workload management system. 
 
 DOCUMENTATION
 
-To install using RPMs (i.e. installing as root) read INSTALL-ROOT.
-To install locally in a user's home directory, and run as that user, read INSTALL-USER. 
-Once installed, before running read CONFIGURATION to understand how to configure APF. 
+Documentation can be found in here: 
+
+        https://twiki.grid.iu.edu/bin/view/Documentation/Release3/AutoPyFactory
 
 DEVELOPERS
-Jose Caballero <jcaballero@bnl.gov>           APF and wrapper code. 
-Peter Love <p.love@lancaster.ac.uk>           APF Monitor code. 
-John Hover <jhover@bnl.gov>                   Proxy manager, Logserver. Multi-threading design. 
-Graeme Stewart <g.stewart@physics.gla.ac.uk>  Original APF author. 
-
-
-
-
-
-
-
-
+Jose Caballero <jcaballero@bnl.gov>           Developer
+John Hover <jhover@bnl.gov>                   Developer 
+Peter Love <p.love@lancaster.ac.uk>           Monitor developer 
+Graeme Stewart <g.stewart@physics.gla.ac.uk>  Original author
