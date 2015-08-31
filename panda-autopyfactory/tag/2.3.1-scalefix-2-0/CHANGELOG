@@ -1,3 +1,7 @@
+Changelog 2015-08-31
+
+* fixing, only for old release 2.3.1, the bug in Nordugrid submit plugin that was already fixed in 2.3.2
+
 Changelog 2015-08-17
 
 * fixing, only for old release 2.3.1, the scale issue with the self.qcl object.
