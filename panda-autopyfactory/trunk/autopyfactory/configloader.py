@@ -247,6 +247,61 @@ class Config(SafeConfigParser, object):
         return str
 
 
+
+
+
+
+
+
+    def isequal(self, config):
+        '''
+        this method checks if two config loader objects are equivalents:
+            -- same set of sections
+            -- each section have the same variables and values 
+        '''
+
+        if self.sections().sort() != config.sections.sort():
+            self.log.debug('configloader object has different list of SECTIONS than current one. Returning False') 
+            return False
+
+        # else...
+        for section in self.sections():
+            if not self.sectionisequal(config, section):
+                self.log.debug('section %s is different in the current configloader object and the input one. Returning False' %section)
+                return False
+        else:
+            self.log.debug('Returning True')
+            return True
+
+
+
+    def sectionsiequal(self, config, section):
+        '''
+        this method checks if a given section is equal in two configloader objects
+        '''
+
+        if self.options(section).sort() != config.options(section).sort():
+            self.log.debug('current configloader object and the input one has different list of options for section %s. Returning False' %section)
+            return False
+
+        # else...
+        for option in self.options(section):
+            if self.get(section, option) != config.get(section, option):
+                self.log.debug('the value of option %s for section %s is different between the current configloader object and the input one. Returning False' %(option, section))
+                return False
+        else:
+            self.log.debug('Returning True')
+            return True
+            
+
+
+
+
+
+
+
+
+
 class ConfigManager(object):
     '''
     -----------------------------------------------------------------------
