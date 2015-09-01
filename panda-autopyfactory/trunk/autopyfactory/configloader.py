@@ -260,7 +260,11 @@ class Config(SafeConfigParser, object):
             -- each section have the same variables and values 
         '''
 
-        if self.sections().sort() != config.sections.sort():
+        sections1 = self.sections()
+        sections2 = config.sections()
+        sections1.sort()
+        sections2.sort()
+        if sections1 != sections2:
             self.log.debug('configloader object has different list of SECTIONS than current one. Returning False') 
             return False
 
@@ -275,7 +279,7 @@ class Config(SafeConfigParser, object):
 
 
 
-    def sectionsiequal(self, config, section):
+    def sectionisequal(self, config, section):
         '''
         this method checks if a given section is equal in two configloader objects
         '''
