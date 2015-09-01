@@ -247,12 +247,6 @@ class Config(SafeConfigParser, object):
         return str
 
 
-
-
-
-
-
-
     def isequal(self, config):
         '''
         this method checks if two config loader objects are equivalents:
@@ -298,11 +292,55 @@ class Config(SafeConfigParser, object):
             return True
             
 
+    def compare(self, config):
+        '''
+        this method compares the current configloader object with a new one.
+        It returns an structure saying 
+            -- the list of SECTIONS that are equal,
+            -- the list of SECTIONS that have changed,
+            -- the list of SECTIONS that have been removed,
+            -- the list of SECTIONS that have been added,
+        The output is a dictionary of lists:
+        
+            out = {'EQUAL': ['SEC1', ..., 'SECn'],
+                   'MODIFIED': ['SEC1', ..., 'SECn'],
+                   'REMOVED': ['SEC1', ..., 'SECn'],
+                   'ADDED': ['SEC1', ..., 'SECn'],
+                  }
+        '''
 
+        out = {'EQUAL': [],
+               'MODIFIED': [],
+               'REMOVED': [],
+               'ADDED': [],
+              }
 
+        sections1 = self.sections()
+        sections1.sort()
+        sections2 = config.sections()
+        sections2.sort()
+        
+        # first, we check for the SECTIONS that have been removed
+        for section in sections1:
+            if section not in sections2:
+                out['REMOVED'].append(section)
+        
+        # second, we check for the SECTIONS that have been added 
+        for section in sections2:
+            if section not in sections1:
+                out['ADDED'].append(section)
 
+        # finally we search for the SECTIONS that are equal or modified
 
-
+        for section in sections1:
+            if section in sections2:
+                if self.sectionisequal(config, section):
+                    out['EQUAL'].append(section)
+                else:
+                    out['MODIFIED'].append(section)
+        
+        self.log.debug('returning with output: %s' %out) 
+        return out
 
 
 
