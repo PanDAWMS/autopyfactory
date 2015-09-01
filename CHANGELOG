@@ -1,3 +1,4 @@
+* added methods isequal( ), sectionisequal( ) and compare( ) to configloader.py
 * added external/ directory, with panda client in it
 * trying several paths to import panda Client.py
 * in APFQueue.__init__() use a self.qcl with only one section (current queue), and in every Batch Submit plugin __init__() get apfqueue.qcl instead of apfqueue.factory.qcl
