@@ -17,7 +17,6 @@ from autopyfactory import condor
 from autopyfactory import jsd
 from autopyfactory.interfaces import BatchSubmitInterface
 from autopyfactory.info import JobInfo
-from autopyfactory.apfexceptions import InvalidProxyFailure
 import autopyfactory.utils as utils
 
 
@@ -38,20 +37,11 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         self.fcl = apfqueue.factory.fcl
         self.mcl = apfqueue.factory.mcl
         
-        self.x509userproxy = None
-        self.proxylist = None
-        
         try:
             self.wmsqueue = qcl.generic_get(self.apfqname, 'wmsqueue')
             self.executable = qcl.generic_get(self.apfqname, 'executable')
             self.factoryadminemail = self.fcl.generic_get('Factory', 'factoryAdminEmail')
 
-            plist = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.proxy')
-            # This is alist of proxy profile names specified in proxy.conf
-            # We will only attempt to derive proxy file path during submission
-            if plist:
-                self.proxylist = [x.strip() for x in plist.split(',')]
-                          
             self.factoryid = self.fcl.generic_get('Factory', 'factoryId')
             self.monitorsection = qcl.generic_get(self.apfqname, 'monitorsection')
             self.log.debug("monitorsection is %s" % self.monitorsection)            
@@ -77,16 +67,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             self.log.error("Caught exception: %s " % str(e))
             raise
 
-
-    def _getX509Proxy(self):
-        '''
-        
-        '''
-        self.log.debug("Determining proxy, if necessary. Profile: %s" % self.proxylist)
-        if self.proxylist:
-            self.x509userproxy = self.factory.proxymanager.getProxyPath(self.proxylist)
-        else:
-            self.log.debug("No proxy profile defined.") 
 
     def submit(self, n):
         '''
@@ -125,9 +105,6 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             
             self.log.debug('Done. Returning joblist %s.' %joblist)
                 
-        except InvalidProxyFailure, ipf:
-            self.log.error('Unable to get valid proxy file.')
-        
         except Exception, e:
             self.log.error('Exception during submit processing. Exception: %s' % e)
             self.log.debug("Exception: %s" % traceback.format_exc())
@@ -289,10 +266,6 @@ x509UserProxyVOName = "atlas"
         # this token is very important, since it will be used by other plugins
         # to identify this pilot from others when running condor_q
         self.JSD.add('+MATCH_APF_QUEUE', '"%s"' % self.apfqname)
-
-        # -- proxy path --
-        if self.x509userproxy:
-            self.JSD.add("x509userproxy", "%s" % self.x509userproxy)
 
         ### Environment
         environment = '"PANDA_JSID=%s' % self.factoryid
