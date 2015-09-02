@@ -18,7 +18,7 @@ from datetime import datetime
 from pprint import pprint
 
 from autopyfactory.interfaces import BatchStatusInterface
-from autopyfactory.factory import Singleton, CondorSingleton
+from autopyfactory.interfaces import Singleton, CondorSingleton
 from autopyfactory.info import BatchStatusInfo
 from autopyfactory.info import QueueInfo
 

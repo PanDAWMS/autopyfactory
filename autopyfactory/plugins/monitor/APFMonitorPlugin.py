@@ -14,8 +14,8 @@ import StringIO
 import urllib
 import urllib2
 
-from autopyfactory.factory import Singleton, singletonfactory
 from autopyfactory.interfaces import MonitorInterface
+from autopyfactory.interfaces import Singleton, CondorSingleton
 
 try:
     import json as json
