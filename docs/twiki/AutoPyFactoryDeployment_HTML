@@ -379,10 +379,12 @@ env | sort >> $CONSOLE_LOG
     <td class="tg-raw1">wmsstatus.panda.sleep</td>
     <td class="tg-031e">time the WMSStatus Plugin waits between cycles Value is in seconds. </td>
   </tr>
+<!--
 <tr>
     <td class="tg-raw1">configplugin</td>
     <td class="tg-031e">the plugin to handle queues configuration. </td>
   </tr>
+-->
 </table>
 
 
