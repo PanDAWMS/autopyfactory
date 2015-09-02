@@ -1,3 +1,4 @@
+* moved Singleton templates from factory.py to interfaces.py
 * moved x509 proxy management from CondorBase submit plugin to CondorGrid submit plugin
 * added methods isequal( ), sectionisequal( ) and compare( ) to configloader.py
 * added external/ directory, with panda client in it

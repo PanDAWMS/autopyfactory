@@ -11,7 +11,7 @@ import traceback
 import xml.dom.minidom
 
 from autopyfactory.interfaces import WMSStatusInterface
-from autopyfactory.factory import Singleton, CondorSingleton
+from autopyfactory.interfaces import Singleton, CondorSingleton
 
 from autopyfactory.info import CloudInfo
 from autopyfactory.info import SiteInfo
