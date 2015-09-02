@@ -328,18 +328,17 @@ class QueuePluginDispatcher(object):
         return plugin_handlers
 
 
-
-
 class FactoryPluginDispatcher(object):
     '''
     class to create and deliver, on request, the different plug-ins needed for the Factory object.
     Does not really implement any generic API, each plugin has different characteristics.
     It is just to take all the code for all Factory plugins in a separate class.
     '''
-
+    
     def __init__(self, factory):
 
         self.log = logging.getLogger('main.factoryplugindispatcher')
+    self.factory = factory
         self.fcl = factory.fcl
         self.log.info('QueuePluginDispatcher: Object initialized.')
 
@@ -353,7 +352,93 @@ class FactoryPluginDispatcher(object):
         config_plugin_handler = self._getplugin('config')[0]
         config_cls = config_plugin_handler.plugin_class
         # calls __init__() to instantiate the class
-        config_plugin = config_cls(self.apfqueue)  
+        config_plugin = config_cls( self.factory )  
     
         return config_plugin
+
+
+    def _getplugin(self, action, config=None):
+        '''
+        '''
+
+        self.log.debug("Starting for action %s" %action)
+
+        plugin_prefixes = {
+                'sched' : 'Sched',
+                'wmsstatus': 'WMSStatus',
+                'batchstatus': 'BatchStatus',
+                'batchsubmit': 'BatchSubmit',
+                'monitor' : 'Monitor',
+                'config' : 'Config',
+        }
+
+        plugin_config_item = '%splugin' %action # i.e. schedplugin
+        plugin_prefix = plugin_prefixes[action] 
+        plugin_action = action
+        
+        # list of objects PluginHandler
+        plugin_handlers = [] 
+
+        # Get the list of plugin names
+        if config:
+            config_section_item = '%ssection' % action  # i.e. monitorsection
+            if self.qcl.has_option(self.apfqname, config_section_item):
+                plugin_names = []
+                sections = self.qcl.get(self.apfqname, config_section_item)
+                for section in sections.split(','):
+                    section = section.strip()
+                    plugin_name = config.get(section, plugin_config_item)  # i.e. APF (from monitor.conf)
+                    plugin_names.append(plugin_name)
+
+                    ph = PluginHandler()
+                    ph.plugin_name = plugin_name 
+                    ph.config_section = [self.apfqname, section]
+                    plugin_handlers.append(ph)
+            #else:
+            #    return [PluginHandler()] # temporary solution  
+        
+        else:
+            if self.fcl.has_option('Factory', plugin_config_item):
+                plugin_names = self.fcl.get('Factory', plugin_config_item)  
+                plugin_names = plugin_names.split(',') # we convert a string split by comma into a list
+               
+                for plugin_name in plugin_names: 
+                    if plugin_name != "None":
+                        plugin_name = plugin_name.strip()
+                        ph = PluginHandler()
+                        ph.plugin_name = plugin_name 
+                        ph.config_section = ['Factory']
+                        plugin_handlers.append(ph)
+            
+            #else:
+            #    return [PluginHandler()] # temporary solution  
+
+
+        for ph in plugin_handlers:
+
+            name = ph.plugin_name 
+
+            plugin_module_name = '%s%sPlugin' %(name, plugin_prefix)
+            # Example of plugin_module_name is CondorGT2 + BatchSubmit + Plugin => CondorGT2BatchSubmitPlugin
+
+            plugin_path = "autopyfactory.plugins.%s.%s" % ( plugin_action, plugin_module_name)
+            self.log.debug("Attempting to import derived classnames: %s"
+                % plugin_path)
+
+            plugin_module = __import__(plugin_path,
+                                       globals(),
+                                       locals(),
+                                       ["%s" % plugin_module_name])
+
+            plugin_class_name = plugin_module_name  #  the name of the class is always the name of the module
+            
+            self.log.debug("Attempting to return plugin with classname %s" %plugin_class_name)
+
+            plugin_class = getattr(plugin_module, plugin_class_name)  # with getattr() we extract the actual class from the module object
+
+            ph.plugin_class_name = plugin_class_name 
+            ph.plugin_module_name = plugin_module_name 
+            ph.plugin_class = plugin_class
+
+        return plugin_handlers
 

@@ -43,6 +43,7 @@ from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
 from autopyfactory.proxymanager import ProxyManager
 from autopyfactory.pluginsmgmt import QueuePluginDispatcher
+from autopyfactory.pluginsmgmt import FactoryPluginDispatcher
 
 major, minor, release, st, num = sys.version_info
 
@@ -463,53 +464,13 @@ class Factory(object):
         self.log.info('AutoPyFactory version %s' %self.version)
         self.fcl = fcl
 
-        ##########
-        # NOTE
-        # the following code to create self.qcl
-        # is now in FileConfigPlugin
-        # so this code here is to be deleted
-        ##########
-
-        # Create config loader object for queues 
-        # 1. we try to read the list of files in queueConf and create a config loader
-        qcf = None
-        try: 
-            qcf = fcl.get('Factory', 'queueConf')    # the configuration files for queues are a list of URIs
-            self.log.debug("queues.conf file(s) = %s" % qcf)
-            qcl_files = ConfigManager().getConfig(sources=qcf)
-        except:
-            pass
-
-        # 2. we try to read the directory in queueDirConf and create a config loader
-        qcd = None
+        self.qcl = None
         try:
-            qcd = fcl.get('Factory', 'queueDirConf') # the configuration files for queues are in a directory
-            if qcd == "None" or qcd == "":
-                qcd = None
-            if qcd:
-                self.log.debug("queues.conf directory = %s" % qcd)
-                qcl_dir = ConfigManager().getConfig(configdir=qcd)
-        except:
-            pass
-
-        # 3. we merge both loader objects
-        try:
-            if qcf and qcd:
-                self.qcl = qcl_files
-                self.qcl.merge(qcl_dir)
-            elif qcf and not qcd:
-                self.qcl = qcl_files
-            elif not qcf and qcd:
-                self.qcl = qcl_dir
-            else:
-                self.log.error('no files or directory with queues configuration specified')
-                sys.exit(0)
-                
-        except ConfigFailure, errMsg:
-            self.log.error('Failed to create QueuesConfigLoader, err: %s' % str(errMsg))
-            sys.exit(0)
-        
-
+            self._plugins()
+            self.qcl = self.config_plugin.getConfig()
+        except Exception, e:
+            self.log.critical('Failed getting the Factory plugins. Aborting')
+            raise
 
         # Handle ProxyManager configuration
         usepman = fcl.getboolean('Factory', 'proxymanager.enabled')
@@ -587,6 +548,13 @@ class Factory(object):
         # Log some info...
         self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )     
         self.log.info("Factory: Object initialized.")
+
+
+    def _plugins(self):
+    
+        fpd = FactoryPluginDispatcher(self)
+        self.config_plugin = fpd.getconfigplugin()
+
 
     def _initLogserver(self):
         # Set up LogServer

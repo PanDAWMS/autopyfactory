@@ -1,3 +1,4 @@
+* added configplugin variable to autopyfactory.conf
 * config/ plugins
 * moved Singleton templates from factory.py to interfaces.py
 * moved x509 proxy management from CondorBase submit plugin to CondorGrid submit plugin
