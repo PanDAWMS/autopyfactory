@@ -113,6 +113,7 @@ setup(
               'autopyfactory.plugins.monitor',
               'autopyfactory.plugins.sched',
               'autopyfactory.plugins.wmsstatus',
+              'autopyfactory.plugins.config',
               'autopyfactory.external',
               'autopyfactory.external.panda',
               ],
