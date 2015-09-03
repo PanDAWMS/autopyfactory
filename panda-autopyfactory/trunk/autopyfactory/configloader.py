@@ -383,11 +383,20 @@ class ConfigManager(object):
                     newconfig = self.__getConfig(src)
                     if newconfig:
                         config.merge(newconfig)
+                        # IMPORTANT NOTE:
+                        # because we create here the final configloader object
+                        # by merge() of each config object (one per source)
+                        # with an empty one, the 'defaults' dictionary {...} of each one
+                        # is lost. 
+                        # Therefore, the final configloader object has empty 'defaults' dictionary {}
             elif configdir:
                 self.log.debug("Processing  configs for dir %s" % configdir)
                 if os.path.isdir(configdir):
                     conffiles = [os.path.join(configdir, f) for f in os.listdir(configdir)]
                     config.read(conffiles)
+                    # IMPORTANT NOTE:
+                    # here, as we use the native python method read()
+                    # the configloader object still keeps the 'defaults' dictionary {...}
                 else:
                     raise ConfigFailure('configuration directory %s does not exist' %configdir)
             config.fixpathvalues()
