@@ -646,6 +646,10 @@ class Factory(threading.Thread):
                 self.log.debug('Checking for interrupt.')
                         
         except (KeyboardInterrupt): 
+            # FIXME
+            # this probably is not needed anymore,
+            # if a KeyboardInterrupt is captured by class FactoryCLI,
+            # it would perform a clean join( )
             logging.info("Shutdown via Ctrl-C or -INT signal.")
             self.shutdown()
             raise
