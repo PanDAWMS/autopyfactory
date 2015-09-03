@@ -1,3 +1,4 @@
+* APFQueue objects are started all of them from method APFQueuesManager::start(), instead of being started when created
 * made class Factory( ) a real threading.Thread
 * added configplugin variable to autopyfactory.conf
 * config/ plugins
