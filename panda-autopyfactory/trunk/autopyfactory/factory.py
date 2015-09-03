@@ -637,6 +637,7 @@ class Factory(threading.Thread):
         self.log.info("Starting all Queue threads...")
 
         self.update()
+        self.apfqueuesmanager.start()
         self.__cleanlogs()
         
         try:
@@ -809,7 +810,7 @@ class APFQueuesManager(object):
             try:
                 qobject = APFQueue(apfqname, self.factory)
                 self.queues[apfqname] = qobject
-                qobject.start()
+                #qobject.start()
                 self.log.info('Queue %s enabled.' %apfqname)
             except Exception, ex:
                 self.log.error('Exception captured when initializing [%s]. Queue omitted. ' %apfqname)
@@ -817,6 +818,17 @@ class APFQueuesManager(object):
         else:
             self.log.debug('Queue %s not enabled.' %apfqname)
             
+
+    def start(self):
+        '''
+        starts all APFQueue objects from here
+        '''
+        self.log.debug('Starting')
+        for qobject in self.queues.values():
+            qobject.start()
+        self.log.debug('Leaving')
+
+
     def _delqueues(self, apfqnames):
         '''
         Deletes APFQueue objects
