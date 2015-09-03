@@ -403,10 +403,11 @@ Jose Caballero <jcaballero@bnl.gov>
             self.log.info('Creating Factory and entering main loop...')
 
             f = Factory(self.fcl)
-            f.mainLoop()
+            f.start()
             
         except KeyboardInterrupt:
             self.log.info('Caught keyboard interrupt - exitting')
+            f.join()
             sys.exit(0)
         except FactoryConfigurationFailure, errMsg:
             self.log.error('Factory configuration failure: %s', errMsg)
@@ -430,7 +431,9 @@ Exploding in 5...4...3...2...1... Have a nice day!''')
             print(traceback.format_exc(None))
             sys.exit(1)          
           
-class Factory(object):
+
+
+class Factory(threading.Thread):
     '''
     -----------------------------------------------------------------------
     Class implementing the main loop. 
@@ -463,6 +466,11 @@ class Factory(object):
         self.log = logging.getLogger('main.factory')
         self.log.info('AutoPyFactory version %s' %self.version)
         self.fcl = fcl
+
+
+        # init the thread
+        threading.Thread.__init__(self) 
+        self.stopevent = threading.Event()
 
 
         # the the queues config loader object, via a Config plugin
@@ -592,6 +600,7 @@ class Factory(object):
         else:
             self.log.info('LogServer disabled. Not running.')
 
+
     def _parseLogPort(self, logurl):
         '''
         logUrl is like:  http[s]://hostname[:port]
@@ -615,7 +624,7 @@ class Factory(object):
         return int(port)
         
         
-    def mainLoop(self):
+    def run(self):
         '''
         Main functional loop of overall Factory. 
         Actions:
@@ -642,6 +651,17 @@ class Factory(object):
             raise
             
         self.log.debug("Leaving.")
+
+
+    def join(self,timeout=None):
+        '''
+        Stop the thread. Overriding this method required to handle Ctrl-C from console.
+        '''
+        self.shutdown()
+        self.stopevent.set()
+        self.log.debug('Stopping factory thread...')
+        threading.Thread.join(self, timeout)
+
 
     def update(self):
         '''
