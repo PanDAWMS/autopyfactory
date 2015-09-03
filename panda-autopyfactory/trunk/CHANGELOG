@@ -1,3 +1,4 @@
+* made class Factory( ) a real threading.Thread
 * added configplugin variable to autopyfactory.conf
 * config/ plugins
 * moved Singleton templates from factory.py to interfaces.py
