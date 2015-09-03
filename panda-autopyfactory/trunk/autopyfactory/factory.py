@@ -477,6 +477,7 @@ class Factory(threading.Thread):
         self.qcl = None
         try:
             self._plugins()
+            # FIXME: this part must go into the loop
             self.qcl = self.config_plugin.getConfig()
         except Exception, e:
             self.log.critical('Failed getting the Factory plugins. Aborting')
