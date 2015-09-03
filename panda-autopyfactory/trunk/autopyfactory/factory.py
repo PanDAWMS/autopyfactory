@@ -464,6 +464,8 @@ class Factory(object):
         self.log.info('AutoPyFactory version %s' %self.version)
         self.fcl = fcl
 
+
+        # the the queues config loader object, via a Config plugin
         self.qcl = None
         try:
             self._plugins()
@@ -471,6 +473,7 @@ class Factory(object):
         except Exception, e:
             self.log.critical('Failed getting the Factory plugins. Aborting')
             raise
+
 
         # Handle ProxyManager configuration
         usepman = fcl.getboolean('Factory', 'proxymanager.enabled')
