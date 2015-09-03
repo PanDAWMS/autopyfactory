@@ -537,8 +537,10 @@ class Factory(object):
         print >> qclfile, qclstr
         qclfile.close()
 
+
         # APF Queues Manager 
         self.apfqueuesmanager = APFQueuesManager(self)
+
         
         # Collect other factory attibutes
         self.adminemail = self.fcl.get('Factory','factoryAdminEmail')
