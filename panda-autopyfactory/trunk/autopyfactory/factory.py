@@ -637,6 +637,7 @@ class Factory(threading.Thread):
         self.log.debug("Starting.")
         self.log.info("Starting all Queue threads...")
 
+        # FIXME: this must go inside the loop
         self.update()
         self.apfqueuesmanager.start()
         self.__cleanlogs()
