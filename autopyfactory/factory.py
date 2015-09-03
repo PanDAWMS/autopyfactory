@@ -640,7 +640,7 @@ class Factory(threading.Thread):
         self.__cleanlogs()
         
         try:
-            while True:
+            while not self.stopevent.isSet():
                 mainsleep = int(self.fcl.get('Factory', 'factory.sleep'))
                 time.sleep(mainsleep)
                 self.log.debug('Checking for interrupt.')
