@@ -357,6 +357,14 @@ class ConfigManager(object):
 
     def __init__(self):
         self.log = logging.getLogger("main.configmanager")
+
+        ###################################
+        #  NEW CODE, UNDER DEVELOPMENT    #
+        ###################################
+        self.sources = None
+        self.configdir = None
+        self.defaults = None
+        ###################################
         
 
     def getConfig(self, sources=None, configdir=None):
@@ -466,5 +474,70 @@ class ConfigManager(object):
             raise FactoryConfigurationFailure("Problem with URI source %s" % uri)
 
 
+    ###################################
+    #  NEW CODE, UNDER DEVELOPMENT    #
+    ###################################
 
-    
+    def updateConfig(self):  # FIXME temporary name 
+
+        if self.sources:
+           config = self._updateConfigFromSources()
+        if self.configdir:
+           config = self._updateConfigFromDir()
+        return config
+
+    def _updateConfigFromSources(self):
+
+        config = Config()
+
+        if not self.defaults:
+
+            for src in self.sources.split(','):
+                src = src.strip()
+                self.log.debug("Calling _getConfig for source %s" % src)
+                newconfig = self.__getConfig(src)
+                if newconfig:
+                    config.merge(newconfig)
+
+        else:
+
+            tmplist = []
+            for src in self.sources.split(','):
+                src = src.strip()
+                src = src[7:]
+                tmplist.append( Config() )
+                tmplist[-1].read([self.defaults, src])
+            for conf in tmplist:
+                config.merge(conf)
+
+        config.fixpathvalues()
+        return config
+
+
+    def _updateConfigFromDir(self):
+
+        config = Config()
+
+        if not self.defaults:
+            self.log.debug("Processing  configs for dir %s" % self.configdir)
+            if os.path.isdir(self.configdir):
+                conffiles = [os.path.join(self.configdir, f) for f in os.listdir(self.configdir)]
+                config.read(conffiles)
+            else:
+                raise ConfigFailure('configuration directory %s does not exist' %self.configdir)
+
+        else:
+
+            tmplist = []
+            sources = [os.path.join(self.configdir, f) for f in os.listdir(self.configdir)]
+            for src in sources:
+                tmplist.append( Config() )
+                tmplist[-1].read([self.defaults, src])
+            for conf in tmplist:
+                config.merge(conf)
+
+
+        config.fixpathvalues()
+        return config
+
+ 
