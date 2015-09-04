@@ -343,6 +343,22 @@ class Config(SafeConfigParser, object):
         return out
 
 
+    def addsection(self, section, items):
+        '''
+        method to add an entire section to a config object
+        items is a dictionary with the list of key/values pairs
+        '''
+
+        if section in self.sections():
+            self.log.warning('section already exists. Doing nothing.')
+            return
+        
+        self.add_section(section)
+        for k,v in items.iteritems():
+            self.set(section, k, v)
+
+    
+
 
 class ConfigManager(object):
     '''
