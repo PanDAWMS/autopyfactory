@@ -560,6 +560,13 @@ class Factory(threading.Thread):
         #self.username = os.getlogin()
         self.username = pwd.getpwuid(os.getuid()).pw_name   
 
+        ### BEGIN TEST ###
+        # start the Listener
+        from autopyfactory.listener import APFListener
+        self.listener = APFListener()
+        self.listener.start(self)
+        ### END TEST ###
+
         # Log some info...
         self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )     
         self.log.info("Factory: Object initialized.")
