@@ -404,7 +404,7 @@ Jose Caballero <jcaballero@bnl.gov>
             self.log.info('Creating Factory and entering main loop...')
 
             f = Factory(self.fcl)
-            f.start()
+            f.run()
             
         except KeyboardInterrupt:
             self.log.info('Caught keyboard interrupt - exitting')
@@ -434,7 +434,7 @@ Exploding in 5...4...3...2...1... Have a nice day!''')
           
 
 
-class Factory(threading.Thread):
+class Factory(object):
     '''
     -----------------------------------------------------------------------
     Class implementing the main loop. 
@@ -467,11 +467,6 @@ class Factory(threading.Thread):
         self.log = logging.getLogger('main.factory')
         self.log.info('AutoPyFactory version %s' %self.version)
         self.fcl = fcl
-
-
-        # init the thread
-        threading.Thread.__init__(self) 
-        self.stopevent = threading.Event()
 
 
         # the the queues config loader object, via a Config plugin
@@ -666,16 +661,6 @@ class Factory(threading.Thread):
             raise
             
         self.log.debug("Leaving.")
-
-
-    def join(self,timeout=None):
-        '''
-        Stop the thread. Overriding this method required to handle Ctrl-C from console.
-        '''
-        self.shutdown()
-        self.stopevent.set()
-        self.log.debug('Stopping factory thread...')
-        threading.Thread.join(self, timeout)
 
 
     def update(self):
