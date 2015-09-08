@@ -469,7 +469,7 @@ class Factory(object):
         self.fcl = fcl
 
         # the the queues config loader object, to be filled by a Config plugin
-        self.qcl = None
+        self.qcl = Config()
         # first call fill self.qcl
         self.update()
 
