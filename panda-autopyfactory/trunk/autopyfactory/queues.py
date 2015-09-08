@@ -73,15 +73,29 @@ class APFQueuesManager(object):
 # ---------------------------------------------------------------------- 
     def update(self, newqueues):
         '''
-        Compares the new list of queues with the current one
-                1. creates and starts new queues if needed
-                2. stops and deletes old queues if needed
+        ###Compares the new list of queues with the current one
+        ###        1. creates and starts new queues if needed
+        ###        2. stops and deletes old queues if needed
+
+        newqueues is a dictionary like this
+            {'REMOVED': [ <list of removed queues ],
+             'ADDED':   [ <list of new queues ],
+             'EQUAL':   [ <list of queues that did not change> ],
+             'MODIFIED':[ <list of queues that changed> ] 
+            }
         '''
-        currentqueues = self.queues.keys()
-        queues_to_remove, queues_to_add = \
-                self._diff_lists(currentqueues, newqueues)
-        self._addqueues(queues_to_add) 
-        self._delqueues(queues_to_remove)
+        ###currentqueues = self.queues.keys()
+        ###queues_to_remove, queues_to_add = \
+        ###        self._diff_lists(currentqueues, newqueues)
+        ###self._addqueues(queues_to_add) 
+        ###self._delqueues(queues_to_remove)
+        ###self._refresh()
+
+    
+        self._delqueues(newqueues['REMOVED'])
+        self._delqueues(newqueues['MODIFIED'])
+        self._addqueues(newqueues['ADDED'])
+        self._addqueues(newqueues['MODIFIED'])
         self._refresh()
 
 
