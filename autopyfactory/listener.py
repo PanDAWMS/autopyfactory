@@ -38,11 +38,9 @@ class APFListener(threading.Thread):
                 conn = self.listener.accept()
                 self.msg = conn.rev()
                 self.log.info('message %s received by listener' %self.msg)
-                #FIXME
-                # here we trigger some action in the factory
-                # depending on the message
-                # something like 
-                #       self.factory.doX()
+                if self.msg == 'reconfigure':
+                    self.log.info('calling Factory method update()' )
+                    self.factory.update()
                 conn.close()
             except:
                 # the _listener._socket timeout was reached
