@@ -689,12 +689,6 @@ class Factory(object):
         self.log.debug("Leaving")
 
 
-
-
-
-
-
-
     def __cleanlogs(self):
         '''
         starts the thread that will clean the condor logs files
