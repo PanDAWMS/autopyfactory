@@ -338,7 +338,7 @@ class FactoryPluginDispatcher(object):
     def __init__(self, factory):
 
         self.log = logging.getLogger('main.factoryplugindispatcher')
-    self.factory = factory
+        self.factory = factory
         self.fcl = factory.fcl
         self.log.info('QueuePluginDispatcher: Object initialized.')
 
@@ -349,12 +349,16 @@ class FactoryPluginDispatcher(object):
         Typically from queues.conf or from an URL
         """
 
-        config_plugin_handler = self._getplugin('config')[0]
-        config_cls = config_plugin_handler.plugin_class
-        # calls __init__() to instantiate the class
-        config_plugin = config_cls( self.factory )  
+        config_plugin_handlers = self._getplugin('config') # list of PluginHander objects, 
+                                                           # as we allow more than one config plugin
+        config_plugins = []
+        for config_ph in config_plugin_handlers:
+            config_cls = config_ph.plugin_class
+            config_plugin = config_cls(self.factory)  # calls __init__() to instantiate the class
+            config_plugins.append(config_plugin)
     
-        return config_plugin
+        return config_plugins
+
 
 
     def _getplugin(self, action, config=None):
