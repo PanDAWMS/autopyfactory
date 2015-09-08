@@ -137,7 +137,7 @@ class APFQueuesManager(object):
             try:
                 qobject = APFQueue(apfqname, self.factory)
                 self.queues[apfqname] = qobject
-                #qobject.start()
+                qobject.start()
                 self.log.info('Queue %s enabled.' %apfqname)
             except Exception, ex:
                 self.log.error('Exception captured when initializing [%s]. Queue omitted. ' %apfqname)
