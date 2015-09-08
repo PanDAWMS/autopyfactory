@@ -2,7 +2,6 @@
 * created method Config.addsection() to add and entire section to a configloader object
 * factory.py split into two files: factory.py and queues.py
 * APFQueue objects are started all of them from method APFQueuesManager::start(), instead of being started when created
-* made class Factory( ) a real threading.Thread
 * added configplugin variable to autopyfactory.conf
 * config/ plugins
 * moved Singleton templates from factory.py to interfaces.py
