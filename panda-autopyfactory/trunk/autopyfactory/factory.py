@@ -468,17 +468,10 @@ class Factory(object):
         self.log.info('AutoPyFactory version %s' %self.version)
         self.fcl = fcl
 
-
-        # the the queues config loader object, via a Config plugin
+        # the the queues config loader object, to be filled by a Config plugin
         self.qcl = None
-        try:
-            self._plugins()
-            # FIXME: this part must go into the loop
-            self.qcl = self.config_plugin.getConfig()
-        except Exception, e:
-            self.log.critical('Failed getting the Factory plugins. Aborting')
-            raise
-
+        # first call fill self.qcl
+        self.update()
 
         # Handle ProxyManager configuration
         usepman = fcl.getboolean('Factory', 'proxymanager.enabled')
@@ -570,7 +563,7 @@ class Factory(object):
     def _plugins(self):
     
         fpd = FactoryPluginDispatcher(self)
-        self.config_plugin = fpd.getconfigplugin()
+        self.config_plugins = fpd.getconfigplugin()
 
 
     def _initLogserver(self):
@@ -676,10 +669,30 @@ class Factory(object):
 
         self.log.debug("Starting")
 
-        newqueues = self.qcl.sections()
+        try:
+            qcl = Config()
+            self._plugins()
+            for config_plugin in self.config_plugins:
+                tmpqcl = config_plugin.getConfig()
+                qcl.merge(tmpqcl)
+
+        except Exception, e:
+            self.log.critical('Failed getting the Factory plugins. Aborting')
+            raise
+
+        #newqueues = self.qcl.sections()
+        newqueues = self.qcl.compare(qcl)
+
         self.apfqueuesmanager.update(newqueues) 
 
         self.log.debug("Leaving")
+
+
+
+
+
+
+
 
     def __cleanlogs(self):
         '''
