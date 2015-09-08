@@ -468,10 +468,10 @@ class Factory(object):
         self.log.info('AutoPyFactory version %s' %self.version)
         self.fcl = fcl
 
-        # the the queues config loader object, to be filled by a Config plugin
-        self.qcl = Config()
-        # first call fill self.qcl
-        self.update()
+        # APF Queues Manager 
+        self.apfqueuesmanager = APFQueuesManager(self)
+
+
 
         # Handle ProxyManager configuration
         usepman = fcl.getboolean('Factory', 'proxymanager.enabled')
@@ -525,19 +525,6 @@ class Factory(object):
         # Handle Log Serving
         self._initLogserver()
 
-        # dump the content of queues.conf 
-        qclstr = self.qcl.getContent(raw=False)
-        logpath = self.fcl.get('Factory', 'baseLogDir')
-        if not os.path.isdir(logpath):
-            # the directory does not exist yet. Let's create it
-            os.makedirs(logpath)
-        qclfile = open('%s/queues.conf' %logpath, 'w')
-        print >> qclfile, qclstr
-        qclfile.close()
-
-
-        # APF Queues Manager 
-        self.apfqueuesmanager = APFQueuesManager(self)
 
         
         # Collect other factory attibutes
@@ -551,9 +538,26 @@ class Factory(object):
         ### BEGIN TEST ###
         # start the Listener
         from autopyfactory.listener import APFListener
-        self.listener = APFListener()
-        self.listener.start(self)
+        self.listener = APFListener(self)
+        self.listener.start()
         ### END TEST ###
+
+
+        # the the queues config loader object, to be filled by a Config plugin
+        self.qcl = Config()
+        # first call fill self.qcl
+        self.update()
+
+
+        # dump the content of queues.conf 
+        qclstr = self.qcl.getContent(raw=False)
+        logpath = self.fcl.get('Factory', 'baseLogDir')
+        if not os.path.isdir(logpath):
+            # the directory does not exist yet. Let's create it
+            os.makedirs(logpath)
+        qclfile = open('%s/queues.conf' %logpath, 'w')
+        print >> qclfile, qclstr
+        qclfile.close()
 
         # Log some info...
         self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )     
@@ -639,7 +643,7 @@ class Factory(object):
         self.__cleanlogs()
         
         try:
-            while not self.stopevent.isSet():
+            while True:
                 mainsleep = int(self.fcl.get('Factory', 'factory.sleep'))
                 time.sleep(mainsleep)
                 self.log.debug('Checking for interrupt.')
