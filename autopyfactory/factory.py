@@ -682,6 +682,7 @@ class Factory(object):
 
         #newqueues = self.qcl.sections()
         newqueues = self.qcl.compare(qcl)
+        self.qcl = qcl
 
         self.apfqueuesmanager.update(newqueues) 
 
