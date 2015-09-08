@@ -639,7 +639,7 @@ class Factory(object):
 
         # FIXME: this must go inside the loop
         self.update()
-        self.apfqueuesmanager.start()
+        #self.apfqueuesmanager.start()
         self.__cleanlogs()
         
         try:
