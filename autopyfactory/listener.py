@@ -36,7 +36,7 @@ class APFListener(threading.Thread):
             time.sleep(5) # FIXME pick a good number
             try:
                 conn = self.listener.accept()
-                self.msg = conn.rev()
+                self.msg = conn.recv()
                 self.log.info('message %s received by listener' %self.msg)
                 if self.msg == 'reconfigure':
                     self.log.info('calling Factory method update()' )
