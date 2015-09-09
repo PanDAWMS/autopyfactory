@@ -491,7 +491,6 @@ class Factory(object):
         # the the queues config loader object, to be filled by a Config plugin
         self.qcl = Config()
 
-        self._dumpqcl()
 
         self._plugins()
 
@@ -707,6 +706,9 @@ class Factory(object):
         # creates the new APFQueues, which in their __init__'s read qcl, so by that time the new one MUST be in factory.qcl
         # and, because of that, APFQueuesManager.udpate() would not know how to compare, as factory.qcl and the new qcl are already the same
         self.apfqueuesmanager.update(newqueues) 
+
+        # dump the new qcl content
+        self._dumpqcl()
 
         self.log.debug("Leaving")
 
