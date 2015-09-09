@@ -535,12 +535,10 @@ class Factory(object):
         #self.username = os.getlogin()
         self.username = pwd.getpwuid(os.getuid()).pw_name   
 
-        ### BEGIN TEST ###
         # start the Listener
         from autopyfactory.listener import APFListener
         self.listener = APFListener(self)
         self.listener.start()
-        ### END TEST ###
 
 
         # the the queues config loader object, to be filled by a Config plugin
