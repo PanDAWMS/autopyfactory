@@ -471,7 +471,36 @@ class Factory(object):
         # APF Queues Manager 
         self.apfqueuesmanager = APFQueuesManager(self)
 
+        self._proxymanager()
+        self._monitor()
+        self._mappings()
 
+        # Handle Log Serving
+        self._initLogserver()
+
+        # Collect other factory attibutes
+        self.adminemail = self.fcl.get('Factory','factoryAdminEmail')
+        self.factoryid = self.fcl.get('Factory','factoryId')
+        self.smtpserver = self.fcl.get('Factory','factorySMTPServer')
+        self.hostname = socket.gethostname()
+        #self.username = os.getlogin()
+        self.username = pwd.getpwuid(os.getuid()).pw_name   
+
+        self._listener()
+
+        # the the queues config loader object, to be filled by a Config plugin
+        self.qcl = Config()
+        # first call to fill self.qcl
+        self.reconfig()
+
+        self._dumpqcl()
+
+        # Log some info...
+        self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )     
+        self.log.info("Factory: Object initialized.")
+
+
+    def _proxymanager(self):
 
         # Handle ProxyManager configuration
         usepman = fcl.getboolean('Factory', 'proxymanager.enabled')
@@ -494,7 +523,10 @@ class Factory(object):
             self.log.debug('ProxyManager thread started.')
         else:
             self.log.info("ProxyManager disabled.")
-       
+
+
+    def _monitor(self):
+
         # Handle monitor configuration
         self.mcl = None
         self.mcf = self.fcl.generic_get('Factory', 'monitorConf')
@@ -507,6 +539,9 @@ class Factory(object):
             sys.exit(0)
 
         self.log.debug("mcl is %s" % self.mcl)
+       
+
+    def _mappings(self):
 
         # Handle mappings configuration
         self.mappingscl = None      # mappings config loader object
@@ -522,30 +557,15 @@ class Factory(object):
         self.log.debug("mappingscl is %s" % self.mappingscl)
 
 
-        # Handle Log Serving
-        self._initLogserver()
-
-
+    def _listener(self):
         
-        # Collect other factory attibutes
-        self.adminemail = self.fcl.get('Factory','factoryAdminEmail')
-        self.factoryid = self.fcl.get('Factory','factoryId')
-        self.smtpserver = self.fcl.get('Factory','factorySMTPServer')
-        self.hostname = socket.gethostname()
-        #self.username = os.getlogin()
-        self.username = pwd.getpwuid(os.getuid()).pw_name   
-
         # start the Listener
         from autopyfactory.listener import APFListener
         self.listener = APFListener(self)
         self.listener.start()
 
 
-        # the the queues config loader object, to be filled by a Config plugin
-        self.qcl = Config()
-        # first call to fill self.qcl
-        self.reconfig()
-
+    def _dumpqcl(self):
 
         # dump the content of queues.conf 
         qclstr = self.qcl.getContent(raw=False)
@@ -556,10 +576,6 @@ class Factory(object):
         qclfile = open('%s/queues.conf' %logpath, 'w')
         print >> qclfile, qclstr
         qclfile.close()
-
-        # Log some info...
-        self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )     
-        self.log.info("Factory: Object initialized.")
 
 
     def _plugins(self):
@@ -682,10 +698,14 @@ class Factory(object):
             self.log.critical('Failed getting the Factory plugins. Aborting')
             raise
 
-        #newqueues = self.qcl.sections()
         newqueues = self.qcl.compare(qcl)
         self.qcl = qcl
 
+        # we pass to apfqueuesmanager.update() a dictionary with the comparison between old qcl and new qcl 
+        # the reason we do that, instead of passing the new qcl
+        # is that we need to set self.qcl to the new one before calling update(), because APFQueuesManager.update() 
+        # creates the new APFQueues, which in their __init__'s read qcl, so by that time the new one MUST be in factory.qcl
+        # and, because of that, APFQueuesManager.udpate() would not know how to compare, as factory.qcl and the new qcl are already the same
         self.apfqueuesmanager.update(newqueues) 
 
         self.log.debug("Leaving")
