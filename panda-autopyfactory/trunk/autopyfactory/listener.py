@@ -40,7 +40,7 @@ class APFListener(threading.Thread):
                 self.log.info('message %s received by listener' %self.msg)
                 if self.msg == 'reconfigure':
                     self.log.info('calling Factory method update()' )
-                    self.factory.update()
+                    self.factory.reconfig()
                 conn.close()
             except:
                 # the _listener._socket timeout was reached

@@ -543,8 +543,8 @@ class Factory(object):
 
         # the the queues config loader object, to be filled by a Config plugin
         self.qcl = Config()
-        # first call fill self.qcl
-        self.update()
+        # first call to fill self.qcl
+        self.reconfig()
 
 
         # dump the content of queues.conf 
@@ -636,7 +636,7 @@ class Factory(object):
         self.log.info("Starting all Queue threads...")
 
         # FIXME: this must go inside the loop
-        self.update()
+        self.reconfig()
         #self.apfqueuesmanager.start()
         self.__cleanlogs()
         
@@ -658,7 +658,7 @@ class Factory(object):
         self.log.debug("Leaving.")
 
 
-    def update(self):
+    def reconfig(self):
         '''
         Method to update the status of the APFQueuesManager object.
         This method will be used every time the 
