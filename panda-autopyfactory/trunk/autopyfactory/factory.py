@@ -491,7 +491,6 @@ class Factory(object):
         # the the queues config loader object, to be filled by a Config plugin
         self.qcl = Config()
 
-
         self._plugins()
 
         # Log some info...
@@ -653,7 +652,7 @@ class Factory(object):
         # first call to reconfig() to load initial qcl configuration
         self.reconfig()
 
-        self.__cleanlogs()
+        self._cleanlogs()
         
         try:
             while True:
@@ -713,7 +712,7 @@ class Factory(object):
         self.log.debug("Leaving")
 
 
-    def __cleanlogs(self):
+    def _cleanlogs(self):
         '''
         starts the thread that will clean the condor logs files
         '''
