@@ -490,8 +490,6 @@ class Factory(object):
 
         # the the queues config loader object, to be filled by a Config plugin
         self.qcl = Config()
-        # first call to fill self.qcl
-        self.reconfig()
 
         self._dumpqcl()
 
@@ -653,9 +651,9 @@ class Factory(object):
         self.log.debug("Starting.")
         self.log.info("Starting all Queue threads...")
 
-        # FIXME: this must go inside the loop
+        # first call to reconfig() to load initial qcl configuration
         self.reconfig()
-        #self.apfqueuesmanager.start()
+
         self.__cleanlogs()
         
         try:
