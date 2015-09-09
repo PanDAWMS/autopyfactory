@@ -71,31 +71,27 @@ class APFQueuesManager(object):
 # ----------------------------------------------------------------------
 #            Public Interface
 # ---------------------------------------------------------------------- 
-    def update(self, newqueues):
+    def update(self, newqcl):
         '''
-        ###Compares the new list of queues with the current one
-        ###        1. creates and starts new queues if needed
-        ###        2. stops and deletes old queues if needed
-
-        newqueues is a dictionary like this
-            {'REMOVED': [ <list of removed queues ],
-             'ADDED':   [ <list of new queues ],
-             'EQUAL':   [ <list of queues that did not change> ],
-             'MODIFIED':[ <list of queues that changed> ] 
-            }
+        Compares the new list of queues with the current one
+                1. creates and starts new queues if needed
+                2. stops and deletes old queues if needed
         '''
-        ###currentqueues = self.queues.keys()
-        ###queues_to_remove, queues_to_add = \
-        ###        self._diff_lists(currentqueues, newqueues)
-        ###self._addqueues(queues_to_add) 
-        ###self._delqueues(queues_to_remove)
-        ###self._refresh()
 
-    
-        self._delqueues(newqueues['REMOVED'])
-        self._delqueues(newqueues['MODIFIED'])
-        self._addqueues(newqueues['ADDED'])
-        self._addqueues(newqueues['MODIFIED'])
+        qcldiff = self.factory.qcl.compare(newqcl)
+        #qcldiff is a dictionary like this
+        #    {'REMOVED': [ <list of removed queues ],
+        #     'ADDED':   [ <list of new queues ],
+        #     'EQUAL':   [ <list of queues that did not change> ],
+        #     'MODIFIED':[ <list of queues that changed> ] 
+        #    }
+
+        self.factory.qcl = newqcl
+
+        self._delqueues(qcldiff['REMOVED'])
+        self._delqueues(qcldiff['MODIFIED'])
+        self._addqueues(qcldiff['ADDED'])
+        self._addqueues(qcldiff['MODIFIED'])
         self._refresh()
 
 
