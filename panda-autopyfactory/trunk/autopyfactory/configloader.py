@@ -278,7 +278,11 @@ class Config(SafeConfigParser, object):
         this method checks if a given section is equal in two configloader objects
         '''
 
-        if self.options(section).sort() != config.options(section).sort():
+        options1 = self.options(section)
+        options2 = config.options(section)
+        options1.sort()
+        options2.sort()
+        if options1 != options2:
             self.log.debug('current configloader object and the input one has different list of options for section %s. Returning False' %section)
             return False
 
@@ -291,6 +295,9 @@ class Config(SafeConfigParser, object):
             self.log.debug('Returning True')
             return True
             
+
+
+
 
     def compare(self, config):
         '''
@@ -341,6 +348,9 @@ class Config(SafeConfigParser, object):
         
         self.log.debug('returning with output: %s' %out) 
         return out
+
+
+
 
 
     def addsection(self, section, items):
