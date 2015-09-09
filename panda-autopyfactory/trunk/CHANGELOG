@@ -1,3 +1,5 @@
+* using self.factory.qcl instead of self.qcl in cleanlogs, so it always keeps the latest configuration, even after reconfig
+* Factory.__init__ refactorized, for clarity
 * created directory sbin/ add added first draft version of autopyfactory-reconfigure
 * using method Config.compare() to decide which queues to start and stop on every re-configuration
 * created first draft code for a listener class
