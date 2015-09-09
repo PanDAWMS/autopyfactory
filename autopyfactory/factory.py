@@ -686,25 +686,16 @@ class Factory(object):
         self.log.debug("Starting")
 
         try:
-            qcl = Config()
-            ###self._plugins()
+            newqcl = Config()
             for config_plugin in self.config_plugins:
                 tmpqcl = config_plugin.getConfig()
-                qcl.merge(tmpqcl)
+                newqcl.merge(tmpqcl)
 
         except Exception, e:
             self.log.critical('Failed getting the Factory plugins. Aborting')
             raise
 
-        newqueues = self.qcl.compare(qcl)
-        self.qcl = qcl
-
-        # we pass to apfqueuesmanager.update() a dictionary with the comparison between old qcl and new qcl 
-        # the reason we do that, instead of passing the new qcl
-        # is that we need to set self.qcl to the new one before calling update(), because APFQueuesManager.update() 
-        # creates the new APFQueues, which in their __init__'s read qcl, so by that time the new one MUST be in factory.qcl
-        # and, because of that, APFQueuesManager.udpate() would not know how to compare, as factory.qcl and the new qcl are already the same
-        self.apfqueuesmanager.update(newqueues) 
+        self.apfqueuesmanager.update(newqcl) 
 
         # dump the new qcl content
         self._dumpqcl()
