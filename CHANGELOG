@@ -1,3 +1,4 @@
+* created directory sbin/ add added first draft version of autopyfactory-reconfigure
 * using method Config.compare() to decide which queues to start and stop on every re-configuration
 * created first draft code for a listener class
 * created method Config.addsection() to add and entire section to a configloader object
