@@ -495,6 +495,8 @@ class Factory(object):
 
         self._dumpqcl()
 
+        self._plugins()
+
         # Log some info...
         self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )     
         self.log.info("Factory: Object initialized.")
@@ -689,7 +691,7 @@ class Factory(object):
 
         try:
             qcl = Config()
-            self._plugins()
+            ###self._plugins()
             for config_plugin in self.config_plugins:
                 tmpqcl = config_plugin.getConfig()
                 qcl.merge(tmpqcl)
