@@ -331,14 +331,18 @@ class Config(SafeConfigParser, object):
         for section in sections1:
             if section not in sections2:
                 out['REMOVED'].append(section)
+        # it could be done in a single line like  
+        # out = [section for section in sections1 if section not in sections2]
+
         
         # second, we check for the SECTIONS that have been added 
         for section in sections2:
             if section not in sections1:
                 out['ADDED'].append(section)
+        # it could be done in a single line like  
+        # out = [section for section in sections2 if section not in sections1]
 
         # finally we search for the SECTIONS that are equal or modified
-
         for section in sections1:
             if section in sections2:
                 if self.sectionisequal(config, section):
