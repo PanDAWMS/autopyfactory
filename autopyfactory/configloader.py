@@ -278,6 +278,12 @@ class Config(SafeConfigParser, object):
         this method checks if a given section is equal in two configloader objects
         '''
 
+        # probably it can be done simply by 
+        #   return ( self.items(section) == config.items(section) )
+        # it is not done like that, yet, because I am not sure if items() would return the dictionary sorted in the same way,
+        # or if that matters when comparing dictionaries
+        # so, meanwhile, we just compare variable by variable
+
         options1 = self.options(section)
         options2 = config.options(section)
         options1.sort()
