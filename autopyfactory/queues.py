@@ -43,8 +43,8 @@ from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
 from autopyfactory.proxymanager import ProxyManager
-from autopyfactory.pluginsmgmt import QueuePluginDispatcher
-from autopyfactory.pluginsmgmt import FactoryPluginDispatcher
+from autopyfactory.pluginsmanagement import QueuePluginDispatcher
+from autopyfactory.pluginsmanagement import FactoryPluginDispatcher
 
 
 class APFQueuesManager(object):

@@ -42,8 +42,8 @@ from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
 from autopyfactory.proxymanager import ProxyManager
-from autopyfactory.pluginsmgmt import QueuePluginDispatcher
-from autopyfactory.pluginsmgmt import FactoryPluginDispatcher
+from autopyfactory.pluginsmanagement import QueuePluginDispatcher
+from autopyfactory.pluginsmanagement import FactoryPluginDispatcher
 from autopyfactory.queues import APFQueuesManager
 
 major, minor, release, st, num = sys.version_info
@@ -807,6 +807,8 @@ class Factory(object):
 ###                 configthread = ConfigThread(section, self)  # ??? FIXME ???
 ###                 self.configs[section] = configthread
 ### 
+
+
 ### 
 ### class ConfigThread(threading.Thread):
 ###     '''
