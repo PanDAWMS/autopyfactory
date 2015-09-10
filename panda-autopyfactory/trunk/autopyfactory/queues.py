@@ -89,8 +89,8 @@ class APFQueuesManager(object):
         self.factory.qcl = newqcl
 
         self._delqueues(qcldiff['REMOVED'])
-        self._delqueues(qcldiff['MODIFIED'])
         self._addqueues(qcldiff['ADDED'])
+        self._delqueues(qcldiff['MODIFIED'])
         self._addqueues(qcldiff['MODIFIED'])
         self._refresh()
 
