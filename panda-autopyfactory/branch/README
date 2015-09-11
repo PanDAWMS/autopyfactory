@@ -1,0 +1,17 @@
+multi-backend              
+2.3.10-1
+2.3.11-1
+mon-dev
+multi-backend-simple
+1.3.x-current
+bnl-dev
+bnl-dev2
+bnl-dev3
+2.1.1-2_bugfixed
+bnl-dev4
+2015-03-18
+python                     some draft code to use condor python bindings instead of writing a submit.jdl file
+jinja                      right now, empty
+load-balancing-server      some files for the django server
+rpm-split                  distutils related and spec file for the split of APF into multiple RPMs
+reconfig                   includes, among other changes, some initial code (unfinished, untested) to reload APFQueues configuration w/o restarting the factory
