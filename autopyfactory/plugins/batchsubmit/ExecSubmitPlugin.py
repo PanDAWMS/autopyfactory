@@ -26,7 +26,6 @@ class ExecSubmitPlugin(BatchSubmitInterface):
 
             self.executable = self.qcl.generic_get(self.apfqname, 'executable')
             self.factoryadminemail = self.fcl.generic_get('Factory', 'factoryAdminEmail')
-            #self.x509userproxy = self.factory.proxymanager.getProxyPath(self.qcl.get(self.apfqname,'proxy'))
             self.factoryid = self.fcl.generic_get('Factory', 'factoryId', logger=self)
             self.monitorurl = self.fcl.generic_get('Factory', 'monitorURL')
             self.factoryuser = self.fcl.generic_get('Factory', 'factoryUser')
