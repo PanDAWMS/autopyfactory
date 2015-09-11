@@ -600,7 +600,7 @@ class ProcessCondorRequests(threading.Thread):
             time.sleep(5) # FIXME, find a proper number. Maybe a config variable???
             if not self.factory.condorrequestsqueue.empty():
                 req = self.factory.condorrequestsqueue.get() 
-                if req.cmd = 'condor_submit':          # FIXME
+                if req.cmd == 'condor_submit':          # FIXME
                     submit(req)    
 
     def join(self):
