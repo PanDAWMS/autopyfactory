@@ -540,21 +540,25 @@ def killids(idlist):
         out = None
     
 
-def submit(args):
+def submit(req):
+    '''
+    req is an object of class CondorRequest()
+    '''
 
     cmd = 'condor_submit -verbose '
     # NOTE: -verbose is needed. 
     #       The output generated with -verbose is parsed by the monitor code 
     #       to determine the number of jobs submitted
-    if args:
-        cmd += args
-    cmd += ' ' + jsdfile
+    if req.args:
+        cmd += req.args
     
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     (out, err) = p.communicate()
     rc = p.returncode()
 
-    return out, err, rc
+    req.out = out
+    req.err = err
+    req.rc = rc
 
 
 class CondorRequest(object):
@@ -596,11 +600,8 @@ class ProcessCondorRequests(threading.Thread):
             time.sleep(5) # FIXME, find a proper number. Maybe a config variable???
             if not self.factory.condorrequestsqueue.empty():
                 req = self.factory.condorrequestsqueue.get() 
-                if req.cmd = 'condor_submit':  # FIXME
-                    out, err, rc = submit()    # FIXME 
-                    req.out = out 
-                    req.err = err
-                    req.rc = rc
+                if req.cmd = 'condor_submit':          # FIXME
+                    submit(req)    
 
     def join(self):
         self.stopevent.set()
