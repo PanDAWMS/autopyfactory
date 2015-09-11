@@ -5,14 +5,14 @@
    to native Python data structures. 
 
 '''
+import commands
+import logging
 import os
-import sys
+import re
 import signal
 import subprocess
-import commands
-import re
-import subprocess
-import logging
+import sys
+import threading
 import time
 import traceback
 import xml.dom.minidom
@@ -539,6 +539,84 @@ def killids(idlist):
         log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
         out = None
     
+
+def submit(args):
+
+    cmd = 'condor_submit -verbose '
+    # NOTE: -verbose is needed. 
+    #       The output generated with -verbose is parsed by the monitor code 
+    #       to determine the number of jobs submitted
+    if args:
+        cmd += args
+    cmd += ' ' + jsdfile
+    
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    (out, err) = p.communicate()
+    rc = p.returncode()
+
+    return out, err, rc
+
+
+class CondorRequest(object):
+    '''
+    class to define any arbitrary condor task 
+    (condor_submit, condor_on, condor_off...)
+
+    The instances of this class can be piped into a Queue() object
+    for serialization
+    '''
+
+    def __init__(self):
+
+        self.cmd = None
+        self.args = None
+        self.out = None
+        self.err = None
+        self.rc = None
+        self.precmd = None
+        self.postcmd = None
+
+
+class ProcessCondorRequests(threading.Thread):
+    '''
+    class to process objects
+    of class CondorRequest()
+    '''
+
+    def __init__(self, factory):
+
+        threading.Thread.__init__(self)
+        self.stopevent = threading.Event()
+        
+        self.factory = factory
+
+    def run(self):
+
+        while not self.stopevent.isSet():
+            time.sleep(5) # FIXME, find a proper number. Maybe a config variable???
+            if not self.factory.condorrequestsqueue.empty():
+                req = self.factory.condorrequestsqueue.get() 
+                if req.cmd = 'condor_submit':  # FIXME
+                    out, err, rc = submit()    # FIXME 
+                    req.out = out 
+                    req.err = err
+                    req.rc = rc
+
+    def join(self):
+        self.stopevent.set()
+        threading.Thread.join(self)
+
+
+
+
+
+
+
+
+
+
+
+###############################################################################
 
 def test1():
     infodict = getJobInfo()
