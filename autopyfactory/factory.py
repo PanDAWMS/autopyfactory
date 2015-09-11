@@ -487,8 +487,6 @@ class Factory(object):
         #self.username = os.getlogin()
         self.username = pwd.getpwuid(os.getuid()).pw_name   
 
-        self._listener()
-
         # the the queues config loader object, to be filled by a Config plugin
         self.qcl = Config()
 
@@ -556,14 +554,6 @@ class Factory(object):
             sys.exit(0)
         
         self.log.debug("mappingscl is %s" % self.mappingscl)
-
-
-    def _listener(self):
-        
-        # start the Listener
-        from autopyfactory.listener import APFListener
-        self.listener = APFListener(self)
-        self.listener.start()
 
 
     def _dumpqcl(self):
