@@ -26,24 +26,25 @@ import smtplib
 import socket
 import sys
 
-from pprint import pprint
 from optparse import OptionParser
+from pprint import pprint
 from ConfigParser import ConfigParser
+from Queue import Queue
 
 try:
     from email.mime.text import MIMEText
 except:
     from email.MIMEText import MIMEText
 
-
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
 from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailure
-from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.cleanlogs import CleanLogs
+from autopyfactory.condor import ProcessCondorRequests
+from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.logserver import LogServer
-from autopyfactory.proxymanager import ProxyManager
 from autopyfactory.pluginsmanagement import QueuePluginDispatcher
 from autopyfactory.pluginsmanagement import FactoryPluginDispatcher
+from autopyfactory.proxymanager import ProxyManager
 from autopyfactory.queues import APFQueuesManager
 
 major, minor, release, st, num = sys.version_info
@@ -493,6 +494,8 @@ class Factory(object):
 
         self._plugins()
 
+        self._serialization()
+
         # Log some info...
         self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )     
         self.log.info("Factory: Object initialized.")
@@ -580,6 +583,21 @@ class Factory(object):
     
         fpd = FactoryPluginDispatcher(self)
         self.config_plugins = fpd.getconfigplugin()
+
+    
+    def _serialization(self):
+        '''
+        here we setup everything needed to 
+        queue condor tasks
+        '''
+
+        # to queue condor tasks
+        self.condorrequestsqueue = Queue()
+
+        # thread that process objects in condorrequestqueue
+        self.processcondorrequests = ProcessCondorRequests()
+        self.processcondorrequests.start()
+
 
 
     def _initLogserver(self):
