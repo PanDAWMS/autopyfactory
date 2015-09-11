@@ -1,3 +1,4 @@
+* using Queue() to serialize the condor_submit tasks
 * using self.factory.qcl instead of self.qcl in cleanlogs, so it always keeps the latest configuration, even after reconfig
 * Factory.__init__ refactorized, for clarity
 * created directory sbin/ add added first draft version of autopyfactory-reconfigure
