@@ -1,0 +1,24 @@
+/var/log/autopyfactory/autopyfactory.log {
+  missingok
+  notifempty
+  sharedscripts
+  size 100M
+  rotate 10 
+  postrotate
+    sleep 5
+    [ -e /etc/profile ] && . /etc/profile >/dev/null 2>&1 || true
+    [ -f /var/run/autopyfactory.pid ] && /etc/init.d/autopyfactory restart >/dev/null 2>&1 || true
+  endscript
+}
+/var/log/autopyfactory/console.log {
+  missingok
+  notifempty
+  sharedscripts
+  size 50M
+  rotate 2
+  postrotate
+    sleep 5
+    [ -e /etc/profile ] && . /etc/profile >/dev/null 2>&1 || true
+    [ -f /var/run/autopyfactory.pid ] && /etc/init.d/autopyfactory restart >/dev/null 2>&1 || true
+  endscript
+}
