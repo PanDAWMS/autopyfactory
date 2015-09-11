@@ -595,7 +595,7 @@ class Factory(object):
         self.condorrequestsqueue = Queue()
 
         # thread that process objects in condorrequestqueue
-        self.processcondorrequests = ProcessCondorRequests()
+        self.processcondorrequests = ProcessCondorRequests(self)
         self.processcondorrequests.start()
 
 

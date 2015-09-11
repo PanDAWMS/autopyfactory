@@ -554,7 +554,7 @@ def submit(req):
     
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     (out, err) = p.communicate()
-    rc = p.returncode()
+    rc = p.returncode
 
     req.out = out
     req.err = err
