@@ -413,3 +413,32 @@ class APFQueue(threading.Thread):
         threading.Thread.join(self, timeout)
 
                  
+
+
+class APFQueuesCluster(threading.Thread):
+    def __init__(self, apfqueuesmanager):
+        threading.Thread.__init__(self) # init the thread
+        self.stopevent = threading.Event()
+        self.apfqueuesmanager = apfqueuesmanager
+        self.log = logging.getLogger('main.cluster')
+
+    def run(self):
+        #while not self.stopevent.isSet():
+            time.sleep(5)
+            self.plugin()
+            
+
+    def join(self):
+        self.stopevent.set()
+        threading.Thread.join(self)
+
+    def plugin(self):
+        '''
+        THIS IS FAKE, JUST FOR PROTOTYPING
+        '''
+        
+        for q in self.apfqueuesmanager.queues.values():
+            q._getnsub()
+            self.log.debug('the queue %s would submit %s pilots' %(q.apfqname,q.nsub))
+            q._submitnsub()
+
