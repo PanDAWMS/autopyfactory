@@ -762,106 +762,60 @@ class Factory(object):
 #   DEVELOOMENT CODE                   #
 ########################################
 
+class FactoryConfigManager(object):
 
-### class ConfigManager(object):
-###     '''
-###     class to handle config plugins that manage APFQueues configurations
-###     The plugins are in directory  plugins/config/
-###     '''
-### 
-###     def __init__(self, factory):
-###         '''
-###         self.configs contains objects Config, which is a Thread
-###         '''
-### 
-###         self.log = logging.getLogger('main.configmanager')
-###         self.factory = factory
-###         self.configs = {}
-###         self._getconfigs()
-###         self.log.debug('ConfigManager: Object initialized.')
-### 
-### 
-###     def _getconfigs(self):
-###         '''
-###         create the list of Config objects, 
-###         based on information comming from 
-###             -- autopyfactory.conf 
-###             -- configs.conf
-###         '''
-### 
-###         # Queues Config plugins Config Loader (qccl)
-###         qccl = None 
-### 
-###         queueConfigConf = self.factory.fcl.generic_get('Factory', 'queuesConfigConf') 
-###         if queueConfigConf:
-###             # Queues Config plugins Config Loader (qccl)
-###             qccl = ConfigManager().getConfig(queueConfigConf)  #FIXME: use the new code in ConfigManager(), when ready
-###             
-###         
-###         queueConf = self.factory.fcl.generic_get('Factory', 'queueConf', default_value="None") 
-###         queueDirConf = self.factory.fcl.generic_get('Factory', 'queueDirConf', default_value="None") 
-###         queueDefaults = self.factory.fcl.generic_get('Factory', 'queueDefaults', default_value="None")
-###         # if queueConf and/or queuesDirConf and/or queuesDefaults are defined, 
-###         # they need to be converted into a File plugin  
-###         # we do this for backward compatibility
-###         qccl.addsection('NO_SECTION', {'configplugin':'File', 'queueConf': queueConf, 'queueDirConf': queueDirConf, 'queueDefaults':queueDefaults})
-###         # FIXME !!! VERY IMPORTANT !!!  this section is fake, it is not in the config file, so cannot be traced back via  self.factory.<anything>...
-###         # FIXME !!! VERY IMPORTANT !!!  in other words, the Config plugin __init__( ) needs to receive the configloader object itself
-### 
-### 
-###         for section in qccl.sections():
-###             if qccl.generic_get(section, 'enabled', 'getboolean', default_value=True):
-###                 # if the section is enabled...
-###                 configthread = ConfigThread(section, self)  # ??? FIXME ???
-###                 self.configs[section] = configthread
-### 
+    def __init__(self, factory):
+
+        self.log = logging.getLogger('main.configmanager')
+        self.factory = factory
+        self.configs = {}
+        self._getconfigs()
+        self.log.debug('ConfigManager: Object initialized.')
 
 
-### 
-### class ConfigThread(threading.Thread):
-###     '''
-###     each queues config plugin is managed 
-###     by a Config object.
-###     These object are thread, so they can loop and re-config
-###     '''
-### 
-###     def __init__(self, section, configmanager):
-###         '''
-###         section is the section name in the qccl (Queues Config plugins Config Loader)
-###         configmanager is the class creating objects ConfigThread
-###         '''
-### 
-###         threading.Thread.__init__(self) # init the thread
-### 
-###         self.configmanager = configmanager
-###         self.stopevent = threading.Event()
-### 
-###         self.renew = self.configmanager.qccl.generic_get(section, 'renew', 'getboolean')
-###         self.time = self.configmanager.qccl.generic_get(section, 'time', 'getint', default_value=0)
-###         self.plugin = self._getplugin()
-###         
-### 
-###     def _getplugin(self):
-### 
-###         plugin = None
-###         pluginname = self.configmanager.qccl.generic_get(section, 'configplugin', defaul_value='File')
-###         # FIXME here create the plugin
-###         return plugin
-### 
-### 
-###     def run(self):
-###         '''
-###         method called by thread.start() 
-###         main loop
-###         '''
-### 
-###         while not self.stopevent.isSet():
-###             # FIXME  here to call the plugin over and over and
-###             #        call self.configmanager.factory.apfqueuesmanager.update( )
-###             #        and self.configmanager.factory.setqcl( )
-###             time.sleep(self.time)
+    def _getconfigs(self):
+        '''
+        create the list of Config objects, 
+        based on information comming from 
+            -- autopyfactory.conf 
+            -- configs.conf
+        '''
+
+        # Queues Config plugins Config Loader (qccl)
+        # a ConfigParser object with everything in file queueConfigConf, AND from autopyfactory.conf for backwards compatibility
+        qccl = Config() # empty
 
 
+        # 1st, we check if there are old-fashion variables in autopyfactory.conf
+        #      (we keep them for backwards compatibility)
+        queueConf = self.factory.fcl.generic_get('Factory', 'queueConf', default_value="None") 
+        if queueConf == None:
+            queueConf = "None"
+        queueDirConf = self.factory.fcl.generic_get('Factory', 'queueDirConf', default_value="None") 
+        if queueDirConf == None:
+            queueDirConf = "None"
+        queueDefaults = self.factory.fcl.generic_get('Factory', 'queueDefaults', default_value="None")
+        if queueDefaults == None:
+            queueDefaults = "None"
+        # if queueConf and/or queuesDirConf and/or queuesDefaults are defined, 
+        # they need to be converted into a File plugin  
+        # we do this for backward compatibility
+        if queueConf != "None" or queueDirConf != "None":
+            qccl.addsection('NO_SECTION', {'configplugin':'File', 'queueConf': queueConf, 'queueDirConf': queueDirConf, 'queueDefaults':queueDefaults})
+            # FIX !!! VERY IMPORTANT !!!  this section is fake, it is not in the config file, so cannot be traced back via  self.factory.<anything>...
+            #                             in other words, the Config plugin __init__( ) needs to receive the configloader object itself
 
 
+        # 2nd, we check if there is a queuesConfigConf file defined, 
+        #      and we parse it
+        queueConfigConf = self.factory.fcl.generic_get('Factory', 'queuesConfigConf') 
+        if queueConfigConf:
+            # Queues Config plugins Config Loader (qccl)
+            # a ConfigParser object with everything in file queueConfigConf, AND from autopyfactory.conf for backwards compatibility
+            newqccl = ConfigManager().getConfig(queueConfigConf)  
 
+            for section in newqccl.sections():
+                if newqccl.generic_get(section, 'enabled', 'getboolean', default_value=True):
+                    qccl.merge(newqccl.getSection(section))
+
+        return qccl
