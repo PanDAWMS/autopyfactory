@@ -306,26 +306,10 @@ class APFQueue(threading.Thread):
         while not self.stopevent.isSet():
             self.log.debug("APFQueue [%s] run(): Beginning submit cycle." % self.apfqname)
             try:
-                nsub = 0
-                fullmsg = ""
-                self.log.debug("APFQueue [%s] run(): Calling sched plugins..." % self.apfqname)
-                for sched_plugin in self.scheduler_plugins:
-                    (nsub, msg) = sched_plugin.calcSubmitNum(nsub)
-                    if msg:
-                        if fullmsg:
-                            fullmsg = "%s;%s" % (fullmsg, msg)
-                        else:
-                            fullmsg = msg
-                        
-                self.log.debug("APFQueue[%s]: All Sched plugins called. Result nsub=%s" % (self.apfqname, nsub))
-                jobinfolist = self._submitpilots(nsub)
-                self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
-                for m in self.monitor_plugins:
-                    self.log.debug('APFQueue[%s] run(): calling registerJobs for monitor plugin %s' % (self.apfqname, m))
-                    m.registerJobs(self, jobinfolist)
-                    if fullmsg:
-                        self.log.debug('APFQueue[%s] run(): calling updateLabel for monitor plugin %s' % (self.apfqname, m))
-                        m.updateLabel(self.apfqname, fullmsg)
+
+                self.nsub, self.fullmsg = self._callscheds()
+                self.jobinfolist = self._submitpilots()
+                self._monitor()
                 self._exitloop()
                 self._logtime() 
                           
@@ -334,6 +318,25 @@ class APFQueue(threading.Thread):
                 self.log.error("APFQueue[%s] run(): Caught exception: %s " % (self.apfqname, ms))
                 self.log.debug("APFQueue[%s] run(): Exception: %s" % (self.apfqname, traceback.format_exc()))
             time.sleep(self.sleep)
+
+
+    def _callscheds(self):
+        '''
+        calls the sched plugins 
+        and calculates the number of pilot to submit
+        '''
+        nsub = 0
+        fullmsg = ""
+        self.log.debug("APFQueue [%s] run(): Calling sched plugins..." % self.apfqname)
+        for sched_plugin in self.scheduler_plugins:
+            (nsub, msg) = sched_plugin.calcSubmitNum(nsub)
+            if msg:
+                if fullmsg:
+                    fullmsg = "%s;%s" % (fullmsg, msg)
+                else:
+                    fullmsg = msg
+        self.log.debug("APFQueue[%s]: All Sched plugins called. Result nsub=%s" % (self.apfqname, nsub))
+        return nsub, fullmsg
 
     def _submitpilots(self, nsub):
         '''
@@ -346,7 +349,17 @@ class APFQueue(threading.Thread):
         self.log.debug("Attempted submission of %d pilots and got jobinfolist %s" % (nsub, jobinfolist))
         self.batchsubmit_plugin.cleanup()
         self.cyclesrun += 1
+        self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
         return jobinfolist
+
+    def _monitor(self):
+
+        for m in self.monitor_plugins:
+            self.log.debug('APFQueue[%s] run(): calling registerJobs for monitor plugin %s' % (self.apfqname, m))
+            m.registerJobs(self, self.jobinfolist)
+            if self.fullmsg:
+                self.log.debug('APFQueue[%s] run(): calling updateLabel for monitor plugin %s' % (self.apfqname, m))
+                m.updateLabel(self.apfqname, self.fullmsg)
 
 
     def _exitloop(self):
