@@ -307,8 +307,8 @@ class APFQueue(threading.Thread):
             self.log.debug("APFQueue [%s] run(): Beginning submit cycle." % self.apfqname)
             try:
 
-                self.nsub, self.fullmsg = self._callscheds()
-                self.jobinfolist = self._submitpilots()
+                self._callscheds()
+                self._submitpilots()
                 self._monitor()
                 self._exitloop()
                 self._logtime() 
@@ -336,7 +336,9 @@ class APFQueue(threading.Thread):
                 else:
                     fullmsg = msg
         self.log.debug("APFQueue[%s]: All Sched plugins called. Result nsub=%s" % (self.apfqname, nsub))
-        return nsub, fullmsg
+        #return nsub, fullmsg
+        self.nsub = nsub
+        self.fullmsg = fullmsg
 
     def _submitpilots(self, nsub):
         '''
@@ -350,7 +352,8 @@ class APFQueue(threading.Thread):
         self.batchsubmit_plugin.cleanup()
         self.cyclesrun += 1
         self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
-        return jobinfolist
+        #return jobinfolist
+        self.jobinfolist = jobinfolist
 
     def _monitor(self):
 
