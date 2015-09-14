@@ -91,7 +91,22 @@ class APFQueuesManager(object):
         self._addqueues(qcldiff['ADDED'])
         self._delqueues(qcldiff['MODIFIED'])
         self._addqueues(qcldiff['MODIFIED'])
-        self._refresh()
+        self._refresh()  # right now it does not do anything...
+
+        self._start() #starts all threads
+        
+
+    def _start(self):
+        '''
+        starts all APFQueue threads.
+        We do it here, instead of one by one at the same time the object is created (old style),
+        so can control which APFQueue threads are started and which ones are not
+        in a more clear way
+        '''
+
+        for q in self.queues.values():
+            if not q.isAlive():
+                q.start()
 
 
     def join(self):
@@ -132,7 +147,7 @@ class APFQueuesManager(object):
             try:
                 qobject = APFQueue(apfqname, self.factory)
                 self.queues[apfqname] = qobject
-                qobject.start()
+                #qobject.start()
                 self.log.info('Queue %s enabled.' %apfqname)
             except Exception, ex:
                 self.log.error('Exception captured when initializing [%s]. Queue omitted. ' %apfqname)
