@@ -375,6 +375,8 @@ class Config(SafeConfigParser, object):
         
         self.add_section(section)
         for k,v in items.iteritems():
+            if v == None:
+                v = "None" # method set() only accepts strings
             self.set(section, k, v)
 
     
