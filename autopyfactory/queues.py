@@ -503,10 +503,7 @@ class APFQueuesClustersManager(object):
         '''
         Creates a single new APFQueuesCluster object and starts it
         '''
-        # FIXME !! queueenabled = self.factory.qcl.generic_get(apfqname, 'enabled', 'getboolean')
-        # FIXME !! globalenabled = self.factory.fcl.generic_get('Factory', 'enablequeues', 'getboolean', default_value=True)
-        # FIXME !! enabled = queueenabled and globalenabled
-        enabled = True
+        enabled = self.factory.ccl.generic_get(clustername, 'enabled', 'getboolean')
         
         if enabled:
             try:
