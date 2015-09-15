@@ -556,6 +556,7 @@ class APFQueuesCluster(threading.Thread):
         self.factory = factory
         self.apfqueuesmanager = self.factory.apfqueuesmanager
         self.apfqueues = {} # queues in this Cluster
+        # FIXME: the other of the queues matter. So maybe a dictionary is not the best way
 
         self.log = logging.getLogger('main.cluster')
 
@@ -578,4 +579,17 @@ class APFQueuesCluster(threading.Thread):
             q._getnsub()
             self.log.debug('the queue %s would submit %s pilots' %(q.apfqname,q.nsub))
             q._submitnsub()
+
+
+    def submit(self, d_nsubs):
+        '''
+        d_nsubs is a dictionary of pairs APFqueue:n_sub
+        where n_sub is the final number of pilots to be submitted
+        by that queue 
+        '''
+
+        for q,n in d_nsubs.iteritems():
+            q._submitpilots(n)
+
+
 
