@@ -79,8 +79,8 @@ class APFQueuesManager(object):
 
         qcldiff = self.factory.qcl.compare(newqcl)
         #qcldiff is a dictionary like this
-        #    {'REMOVED': [ <list of removed queues ],
-        #     'ADDED':   [ <list of new queues ],
+        #    {'REMOVED': [ <list of removed queues> ],
+        #     'ADDED':   [ <list of new queues> ],
         #     'EQUAL':   [ <list of queues that did not change> ],
         #     'MODIFIED':[ <list of queues that changed> ] 
         #    }
@@ -180,13 +180,13 @@ class APFQueuesManager(object):
         self.log.debug('%d queues joined and removed' %count)
 
 
-    def _del(self, apfqname):
-        '''
-        Deletes a single queue object from the list and stops it.
-        '''
-        qobject = self._get(apfqname)
-        qname.join()
-        self.queues.pop(apfqname)
+    #def _del(self, apfqname):
+    #    '''
+    #    Deletes a single queue object from the list and stops it.
+    #    '''
+    #    qobject = self._get(apfqname)
+    #    qname.join()
+    #    self.queues.pop(apfqname)
 
     
     def _refresh(self):
@@ -421,12 +421,145 @@ class APFQueue(threading.Thread):
 #   DEVELOPMENT CODE                 #
 ######################################
 
+class APFQueuesClustersManager(object):
+    #
+    # FIXME !! the code here is mostly a copy of APFQueuesManager
+    #
+
+    def __init__(self, factory):
+        '''
+        Initializes a container of APFQueue objects
+        '''
+
+        self.log = logging.getLogger('main.apfqueuesmanager')
+        self.clusters = {}
+        self.factory = factory
+        self.log.debug('APFQueuesManager: Object initialized.')
+
+
+    def update(self, newccl):
+        '''
+        newccl is new cluster configloader
+        Compares the new list of clusters with the current one
+                1. creates and starts new clusters if needed
+                2. stops and deletes old clusters if needed
+        '''
+
+        ccldiff = self.factory.ccl.compare(newccl)
+        #ccldiff is a dictionary like this
+        #    {'REMOVED': [ <list of removed clusters> ],
+        #     'ADDED':   [ <list of new clusters> ],
+        #     'EQUAL':   [ <list of clusters that did not change> ],
+        #     'MODIFIED':[ <list of clusters that changed> ] 
+        #    }
+
+        self.factory.ccl = newccl
+
+        self._delclusters(qcldiff['REMOVED'])
+        self._addclusters(qcldiff['ADDED'])
+        self._delclusters(qcldiff['MODIFIED'])
+        self._addclusters(qcldiff['MODIFIED'])
+
+        self._start() #starts all threads
+        
+
+    def _start(self):
+        '''
+        starts all APFQueuesCluster threads.
+        '''
+
+        for cluster in self.clusters.values():
+            if not cluster.isAlive():
+                cluster.start()
+
+
+    def join(self):
+        '''
+        Joins all APFQueuesCluster objects
+        QUESTION: should the queues also be removed from self.clusters ?
+        '''
+        count = 0
+        for q in self.clusters.values():
+            q.join()
+            count += 1
+        self.log.debug('%d clusters joined' %count)
+
+    
+    # ----------------------------------------------------------------------
+    #  private methods
+    # ----------------------------------------------------------------------
+
+    def _addclusters(self, clusternames):
+        '''
+        Creates new APFQueuesCluster objects
+        '''
+        count = 0
+        for clustername in clusternames:
+            self._add(clustername)
+            count += 1
+        self.log.debug('%d clusters in the configuration.' %count)
+
+    def _add(self, clustername):
+        '''
+        Creates a single new APFQueuesCluster object and starts it
+        '''
+        # FIXME !! queueenabled = self.factory.qcl.generic_get(apfqname, 'enabled', 'getboolean')
+        # FIXME !! globalenabled = self.factory.fcl.generic_get('Factory', 'enablequeues', 'getboolean', default_value=True)
+        # FIXME !! enabled = queueenabled and globalenabled
+        enabled = True
+        
+        if enabled:
+            try:
+                cobject = APFQueuesCluster(clustername, self.factory)
+                self.clusters[clustername] = cobject
+                self.log.info('Cluster %s enabled.' %clustername)
+            except Exception, ex:
+                self.log.error('Exception captured when initializing [%s]. Cluster omitted. ' %clustername)
+                self.log.debug("Exception: %s" % traceback.format_exc())
+        else:
+            self.log.debug('Cluster %s not enabled.' %clustername)
+            
+
+    def start(self):
+        '''
+        starts all APFQueuesCluster objects from here
+        '''
+        self.log.debug('Starting')
+        for cobject in self.clusters.values():
+            cobject.start()
+        self.log.debug('Leaving')
+
+
+    def _delqueues(self, clusternames):
+        '''
+        Deletes APFQueuesCluster objects
+        '''
+
+        count = 0
+        for clustername in clusternames:
+            c = self.clusters[clustername]
+            c.join()
+            self.clustes.pop(clustername)
+            count += 1
+        self.log.debug('%d clusters joined and removed' %count)
+
+
+
+
+
 
 class APFQueuesCluster(threading.Thread):
-    def __init__(self, apfqueuesmanager):
+
+    def __init__(self, clustername, factory):
+
         threading.Thread.__init__(self) # init the thread
         self.stopevent = threading.Event()
-        self.apfqueuesmanager = apfqueuesmanager
+
+        self.clustername = clustername
+        self.factory = factory
+        self.apfqueuesmanager = self.factory.apfqueuesmanager
+        self.apfqueues = {} # queues in this Cluster
+
         self.log = logging.getLogger('main.cluster')
 
     def run(self):
