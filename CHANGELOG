@@ -1,3 +1,4 @@
+* importing proxymanager only when proxymanager.enabled is True
 * added MissingPluginException to apfexceptions.py
 * split the code in method APFQueue.run( ) into 3 separated methods, so they could be called one by one from outside
 * starting the APFQueue threads in a separate method _start( )
