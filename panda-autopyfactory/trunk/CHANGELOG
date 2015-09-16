@@ -1,3 +1,4 @@
+* added MissingPluginException to apfexceptions.py
 * split the code in method APFQueue.run( ) into 3 separated methods, so they could be called one by one from outside
 * starting the APFQueue threads in a separate method _start( )
 * using Queue() to serialize the condor_submit tasks
