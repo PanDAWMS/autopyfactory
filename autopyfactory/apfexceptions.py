@@ -11,11 +11,13 @@ class FactoryConfigurationFailure(Exception):
     def __str__(self):
         return repr(self.value)
 
+
 class CondorStatusFailure(Exception):
     def __init__(self, value):
         self.value = value
     def __str__(self):
         return repr(self.value)
+
 
 class CondorVersionFailure(Exception):
     def __init__(self, value):
@@ -30,11 +32,13 @@ class PandaStatusFailure(Exception):
     def __str__(self):
         return repr(self.value)
 
+
 class ConfigFailure(Exception):
     def __init__(self, value):
         self.value = value
     def __str__(self):
         return self.value
+
 
 class ConfigFailureMandatoryAttr(Exception):
     def __init__(self, option, section):
@@ -42,8 +46,21 @@ class ConfigFailureMandatoryAttr(Exception):
     def __str__(self):
         return self.value
 
+
 class InvalidProxyFailure(Exception):
     def __init__(self, value):
         self.value = value
     def __str__(self):
         return self.value
+
+
+class MissingPluginException(Exception):
+    """
+    exception to be raised when a plugin is being imported
+    but the RPM with that plugin has not been deployed.
+    """
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return self.value
+        
