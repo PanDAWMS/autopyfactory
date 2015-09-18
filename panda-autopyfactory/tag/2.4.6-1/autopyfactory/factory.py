@@ -41,7 +41,6 @@ from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailur
 from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
-from autopyfactory.proxymanager import ProxyManager
 
 major, minor, release, st, num = sys.version_info
 
@@ -494,6 +493,13 @@ class Factory(object):
         # Handle ProxyManager configuration
         usepman = fcl.getboolean('Factory', 'proxymanager.enabled')
         if usepman:      
+
+            try:
+                from autopyfactory.proxymanager import ProxyManager
+            except:
+                self.log.critical('proxymanager cannot be imported')
+                sys.exit(0)
+
             pcf = fcl.get('Factory','proxyConf')
             self.log.debug("proxy.conf file(s) = %s" % pcf)
             pcl = ConfigParser()
