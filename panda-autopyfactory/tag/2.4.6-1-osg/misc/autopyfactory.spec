@@ -160,7 +160,6 @@ fi
 %package -n autopyfactory-common
 Summary: autopyfactory common 
 Group: Development/Libraries
-Requires: autopyfactory-proxymanager
 Requires: autopyfactory-plugins-condor
 %description -n autopyfactory-common
 This package contains autopyfactory common
@@ -274,8 +273,8 @@ This package contains autopyfactory plugins monitor
 Summary: META RPM for more standard scenario
 Group: Development/Libraries
 Requires: autopyfactory-common
-Requires: autopyfactory-proxymanager
 Requires: autopyfactory-plugins-remote
+Requires: autopyfactory-proxymanager
 Requires: voms-clients
 Requires: myproxy
 %description -n autopyfactory-remote
@@ -311,6 +310,7 @@ Summary: META RPM for autopyfactory-cloud
 Group: Development/Libraries
 Requires: autopyfactory-common
 Requires: autopyfactory-plugins-cloud
+Requires: autopyfactory-proxymanager
 %description -n autopyfactory-cloud
 meta rpm autopyfactory-cloud
 %files -n autopyfactory-cloud
