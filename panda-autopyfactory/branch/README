@@ -36,3 +36,6 @@ reconfig                   includes, among other changes, some initial code (unf
                            includes a file listener.py, code in factory.py to use it,  and a subdirectory sbin/ with client autopyfactory-reconfig
 
 clusters                   code to implement the APFQueues clusterization
+
+config-plugins             code to deal with the new plugins to read queues config
+                           also trying to make the whole plugins management more homogeneous and understandable
