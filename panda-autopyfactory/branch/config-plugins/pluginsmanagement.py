@@ -330,25 +330,6 @@ class QueuePluginDispatcher(object):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class FactoryPluginDispatcher(object):
     '''
     class to create and deliver, on request, the different plug-ins needed for the Factory object.
