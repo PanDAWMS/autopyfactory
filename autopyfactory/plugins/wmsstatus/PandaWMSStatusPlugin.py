@@ -208,13 +208,16 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         
         try:
             newcloudinfo = self._updateclouds()
-            newcloudinfo.lasttime = int(time.time())
+            if newcloudinfo:
+                newcloudinfo.lasttime = int(time.time())
 
             newsiteinfo = self._updatesites()
-            newsiteinfo.lasttime = int(time.time())
+            if newsiteinfo:
+                newsiteinfo.lasttime = int(time.time())
 
             newjobinfo = self._updatejobs()
-            newjobinfo.lasttime = int(time.time())
+            if newjobinfo:
+                newjobinfo.lasttime = int(time.time())
             
             self.log.info("Replacing old info with newly generated info.")
             self.currentjobinfo = newjobinfo
@@ -323,6 +326,7 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         out = None
         if clouds_err:
             self.log.error('Client.getCloudSpecs() failed')
+            return None
         else:
             cloudsinfo = WMSStatusInfo()
             for cloud in all_clouds_config.keys():
@@ -474,6 +478,7 @@ class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
         out = None
         if sites_err:
             self.log.error('Client.getSiteSpecs() failed.')
+            return None
         else:
             sitesinfo = WMSStatusInfo()
             for site in all_sites_config.keys():
