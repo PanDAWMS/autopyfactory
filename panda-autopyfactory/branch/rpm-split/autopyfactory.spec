@@ -1,6 +1,6 @@
 %define name autopyfactory
-%define version 2.4.5
-%define unmangled_version 2.4.5
+%define version 2.4.6
+%define unmangled_version 2.4.6
 %define release 1
 
 Summary: autopyfactory package
@@ -160,7 +160,7 @@ fi
 %package -n autopyfactory-common
 Summary: autopyfactory common 
 Group: Development/Libraries
-Requires: autopyfactory-proxymanager
+#Requires: autopyfactory-proxymanager
 Requires: condor
 Requires: python-simplejson
 Requires: python-pycurl
@@ -279,6 +279,9 @@ Summary: META RPM for more standard scenario
 Group: Development/Libraries
 Requires: autopyfactory-common
 Requires: autopyfactory-plugins-remote
+Requires: autopyfactory-proxymanager
+#Requires: voms-clients
+#Requires: myproxy
 %description -n autopyfactory-remote
 meta rpm autopyfactory-remote
 %files -n autopyfactory-remote
@@ -289,6 +292,8 @@ Summary: META RPM for PanDA
 Group: Development/Libraries
 Requires: autopyfactory-common
 Requires: autopyfactory-plugins-panda
+#Requires: voms-clients
+#Requires: myproxy
 %description -n autopyfactory-panda
 meta rpm autopyfactory-panda
 %files -n autopyfactory-panda
@@ -299,6 +304,7 @@ Summary: META RPM for autopyfactory-wms
 Group: Development/Libraries
 Requires: autopyfactory-common
 Requires: autopyfactory-plugins-local
+#Requires: voms-clients
 %description -n autopyfactory-wms
 meta rpm autopyfactory-wms
 %files -n autopyfactory-wms
@@ -309,9 +315,9 @@ Summary: META RPM for autopyfactory-cloud
 Group: Development/Libraries
 Requires: autopyfactory-common
 Requires: autopyfactory-plugins-cloud
+Requires: autopyfactory-proxymanager
 %description -n autopyfactory-cloud
 meta rpm autopyfactory-cloud
 %files -n autopyfactory-cloud
 
 ##############################################
-
