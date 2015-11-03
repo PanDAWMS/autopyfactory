@@ -1,3 +1,4 @@
+* created bin/autopyfactory_version
 * checking if methods _updateclouds( ) and _updatesites( ) in PANDA WMS Status plugin return something valid
 * importing proxymanager only when proxymanager.enabled is True
 * added MissingPluginException to apfexceptions.py

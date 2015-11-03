@@ -119,6 +119,7 @@ setup(
               ],
     scripts = [ # Utilities and main script
                'bin/autopyfactory',
+               'bin/autopyfactory_version',
                'bin/proxymanager'
               ],
     
