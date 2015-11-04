@@ -1,7 +1,7 @@
 %define name autopyfactory
 %define version 2.4.6
 %define unmangled_version 2.4.6
-%define release 1
+%define release 3
 
 Summary: autopyfactory package
 Name: %{name}
@@ -181,6 +181,7 @@ Summary: autopyfactory proxymanager
 Group: Development/Libraries
 Requires: voms-clients
 Requires: myproxy
+Requires: autopyfactory-common
 %description -n autopyfactory-proxymanager
 This package contains autopyfactory proxymanger 
 
