@@ -142,10 +142,25 @@ class ProxyHandler(threading.Thread):
         self.initdelay = int(initdelaystr)     
 
         # transfer proxy to remote host?
-        self.remote_host = config.get(section, 'remote_host')
-        self.remote_user = config.get(section, 'remote_user')
-        self.remote_owner = config.get(section, 'remote_owner')
-        self.remote_group = config.get(section, 'remote_group')
+        if config.has_option(section, 'remote_host'):
+            self.remote_host = config.get(section, 'remote_host')
+        else:
+            self.remote_host = None
+
+        if config.has_option(section, 'remote_user'):
+            self.remote_user = config.get(section, 'remote_user')
+        else:
+            self.remote_user = None
+
+        if config.has_option(section, 'remote_owner'):
+            self.remote_owner = config.get(section, 'remote_owner')
+        else:
+            self.remote_owner = None
+
+        if config.has_option(section, 'remote_group'):
+            self.remote_group = config.get(section, 'remote_group')
+        else:
+            self.remote_group = None
 
         # extra argument
         self.voms_args = None
