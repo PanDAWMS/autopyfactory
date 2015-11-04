@@ -182,14 +182,15 @@ class ProxyHandler(threading.Thread):
         # Flavors are 'voms' or 'myproxy'
         self.flavor = config.get(section, 'flavor')
         
-        if self.flavor == 'voms':        
-            self.baseproxy = config.get(section,'baseproxy' ) 
-            if self.baseproxy.lower().strip() == "none":
+        if self.flavor == 'voms':
+            if config.has_option(section, 'baseproxy'):
+                baseproxy = config.get(section,'baseproxy')
+                self.baseproxy = os.path.expanduser(baseproxy)
+            else:
                 self.baseproxy = None
                 self.usercert = os.path.expanduser(config.get(section, 'usercert'))
                 self.userkey = os.path.expanduser(config.get(section, 'userkey'))
-            else:
-                self.baseproxy = os.path.expanduser(self.baseproxy)
+
             
             # Handle booleans
             renewstr = config.get(section, 'renew').lower().strip()
