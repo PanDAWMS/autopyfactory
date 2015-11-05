@@ -339,15 +339,15 @@ class APFQueue(threading.Thread):
         self.nsub = nsub
         self.fullmsg = fullmsg
 
-    def _submitpilots(self, nsub):
+    def _submitpilots(self):
         '''
         submit using this number
         call for cleanup
         '''
         self.log.debug("Starting")
-        msg = 'Attempt to submit %s pilots for queue %s' %(nsub, self.apfqname)
-        jobinfolist = self.batchsubmit_plugin.submit(nsub)
-        self.log.debug("Attempted submission of %d pilots and got jobinfolist %s" % (nsub, jobinfolist))
+        msg = 'Attempt to submit %s pilots for queue %s' %(self.nsub, self.apfqname)
+        jobinfolist = self.batchsubmit_plugin.submit(self.nsub)
+        self.log.debug("Attempted submission of %d pilots and got jobinfolist %s" % (self.nsub, jobinfolist))
         self.batchsubmit_plugin.cleanup()
         self.cyclesrun += 1
         self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
