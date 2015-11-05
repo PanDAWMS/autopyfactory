@@ -501,7 +501,7 @@ class Factory(object):
     def _proxymanager(self):
 
         # Handle ProxyManager configuration
-        usepman = fcl.getboolean('Factory', 'proxymanager.enabled')
+        usepman = self.fcl.getboolean('Factory', 'proxymanager.enabled')
         if usepman:      
 
             try:
@@ -510,7 +510,7 @@ class Factory(object):
                 self.log.critical('proxymanager cannot be imported')
                 sys.exit(0) 
 
-            pcf = fcl.get('Factory','proxyConf')
+            pcf = self.fcl.get('Factory','proxyConf')
             self.log.debug("proxy.conf file(s) = %s" % pcf)
             pcl = ConfigParser()
 
