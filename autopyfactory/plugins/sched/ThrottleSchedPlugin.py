@@ -67,42 +67,51 @@ class ThrottleSchedPlugin(SchedInterface):
         # we need, for each queue (MATCH_APF_QUEUE), the total number of pilots, 
         # and the number of pilots that finished too fast (RemoteWallClockTime < maxtime)
 
-        #n_pilots = sum(1 for p in pilots)
-        pilots_dict = {}
-        for pilot in pilots:
-            q = pilot['MATCH_APF_QUEUE']
-            if q not in pilots_dict.keys():
-                pilots_dict[q] = {'total':0, 'short':0}
-            pilots_dict[q]['total'] += 1
-            w = pilot['RemoteWallClockTime']
-            if w < self.maxtime:
-                pilots_dict[q]['short'] += 1
+        try:
+            #n_pilots = sum(1 for p in pilots)
+            pilots_dict = {}
+            for pilot in pilots:
+                q = pilot['MATCH_APF_QUEUE']
+                if q not in pilots_dict.keys():
+                    pilots_dict[q] = {'total':0, 'short':0}
+                pilots_dict[q]['total'] += 1
+                w = pilot['RemoteWallClockTime']
+                if w < self.maxtime:
+                    pilots_dict[q]['short'] += 1
 
-        # now, we have a look to what happened with this queue:
-        if self.apfqname in pilots_dict.keys():
-            total = pilots_dict[self.apfqname]['total']
-            short = pilots_dict[self.apfqname]['short']
-            
-            
-            ratio = float(short)/total
-            if ratio > self.ratio:
-                self.log.warning('the ratio short pilots over total pilots %s is higher than limit %s. Submitting just %s' %(ratio, self.ratio, self.submit))
-                out = self.submit
+            # now, we have a look to what happened with this queue:
+            if self.apfqname in pilots_dict.keys():
+                total = pilots_dict[self.apfqname]['total']
+                short = pilots_dict[self.apfqname]['short']
+                
+                
+                ratio = float(short)/total
+                if ratio > self.ratio:
+                    self.log.warning('the ratio short pilots over total pilots %s is higher than limit %s. Submitting just %s' %(ratio, self.ratio, self.submit))
+                    out = self.submit
+                else:
+                    out = input
+                
+                self.log.info('input=%s; totalpilots=%s; shortpilots=%s; ratio=%s; submit=%s; Return=%s' %(input,
+                                                                                                 total,
+                                                                                                 short, 
+                                                                                                 self.ratio, 
+                                                                                                 self.submit, 
+                                                                                                 out))
+
+                msg = 'Throttle:in=%s;total=%s;short=%s;ratio=%s;submit=%s;ret=%s' %(input, total, short, self.ratio, self.submit, out)
             else:
+                self.log.warning('there is no info for queue %s' %self.apfqname)
+                msg = 'Throttle:in=%s;ret=%s' %(input, out)
                 out = input
-            
-            self.log.info('input=%s; totalpilots=%s; shortpilots=%s; ratio=%s; submit=%s; Return=%s' %(input,
-                                                                                             total,
-                                                                                             short, 
-                                                                                             self.ratio, 
-                                                                                             self.submit, 
-                                                                                             out))
 
-            msg = 'Throttle:in=%s;total=%s;short=%s;ratio=%s;submit=%s;ret=%s' %(input, total, short, self.ratio, self.submit, out)
-        else:
-            self.log.warning('there is no info for queue %s' %self.apfqname)
-            msg = 'Throttle:in=%s;ret=%s' %(input, out)
+            return (out,msg)
+
+        except Exception, ex:        
+            # it is possible it fails if condor_history does not work
+            # for example, in a fresh installation where there is no history yet
+            self.log.warning('An exception was raised: %s' %ex)
             out = input
-
-        return (out,msg)
-        
+            msg = 'Throttle:in=%s;ret=%s' %(input, out)
+            self.log.info('input=%s; Return=%s' %(input, out))
+            return (out,msg)
