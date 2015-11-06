@@ -328,6 +328,20 @@ class QueuePluginDispatcher(object):
         return plugin_handlers
 
 
+
+
+
+####################################################
+#   FIXME
+#       -- Too much code duplicated between
+#          FactoryPluginDispatcher and
+#          QueuePluginDispatcher
+#       -- things in the code that only 
+#          make sense to queues plugins
+#       -- the concept of "default" here
+#          may be also valid for queues plugins
+####################################################
+
 class FactoryPluginDispatcher(object):
     '''
     class to create and deliver, on request, the different plug-ins needed for the Factory object.
@@ -349,7 +363,7 @@ class FactoryPluginDispatcher(object):
         Typically from queues.conf or from an URL
         """
 
-        config_plugin_handlers = self._getplugin('config') # list of PluginHander objects, 
+        config_plugin_handlers = self._getplugin('config', default_plugins='File') # list of PluginHander objects, 
                                                            # as we allow more than one config plugin
         config_plugins = []
         for config_ph in config_plugin_handlers:
@@ -361,7 +375,7 @@ class FactoryPluginDispatcher(object):
 
 
 
-    def _getplugin(self, action, config=None):
+    def _getplugin(self, action, config=None, default_plugins=None):
         '''
         '''
 
@@ -413,6 +427,22 @@ class FactoryPluginDispatcher(object):
                         ph.plugin_name = plugin_name 
                         ph.config_section = ['Factory']
                         plugin_handlers.append(ph)
+
+            # FIXME
+            # too much duplicated code here
+            else:
+                if default_plugins:
+                    plugin_names = default_plugins
+                    plugin_names = plugin_names.split(',') # we convert a string split by comma into a list
+               
+                    for plugin_name in plugin_names: 
+                        if plugin_name != "None":
+                            plugin_name = plugin_name.strip()
+                            ph = PluginHandler()
+                            ph.plugin_name = plugin_name 
+                            ph.config_section = ['Factory']
+                            plugin_handlers.append(ph)
+
             
             #else:
             #    return [PluginHandler()] # temporary solution  
