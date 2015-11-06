@@ -102,8 +102,8 @@ class ThrottleSchedPlugin(SchedInterface):
                 msg = 'Throttle:in=%s;total=%s;short=%s;ratio=%s;submit=%s;ret=%s' %(input, total, short, self.ratio, self.submit, out)
             else:
                 self.log.warning('there is no info for queue %s' %self.apfqname)
-                msg = 'Throttle:in=%s;ret=%s' %(input, out)
                 out = input
+                msg = 'Throttle:in=%s;ret=%s' %(input, out)
 
             return (out,msg)
 
