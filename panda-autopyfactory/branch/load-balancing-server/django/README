@@ -1,0 +1,37 @@
+from the APF monitor @ Lancaster
+
+
+
+# cat /etc/httpd/conf.d/local.conf
+WSGIPythonPath /home/atl:/home/atl/env/lib/python2.6/site-packages
+
+WSGIDaemonProcess apfmon
+python-path=/home/atl:/home/atl/env/lib/python2.6/site-packages
+processes=2 threads=5 display-name=apfmon
+
+WSGIRestrictEmbedded On
+
+WSGIScriptAlias / /home/atl/apfmon/wsgi.py
+<Directory /home/atl/apfmon>
+  WSGIProcessGroup apfmon
+  Order deny,allow
+  Allow from all
+</Directory>
+
+Alias /robots.txt /home/atl/static/robots.txt
+Alias /favicon.ico /home/atl/static/favicon.ico
+AliasMatch ^/([^/]*\.css) /home/atl/static/css/$1
+
+<Directory /home/atl/apfmon>
+<Files wsgi.py>
+  Order deny,allow
+  Allow from all
+</Files>
+</Directory>
+
+Alias /static/ /home/atl/static/
+
+<Directory /home/atl/static>
+  Order deny,allow
+  Allow from all
+</Directory>
