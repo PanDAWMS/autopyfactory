@@ -52,7 +52,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             self.factoryuser = self.fcl.generic_get('Factory', 'factoryUser')
             self.submitargs = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.submitargs')
             self.environ = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.environ')
-            self.batchqueue = qcl.generic_get(self.apfqname, 'batchqueue')
+            #self.batchqueue = qcl.generic_get(self.apfqname, 'batchqueue')
             self.arguments = qcl.generic_get(self.apfqname, 'executable.arguments')
             self.condor_attributes = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.condor_attributes')
             self.extra_condor_attributes = [(opt.replace('batchsubmit.condorbase.condor_attributes.',''),qcl.generic_get(self.apfqname, opt)) \
