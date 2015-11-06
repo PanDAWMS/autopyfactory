@@ -1,5 +1,9 @@
-from the APF monitor @ Lancaster
+===================================================================
+        from the APF monitor @ Lancaster
+===================================================================
 
+
+Apache on front with wsgi
 
 
 # cat /etc/httpd/conf.d/local.conf
