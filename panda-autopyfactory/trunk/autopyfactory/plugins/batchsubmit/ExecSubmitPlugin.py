@@ -31,7 +31,7 @@ class ExecSubmitPlugin(BatchSubmitInterface):
             self.factoryuser = self.fcl.generic_get('Factory', 'factoryUser')
             self.environ = self.qcl.generic_get(self.apfqname, 'batchsubmit.condorlocal.environ')
             self.condor_attributes = self.qcl.generic_get(self.apfqname, 'batchsubmit.condorlocal.condor_attributes')
-            self.batchqueue = self.qcl.generic_get(self.apfqname, 'batchqueue')
+            #self.batchqueue = self.qcl.generic_get(self.apfqname, 'batchqueue')
             self.arguments = self.qcl.generic_get(self.apfqname, 'executable.arguments')
 
             self.log.info('BatchSubmitPlugin: Object initialized.')
