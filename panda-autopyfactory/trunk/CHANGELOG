@@ -1,3 +1,4 @@
+* batchqueue was still mandatory in one plugin. Not anymore
 * added panda status throttled to the mappings as notready
 * some code in proxymanager.py cleaner, and made baseproxy not mandatory
 * made the remote_* variables in proxymanager not mandatory, and removed from proxy.conf
