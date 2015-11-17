@@ -16,7 +16,7 @@ import urllib2
 
 # QUICK & DIRTY HACK
 #BASEURL='http://192.153.161.228:8000'
-BASEURL='http://192.153.161.228'
+BASEURL='http://192.153.161.228/loadbalancing'
 
 
 
