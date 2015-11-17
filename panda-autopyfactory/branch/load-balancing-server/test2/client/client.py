@@ -95,8 +95,11 @@ def _add2():
 def _get():
 
     url = BASEURL+'/get/'
-    out = _call(http.GET, url)
-    out = json.loads(out.read())
+    try:
+        out = _call(http.GET, url)
+        out = json.loads(out.read())
+    except:
+        out = {}
     return out
 
 def _test():
@@ -127,15 +130,15 @@ def _call(method, url, data=None):
 if __name__ == '__main__':
 
     #print _test()
-    _add()  
+    #_add()  
     out = _get()
     print(out)
 
-    time.sleep(1)
-    _add2() 
-    out = _get()
-    print(out)
+    #time.sleep(1)
+    #_add2() 
+    #out = _get()
+    #print(out)
 
-    time.sleep(15)
-    out = _get()
-    print(out)
+    #time.sleep(15)
+    #out = _get()
+    #print(out)
