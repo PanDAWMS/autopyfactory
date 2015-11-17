@@ -9,6 +9,7 @@
 import commands
 import re
 import threading
+import time
 import StringIO
 import urllib
 import urllib2
@@ -68,14 +69,26 @@ def _add():
 
         label = {}
         label['factory'] = 'ui18' 
+        #label['factory'] = 'ui19' 
         label['queues'] = ['ANALY_BNL', 'ANALY_PROD', 'ANALY_MWT2']
         
-
-
         data.append(label)
         data = json.dumps(data)
 
         #out = _call(http.GET, url, data)
+        out = _call(http.GET, url, json.dumps(label))
+        #print out
+
+
+def _add2():
+
+        url = BASEURL+'/add/'
+        data = [] 
+        label = {}
+        label['factory'] = 'ui19' 
+        label['queues'] = ['ANALY_BNL', 'ANALY_PROD']
+        data.append(label)
+        data = json.dumps(data)
         out = _call(http.GET, url, json.dumps(label))
 
 
@@ -84,6 +97,13 @@ def _get():
     url = BASEURL+'/get/'
     out = _call(http.GET, url)
     out = json.loads(out.read())
+    return out
+
+def _test():
+    
+    url = BASEURL+'/test/'
+    out = _call(http.GET, url)
+    out = out.read()
     return out
 
 
@@ -105,5 +125,17 @@ def _call(method, url, data=None):
 
 
 if __name__ == '__main__':
+
+    #print _test()
     _add()  
-    print _get()
+    out = _get()
+    print(out)
+
+    time.sleep(1)
+    _add2() 
+    out = _get()
+    print(out)
+
+    time.sleep(15)
+    out = _get()
+    print(out)
