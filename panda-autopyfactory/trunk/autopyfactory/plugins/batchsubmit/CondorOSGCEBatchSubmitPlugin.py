@@ -22,6 +22,7 @@ class CondorOSGCEBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
         super(CondorOSGCEBatchSubmitPlugin, self).__init__(apfqueue, config=newqcl) 
         try:
             self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorosgce.gridresource') 
+            self.port = qcl.generic_get(self.apfqname, 'batchsubmit.condorosgce.port', default_value='9619') 
         except Exception, e:
             self.log.error("Caught exception: %s " % str(e))
             raise
@@ -35,7 +36,7 @@ class CondorOSGCEBatchSubmitPlugin(CondorCEBatchSubmitPlugin):
 
         self.log.debug('CondorOSGCEBatchSubmitPlugin.addJSD: Starting.')
 
-        self.JSD.add('grid_resource', 'condor %s %s:9619' % (self.gridresource, self.gridresource))
+        self.JSD.add('grid_resource', 'condor %s %s:%s' % (self.gridresource, self.gridresource, self.port))
         # in a line like  grid_resource condor neo.matrix.net neo.matrix.net:9619
         #   the first field is the schedd host
         #   the second field is the central manager host
