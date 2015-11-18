@@ -1,3 +1,4 @@
+* port number in case of submit plugin CondorOSGCE not hardcoded. But default is still 9619
 * batchqueue was still mandatory in one plugin. Not anymore
 * added panda status throttled to the mappings as notready
 * some code in proxymanager.py cleaner, and made baseproxy not mandatory
