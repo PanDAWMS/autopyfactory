@@ -17,6 +17,10 @@ class Singleton(type):
 
 class InfoManager:
     __metaclass__ = Singleton
+    # FIXME: this may not be needed
+    #       if apache+wsgi is configured to run in daemon mode
+    #       and class InfoManager() is imported only once in views.py
+
 
     """
     This class manages factories information.
