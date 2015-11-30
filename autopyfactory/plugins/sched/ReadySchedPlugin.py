@@ -36,7 +36,7 @@ class ReadySchedPlugin(SchedInterface):
         self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
 
         if self.wmsqueueinfo is None or self.queueinfo is None:
-            self.log.warning("Missing info. wmsinfo is %s batchinfo is %s" % (self.wmsqueueinfo, self.queueinfo))
+            self.log.warning("Missing info. wmsinfo is %s batchinfo is %s. Return=0" % (self.wmsqueueinfo, self.queueinfo))
             out = 0 
             msg = 'Invalid wmsinfo or batchinfo' 
         else:
