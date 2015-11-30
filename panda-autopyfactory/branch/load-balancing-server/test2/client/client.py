@@ -86,7 +86,7 @@ def _add2():
         data = [] 
         label = {}
         label['factory'] = 'ui19' 
-        label['queues'] = ['ANALY_BNL', 'ANALY_PROD']
+        label['queues'] = ['ANALY_BNL', 'ANALY_PROD', 'SLAC']
         data.append(label)
         data = json.dumps(data)
         out = _call(http.GET, url, json.dumps(label))
