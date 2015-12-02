@@ -1,6 +1,8 @@
 import json
 import time
 
+from apps.loadbalancing.info import Factories, Queues
+
 
 # FIXME : add a logger here 
 
@@ -17,10 +19,6 @@ class Singleton(type):
 
 class InfoManager:
     __metaclass__ = Singleton
-    # FIXME: this may not be needed
-    #       if apache+wsgi is configured to run in daemon mode
-    #       and class InfoManager() is imported only once in views.py
-
 
     """
     This class manages factories information.
@@ -33,8 +31,8 @@ class InfoManager:
 
     def __init__(self):
         
-        self.factories_info = {}
-        self.queues_info = {}
+        self.factories_info = Factories(self)
+        self.queues_info = Queues(self)
 
 
     def add(self, data):
@@ -57,14 +55,8 @@ class InfoManager:
         info['time'] = current_time
         info['queues'] = queues
 
-        self.factories_info[factory] = info
-
-        for queue in queues:
-            if queue in self.queues_info.keys():
-                if factory not in self.queues_info[queue]:
-                    self.queues_info[queue].append(factory) 
-            else:
-                self.queues_info[queue] = [factory]
+        self.factories_info.add(factory, queues)
+        self.queues_info.add(factory, queues)
 
 
     def get(self):
@@ -75,48 +67,7 @@ class InfoManager:
         info too old is discarded
         """
 
-        ###		out = {}
-        ###		
-        ###		current_time = int(time.time())
-        ###
-        ###		for factory, data in self.data.iteritems():
-        ###		    if current_time - data['time'] > 600: # 10 minutes
-        ###		        # info too old.
-        ###		        pass
-        ###		    else:
-        ###		        for queue in data['queues']:
-        ###		            if queue in out.keys():
-        ###		                out[queue].append(factory)
-        ###		            else:
-        ###		                out[queue] = [factory]
-        ### 
-        ###		#print 'InfoManager::get( ) -> ', out
-        ###
-        ###		# convert out to JSON
-        ###		out = json.dumps( out ) 
-        ###		return out
-
-        ### BEGIN TEST ###
-        #out = self.queues_info
-        out = {}
-            
-        current_time = int(time.time())
-
-        valid_factories = []
-        for factory in self.factories_info.keys():
-            #if current_time - self.factories_info[factory]['time'] < 600:
-            if current_time - self.factories_info[factory]['time'] < 10:
-               valid_factories.append(factory) 
-
-        for queue in self.queues_info.keys():
-           list_factories = []
-           for factory in self.queues_info[queue]:
-              if factory in valid_factories:
-                 list_factories.append(factory)
-           if list_factories:
-              out[queue] = list_factories
-        
+        out = self.queues_info.get()
         out = json.dumps(out)
         return out
-        ### END TEST ###
 

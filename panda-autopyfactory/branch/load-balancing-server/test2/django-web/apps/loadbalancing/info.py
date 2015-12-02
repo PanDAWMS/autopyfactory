@@ -18,7 +18,8 @@ class Factories:
     # FIXME ?? Is the Singleton really needed
     __metaclass__ = Singleton
 
-    def __init__(self):
+    def __init__(self, manager):
+        self.manager = manager
         self.info = {}
 
     def add(self, factory, queues):
@@ -31,17 +32,17 @@ class Factories:
 
         self.info[factory] = newinfo
 
-
     def get(self):
 
         current_time = int(time.time())
 
         valid_factories = []
         for factory in self.info.keys():
-            if current_time - self.factories_info[factory]['time'] < 600:
-            #if current_time - self.factories_info[factory]['time'] < 10:
+            if current_time - self.info[factory]['time'] < 600:
+            #if current_time - self.info[factory]['time'] < 10:
                valid_factories.append(factory)
 		
+        print '>>>> valid_factories ', valid_factories
         return valid_factories
         
 
@@ -51,7 +52,8 @@ class Queues:
     # FIXME ?? Is the Singleton really needed
     __metaclass__ = Singleton
 
-    def __init__(self):
+    def __init__(self, manager):
+        self.manager = manager
         self.info = {}
 
     def add(self, factory, queues):
@@ -68,7 +70,7 @@ class Queues:
 
 	queues = {}
 
-	valid_factories = Factories().get()
+        valid_factories = self.manager.factories_info.get()
 
         for queue in self.info.keys():
            list_factories = []
@@ -79,6 +81,4 @@ class Queues:
               queues[queue] = list_factories
 
 	return queues
-
-
 
