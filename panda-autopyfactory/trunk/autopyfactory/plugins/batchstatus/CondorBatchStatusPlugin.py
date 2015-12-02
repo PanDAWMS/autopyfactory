@@ -224,7 +224,7 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         self.log.debug('Starting.')
        
         if not utils.checkDaemon('condor'):
-            self.log.warning('condor daemon is not running. Doing nothing')
+            self.log.error('condor daemon is not running. Doing nothing')
         else:
             try:
                 strout = querycondor(self.queryargs)
