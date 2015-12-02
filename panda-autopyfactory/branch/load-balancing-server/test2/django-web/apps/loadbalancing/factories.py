@@ -35,7 +35,12 @@ class InfoManager:
         self.factories_info = Factories(self)
         self.queues_info = Queues(self)
 
-        self.log = logging.getLogger('InfoManager')
+        self._logger()
+
+
+    def _logger(self):
+
+        self.log = logging.getLogger('main')
         lf = '/var/log/loadbalancing/log'
         logdir = os.path.dirname(lf)
         if not os.path.exists(logdir):
@@ -60,6 +65,8 @@ class InfoManager:
         """
 
         data = json.loads(data)
+
+        self.log.info('adding data: %s' %data)
 
         factory = data['factory']
         current_time = int(time.time())
@@ -86,6 +93,8 @@ class InfoManager:
         parameters = {}
         if data:
             parameters = json.loads(data)
+
+        self.log.info('retrieving data with parameters %s' %parameters)
 
         out = self.queues_info.get(parameters)
         out = json.dumps(out)

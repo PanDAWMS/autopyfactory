@@ -2,6 +2,7 @@
 #	-- factories
 #	-- queues
 
+import logging
 import time
 
 class Singleton(type):
@@ -19,18 +20,23 @@ class Factories:
     __metaclass__ = Singleton
 
     def __init__(self, manager):
+
         self.manager = manager
         self.info = {}
+        self.log = logging.getLogger('main.Factories')
+
 
     def add(self, factory, queues):
 
-        current_time = int(time.time())
+        self.log.debug('adding data. Factory: %s; queues: %s' %(factory, queues))
 
+        current_time = int(time.time())
         newinfo = {}
         newinfo['time'] = current_time
         newinfo['queues'] = queues
 
         self.info[factory] = newinfo
+
 
     def get(self):
 
@@ -42,6 +48,7 @@ class Factories:
             #if current_time - self.info[factory]['time'] < 10:
                valid_factories.append(factory)
 		
+        self.log.info("retrieving list of factories: %s" %valid_factories)
         return valid_factories
 
 
@@ -50,10 +57,15 @@ class Queues:
     __metaclass__ = Singleton
 
     def __init__(self, manager):
+
         self.manager = manager
         self.info = {}
+        self.log = logging.getLogger('main.Queues')
+
 
     def add(self, factory, queues):
+
+        self.log.debug('adding data. Factory: %s; queues: %s' %(factory, queues))
 
         for queue in queues:
             if queue in self.info.keys():
@@ -84,5 +96,6 @@ class Queues:
            if list_factories:
               queues[queue] = list_factories
 
+        self.log.info("retrieving queues: %s" %queues)
         return queues
 
