@@ -42,10 +42,7 @@ class Factories:
             #if current_time - self.info[factory]['time'] < 10:
                valid_factories.append(factory)
 		
-        print '>>>> valid_factories ', valid_factories
         return valid_factories
-        
-
 
 
 class Queues:
