@@ -18,7 +18,8 @@ class Singleton(type):
 
 
 class InfoManager:
-    __metaclass__ = Singleton
+    #__metaclass__ = Singleton
+    # when APACHE+WSGI is configured in daemon mode, this class does not need to be a Singleton
 
     """
     This class manages factories information.
