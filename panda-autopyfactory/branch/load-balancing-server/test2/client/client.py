@@ -57,7 +57,6 @@ def _add():
 
         url = BASEURL+'/add/'
 
-        data = [] 
 
         #label = {}
         #label['name'] = 'name' 
@@ -71,32 +70,32 @@ def _add():
         label['factory'] = 'ui18' 
         #label['factory'] = 'ui19' 
         label['queues'] = ['ANALY_BNL', 'ANALY_PROD', 'ANALY_MWT2']
-        
-        data.append(label)
-        data = json.dumps(data)
+        data = json.dumps(label)
 
-        #out = _call(http.GET, url, data)
-        out = _call(http.GET, url, json.dumps(label))
+        out = _call(http.GET, url, data)
         #print out
 
 
 def _add2():
 
         url = BASEURL+'/add/'
-        data = [] 
+
         label = {}
         label['factory'] = 'ui19' 
         label['queues'] = ['ANALY_BNL', 'ANALY_PROD', 'SLAC']
-        data.append(label)
-        data = json.dumps(data)
-        out = _call(http.GET, url, json.dumps(label))
+        data = json.dumps(label)
+
+        out = _call(http.GET, url, data)
 
 
 def _get():
 
     url = BASEURL+'/get/'
     try:
-        out = _call(http.GET, url)
+        data = {}
+        data['maxtime']=1
+        data = json.dumps(data)
+        out = _call(http.GET, url, data)
         out = json.loads(out.read())
     except:
         out = {}
@@ -130,7 +129,8 @@ def _call(method, url, data=None):
 if __name__ == '__main__':
 
     #print _test()
-    #_add()  
+    _add()  
+    time.sleep(5)
     out = _get()
     print(out)
 
