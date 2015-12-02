@@ -35,6 +35,19 @@ class InfoManager:
         self.factories_info = Factories(self)
         self.queues_info = Queues(self)
 
+        self.log = logging.getLogger('InfoManager')
+        lf = '/var/log/loadbalancing/log'
+        logdir = os.path.dirname(lf)
+        if not os.path.exists(logdir):
+           os.makedirs(logdir)
+        logStream = logging.FileHandler(filename=lf)
+        FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
+        formatter = logging.Formatter(FORMAT)
+        formatter.converter = time.gmtime  # to convert timestamps to UTC  
+        logStream.setFormatter(formatter)
+        self.log.addHandler(logStream)
+        self.log.setLevel(logging.DEBUG)
+
 
     def add(self, data):
         """
