@@ -59,16 +59,19 @@ class InfoManager:
         self.factories_info.add(factory, queues)
         self.queues_info.add(factory, queues)
 
-
-    def get(self):
+   def get(self, data):
         """
         returns a dictionary (in JSON format):
         keys are the APFQueue names
         values are a list of factories serving that queue
         info too old is discarded
+
+        data is a dictionary with parameters
+        from the client
         """
 
-        out = self.queues_info.get()
+        parameters = json.loads(data)
+
+        out = self.queues_info.get(parameters)
         out = json.dumps(out)
         return out
-

@@ -15,7 +15,7 @@ class Singleton(type):
 
 
 class Factories:
-    # FIXME ?? Is the Singleton really needed
+    # FIXME ?? Is the Singleton really needed when APACHE+WSGI is in daemon mode
     __metaclass__ = Singleton
 
     def __init__(self, manager):
@@ -46,7 +46,7 @@ class Factories:
 
 
 class Queues:
-    # FIXME ?? Is the Singleton really needed
+    # FIXME ?? Is the Singleton really needed when APACHE+WSGI is in daemon mode
     __metaclass__ = Singleton
 
     def __init__(self, manager):
@@ -63,11 +63,18 @@ class Queues:
                 self.info[queue] = [factory]
 
 
-    def get(self):
+    def get(self, parameters):
+        """
+        parameters is a dictionary,
+        passed from the client,
+        with parameters for the query
+        """
 
-	queues = {}
+        maxtime = parameters.get('maxtime', 600)
 
-        valid_factories = self.manager.factories_info.get()
+        queues = {}
+
+        valid_factories = self.manager.factories_info.get(maxtime)
 
         for queue in self.info.keys():
            list_factories = []
@@ -77,5 +84,5 @@ class Queues:
            if list_factories:
               queues[queue] = list_factories
 
-	return queues
+        return queues
 
