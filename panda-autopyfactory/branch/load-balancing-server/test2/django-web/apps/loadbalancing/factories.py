@@ -59,7 +59,7 @@ class InfoManager:
         self.factories_info.add(factory, queues)
         self.queues_info.add(factory, queues)
 
-   def get(self, data):
+   def get(self, data=None):
         """
         returns a dictionary (in JSON format):
         keys are the APFQueue names
@@ -70,7 +70,9 @@ class InfoManager:
         from the client
         """
 
-        parameters = json.loads(data)
+        parameters = {}
+        if data:
+            parameters = json.loads(data)
 
         out = self.queues_info.get(parameters)
         out = json.dumps(out)
