@@ -211,6 +211,7 @@ class InfoManager:
     def __init__(self):
         
         self._logger()
+        self.tables = {}
 
         self.log.debug("object InfoManager created")
 
@@ -238,15 +239,17 @@ class InfoManager:
         self.data = json.loads(data)
         #self.log.info('adding data: %s' %self.data)
 
+        factory = self.data['factory']
+        info = self.data['info']
 
-        xmldoc = xml.dom.minidom.parseString(self.data['info']).documentElement
+        xmldoc = xml.dom.minidom.parseString(info).documentElement
         nodelist = []
         for c in listnodesfromxml(xmldoc, 'c') :
             node_dict = node2dict(c)
             nodelist.append(node_dict)  
         if len(nodelist) > 0:
             aggdict = aggregateinfo(nodelist)
-            self.table = map2table(aggdict)
+            self.tables[factory] = map2table(aggdict)    
 
         self.log.debug('table = %s' %self.table)
 
@@ -255,16 +258,18 @@ class InfoManager:
         """
         """
 
-        #self.log.debug('retrieving... %s' %self.table)
+        out = ""
+        factories = self.tables.keys()
+        factories.sort()
+        #for factory, table in self.tables.iteritems():
+        for factory in factories:
+            table = self.tables[factory]
+            out += 'Factory: %s\n' %factory
+            out += printtable(self.log, table)
+            out += '\n'
 
-        #out = json.dumps(self.table)
-        #self.log.debug('retrieving... %s' %self.tables)
-
-        out = printtable(self.log, self.table)
         self.log.debug('retrieving... %s' %out)
-
-	out = json.dumps(out)
+        out = json.dumps(out)
 
         return out
-
 
