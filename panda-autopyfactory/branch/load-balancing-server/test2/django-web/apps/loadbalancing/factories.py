@@ -4,9 +4,6 @@ import time
 from apps.loadbalancing.info import Factories, Queues
 
 
-# FIXME : add a logger here 
-
-
 class Singleton(type):
     def __init__(cls, name, bases, dct):
         cls.__instance = None
