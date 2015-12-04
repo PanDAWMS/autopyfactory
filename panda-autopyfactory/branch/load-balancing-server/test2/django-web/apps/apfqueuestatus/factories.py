@@ -283,7 +283,7 @@ class InfoManager:
         factories.sort()
         for factory in factories:
             table = self.tables[factory]
-            table = printtable(self.log, table)
+            #table = printtable(self.log, table)
             tables[factory] = table
         return tables
 
