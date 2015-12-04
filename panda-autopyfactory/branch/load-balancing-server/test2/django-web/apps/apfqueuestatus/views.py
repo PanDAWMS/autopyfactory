@@ -51,3 +51,17 @@ def bget(request):
 
     return HttpResponse(t.render(c))
 
+
+#   
+#   #### THIS IS JUST FOR TESTING ####
+#   
+#   def bget(request):
+#       info = factories.InfoManager()
+#       tables = info.bget( )
+#   
+#       t = loader.get_template('apfqueuestatus/index2.html')
+#       c = Context({'table':tables['ui18'],  
+#                   })
+#   
+#       return HttpResponse(t.render(c))
+#
