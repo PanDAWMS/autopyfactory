@@ -1,0 +1,8 @@
+{% for k in factories %}
+    Factory: {{ k }}
+    <br>
+    <pre>
+{{ tables|get_item:k }}
+    </pre>
+    <br>
+{% endfor %}

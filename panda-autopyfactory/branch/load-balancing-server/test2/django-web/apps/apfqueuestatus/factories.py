@@ -272,4 +272,18 @@ class InfoManager:
         out = json.dumps(out)
 
         return out
+    
+
+    def bget(self):
+        """
+        """
+
+        tables = {}
+        factories = self.tables.keys()
+        factories.sort()
+        for factory in factories:
+            table = self.tables[factory]
+            table = printtable(self.log, table)
+            tables[factory] = table
+        return tables
 
