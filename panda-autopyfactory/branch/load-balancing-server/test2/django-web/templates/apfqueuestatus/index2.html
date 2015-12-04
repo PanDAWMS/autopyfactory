@@ -1,0 +1,14 @@
+<table>
+<tr>
+<td></td> <td>COMPLETE</td> <td> RUNNING</td> <td> HELD</td> <td> IDLE</td> <td> ERROR</td> <td> UNSUB </td> <td>REMOVED</td> 
+</tr>
+{% for k,v in table.iteritems %}
+  <tr>
+  <td> {{ k }} </td>
+  {% for k2, v2 in v.jobstatus.iteritems %}
+    <td> {{ v2 }} </td>
+  {% endfor %}
+  </tr>
+{% endfor %}
+</table>
+
