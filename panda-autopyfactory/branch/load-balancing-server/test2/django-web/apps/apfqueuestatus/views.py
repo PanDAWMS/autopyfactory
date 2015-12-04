@@ -6,12 +6,19 @@ import apps.apfqueuestatus.factories as factories
 
 import time
 
-##### BEGIN TEST ###
+### CUSTOM FILTERS ###
 from django.template.defaulttags import register
+
 @register.filter
 def get_item(dictionary, key):
-   return dictionary.get(key)       
-##### END TEST ###
+   """
+   to look up for a field in a dictionary
+   when we do not know the key name
+   """
+   return dictionary.get(key) 
+
+### CUSTOM FILTERS ###
+
 
 
 # FIXME : add a logger here 
