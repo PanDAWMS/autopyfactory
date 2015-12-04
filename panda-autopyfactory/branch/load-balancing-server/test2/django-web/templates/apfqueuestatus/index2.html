@@ -1,14 +1,29 @@
 <table>
 <tr>
 <td></td> <td>COMPLETE</td> <td> RUNNING</td> <td> HELD</td> <td> IDLE</td> <td> ERROR</td> <td> UNSUB </td> <td>REMOVED</td> 
+<td>UNSUB</td> <td>PENDING</td> <td>STAGE_IN</td> <td>ACTIVE</td> <td>STAGE_OUT</td> <td>SUSP</td> <td>DONE</td> <td>FAILED</td>
+
 </tr>
 {% for k,v in table.iteritems %}
   <tr>
   <td> {{ k }} </td>
-  {% for k2, v2 in v.jobstatus.iteritems %}
-    <td> {{ v2 }} </td>
-  {% endfor %}
+    <td> {{ v.jobstatus.COMPLETE|default:"0" }} </td>
+    <td> {{ v.jobstatus.RUNNING|default:"0" }} </td>
+    <td> {{ v.jobstatus.HELD|default:"0" }} </td>
+    <td> {{ v.jobstatus.IDLE|default:"0" }} </td>
+    <td> {{ v.jobstatus.ERROR|default:"0" }} </td>
+    <td> {{ v.jobstatus.UNSUB|default:"0" }} </td>
+    <td> {{ v.jobstatus.REMOVED|default:"0" }} </td>
+
+    <td> {{ v.globusstatus.PENDING|default:"0" }} </td>
+    <td> {{ v.globusstatus.ACTIVE|default:"0" }} </td>
+    <td> {{ v.globusstatus.FAILED|default:"0" }} </td>
+    <td> {{ v.globusstatus.DONE|default:"0" }} </td>
+    <td> {{ v.globusstatus.SUSP|default:"0" }} </td>
+    <td> {{ v.globusstatus.UNSUB|default:"0" }} </td>
+    <td> {{ v.globusstatus.STAGE_IN|default:"0" }} </td>
+    <td> {{ v.globusstatus.STAGE_OUT|default:"0" }} </td>
+
   </tr>
 {% endfor %}
 </table>
-
