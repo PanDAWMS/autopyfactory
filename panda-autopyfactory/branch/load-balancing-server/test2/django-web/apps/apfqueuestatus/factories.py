@@ -22,22 +22,22 @@ import datetime
 import xml.dom.minidom
 
 
-GRAM2STATUS = {'1':   'gPENDING',
-               '2':   'gACTIVE',
-               '4':   'gFAILED',
-               '8':   'gDONE',
-               '16':  'gSUSP',
-               '32':  'gUNSUB',
-               '64':  'gSTAGE_IN',
-               '128': 'gSTAGE_OUT'}
+GRAM2STATUS = {'1':   'PENDING',
+               '2':   'ACTIVE',
+               '4':   'FAILED',
+               '8':   'DONE',
+               '16':  'SUSP',
+               '32':  'UNSUB',
+               '64':  'STAGE_IN',
+               '128': 'STAGE_OUT'}
             
-CONDOR2STATUS = {'0': 'jUNSUB',
-                 '1': 'jIDLE',
-                 '2': 'jRUNNING',
-                 '3': 'jREMOVED',
-                 '4': 'jCOMPLETE',
-                 '5': 'jHELD',
-                 '6': 'jERROR'}
+CONDOR2STATUS = {'0': 'UNSUB',
+                 '1': 'IDLE',
+                 '2': 'RUNNING',
+                 '3': 'REMOVED',
+                 '4': 'COMPLETE',
+                 '5': 'HELD',
+                 '6': 'ERROR'}
 
 def listnodesfromxml(xmldoc, tag):
 	return xmldoc.getElementsByTagName(tag)
@@ -100,25 +100,21 @@ def aggregateinfo( input):
 
 
 statuskeys = {}
-statuskeys['globusstatus'] = ['gUNSUB',    
-                              'gPENDING',
-                              'gSTAGE_IN',
-                              'gACTIVE', 
-                              'gSTAGE_OUT',  
-                              'gSUSP',  
-                              'gDONE',  
-                              'gFAILED']
-statuskeys['jobstatus'] = ['jUNSUB',    
-                           'jIDLE',
-                           'jRUNNING',
-                           'jCOMPLETE', 
-                           'jHELD',  
-                           'jERROR',  
-                           'jREMOVED']
-
-
-
-
+statuskeys['globusstatus'] = ['UNSUB',    
+                              'PENDING',
+                              'STAGE_IN',
+                              'ACTIVE', 
+                              'STAGE_OUT',  
+                              'SUSP',  
+                              'DONE',  
+                              'FAILED']
+statuskeys['jobstatus'] = ['UNSUB',    
+                           'IDLE',
+                           'RUNNING',
+                           'COMPLETE', 
+                           'HELD',  
+                           'ERROR',  
+                           'REMOVED']
 
 
 def map2table(log, aggdict):
@@ -128,14 +124,14 @@ def map2table(log, aggdict):
         queuetable[site] = {}
         sitedict = aggdict[site]
 
-        qi = {'gPENDING': 0 , 
-              'gACTIVE': 0, 
-              'gFAILED' : 0 , 
-              'gDONE': 0,
-              'gSUSP': 0,
-              'gUNSUB' : 0,
-              'gSTAGE_IN' : 0,
-              'gSTAGE_OUT' : 0,                               
+        qi = {'PENDING': 0 , 
+              'ACTIVE': 0, 
+              'FAILED' : 0 , 
+              'DONE': 0,
+              'SUSP': 0,
+              'UNSUB' : 0,
+              'STAGE_IN' : 0,
+              'STAGE_OUT' : 0,                               
              }
 
         if 'globusstatus' in sitedict.keys():
@@ -150,13 +146,13 @@ def map2table(log, aggdict):
         
         queuetable[site]['globusstatus'] = qi
 
-        qi = {'jUNSUB': 0 , 
-              'jIDLE': 0, 
-              'jRUNNING' : 0 , 
-              'jREMOVED': 0,
-              'jCOMPLETE': 0,
-              'jHELD' : 0,
-              'jERROR' : 0,                              
+        qi = {'UNSUB': 0 , 
+              'IDLE': 0, 
+              'RUNNING' : 0 , 
+              'REMOVED': 0,
+              'COMPLETE': 0,
+              'HELD' : 0,
+              'ERROR' : 0,                              
              }
 
         if 'jobstatus' in sitedict.keys():
@@ -193,11 +189,11 @@ def printtable(log, queuetable):
         out += '%s \t' %sitename 
         qi = queuetable[s]
 
-        #if 'globusstatus' in qi.keys():
-        t = qi['globusstatus']
-        keys = statuskeys['globusstatus']
-        for k in keys:
-           out += "%s = %s\t" %(k,t[k])
+        ####if 'globusstatus' in qi.keys():
+        ###t = qi['globusstatus']
+        ###keys = statuskeys['globusstatus']
+        ###for k in keys:
+        ###   out += "%s = %s\t" %(k,t[k])
         #if 'jobstatus' in qi.keys():
         t = qi['jobstatus']
         keys = statuskeys['jobstatus']
@@ -217,11 +213,11 @@ def bprinttable(table):
         line = '%s ' %q
         info = table[q]
 
-        #if 'globusstatus' in qi.keys():
-        t = info['globusstatus']
-        keys = statuskeys['globusstatus']
-        for k in keys:
-           line += "%s " %t[k]
+        ####if 'globusstatus' in qi.keys():
+        ###t = info['globusstatus']
+        ###keys = statuskeys['globusstatus']
+        ###for k in keys:
+        ###   line += "%s " %t[k]
         #if 'jobstatus' in qi.keys():
         t = info['jobstatus']
         keys = statuskeys['jobstatus']
@@ -333,4 +329,5 @@ class InfoManager:
             table = bprinttable(table)
             tables[factory] = table
         return tables
+
 
