@@ -1,8 +1,23 @@
-{% for k in factories %}
-    Factory: {{ k }}
+{% for fact in factories %}
+
+    <b>Factory: {{ fact }}</b> <br>
+    <table>
+        <tr>
+          <td></td>
+          <td>gUNSUB</td> <td>gPENDING</td> <td>gSTAGE_IN</td> <td>gACTIVE</td> <td>gSTAGE_OUT</td> <td>gSUSP</td> <td>gDONE</td> <td>gFAILED</td>
+          <td>jUNSUB</td> <td>jIDLE</td> <td>jRUNNING</td> <td>jCOMPETE</td> <td>jHELD</td> <td> jERROR</td> <td>jREMOVED</td>
+        </tr>
+
+        {% for line in tables|get_item:fact %}
+          <tr>
+          {% for token in line.split %}
+            <td> {{ token }} </td>
+          {% endfor%}
+          </tr>
+        {% endfor %}
+
+    </table>
     <br>
-    <pre>
-{{ tables|get_item:k }}
-    </pre>
-    <br>
+
 {% endfor %}
+
