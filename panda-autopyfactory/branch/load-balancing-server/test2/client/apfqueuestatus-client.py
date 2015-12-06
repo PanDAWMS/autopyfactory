@@ -82,8 +82,7 @@ def _get():
         data = {}
         data['maxtime'] = 600
         data = json.dumps(data)
-        out = _call(http.GET, url)
-        #out = _call(http.GET, url, data)
+        out = _call(http.GET, url, data)
         out = json.loads(out.read())
     except:
         out = {}

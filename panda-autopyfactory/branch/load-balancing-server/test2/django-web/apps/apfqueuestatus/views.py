@@ -35,9 +35,12 @@ def add(request):
 
 def get(request):
     info = factories.InfoManager()
-    data = info.get( request.body )
-    return HttpResponse(data, content_type="application/json")
 
+    if request.body:
+        data = info.get( request.body )
+        return HttpResponse(data, content_type="application/json")
+    else:
+        return bget(request)
 
 def bget(request):
     info = factories.InfoManager()
