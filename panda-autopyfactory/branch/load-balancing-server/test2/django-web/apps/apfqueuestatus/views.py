@@ -1,5 +1,19 @@
 # Create your views here.
 
+#    
+#    example for custom tag {% mytest %}
+#    
+#    @register.tag
+#    def mytest(parser, token):
+#        return MyTestNode()
+#
+#    from django import template
+#    class MyTestNode(template.Node):
+#        def render(self, context):
+#            return "this is a test"
+
+
+
 from django.http import HttpResponse
 import apps.apfqueuestatus.factories as factories
 #import json
@@ -55,4 +69,6 @@ def bget(request):
                 })
 
     return HttpResponse(t.render(c))
+
+
 
