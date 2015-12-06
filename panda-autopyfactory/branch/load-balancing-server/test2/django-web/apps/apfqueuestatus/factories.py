@@ -21,16 +21,6 @@ class Singleton(type):
 import datetime
 import xml.dom.minidom
 
-
-GRAM2STATUS = {'1':   'PENDING',
-               '2':   'ACTIVE',
-               '4':   'FAILED',
-               '8':   'DONE',
-               '16':  'SUSP',
-               '32':  'UNSUB',
-               '64':  'STAGE_IN',
-               '128': 'STAGE_OUT'}
-            
 CONDOR2STATUS = {'0': 'UNSUB',
                  '1': 'IDLE',
                  '2': 'RUNNING',
@@ -98,23 +88,15 @@ def aggregateinfo( input):
                 qdict[attrkey][attrval] = 1
     return queues
 
-
-statuskeys = {}
-statuskeys['globusstatus'] = ['UNSUB',    
-                              'PENDING',
-                              'STAGE_IN',
-                              'ACTIVE', 
-                              'STAGE_OUT',  
-                              'SUSP',  
-                              'DONE',  
-                              'FAILED']
-statuskeys['jobstatus'] = ['UNSUB',    
-                           'IDLE',
-                           'RUNNING',
-                           'COMPLETE', 
-                           'HELD',  
-                           'ERROR',  
-                           'REMOVED']
+#legacy 
+statuskeys = ['UNSUB',    
+              'IDLE',
+              'RUNNING',
+              'COMPLETE', 
+              'HELD',  
+              'ERROR',  
+              'REMOVED'
+             ]
 
 
 def map2table(log, aggdict):
@@ -123,28 +105,6 @@ def map2table(log, aggdict):
     for site in aggdict.keys():
         queuetable[site] = {}
         sitedict = aggdict[site]
-
-        qi = {'PENDING': 0 , 
-              'ACTIVE': 0, 
-              'FAILED' : 0 , 
-              'DONE': 0,
-              'SUSP': 0,
-              'UNSUB' : 0,
-              'STAGE_IN' : 0,
-              'STAGE_OUT' : 0,                               
-             }
-
-        if 'globusstatus' in sitedict.keys():
-            # fill in values here
-            sd = sitedict['globusstatus']
-            for status in sd.keys():
-                try:
-                    qi[GRAM2STATUS[status]] += sd[status]
-                except KeyError:
-                    pass
-                    #log.warn("Got globusstatus of %s" % status)
-        
-        queuetable[site]['globusstatus'] = qi
 
         qi = {'UNSUB': 0 , 
               'IDLE': 0, 
@@ -165,7 +125,7 @@ def map2table(log, aggdict):
                     pass
                     #log.warn("Got jobstatus of %s" % status)
             
-        queuetable[site]['jobstatus'] = qi              
+        queuetable[site] = qi              
 
     return queuetable
 
@@ -188,17 +148,9 @@ def printtable(log, queuetable):
         sitename = sitename + (' ' * addl)
         out += '%s \t' %sitename 
         qi = queuetable[s]
-
-        ####if 'globusstatus' in qi.keys():
-        ###t = qi['globusstatus']
-        ###keys = statuskeys['globusstatus']
-        ###for k in keys:
-        ###   out += "%s = %s\t" %(k,t[k])
-        #if 'jobstatus' in qi.keys():
-        t = qi['jobstatus']
-        keys = statuskeys['jobstatus']
+        keys = statuskeys
         for k in keys:
-           out += "%s = %s\t" %(k,t[k])
+           out += "%s = %s\t" %(k,qi[k])
 
         out += "\n"
     return out
@@ -212,17 +164,9 @@ def bprinttable(table):
     for q in qs:
         line = '%s ' %q
         info = table[q]
-
-        ####if 'globusstatus' in qi.keys():
-        ###t = info['globusstatus']
-        ###keys = statuskeys['globusstatus']
-        ###for k in keys:
-        ###   line += "%s " %t[k]
-        #if 'jobstatus' in qi.keys():
-        t = info['jobstatus']
-        keys = statuskeys['jobstatus']
+        keys = statuskeys
         for k in keys:
-           line += "%s " %t[k]
+           line += "%s " %info[k]
 
         lines.append(line)
         
@@ -305,7 +249,6 @@ class InfoManager:
         out = ""
         factories = self.tables.keys()
         factories.sort()
-        #for factory, table in self.tables.iteritems():
         for factory in factories:
             table = self.tables[factory]
             out += 'Factory: %s\n' %factory
@@ -325,9 +268,9 @@ class InfoManager:
         factories.sort()
         for factory in factories:
             table = self.tables[factory]
-            #table = printtable(self.log, table)
             table = bprinttable(table)
             tables[factory] = table
         return tables
+
 
 
