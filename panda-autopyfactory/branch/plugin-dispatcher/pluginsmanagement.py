@@ -54,8 +54,8 @@ def getpluginnames(conf, section, type,  auxconf=None):
     from a ConfigParser object
     
     Sometimes the name of the plugin is not in the ConfigParser object.
-    Instead of that, the ConfigParser objects contains a reference
-    into a secondary config file (auxconf) 
+    Instead of that, the ConfigParser objects contains the name of a section 
+    in a secondary config file (auxconf) 
     """
 
     names = []
