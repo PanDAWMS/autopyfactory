@@ -1,0 +1,67 @@
+
+
+
+def getpluginclass(level, type, name):
+    """
+    returns the plugin class (not an object)
+    """
+
+    plugin_path = "autopyfactory.plugins.%s.%s.%s" % (level, type, name)
+    plugin_module = __import__(plugin_path,
+                               globals(),
+                               locals(),
+                               [name])
+
+    # with getattr() we extract the actual class from the module object
+    # the name of the class is always the name of the module
+    plugin_class = getattr(plugin_module, name)  
+
+    return plugin_class
+
+
+def initializeplugin(plugin_class, *k, **kw):
+    """
+    initializes an object for a given plugin class
+    and returns the object, 
+    or raises an exception in case of failure
+    """
+
+    try:
+        plugin_object(*k, **kw)
+    except:
+        raise Exception
+
+
+def getpluginnames(conf, section, type,  auxconf=None):
+    """
+    gets the name of the plugins to be retrieved
+    from a ConfigParser object
+    
+    Sometimes the name of the plugin is not in the ConfigParser object.
+    Instead of that, the ConfigParser objects contains a reference
+    into a secondary config file (auxconf) 
+    """
+
+    names = []
+
+    if auxconf:
+        auxconf_section_item = '%ssection' % type # i.e. monitorsection
+        if conf.has_option(section, auxconf_section_item):
+            sections = conf.get(section, auxconf_section_item)
+            sections = [section.strip() for section in sections.split(',') if section.strip() != "None"]
+            for section in sections:
+                # recursive call to the same getpluginname() function
+                # but passing the auxconf ConfigParser as primary conf 
+                names += getpluginnames(auxconf, section, type)
+    
+    else:
+        plugin_config_item = '%splugin' %type  # i.e. schedplugin
+        if conf.has_option(section, plugin_config_item):
+            names = conf.get(section, plugin_config_item)  # i.e. Activated
+            # and we convert a string split by comma into a list
+            names = [name.strip() for name in names.split(',') if name.strip() != "None"]
+
+    return names 
+
+
+
