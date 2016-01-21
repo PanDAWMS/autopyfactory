@@ -39,3 +39,5 @@ clusters                   code to implement the APFQueues clusterization
 
 config-plugins             code to deal with the new plugins to read queues config
                            also trying to make the whole plugins management more homogeneous and understandable
+
+plugin-dispatcher          new code for plugins management, more generic 
