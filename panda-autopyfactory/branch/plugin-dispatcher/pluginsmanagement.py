@@ -4,6 +4,21 @@
 def getpluginclass(level, type, name):
     """
     returns the plugin class (not an object)
+
+    Assumes the plugins layout is <level> / <type> / <module> 
+    For example:
+
+        autopyfactory/
+            plugins/
+                queue/
+                    wmsstatus/
+                    monitor/
+                    sched/
+                    batchstatus/
+                    batchsubmit/
+                factory/
+                    config/ 
+
     """
 
     plugin_path = "autopyfactory.plugins.%s.%s.%s" % (level, type, name)
@@ -27,7 +42,8 @@ def initializeplugin(plugin_class, *k, **kw):
     """
 
     try:
-        plugin_object(*k, **kw)
+        plugin_object = plugin_class(*k, **kw)
+        return plugin_object
     except:
         raise Exception
 
