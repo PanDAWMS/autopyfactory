@@ -26,6 +26,13 @@ def getpluginclass(level, type, name):
                                globals(),
                                locals(),
                                [name])
+    # NOTE:
+    # an alternative to __import__ would be like this
+    #
+    #       plugin_path = "autopyfactory/plugins/%s/%s/%s.py" % (level, type, name)
+    #       import imp
+    #       plugin_module = imp.load_source(name, plugin_path)
+    #
 
     # with getattr() we extract the actual class from the module object
     # the name of the class is always the name of the module
