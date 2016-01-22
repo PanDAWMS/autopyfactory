@@ -41,7 +41,7 @@ def getpluginclass(level, type, name):
     return plugin_class
 
 
-def initializeplugin(plugin_class, *k, **kw):
+def initializeplugin(plugin_class, *args, **kwargs):
     """
     initializes an object for a given plugin class
     and returns the object, 
@@ -49,7 +49,7 @@ def initializeplugin(plugin_class, *k, **kw):
     """
 
     try:
-        plugin_object = plugin_class(*k, **kw)
+        plugin_object = plugin_class(*args, **kwargs)
         return plugin_object
     except:
         raise Exception
