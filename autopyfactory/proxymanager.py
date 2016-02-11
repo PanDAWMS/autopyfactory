@@ -183,7 +183,8 @@ class ProxyHandler(threading.Thread):
         self.flavor = config.get(section, 'flavor')
         
         if self.flavor == 'voms':
-            if config.has_option(section, 'baseproxy'):
+            if config.has_option(section, 'baseproxy') and\
+                config.get(section, 'baseproxy').lower().strip() != "none":
                 baseproxy = config.get(section,'baseproxy')
                 self.baseproxy = os.path.expanduser(baseproxy)
             else:
