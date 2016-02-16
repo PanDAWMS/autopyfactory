@@ -1,3 +1,5 @@
+2.4.7 
+
 * port number in case of submit plugin CondorOSGCE not hardcoded. But default is still 9619
 * batchqueue was still mandatory in one plugin. Not anymore
 * added panda status throttled to the mappings as notready
@@ -5,7 +7,6 @@
 * made the remote_* variables in proxymanager not mandatory, and removed from proxy.conf
 * created bin/autopyfactory_version
 * checking if methods _updateclouds( ) and _updatesites( ) in PANDA WMS Status plugin return something valid
-* importing proxymanager only when proxymanager.enabled is True
 * added MissingPluginException to apfexceptions.py
 * split the code in method APFQueue.run( ) into 3 separated methods, so they could be called one by one from outside
 * starting the APFQueue threads in a separate method _start( )
@@ -23,13 +24,9 @@
 * moved Singleton templates from factory.py to interfaces.py
 * moved x509 proxy management from CondorBase submit plugin to CondorGrid submit plugin
 * added methods isequal( ), sectionisequal( ) and compare( ) to configloader.py
-* added external/ directory, with panda client in it
-* trying several paths to import panda Client.py
-* in APFQueue.__init__() use a self.qcl with only one section (current queue), and in every Batch Submit plugin __init__() get apfqueue.qcl instead of apfqueue.factory.qcl
 * default value for queuesDirConf set to None to allow start just from install
 * printing a WARNING log message when merging two sections with the same name
 * set the default value of "override" to False (the new object has precedence over the current one)
-* creating the directory baseLogDir if it does not exist yet (for example, first time APF is installed)
 * allowing both queues.conf and queues.d/ at the same time, each one with its own merging mechanism
 * for clarity, code for plugins management in a separate module pluginsmgmt.py
 * first draft for sched plugin Throttle 
@@ -40,7 +37,25 @@
 * changes in the logrotate config file:
   no prerotate script, post rotate only restart daemon when there is a PID file
 * normalized the format of the messages returned by the Sched plugins
+
+2.4.6
+
+* importing proxymanager only when proxymanager.enabled is True
+
+2.4.5
+
+* added external/ directory, with panda client in it
+* trying several paths to import panda Client.py
+
+2.4.4
+
+* in APFQueue.__init__() use a self.qcl with only one section (current queue), and in every Batch Submit plugin __init__() get apfqueue.qcl instead of apfqueue.factory.qcl
+
+2.4.3
+
+* creating the directory baseLogDir if it does not exist yet (for example, first time APF is installed)
 * no manpages distribution.
+
 
 2.4.2
 
