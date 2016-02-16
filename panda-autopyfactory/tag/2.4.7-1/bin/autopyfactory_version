@@ -1,0 +1,4 @@
+#!/usr/bin/env python
+
+from autopyfactory import factory 
+print(factory.__version__)
