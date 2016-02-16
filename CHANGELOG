@@ -1,3 +1,5 @@
+2.4.8
+
 2.4.7 
 
 * port number in case of submit plugin CondorOSGCE not hardcoded. But default is still 9619
