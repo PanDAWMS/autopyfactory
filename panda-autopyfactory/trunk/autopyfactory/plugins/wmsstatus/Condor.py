@@ -3,113 +3,87 @@
 # AutoPyfactory batch status plugin for Condor
 #
 
-import commands
 import subprocess
 import logging
-import os
-import sys
 import time
 import threading
 import traceback
 import xml.dom.minidom
 
-from datetime import datetime
-from pprint import pprint
-from autopyfactory.interfaces import BatchStatusInterface
+from autopyfactory.interfaces import WMSStatusInterface
 from autopyfactory.interfaces import Singleton, CondorSingleton
-from autopyfactory.info import BatchStatusInfo
-from autopyfactory.info import QueueInfo
 
+from autopyfactory.info import CloudInfo
+from autopyfactory.info import SiteInfo
+from autopyfactory.info import JobInfo
+from autopyfactory.info import WMSStatusInfo
+from autopyfactory.info import WMSQueueInfo
+
+#from autopyfactory.condor import checkCondor, querycondor, querycondorxml, querycondorlib  
 from autopyfactory.condor import checkCondor, querycondor, querycondorxml
 from autopyfactory.condor import parseoutput, aggregateinfo
-  
-import autopyfactory.utils as utils
 
 
-
-class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
+class Condor(threading.Thread, WMSStatusInterface):
     '''
     -----------------------------------------------------------------------
-    This class is expected to have separate instances for each PandaQueue object. 
+    This class is expected to have separate instances for each object. 
     The first time it is instantiated, 
     -----------------------------------------------------------------------
     Public Interface:
             the interfaces inherited from Thread and from BatchStatusInterface
     -----------------------------------------------------------------------
     '''
-    
+   
     __metaclass__ = CondorSingleton 
     
     def __init__(self, apfqueue, **kw):
-
+        #try:
         threading.Thread.__init__(self) # init the thread
         
-        self.log = logging.getLogger("batchstatusplugin[singleton: %s condor_q_id: %s]" %(apfqueue.apfqname, kw['condor_q_id']))
-        self.log.debug('BatchStatusPlugin: Initializing object...')
+        self.log = logging.getLogger("main.wmsstatusplugin[singleton created by %s with condor_q_id: %s]" %(apfqueue.apfqname, kw['condor_q_id']))
+        self.log.debug('Initializing object...')
         self.stopevent = threading.Event()
 
         # to avoid the thread to be started more than once
         self.__started = False
-
-        self.apfqueue = apfqueue
+        
+        self.apfqueue = apfqueue   
         self.apfqname = apfqueue.apfqname
-        
-        try:
-            self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
-            self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
-            self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
-            self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs') 
+        #self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
+        #self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
+        self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.condor.sleep')
+        self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queryargs')
 
-        except AttributeError:
-            self.condoruser = 'apf'
-            self.facoryid = 'test-local'
-            self.sleeptime = 10
-            self.log.warning("Got AttributeError during init. We should be running stand-alone for testing.")
-       
-        
-
-        self.currentinfo = None              
+        self.currentcloudinfo = None
+        self.currentjobinfo = None
+        self.currentsiteinfo = None
+              
 
         # ================================================================
         #                     M A P P I N G S 
         # ================================================================
         
-
-        self.globusstatus2info = self.apfqueue.factory.mappingscl.section2dict('CONDORBATCHSTATUS-GLOBUSSTATUS2INFO')
-        self.log.info('globusstatus2info mappings are %s' %self.globusstatus2info)
-        self.jobstatus2info = self.apfqueue.factory.mappingscl.section2dict('CONDORBATCHSTATUS-JOBSTATUS2INFO')
+        self.jobstatus2info = self.apfqueue.factory.mappingscl.section2dict('CONDORWMSSTATUS-JOBSTATUS2INFO')
         self.log.info('jobstatus2info mappings are %s' %self.jobstatus2info)
-
-        ###self.globusstatus2info = {'1':   'pending',
-        ###                          '2':   'running',
-        ###                          '4':   'done',
-        ###                          '8':   'done',
-        ###                          '16':  'suspended',
-        ###                          '32':  'pending',
-        ###                          '64':  'pending',
-        ###                          '128': 'running'}
-        ###
-        ###self.jobstatus2info = {'0': 'pending',
-        ###                       '1': 'pending',
+        ###self.jobstatus2info = {'0': 'ready',
+        ###                       '1': 'ready',
         ###                       '2': 'running',
         ###                       '3': 'done',
         ###                       '4': 'done',
-        ###                       '5': 'suspended',
+        ###                       '5': 'failed',
         ###                       '6': 'running'}
-
 
         # variable to record when was last time info was updated
         # the info is recorded as seconds since epoch
         self.lasttime = 0
         checkCondor()
-        self.log.info('BatchStatusPlugin: Object initialized.')
-
-
+        self.log.info('WMSStatusPlugin: Object initialized.')
 
 
     def getInfo(self, queue=None, maxtime=0):
         '''
-        Returns a  object populated by the analysis 
+        Returns a BatchStatusInfo object populated by the analysis 
         over the output of a condor_q command
 
         Optionally, a maxtime parameter can be passed.
@@ -119,22 +93,53 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''           
         self.log.debug('Starting with maxtime=%s' % maxtime)
         
-        if self.currentinfo is None:
+        if self.currentjobinfo is None:
             self.log.debug('Not initialized yet. Returning None.')
             return None
-        elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
+        elif maxtime > 0 and (int(time.time()) - self.currentjobinfo.lasttime) > maxtime:
             self.log.debug('Info too old. Leaving and returning None.')
             return None
         else:
             if queue:
-                self.log.debug('Current info is %s' % self.currentinfo)                    
-                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentinfo))
-                return self.currentinfo[queue]
+                return self.currentjobinfo[queue]                    
             else:
-                return self.currentinfo
+                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentjobinfo))
+                return self.currentjobinfo
+
+    def getCloudInfo(self, cloud=None, maxtime=0):
+        self.log.debug('Starting with maxtime=%s' % maxtime)
+        
+        if self.currentcloudinfo is None:
+            self.log.debug('Not initialized yet. Returning None.')
+            return None
+        elif maxtime > 0 and (int(time.time()) - self.currentcloudinfo.lasttime) > maxtime:
+            self.log.debug('Info too old. Leaving and returning None.')
+            return None
+        else:
+            if cloud:
+                return self.currentcloudinfo[queue]                    
+            else:
+                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentcloudinfo))
+                return self.currentcloudinfo
 
 
+    def getSiteInfo(self, site=None, maxtime=0):
+        self.log.debug('Starting with maxtime=%s' % maxtime)
+        
+        if self.currentsiteinfo is None:
+            self.log.debug('Not initialized yet. Returning None.')
+            return None
+        elif maxtime > 0 and (int(time.time()) - self.currentsiteinfo.lasttime) > maxtime:
+            self.log.debug('Info too old. Leaving and returning None.')
+            return None
+        else:
+            if site:
+                return self.currentsiteinfo[queue]                    
+            else:
+                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentsiteinfo))
+                return self.currentsiteinfo
 
+  
     def start(self):
         '''
         We override method start() to prevent the thread
@@ -165,22 +170,9 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
             time.sleep(self.sleeptime)
         self.log.debug('Leaving')
 
-    def join(self, timeout=None):
-        ''' 
-        Stop the thread. Overriding this method required to handle Ctrl-C from console.
-        ''' 
-
-        self.log.debug('Starting with input %s' %timeout)
-        self.stopevent.set()
-        self.log.debug('Stopping thread....')
-        threading.Thread.join(self, timeout)
-        self.log.debug('Leaving')
-
-
-
     def _update(self):
         '''        
-        Query Condor for job status, validate ?, and populate  object.
+        Query Condor for job status, validate ?, and populate BatchStatusInfo object.
         Condor-G query template example:
         
         condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
@@ -222,26 +214,26 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
         '''
 
         self.log.debug('Starting.')
-       
-        if not utils.checkDaemon('condor'):
-            self.log.error('condor daemon is not running. Doing nothing')
-        else:
-            try:
-                strout = querycondor(self.queryargs)
-                if not strout:
-                    self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
-                else:
-                    outlist = parseoutput(strout)
-                    aggdict = aggregateinfo(outlist)
-                    newinfo = self._map2info(aggdict)
-                    self.log.info("Replacing old info with newly generated info.")
-                    self.currentinfo = newinfo
-            except Exception, e:
-                self.log.error("Exception: %s" % str(e))
-                self.log.debug("Exception: %s" % traceback.format_exc())            
+        
+        # These are not meaningful for Local Condor as WMS
+        self.currentcloudinfo = None
+        self.currentsiteinfo = None
 
-        self.log.debug('Leaving.')
+        try:
+            strout = querycondor(self.queryargs)
+            if not strout:
+                self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
+            else:
+                outlist = parseoutput(strout)
+                aggdict = aggregateinfo(outlist)
+                newjobinfo = self._map2info(aggdict)
+                self.log.info("Replacing old info with newly generated info.")
+                self.currentjobinfo = newjobinfo
+        except Exception, e:
+            self.log.error("Exception: %s" % str(e))
+            self.log.debug("Exception: %s" % traceback.format_exc())            
 
+        self.log.debug('_ Leaving.')
 
 
     def _map2info(self, input):
@@ -307,51 +299,58 @@ class CondorBatchStatusPlugin(threading.Thread, BatchStatusInterface):
                       }
            }          
         Output:
-            A  object which maps attribute counts to generic APF
+            A BatchStatusInfo object which maps attribute counts to generic APF
             queue attribute counts. 
         '''
-
-
         self.log.debug('Starting.')
-        batchstatusinfo = BatchStatusInfo()
+        wmsstatusinfo = WMSStatusInfo()
         for site in input.keys():
-            qi = QueueInfo()
-            batchstatusinfo[site] = qi
-            attrdict = input[site]
-            
-            # use finer-grained globus statuses in preference to local summaries, if they exist. 
-            if 'globusstatus' in attrdict.keys():
-                valdict = attrdict['globusstatus']
-                qi.fill(valdict, mappings=self.globusstatus2info)
-            # must be a local-only job or other. 
-            else:
+                qi = WMSQueueInfo()
+                wmsstatusinfo[site] = qi
+                attrdict = input[site]
                 valdict = attrdict['jobstatus']
                 qi.fill(valdict, mappings=self.jobstatus2info)
-                    
-        batchstatusinfo.lasttime = int(time.time())
-        self.log.debug('Returning : %s' % batchstatusinfo )
-        for site in batchstatusinfo.keys():
-            self.log.debug('Queue %s = %s' % (site, batchstatusinfo[site]))           
-        return batchstatusinfo 
+                        
+        wmsstatusinfo.lasttime = int(time.time())
+        self.log.debug('Returning WMSStatusInfo: %s' % wmsstatusinfo)
+        for site in wmsstatusinfo.keys():
+            self.log.debug('Queue %s = %s' % (site, wmsstatusinfo[site]))           
+        return wmsstatusinfo
 
-def test1():
-    from autopyfactory.test import MockAPFQueue
+
+    def join(self, timeout=None):
+        ''' 
+        Stop the thread. Overriding this method required to handle Ctrl-C from console.
+        ''' 
+
+        self.log.debug('Starting with input %s' %timeout)
+        self.stopevent.set()
+        self.log.debug('Stopping thread....')
+        threading.Thread.join(self, timeout)
+        self.log.debug('Leaving')
+
+
+def test():
+    list =  [ { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
+                'jobStatus' : '2' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
+                'jobStatus' : '1' },
+                           { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
+                'jobStatus' : '1' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
+                'jobStatus' : '1' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
+                'jobStatus' : '2' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
+                'jobStatus' : '3' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
+                'jobStatus' : '3' },
+              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
+                'jobStatus' : '3' }
+            ] 
     
-    a = MockAPFQueue('BNL_CLOUD-ec2-spot')
-    bsp = CondorBatchStatusPlugin(a, condor_q_id='local')
-    bsp.start()
-    while True:
-        try:
-            time.sleep(15)
-        except KeyboardInterrupt:
-            bsp.stopevent.set()
-            sys.exit(0)    
+if __name__=='__main__':
+    pass
 
-
-
-
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
-    test1()
 
 

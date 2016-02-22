@@ -36,7 +36,7 @@ import autopyfactory.utils as utils
 import autopyfactory.external.panda.Client as Client
 
 
-class PandaWMSStatusPlugin(threading.Thread, WMSStatusInterface):
+class Panda(threading.Thread, WMSStatusInterface):
     '''
     -----------------------------------------------------------------------
     PanDA-flavored version of WMSStatus class.
