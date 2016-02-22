@@ -1,6 +1,7 @@
 2.4.8
 
 * simplified the name of plugins modules and classes, and pluginsmanagement code accordingly
+* added a new layer to the plugins directory structure
 
 2.4.7 
 
