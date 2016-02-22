@@ -69,7 +69,7 @@ class QueuePluginDispatcher(object):
 
     def getschedplugins(self):
 
-        scheduler_plugin_handlers = self._getplugin('sched')  # list of PluginHandler objects
+        scheduler_plugin_handlers = self._getplugin('queue', 'sched')  # list of PluginHandler objects
                                                       # Note that for the Sched category,
                                                       # we allow more than one plugin 
                                                       # (split by comma in the config file)
@@ -87,7 +87,7 @@ class QueuePluginDispatcher(object):
             queryargs = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs')
             if queryargs:
                     condor_q_id = self.__queryargs2condorqid(queryargs)    
-        batchstatus_plugin_handler = self._getplugin('batchstatus')[0]
+        batchstatus_plugin_handler = self._getplugin('queue', 'batchstatus')[0]
         batchstatus_cls = batchstatus_plugin_handler.plugin_class
 
         # calls __init__() to instantiate the class
@@ -127,7 +127,7 @@ class QueuePluginDispatcher(object):
             if queryargs:
                     condor_q_id = self.__queryargs2condorqid(queryargs)
 
-        wmsstatus_plugin_handler = self._getplugin('wmsstatus')[0]
+        wmsstatus_plugin_handler = self._getplugin('queue', 'wmsstatus')[0]
         wmsstatus_cls = wmsstatus_plugin_handler.plugin_class
 
         # calls __init__() to instantiate the class
@@ -152,7 +152,7 @@ class QueuePluginDispatcher(object):
 
     def getsubmitplugin(self):
     
-        batchsubmit_plugin_handler = self._getplugin('batchsubmit')[0]
+        batchsubmit_plugin_handler = self._getplugin('queue', 'batchsubmit')[0]
         batchsubmit_cls = batchsubmit_plugin_handler.plugin_class
     
         # calls __init__() to instantiate the class
@@ -162,7 +162,7 @@ class QueuePluginDispatcher(object):
 
 
     def getmonitorplugins(self):
-        monitor_plugin_handlers = self._getplugin('monitor', self.mcl)  # list of classes 
+        monitor_plugin_handlers = self._getplugin('queue', 'monitor', self.mcl)  # list of classes 
         self.log.debug("monitor_plugin_handlers =   %s" % monitor_plugin_handlers)
         monitor_plugins = []
         for monitor_ph in monitor_plugin_handlers:
@@ -202,7 +202,7 @@ class QueuePluginDispatcher(object):
             return '%s:%s' %(name, pool)
 
 
-    def _getplugin(self, action, config=None):
+    def _getplugin(self, level, action, config=None):
         '''
         Generic private method to find out the specific plugin
         to be used for this queue, depending on the action.
@@ -297,7 +297,7 @@ class QueuePluginDispatcher(object):
 
             plugin_module_name = name
 
-            plugin_path = "autopyfactory.plugins.%s.%s" % ( plugin_action, plugin_module_name)
+            plugin_path = "autopyfactory.plugins.%s.%s.%s" % ( level, plugin_action, plugin_module_name)
             self.log.debug("Attempting to import derived classnames: %s"
                 % plugin_path)
 
@@ -354,7 +354,7 @@ class FactoryPluginDispatcher(object):
         Typically from queues.conf or from an URL
         """
 
-        config_plugin_handlers = self._getplugin('config', default_plugins='File') # list of PluginHander objects, 
+        config_plugin_handlers = self._getplugin('factory', 'config', default_plugins='File') # list of PluginHander objects, 
                                                            # as we allow more than one config plugin
         config_plugins = []
         for config_ph in config_plugin_handlers:
@@ -366,7 +366,7 @@ class FactoryPluginDispatcher(object):
 
 
 
-    def _getplugin(self, action, config=None, default_plugins=None):
+    def _getplugin(self, level, action, config=None, default_plugins=None):
         '''
         '''
 
@@ -435,7 +435,7 @@ class FactoryPluginDispatcher(object):
 
             plugin_module_name = name
 
-            plugin_path = "autopyfactory.plugins.%s.%s" % ( plugin_action, plugin_module_name)
+            plugin_path = "autopyfactory.plugins.%s.%s.%s" % ( level, plugin_action, plugin_module_name)
             self.log.debug("Attempting to import derived classnames: %s"
                 % plugin_path)
 
