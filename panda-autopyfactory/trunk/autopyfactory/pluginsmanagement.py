@@ -205,7 +205,10 @@ class QueuePluginDispatcher(object):
     def _getplugin(self, level, action, config=None):
         '''
         Generic private method to find out the specific plugin
-        to be used for this queue, depending on the action.
+        to be used depending on the level and action.
+        Level can be:
+                - queue
+                - factory
         Action can be:
                 - sched
                 - batchstatus
