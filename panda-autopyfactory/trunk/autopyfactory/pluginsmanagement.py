@@ -249,16 +249,8 @@ class QueuePluginDispatcher(object):
 
         self.log.debug("Starting for action %s" %action)
 
-        plugin_prefixes = {
-                'sched' : 'Sched',
-                'wmsstatus': 'WMSStatus',
-                'batchstatus': 'BatchStatus',
-                'batchsubmit': 'BatchSubmit',
-                'monitor' : 'Monitor',
-        }
 
         plugin_config_item = '%splugin' %action # i.e. schedplugin
-        plugin_prefix = plugin_prefixes[action] 
         plugin_action = action
         
         # list of objects PluginHandler
@@ -303,8 +295,7 @@ class QueuePluginDispatcher(object):
 
             name = ph.plugin_name 
 
-            plugin_module_name = '%s%sPlugin' %(name, plugin_prefix)
-            # Example of plugin_module_name is CondorGT2 + BatchSubmit + Plugin => CondorGT2BatchSubmitPlugin
+            plugin_module_name = name
 
             plugin_path = "autopyfactory.plugins.%s.%s" % ( plugin_action, plugin_module_name)
             self.log.debug("Attempting to import derived classnames: %s"
@@ -381,17 +372,7 @@ class FactoryPluginDispatcher(object):
 
         self.log.debug("Starting for action %s" %action)
 
-        plugin_prefixes = {
-                'sched' : 'Sched',
-                'wmsstatus': 'WMSStatus',
-                'batchstatus': 'BatchStatus',
-                'batchsubmit': 'BatchSubmit',
-                'monitor' : 'Monitor',
-                'config' : 'Config',
-        }
-
         plugin_config_item = '%splugin' %action # i.e. schedplugin
-        plugin_prefix = plugin_prefixes[action] 
         plugin_action = action
         
         # list of objects PluginHandler
@@ -452,8 +433,7 @@ class FactoryPluginDispatcher(object):
 
             name = ph.plugin_name 
 
-            plugin_module_name = '%s%sPlugin' %(name, plugin_prefix)
-            # Example of plugin_module_name is CondorGT2 + BatchSubmit + Plugin => CondorGT2BatchSubmitPlugin
+            plugin_module_name = name
 
             plugin_path = "autopyfactory.plugins.%s.%s" % ( plugin_action, plugin_module_name)
             self.log.debug("Attempting to import derived classnames: %s"
