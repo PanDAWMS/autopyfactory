@@ -112,7 +112,12 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
             return None
         else:
             if queue:
-                return self.currentinfo[queue]
+                try:
+                    cq = self.currentinfo[queue]
+                except:
+                    self.log.warn('Problem getting info for queue: %s from valid currentinfo.' % queue)
+                self.log.debug('Returning valid batchinfo for queue: %s' % queue)
+                return cq
             else:                    
                 self.log.debug('Leaving and returning info of %d entries.' % len(self.currentinfo))
                 return self.currentinfo
@@ -171,6 +176,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
         while not self.stopevent.isSet():
             try:
                 self._update()
+                self.log.info('Updated batch status info.')
             except Exception, e:
                 self.log.error("Main loop caught exception: %s " % str(e))
             self.log.debug("Sleeping for %d seconds..." % self.sleeptime)
@@ -271,7 +277,9 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                                
                 # Update current info references
                 # curr
+                self.log.info('Updating currentjobs with joblist containing %d queues' % len(joblist))
                 self.currentjobs = joblist
+                self.log.info('Updating currentinfo with newinfo containing %d queues' % len(newinfo))
                 self.currentinfo = newinfo
             
             except Exception, e:
