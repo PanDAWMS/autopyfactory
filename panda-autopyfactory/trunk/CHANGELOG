@@ -2,6 +2,8 @@
 
 * simplified the name of plugins modules and classes, and pluginsmanagement code accordingly
 * added a new layer to the plugins directory structure
+* distinguish between self.keep_running is None than when is 0
+* MaxToRun returns 0 when there is no BatchInfo
 
 2.4.7 
 
