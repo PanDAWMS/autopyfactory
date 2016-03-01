@@ -75,12 +75,12 @@ class KeepNRunning(SchedInterface):
         # 
         # Output is simply keep_running, minus potentially or currently running, while ignoring retiring jobs
         #
-        if self.keep_running:
+        if self.keep_running is None:
+            self.log.debug("keep_running is not set, use input.")
+            out = input - ( running_pilots + pending_pilots )
+        else:
             self.log.debug("keep_running is set %d, use it." % self.keep_running) 
             out = self.keep_running - ( running_pilots  + pending_pilots)
-        else:
-            self.log.debug("keep_running is set not set, use input.")
-            out = input - ( running_pilots + pending_pilots )
 
         self.log.info('input=%s; keep_running=%s; pending=%s; running=%s; retiring=%s; Return=%s' %(input,
                                                                                          self.keep_running, 
