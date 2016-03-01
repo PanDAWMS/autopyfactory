@@ -27,7 +27,7 @@ class MaxToRunSchedPlugin(SchedInterface):
 
         batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue=self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
         if batchinfo is None:
-            out = n
+            out = 0
             msg = "MaxToRun:No batchinfo."
             self.log.warning("self.batchinfo is None!")
         else:
