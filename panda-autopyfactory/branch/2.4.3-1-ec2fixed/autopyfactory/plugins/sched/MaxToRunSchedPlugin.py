@@ -41,8 +41,9 @@ class MaxToRunSchedPlugin(SchedInterface):
                                                             pending_pilots, 
                                                             running_pilots, 
                                                             out)
-            self.log.info('(input=%s; pending=%s; running=%s): Return=%s' %(n, 
-                                                                                           pending_pilots, 
-                                                                                           running_pilots, 
-                                                                                           out))
+            self.log.info('(input=%s; max=%s, pending=%s; running=%s): Return=%s' %(n,
+                                                                                    self.max_to_run, 
+                                                                                    pending_pilots, 
+                                                                                    running_pilots, 
+                                                                                    out))
         return (out, msg) 
