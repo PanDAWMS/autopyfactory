@@ -1,7 +1,7 @@
 %define name autopyfactory
 %define version 2.4.6
 %define unmangled_version 2.4.6
-%define release 3
+%define release 5
 
 Summary: autopyfactory package
 Name: %{name}
@@ -134,26 +134,6 @@ mkdir -pm0755 $RPM_BUILD_ROOT%{_var}/log/autopyfactory
 rm -rf $RPM_BUILD_ROOT
 
 ##############################################
-#   SCRIPTS
-##############################################
-
-%pre
-if id autopyfactory > /dev/null 2>&1; then
-    : # do nothing
-else
-    /usr/sbin/useradd --comment "AutoPyFactory service account" --shell /bin/bash autopyfactory
-fi 
-
-%post
-/sbin/chkconfig --add autopyfactory
-
-%preun
-#if [ -x /etc/init.d/autopyfactory ] ; then
-#  /etc/init.d/autopyfactory stop > /dev/null 2>&1
-#fi
-
-
-##############################################
 #   SUB PACKAGE AUTOPYFACTORY-COMMON
 ##############################################
 
@@ -166,6 +146,36 @@ Requires: python-simplejson
 Requires: python-pycurl
 %description -n autopyfactory-common
 This package contains autopyfactory common
+
+#---------------------------------------------
+#   INSTALL AND ERASE-TIME SCRIPTS
+#
+# NOTE:
+#   we place here the scripts because
+#   at the top level they are never been
+#   executed, since package "autopyfactory"
+#   is not being created
+#   package "autopyfactory-common" is
+#   created, and always a dependency to all
+#   meta-RPMs, so placing the scripts here
+#   they always get executed
+#---------------------------------------------
+%pre -n autopyfactory-common
+if id autopyfactory > /dev/null 2>&1; then
+    : # do nothing
+else
+    /usr/sbin/useradd --comment "AutoPyFactory service account" --shell /bin/bash autopyfactory
+fi 
+
+%post -n autopyfactory-common
+/sbin/chkconfig --add autopyfactory
+
+%preun -n autopyfactory-common
+#if [ -x /etc/init.d/autopyfactory ] ; then
+#  /etc/init.d/autopyfactory stop > /dev/null 2>&1
+#fi
+
+#---------------------------------------------
 
 %files -n autopyfactory-common -f COMMON_FILES
 %defattr(-,root,root)
@@ -320,5 +330,22 @@ Requires: autopyfactory-proxymanager
 %description -n autopyfactory-cloud
 meta rpm autopyfactory-cloud
 %files -n autopyfactory-cloud
+
+
+%package -n autopyfactory-atlas
+Summary: META RPM for autopyfactory-atlas
+Group: Development/Libraries
+Requires: autopyfactory-common
+Requires: autopyfactory-proxymanager
+Requires: autopyfactory-plugins-scheds
+Requires: autopyfactory-plugins-monitors
+Requires: autopyfactory-plugins-panda
+Requires: autopyfactory-plugins-local
+Requires: autopyfactory-plugins-remote
+Requires: autopyfactory-plugins-cloud
+%description -n autopyfactory-atlas
+meta rpm autopyfactory-atlas
+%files -n autopyfactory-atlas
+
 
 ##############################################
