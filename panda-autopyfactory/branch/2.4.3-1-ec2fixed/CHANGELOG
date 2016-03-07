@@ -2,6 +2,7 @@
 
 * distinguish between self.keep_running is None than when is 0
 * MaxToRun returns 0 when there is no BatchInfo
+* added function debugrestart to the init script
 
 2.4.3
 
