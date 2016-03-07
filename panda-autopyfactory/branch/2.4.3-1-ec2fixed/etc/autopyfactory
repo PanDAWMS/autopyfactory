@@ -184,16 +184,16 @@ restart() {
 }	
 
 debugrestart() {
-	stop
-	sleep 2
+    stop
+    sleep 2
     # make a copy of the latest log file
     LOG=/var/log/autopyfactory/autopyfactory.log
     # FIXME: variable LOG should be setup in the /etc/sysconfig/autopyfactory file
     mv $LOG $LOG-`date -u +%Y%m%d.%H%M%S`
     # FIXME: most probably the saved file is owned by root instead of "autopyfactory". OK for the time being
-	start
-	RETVAL=$?
-	return $RETVAL
+    start
+    RETVAL=$?
+    return $RETVAL
 }	
 
 case "$1" in
