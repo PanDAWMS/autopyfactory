@@ -4,6 +4,7 @@
 * added a new layer to the plugins directory structure
 * distinguish between self.keep_running is None than when is 0
 * MaxToRun returns 0 when there is no BatchInfo
+* added function debugrestart to init script
 
 2.4.7 
 
