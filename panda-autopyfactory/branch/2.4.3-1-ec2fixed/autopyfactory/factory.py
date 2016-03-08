@@ -369,7 +369,7 @@ Jose Caballero <jcaballero@bnl.gov>
         '''
         runAs_home = pwd.getpwnam(self.options.runAs).pw_dir 
         os.environ['HOME'] = runAs_home
-        self.log.debug('Setting up environment variable HOME to %s' %runAs_home)
+        self.log.trace('Setting up environment variable HOME to %s' %runAs_home)
 
 
     def _changewd(self):
@@ -383,7 +383,7 @@ Jose Caballero <jcaballero@bnl.gov>
         '''
         runAs_home = pwd.getpwnam(self.options.runAs).pw_dir
         os.chdir(runAs_home)
-        self.log.debug('Switching working directory to %s' %runAs_home)
+        self.log.trace('Switching working directory to %s' %runAs_home)
 
 
     def __createconfig(self):
@@ -483,7 +483,7 @@ class Factory(object):
         if not qcf:
             try:
                 qcd = fcl.get('Factory', 'queueDirConf') # the configuration files for queues are in a directory
-                self.log.debug("queues.conf directory = %s" % qcd)
+                self.log.trace("queues.conf directory = %s" % qcd)
             except:
                 pass
 
@@ -511,14 +511,14 @@ class Factory(object):
                 got_config = pcl.read(pcf)
             except Exception, e:
                 self.log.error('Failed to create ProxyConfigLoader')
-                self.log.debug("Exception: %s" % traceback.format_exc())
+                self.log.error("Exception: %s" % traceback.format_exc())
                 sys.exit(0)
 
-            self.log.debug("Read config file %s, return value: %s" % (pcf, got_config)) 
+            self.log.trace("Read config file %s, return value: %s" % (pcf, got_config)) 
             self.proxymanager = ProxyManager(pcl, self)
             self.log.info('ProxyManager initialized. Starting...')
             self.proxymanager.start()
-            self.log.debug('ProxyManager thread started.')
+            self.log.trace('ProxyManager thread started.')
         else:
             self.log.info("ProxyManager disabled.")
        
@@ -533,7 +533,7 @@ class Factory(object):
             self.log.error('Failed to create MonitorConfigLoader')
             sys.exit(0)
 
-        self.log.debug("mcl is %s" % self.mcl)
+        self.log.trace("mcl is %s" % self.mcl)
 
         # Handle mappings configuration
         self.mappingscl = None      # mappings config loader object
@@ -546,7 +546,7 @@ class Factory(object):
             self.log.error('Failed to create ConfigLoader object for mappings')
             sys.exit(0)
         
-        self.log.debug("mappingscl is %s" % self.mappingscl)
+        self.log.trace("mappingscl is %s" % self.mappingscl)
 
 
         # Handle Log Serving
@@ -574,12 +574,12 @@ class Factory(object):
         self.username = pwd.getpwuid(os.getuid()).pw_name   
         
         # Log some info...
-        self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )     
-        self.log.info("Factory: Object initialized.")
+        self.log.trace('Factory shell PATH: %s' % os.getenv('PATH') )     
+        self.log.trace("Factory: Object initialized.")
 
     def _initLogserver(self):
         # Set up LogServer
-        self.log.debug("Handling LogServer...")
+        self.log.trace("Handling LogServer...")
         ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean')
         if ls:
             self.log.info("LogServer enabled. Initializing...")
@@ -600,11 +600,11 @@ class Factory(object):
                     f.close()
                 except IOError:
                     self.log.warn("Unable to create robots.txt file...")
-            self.log.debug("Creating LogServer object...")
+            self.log.trace("Creating LogServer object...")
             self.logserver = LogServer(port=logport, docroot=logpath, index=lsidx)
             self.log.info('LogServer initialized. Starting...')
             self.logserver.start()
-            self.log.debug('LogServer thread started.')
+            self.log.trace('LogServer thread started.')
         else:
             self.log.info('LogServer disabled. Not running.')
 
@@ -640,7 +640,7 @@ class Factory(object):
                    stops all queues when that happens.
         '''
 
-        self.log.debug("Starting.")
+        self.log.trace("Starting.")
         self.log.info("Starting all Queue threads...")
 
         self.update()
@@ -650,14 +650,14 @@ class Factory(object):
             while True:
                 mainsleep = int(self.fcl.get('Factory', 'factory.sleep'))
                 time.sleep(mainsleep)
-                self.log.debug('Checking for interrupt.')
+                self.log.trace('Checking for interrupt.')
                         
         except (KeyboardInterrupt): 
             logging.info("Shutdown via Ctrl-C or -INT signal.")
             self.shutdown()
             raise
             
-        self.log.debug("Leaving.")
+        self.log.trace("Leaving.")
 
     def update(self):
         '''
@@ -670,22 +670,22 @@ class Factory(object):
         main loop code or from any method capturing specific signals.
         '''
 
-        self.log.debug("Starting")
+        self.log.trace("Starting")
 
         newqueues = self.qcl.sections()
         self.apfqueuesmanager.update(newqueues) 
 
-        self.log.debug("Leaving")
+        self.log.trace("Leaving")
 
     def __cleanlogs(self):
         '''
         starts the thread that will clean the condor logs files
         '''
 
-        self.log.debug('Starting')
+        self.log.trace('Starting')
         self.clean = CleanLogs(self)
         self.clean.start()
-        self.log.debug('Leaving')
+        self.log.trace('Leaving')
 
     def shutdown(self):
         '''
@@ -744,7 +744,7 @@ class APFQueuesManager(object):
         self.log = logging.getLogger('main.apfqueuesmanager')
         self.queues = {}
         self.factory = factory
-        self.log.debug('APFQueuesManager: Object initialized.')
+        self.log.trace('APFQueuesManager: Object initialized.')
 
 # ----------------------------------------------------------------------
 #            Public Interface
@@ -772,7 +772,7 @@ class APFQueuesManager(object):
         for q in self.queues.values():
             q.join()
             count += 1
-        self.log.debug('%d queues joined' %count)
+        self.log.trace('%d queues joined' %count)
 
     
     # ----------------------------------------------------------------------
@@ -805,9 +805,9 @@ class APFQueuesManager(object):
                 self.log.info('Queue %s enabled.' %apfqname)
             except Exception, ex:
                 self.log.error('Exception captured when initializing [%s]. Queue omitted. ' %apfqname)
-                self.log.debug("Exception: %s" % traceback.format_exc())
+                self.log.error("Exception: %s" % traceback.format_exc())
         else:
-            self.log.debug('Queue %s not enabled.' %apfqname)
+            self.log.trace('Queue %s not enabled.' %apfqname)
             
     def _delqueues(self, apfqnames):
         '''
@@ -820,7 +820,7 @@ class APFQueuesManager(object):
             q.join()
             self.queues.pop(apfqname)
             count += 1
-        self.log.debug('%d queues joined and removed' %count)
+        self.log.trace('%d queues joined and removed' %count)
 
 
     def _del(self, apfqname):
@@ -840,7 +840,7 @@ class APFQueuesManager(object):
         for q in self.queues.values():
             q.refresh()
             count += 1
-        self.log.debug('%d queues refreshed' %count)
+        self.log.trace('%d queues refreshed' %count)
 
 
 
@@ -904,7 +904,7 @@ class APFQueue(threading.Thread):
             self.wmsstatusmaxtime = self.fcl.generic_get('Factory', 'wmsstatus.maxtime', default_value=0)
         except Exception, ex:
             self.log.error('APFQueue: exception captured while reading configuration variables to create the object.')
-            self.log.debug("Exception: %s" % traceback.format_exc())
+            self.log.error("Exception: %s" % traceback.format_exc())
             raise ex
 
         try:
@@ -916,10 +916,10 @@ class APFQueue(threading.Thread):
         
         except Exception, ex:
             self.log.error('APFQueue: Exception getting plugins: %s' % str(ex))
-            self.log.debug("Exception: %s" % traceback.format_exc())
+            self.log.error("Exception: %s" % traceback.format_exc())
             raise ex
         
-        self.log.debug('APFQueue: Object initialized.')
+        self.log.trace('APFQueue: Object initialized.')
 
     def _plugins(self):
         '''
@@ -949,7 +949,7 @@ class APFQueue(threading.Thread):
             try:
                 nsub = 0
                 fullmsg = ""
-                self.log.debug("APFQueue [%s] run(): Calling sched plugins..." % self.apfqname)
+                self.log.trace("APFQueue [%s] run(): Calling sched plugins..." % self.apfqname)
                 for sched_plugin in self.scheduler_plugins:
                     (nsub, msg) = sched_plugin.calcSubmitNum(nsub)
                     if msg:
@@ -962,7 +962,7 @@ class APFQueue(threading.Thread):
                 jobinfolist = self._submitpilots(nsub)
                 self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
                 for m in self.monitor_plugins:
-                    self.log.debug('APFQueue[%s] run(): calling registerJobs for monitor plugin %s' % (self.apfqname, m))
+                    self.log.trace('APFQueue[%s] run(): calling registerJobs for monitor plugin %s' % (self.apfqname, m))
                     m.registerJobs(self, jobinfolist)
                     if fullmsg:
                         self.log.debug('APFQueue[%s] run(): calling updateLabel for monitor plugin %s' % (self.apfqname, m))
@@ -973,7 +973,7 @@ class APFQueue(threading.Thread):
             except Exception, e:
                 ms = str(e)
                 self.log.error("APFQueue[%s] run(): Caught exception: %s " % (self.apfqname, ms))
-                self.log.debug("APFQueue[%s] run(): Exception: %s" % (self.apfqname, traceback.format_exc()))
+                self.log.error("APFQueue[%s] run(): Exception: %s" % (self.apfqname, traceback.format_exc()))
             time.sleep(self.sleep)
 
     def _submitpilots(self, nsub):
@@ -981,10 +981,10 @@ class APFQueue(threading.Thread):
         submit using this number
         call for cleanup
         '''
-        self.log.debug("Starting")
+        self.log.trace("Starting")
         msg = 'Attempt to submit %s pilots for queue %s' %(nsub, self.apfqname)
         jobinfolist = self.batchsubmit_plugin.submit(nsub)
-        self.log.debug("Attempted submission of %d pilots and got jobinfolist %s" % (nsub, jobinfolist))
+        self.log.trace("Attempted submission of %d pilots and got jobinfolist %s" % (nsub, jobinfolist))
         self.batchsubmit_plugin.cleanup()
         self.cyclesrun += 1
         return jobinfolist
@@ -994,18 +994,18 @@ class APFQueue(threading.Thread):
         '''
         Exit loop if desired number of cycles is reached...  
         '''
-        self.log.debug("__exitloop. Checking to see how many cycles to run.")
+        self.log.trace("__exitloop. Checking to see how many cycles to run.")
         if self.cycles and self.cyclesrun >= self.cycles:
-                self.log.debug('_ stopping the thread because high cyclesrun')
+                self.log.trace('_ stopping the thread because high cyclesrun')
                 self.stopevent.set()                        
-        self.log.debug("__exitloop. Incrementing cycles...")
+        self.log.trace("__exitloop. Incrementing cycles...")
 
     def _logtime(self):
         '''
         report the time passed since the object was created
         '''
 
-        self.log.debug("__reporttime: Starting")
+        self.log.trace("__reporttime: Starting")
 
         now = datetime.datetime.now()
         delta = now - self.inittime
@@ -1016,9 +1016,9 @@ class APFQueue(threading.Thread):
         total_seconds = days*86400 + seconds
         average = total_seconds/self.cyclesrun
 
-        self.log.debug('__reporttime: up %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
+        self.log.trace('__reporttime: up %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
         self.log.info('Up %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
-        self.log.debug("__reporttime: Leaving")
+        self.log.trace("__reporttime: Leaving")
 
     # End of run-related methods
 
@@ -1034,7 +1034,7 @@ class APFQueue(threading.Thread):
         Stop the thread. Overriding this method required to handle Ctrl-C from console.
         '''
         self.stopevent.set()
-        self.log.debug('Stopping thread...')
+        self.log.trace('Stopping thread...')
         threading.Thread.join(self, timeout)
 
                  

@@ -99,7 +99,7 @@ class APFMonitorPlugin(MonitorInterface):
         Also sends initial ping to monitor server. 
         '''
 
-        self.log = logging.getLogger('main.monitor [singleton created by %s with id %s]' %(apfqueue.apfqname, monitor_id))
+        self.log = logging.getLogger('main.monitor')
         mainlevel = logging.getLogger('main').getEffectiveLevel()
         self.log.setLevel(mainlevel)
         self.log.trace("Start...")
@@ -118,7 +118,7 @@ class APFMonitorPlugin(MonitorInterface):
         self.log.trace('Instantiated monitor')
         self.registerFactory()     
         self.registeredlabels = self._getLabels() # list of labels registered
-        self.log.debug('Monitor plugin initialized.')
+        self.log.trace('Monitor plugin initialized.')
 
 
     def registerFactory(self):
@@ -130,7 +130,7 @@ class APFMonitorPlugin(MonitorInterface):
         self.log.trace('Starting')
 
         #if self._isFactoryRegistered():
-        #    self.log.debug('factory is already registered')
+        #    self.log.trace('factory is already registered')
         #    out = None
         #else:
         #    self.log.info('factory is not registered yet. Registering.')

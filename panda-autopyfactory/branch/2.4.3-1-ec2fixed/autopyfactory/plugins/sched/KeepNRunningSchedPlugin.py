@@ -47,7 +47,7 @@ class KeepNRunningSchedPlugin(SchedInterface):
             msg = "Invalid queueinfo"
         else:
             (out, msg) = self._calc(nsub)
-            self.log.debug("Returning %d" % out)
+            self.log.trace("Returning %d" % out)
         return (out, msg)
 
     def _calc(self, input):
@@ -76,10 +76,10 @@ class KeepNRunningSchedPlugin(SchedInterface):
         # Output is simply keep_running, minus potentially or currently running, while ignoring retiring jobs
         #
         if self.keep_running is None:
-            self.log.debug("keep_running is not set, use input.")
+            self.log.trace("keep_running is not set, use input.")
             out = input - ( running_pilots + pending_pilots )
         else:
-            self.log.debug("keep_running is set %d, use it." % self.keep_running) 
+            self.log.trace("keep_running is set %d, use it." % self.keep_running) 
             out = self.keep_running - ( running_pilots  + pending_pilots)
 
         msg = "KeepNRunning:in=%s,keep=%s,run=%s,pend=%s,retiring=%s,out=%s" % (str(input), 
