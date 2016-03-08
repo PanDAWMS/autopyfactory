@@ -42,7 +42,7 @@ class StatusTestSchedPlugin(SchedInterface):
                 msg='StatusTest:(test)in=%d,out=%d' % ( n,
                                                         self.pilots_in_test_mode )
             else:
-                self.log.info('StatusTest:(not test),in=%d,out=%d' %(n, out))
+                msg='StatusTest:(not test),in=%d,out=%d' %(n, out)
         self.log.info(msg)
         return (out, msg)
 
