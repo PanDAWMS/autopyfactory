@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 __author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
-__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2014 John Hover; 2010-2014 Jose Caballero"
+__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2016 John Hover; 2010-2016 Jose Caballero"
 __credits__ = []
 __license__ = "GPL"
 __version__ = "2.4.3-ec2fixed"
@@ -213,11 +213,15 @@ Jose Caballero <jcaballero@bnl.gov>
         -- Logging syntax and semantics should be uniform throughout the program,  
            based on whatever organization scheme is appropriate.  
         
-        -- Have at least a single log message at DEBUG at beginning and end of each function call.  
+        -- Have at least a single log message at TRACE at beginning and end of each function call.  
            The entry message should mention input parameters,  
-           and the exit message should not any important result.  
-           DEBUG output should be detailed enough that almost any logic error should become apparent.  
-           It is OK if DEBUG messages are produced too fast to read interactively. 
+           and the exit message should note any important results.  
+           TRACE output should be detailed enough that almost any logic error should become apparent.  
+           It is OK if TRACE messages are produced too fast to read interactively.
+           Only TRACE messages should span more than one line.  
+        
+        -- Have sufficient DEBUG messages to show domain problem calculations input and output.
+           DEBUG messages should never span more than one line.  
         
         -- A moderate number of INFO messages should be logged to mark major  
            functional steps in the operation of the program,  
@@ -240,13 +244,18 @@ Jose Caballero <jcaballero@bnl.gov>
         -- We keep the original python levels meaning,  
            including WARNING as being the default level.  
         
-                DEBUG      Detailed information, typically of interest only when diagnosing problems. 
-                INFO       Confirmation that things are working as expected. 
+                TRACE      Detailed code execution information related to housekeeping, 
+                           parsing, objects, threads.
+                DEBUG      Detailed domain problem information related to scheduling, calculations,
+                           program state.  
+                INFO       High level confirmation that things are working as expected. 
                 WARNING    An indication that something unexpected happened,  
                            or indicative of some problem in the near future (e.g. 'disk space low').  
                            The software is still working as expected. 
-                ERROR      Due to a more serious problem, the software has not been able to perform some function. 
-                CRITICAL   A serious error, indicating that the program itself may be unable to continue running. 
+                ERROR      Due to a more serious problem, the software has not been able to perform 
+                           some function. 
+                CRITICAL   A serious error, indicating that the program itself may be unable to 
+                           continue running. 
         
         -- We add a new custom level -TRACE- to be more verbose than DEBUG.
 
@@ -296,16 +305,16 @@ Jose Caballero <jcaballero@bnl.gov>
         envmsg = ''        
         for k in sorted(os.environ.keys()):
             envmsg += '\n%s=%s' %(k, os.environ[k])
-        self.log.debug('Environment : %s' %envmsg)
+        self.log.trace('Environment : %s' %envmsg)
 
 
     def __platforminfo(self):
         '''
         display basic info about the platform, for debugging purposes 
         '''
-        self.log.info('platform: uname = %s %s %s %s %s %s' %platform.uname())
-        self.log.info('platform: platform = %s' %platform.platform())
-        self.log.info('platform: python version = %s' %platform.python_version())
+        self.log.debug('platform: uname = %s %s %s %s %s %s' %platform.uname())
+        self.log.debug('platform: platform = %s' %platform.platform())
+        self.log.debug('platform: python version = %s' %platform.python_version())
         self._printenv()
 
     def __checkroot(self): 
@@ -319,7 +328,7 @@ Jose Caballero <jcaballero@bnl.gov>
         hostname = socket.gethostname()
         
         if os.getuid() != 0:
-            self.log.info("Already running as unprivileged user %s at %s" % (starting_uid_name, hostname))
+            self.log.debug("Already running as unprivileged user %s at %s" % (starting_uid_name, hostname))
             
         if os.getuid() == 0:
             try:
@@ -335,7 +344,7 @@ Jose Caballero <jcaballero@bnl.gov>
                 self._changehome()
                 self._changewd()
 
-                self.log.info("Now running as user %d:%d at %s..." % (runuid, rungid, hostname))
+                self.log.debug("Now running as user %d:%d at %s..." % (runuid, rungid, hostname))
                 self._printenv()
 
             
@@ -466,7 +475,7 @@ class Factory(object):
         qcd = None
         try: 
             qcf = fcl.get('Factory', 'queueConf')    # the configuration files for queues are a list of URIs
-            self.log.debug("queues.conf file(s) = %s" % qcf)
+            self.log.info("queues.conf file(s) = %s" % qcf)
             
         except:
             pass
@@ -870,7 +879,7 @@ class APFQueue(threading.Thread):
 
         threading.Thread.__init__(self) # init the thread
         self.log = logging.getLogger('main.apfqueue[%s]' %apfqname)
-        self.log.debug('APFQueue: Initializing object...')
+        self.log.trace('APFQueue: Initializing object...')
 
         self.stopevent = threading.Event()
 
@@ -881,7 +890,7 @@ class APFQueue(threading.Thread):
         self.qcl = self.factory.qcl 
         self.mcl = self.factory.mcl
 
-        self.log.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(apfqname).getContent())
+        self.log.trace('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(apfqname).getContent())
    
         try: 
             self.wmsqueue = self.qcl.generic_get(apfqname, 'wmsqueue')
@@ -1071,20 +1080,20 @@ class PluginDispatcher(object):
         
         self.apfqname = apfqueue.apfqname
 
-        self.log.debug("Getting sched plugins")
+        self.log.trace("Getting sched plugins")
         self.schedplugins = self.getschedplugins()
-        self.log.debug("Got %d sched plugins" % len(self.schedplugins))
-        self.log.debug("Getting batchstatus plugin")
+        self.log.trace("Got %d sched plugins" % len(self.schedplugins))
+        self.log.trace("Getting batchstatus plugin")
         self.batchstatusplugin =  self.getbatchstatusplugin()
-        self.log.debug("Getting batchstatus plugin")        
+        self.log.trace("Getting batchstatus plugin")        
         self.wmsstatusplugin =  self.getwmsstatusplugin()
-        self.log.debug("Getting submit plugin")
+        self.log.trace("Getting submit plugin")
         self.submitplugin =  self.getsubmitplugin()
-        self.log.debug("Getting monitor plugins")
+        self.log.trace("Getting monitor plugins")
         self.monitorplugins = self.getmonitorplugins()
-        self.log.debug("Got %d monitor plugins" % len(self.monitorplugins))
+        self.log.trace("Got %d monitor plugins" % len(self.monitorplugins))
 
-        self.log.info('PluginDispatcher: Object initialized.')
+        self.log.trace('PluginDispatcher: Object initialized.')
 
     def getschedplugins(self):
 
@@ -1181,7 +1190,7 @@ class PluginDispatcher(object):
 
     def getmonitorplugins(self):
         monitor_plugin_handlers = self._getplugin('monitor', self.apfqueue.mcl)  # list of classes 
-        self.log.debug("monitor_plugin_handlers =   %s" % monitor_plugin_handlers)
+        self.log.trace("monitor_plugin_handlers =   %s" % monitor_plugin_handlers)
         monitor_plugins = []
         for monitor_ph in monitor_plugin_handlers:
             try:
@@ -1191,7 +1200,7 @@ class PluginDispatcher(object):
                 monitor_plugins.append(monitor_plugin)
             except Exception, e:
                 self.log.error("Problem getting monitor plugin %s" % monitor_ph.plugin_name)
-                self.log.debug("Exception: %s" % traceback.format_exc())
+                self.log.error("Exception: %s" % traceback.format_exc())
         return monitor_plugins
 
 
@@ -1265,7 +1274,7 @@ class PluginDispatcher(object):
         First item is the name of the plugin.
         '''
 
-        self.log.debug("Starting for action %s" %action)
+        self.log.trace("Starting for action %s" %action)
 
         plugin_prefixes = {
                 'sched' : 'Sched',
@@ -1325,7 +1334,7 @@ class PluginDispatcher(object):
             # Example of plugin_module_name is CondorGT2 + BatchSubmit + Plugin => CondorGT2BatchSubmitPlugin
 
             plugin_path = "autopyfactory.plugins.%s.%s" % ( plugin_action, plugin_module_name)
-            self.log.debug("Attempting to import derived classnames: %s"
+            self.log.trace("Attempting to import derived classnames: %s"
                 % plugin_path)
 
             plugin_module = __import__(plugin_path,
@@ -1335,7 +1344,7 @@ class PluginDispatcher(object):
 
             plugin_class_name = plugin_module_name  #  the name of the class is always the name of the module
             
-            self.log.debug("Attempting to return plugin with classname %s" %plugin_class_name)
+            self.log.trace("Attempting to return plugin with classname %s" %plugin_class_name)
 
             plugin_class = getattr(plugin_module, plugin_class_name)  # with getattr() we extract the actual class from the module object
 

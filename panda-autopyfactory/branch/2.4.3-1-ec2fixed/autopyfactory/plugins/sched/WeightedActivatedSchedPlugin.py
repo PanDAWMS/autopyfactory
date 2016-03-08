@@ -17,9 +17,9 @@ class WeightedActivatedSchedPlugin(SchedInterface):
             # --- weights ---
             self.activated_w = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.weightedactivated.activated', 'getfloat', default_value=1.0)
             self.pending_w = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.weightedactivated.pending', 'getfloat', default_value=1.0)
-            self.log.debug("SchedPlugin: weight values are activated_w=%s, pending_w=%s." %(self.activated_w, self.pending_w))
+            self.log.trace("SchedPlugin: weight values are activated_w=%s, pending_w=%s." %(self.activated_w, self.pending_w))
 
-            self.log.debug("SchedPlugin: Object initialized.")
+            self.log.trace("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
@@ -31,7 +31,7 @@ class WeightedActivatedSchedPlugin(SchedInterface):
         to both values: activated and pending
         """
 
-        self.log.debug('Starting.')
+        self.log.trace('Starting.')
 
         self.wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo(maxtime = self.apfqueue.wmsstatusmaxtime)
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
@@ -51,23 +51,24 @@ class WeightedActivatedSchedPlugin(SchedInterface):
         else:
             # Carefully get wmsinfo, activated. 
             self.wmsqueue = self.apfqueue.wmsqueue
-            self.log.info("wmsqueue is %s" % self.wmsqueue)
+            self.log.debug("wmsqueue is %s" % self.wmsqueue)
 
-            (out, msg) = self._calc()
+            (out, msg) = self._calc(n)
+        self.log.info(msg)
         return (out, msg)
 
-    def _calc(self):
+    def _calc(self,n=0):
         
         # initial default values. 
         activated_jobs = 0
         pending_pilots = 0
 
         jobsinfo = self.wmsinfo.jobs
-        self.log.debug("jobsinfo class is %s" % jobsinfo.__class__ )
+        self.log.trace("jobsinfo class is %s" % jobsinfo.__class__ )
 
         try:
             sitedict = jobsinfo[self.wmsqueue]
-            self.log.debug("sitedict class is %s" % sitedict.__class__ )
+            self.log.trace("sitedict class is %s" % sitedict.__class__ )
             activated_jobs = sitedict.ready
         except KeyError:
             # This is OK--it just means no jobs in any state at the wmsqueue. 
@@ -87,9 +88,5 @@ class WeightedActivatedSchedPlugin(SchedInterface):
         pending_pilots_w = int(pending_pilots * self.pending_w)
 
         out = max(0, activated_jobs_w - pending_pilots_w)
-
-        self.log.info('activated=%s; pending=%s; Return=%s' %(activated_jobs_w, 
-                                                              pending_pilots_w, 
-                                                              out))
-        msg = "Weighted,act=%s,actw=%s,pend=%s,pendw=%s,out=%s" %(activated_jobs, activated_jobs_w, pending_pilots, pending_pilots_w, out)
+        msg = "Weighted:in=%d,act=%s,actw=%s,pend=%s,pendw=%s,out=%s" %(n,activated_jobs, activated_jobs_w, pending_pilots, pending_pilots_w, out)
         return (out, msg)

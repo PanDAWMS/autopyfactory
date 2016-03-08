@@ -184,20 +184,20 @@ class Config(SafeConfigParser, object):
         example of usage:
                 x = generic_get("Sec1", "x", get_function='getint', default_value=0  )
         '''
-        self.log.debug('called for section %s option %s get_function %s default_value %s' % ( section,
+        self.log.trace('called for section %s option %s get_function %s default_value %s' % ( section,
                                                                                               option,
                                                                                               get_function,
                                                                                               default_value ))                                                                                                         
         has_option = self.has_option(section, option)
         if not has_option:
-            self.log.debug('option %s is not present in section %s. Return default %s' %(option, section, default_value))
+            self.log.trace('option %s is not present in section %s. Return default %s' %(option, section, default_value))
             return default_value
         else:
             get_f = getattr(self, get_function)
             value = get_f(section, option)
             if value == "None" or value == "none":
                 value = None
-            self.log.debug('option %s in section %s has value %s' %(option, section, value))
+            self.log.trace('option %s in section %s has value %s' %(option, section, value))
             return value
 
 
@@ -275,19 +275,19 @@ class ConfigManager(object):
             if sources:
                 for src in sources.split(','):
                     src = src.strip()
-                    self.log.debug("Calling _getConfig for source %s" % src)
+                    self.log.trace("Calling _getConfig for source %s" % src)
                     newconfig = self.__getConfig(src)
                     if newconfig:
                         config.merge(newconfig)
             elif configdir:
-                self.log.debug("Processing  configs for dir %s" % configdir)
+                self.log.trace("Processing  configs for dir %s" % configdir)
                 if os.path.isdir(configdir):
                     conffiles = [os.path.join(configdir, f) for f in os.listdir(configdir)]
                     config.read(conffiles)
                 else:
                     raise ConfigFailure('configuration directory %s does not exist' %configdir)
             config.fixpathvalues()
-            self.log.debug("Finished creating config object.")
+            self.log.trace("Finished creating config object.")
             return config
         except:
             raise ConfigFailure('creating config object from source %s failed' %sources)

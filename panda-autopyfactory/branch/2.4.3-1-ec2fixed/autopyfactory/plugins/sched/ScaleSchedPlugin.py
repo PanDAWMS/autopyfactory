@@ -28,11 +28,11 @@ class ScaleSchedPlugin(SchedInterface):
 
     def calcSubmitNum(self, n=0):
 
-        self.log.debug('Starting with n=%s' %n)
+        self.log.trace('Starting with n=%d' % n)
 
         out = math.ceil(n * self.factor)
         out = int(out)  #because the output of ceil() is float
 
-        self.log.info('Return=%s' %out)
-        msg = "Scale=%s,factor=%s,ret=%s" %(n, self.factor, out )
+        msg = "Scale:in=%d,factor=%f,out=%d" %(n, self.factor, out )
+        self.log.info(msg)
         return (out, msg) 

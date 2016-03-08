@@ -16,14 +16,14 @@ class StatusTestSchedPlugin(SchedInterface):
 
             self.pilots_in_test_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.statustest.pilots', 'getint', default_value=0)
 
-            self.log.debug("SchedPlugin: Object initialized.")
+            self.log.trace("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
     def calcSubmitNum(self, n=0):
         
-        self.log.debug('Starting.')
+        self.log.trace('Starting.')
         self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue=self.apfqueue.wmsqueue, maxtime = self.apfqueue.wmsstatusmaxtime)
         self.siteinfo = self.apfqueue.wmsstatus_plugin.getSiteInfo(site=self.apfqueue.wmsqueue, maxtime = self.apfqueue.wmsstatusmaxtime)
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue=self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
@@ -31,19 +31,18 @@ class StatusTestSchedPlugin(SchedInterface):
         if self.wmsqueueinfo is None or self.batchinfo is None or self.siteinfo is None:
             self.log.warning("wmsinfo, batchinfo, or siteinfo is None!")
             out = 0
-            msg = "StatusTest:no wms/batch/siteinfo,ret=0"
+            msg = "StatusTest:No wms/batch/siteinfo,out=0"
         else:
             sitestatus = self.siteinfo.status
-            self.log.debug('site status is %s' %sitestatus)
+            self.log.trace('site status is %s' %sitestatus)
             out = n
             msg = None
             if sitestatus == 'test':
-                self.log.info('Return=%s' %self.pilots_in_test_mode)
                 out= self.pilots_in_test_mode
-                msg='StatusTest,ret=%s' %self.pilots_in_test_mode
+                msg='StatusTest:(test)in=%d,out=%d' % ( n,
+                                                        self.pilots_in_test_mode )
             else:
-                self.log.info('[Queue is not test] input=%s; Return=%s' %(n, out))
-
-
+                self.log.info('StatusTest:(not test),in=%d,out=%d' %(n, out))
+        self.log.info(msg)
         return (out, msg)
 

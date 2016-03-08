@@ -28,7 +28,7 @@ class KeepNRunningSchedPlugin(SchedInterface):
             self.keep_running = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.keepnrunning.keep_running')
             if self.keep_running:
                 self.keep_running = int(self.keep_running)
-            self.log.debug("SchedPlugin: Object initialized.")
+            self.log.trace("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
@@ -37,7 +37,7 @@ class KeepNRunningSchedPlugin(SchedInterface):
         """ 
         It just returns nb of Activated Jobs - nb of Pending Pilots
         """
-        self.log.debug('Starting.')
+        self.log.trace('Starting.')
 
         self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
        
@@ -82,20 +82,11 @@ class KeepNRunningSchedPlugin(SchedInterface):
             self.log.debug("keep_running is set %d, use it." % self.keep_running) 
             out = self.keep_running - ( running_pilots  + pending_pilots)
 
-        self.log.info('input=%s; keep_running=%s; pending=%s; running=%s; retiring=%s; Return=%s' %(input,
-                                                                                         self.keep_running, 
-                                                                                         pending_pilots, 
-                                                                                         running_pilots,
-                                                                                         retiring_pilots, 
-                                                                                         out))
         msg = "KeepNRunning:in=%s,keep=%s,run=%s,pend=%s,retiring=%s,out=%s" % (str(input), 
                                                                            self.keep_running, 
                                                                            running_pilots, 
                                                                            pending_pilots, 
                                                                            retiring_pilots, 
                                                                            out)
+        self.log.info(msg)
         return (out, msg)
-
-
-
-

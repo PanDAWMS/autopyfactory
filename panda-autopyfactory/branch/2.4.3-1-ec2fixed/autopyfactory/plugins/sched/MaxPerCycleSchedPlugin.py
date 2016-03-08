@@ -14,7 +14,7 @@ class MaxPerCycleSchedPlugin(SchedInterface):
             self.apfqueue = apfqueue                
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
             self.max_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.maxpercycle.maximum', 'getint')
-            self.log.debug("SchedPlugin: Object initialized.")
+            self.log.trace("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
@@ -32,5 +32,5 @@ class MaxPerCycleSchedPlugin(SchedInterface):
                                          self.max_pilots_per_cycle, 
                                          out)
                 
-        self.log.info('input=%s; Return=%s' % (n, out))
+        self.log.info(msg)
         return (out, msg)
