@@ -22,7 +22,7 @@ class MaxPendingSchedPlugin(SchedInterface):
             raise ex
 
     def calcSubmitNum(self, n=0):
-        self.log.debug('Starting with n=%s' %n)
+        self.log.trace('Starting with n=%s' %n)
         #batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
         queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
         out = n
@@ -33,7 +33,7 @@ class MaxPendingSchedPlugin(SchedInterface):
             msg = "MaxPending: No queueinfo."
         else:
             pending_pilots = queueinfo.pending
-            self.log.debug('Pending is %s' % pending_pilots)
+            self.log.trace('Pending is %s' % pending_pilots)
             if pending_pilots == 0:
                 # if no pending, there may be free slots, so we impose no limit
                 out = n

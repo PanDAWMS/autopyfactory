@@ -18,17 +18,17 @@ class CondorGridBatchSubmitPlugin(CondorBaseBatchSubmitPlugin):
                
         newqcl = qcl.clone().filterkeys('batchsubmit.condorgrid', 'batchsubmit.condorbase')
         super(CondorGridBatchSubmitPlugin, self).__init__(apfqueue, newqcl) 
-        self.log.info('CondorGridBatchSubmitPlugin: Object initialized.')
+        self.log.trace('CondorGridBatchSubmitPlugin: Object initialized.')
 
     def _addJSD(self):
         '''   
         add things to the JSD object
         '''   
  
-        self.log.debug('CondorGridBatchSubmitPlugin.addJSD: Starting.')
+        self.log.trace('CondorGridBatchSubmitPlugin.addJSD: Starting.')
    
         self.JSD.add("universe", "grid")
         super(CondorGridBatchSubmitPlugin, self)._addJSD()
     
-        self.log.debug('CondorGridBatchSubmitPlugin.addJSD: Leaving.')
+        self.log.trace('CondorGridBatchSubmitPlugin.addJSD: Leaving.')
     

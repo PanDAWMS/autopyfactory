@@ -69,7 +69,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
             self.baselogdirurl = self.fcl.generic_get('Factory', 'baseLogDirUrl') 
             
             condor.checkCondor()
-            self.log.info('BatchSubmitPlugin: Object properly initialized.')
+            self.log.trace('BatchSubmitPlugin: Object properly initialized.')
         except Exception, e:
             self.log.error("Caught exception: %s " % str(e))
             raise
@@ -112,7 +112,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
                     self.log.trace('Got output (%s, %s).' %(st, output)) 
                     joblist = self._parseCondorSubmit(output)
                 else:
-                    self.log.info('jsdfile has no value. Doing nothing')
+                    self.log.trace('jsdfile has no value. Doing nothing')
             elif n < 0:
                 # For certain plugins, this means to retire or terminate nodes...
                 self.log.debug('Preparing to retire %s jobs' % abs(n))
@@ -142,7 +142,7 @@ class CondorBaseBatchSubmitPlugin(BatchSubmitInterface):
         '''
         
         '''
-        self.log.info("Cleanup called. Noop.")
+        self.log.trace("Cleanup called. Noop.")
   
     def _parseCondorSubmit(self, output):
         '''
@@ -385,13 +385,13 @@ x509UserProxyVOName = "atlas"
         if self.submitargs:
             cmd += self.submitargs
         cmd += ' ' + jsdfile
-        self.log.info('command = %s' %cmd)
+        self.log.trace('command = %s' %cmd)
 
         (exitStatus, output) = commands.getstatusoutput(cmd)
         if exitStatus != 0:
             self.log.error('condor_submit command for %s failed (status %d): %s', self.wmsqueue, exitStatus, output)
         else:
-            self.log.info('condor_submit command for %s succeeded', self.wmsqueue)
+            self.log.trace('condor_submit command for %s succeeded', self.wmsqueue)
         st, out = exitStatus, output
 
 

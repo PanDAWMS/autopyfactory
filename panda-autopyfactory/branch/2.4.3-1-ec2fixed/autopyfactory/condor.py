@@ -209,7 +209,7 @@ def querycondor(queryargs=None):
     out = None
     (out, err) = p.communicate()
     delta = time.time() - before
-    log.info('condor_q: %s seconds to perform the query' %delta)
+    log.trace('condor_q: %s seconds to perform the query' %delta)
 
     if p.returncode == 0:
         log.trace('Leaving with OK return code.')
@@ -262,7 +262,7 @@ def xml2nodelist(input):
         node_dict = node2dict(c)
         nodelist.append(node_dict)
     log.trace('_parseoutput: Leaving and returning list of %d entries.' %len(nodelist))
-    log.info('Got list of %d entries.' %len(nodelist))
+    log.trace('Got list of %d entries.' %len(nodelist))
     return nodelist
 
 
@@ -307,7 +307,7 @@ def parseoutput(output):
         for c in listnodesfromxml(xmldoc, 'c') :
             node_dict = node2dict(c)
             nodelist.append(node_dict)            
-    log.info('Got list of %d entries.' %len(nodelist))       
+    log.trace('Got list of %d entries.' %len(nodelist))       
     return nodelist
 
 
@@ -443,7 +443,7 @@ def aggregateinfo(input):
                 qdict[attrkey][attrval] = 1
                    
     log.trace('Aggregate: output is %s ' % queues)  # this could be trace() instead of debug()
-    log.info('Aggregate: Created dict with %d queues.' % len(queues))
+    log.trace('Aggregate: Created dict with %d queues.' % len(queues))
     return queues
 
   
@@ -452,7 +452,7 @@ def getJobInfo():
     log = logging.getLogger()
     xml = querycondorxml()
     nl = xml2nodelist(xml)
-    log.info("Got node list of length %d" % len(nl))
+    log.trace("Got node list of length %d" % len(nl))
     joblist = []
     qd = {}
     if len(nl) > 0:
@@ -483,8 +483,8 @@ def getJobInfo():
                 # again we don't care about non-APF jobs
                 pass    
             
-    log.info("Made job list of length %d" % len(joblist))
-    log.info("Made a job info dict of length %d" % len(qd))
+    log.trace("Made job list of length %d" % len(joblist))
+    log.trace("Made a job info dict of length %d" % len(qd))
     return qd
 
 
