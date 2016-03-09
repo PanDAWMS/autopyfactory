@@ -36,6 +36,9 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             self.access_key_id = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.access_key_id')
             self.secret_access_key = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.secret_access_key')
             self.spot_price = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.spot_price')
+            if self.spot_price:                
+                self.spot_price = float(self.spot_price)
+                
             self.usessh = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.usessh')
             if self.usessh == "False":
                 self.usessh = False
@@ -43,8 +46,15 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
                 self.usessh = True
             else:
                 self.usessh = False
-            if self.spot_price:                
-                self.spot_price = float(self.spot_price)
+
+            self.peaceful = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.peaceful')
+            if self.peaceful == "False":
+                self.peaceful = False
+            elif self.peaceful == "True":
+                self.peaceful = True
+            else:
+                self.peaceful = True
+            
             self.security_groups = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.security_groups')
             self.log.trace("Successfully got all config values for EC2BatchSubmit plugin.")
             self.log.trace('CondorEC2BatchSubmitPlugin: Object properly initialized.')
@@ -196,7 +206,10 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
         
         if self.usessh:
             self.log.debug("Trying to use SSH to retire node %s" % publicip)
-            cmd='ssh root@%s "condor_off -peaceful -startd"' % publicip
+            if self.peaceful:
+                cmd='ssh root@%s "condor_off -peaceful -startd"' % publicip
+            else:
+                cmd='ssh root@%s "condor_off -startd"' % publicip
             self.log.debug("retire cmd is %s" % cmd) 
             before = time.time()
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -213,7 +226,10 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             # call condor_off locally
             self.log.debug("Trying local retirement of node %s" % publicip)
             if machine.strip() != "":
-                cmd='condor_off -peaceful -startd -name %s' % machine
+                if self.peaceful:
+                    cmd='condor_off -peaceful -startd -name %s' % machine
+                else:
+                    cmd='condor_off -startd -name %s' % machine
                 self.log.debug("retire cmd is %s" % cmd) 
                 before = time.time()
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -262,11 +278,25 @@ class CondorEC2BatchSubmitPlugin(CondorGridBatchSubmitPlugin):
             if machine.strip() != "":
                 # call condor_off locally
                 self.log.debug("Trying local unretirement of node %s" % publicip)
+                cmd='condor_on -startd -name %s' % machine
+                self.log.trace("unretire cmd is %s" % cmd) 
+                before = time.time()
+                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                out = None
+                (out, err) = p.communicate()
+                delta = time.time() - before
+                self.log.trace('%s seconds to issue command' %delta)
+                if p.returncode == 0:
+                    self.log.trace('Leaving with OK return code.')
+                else:
+                    out = out.replace("\n", " ")
+                    out = err.replace("\n", " ")
+                    self.log.warning('Leaving with bad return code. rc=%s err="%s" out="%s"' %(p.returncode, err, out ))          
+
             else:
                 self.log.warning("Unable to unretire node %s (%s) because it has an empty machine name." % (jobinfo.executeinfo.hostname,
                                                                                                           jobinfo.ec2instancename))
              
-
     def cleanup(self):
         '''
         

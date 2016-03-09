@@ -164,6 +164,7 @@
 # batchsubmit.condorec2.access_key_id
 # batchsubmit.condorec2.secret_access_key
 # batchsubmit.condorec2.proxy
+# batchsubmit.condorec2.peaceful
 #
 # batchsubmit.condordeltacloud.gridresource
 # batchsubmit.condordeltacloud.username
@@ -748,6 +749,10 @@
 # batchsubmit.condorec2.proxy = name of the proxy handler in proxymanager for automatic proxy renewal 
 #               (See etc/proxy.conf)
 #               None if no automatic proxy renewal is desired.
+#
+# batchsubmit.condorec2.peaceful = True/False, Whether during VM retirement to allow running jobs to 
+#                                   finish. 
+#
 
 #  --------------------------------------------------------------------
 #       Configuration when batchsubmitplugin is condordeltacloud
