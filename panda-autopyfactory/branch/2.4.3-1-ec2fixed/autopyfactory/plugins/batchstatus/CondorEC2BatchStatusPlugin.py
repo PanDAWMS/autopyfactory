@@ -287,7 +287,7 @@ class CondorEC2BatchStatusPlugin(threading.Thread, BatchStatusInterface):
                 self.currentinfo = newinfo
             
             except Exception, e:
-                self.log.exception("Problem handling Condor info.")
+                self.log.error("Problem handling Condor info.")
 
         self.log.debug('_ Leaving.')
 
