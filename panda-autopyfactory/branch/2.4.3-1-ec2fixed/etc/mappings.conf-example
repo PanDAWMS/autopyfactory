@@ -21,8 +21,8 @@
 2 = running
 3 = done
 4 = done
-5 = suspended
-6 = running
+5 = pending
+6 = pending
 
 
 [CONDOREC2BATCHSTATUS-JOBSTATUS2INFO]
@@ -31,8 +31,8 @@
 2 = running
 3 = done
 4 = done
-5 = pending 
-6 = running
+5 = done 
+6 = pending
 
 
 [PANDAWMSSTATUS-JOBSSTATISTICSPERSITE2INFO]
