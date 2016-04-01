@@ -122,12 +122,12 @@ def checkCondor():
     log = logging.getLogger()
     (s,o) = commands.getstatusoutput('condor_version')
     if s == 0:
-        log.debug('Condor version is: \n%s' % o )       
+        log.trace('Condor version is: \n%s' % o )       
         CONDOR_CONFIG = os.environ.get('CONDOR_CONFIG', None)
         if CONDOR_CONFIG:
-            log.debug('Environment variable CONDOR_CONFIG set to %s' %CONDOR_CONFIG)
+            log.trace('Environment variable CONDOR_CONFIG set to %s' %CONDOR_CONFIG)
         else:
-            log.debug("Condor config is: \n%s" % commands.getoutput('condor_config_val -config'))
+            log.trace("Condor config is: \n%s" % commands.getoutput('condor_config_val -config'))
     else:
         log.error('checkCondor() has been called, but not Condor is available on system.')
         raise ConfigFailure("No Condor available on system.")
@@ -141,16 +141,15 @@ def statuscondor(queryargs = None):
     cmd = 'condor_status -xml '
     if queryargs:
         cmd += queryargs
-    log.debug('Querying cmd = %s' %cmd.replace('\n','\\n'))
+    log.trace('Querying cmd = %s' %cmd.replace('\n','\\n'))
     before = time.time()
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     out = None
     (out, err) = p.communicate()
     delta = time.time() - before
-    log.debug('It took %s seconds to perform the query' %delta)
-    log.info('%s seconds to perform the query' %delta)
+    log.trace('%s seconds to perform the query' %delta)
     if p.returncode == 0:
-        log.debug('Leaving with OK return code.')
+        log.trace('Leaving with OK return code.')
     else:
         log.warning('Leaving with bad return code. rc=%s err=%s out=%s' %(p.returncode, err, out ))
         out = None
@@ -165,17 +164,17 @@ def statuscondormaster(queryargs = None):
     if queryargs:
         cmd += queryargs
     
-    log.debug('Querying cmd = %s' % cmd.replace('\n','\\n'))
-    #log.debug('Querying cmd = %s' % cmd)
+    log.trace('Querying cmd = %s' % cmd.replace('\n','\\n'))
+    #log.trace('Querying cmd = %s' % cmd)
     before = time.time()
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     out = None
     (out, err) = p.communicate()
     delta = time.time() - before
-    log.debug('It took %s seconds to perform the query' %delta)
-    log.info('%s seconds to perform the query' %delta)
+    log.trace('It took %s seconds to perform the query' %delta)
+
     if p.returncode == 0:
-        log.debug('Leaving with OK return code.')
+        log.trace('Leaving with OK return code.')
     else:
         log.warning('Leaving with bad return code. rc=%s err=%s out=%s' %(p.returncode, err, out ))
         out = None
@@ -191,9 +190,9 @@ def querycondor(queryargs=None):
     '''
 
     log = logging.getLogger()
-    log.debug('Starting.')
+    log.trace('Starting.')
     querycmd = "condor_q "
-    log.debug('_querycondor: using executable condor_q in PATH=%s' %utils.which('condor_q'))
+    log.trace('_querycondor: using executable condor_q in PATH=%s' %utils.which('condor_q'))
 
 
     # adding extra query args from queues.conf
@@ -205,17 +204,17 @@ def querycondor(queryargs=None):
     querycmd += " -format ' GlobusStatus=%d\n' globusstatus"
     querycmd += " -xml"
 
-    log.debug('Querying cmd = %s' %querycmd.replace('\n','\\n'))
+    log.trace('Querying cmd = %s' %querycmd.replace('\n','\\n'))
 
     before = time.time()          
     p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)     
     out = None
     (out, err) = p.communicate()
     delta = time.time() - before
-    log.info('condor_q: %s seconds to perform the query' %delta)
+    log.debug('condor_q: %s seconds to perform the query' %delta)
 
     if p.returncode == 0:
-        log.debug('Leaving with OK return code.')
+        log.trace('Leaving with OK return code.')
     else:
         # lets try again. Sometimes RC!=0 does not mean the output was bad
         if out.startswith('<?xml version="1.0"?>'):
@@ -224,7 +223,7 @@ def querycondor(queryargs=None):
             log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
             out = None
     log.trace('_querycondor: Out is %s' % out)
-    log.debug('_querycondor: Leaving.')
+    log.trace('_querycondor: Leaving.')
     return out
     
 
@@ -240,21 +239,20 @@ def querycondorxml(queryargs=None):
     if queryargs:
         querycmd += queryargs 
        
-    log.debug('Querying cmd = %s' %cmd.replace('\n','\\n'))
+    log.trace('Querying cmd = %s' %cmd.replace('\n','\\n'))
     before = time.time()
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     out = None
     (out, err) = p.communicate()
     delta = time.time() - before
-    log.debug('It took %s seconds to perform the query' %delta)
-    log.info('%s seconds to perform the query' %delta)
+    log.trace('It took %s seconds to perform the query' %delta)
     if p.returncode == 0:
-        log.debug('Leaving with OK return code.')
+        log.trace('Leaving with OK return code.')
     else:
         log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
         out = None
     log.trace('Out is %s' % out)
-    log.debug('Leaving.')
+    log.trace('Leaving.')
     return out
 
 
@@ -265,8 +263,8 @@ def xml2nodelist(input):
     for c in listnodesfromxml(xmldoc, 'c') :
         node_dict = node2dict(c)
         nodelist.append(node_dict)
-    log.debug('_parseoutput: Leaving and returning list of %d entries.' %len(nodelist))
-    log.info('Got list of %d entries.' %len(nodelist))
+    log.trace('_parseoutput: Leaving and returning list of %d entries.' %len(nodelist))
+    log.debug('Got list of %d entries.' %len(nodelist))
     return nodelist
 
 
@@ -300,7 +298,7 @@ def parseoutput(output):
     '''
 
     log=logging.getLogger()
-    log.debug('Starting.')                
+    log.trace('Starting.')                
 
     # first convert the XML output into a list of XML docs
     outputs = _out2list(output)
@@ -311,7 +309,7 @@ def parseoutput(output):
         for c in listnodesfromxml(xmldoc, 'c') :
             node_dict = node2dict(c)
             nodelist.append(node_dict)            
-    log.info('Got list of %d entries.' %len(nodelist))       
+    log.debug('Got list of %d entries.' %len(nodelist))       
     return nodelist
 
 
@@ -363,7 +361,7 @@ def node2dict(node):
     for child in node.childNodes:
         if child.nodeType == child.ELEMENT_NODE:
             key = child.attributes['n'].value
-            #log.debug("child 'n' key is %s" % key)
+            #log.trace("child 'n' key is %s" % key)
             if len(child.childNodes[0].childNodes) > 0:
                 try:
                     value = child.childNodes[0].firstChild.data
@@ -412,7 +410,7 @@ def aggregateinfo(input):
                  
     '''
     log=logging.getLogger()
-    log.debug('Starting with list of %d items.' % len(input))
+    log.trace('Starting with list of %d items.' % len(input))
     queues = {}
     for item in input:
         if not item.has_key('match_apf_queue'):
@@ -447,8 +445,8 @@ def aggregateinfo(input):
             except KeyError:
                 qdict[attrkey][attrval] = 1
                    
-    log.debug('Aggregate: output is %s ' % queues)  # this could be trace() instead of debug()
-    log.info('Aggregate: Created dict with %d queues.' % len(queues))
+    log.trace('Aggregate: output is %s ' % queues)  # this could be trace() instead of debug()
+    log.debug('Aggregate: Created dict with %d queues.' % len(queues))
     return queues
 
   
@@ -457,7 +455,7 @@ def getJobInfo():
     log = logging.getLogger()
     xml = querycondorxml()
     nl = xml2nodelist(xml)
-    log.info("Got node list of length %d" % len(nl))
+    log.debug("Got node list of length %d" % len(nl))
     joblist = []
     qd = {}
     if len(nl) > 0:
@@ -488,8 +486,8 @@ def getJobInfo():
                 # again we don't care about non-APF jobs
                 pass    
             
-    log.info("Made job list of length %d" % len(joblist))
-    log.info("Made a job info dict of length %d" % len(qd))
+    log.debug("Made job list of length %d" % len(joblist))
+    log.debug("Made a job info dict of length %d" % len(qd))
     return qd
 
 
@@ -507,7 +505,7 @@ def getStartdInfoByEC2Id():
             slots = n['totalslots']
             machine = n['machine']
             j = CondorStartdInfo(ec2iid, machine, state, act)
-            #log.debug("Created csdi: %s" % j)
+            #log.trace("Created csdi: %s" % j)
             j.slots = slots
             infolist[ec2iid] = j
         except Exception, e:
@@ -520,21 +518,19 @@ def killids(idlist):
     Remove all jobs by jobid in idlist.
     Idlist is assumed to be a list of complete ids (<clusterid>.<procid>)
      
-    
     '''
     log = logging.getLogger()
     idstring = ' '.join(idlist)
     cmd = 'condor_rm %s' % idstring
-    log.debug('Issuing remove cmd = %s' %cmd.replace('\n','\\n'))
+    log.trace('Issuing remove cmd = %s' %cmd.replace('\n','\\n'))
     before = time.time()
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     out = None
     (out, err) = p.communicate()
     delta = time.time() - before
-    log.debug('It took %s seconds to perform the command' %delta)
-    log.info('%s seconds to perform the command' %delta)
+    log.trace('It took %s seconds to perform the command' %delta)
     if p.returncode == 0:
-        log.debug('Leaving with OK return code.')
+        log.trace('Leaving with OK return code.')
     else:
         log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
         out = None

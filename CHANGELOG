@@ -5,6 +5,7 @@
 * distinguish between self.keep_running is None than when is 0
 * MaxToRun returns 0 when there is no BatchInfo
 * added function debugrestart to init script
+* manually merged various changes to loglevels and sched plugins from ec2fixed adhoc branch. 
 
 2.4.7 
 

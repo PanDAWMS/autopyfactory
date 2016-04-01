@@ -47,7 +47,7 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
         threading.Thread.__init__(self) # init the thread
         
         self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s with condor_q_id %s]" %(apfqueue.apfqname, kw['condor_q_id']))
-        self.log.debug('BatchStatusPlugin: Initializing object...')
+        self.log.trace('BatchStatusPlugin: Initializing object...')
         self.stopevent = threading.Event()
 
         # to avoid the thread to be started more than once
@@ -102,19 +102,24 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
         None is returned, as we understand that info is too old and 
         not reliable anymore.
         '''           
-        self.log.debug('Starting with maxtime=%s' % maxtime)
+        self.log.trace('Starting with maxtime=%s' % maxtime)
         
         if self.currentinfo is None:
-            self.log.debug('Not initialized yet. Returning None.')
+            self.log.trace('Not initialized yet. Returning None.')
             return None
         elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
-            self.log.debug('Info too old. Leaving and returning None.')
+            self.log.trace('Info too old. Leaving and returning None.')
             return None
         else:
             if queue:
-                return self.currentinfo[queue]
+                try:
+                    cq = self.currentinfo[queue]
+                except:
+                    self.log.warn('Problem getting info for queue: %s from valid currentinfo.' % queue)
+                self.log.debug('Returning valid batchinfo for queue: %s' % queue)
+                return cq
             else:                    
-                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentinfo))
+                self.log.trace('Leaving and returning info of %d entries.' % len(self.currentinfo))
                 return self.currentinfo
 
     def getJobInfo(self, queue=None, maxtime=0):
@@ -126,24 +131,24 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
         None is returned, as we understand that info is too old and 
         not reliable anymore.
         '''           
-        self.log.debug('getInfo: Starting with maxtime=%s' % maxtime)
+        self.log.trace('getInfo: Starting with maxtime=%s' % maxtime)
         
         if self.currentjobs is None:
-            self.log.debug('getInfo: Not initialized yet. Returning None.')
+            self.log.trace('getInfo: Not initialized yet. Returning None.')
             return None
         elif maxtime > 0 and (int(time.time()) - self.currentjobs.lasttime) > maxtime:
-            self.log.debug('getInfo: Info too old. Leaving and returning None.')
+            self.log.trace('getInfo: Info too old. Leaving and returning None.')
             return None
         else:
             if queue:
                 try:
                     i =  self.currentjobs[queue]
-                    self.log.debug('getInfo: Leaving and returning queue-specific JobInfo list of %d entries.' % len(i))
+                    self.log.trace('getInfo: Leaving and returning queue-specific JobInfo list of %d entries.' % len(i))
                     return i 
                 except KeyError:
                     return None
             else:
-                self.log.debug('getInfo: Leaving and returning all jobinfo w/ %d entries.' % len(self.currentjobs))
+                self.log.trace('getInfo: Leaving and returning all jobinfo w/ %d entries.' % len(self.currentjobs))
                 return self.currentjobs
 
 
@@ -153,29 +158,29 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
         to be started more than once
         '''
 
-        self.log.debug('Starting')
+        self.log.trace('Starting')
 
         if not self.__started:
-                self.log.debug("Creating Condor batch status thread...")
+                self.log.trace("Creating Condor batch status thread...")
                 self.__started = True
                 threading.Thread.start(self)
 
-        self.log.debug('Leaving.')
+        self.log.trace('Leaving.')
 
     def run(self):
         '''
         Main loop
         '''
 
-        self.log.debug('Starting')
+        self.log.trace('Starting')
         while not self.stopevent.isSet():
             try:
                 self._update()
             except Exception, e:
                 self.log.error("Main loop caught exception: %s " % str(e))
-            self.log.debug("Sleeping for %d seconds..." % self.sleeptime)
+            self.log.trace("Sleeping for %d seconds..." % self.sleeptime)
             time.sleep(self.sleeptime)
-        self.log.debug('Leaving')
+        self.log.trace('Leaving')
 
 
     def _update(self):
@@ -188,7 +193,7 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
             update currentinfo
                 
         '''
-        self.log.debug('Starting.')
+        self.log.trace('Starting.')
 
         exelist = None
         slotlist = None
@@ -200,10 +205,13 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
         else:
             try:
                 exelist = self._makeexelist()
-                self.log.debug("exelist: %s" % exelist)
+                self.log.trace("exelist: %s" % exelist)
+                self.log.debug("Made exelist with %d entries." % len(exelist))
+                
                 slotlist = self._makeslotlist()
-                self.log.debug("slotlist: %s" % slotlist)
-
+                self.log.trace("slotlist: %s" % slotlist)
+                self.log.debug("Made slotlist with %d entries." % len(slotlist))
+                
                 # Query condor once
                 xmlout = querycondorxml()
                 # With no jobs, xmlout is empty string. 
@@ -213,14 +221,17 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
 
                 # use it to for stats and job-by-job processing...
                 newinfo = self._makeinfolist(dictlist)
-                self.log.debug("rawinfo: %s" % newinfo)
+                self.log.trace("rawinfo: %s" % newinfo)
+                self.log.debug("infolist with %d entries" % len(newinfo))
                 
                 joblist = self._makejoblist(dictlist)
-                self.log.debug("rawjoblist: %s" % joblist)
+                self.log.trace("rawjoblist: %s" % joblist)
+                self.log.debug("joblist with %d entries" % len(joblist))
                 
                 #Make hash of SlotInfo objects by instanceid 
                 slotsbyec2id =  self._indexobjectsby(slotlist, 'instanceid')
-                self.log.debug("indexed slotlist: %s" % slotsbyec2id)
+                self.log.trace("indexed slotlist: %s" % slotsbyec2id)
+                self.log.debug("indexed slotlist with %d index entries." % len(slotsbyec2id.keys()))
                 
                 for exe in exelist:
                     ec2id = exe.instanceid
@@ -228,41 +239,42 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
                         slots = slotsbyec2id[ec2id]
                         exe.slotinfolist = slots
                     except KeyError:
-                        self.log.debug("Failed to find slotinfo for ec2id %s." % ec2id)
+                        self.log.trace("Failed to find slotinfo for ec2id %s." % ec2id)
                         # Not necessarily a problem, if node is retired. 
 
                                  
                 # Make hash of of CondorExecuteInfo objects, indexed
                 exebyec2id = self._indexobjectsby(exelist, 'instanceid')
-                self.log.debug("indexed exelist: %s" % exebyec2id)
+                self.log.trace("indexed exelist: %s" % exebyec2id)
+                self.log.debug("indexed exelist with %d index entries." % len(exebyec2id.keys()))
                 
                 # Now, add exeinfo to correct jobs, by ec2instanceid...
 
                 for aq in joblist.keys():
-                    self.log.debug("Adding exeinfo to jobs in apfqueue %s" % aq)
+                    self.log.trace("Adding exeinfo to jobs in apfqueue %s" % aq)
                     for job in joblist[aq]:
-                        #self.log.debug("Handling job %s" % job) 
+                        #self.log.trace("Handling job %s" % job) 
                         try:
                             ec2id = job.ec2instancename
-                            self.log.debug("Adding exeinfo to job for ec2id: %s" % ec2id )
+                            self.log.trace("Adding exeinfo to job for ec2id: %s" % ec2id )
                             try:
                                 exeinfo = exebyec2id[ec2id][0]
-                                self.log.debug("Retrieved exeinfo from indexed hash for ec2id: %s" % ec2id)
+                                self.log.trace("Retrieved exeinfo from indexed hash for ec2id: %s" % ec2id)
                                 # Should only be one per job
                                 job.executeinfo = exeinfo
                                 exestat = job.executeinfo.getStatus() 
-                                self.log.debug("Job with exeinfo, checking status=%s" % exestat)
+                                self.log.trace("Job with exeinfo, checking status=%s" % exestat)
                                 if exestat == 'retiring':
-                                    self.log.debug("Found retiring, adjusting newinfo")
+                                    self.log.trace("Found retiring, adjusting newinfo")
                                     newinfo[aq].retiring += 1
                                     newinfo[aq].running -= 1
                                 elif exestat == 'retired':
-                                    self.log.debug("Found retired, adjusting newinfo")
+                                    self.log.trace("Found retired, adjusting newinfo")
                                     newinfo[aq].retired += 1
                                     newinfo[aq].running -= 1
                                 else:
-                                    self.log.debug("No change to newinfo")
-                                self.log.debug("Assigned exeinfo: %s to job %s" % (exeinfo, job))
+                                    self.log.trace("No change to newinfo")
+                                self.log.trace("Assigned exeinfo: %s to job %s" % (exeinfo, job))
                             except KeyError:
                                 # New VM jobs will not have exeinfo until they start 
                                 # and connect back to the pool. This is OK.  
@@ -279,7 +291,7 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
             except Exception, e:
                 self.log.exception("Problem handling Condor info.")
 
-        self.log.debug('_ Leaving.')
+        self.log.trace('_ Leaving.')
 
 
     def _makeexelist(self):
@@ -295,7 +307,7 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
         else:
             dictlist = parseoutput(xmlout)
             exelist = self._dicttoexelist(dictlist)
-            self.log.debug("Created CondorExecuteInfo list of length %d" % len(exelist))
+            self.log.trace("Created CondorExecuteInfo list of length %d" % len(exelist))
         return exelist
         
         
@@ -307,7 +319,7 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
         else:
             dictlist = parseoutput(xmlout)
             slotlist = self._dicttoslotlist(dictlist)
-            self.log.debug("Created CondorSlotInfo list of length %d" % len(slotlist))
+            self.log.trace("Created CondorSlotInfo list of length %d" % len(slotlist))
         return slotlist
    
     def _makejoblist(self, dictlist):
@@ -316,7 +328,7 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
             self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
         else:
             joblist = self._dicttojoblist(dictlist)
-            self.log.debug("Created indexed joblist of length %d" % len(joblist))
+            self.log.trace("Created indexed joblist of length %d" % len(joblist))
             self.currentjobs = joblist
         return joblist
 
@@ -362,9 +374,9 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
                     ec2in = n['ec2instancename']
                     j = CondorEC2JobInfo(n)
                     joblist.append(j)
-                    self.log.debug("Found EC2 job with instancename %s" % ec2in)
+                    self.log.trace("Found EC2 job with instancename %s" % ec2in)
                 except KeyError:
-                    self.log.debug("Discarding non-EC2 job...")
+                    self.log.trace("Discarding non-EC2 job...")
             
             indexhash = {}
             for j in joblist:
@@ -389,8 +401,8 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
                     # again we don't care about non-APF jobs
                     pass    
                 
-        self.log.info("Made job list of length %d" % len(joblist))
-        self.log.info("Made a job info dict of length %d" % len(qd))
+        self.log.debug("Made job list of length %d" % len(joblist))
+        self.log.debug("Made a job info dict of length %d" % len(qd))
         return qd
 
     def _dicttoslotlist(self, nodelist):
@@ -426,7 +438,7 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
                 machine = n['machine']
                 hostname = n['ec2publicdns']
                 j = CondorExecuteInfo(ec2iid, machine, hostname)
-                self.log.debug("Creating CondorExecuteInfo: %s" % j)
+                self.log.trace("Creating CondorExecuteInfo: %s" % j)
                 exelist.append(j)
             except Exception, e:
                 self.log.warning("Bad node. May be OK since not all nodes ec2: %s" % str(e))
@@ -441,10 +453,10 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
         for si in slotlist:
             try:
                 stdinfo = startdlist[si.instanceid]
-                self.log.debug("Found existing CondorStartdInfo object, adding slotinfo...")
+                self.log.trace("Found existing CondorStartdInfo object, adding slotinfo...")
                 stdinfo.add(si)
             except KeyError:
-                self.log.debug("KeyError. Creating new CondorStartdInfo object...")
+                self.log.trace("KeyError. Creating new CondorStartdInfo object...")
                 startdlist[si.instanceid] = CondorStartdInfo(si)
         self.log.info("Created startdlist of length %d" % len(startdlist))
         return startdlist
@@ -469,7 +481,7 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
                 hash[idx] = olist
             except KeyError:
                 pass
-        self.log.debug("Constructed indexed hash: %s" % hash)
+        self.log.trace("Constructed indexed hash: %s" % hash)
         return hash
         
 
@@ -531,7 +543,7 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
         
                   
         '''
-        self.log.debug('Starting.')
+        self.log.trace('Starting.')
         batchstatusinfo = BatchStatusInfo()
         for site in input.keys():
             qi = QueueInfo()
@@ -541,9 +553,9 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
             qi.fill(valdict, mappings=self.jobstatus2info)
                     
         batchstatusinfo.lasttime = int(time.time())
-        self.log.debug('Returning BatchStatusInfo: %s' % batchstatusinfo)
+        self.log.trace('Returning BatchStatusInfo: %s' % batchstatusinfo)
         for site in batchstatusinfo.keys():
-            self.log.debug('Queue %s = %s' % (site, batchstatusinfo[site]))           
+            self.log.trace('Queue %s = %s' % (site, batchstatusinfo[site]))           
         return batchstatusinfo
 
     def join(self, timeout=None):
@@ -551,11 +563,11 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
         Stop the thread. Overriding this method required to handle Ctrl-C from console.
         ''' 
 
-        self.log.debug('Starting with input %s' %timeout)
+        self.log.trace('Starting with input %s' %timeout)
         self.stopevent.set()
-        self.log.debug('Stopping thread....')
+        self.log.trace('Stopping thread....')
         threading.Thread.join(self, timeout)
-        self.log.debug('Leaving')
+        self.log.trace('Leaving')
 
 
 
@@ -584,7 +596,7 @@ class CondorEC2JobInfo(object):
             self.jobattrs.append(k)
         self.jobattrs.sort()
         self.executeinfo = None
-        #self.log.debug("Made CondorJobInfo object with %d attributes" % len(self.jobattrs))    
+        #self.log.trace("Made CondorJobInfo object with %d attributes" % len(self.jobattrs))    
         
     def __str__(self):
         attrstoprint = ['match_apf_queue',
@@ -688,7 +700,7 @@ class CondorExecuteInfo(object):
         # "Contact-able" hostname, usually EC2PublicDNS
         self.hostname = publicdns
         self.slotinfolist = []
-        self.log.debug("Created new CondorExecuteInfo: %s %s %s" % (self.instanceid, 
+        self.log.trace("Created new CondorExecuteInfo: %s %s %s" % (self.instanceid, 
                                                            self.machine,
                                                            self.hostname))   
     
@@ -697,7 +709,7 @@ class CondorExecuteInfo(object):
                  
         '''
         self.slotinfolist.append(slotinfo)
-        self.log.debug("Adding slotinfo %s to list." % slotinfo)
+        self.log.trace("Adding slotinfo %s to list." % slotinfo)
 
     def getStatus(self):
         '''
@@ -723,7 +735,7 @@ class CondorExecuteInfo(object):
             retiring = False
             for si in self.slotinfolist:
                 act = si.activity.lower()
-                self.log.debug("slotinfo activity is %s" % act)
+                self.log.trace("slotinfo activity is %s" % act)
                 
                 if act == 'busy':
                     busy = True
@@ -746,7 +758,7 @@ class CondorExecuteInfo(object):
                 overall = 'retiring'
             else:
                 self.log.warning('Difficulty calculating status for %s ' % self.instanceid)
-            self.log.debug("[%s:%s] executeinfo overall is %s" % (self.machine, self.instanceid, overall))
+            self.log.trace("[%s:%s] executeinfo overall is %s" % (self.machine, self.instanceid, overall))
         return overall
             
         

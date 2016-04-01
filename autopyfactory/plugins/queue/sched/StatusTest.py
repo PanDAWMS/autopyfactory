@@ -16,14 +16,14 @@ class StatusTest(SchedInterface):
 
             self.pilots_in_test_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.statustest.pilots', 'getint', default_value=0)
 
-            self.log.debug("SchedPlugin: Object initialized.")
+            self.log.trace("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
     def calcSubmitNum(self, n=0):
         
-        self.log.debug('Starting.')
+        self.log.trace('Starting.')
         self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue=self.apfqueue.wmsqueue, maxtime = self.apfqueue.wmsstatusmaxtime)
         self.siteinfo = self.apfqueue.wmsstatus_plugin.getSiteInfo(site=self.apfqueue.wmsqueue, maxtime = self.apfqueue.wmsstatusmaxtime)
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue=self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
@@ -34,16 +34,12 @@ class StatusTest(SchedInterface):
             msg = "StatusTest[no wms/batch/siteinfo]:in=%s;ret=0" %n
         else:
             sitestatus = self.siteinfo.status
-            self.log.debug('site status is %s' %sitestatus)
+            self.log.trace('site status is %s' %sitestatus)
             out = n
-            msg = None
             if sitestatus == 'test':
-                self.log.info('Return=%s' %self.pilots_in_test_mode)
                 out = self.pilots_in_test_mode
-                msg = 'StatusTest:in=%s;ret=%s' %(n, self.pilots_in_test_mode)
+                msg='StatusTest:(test);in=%d,out=%d' % ( n,  self.pilots_in_test_mode )
             else:
-                self.log.info('[Queue is not test] input=%s; Return=%s' %(n, out))
-
-
+                msg='StatusTest:(not test);input=%s; Return=%s' % (n, out)
         return (out, msg)
 

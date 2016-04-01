@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 __author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
-__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2015 John Hover; 2010-2015 Jose Caballero"
+__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2016 John Hover; 2010-2016 Jose Caballero"
 __credits__ = []
 __license__ = "GPL"
 __version__ = "2.4.8"
@@ -216,11 +216,14 @@ Jose Caballero <jcaballero@bnl.gov>
         -- Logging syntax and semantics should be uniform throughout the program,  
            based on whatever organization scheme is appropriate.  
         
-        -- Have at least a single log message at DEBUG at beginning and end of each function call.  
+        -- Have at least a single log message at TRACE at beginning and end of each function call.  
            The entry message should mention input parameters,  
            and the exit message should not any important result.  
-           DEBUG output should be detailed enough that almost any logic error should become apparent.  
-           It is OK if DEBUG messages are produced too fast to read interactively. 
+           TRACE output should be detailed enough that almost any logic error should become apparent.  
+           It is OK if TRACE messages are produced too fast to read interactively. 
+        
+        -- Have sufficient DEBUG messages to show domain problem calculations input and output.
+           DEBUG messages should never span more than one line. 
         
         -- A moderate number of INFO messages should be logged to mark major  
            functional steps in the operation of the program,  
@@ -243,8 +246,11 @@ Jose Caballero <jcaballero@bnl.gov>
         -- We keep the original python levels meaning,  
            including WARNING as being the default level.  
         
-                DEBUG      Detailed information, typically of interest only when diagnosing problems. 
-                INFO       Confirmation that things are working as expected. 
+                TRACE      Detailed code execution information related to housekeeping, 
+                           parsing, objects, threads.
+                DEBUG      Detailed domain problem information related to scheduling, calculations,
+                           program state.  
+                INFO       High level confirmation that things are working as expected.  
                 WARNING    An indication that something unexpected happened,  
                            or indicative of some problem in the near future (e.g. 'disk space low').  
                            The software is still working as expected. 
@@ -252,10 +258,8 @@ Jose Caballero <jcaballero@bnl.gov>
                 CRITICAL   A serious error, indicating that the program itself may be unable to continue running. 
         
         -- We add a new custom level -TRACE- to be more verbose than DEBUG.
-
-        Info: 
-        
-          http://docs.python.org/howto/logging.html#logging-advanced-tutorial  
+           
+           Info: http://docs.python.org/howto/logging.html#logging-advanced-tutorial  
 
         """
         self.log = logging.getLogger()
@@ -299,7 +303,7 @@ Jose Caballero <jcaballero@bnl.gov>
         envmsg = ''        
         for k in sorted(os.environ.keys()):
             envmsg += '\n%s=%s' %(k, os.environ[k])
-        self.log.debug('Environment : %s' %envmsg)
+        self.log.trace('Environment : %s' %envmsg)
 
 
     def __platforminfo(self):
@@ -494,7 +498,7 @@ class Factory(object):
         self._serialization()
 
         # Log some info...
-        self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )     
+        self.log.trace('Factory shell PATH: %s' % os.getenv('PATH') )     
         self.log.info("Factory: Object initialized.")
 
 
@@ -518,14 +522,14 @@ class Factory(object):
                 got_config = pcl.read(pcf)
             except Exception, e:
                 self.log.error('Failed to create ProxyConfigLoader')
-                self.log.debug("Exception: %s" % traceback.format_exc())
+                self.log.error("Exception: %s" % traceback.format_exc())
                 sys.exit(0)
 
-            self.log.debug("Read config file %s, return value: %s" % (pcf, got_config)) 
+            self.log.trace("Read config file %s, return value: %s" % (pcf, got_config)) 
             self.proxymanager = ProxyManager(pcl, self)
             self.log.info('ProxyManager initialized. Starting...')
             self.proxymanager.start()
-            self.log.debug('ProxyManager thread started.')
+            self.log.trace('ProxyManager thread started.')
         else:
             self.log.info("ProxyManager disabled.")
 
@@ -543,7 +547,7 @@ class Factory(object):
             self.log.error('Failed to create MonitorConfigLoader')
             sys.exit(0)
 
-        self.log.debug("mcl is %s" % self.mcl)
+        self.log.trace("mcl is %s" % self.mcl)
        
 
     def _mappings(self):
@@ -559,8 +563,7 @@ class Factory(object):
             self.log.error('Failed to create ConfigLoader object for mappings')
             sys.exit(0)
         
-        self.log.debug("mappingscl is %s" % self.mappingscl)
-
+        self.log.trace("mappingscl is %s" % self.mappingscl)
 
     def _dumpqcl(self):
 
@@ -598,7 +601,7 @@ class Factory(object):
 
     def _initLogserver(self):
         # Set up LogServer
-        self.log.debug("Handling LogServer...")
+        self.log.trace("Handling LogServer...")
         ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean')
         if ls:
             self.log.info("LogServer enabled. Initializing...")
@@ -608,22 +611,22 @@ class Factory(object):
             logurl = self.fcl.get('Factory','baseLogDirUrl')            
             logport = self._parseLogPort(logurl)
             if not os.path.exists(logpath):
-                self.log.debug("Creating log path: %s" % logpath)
+                self.log.trace("Creating log path: %s" % logpath)
                 os.makedirs(logpath)
             if not lsrobots:
                 rf = "%s/robots.txt" % logpath
-                self.log.debug("logserver.allowrobots is False, creating file: %s" % rf)
+                self.log.trace("logserver.allowrobots is False, creating file: %s" % rf)
                 try:
                     f = open(rf , 'w' )
                     f.write("User-agent: * \nDisallow: /")
                     f.close()
                 except IOError:
                     self.log.warn("Unable to create robots.txt file...")
-            self.log.debug("Creating LogServer object...")
+            self.log.trace("Creating LogServer object...")
             self.logserver = LogServer(port=logport, docroot=logpath, index=lsidx)
             self.log.info('LogServer initialized. Starting...')
             self.logserver.start()
-            self.log.debug('LogServer thread started.')
+            self.log.trace('LogServer thread started.')
         else:
             self.log.info('LogServer disabled. Not running.')
 
@@ -660,7 +663,7 @@ class Factory(object):
                    stops all queues when that happens.
         '''
 
-        self.log.debug("Starting.")
+        self.log.trace("Starting.")
         self.log.info("Starting all Queue threads...")
 
         # first call to reconfig() to load initial qcl configuration
@@ -672,7 +675,7 @@ class Factory(object):
             while True:
                 mainsleep = int(self.fcl.get('Factory', 'factory.sleep'))
                 time.sleep(mainsleep)
-                self.log.debug('Checking for interrupt.')
+                self.log.trace('Checking for interrupt.')
                         
         except (KeyboardInterrupt): 
             # FIXME
@@ -683,7 +686,7 @@ class Factory(object):
             self.shutdown()
             raise
             
-        self.log.debug("Leaving.")
+        self.log.trace("Leaving.")
 
 
     def reconfig(self):
@@ -697,7 +700,7 @@ class Factory(object):
         main loop code or from any method capturing specific signals.
         '''
 
-        self.log.debug("Starting")
+        self.log.trace("Starting")
 
         try:
             newqcl = Config()
@@ -714,7 +717,7 @@ class Factory(object):
         # dump the new qcl content
         self._dumpqcl()
 
-        self.log.debug("Leaving")
+        self.log.trace("Leaving")
 
 
     def _cleanlogs(self):
@@ -722,10 +725,10 @@ class Factory(object):
         starts the thread that will clean the condor logs files
         '''
 
-        self.log.debug('Starting')
+        self.log.trace('Starting')
         self.clean = CleanLogs(self)
         self.clean.start()
-        self.log.debug('Leaving')
+        self.log.trace('Leaving')
 
     def shutdown(self):
         '''
