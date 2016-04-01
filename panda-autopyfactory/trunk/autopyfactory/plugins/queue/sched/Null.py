@@ -15,10 +15,11 @@ class Null(SchedInterface):
     def __init__(self, apfqueue):
         try:
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
-            self.log.debug("SchedPlugin: Object initialized.")
+            self.log.trace("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
     def calcSubmitNum(self, n=0):
-        return (0, "Null=0")
+        msg = "Null:in=%d;out=0" % n
+        return (0, msg)

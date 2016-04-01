@@ -29,13 +29,13 @@ class JSDFile(object):
         self.log = logging.getLogger("main.jsdfile")
         self.directive_lines = []
         self.directive_dict = {}
-        self.log.info('JSDFile: Object initialized.')
+        self.log.debug('JSDFile: Object initialized.')
 
     def add(self, *k):
         """
         """
 
-        self.log.debug('Starting.')
+        self.log.trace('Starting.')
 
         if len(k) == 1:
             line = k[0]
@@ -45,7 +45,7 @@ class JSDFile(object):
             value = k[1]
             self.directive_dict[key] = value
 
-        self.log.debug('Leaving.')
+        self.log.trace('Leaving.')
 
 
     def write(self, path, filename):
@@ -53,24 +53,24 @@ class JSDFile(object):
         Dumps the whole content of the JSDFile object into a disk file
         '''
 
-        self.log.debug('writeJSD: Starting.')
+        self.log.trace('writeJSD: Starting.')
 
         if not os.access(path, os.F_OK):
             try:
                 os.makedirs(path)
-                self.log.debug('writeJSD: Created directory %s', path)
+                self.log.trace('writeJSD: Created directory %s', path)
             except OSError, (errno, errMsg):
                 self.log.error('writeJSD: Failed to create directory %s (error %d): %s', path, errno, errMsg)
                 return
         jsdfilename = os.path.join(path, filename)
         self._dump(jsdfilename)
-        self.log.debug('writeJSD: the submit file content is\n %s ' %self)
-        self.log.debug('writeJSD: Leaving.')
+        self.log.trace('writeJSD: the submit file content is\n %s ' %self)
+        self.log.trace('writeJSD: Leaving.')
         return jsdfilename
 
     def _dump(self, jsdfilename):
 
-        self.log.debug('Starting.')
+        self.log.trace('Starting.')
 
         jsdfile = open(jsdfilename, 'w')
 
@@ -81,7 +81,7 @@ class JSDFile(object):
 
         jsdfile.close()
 
-        self.log.debug('Leaving.')
+        self.log.trace('Leaving.')
 
 
 # ==============================================================================

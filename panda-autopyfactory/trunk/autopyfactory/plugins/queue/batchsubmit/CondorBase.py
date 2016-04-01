@@ -45,9 +45,9 @@ class CondorBase(BatchSubmitInterface):
 
             self.factoryid = self.fcl.generic_get('Factory', 'factoryId')
             self.monitorsection = qcl.generic_get(self.apfqname, 'monitorsection')
-            self.log.debug("monitorsection is %s" % self.monitorsection)            
+            self.log.trace("monitorsection is %s" % self.monitorsection)            
             self.monitorurl = self.mcl.generic_get(self.monitorsection, 'monitorURL')
-            self.log.debug("monitorURL is %s" % self.monitorurl)
+            self.log.trace("monitorURL is %s" % self.monitorurl)
             
             self.factoryuser = self.fcl.generic_get('Factory', 'factoryUser')
             self.submitargs = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.submitargs')
@@ -79,7 +79,7 @@ class CondorBase(BatchSubmitInterface):
         joblist = None
 
         if not utils.checkDaemon('condor'):
-            self.log.info('condor daemon is not running. Doing nothing')
+            self.log.debug('condor daemon is not running. Doing nothing')
             return joblist
         
         try:
@@ -93,22 +93,22 @@ class CondorBase(BatchSubmitInterface):
                 jsdfile = self._writeJSD()
                 if jsdfile:
                     st, output = self.__submit(n, jsdfile)
-                    self.log.debug('Got output (%s, %s).' %(st, output)) 
+                    self.log.trace('Got output (%s, %s).' %(st, output)) 
                     joblist = self._parseCondorSubmit(output)
                 else:
-                    self.log.info('jsdfile has no value. Doing nothing')
+                    self.log.debug('jsdfile has no value. Doing nothing')
             elif n < 0:
                 # For certain plugins, this means to retire or terminate nodes...
-                self.log.debug('Preparing to retire %s jobs' % abs(n))
+                self.log.trace('Preparing to retire %s jobs' % abs(n))
                 self.retire(abs(n))
             else:
                 self.log.debug("Asked to submit 0. Doing nothing...")
             
-            self.log.debug('Done. Returning joblist %s.' %joblist)
+            self.log.trace('Done. Returning joblist %s.' %joblist)
                 
         except Exception, e:
             self.log.error('Exception during submit processing. Exception: %s' % e)
-            self.log.debug("Exception: %s" % traceback.format_exc())
+            self.log.error("Exception: %s" % traceback.format_exc())
         return joblist
         
 
@@ -116,7 +116,7 @@ class CondorBase(BatchSubmitInterface):
         '''
          Do nothing by default. 
         '''
-        self.log.debug('Default retire() do nothing.')
+        self.log.trace('Default retire() do nothing.')
 
 
     def cleanup(self):
@@ -222,7 +222,7 @@ x509UserProxyVOName = "atlas"
 
         '''
         
-        self.log.debug('Starting')
+        self.log.trace('Starting')
 
         now = datetime.datetime.utcnow()
         joblist = []
@@ -236,10 +236,10 @@ x509UserProxyVOName = "atlas"
                 ji = JobInfo(procid, 'submitted', now)
                 joblist.append(ji)
         if not len(joblist) > 0:
-            self.log.debug('joblist has length 0, returning None')
+            self.log.trace('joblist has length 0, returning None')
             joblist = None
 
-        self.log.debug('Leaving with joblist = %s' %joblist )
+        self.log.trace('Leaving with joblist = %s' %joblist )
         return joblist
         
     
@@ -258,7 +258,7 @@ x509UserProxyVOName = "atlas"
  
     def _addJSD(self):
 
-        self.log.debug('addJSD: Starting.')
+        self.log.trace('addJSD: Starting.')
 
         self.JSD.add("Dir", "%s/" % self.logDir)
         self.JSD.add("notify_user", "%s" % self.factoryadminemail)
@@ -297,7 +297,7 @@ x509UserProxyVOName = "atlas"
         self.JSD.add("notification", "Error")
         self.JSD.add("transfer_executable", "True")
         
-        self.log.debug('addJSD: Leaving.')
+        self.log.trace('addJSD: Leaving.')
    
     def __parse_condor_attribute(self, s):
         '''
@@ -351,12 +351,12 @@ x509UserProxyVOName = "atlas"
         Submit pilots
         '''
 
-        self.log.debug('Starting.')
+        self.log.trace('Starting.')
 
         self.log.info('Attempt to submit %d pilots for queue %s' %(n, self.wmsqueue))
 
         ###     cmd = 'condor_submit -verbose '
-        ###     self.log.debug('submitting using executable condor_submit from PATH=%s' %utils.which('condor_submit'))
+        ###     self.log.trace('submitting using executable condor_submit from PATH=%s' %utils.which('condor_submit'))
         ###     # NOTE: -verbose is needed. 
         ###     # The output generated with -verbose is parsed by the monitor code to determine the number of jobs submitted
         ###     if self.submitargs:
@@ -389,7 +389,7 @@ x509UserProxyVOName = "atlas"
         else:
             self.log.info('condor_submit command for %s succeeded', self.wmsqueue)
 
-        self.log.debug('Leaving with output (%s, %s).' %(st, out))
+        self.log.trace('Leaving with output (%s, %s).' %(st, out))
         return st, out
 
 
@@ -397,7 +397,7 @@ x509UserProxyVOName = "atlas"
         ''' 
         adding custom attributes from the queues.conf file
         ''' 
-        self.log.debug('Starting.')
+        self.log.trace('Starting.')
 
         if self.condor_attributes:
             for attr in self.__parse_condor_attribute(self.condor_attributes):
@@ -413,25 +413,25 @@ x509UserProxyVOName = "atlas"
         for item in self.extra_condor_attributes:
             self.JSD.add(item[0], item[1])
 
-        self.log.debug('Leaving.')
+        self.log.trace('Leaving.')
 
 
     def _finishJSD(self, n):
         '''
         add the number of pilots (n)
         '''
-        self.log.debug('finishJSD: Starting.')
-        self.log.debug('finishJSD: adding queue line with %d jobs' %n)
+        self.log.trace('finishJSD: Starting.')
+        self.log.trace('finishJSD: adding queue line with %d jobs' %n)
         self.JSD.add("queue %d" %n)
-        self.log.debug('finishJSD: Leaving.')
+        self.log.trace('finishJSD: Leaving.')
 
     def _writeJSD(self):
         '''
         Dumps the whole content of the JSDFile object into a disk file
         '''
     
-        self.log.debug('writeJSD: Starting.')
-        self.log.debug('writeJSD: the submit file content is\n %s ' %self.JSD)
+        self.log.trace('writeJSD: Starting.')
+        self.log.trace('writeJSD: the submit file content is\n %s ' %self.JSD)
         out = self.JSD.write(self.logDir, 'submit.jdl')
-        self.log.debug('writeJSD: Leaving.')
+        self.log.trace('writeJSD: Leaving.')
         return out

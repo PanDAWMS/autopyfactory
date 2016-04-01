@@ -19,7 +19,7 @@ class MaxPerFactory(SchedInterface):
 
             self.max_pilots_per_factory = self.apfqueue.fcl.generic_get('Factory', 'maxperfactory.maximum', 'getint')
 
-            self.log.debug("SchedPlugin: Object initialized.")
+            self.log.trace("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
@@ -28,7 +28,7 @@ class MaxPerFactory(SchedInterface):
         """ 
         """
 
-        self.log.debug('Starting.')
+        self.log.trace('Starting.')
 
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
 
@@ -36,10 +36,9 @@ class MaxPerFactory(SchedInterface):
         for batchqueue in self.batchinfo.keys():  
             self.total_pilots += self.batchinfo[batchqueue].running
             self.total_pilots += self.batchinfo[batchqueue].pending
-        self.log.info('the total number of current pending+running pilots being handled by the factory is %s' %self.total_pilots)
+        self.log.trace('the total number of current pending+running pilots being handled by the factory is %s' %self.total_pilots)
 
         out = n
-        msg = None
 
         if self.total_pilots > self.max_pilots_per_factory:
             out = 0
@@ -51,6 +50,6 @@ class MaxPerFactory(SchedInterface):
         #    self.log.info('calculated output was negative. Returning 0')
         #    out = 0
 
-        self.log.info('initial n = %s total_pilots = %s max_per_factory = %s Return=%s' %(n, self.total_pilots, self.max_pilots_per_factory, out))
         msg = 'MaxPerFactory:in=%s,total=%s,maxperfactory=%s;ret=%s' %(n, self.total_pilots, self.max_pilots_per_factory, out)
+        self.log.info(msg)
         return (out, msg)

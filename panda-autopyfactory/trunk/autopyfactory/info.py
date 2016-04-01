@@ -124,8 +124,8 @@ class BaseQueueInfo(object):
             except KeyError, e:
                 log = logging.getLogger('main.info')
                 log.error("fill(): Exception: %s" % str(e))
-                log.debug("Stack Trace: %s " % traceback.format_exc()) 
-                log.debug("k: %s v: %s dictionary: %s mappings: %s" % (k,v, dictionary, mappings))
+                log.error("Stack Trace: %s " % traceback.format_exc()) 
+                log.error("k: %s v: %s dictionary: %s mappings: %s" % (k,v, dictionary, mappings))
             
 
             # if the key is new, then ...

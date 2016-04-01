@@ -45,12 +45,19 @@ class CondorEC2(CondorGrid):
                 self.usessh = False
             if self.spot_price:                
                 self.spot_price = float(self.spot_price)
+            self.peaceful = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.peaceful')
+            if self.peaceful == "False":
+                self.peaceful = False
+            elif self.peaceful == "True":
+                self.peaceful = True
+            else:
+                self.peaceful = True
             self.security_groups = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.security_groups')
-            self.log.debug("Successfully got all config values for EC2BatchSubmit plugin.")
-            self.log.info('CondorEC2: Object properly initialized.')
+            self.log.trace("Successfully got all config values for EC2BatchSubmit plugin.")
+            self.log.trace('CondorEC2: Object properly initialized.')
         except Exception, e:
             self.log.error("Problem getting object configuration variables.")
-            self.log.debug("Exception: %s" % traceback.format_exc())
+            self.log.trace("Exception: %s" % traceback.format_exc())
 
     def submit(self, num):
         '''
@@ -61,13 +68,13 @@ class CondorEC2(CondorGrid):
         
         '''
         if num < 1:
-            self.log.debug("Number to submit is zero or negative, calling parent...")
+            self.log.trace("Number to submit is zero or negative, calling parent...")
             super(CondorEC2, self).submit(num)
         else:
-            self.log.debug("Checking for jobs in 'retiring' state...")
+            self.log.trace("Checking for jobs in 'retiring' state...")
             batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
             numretiring = batchinfo.retiring
-            self.log.debug("%d jobs in 'retiring' state." % numretiring)
+            self.log.trace("%d jobs in 'retiring' state." % numretiring)
             numleft = num - numretiring
             if numleft > 0:
                 self.log.debug("More to submit (%d) than retiring (%d). Unretiring all and submitting %d" % (num, 
@@ -84,7 +91,7 @@ class CondorEC2(CondorGrid):
         add things to the JSD object
         '''
 
-        self.log.debug('CondorEC2.addJSD: Starting.')
+        self.log.trace('CondorEC2.addJSD: Starting.')
         super(CondorEC2, self)._addJSD()
 
         self.JSD.add('grid_resource', 'ec2 %s' % self.gridresource) 
@@ -106,7 +113,7 @@ class CondorEC2(CondorGrid):
         if self.security_groups:
             self.JSD.add('ec2_security_groups', '%s' % self.security_groups)
 
-        self.log.debug('CondorEC2.addJSD: Leaving.')
+        self.log.trace('CondorEC2.addJSD: Leaving.')
 
        
     def unretire(self, n ):
@@ -115,7 +122,7 @@ class CondorEC2(CondorGrid):
         
         '''
         if n > 0:
-            self.log.info("Beginning to unretire %d VM jobs..." % n)
+            self.log.debug("Beginning to unretire %d VM jobs..." % n)
             jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqueue.apfqname)
             if jobinfo:
                 numtounretire = n
@@ -131,9 +138,9 @@ class CondorEC2(CondorGrid):
                             self.log.debug("numtounretire = %d" % numtounretire)
                     if numtounretire <= 0:
                         break
-                self.log.info("Unretired %d VM jobs" % numunretired)
+                self.log.debug("Unretired %d VM jobs" % numunretired)
             else:
-                self.log.info("Some info unavailable. Do nothing.")    
+                self.log.debug("Some info unavailable. Do nothing.")    
         else:
             self.log.debug("No jobs to unretire...")
 
@@ -155,7 +162,7 @@ class CondorEC2(CondorGrid):
        
         But we should preferentially retire nodes that are Idle over ones that we know are busy.         
         '''
-        self.log.info("Beginning to retire %d VM jobs..." % n)
+        self.log.debug("Beginning to retire %d VM jobs..." % n)
         jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqueue.apfqname)
         if jobinfo:
             numtoretire = n
@@ -164,7 +171,7 @@ class CondorEC2(CondorGrid):
             busylist = []            
             for job in jobinfo:
                 if job.executeinfo is not None:
-                    self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)              
+                    self.log.trace("Handling instanceid =  %s" % job.executeinfo.instanceid)              
                     stat = job.executeinfo.getStatus()
                     if stat == 'busy':
                         busylist.append(job)
@@ -175,12 +182,12 @@ class CondorEC2(CondorGrid):
                 self._retirenode(job)
                 numtoretire = numtoretire - 1
                 numretired += 1
-                self.log.debug("numtoretire = %d" % numtoretire)
+                self.log.trace("numtoretire = %d" % numtoretire)
                 if numtoretire <= 0:
                     break
-            self.log.info("Retired %d VM jobs" % numretired)
+            self.log.debug("Retired %d VM jobs" % numretired)
         else:
-            self.log.info("Some info unavailable. Do nothing.")
+            self.log.debug("Some info unavailable. Do nothing.")
 
 
     
@@ -188,7 +195,7 @@ class CondorEC2(CondorGrid):
         '''
         Do whatever is needed to tell the node to retire...
         '''
-        self.log.info("Retiring node %s (%s)" % (jobinfo.executeinfo.hostname, 
+        self.log.debug("Retiring node %s (%s)" % (jobinfo.executeinfo.hostname, 
                                                  jobinfo.ec2instancename))
         exeinfo = jobinfo.executeinfo
         publicip = exeinfo.hostname
@@ -196,36 +203,42 @@ class CondorEC2(CondorGrid):
         condorid = "%s.%s" % (jobinfo.clusterid, jobinfo.procid)
         
         if self.usessh:
-            self.log.info("Trying to use SSH to retire node %s" % publicip)
-            cmd='ssh root@%s "condor_off -peaceful -startd"' % publicip
-            self.log.debug("retire cmd is %s" % cmd) 
+            self.log.trace("Trying to use SSH to retire node %s" % publicip)
+            if self.peaceful:
+                cmd='ssh root@%s "condor_off -peaceful -startd"' % publicip
+            else:
+                cmd='ssh root@%s "condor_off -startd"' % publicip
+            self.log.trace("retire cmd is %s" % cmd) 
             before = time.time()
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             out = None
             (out, err) = p.communicate()
             delta = time.time() - before
-            self.log.debug('It took %s seconds to issue the command' %delta)
-            self.log.info('%s seconds to issue command' %delta)
+            self.log.trace('It took %s seconds to issue the command' %delta)
+            self.log.trace('%s seconds to issue command' %delta)
             if p.returncode == 0:
-                self.log.debug('Leaving with OK return code.')
+                self.log.trace('Leaving with OK return code.')
             else:
                 self.log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))          
             # invoke ssh to retire node
         else:
             # call condor_off locally
-            self.log.info("Trying local retirement of node %s" % publicip)
+            self.log.trace("Trying local retirement of node %s" % publicip)
             if machine.strip() != "":
-                cmd='condor_off -peaceful -startd -name %s' % machine
-                self.log.debug("retire cmd is %s" % cmd) 
+                if self.peaceful:
+                    cmd='condor_off -peaceful -startd -name %s' % machine
+                else:
+                    cmd='condor_off -startd -name %s' % machine
+                self.log.trace("retire cmd is %s" % cmd) 
                 before = time.time()
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out = None
                 (out, err) = p.communicate()
                 delta = time.time() - before
                 self.log.debug('It took %s seconds to issue the command' %delta)
-                self.log.info('%s seconds to issue command' %delta)
+                self.log.trace('%s seconds to issue command' %delta)
                 if p.returncode == 0:
-                    self.log.debug('Leaving with OK return code.')
+                    self.log.trace('Leaving with OK return code.')
                 else:
                     out = out.replace("\n", " ")
                     out = err.replace("\n", " ")
@@ -238,7 +251,7 @@ class CondorEC2(CondorGrid):
         '''
         Do whatever is needed to tell the node to un-retire...
         '''
-        self.log.info("Unretiring node %s (%s)" % (jobinfo.executeinfo.hostname, 
+        self.log.trace("Unretiring node %s (%s)" % (jobinfo.executeinfo.hostname, 
                                                  jobinfo.ec2instancename))
         exeinfo = jobinfo.executeinfo
         publicip = exeinfo.hostname
@@ -246,35 +259,35 @@ class CondorEC2(CondorGrid):
         condorid = "%s.%s" % (jobinfo.clusterid, jobinfo.procid)
         
         if self.usessh:
-            self.log.info("Trying to use SSH to retire node %s" % publicip)
+            self.log.trace("Trying to use SSH to retire node %s" % publicip)
             cmd='ssh root@%s "condor_on -startd"' % publicip
-            self.log.debug("unretire cmd is %s" % cmd) 
+            self.log.trace("unretire cmd is %s" % cmd) 
             before = time.time()
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             out = None
             (out, err) = p.communicate()
             delta = time.time() - before
-            self.log.debug('It took %s seconds to issue the command' %delta)
-            self.log.info('%s seconds to issue command' %delta)
+            self.log.trace('It took %s seconds to issue the command' %delta)
+            self.log.trace('%s seconds to issue command' %delta)
             if p.returncode == 0:
-                self.log.debug('Leaving with OK return code.')
+                self.log.trace('Leaving with OK return code.')
             else:
                 self.log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))          
             # invoke ssh to retire node
         else:
             if machine.strip() != "":
-                self.log.info("Trying local unretirement of node %s" % publicip)
+                self.log.trace("Trying local unretirement of node %s" % publicip)
                 cmd='condor_on -startd -name %s ' % machine  
-                self.log.debug("unretire cmd is %s" % cmd) 
+                self.log.trace("unretire cmd is %s" % cmd) 
                 before = time.time()
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out = None
                 (out, err) = p.communicate()
                 delta = time.time() - before
-                self.log.debug('It took %s seconds to issue the command' %delta)
-                self.log.info('%s seconds to issue command' %delta)
+                self.log.trace('It took %s seconds to issue the command' %delta)
+                self.log.trace('%s seconds to issue command' %delta)
                 if p.returncode == 0:
-                    self.log.debug('Leaving with OK return code.')
+                    self.log.trace('Leaving with OK return code.')
                 else:
                     self.log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))          
             else:
@@ -284,7 +297,7 @@ class CondorEC2(CondorGrid):
         '''
         
         '''
-        self.log.debug("Cleanup called in EC2. Retiring...")
+        self.log.trace("Cleanup called in EC2. Retiring...")
         self._killretired()
 
         
@@ -293,27 +306,27 @@ class CondorEC2(CondorGrid):
         scan through jobinfo for this queue with job
         
         '''
-        self.log.info("Killretired process triggered. Searching...")
+        self.log.trace("Killretired process triggered. Searching...")
         jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqueue.apfqname)
-        self.log.info("Finding and killing VM jobs in 'retired' state.")
+        self.log.trace("Finding and killing VM jobs in 'retired' state.")
         
         killlist = []
         if jobinfo:        
             for j in jobinfo:
-                self.log.debug("jobinfo is %s " % j)
+                self.log.trace("jobinfo is %s " % j)
                 if j.executeinfo:
                     st = j.executeinfo.getStatus()
-                    self.log.debug("exe status for %s is %s" % (j.ec2instancename, st)  )
+                    self.log.trace("exe status for %s is %s" % (j.ec2instancename, st)  )
                     if st == 'retired':
                         killlist.append( "%s.%s" % (j.clusterid, j.procid))
                 else:
                     self.log.warning("There seems to be a VM job without even exeinfo. ec2id: %s" % j.ec2instancename)
-            self.log.debug("killlist length is %s" % len(killlist))
+            self.log.trace("killlist length is %s" % len(killlist))
         if killlist:
-            self.log.info("About to kill list of %s ids. First one is %s" % (len(killlist), killlist[0] ))
+            self.log.trace("About to kill list of %s ids. First one is %s" % (len(killlist), killlist[0] ))
             killids(killlist)
         else:
-            self.log.info("No VM jobs to kill for apfqueue %s" % self.apfqueue.apfqname )
+            self.log.trace("No VM jobs to kill for apfqueue %s" % self.apfqueue.apfqname )
 
         
             

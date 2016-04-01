@@ -45,7 +45,7 @@ class Condor(threading.Thread, BatchStatusInterface):
         threading.Thread.__init__(self) # init the thread
         
         self.log = logging.getLogger("batchstatusplugin[singleton: %s condor_q_id: %s]" %(apfqueue.apfqname, kw['condor_q_id']))
-        self.log.debug('BatchStatusPlugin: Initializing object...')
+        self.log.trace('BatchStatusPlugin: Initializing object...')
         self.stopevent = threading.Event()
 
         # to avoid the thread to be started more than once
@@ -117,18 +117,18 @@ class Condor(threading.Thread, BatchStatusInterface):
         None is returned, as we understand that info is too old and 
         not reliable anymore.
         '''           
-        self.log.debug('Starting with maxtime=%s' % maxtime)
+        self.log.trace('Starting with maxtime=%s' % maxtime)
         
         if self.currentinfo is None:
-            self.log.debug('Not initialized yet. Returning None.')
+            self.log.trace('Not initialized yet. Returning None.')
             return None
         elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
-            self.log.debug('Info too old. Leaving and returning None.')
+            self.log.trace('Info too old. Leaving and returning None.')
             return None
         else:
             if queue:
-                self.log.debug('Current info is %s' % self.currentinfo)                    
-                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentinfo))
+                self.log.trace('Current info is %s' % self.currentinfo)                    
+                self.log.trace('Leaving and returning info of %d entries.' % len(self.currentinfo))
                 return self.currentinfo[queue]
             else:
                 return self.currentinfo
@@ -141,40 +141,40 @@ class Condor(threading.Thread, BatchStatusInterface):
         to be started more than once
         '''
 
-        self.log.debug('Starting')
+        self.log.trace('Starting')
 
         if not self.__started:
-                self.log.debug("Creating Condor batch status thread...")
+                self.log.trace("Creating Condor batch status thread...")
                 self.__started = True
                 threading.Thread.start(self)
 
-        self.log.debug('Leaving.')
+        self.log.trace('Leaving.')
 
     def run(self):
         '''
         Main loop
         '''
 
-        self.log.debug('Starting')
+        self.log.trace('Starting')
         while not self.stopevent.isSet():
             try:
                 self._update()
             except Exception, e:
                 self.log.error("Main loop caught exception: %s " % str(e))
-            self.log.debug("Sleeping for %d seconds..." % self.sleeptime)
+            self.log.trace("Sleeping for %d seconds..." % self.sleeptime)
             time.sleep(self.sleeptime)
-        self.log.debug('Leaving')
+        self.log.trace('Leaving')
 
     def join(self, timeout=None):
         ''' 
         Stop the thread. Overriding this method required to handle Ctrl-C from console.
         ''' 
 
-        self.log.debug('Starting with input %s' %timeout)
+        self.log.trace('Starting with input %s' %timeout)
         self.stopevent.set()
-        self.log.debug('Stopping thread....')
+        self.log.trace('Stopping thread....')
         threading.Thread.join(self, timeout)
-        self.log.debug('Leaving')
+        self.log.trace('Leaving')
 
 
 
@@ -221,7 +221,7 @@ class Condor(threading.Thread, BatchStatusInterface):
                 128     STAGE_OUT 
         '''
 
-        self.log.debug('Starting.')
+        self.log.trace('Starting.')
        
         if not utils.checkDaemon('condor'):
             self.log.error('condor daemon is not running. Doing nothing')
@@ -238,9 +238,9 @@ class Condor(threading.Thread, BatchStatusInterface):
                     self.currentinfo = newinfo
             except Exception, e:
                 self.log.error("Exception: %s" % str(e))
-                self.log.debug("Exception: %s" % traceback.format_exc())            
+                self.log.trace("Exception: %s" % traceback.format_exc())            
 
-        self.log.debug('Leaving.')
+        self.log.trace('Leaving.')
 
 
 
@@ -312,7 +312,7 @@ class Condor(threading.Thread, BatchStatusInterface):
         '''
 
 
-        self.log.debug('Starting.')
+        self.log.trace('Starting.')
         batchstatusinfo = BatchStatusInfo()
         for site in input.keys():
             qi = QueueInfo()
@@ -329,9 +329,9 @@ class Condor(threading.Thread, BatchStatusInterface):
                 qi.fill(valdict, mappings=self.jobstatus2info)
                     
         batchstatusinfo.lasttime = int(time.time())
-        self.log.debug('Returning : %s' % batchstatusinfo )
+        self.log.trace('Returning : %s' % batchstatusinfo )
         for site in batchstatusinfo.keys():
-            self.log.debug('Queue %s = %s' % (site, batchstatusinfo[site]))           
+            self.log.trace('Queue %s = %s' % (site, batchstatusinfo[site]))           
         return batchstatusinfo 
 
 def test1():

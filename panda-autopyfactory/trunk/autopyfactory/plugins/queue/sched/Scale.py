@@ -21,18 +21,18 @@ class Scale(SchedInterface):
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
             self.factor = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.scale.factor', 'getfloat', default_value=1.0)
             self.factor = float(self.factor)
-            self.log.debug("SchedPlugin: Object initialized.")
+            self.log.trace("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
     def calcSubmitNum(self, n=0):
 
-        self.log.debug('Starting with n=%s' %n)
+        self.log.trace('Starting with n=%s' %n)
 
         out = math.ceil(n * self.factor)
         out = int(out)  #because the output of ceil() is float
 
-        self.log.info('Return=%s' %out)
         msg = "Scale:in=%s;factor=%s;ret=%s" %(n, self.factor, out )
+        self.log.info(msg)
         return (out, msg) 
