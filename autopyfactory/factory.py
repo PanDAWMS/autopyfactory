@@ -136,7 +136,7 @@ Graeme A Stewart <g.stewart@physics.gla.ac.uk>
 Peter Love <p.love@lancaster.ac.uk>
 John Hover <jhover@bnl.gov>
 Jose Caballero <jcaballero@bnl.gov>
-''', version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $ %s" % __version__)
+''', version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $" )
 
 
         parser.add_option("--trace", 
