@@ -192,6 +192,7 @@ debugrestart() {
     # make a copy of the latest log file
     if [ -f $LOGFILE ]; then 
     	mv $LOGFILE $LOGFILE-`date -u +%Y%m%d.%H%M%S`
+    fi
     start
     RETVAL=$?
     return $RETVAL
