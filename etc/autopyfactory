@@ -76,7 +76,11 @@ else
     PIDFILE=$APFHEAD/var/run/autopyfactory.pid
 fi
 
+# Sensible defaults
 CONFFILE=$ETCDIR/autopyfactory.conf
+LOGFILE=/var/log/autopyfactory/autopyfactory.log
+CONSOLE_LOG=/var/log/autopyfactory/console.log
+OPTIONS="--debug --sleep=60 --runas=autopyfactory --log=$LOGFILE"
 
 # Source settings from sysconfig
 # overriding default if present
@@ -187,10 +191,8 @@ debugrestart() {
     stop
     sleep 2
     # make a copy of the latest log file
-    LOG=/var/log/autopyfactory/autopyfactory.log
-    # FIXME: variable LOG should be setup in the /etc/sysconfig/autopyfactory file
-    mv $LOG $LOG-`date -u +%Y%m%d.%H%M%S`
-    # FIXME: most probably the saved file is owned by root instead of "autopyfactory". OK for the time being
+    if [ -f $LOGFILE ]; then 
+    	mv $LOGFILE $LOGFILE-`date -u +%Y%m%d.%H%M%S`
     start
     RETVAL=$?
     return $RETVAL
