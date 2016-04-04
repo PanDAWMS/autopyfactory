@@ -98,7 +98,6 @@ if [ -n "$GRIDSETUP" ]; then
 fi
 
 
-
 RETVAL=0
 #
 # See how we were called.
