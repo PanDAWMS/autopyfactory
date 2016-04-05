@@ -62,12 +62,7 @@ class CondorBase(BatchSubmitInterface):
             self.baselogdir = self.fcl.generic_get('Factory', 'baseLogDir') 
             self.baselogdirurl = self.fcl.generic_get('Factory', 'baseLogDirUrl') 
 
-            plist = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.proxy')
-            # This is alist of proxy profile names specified in proxy.conf
-            # We will only attempt to derive proxy file path during submission
-            if plist:
-                self.proxylist = [x.strip() for x in plist.split(',')]
-            
+           
             condor.checkCondor()
             self.log.info(': Object properly initialized.')
         except Exception, e:
@@ -261,15 +256,7 @@ x509UserProxyVOName = "atlas"
         self.logDir = self.baselogdir + logPath
         self.logUrl = self.baselogdirurl + logPath
 
-    def _getX509Proxy(self):
-        '''
-        
-        '''
-        self.log.debug("Determining proxy, if necessary. Profile: %s" % self.proxylist)
-        if self.proxylist:
-            self.x509userproxy = self.factory.proxymanager.getProxyPath(self.proxylist)
-        else:
-            self.log.debug("No proxy profile defined.")         
+
  
     def _addJSD(self):
 
@@ -299,10 +286,7 @@ x509UserProxyVOName = "atlas"
         environment += '"'
         self.JSD.add('environment', environment)
 
-        # -- proxy path --
-        if self.x509userproxy:
-            self.JSD.add("x509userproxy", "%s" % self.x509userproxy)
-        
+       
         self.JSD.add("executable", "%s" % self.executable)
         self.JSD.add('arguments', '%s' % self.arguments)
 
