@@ -373,8 +373,8 @@ x509UserProxyVOName = "atlas"
         ###     st, out = exitStatus, output
 
         req = CondorRequest()
-        req.cmd = 'condor_submit -verbose '
-        args = ' '
+        req.cmd = 'condor_submit'
+        args = ' -verbose '
         if self.submitargs:
             args += self.submitargs
             args += ' '
