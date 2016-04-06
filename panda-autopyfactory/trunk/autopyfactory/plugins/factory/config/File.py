@@ -54,7 +54,7 @@ class File(ConfigInterface):
             if qcf and qcd:
                 self.log.trace("both queues file(s) and dir")
                 qcl = qcl_files
-                self.qcl.merge(qcl_dir)
+                qcl.merge(qcl_dir)
             elif qcf and not qcd:
                 self.log.trace("queues file(s) only")
                 qcl = qcl_files
