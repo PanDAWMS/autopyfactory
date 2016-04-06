@@ -14,21 +14,21 @@ class CondorLocal(CondorBase):
     '''
     
     def __init__(self, apfqueue, config=None):
-        
-           
+
+        if not config:
+            qcl = apfqueue.qcl            
+        else:
+            qcl = config             
+
+        newqcl = qcl.clone().filterkeys('batchsubmit.condorlocal', 'batchsubmit.condorbase')           
         super(CondorLocal, self).__init__(apfqueue, config=newqcl) 
+        
         plist = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.proxy')
         # This is alist of proxy profile names specified in proxy.conf
         # We will only attempt to derive proxy file path during submission
         if plist:
             self.proxylist = [x.strip() for x in plist.split(',')]
-        newqcl = qcl.clone().filterkeys('batchsubmit.condorlocal', 'batchsubmit.condorbase')        
-
-        if not config:
-            qcl = apfqueue.qcl            
-        else:
-            qcl = config        
-        
+           
         self.log.info('CondorLocal: Object initialized.')
 
     def _getX509Proxy(self):
