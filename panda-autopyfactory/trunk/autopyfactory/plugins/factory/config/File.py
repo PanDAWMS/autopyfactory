@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import logging
+import os
 
 from autopyfactory.apfexceptions import ConfigFailure
 from autopyfactory.configloader import Config, ConfigManager
@@ -37,8 +38,14 @@ class File(ConfigInterface):
             if qcd == "None" or qcd == "":
                 qcd = None
             if qcd:
-                self.log.debug("queues.conf directory = %s" % qcd)
-                qcl_dir = ConfigManager().getConfig(configdir=qcd)
+                # FIXME : temporary solution. 
+                #         The ConfigManager.getConfig( ) method should know how to handle properly empty directories
+                if os.listdir(qcd) == []:
+                    self.log.debug("queues.conf directory = %s exists but it is empty" % qcd)
+                    qcd = None
+                else:
+                    self.log.debug("queues.conf directory = %s" % qcd)
+                    qcl_dir = ConfigManager().getConfig(configdir=qcd)
         except:
             pass
         
