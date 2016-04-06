@@ -352,7 +352,6 @@ x509UserProxyVOName = "atlas"
         '''
         Submit pilots
         '''
-
         self.log.trace('Starting.')
 
         self.log.info('Attempt to submit %d pilots for queue %s' %(n, self.wmsqueue))
@@ -374,10 +373,11 @@ x509UserProxyVOName = "atlas"
         ###     st, out = exitStatus, output
 
         req = CondorRequest()
-        req.cmd = 'condor_submit'
-        args = ''
+        req.cmd = 'condor_submit -verbose '
+        args = ' '
         if self.submitargs:
             args += self.submitargs
+            args += ' '
         args += ' ' + jsdfile
         req.args = args
         self.factory.condorrequestsqueue.put(req)
