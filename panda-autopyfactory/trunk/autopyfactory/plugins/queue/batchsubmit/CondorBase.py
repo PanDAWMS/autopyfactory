@@ -14,8 +14,8 @@ import traceback
 
 
 from autopyfactory import condor 
+from autopyfactory.condor  import mynewsubmit
 from autopyfactory import jsd
-from autopyfactory.condor import CondorRequest
 from autopyfactory.interfaces import BatchSubmitInterface
 from autopyfactory.info import JobInfo
 import autopyfactory.utils as utils
@@ -93,7 +93,10 @@ class CondorBase(BatchSubmitInterface):
                 self._finishJSD(n)
                 jsdfile = self._writeJSD()
                 if jsdfile:
-                    st, output = self.__submit(n, jsdfile)
+                    #st, output = self.__submit(n, jsdfile)
+                    # FIXME:
+                    # factory, wmsqueue and submitargs should not be necessary
+                    st, output = mynewsubmit(n, jsdfile, self.factory, self.wmsqueue, self.submitargs)
                     self.log.trace('Got output (%s, %s).' %(st, output)) 
                     joblist = self._parseCondorSubmit(output)
                 else:
@@ -348,52 +351,6 @@ x509UserProxyVOName = "atlas"
         return fields
 
  
-    def __submit(self, n, jsdfile):
-        '''
-        Submit pilots
-        '''
-        self.log.trace('Starting.')
-
-        self.log.info('Attempt to submit %d pilots for queue %s' %(n, self.wmsqueue))
-
-        ###     cmd = 'condor_submit -verbose '
-        ###     self.log.trace('submitting using executable condor_submit from PATH=%s' %utils.which('condor_submit'))
-        ###     # NOTE: -verbose is needed. 
-        ###     # The output generated with -verbose is parsed by the monitor code to determine the number of jobs submitted
-        ###     if self.submitargs:
-        ###         cmd += self.submitargs
-        ###     cmd += ' ' + jsdfile
-        ###     self.log.info('command = %s' %cmd)
-        ###
-        ###     (exitStatus, output) = commands.getstatusoutput(cmd)
-        ###     if exitStatus != 0:
-        ###         self.log.error('condor_submit command for %s failed (status %d): %s', self.wmsqueue, exitStatus, output)
-        ###     else:
-        ###         self.log.info('condor_submit command for %s succeeded', self.wmsqueue)
-        ###     st, out = exitStatus, output
-
-        req = CondorRequest()
-        req.cmd = 'condor_submit'
-        args = ' -verbose '
-        if self.submitargs:
-            args += self.submitargs
-            args += ' '
-        args += ' ' + jsdfile
-        req.args = args
-        self.factory.condorrequestsqueue.put(req)
-        
-        while not req.out:
-            time.sleep(1)
-        out = req.out
-        st = req.rc
-        if st != 0:
-            self.log.error('condor_submit command for %s failed (status %d): %s', self.wmsqueue, st, out)
-        else:
-            self.log.info('condor_submit command for %s succeeded', self.wmsqueue)
-
-        self.log.trace('Leaving with output (%s, %s).' %(st, out))
-        return st, out
-
 
     def _custom_attrs(self):
         ''' 
