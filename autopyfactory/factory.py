@@ -495,8 +495,6 @@ class Factory(object):
 
         self._plugins()
 
-        self._serialization()
-
         # Log some info...
         self.log.trace('Factory shell PATH: %s' % os.getenv('PATH') )     
         self.log.info("Factory: Object initialized.")
@@ -582,18 +580,6 @@ class Factory(object):
     
         fpd = FactoryPluginDispatcher(self)
         self.config_plugins = fpd.getconfigplugin()
-
-    
-    def _serialization(self):
-        '''
-        here we setup everything needed to 
-        queue condor tasks
-        '''
-
-        # thread that process objects in condorrequestqueue
-        self.processcondorrequests = ProcessCondorRequests(self)
-        self.processcondorrequests.start()
-
 
 
     def _initLogserver(self):

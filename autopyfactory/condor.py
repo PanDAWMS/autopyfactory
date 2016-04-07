@@ -24,6 +24,11 @@ from datetime import datetime
 from pprint import pprint
 from Queue import Queue
 
+
+
+
+# FIXME !!!
+# this should not be here !!!
 condorrequestsqueue = Queue()
 
 
@@ -54,6 +59,12 @@ def mynewsubmit(n, jsdfile, factory, wmsqueue, submitargs=None):
     ###     else:
     ###         self.log.info('condor_submit command for %s succeeded', self.wmsqueue)
     ###     st, out = exitStatus, output
+
+    # FIXME:
+    # maybe this should not be here???
+    processcondorrequests = ProcessCondorRequests()
+    processcondorrequests.start()
+
 
     req = CondorRequest()
     req.cmd = 'condor_submit'
@@ -611,18 +622,46 @@ class CondorRequest(object):
         self.postcmd = None
 
 
+# FIXME
+# if we really need a Singleton, reuse the one in interfaces.py
+class Singleton(type):
+    '''
+    -----------------------------------------------------------------------
+    Ancillary class to be used as metaclass to make other classes Singleton.
+    -----------------------------------------------------------------------
+    '''
+    
+    def __init__(cls, name, bases, dct):
+        cls.__instance = None 
+        type.__init__(cls, name, bases, dct)
+    def __call__(cls, *args, **kw): 
+        if cls.__instance is None:
+            cls.__instance = type.__call__(cls, *args,**kw)
+        return cls.__instance
+
+
 class ProcessCondorRequests(threading.Thread):
     '''
     class to process objects
     of class CondorRequest()
     '''
 
+    __metaclass__ = Singleton
+
     def __init__(self, factory):
 
+        self.started = False
         threading.Thread.__init__(self)
         self.stopevent = threading.Event()
         
         self.factory = factory
+
+
+    def start(self):
+        if not self.started:
+            threading.Thread.start(self)
+            self.started = True
+
 
     def run(self):
 
