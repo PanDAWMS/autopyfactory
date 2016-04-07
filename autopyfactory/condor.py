@@ -536,24 +536,6 @@ def killids(idlist):
         out = None
     
 
-def submit(req):
-    '''
-    req is an object of class CondorRequest()
-    '''
-
-    cmd = req.cmd
-    if req.args:
-        cmd += req.args
-    
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    (out, err) = p.communicate()
-    rc = p.returncode
-
-    req.out = out
-    req.err = err
-    req.rc = rc
-
-
 class CondorRequest(object):
     '''
     class to define any arbitrary condor task 
@@ -599,6 +581,27 @@ class ProcessCondorRequests(threading.Thread):
     def join(self):
         self.stopevent.set()
         threading.Thread.join(self)
+
+
+    def submit(self, req):
+        '''
+        req is an object of class CondorRequest()
+        '''
+    
+        cmd = req.cmd
+        if req.args:
+            cmd += req.args
+        
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        (out, err) = p.communicate()
+        rc = p.returncode
+    
+        req.out = out
+        req.err = err
+        req.rc = rc
+
+
+
 
 ##############################################################################
 
