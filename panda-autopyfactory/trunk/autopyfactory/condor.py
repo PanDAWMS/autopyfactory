@@ -39,7 +39,7 @@ def mynewsubmit(n, jsdfile, factory, wmsqueue, submitargs=None):
     Submit pilots
     '''
     
-    log = logging.getLogger()
+    log = logging.getLogger() # FIXME !!
     log.trace('Starting.')
 
     log.info('Attempt to submit %d pilots for queue %s' %(n, wmsqueue))
@@ -185,7 +185,7 @@ x509userproxy = "/tmp/prodProxy"
 x509UserProxyVOName = "atlas"
     '''
 
-    log = logging.getLogger() 
+    log = logging.getLogger() # FIXME !! 
     now = datetime.datetime.utcnow()
     joblist = []
     lines = output.split('\n')
@@ -273,7 +273,7 @@ def mincondorversion(major, minor, release):
     
     '''
 
-    log = logging.getLogger()
+    log = logging.getLogger() # FIXME !!
     s,o = commands.getstatusoutput('condor_version')
     if s == 0:
         cvstr = o.split()[1]
@@ -302,7 +302,7 @@ def checkCondor():
     '''
     
     # print condor version
-    log = logging.getLogger()
+    log = logging.getLogger() # FIXME !!
     (s,o) = commands.getstatusoutput('condor_version')
     if s == 0:
         log.trace('Condor version is: \n%s' % o )       
@@ -320,7 +320,7 @@ def statuscondor(queryargs = None):
     '''
     Return info about job startd slots. 
     '''
-    log = logging.getLogger()
+    log = logging.getLogger() # FIXME !!
     cmd = 'condor_status -xml '
     if queryargs:
         cmd += queryargs
@@ -342,7 +342,7 @@ def statuscondormaster(queryargs = None):
     '''
     Return info about masters. 
     '''
-    log = logging.getLogger()
+    log = logging.getLogger() # FIXME !!
     cmd = 'condor_status -master -xml '
     if queryargs:
         cmd += queryargs
@@ -372,7 +372,7 @@ def querycondor(queryargs=None):
     queryargs are possible extra query arguments from queues.conf 
     '''
 
-    log = logging.getLogger()
+    log = logging.getLogger() # FIXME !!
     log.trace('Starting.')
     querycmd = "condor_q "
     log.trace('_querycondor: using executable condor_q in PATH=%s' %utils.which('condor_q'))
@@ -415,7 +415,7 @@ def querycondorxml(queryargs=None):
     '''
     Return human readable info about startds. 
     '''
-    log = logging.getLogger()
+    log = logging.getLogger() # FIXME !!
     cmd = 'condor_q -xml '
 
     # adding extra query args from queues.conf
@@ -440,7 +440,7 @@ def querycondorxml(queryargs=None):
 
 
 def xml2nodelist(input):
-    log = logging.getLogger()
+    log = logging.getLogger() # FIXME !!
     xmldoc = xml.dom.minidom.parseString(input).documentElement
     nodelist = []
     for c in listnodesfromxml(xmldoc, 'c') :
@@ -480,7 +480,7 @@ def parseoutput(output):
     
     '''
 
-    log=logging.getLogger()
+    log=logging.getLogger() # FIXME !!
     log.trace('Starting.')                
 
     # first convert the XML output into a list of XML docs
@@ -539,7 +539,7 @@ def node2dict(node):
     
     
     '''
-    log = logging.getLogger()
+    log = logging.getLogger() # FIXME !!
     dic = {}
     for child in node.childNodes:
         if child.nodeType == child.ELEMENT_NODE:
@@ -592,7 +592,7 @@ def aggregateinfo(input):
     If input is empty list, output is empty dictionary
                  
     '''
-    log=logging.getLogger()
+    log=logging.getLogger() # FIXME !!
     log.trace('Starting with list of %d items.' % len(input))
     queues = {}
     for item in input:
@@ -635,7 +635,7 @@ def aggregateinfo(input):
   
 
 def getJobInfo():
-    log = logging.getLogger()
+    log = logging.getLogger() # FIXME !!
     xml = querycondorxml()
     nl = xml2nodelist(xml)
     log.debug("Got node list of length %d" % len(nl))
@@ -675,7 +675,7 @@ def getJobInfo():
 
 
 def getStartdInfoByEC2Id():
-    log = logging.getLogger()
+    log = logging.getLogger() # FIXME !!
     out = statuscondor()
     nl = xml2nodelist(out)
     infolist = {}
@@ -702,7 +702,7 @@ def killids(idlist):
     Idlist is assumed to be a list of complete ids (<clusterid>.<procid>)
      
     '''
-    log = logging.getLogger()
+    log = logging.getLogger() # FIXME !!
     idstring = ' '.join(idlist)
     cmd = 'condor_rm %s' % idstring
     log.trace('Issuing remove cmd = %s' %cmd.replace('\n','\\n'))
