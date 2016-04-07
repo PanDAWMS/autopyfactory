@@ -98,7 +98,7 @@ class CondorBase(BatchSubmitInterface):
                     # factory, wmsqueue and submitargs should not be necessary
                     st, output = mynewsubmit(n, jsdfile, self.factory, self.wmsqueue, self.submitargs)
                     self.log.trace('Got output (%s, %s).' %(st, output)) 
-                    joblist = self._parseCondorSubmit(output)
+                    joblist = condor.parsecondorsubmit(output)
                 else:
                     self.log.debug('jsdfile has no value. Doing nothing')
             elif n < 0:
@@ -125,127 +125,9 @@ class CondorBase(BatchSubmitInterface):
 
     def cleanup(self):
         '''
-        
         '''
         self.log.info("Cleanup called. Noop.")
   
-    def _parseCondorSubmit(self, output):
-        '''
-        Parses raw output from condor_submit -verbose and returns list of JobInfo objects. 
-        
-        condor_submit -verbose output:
-                
-** Proc 769012.0:
-Args = "--wrappergrid=OSG --wrapperwmsqueue=BNL_CVMFS_1 --wrapperbatchqueue=BNL_CVMFS_1-condor --wrappervo=ATLAS --wrappertarballurl=http://dev.racf.bnl.gov/dist/wrapper/wrapper-0.9.7-0.9.3.tar.gz --wrapperserverurl=http://pandaserver.cern.ch:25080/cache/pilot --wrapperloglevel=debug --script=pilot.py --libcode=pilotcode.tar.gz,pilotcode-rc.tar.gz --pilotsrcurl=http://panda.cern.ch:25880/cache -f false -m false --user managed"
-BufferBlockSize = 32768
-BufferSize = 524288
-Cmd = "/usr/libexec/wrapper.sh"
-CommittedSlotTime = 0
-CommittedSuspensionTime = 0
-CommittedTime = 0
-CompletionDate = 0
-CondorPlatform = "$CondorPlatform: X86_64-CentOS_5.8 $"
-CondorVersion = "$CondorVersion: 7.9.0 Jun 19 2012 PRE-RELEASE-UWCS $"
-CoreSize = 0
-CumulativeSlotTime = 0
-CumulativeSuspensionTime = 0
-CurrentHosts = 0
-CurrentTime = time()
-DiskUsage = 22
-EC2TagNames = "(null)"
-EnteredCurrentStatus = 1345558923
-Environment = "FACTORYUSER=apf APFFID=BNL-gridui08-jhover APFMON=http://apfmon.lancs.ac.uk/mon/ APFCID=769012.0 PANDA_JSID=BNL-gridui08-jhover FACTORYQUEUE=BNL_CVMFS_1-gridgk07 GTAG=http://gridui08.usatlas.bnl.gov:25880/2012-08-21/BNL_CVMFS_1-gridgk07/769012.0.out"
-Err = "/home/apf/factory/logs/2012-08-21/BNL_CVMFS_1-gridgk07//769012.0.err"
-ExecutableSize = 22
-ExitBySignal = false
-ExitStatus = 0
-GlobusResubmit = false
-GlobusRSL = "(jobtype=single)(queue=cvmfs)"
-GlobusStatus = 32
-GridResource = "gt5 gridgk07.racf.bnl.gov/jobmanager-condor"
-ImageSize = 22
-In = "/dev/null"
-Iwd = "/home/apf/factory/logs/2012-08-21/BNL_CVMFS_1-gridgk07"
-JobNotification = 3
-JobPrio = 0
-JobStatus = 1
-JobUniverse = 9
-KillSig = "SIGTERM"
-LastSuspensionTime = 0
-LeaveJobInQueue = false
-LocalSysCpu = 0.0
-LocalUserCpu = 0.0
-MATCH_APF_QUEUE = "BNL_CVMFS_1-gridgk07"
-MaxHosts = 1
-MinHosts = 1
-MyType = "Job"
-NiceUser = false
-Nonessential = true
-NotifyUser = "jhover@bnl.gov"
-NumCkpts = 0
-NumGlobusSubmits = 0
-NumJobStarts = 0
-NumRestarts = 0
-NumSystemHolds = 0
-OnExitHold = false
-OnExitRemove = true
-Out = "/home/apf/factory/logs/2012-08-21/BNL_CVMFS_1-gridgk07//769012.0.out"
-Owner = "apf"
-PeriodicHold = false
-PeriodicRelease = false
-PeriodicRemove = false
-QDate = 1345558923
-Rank = 0.0
-RemoteSysCpu = 0.0
-RemoteUserCpu = 0.0
-RemoteWallClockTime = 0.0
-RequestCpus = 1
-RequestDisk = DiskUsage
-RequestMemory = ifthenelse(MemoryUsage =!= undefined,MemoryUsage,( ImageSize + 1023 ) / 1024)
-Requirements = true
-RootDir = "/"
-ShouldTransferFiles = "YES"
-StreamErr = false
-StreamOut = false
-TargetType = "Machine"
-TotalSuspensions = 0
-TransferIn = false
-UserLog = "/home/apf/factory/logs/2012-08-21/BNL_CVMFS_1-gridgk07/769012.0.log"
-WantCheckpoint = false
-WantClaiming = false
-WantRemoteIO = true
-WantRemoteSyscalls = false
-WhenToTransferOutput = "ON_EXIT_OR_EVICT"
-x509UserProxyEmail = "jhover@bnl.gov"
-x509UserProxyExpiration = 1346126473
-x509UserProxyFirstFQAN = "/atlas/usatlas/Role=production/Capability=NULL"
-x509UserProxyFQAN = "/DC=org/DC=doegrids/OU=People/CN=John R. Hover 47116,/atlas/usatlas/Role=production/Capability=NULL,/atlas/lcg1/Role=NULL/Capability=NULL,/atlas/usatlas/Role=NULL/Capability=NULL,/atlas/Role=NULL/Capability=NULL"
-x509userproxysubject = "/DC=org/DC=doegrids/OU=People/CN=John R. Hover 47116"
-x509userproxy = "/tmp/prodProxy"
-x509UserProxyVOName = "atlas"
-
-        '''
-        
-        self.log.trace('Starting')
-
-        now = datetime.datetime.utcnow()
-        joblist = []
-        lines = output.split('\n')
-        for line in lines:
-            jobidline = None
-            if line.strip().startswith('**'):
-                jobidline = line.split()
-                procid = jobidline[2]
-                procid = procid.replace(':','') # remove trailing colon
-                ji = JobInfo(procid, 'submitted', now)
-                joblist.append(ji)
-        if not len(joblist) > 0:
-            self.log.trace('joblist has length 0, returning None')
-            joblist = None
-
-        self.log.trace('Leaving with joblist = %s' %joblist )
-        return joblist
-        
     
     def _calculateDateDir(self):
         '''
