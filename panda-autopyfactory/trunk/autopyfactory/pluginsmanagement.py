@@ -152,7 +152,7 @@ class QueuePluginDispatcher(object):
 
     def getsubmitplugin(self):
     
-        batchsubmit_plugin_handler = self._getplugin('queue', 'batchsubmit')[0]
+        batchsubmit_plugin_handler = self._getplugin('queue', 'submit')[0]
         batchsubmit_cls = batchsubmit_plugin_handler.plugin_class
     
         # calls __init__() to instantiate the class
