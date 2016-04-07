@@ -22,6 +22,61 @@ from autopyfactory.apfexceptions import ConfigFailure, CondorVersionFailure
 
 from datetime import datetime
 from pprint import pprint
+from Queue import Queue
+
+condorrequestsqueue = Queue()
+
+
+# FIXME
+# factory, submitargs and wmsqueue should not be needed
+def mynewsubmit(n, jsdfile, factory, wmsqueue, submitargs=None):
+    '''
+    Submit pilots
+    '''
+    
+    log = logging.getLogger()
+    log.trace('Starting.')
+
+    log.info('Attempt to submit %d pilots for queue %s' %(n, wmsqueue))
+
+    ###     cmd = 'condor_submit -verbose '
+    ###     self.log.trace('submitting using executable condor_submit from PATH=%s' %utils.which('condor_submit'))
+    ###     # NOTE: -verbose is needed. 
+    ###     # The output generated with -verbose is parsed by the monitor code to determine the number of jobs submitted
+    ###     if self.submitargs:
+    ###         cmd += self.submitargs
+    ###     cmd += ' ' + jsdfile
+    ###     self.log.info('command = %s' %cmd)
+    ###
+    ###     (exitStatus, output) = commands.getstatusoutput(cmd)
+    ###     if exitStatus != 0:
+    ###         self.log.error('condor_submit command for %s failed (status %d): %s', self.wmsqueue, exitStatus, output)
+    ###     else:
+    ###         self.log.info('condor_submit command for %s succeeded', self.wmsqueue)
+    ###     st, out = exitStatus, output
+
+    req = CondorRequest()
+    req.cmd = 'condor_submit'
+    args = ' -verbose '
+    if submitargs:
+        args += submitargs
+        args += ' '
+    args += ' ' + jsdfile
+    req.args = args
+    condorrequestsqueue.put(req)
+
+    while not req.out:
+        time.sleep(1)
+    out = req.out
+    st = req.rc
+    if st != 0:
+        log.error('condor_submit command for %s failed (status %d): %s', wmsqueue, st, out)
+    else:
+        log.info('condor_submit command for %s succeeded', wmsqueue)
+
+    log.trace('Leaving with output (%s, %s).' %(st, out))
+    return st, out
+
 
 
 def querycondorlib():
@@ -573,8 +628,10 @@ class ProcessCondorRequests(threading.Thread):
 
         while not self.stopevent.isSet():
             time.sleep(5) # FIXME, find a proper number. Maybe a config variable???
-            if not self.factory.condorrequestsqueue.empty():
-                req = self.factory.condorrequestsqueue.get() 
+            ###if not self.factory.condorrequestsqueue.empty():
+            ###    req = self.factory.condorrequestsqueue.get() 
+            if not condorrequestsqueue.empty():
+                req = condorrequestsqueue.get() 
                 if req.cmd == 'condor_submit':       
                     submit(req)    
 
