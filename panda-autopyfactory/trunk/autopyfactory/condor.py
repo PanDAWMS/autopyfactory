@@ -790,7 +790,7 @@ def querycondorlib(args):
     list_attrs = ['match_apf_queue', 'jobstatus', 'ec2instanceid']
     out = schedd.query('true', list_attrs)
     out = aggregateinfolib(out) 
-    log.debug(out)
+    log.trace(out)
     return out 
 
 def aggregateinfolib(input):
@@ -818,7 +818,7 @@ def aggregateinfolib(input):
 
        queues[apfqname][jobstatus] += 1
     
-    log.debug(queues)
+    log.trace(queues)
     return queues
 
 
