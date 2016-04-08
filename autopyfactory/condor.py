@@ -205,51 +205,6 @@ x509UserProxyVOName = "atlas"
     return joblist
 
 
-
-
-def querycondorlib():
-    '''
-    queries condor to get a list of ClassAds objects
-    We query for a few specific ClassAd attributes
-    (faster than getting everything)
-    '''
-    
-    # We only want to try to import if we are actually using the call...
-    # Later on we will need to handle Condor version >7.9.4 and <7.9.4
-    #
-    import htcondor
-    import classad
-    
-    schedd = htcondor.Schedd() # Defaults to the local schedd.
-    list_attrs = ['match_apf_queue', 'globusstatus', 'jobstatus', 'ec2instanceid']
-    outlist = schedd.query('true', list_attrs)
-    return outlist
-
-
-def querystatuslib():
-    '''
-    Equivalent to condor_status
-    We query for a few specific ClassAd attributes 
-    (faster than getting everything)
-    Output of collector.query(htcondor.AdTypes.Startd) looks like
-
-     [
-      [ Name = "slot1@mysite.net"; Activity = "Idle"; MyType = "Machine"; TargetType = "Job"; State = "Unclaimed"; CurrentTime = time() ], 
-      [ Name = "slot2@mysite.net"; Activity = "Idle"; MyType = "Machine"; TargetType = "Job"; State = "Unclaimed"; CurrentTime = time() ]
-     ]
-    '''
-    # We only want to try to import if we are actually using the call...
-    # Later on we will need to handle Condor version >7.9.4 and <7.9.4
-    #
-    import htcondor
-    import classad
-
-    collector = htcondor.Collector()
-    list_attrs = ['Name', 'State', 'Activity']
-    outlist = collector.query(htcondor.AdTypes.Startd, 'true', list_attrs)
-    return outlist
-
-
 def classad2dict(outlist):
     '''
     convert each ClassAd object into a python dictionary.
@@ -812,6 +767,82 @@ class ProcessCondorRequests(threading.Thread):
         req.out = out
         req.err = err
         req.rc = rc
+
+
+
+#############################################################################
+#               using HTCondor python bindings
+#############################################################################
+
+import htcondor
+import classad
+import copy
+
+def querycondorlib(args):
+    ''' 
+    queries condor to get a list of ClassAds objects
+    We query for a few specific ClassAd attributes
+    (faster than getting everything)
+    '''
+    log = logging.getLogger() # FIXME !!
+
+    schedd = htcondor.Schedd() # Defaults to the local schedd.
+    list_attrs = ['match_apf_queue', 'jobstatus', 'ec2instanceid']
+    out = schedd.query('true', list_attrs)
+    out = aggregateinfolib(out) 
+    log.debug(out)
+    return out 
+
+def aggregateinfolib(input):
+    
+    log = logging.getLogger() # FIXME !!
+
+    emptydict = {'0' : 0,
+                 '1' : 0,
+                 '2' : 0,
+                 '3' : 0,
+                 '4' : 0,
+                 '5' : 0,
+                 '6' : 0}
+
+    queues = {}
+    for job in input:
+       if not 'match_apf_queue' in job.keys():
+           # This job is not managed by APF. Ignore...
+           continue
+       apfqname = job['match_apf_queue']
+       if apfqname not in queues.keys():
+           queues[apfqname] = copy.copy(emptydict)
+
+       jobstatus = str(job['jobstatus'])
+
+       queues[apfqname][jobstatus] += 1
+    
+    log.debug(queues)
+    return queues
+
+
+def querystatuslib():
+    ''' 
+    Equivalent to condor_status
+    We query for a few specific ClassAd attributes 
+    (faster than getting everything)
+    Output of collector.query(htcondor.AdTypes.Startd) looks like
+
+     [
+      [ Name = "slot1@mysite.net"; Activity = "Idle"; MyType = "Machine"; TargetType = "Job"; State = "Unclaimed"; CurrentTime = time() ], 
+      [ Name = "slot2@mysite.net"; Activity = "Idle"; MyType = "Machine"; TargetType = "Job"; State = "Unclaimed"; CurrentTime = time() ]
+     ]
+    '''
+    # We only want to try to import if we are actually using the call...
+    # Later on we will need to handle Condor version >7.9.4 and <7.9.4
+    #
+
+    collector = htcondor.Collector()
+    list_attrs = ['Name', 'State', 'Activity']
+    outlist = collector.query(htcondor.AdTypes.Startd, 'true', list_attrs)
+    return outlist
+
 
 
 
