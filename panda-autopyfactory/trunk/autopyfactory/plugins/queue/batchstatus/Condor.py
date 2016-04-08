@@ -159,6 +159,7 @@ class Condor(threading.Thread, BatchStatusInterface):
         while not self.stopevent.isSet():
             try:
                 self._update()
+                #self._updatelib()
             except Exception, e:
                 self.log.error("Main loop caught exception: %s " % str(e))
             self.log.trace("Sleeping for %d seconds..." % self.sleeptime)
@@ -334,6 +335,66 @@ class Condor(threading.Thread, BatchStatusInterface):
             self.log.trace('Queue %s = %s' % (site, batchstatusinfo[site]))           
         return batchstatusinfo 
 
+
+###############################################################################
+#               playing with the HTcondor python bindings
+###############################################################################
+
+    def _updatelib(self):
+
+        self.log.trace('Starting.')
+        self.log.debug('Starting.')
+
+        if not utils.checkDaemon('condor'):
+            self.log.error('condor daemon is not running. Doing nothing')
+        else:
+            try:
+                strout = querycondorlib(self.queryargs)
+                self.log.debug('>>> output of querycondorlib : ' %strout)
+                if not strout:
+                    self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.')
+                else:
+                    newinfo = self._map2infolib(strout)
+                    self.log.info("Replacing old info with newly generated info.")
+                    self.currentinfo = newinfo
+            except Exception, e:
+                self.log.error("Exception: %s" % str(e))
+                self.log.trace("Exception: %s" % traceback.format_exc())
+
+        self.log.trace('Leaving.')
+
+
+
+    def _map2infolib(self, input):
+        '''
+        devel version of _map2info( ) to process the output of condor query 
+        methods using the python bindings.
+
+        Also, assumes that no more globusstatus, only jobstatus
+        is in the output 
+        '''
+
+
+        self.log.trace('Starting.')
+        batchstatusinfo = BatchStatusInfo()
+        for site in input.keys():
+            qi = QueueInfo()
+            batchstatusinfo[site] = qi
+            attrdict = input[site]
+
+            qi.fill(attrdict, mappings=self.jobstatus2info)
+
+        batchstatusinfo.lasttime = int(time.time())
+        self.log.trace('Returning : %s' % batchstatusinfo )
+        for site in batchstatusinfo.keys():
+            self.log.trace('Queue %s = %s' % (site, batchstatusinfo[site]))
+            self.log.debug('>>> Queue %s = %s' % (site, batchstatusinfo[site]))
+        return batchstatusinfo
+
+
+
+###############################################################################
+
 def test1():
     from autopyfactory.test import MockAPFQueue
     
@@ -346,8 +407,6 @@ def test1():
         except KeyboardInterrupt:
             bsp.stopevent.set()
             sys.exit(0)    
-
-
 
 
 if __name__ == '__main__':
