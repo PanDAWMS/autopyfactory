@@ -113,6 +113,7 @@ class CondorBase(BatchSubmitInterface):
         except Exception, e:
             self.log.error('Exception during submit processing. Exception: %s' % e)
             self.log.error("Exception: %s" % traceback.format_exc())
+        # we return the joblist so it can be sent to the monitor
         return joblist
         
 
