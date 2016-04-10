@@ -178,6 +178,38 @@ def which(file):
                 return path + "/" + file
 
 
+def renamekeys(dict, mappings):
+    """
+    function to change the keys of a dictionary
+    according to the mappings.
+    For example:
+
+        dict = {'a':1,
+                'b':2,
+                'c':3,
+                'd':4}
+
+        mapppings = {'a':'A',
+                     'b':'B',
+                     'c':'C',
+                     'd':'D',
+                     'e':'E'}
+
+    returns
+
+        {'A':1,
+         'B':2,
+         'C':3,
+         'D':4}
+    """
+
+    for k in dict.keys():
+        dict[mappings[k]] = dict.pop(k)
+    return dict
+
+
+
+
 if __name__ == "__main__":
         
     try:
