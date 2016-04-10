@@ -351,8 +351,8 @@ class Condor(threading.Thread, BatchStatusInterface):
             self.log.error('condor daemon is not running. Doing nothing')
         else:
             try:
-                strout = querycondorlib(self.queryargs)
-                self.log.debug('>>> output of querycondorlib : ' %strout)
+                strout = querycondorlib()
+                self.log.debug('output of querycondorlib : ' %strout)
                 if not strout:
                     self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.')
                 else:
@@ -390,7 +390,6 @@ class Condor(threading.Thread, BatchStatusInterface):
         self.log.trace('Returning : %s' % batchstatusinfo )
         for site in batchstatusinfo.keys():
             self.log.trace('Queue %s = %s' % (site, batchstatusinfo[site]))
-            self.log.debug('>>> Queue %s = %s' % (site, batchstatusinfo[site]))
         return batchstatusinfo
 
 
