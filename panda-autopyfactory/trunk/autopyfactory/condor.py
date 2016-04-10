@@ -793,9 +793,9 @@ def querycondorlib(remote=None):
         collector = htcondor.collector(htcondor.param['COLLECTOR_HOST'])
         scheddAd = collector.locate(condor.DaemonTypes.Schedd, remote)
         schedd = htcondor.Schedd(scheddAd) 
+    else:
+        schedd = htcondor.Schedd() # Defaults to the local schedd.
 
-    # if local...
-    schedd = htcondor.Schedd() # Defaults to the local schedd.
     list_attrs = ['match_apf_queue', 'jobstatus', 'ec2instanceid']
     out = schedd.query('true', list_attrs)
     out = aggregateinfolib(out) 
