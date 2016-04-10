@@ -778,14 +778,23 @@ import htcondor
 import classad
 import copy
 
-def querycondorlib(args):
+def querycondorlib(remote=None):
     ''' 
     queries condor to get a list of ClassAds objects
     We query for a few specific ClassAd attributes
     (faster than getting everything)
+    
     '''
     log = logging.getLogger() # FIXME !!
 
+    if remote:
+        # FIXME: to be tested
+        log.debug("querying remote pool %s" %remote)
+        collector = htcondor.collector(htcondor.param['COLLECTOR_HOST'])
+        scheddAd = collector.locate(condor.DaemonTypes.Schedd, remote)
+        schedd = htcondor.Schedd(scheddAd) 
+
+    # if local...
     schedd = htcondor.Schedd() # Defaults to the local schedd.
     list_attrs = ['match_apf_queue', 'jobstatus', 'ec2instanceid']
     out = schedd.query('true', list_attrs)
