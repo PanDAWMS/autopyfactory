@@ -778,20 +778,25 @@ import htcondor
 import classad
 import copy
 
-def querycondorlib(remote=None):
+def querycondorlib(remotecollector=None, remoteschedd=None):
     ''' 
     queries condor to get a list of ClassAds objects
     We query for a few specific ClassAd attributes
     (faster than getting everything)
-    
+
+    remotecollector and remoteschedd
+    are passed when querying a remote HTCondor pool 
+    They are the equivalent to -pool and -name input
+    options to CLI condor_q
     '''
+
     log = logging.getLogger() # FIXME !!
 
-    if remote:
+    if remotecollector:
         # FIXME: to be tested
-        log.debug("querying remote pool %s" %remote)
-        collector = htcondor.collector(htcondor.param['COLLECTOR_HOST'])
-        scheddAd = collector.locate(condor.DaemonTypes.Schedd, remote)
+        log.debug("querying remote pool %s" %remotecollector)
+        collector = htcondor.collector(remotecollector)
+        scheddAd = collector.locate(condor.DaemonTypes.Schedd, remoteschedd)
         schedd = htcondor.Schedd(scheddAd) 
     else:
         schedd = htcondor.Schedd() # Defaults to the local schedd.
