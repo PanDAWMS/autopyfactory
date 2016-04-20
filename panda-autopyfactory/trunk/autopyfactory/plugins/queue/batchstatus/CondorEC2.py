@@ -589,7 +589,7 @@ class CondorEC2JobInfo(object):
         ec2instancename -> ec2instanceid
         
         '''
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('main.condorec2jobinfo')
         self.jobattrs = []
         for k in dict.keys():
             self.__setattr__(k,dict[k])
@@ -646,7 +646,7 @@ class CondorSlotInfo(object):
                 Suspended
 
         '''
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('main.condorslotinfo')
         self.instanceid = instanceid
         self.machine = machine
         self.state = state
@@ -692,7 +692,7 @@ class CondorExecuteInfo(object):
                 Retiring 
                 Suspended                 
         '''
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('main.condorexecuteinfo')
         # EC2 instance id
         self.instanceid = instanceid
         # Condor Machine name, usually internal hostname

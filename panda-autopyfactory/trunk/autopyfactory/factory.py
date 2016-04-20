@@ -262,7 +262,7 @@ Jose Caballero <jcaballero@bnl.gov>
            Info: http://docs.python.org/howto/logging.html#logging-advanced-tutorial  
 
         """
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('main')
         if self.options.logfile == "stdout":
             logStream = logging.StreamHandler()
         elif self.options.logfile == 'syslog':
