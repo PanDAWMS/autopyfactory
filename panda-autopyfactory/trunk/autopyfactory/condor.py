@@ -62,7 +62,7 @@ def mynewsubmit(n, jsdfile, factory, wmsqueue, submitargs=None):
 
     # FIXME:
     # maybe this should not be here???
-    processcondorrequests = ProcessCondorRequests()
+    processcondorrequests = ProcessCondorRequests(factory)
     processcondorrequests.start()
 
 
@@ -744,7 +744,7 @@ class ProcessCondorRequests(threading.Thread):
             if not condorrequestsqueue.empty():
                 req = condorrequestsqueue.get() 
                 if req.cmd == 'condor_submit':       
-                    submit(req)    
+                    self.submit(req)    
 
     def join(self):
         self.stopevent.set()

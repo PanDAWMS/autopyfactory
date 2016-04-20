@@ -46,7 +46,7 @@ class Condor(threading.Thread, BatchStatusInterface):
 
         threading.Thread.__init__(self) # init the thread
         
-        self.log = logging.getLogger("batchstatusplugin[singleton: %s condor_q_id: %s]" %(apfqueue.apfqname, kw['condor_q_id']))
+        self.log = logging.getLogger("main.batchstatusplugin[singleton: %s condor_q_id: %s]" %(apfqueue.apfqname, kw['condor_q_id']))
         self.log.trace('BatchStatusPlugin: Initializing object...')
         self.stopevent = threading.Event()
 
