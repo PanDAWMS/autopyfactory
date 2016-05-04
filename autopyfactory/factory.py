@@ -1,749 +1,634 @@
 #! /usr/bin/env python
+#
+# Simple(ish) python condor_g factory for panda pilots
+#
+# $Id$
+#
+#
+#  Copyright (C) 2007,2008,2009,2010 Graeme Andrew Stewart
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-__author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
-__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2016 John Hover; 2010-2016 Jose Caballero"
-__credits__ = []
-__license__ = "GPL"
-__version__ = "2.4.8"
-__maintainer__ = "Jose Caballero"
-__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
-__status__ = "Production"
-
-'''
-    Main module for autopyfactory. 
-'''
-
-import datetime
-import logging
-import logging.handlers
-import threading
-import time
-import traceback
 import os
-import platform
-import pwd
-import smtplib
-import socket
 import sys
+import logging
+import commands
+import time
+import string
+import re
+import threading
+import pprint
 
-from optparse import OptionParser
-from pprint import pprint
-from ConfigParser import ConfigParser
-from Queue import Queue
+import os
+import pwd
+import grp
 
-try:
-    from email.mime.text import MIMEText
-except:
-    from email.MIMEText import MIMEText
+from autopyfactory.exceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
+from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
+from autopyfactory.monitor import Monitor
 
-from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
-from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailure
-from autopyfactory.cleanlogs import CleanLogs
-from autopyfactory.condor import ProcessCondorRequests
-from autopyfactory.configloader import Config, ConfigManager
-from autopyfactory.logserver import LogServer
-from autopyfactory.pluginsmanagement import QueuePluginDispatcher
-from autopyfactory.pluginsmanagement import FactoryPluginDispatcher
-from autopyfactory.queues import APFQueuesManager
+import userinterface.Client as Client
 
-major, minor, release, st, num = sys.version_info
-
-class FactoryCLI(object):
-    """class to handle the command line invocation of APF. 
-       parse the input options,
-       setup everything, and run Factory class
-    """
-    def __init__(self):
-        self.options = None 
-        self.args = None
-        self.log = None
-        self.fcl = None
-
-        self.__presetups()
-        self.__parseopts()
-        self.__setuplogging()
-        self.__platforminfo()
-        self.__checkroot()
-        self.__createconfig()
-
-
-    def __presetups(self):
-        '''
-        we put here some preliminary steps that 
-        for one reason or another 
-        must be done before anything else
-        '''
-
-        self.__addloggingtrace()
-
-
-    def __addloggingtrace(self):
-        """
-        Adding custom TRACE level
-        This must be done here, because parseopts()
-        uses logging.TRACE, so it must be defined
-        by that time
-        """
-
-        logging.TRACE = 5
-        logging.addLevelName(logging.TRACE, 'TRACE')
-        def trace(self, msg, *args, **kwargs):
-            self.log(logging.TRACE, msg, *args, **kwargs)
-        logging.Logger.trace = trace
-
-        #
-        #   NOTE:
-        #
-        #   I have been told that this way, messing with the root logging,
-        #   can have problems with multi-threaded applications...
-        #   Apparently, the best way to do it is
-        #   with a dedicated Logger class:
-        #   
-        #           class MyLogger(logging.getLoggerClass()):
-        #           
-        #               TRACE = 5
-        #               logging.addLevelName(TRACE, "TRACE")
-        #           
-        #               def trace(self, msg, *args, **kwargs):
-        #                   self.log(self.TRACE, msg, *args, **kwargs)
-        #           
-        #           logging.setLoggerClass(MyLogger)
-        #
-        #   but that only works fine is we never 
-        #   call the logger root, as we are doing
-        #   Also, it has the problem that logging.TRACE would not be defined.
-        #
-        #
-        #   Another option is
-        #       
-        #           logging.trace = functools.partial(logging.log, logging.TRACE)
-        #
-        #   Related documentation on partial() can be found here
-        #
-        #           http://docs.python.org/2/library/functools.html
-        #
-
-
+class Factory:
+    '''
     
-    def __parseopts(self):
-        parser = OptionParser(usage='''%prog [OPTIONS]
-autopyfactory is an ATLAS pilot factory.
-
-This program is licenced under the GPL, as set out in LICENSE file.
-
-Author(s):
-Graeme A Stewart <g.stewart@physics.gla.ac.uk>
-Peter Love <p.love@lancaster.ac.uk>
-John Hover <jhover@bnl.gov>
-Jose Caballero <jcaballero@bnl.gov>
-''', version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $" )
-
-
-        parser.add_option("--trace", 
-                          dest="logLevel", 
-                          default=logging.WARNING,
-                          action="store_const", 
-                          const=logging.TRACE, 
-                          help="Set logging level to TRACE [default WARNING], super verbose")
-        parser.add_option("-d", "--debug", 
-                          dest="logLevel", 
-                          default=logging.WARNING,
-                          action="store_const", 
-                          const=logging.DEBUG, 
-                          help="Set logging level to DEBUG [default WARNING]")
-        parser.add_option("-v", "--info", 
-                          dest="logLevel", 
-                          default=logging.WARNING,
-                          action="store_const", 
-                          const=logging.INFO, 
-                          help="Set logging level to INFO [default WARNING]")
-        parser.add_option("--console", 
-                          dest="console", 
-                          default=False,
-                          action="store_true", 
-                          help="Forces debug and info messages to be sent to the console")
-        parser.add_option("--quiet", dest="logLevel", 
-                          default=logging.WARNING,
-                          action="store_const", 
-                          const=logging.WARNING, 
-                          help="Set logging level to WARNING [default]")
-        parser.add_option("--oneshot", "--one-shot", 
-                          dest="cyclesToDo", 
-                          default=0,
-                          action="store_const", 
-                          const=1, 
-                          help="Run one cycle only")
-        parser.add_option("--cycles", 
-                          dest="cyclesToDo",
-                          action="store", 
-                          type="int", 
-                          metavar="CYCLES", 
-                          help="Run CYCLES times, then exit [default infinite]")
-        parser.add_option("--sleep", dest="sleepTime", 
-                          default=120,
-                          action="store", 
-                          type="int", 
-                          metavar="TIME", 
-                          help="Sleep TIME seconds between cycles [default %default]")
-        parser.add_option("--conf", dest="confFiles", 
-                          default="/etc/autopyfactory/autofactory.conf",
-                          action="store", 
-                          metavar="FILE1[,FILE2,FILE3]", 
-                          help="Load configuration from FILEs (comma separated list)")
-        parser.add_option("--log", dest="logfile", 
-                          default="syslog", 
-                          metavar="LOGFILE", 
-                          action="store", 
-                          help="Send logging output to LOGFILE or SYSLOG or stdout [default <syslog>]")
-        parser.add_option("--runas", dest="runAs", 
-                          #
-                          # By default
-                          #
-                          default=pwd.getpwuid(os.getuid())[0],
-                          action="store", 
-                          metavar="USERNAME", 
-                          help="If run as root, drop privileges to USER")
-        (self.options, self.args) = parser.parse_args()
-
-        #self.options.confFiles = self.options.confFiles.split(',')
-
-    def __setuplogging(self):
-        """ 
-        Setup logging 
-        
-        General principles we have tried to used for logging: 
-        
-        -- Logging syntax and semantics should be uniform throughout the program,  
-           based on whatever organization scheme is appropriate.  
-        
-        -- Have at least a single log message at TRACE at beginning and end of each function call.  
-           The entry message should mention input parameters,  
-           and the exit message should not any important result.  
-           TRACE output should be detailed enough that almost any logic error should become apparent.  
-           It is OK if TRACE messages are produced too fast to read interactively. 
-        
-        -- Have sufficient DEBUG messages to show domain problem calculations input and output.
-           DEBUG messages should never span more than one line. 
-        
-        -- A moderate number of INFO messages should be logged to mark major  
-           functional steps in the operation of the program,  
-           e.g. when a persistent object is instantiated and initialized,  
-           when a functional cycle/loop is complete.  
-           It would be good if these messages note summary statistics,  
-           e.g. "the last submit cycle submitted 90 jobs and 10 jobs finished".  
-           A program being run with INFO log level should provide enough output  
-           that the user can watch the program function and quickly observe interesting events. 
-        
-        -- Initially, all logging should be directed to a single file.  
-           But provision should be made for eventually directing logging output from different subsystems  
-           (submit, info, proxy management) to different files,  
-           and at different levels of verbosity (DEBUG, INFO, WARN), and with different formatters.  
-           Control of this distribution should use the standard Python "logging.conf" format file: 
-        
-        -- All messages are always printed out in the logs files, 
-           but also to the stderr when DEBUG or INFO levels are selected. 
-        
-        -- We keep the original python levels meaning,  
-           including WARNING as being the default level.  
-        
-                TRACE      Detailed code execution information related to housekeeping, 
-                           parsing, objects, threads.
-                DEBUG      Detailed domain problem information related to scheduling, calculations,
-                           program state.  
-                INFO       High level confirmation that things are working as expected.  
-                WARNING    An indication that something unexpected happened,  
-                           or indicative of some problem in the near future (e.g. 'disk space low').  
-                           The software is still working as expected. 
-                ERROR      Due to a more serious problem, the software has not been able to perform some function. 
-                CRITICAL   A serious error, indicating that the program itself may be unable to continue running. 
-        
-        -- We add a new custom level -TRACE- to be more verbose than DEBUG.
-           
-           Info: http://docs.python.org/howto/logging.html#logging-advanced-tutorial  
-
-        """
-        self.log = logging.getLogger('main')
-        if self.options.logfile == "stdout":
-            logStream = logging.StreamHandler()
-        elif self.options.logfile == 'syslog':
-            logStream = logging.handlers.SysLogHandler('/dev/log')
-        else:
-            lf = self.options.logfile
-            logdir = os.path.dirname(lf)
-            if not os.path.exists(logdir):
-                os.makedirs(logdir)
-            runuid = pwd.getpwnam(self.options.runAs).pw_uid
-            rungid = pwd.getpwnam(self.options.runAs).pw_gid                  
-            os.chown(logdir, runuid, rungid)
-            logStream = logging.FileHandler(filename=lf)    
-
-        if major == 2 and minor == 4:
-            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d : %(message)s'
-        else:
-            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
-        formatter = logging.Formatter(FORMAT)
-        formatter.converter = time.gmtime  # to convert timestamps to UTC
-        logStream.setFormatter(formatter)
-        self.log.addHandler(logStream)
-
-        # adding a new Handler for the console, 
-        # to be used only for DEBUG and INFO modes. 
-        if self.options.logLevel in [logging.DEBUG, logging.INFO]:
-            if self.options.console:
-                console = logging.StreamHandler(sys.stdout)
-                console.setFormatter(formatter)
-                console.setLevel(self.options.logLevel)
-                self.log.addHandler(console)
-        self.log.setLevel(self.options.logLevel)
-        self.log.info('Logging initialized.')
-
-
-    def _printenv(self):
-
-        envmsg = ''        
-        for k in sorted(os.environ.keys()):
-            envmsg += '\n%s=%s' %(k, os.environ[k])
-        self.log.trace('Environment : %s' %envmsg)
-
-
-    def __platforminfo(self):
-        '''
-        display basic info about the platform, for debugging purposes 
-        '''
-        self.log.info('platform: uname = %s %s %s %s %s %s' %platform.uname())
-        self.log.info('platform: platform = %s' %platform.platform())
-        self.log.info('platform: python version = %s' %platform.python_version())
-        self._printenv()
-
-    def __checkroot(self): 
-        """
-        If running as root, drop privileges to --runas' account.
-        """
-        starting_uid = os.getuid()
-        starting_gid = os.getgid()
-        starting_uid_name = pwd.getpwuid(starting_uid)[0]
-
-        hostname = socket.gethostname()
-        
-        if os.getuid() != 0:
-            self.log.info("Already running as unprivileged user %s at %s" % (starting_uid_name, hostname))
-            
-        if os.getuid() == 0:
-            try:
-                runuid = pwd.getpwnam(self.options.runAs).pw_uid
-                rungid = pwd.getpwnam(self.options.runAs).pw_gid
-                os.chown(self.options.logfile, runuid, rungid)
-                
-                os.setgid(rungid)
-                os.setuid(runuid)
-                os.seteuid(runuid)
-                os.setegid(rungid)
-
-                self._changehome()
-                self._changewd()
-
-                self.log.info("Now running as user %d:%d at %s..." % (runuid, rungid, hostname))
-                self._printenv()
-
-            
-            except KeyError, e:
-                self.log.error('No such user %s, unable run properly. Error: %s' % (self.options.runAs, e))
-                sys.exit(1)
-                
-            except OSError, e:
-                self.log.error('Could not set user or group id to %s:%s. Error: %s' % (runuid, rungid, e))
-                sys.exit(1)
-
-    def _changehome(self):
-        '''
-        at some point, proxyManager will make use of method
-              os.path.expanduser()
-        to find out the absolute path of the usercert and userkey files
-        in order to renew proxy.   
-        The thing is that expanduser() uses the value of $HOME
-        as it is stored in os.environ, and that value still is /root/
-        Ergo, if we want the path to be expanded to a different user, i.e. autopyfactory,
-        we need to change by hand the value of $HOME in the environment
-        '''
-        runAs_home = pwd.getpwnam(self.options.runAs).pw_dir 
-        os.environ['HOME'] = runAs_home
-        self.log.debug('Setting up environment variable HOME to %s' %runAs_home)
-
-
-    def _changewd(self):
-        '''
-        changing working directory to the HOME directory of the new user,
-        typically "autopyfactory". 
-        When APF starts as a daemon, working directory may be "/".
-        If APF was called from the command line as root, working directory is "/root".
-        It is better is current working directory is just the HOME of the running user,
-        so it is easier to debug in case of failures.
-        '''
-        runAs_home = pwd.getpwnam(self.options.runAs).pw_dir
-        os.chdir(runAs_home)
-        self.log.debug('Switching working directory to %s' %runAs_home)
-
-
-    def __createconfig(self):
-        """Create config, add in options...
-        """
-        if self.options.confFiles != None:
-            try:
-                self.fcl = ConfigManager().getConfig(self.options.confFiles)
-            except ConfigFailure, errMsg:
-                self.log.error('Failed to create FactoryConfigLoader')
-                sys.exit(1)
-        
-        self.fcl.set("Factory","cyclesToDo", str(self.options.cyclesToDo))
-        self.fcl.set("Factory", "sleepTime", str(self.options.sleepTime))
-        self.fcl.set("Factory", "confFiles", self.options.confFiles)
-           
-    def run(self):
-        """Create Factory and enter main loop
-        """
-
-        from autopyfactory.factory import Factory
-
-        try:
-            self.log.info('Creating Factory and entering main loop...')
-
-            f = Factory(self.fcl)
-            f.run()
-            
-        except KeyboardInterrupt:
-            self.log.info('Caught keyboard interrupt - exitting')
-            f.join()
-            sys.exit(0)
-        except FactoryConfigurationFailure, errMsg:
-            self.log.error('Factory configuration failure: %s', errMsg)
-            sys.exit(1)
-        except ImportError, errorMsg:
-            self.log.error('Failed to import necessary python module: %s' % errorMsg)
-            sys.exit(1)
-        except:
-            # TODO - make this a logger.exception() call
-            self.log.error('''Unexpected exception! \
-There was an exception raised which the factory was not expecting \
-and did not know how to handle. You may have discovered a new bug \
-or an unforseen error condition. \
-Please report this exception to Jose <jcaballero@bnl.gov>. \
-The factory will now re-raise this exception so that the python stack trace is printed, \
-which will allow it to be debugged - \
-please send output from this message onwards. \
-Exploding in 5...4...3...2...1... Have a nice day!''')
-            # The following line prints the exception to the logging module
-            self.log.error(traceback.format_exc(None))
-            print(traceback.format_exc(None))
-            sys.exit(1)          
-          
-
-
-class Factory(object):
+    
     '''
-    -----------------------------------------------------------------------
-    Class implementing the main loop. 
-    The class has two main goals:
-            1. load the config files
-            2. launch a new thread per queue 
-
-    Information about queues created and running is stored in a 
-    APFQueuesManager object.
-
-    Actions are triggered by method update() 
-    update() can be invoked at the beginning, from __init__,
-    or when needed. For example, is an external SIGNAL is received.
-    When it happens, update() does:
-            1. calculates the new list of queues from the config file
-            2. updates the APFQueuesManager object 
-    -----------------------------------------------------------------------
-    Public Interface:
-            __init__(fcl)
-            mainLoop()
-            update()
-    -----------------------------------------------------------------------
-    '''
-
     def __init__(self, fcl):
         '''
-        fcl is a FactoryConfigLoader object. 
+        fconfig is a FactoryConfigLoader object. 
+        
         '''
-        self.version = __version__
         self.log = logging.getLogger('main.factory')
-        self.log.info('AutoPyFactory version %s' %self.version)
+        self.log.debug('Factory initializing...')
         self.fcl = fcl
-
-        # APF Queues Manager 
-        self.apfqueuesmanager = APFQueuesManager(self)
-
-        self._proxymanager()
-        self._monitor()
-        self._mappings()
-
-        # Handle Log Serving
-        self._initLogserver()
-
-        # Collect other factory attibutes
-        self.adminemail = self.fcl.get('Factory','factoryAdminEmail')
-        self.factoryid = self.fcl.get('Factory','factoryId')
-        self.smtpserver = self.fcl.get('Factory','factorySMTPServer')
-        self.hostname = socket.gethostname()
-        #self.username = os.getlogin()
-        self.username = pwd.getpwuid(os.getuid()).pw_name   
-
-        # the the queues config loader object, to be filled by a Config plugin
-        self.qcl = Config()
-
-        self._plugins()
-
-        # Log some info...
-        self.log.trace('Factory shell PATH: %s' % os.getenv('PATH') )     
-        self.log.info("Factory: Object initialized.")
-
-
-    def _proxymanager(self):
-
-        # Handle ProxyManager configuration
-        usepman = self.fcl.getboolean('Factory', 'proxymanager.enabled')
-        if usepman:      
-
-            try:
-                from autopyfactory.proxymanager import ProxyManager
-            except:
-                self.log.critical('proxymanager cannot be imported')
-                sys.exit(0) 
-
-            pcf = self.fcl.get('Factory','proxyConf')
-            self.log.debug("proxy.conf file(s) = %s" % pcf)
-            pcl = ConfigParser()
-
-            try:
-                got_config = pcl.read(pcf)
-            except Exception, e:
-                self.log.error('Failed to create ProxyConfigLoader')
-                self.log.error("Exception: %s" % traceback.format_exc())
-                sys.exit(0)
-
-            self.log.trace("Read config file %s, return value: %s" % (pcf, got_config)) 
-            self.proxymanager = ProxyManager(pcl, self)
-            self.log.info('ProxyManager initialized. Starting...')
-            self.proxymanager.start()
-            self.log.trace('ProxyManager thread started.')
-        else:
-            self.log.info("ProxyManager disabled.")
-
-
-    def _monitor(self):
-
-        # Handle monitor configuration
-        self.mcl = None
-        self.mcf = self.fcl.generic_get('Factory', 'monitorConf')
-        self.log.debug("monitor.conf file(s) = %s" % self.mcf)
+        self.dryRun = fcl.config.get("Factory", "dryRun")
+        self.cycles = fcl.config.get("Factory", "cycles")
+        self.sleep = fcl.config.get("Factory", "sleep")
+        self.log.debug("queueConf file(s) = %s" % fcl.config.get('Factory', 'queueConf'))
+        self.qcl= QueueConfigLoader(fcl.config.get('Factory', 'queueConf').split(','))
         
-        try:
-            self.mcl = ConfigManager().getConfig(self.mcf)
-        except ConfigFailure, e:
-            self.log.error('Failed to create MonitorConfigLoader')
-            sys.exit(0)
-
-        self.log.trace("mcl is %s" % self.mcl)
-       
-
-    def _mappings(self):
-
-        # Handle mappings configuration
-        self.mappingscl = None      # mappings config loader object
-        self.mappingscf = self.fcl.generic_get('Factory', 'mappingsConf') 
-        self.log.debug("mappings.conf file(s) = %s" % self.mappingscf)
-
-        try:
-            self.mappingscl = ConfigManager().getConfig(self.mappingscf)
-        except ConfigFailure, e:
-            self.log.error('Failed to create ConfigLoader object for mappings')
-            sys.exit(0)
+        # Create all PandaQueue objects
+        self.queues = []
+        for section in self.qcl.config.sections():
+            q = PandaQueue(self, section)
+            self.queues.append(q)
         
-        self.log.trace("mappingscl is %s" % self.mappingscl)
+        self.pandastatus = PandaStatus(self.fcl)
+        #try:
+        #    args = dict(self.config.items('Factory'))
+        #    args.update(self.config.items('Pilots'))
+            # pass through all Factory and Pilots config items to Monitor
+        #    self.monitor = Monitor(**args)
+        #except:
+        #    self.log.warn('Monitoring not configured')
+        
+        #Set up Panda status
+        #self.pandastatus = PandaStatus(config)
+                        
+        
+        
+        self.log.debug("Factory initialized.")
 
-    def _dumpqcl(self):
+    def mainLoop(self):
+        '''
+        Main functional loop of overall Factory. 
+        '''
+        self.pandastatus.start()
+        self.log.info("Starting all Queue threads...")
+        for q in self.queues:
+            q.start()
+        
+        # Continue while there are still threads alive        
+        try:
+            while True:
+                time.sleep(10)
+                self.log.debug('Checking for interrupt.')
+                
+        except (KeyboardInterrupt): 
+            logging.info("Shutdown via Ctrl-C or -INT signal.")
+            logging.debug(" Shutting down all threads...")
+            
+            self.log.info("Joining all Queue threads...")
+            for q in self.queues:
+                q.join()
+            
+            self.log.info("All Queue threads joined. Exitting.")
+                
+#        cyclesDone = 0
+#        while True:
+#            self.log.info('\nStarting factory cycle %d at %s', cyclesDone, time.asctime(time.localtime()))
+#            self.factorySubmitCycle(cyclesDone)
+#            self.log.info('Factory cycle %d done' % cyclesDone)
+#            cyclesDone += 1
+#            if cyclesDone == self.config.get("options","cyclesToDo"):
+#                break
+#            self.log.info('Sleeping %ds' % options.sleepTime)
+#            time.sleep(options.sleepTime)
+#            f.updateConfig(cyclesDone)
+        #while True:
+            # trigger FCL update...
+        
+            
+            
+            # check to see if all queue threads have finished?
+            #time.sleep(self.sleep)
 
-        # dump the content of queues.conf 
-        qclstr = self.qcl.getContent(raw=False)
-        logpath = self.fcl.get('Factory', 'baseLogDir')
-        if not os.path.isdir(logpath):
-            # the directory does not exist yet. Let's create it
-            os.makedirs(logpath)
-        qclfile = open('%s/queues.conf' %logpath, 'w')
-        print >> qclfile, qclstr
-        qclfile.close()
+
+    def note(self, queue, msg):
+        self.log.info('%s: %s' % (queue,msg))
+        if isinstance(self.mon, Monitor):
+            nick = self.config.queues[queue]['nickname']
+            self.mon.msg(nick, queue, msg)
+
+   
 
 
-    def _plugins(self):
+    def submitPilots(self, cycleNumber=0):
+        for queue in self.config.queueKeys:
+            queueParameters = self.config.queues[queue]
+ 
+            # Check to see if a site or cloud is offline or in an error state
+            if queueParameters['cloud'] in self.pandaCloudStatus and self.pandaCloudStatus[queueParameters['cloud']]['status'] == 'offline':
+                msg = 'Cloud %s is offline - will not submit pilots.' % queueParameters['cloud']
+                self.note(queue, msg)
+                continue
+                
+            if queueParameters['status'] == 'offline':
+                msg = 'Site %s is offline - will not submit pilots.' % queueParameters['siteid']
+                self.note(queue, msg)
+                continue
+                
+            if queueParameters['status'] == 'error':
+                msg = 'Site %s is in an error state - will not submit pilots.' % queueParameters['siteid']
+                self.note(queue, msg)
+                continue
+                
+            # Check to see if the cloud is in test mode
+            if queueParameters['cloud'] in self.pandaCloudStatus and self.pandaCloudStatus[queueParameters['cloud']]['status'] == 'test':
+                msg = 'Cloud %s in test mode.' % queueParameters['cloud']
+                self.note(queue, msg)
+                cloudTestStatus = True
+            else:
+                cloudTestStatus = False
+                
+                
+            # Now normal queue submission algorithm begins
+            if queueParameters['pilotlimit'] != None and queueParameters['pilotQueue']['total'] >= queueParameters['pilotlimit']:
+                msg = 'reached pilot limit %d (%s) - will not submit more pilots.' % (queueParameters['pilotlimit'], queueParameters['pilotQueue'])
+                self.note(queue, msg)
+                continue
+
+            if queueParameters['transferringlimit'] != None and 'transferring' in queueParameters['pandaStatus'] and \
+                    queueParameters['pandaStatus']['transferring'] >= queueParameters['transferringlimit']:
+                msg = 'too many transferring jobs (%d > limit %d) - will not submit more pilots.' % (queueParameters['pandaStatus']['transferring'], queueParameters['transferringlimit'])
+                self.note(queue, msg)
+                continue
+
+            if queueParameters['status'] == 'test' or cloudTestStatus == True:
+                # For test sites only ever have one pilot queued, but allow up to nqueue to run
+                if queueParameters['pilotQueue']['inactive'] > 0 or queueParameters['pilotQueue']['total'] > queueParameters['nqueue']:
+                    msg = 'test site has %d pilots, %d queued. Doing nothing.' % (queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
+                    self.note(queue, msg)
+                else:
+                    msg = 'test site has %d pilots, %d queued. Will submit 1 testing pilot.' % (queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
+                    self.note(queue, msg)
+                    self.condorPilotSubmit(queue, cycleNumber, 1)
+                continue
+
+            # Production site, online - look for activated jobs and ensure pilot queue is topped up, or
+            # submit some idling pilots
+            if queueParameters['pandaStatus']['activated'] > 0:
+                # Activated jobs at this site
+                if queueParameters['depthboost'] == None:
+                    self.log.info('Depth boost unset for queue %s - defaulting to 2' % queue)
+                    depthboost = 2
+                else:
+                    depthboost = queueParameters['depthboost']
+                if queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue'] or \
+                        (queueParameters['pandaStatus']['activated'] > queueParameters['pilotQueue']['inactive'] and \
+                         queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue'] * depthboost):
+                    msg = '%d activated jobs, %d inactive pilots queued (< queue depth %d * depth boost %d). Will submit full pilot load.' % (queueParameters['pandaStatus']['activated'], queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
+                    self.note(queue, msg)
+                    self.condorPilotSubmit(queue, cycleNumber, queueParameters['nqueue'])
+                else:
+                    msg = '%d activated jobs, %d inactive pilots queued (>= queue depth %d * depth boost %d). No extra pilots needed.' % (queueParameters['pandaStatus']['activated'],queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
+                    self.note(queue, msg)
+                continue
+
+            # No activated jobs - send an idling pilot if there are less than queue depth pilots
+            # and we are not in a suppressed cycle for this queue (so avoid racking up too many idleing jobs)
+            if queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue']:
+                if queueParameters['idlepilotsuppression'] > 1 and cycleNumber % queueParameters['idlepilotsuppression'] != 0:
+                    msg = 'No activated jobs, %d inactive pilots queued (queue depth %d). This factory cycle supressed (%d m od %d != 0).' % (queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'],cycleNumber, queueParameters['idlepilotsuppression'])
+                    self.note(queue, msg)
+                else:
+                    msg = 'No activated jobs, %d inactive pilots queued (queue depth %d). Will submit 1 idling pilot.' % (queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
+                    self.note(queue, msg)
+                    self.condorPilotSubmit(queue, cycleNumber, 1)
+            else:
+                msg = 'No activated jobs, %d inactive pilots queued (queue depth %d). No extra pilots needed.' % (queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
+                self.note(queue, msg)
+
+
+
+            
+
+  
+
+    def getPandaStatus(self):
+        for country in self.config.sites.keys():
+            for group in self.config.sites[country].keys():
+                # country/group = None is equivalent to not specifing anything
+                self.log.info('Polling panda status for country=%s, group=%s' % (country, group,))
+                error,self.config.sites[country][group]['siteStatus'] = Client.getJobStatisticsPerSite(countryGroup=country,workingGroup=group)
+                if error != 0:
+                    raise PandaStatusFailure, 'Client.getJobStatisticsPerSite(countryGroup=%s,workingGroup=%s) error: %s' % (country, group, error)
+
+                for siteid, queues in self.config.sites[country][group].iteritems():
+                    if siteid == 'siteStatus':
+                        continue
+                    if siteid in self.config.sites[country][group]['siteStatus']:
+                        self.log.debug('Panda status: %s (country=%s, group=%s) %s' % (siteid, country, group, self.config.sites[country][group]['siteStatus'][siteid]))
+                        for queue in queues:
+                            self.config.queues[queue]['pandaStatus'] = self.config.sites[country][group]['siteStatus'][siteid]
+                    else:
+                        # If panda knows nothing, then we assume all zeros (site may be inactive)
+                        self.log.debug('Panda status for siteid %s (country=%s, group=%s) not found - setting zeros in status to allow bootstraping of site.' % (siteid, country, group))
+                        for queue in queues:
+                            self.config.queues[queue]['pandaStatus'] = {'transferring': 0, 'activated': 0, 'running': 0, 'assigned': 0, 'failed': 0, 'finished': 0}
+
+        # Now poll site and cloud status to suppress pilots if a site is offline
+        # Take site staus out - better to use individual queue status from schedconfig
+        #self.log.info('Polling panda for site status')
+        #error,self.pandaSiteStatus = Client.getSiteSpecs(siteType='all')
+        #if error != 0:
+        #    raise PandaStatusFailure, '''Client.getSiteSpecs(siteType='all') error: %s''' % (error)
+        self.log.info('Polling panda for cloud status')
+        error,self.pandaCloudStatus = Client.getCloudSpecs()
+        if error != 0:
+            raise PandaStatusFailure, 'Client.getCloudSpecs() error: %s' % (error)
+
+
+    def updateConfig(self, cycleNumber):
+        '''Update configuration if necessary'''
+        self.config.reloadConfigFilesIfChanged()
+        if cycleNumber % self.config.config.getint('Factory', 'schedConfigPoll') == 0:
+            self.config.reloadSchedConfig()
+
+
+    def factorySubmitCycle(self, cycleNumber=0):
+        '''Go through one status/submission cycle'''
+        try:
+            self.getCondorStatus()
+            self.getPandaStatus()
+            self.submitPilots(cycleNumber)
+            if isinstance(self.mon, Monitor):
+                self.mon.shout(cycleNumber)
+        except CondorStatusFailure, errMsg:
+            self.log.error('Condor status polling failure: %s', errMsg)
+            self.log.error('Will sleep and carry on.')
+        except PandaStatusFailure, errMsg:
+            self.log.error('Panda status polling failure: %s', errMsg)
+            self.log.error('Will sleep and carry on.')
+        except IOError, (errno, errMsg):
+            self.log.error('Caught IOError Exception %d: %s (%d)' % (errno, errMsg))
+            self.log.error('Will sleep and carry on.')
+            
+
+class PandaQueue(threading.Thread):
+    '''
+    Encapsulates all the functionality related to servicing each Panda queue (i.e. siteid, i.e. site).
     
-        fpd = FactoryPluginDispatcher(self)
-        self.config_plugins = fpd.getconfigplugin()
-
-
-    def _initLogserver(self):
-        # Set up LogServer
-        self.log.trace("Handling LogServer...")
-        ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean')
-        if ls:
-            self.log.info("LogServer enabled. Initializing...")
-            lsidx = self.fcl.generic_get('Factory','logserver.index', 'getboolean')
-            lsrobots = self.fcl.generic_get('Factory','logserver.allowrobots', 'getboolean')
-            logpath = self.fcl.get('Factory', 'baseLogDir')
-            logurl = self.fcl.get('Factory','baseLogDirUrl')            
-            logport = self._parseLogPort(logurl)
-            if not os.path.exists(logpath):
-                self.log.trace("Creating log path: %s" % logpath)
-                os.makedirs(logpath)
-            if not lsrobots:
-                rf = "%s/robots.txt" % logpath
-                self.log.trace("logserver.allowrobots is False, creating file: %s" % rf)
-                try:
-                    f = open(rf , 'w' )
-                    f.write("User-agent: * \nDisallow: /")
-                    f.close()
-                except IOError:
-                    self.log.warn("Unable to create robots.txt file...")
-            self.log.trace("Creating LogServer object...")
-            self.logserver = LogServer(port=logport, docroot=logpath, index=lsidx)
-            self.log.info('LogServer initialized. Starting...')
-            self.logserver.start()
-            self.log.trace('LogServer thread started.')
-        else:
-            self.log.info('LogServer disabled. Not running.')
-
-
-    def _parseLogPort(self, logurl):
+    
+    '''
+    
+    def __init__(self, factory, siteid ):
         '''
-        logUrl is like:  http[s]://hostname[:port]
-        if port exists, return port
-        if port is omitted, 
-           if http, return 80
-           if https, return 443
-           
-        Return value must be an int. 
+        factory is the parent factory
+        qcl is a QueueConfigLoader object
+        siteid is the name of the section in the queueconfig
+        
         '''
-        urlparts = logurl.split(':')
-        urltype = urlparts[0]
-        port = 80
-        if len(urlparts) == 3:
-            port = int(urlparts[2])
-        elif len(urlparts) == 2:
-            if urltype == "http":
-                port = 80
-            elif urltype == "https":
-                port = 443
-        return int(port)
+        threading.Thread.__init__(self) # init the thread
+        self.log = logging.getLogger('main.pandaqueue')
+        self.stopevent = threading.Event()
+        self.factory = factory       # Factory object that is the parent of this queue object. 
+        self.fcl = factory.fcl       # FactoryConfigLoader for this factory
+        self.qcl = factory.qcl       # Queue config object for this queue object.
+        self.siteid = siteid         # Queue section designator from config
+        self.nickname = self.qcl.config.get(siteid, "nickname")
+        self.dryrun = self.fcl.config.get("Factory", "dryRun")
+        self.cycles = self.fcl.config.get("Factory", "cycles" )
+        self.sleep = int(self.fcl.config.get("Factory", "sleep"))
+        self.cyclesrun = 0
+        
+        # Handle sched plugin
+        schedclass = self.qcl.config.get(self.siteid, "schedplugin")
+        self.log.debug("[%s] Attempting to import derived classname: autopyfactory.plugins.%sSchedPlugin.%sSchedPlugin" % (self.siteid,schedclass,schedclass))                
+        _temp = __import__("autopyfactory.plugins.%sSchedPlugin" % (schedclass), 
+                                 fromlist=["%sSchedPlugin" % schedclass])
+        SchedPlugin = _temp.SchedPlugin
+        self.scheduler = SchedPlugin()
+        
+        # Handle status and submit batch plugins. 
+        batchclass = self.qcl.config.get(self.siteid, "batchplugin")
+        
+        _temp =  __import__("autopyfactory.plugins.%sBatchPlugin" % batchclass, fromlist=["%sBatchPlugin" % batchclass])
+        BatchStatusPlugin = _temp.BatchStatusPlugin
+        self.batchstatus = BatchStatusPlugin(self)
+
+        BatchSubmitPlugin = _temp.BatchSubmitPlugin
+        self.batchsubmit = BatchSubmitPlugin(self)
+        self.log.debug("[%s] PandaQueue initialization done." % self.siteid)
         
         
     def run(self):
         '''
-        Main functional loop of overall Factory. 
-        Actions:
-                1. Creates all queues and starts them.
-                2. Wait for a termination signal, and
-                   stops all queues when that happens.
-        '''
+        Method called by thread.start()
+        Main functional loop of this Queue. 
+        '''    
+        while not self.stopevent.isSet():
+            self.log.debug("[%s] Would be grabbing Batch info relevant to this queue." % self.siteid)
+            # update batch info
+            #batchstatus = self.factory.batchstatus.getInfo()
+            # update panda info
+            self.log.debug("[%s] Would be getting panda info relevant to this queue."% self.siteid)
+            
+            self.log.debug("[%s] Would be calculating number to submit."% self.siteid)
+            # calculate number to submit
+            #nsub = self.scheduler.calcSubmitNum()
+            # submit using this number
+            self.log.debug("[%s] Would be submitting jobs for this queue."% self.siteid)
+            #self.submitPilots(nsub)
+            # Exit loop if desired number of cycles is reached...  
+            self.log.debug("[%s] Checking to see how many cycles to run."% self.siteid)
+            if self.cycles and self.cyclesrun >= self.cycles:
+                self.stopevent.set()            
+            self.log.debug("[%s] Incrementing cycles..."% self.siteid)
+            self.cyclesrun += 1
+            # sleep interval
+            self.log.debug("[%s] Sleeping for %d seconds..." % (self.siteid, self.sleep))
+            time.sleep(self.sleep)
+              
+    def join(self,timeout=None):
+        """
+        Stop the thread. Overriding this method required to handle Ctrl-C from console.
+        """
+        self.stopevent.set()
+        self.log.debug('[%s] Stopping thread...' % self.siteid )
+        threading.Thread.join(self, timeout)
+         
 
-        self.log.trace("Starting.")
-        self.log.info("Starting all Queue threads...")
-
-        # first call to reconfig() to load initial qcl configuration
-        self.reconfig()
-
-        self._cleanlogs()
+    def submitPilots(self):
         
-        try:
-            while True:
-                mainsleep = int(self.fcl.get('Factory', 'factory.sleep'))
-                time.sleep(mainsleep)
-                self.log.trace('Checking for interrupt.')
-                        
-        except (KeyboardInterrupt): 
-            # FIXME
-            # this probably is not needed anymore,
-            # if a KeyboardInterrupt is captured by class FactoryCLI,
-            # it would perform a clean join( )
-            logging.info("Shutdown via Ctrl-C or -INT signal.")
-            self.shutdown()
-            raise
-            
-        self.log.trace("Leaving.")
+        for queue in self.config.queueKeys:
+             queueParameters = self.config.queues[queue]
+    
+             # Check to see if a site or cloud is offline or in an error state
+             if queueParameters['cloud'] in self.pandaCloudStatus and self.pandaCloudStatus[queueParameters['cloud']]['status'] == 'offline':
+                 self.log.info('Cloud %s containing queue %s: is offline - will not submit pilots.' % (queue, queueParameters['cloud']))
+                 continue
+                 
+             if queueParameters['status'] == 'offline':
+                 self.log.info('Site %s containing queue %s: is offline - will not submit pilots.' % (queue, queueParameters['site']))
+                 continue
+                 
+             if queueParameters['status'] == 'error':
+                 self.log.info('Site %s containing queue %s: is in an error state - will not submit pilots.' % (queue, queueParameters['site']))
+                 continue
+                 
+             # Check to see if the cloud is in test mode
+             if queueParameters['cloud'] in self.pandaCloudStatus and self.pandaCloudStatus[queueParameters['cloud']]['status'] == 'test':
+                 self.log.info('Cloud %s containing queue %s: is in test mode.' % (queue, queueParameters['cloud']))
+                 cloudTestStatus = True
+             else:
+                 cloudTestStatus = False
+                 
+                 
+             # Now normal queue submission algorithm begins
+             if queueParameters['pilotlimit'] != None and queueParameters['pilotQueue']['total'] >= queueParameters['pilotlimit']:
+                 self.log.info('%s: reached pilot limit %d (%s) - will not submit more pilots.', 
+                                           queue, queueParameters['pilotlimit'], queueParameters['pilotQueue'])
+                 continue
+    
+             if queueParameters['transferringlimit'] != None and 'transferring' in queueParameters['pandaStatus'] and \
+                     queueParameters['pandaStatus']['transferring'] >= queueParameters['transferringlimit']:
+                 self.log.info('%s: too many transferring jobs (%d > limit %d) - will not submit more pilots.', 
+                                           queue, queueParameters['pandaStatus']['transferring'], queueParameters['transferringlimit'])
+                 continue
+    
+             if queueParameters['status'] == 'test' or cloudTestStatus == True:
+                 # For test sites only ever have one pilot queued, but allow up to nqueue to run
+                 if queueParameters['pilotQueue']['inactive'] > 0 or queueParameters['pilotQueue']['total'] > queueParameters['nqueue']:
+                     self.log.info('%s: test site has %d pilots, %d queued. Doing nothing.',
+                                               queue, queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
+                 else:
+                     self.log.info('%s: test site has %d pilots, %d queued. Will submit 1 testing pilot.',
+                                               queue, queueParameters['pilotQueue']['total'], queueParameters['pilotQueue']['inactive'])
+                     self.condorPilotSubmit(queue, cycleNumber, 1)
+                 continue
+    
+             # Production site, online - look for activated jobs and ensure pilot queue is topped up, or
+             # submit some idling pilots
+             if queueParameters['pandaStatus']['activated'] > 0:
+                 # Activated jobs at this site
+                 if queueParameters['depthboost'] == None:
+                     self.log.info('Depth boost unset for queue %s - defaulting to 2' % queue)
+                     depthboost = 2
+                 else:
+                     depthboost = queueParameters['depthboost']
+                 if queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue'] or \
+                         (queueParameters['pandaStatus']['activated'] > queueParameters['pilotQueue']['inactive'] and \
+                          queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue'] * depthboost):
+                     self.log.info('%s: %d activated jobs, %d inactive pilots queued (< queue depth %d * depth boost %d). Will submit full pilot load.',
+                                               queue, queueParameters['pandaStatus']['activated'], 
+                                               queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
+                     self.condorPilotSubmit(queue, cycleNumber, queueParameters['nqueue'])
+                 else:
+                     self.log.info('%s: %d activated jobs, %d inactive pilots queued (>= queue depth %d * depth boost %d). No extra pilots needed.',
+                                               queue, queueParameters['pandaStatus']['activated'],
+                                               queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'], depthboost)
+                 continue
+    
+             # No activated jobs - send an idling pilot if there are less than queue depth pilots
+             # and we are not in a suppressed cycle for this queue (so avoid racking up too many idleing jobs)
+             if queueParameters['pilotQueue']['inactive'] < queueParameters['nqueue']:
+                 if queueParameters['idlepilotsuppression'] > 1 and cycleNumber % queueParameters['idlepilotsuppression'] != 0:
+                     self.log.info('%s: No activated jobs, %d inactive pilots queued (queue depth %d). This factory cycle supressed (%d mod %d != 0).',
+                                               queue, queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'],
+                                               cycleNumber, queueParameters['idlepilotsuppression'])
+                 else:
+                     self.log.info('%s: No activated jobs, %d inactive pilots queued (queue depth %d). Will submit 1 idling pilot.',
+                                               queue, queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
+                     self.condorPilotSubmit(queue, cycleNumber, 1)
+             else:
+                 self.log.info('%s: No activated jobs, %d inactive pilots queued (queue depth %d). No extra pilots needed.',
+                                           queue, queueParameters['pilotQueue']['inactive'], queueParameters['nqueue'])
 
 
-    def reconfig(self):
+
+
+
+class PandaStatus(threading.Thread):
+    '''
+    Contains all information pulled from Panda (schedconfig/job statistics/cloudspecs). 
+    Encapsulates all understanding needed to interpret data returned from Panda. 
+    Runs every <pandaCheckInterval> seconds. 
+    '''  
+    def __init__(self, fcl):
         '''
-        Method to update the status of the APFQueuesManager object.
-        This method will be used every time the 
-        status of the queues changes: 
-                - at the very beginning
-                - when the config files change
-        That means this method will be invoked by the regular factory
-        main loop code or from any method capturing specific signals.
-        '''
-
-        self.log.trace("Starting")
-
-        try:
-            newqcl = Config()
-            for config_plugin in self.config_plugins:
-                tmpqcl = config_plugin.getConfig()
-                newqcl.merge(tmpqcl)
-
-        except Exception, e:
-            self.log.critical('Failed getting the Factory plugins. Aborting')
-            raise
-
-        self.apfqueuesmanager.update(newqcl) 
-
-        # dump the new qcl content
-        self._dumpqcl()
-
-        self.log.trace("Leaving")
-
-
-    def _cleanlogs(self):
-        '''
-        starts the thread that will clean the condor logs files
-        '''
-
-        self.log.trace('Starting')
-        self.clean = CleanLogs(self)
-        self.clean.start()
-        self.log.trace('Leaving')
-
-    def shutdown(self):
-        '''
-        Method to cleanly shut down all factory activity, joining threads, etc. 
-        '''
-
-        logging.debug(" Shutting down all Queue threads...")
-        self.log.info("Joining all Queue threads...")
-        self.apfqueuesmanager.join()
-        self.log.info("All Queue threads joined.")
-        if self.fcl.getboolean('Factory', 'proxymanager.enabled'):
-            self.log.info("Shutting down Proxymanager...")
-            self.proxymanager.join()
-            self.log.info("Proxymanager stopped.")
-        if self.fcl.getboolean('Factory', 'logserver.enabled'):
-            self.log.info("Shutting down Logserver...")
-            self.logserver.join()
-            self.log.info("Logserver stopped.")            
-            
-                            
-    def sendAdminEmail(self, subject, messagestring):
-        msg = MIMEText(messagestring)
-        msg['Subject'] = subject
-        email_from = "%s@%s" % ( self.username, self.hostname)
-        msg['From'] = email_from
-        msg['To'] = self.adminemail
-        tolist = self.adminemail.split(",")
+        fcl is the FactoryConfigLoader for this factory. 
         
-        # Send the message via our own SMTP server, but don't include the
-        # envelope header.
-        s = smtplib.SMTP(self.smtpserver)
-        self.log.info("Sending email: %s" % msg.as_string())
-        s.sendmail(email_from , tolist , msg.as_string())
-        s.quit()
-            
+        '''
+        threading.Thread.__init__(self) # init the thread
+        self.log = logging.getLogger('main.pandastatus')
+        self.fcl = fcl
+        self.interval = int(self.fcl.config.get('Factory','pandaCheckInterval'))
+        self.stopevent = threading.Event()
+        # Hold return value of getCloudSpecs
+        self.cloudconfig = None 
+        self.newcloudconfig = None
+
+        self.siteconfig = None
+        self.newsiteconfig = None
+        
+        # Holds return vlue of getJobStatisticsPerSite(countryGroup='',workingGroup='')
+        self.jobstats = None
+        self.newjobstats = None
+        
+    def join(self,timeout=None):
+        """
+        Stop the thread. Overriding this method required to handle Ctrl-C from console.
+        """
+        self.stopevent.set()
+        self.log.debug('Stopping PandaStatus thread...')
+        threading.Thread.join(self, timeout)
+    
+    def run(self):
+        '''
+        Run the thread (from start()). 
+        '''
+        while not self.stopevent.isSet():
+            self.log.info("Starting PandaStatus update cycle...")
+            self.updateCloudConfig()
+            self.updateSiteConfig()
+            self.updateJobStats()
+            self.log.debug("Finished update loop. Sleeping %d seconds..." % self.interval)
+            time.sleep(self.interval)
+        
+      
+    def updateCloudConfig(self):
+        self.log.info('Polling Panda for cloud status...')
+        error,self.newcloudconfig = Client.getCloudSpecs()
+        if error != 0:
+            raise PandaStatusFailure, 'Client.getCloudSpecs() error: %s' % (error)
+        #self.log.debug("Got new cloud config: %s" % pprint.pformat(self.newcloudconfig))
+        self.log.debug("Got new cloud config with entries for %d clouds" % len(self.newcloudconfig))
+        self.cloudconfig = self.newcloudconfig
+    
+    
+    def updateJobStats(self):
+        self.log.info('Polling Panda for Job statistics')
+        error, self.newjobstats = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
+        if error != 0:
+            raise PandaStatusFailure, 'Client.getJobStatisticsPerSite() error: %s' % (error)
+        #self.log.debug("Got new jobstats: %s" % pprint.pformat(self.newjobstats))
+        self.log.debug("Got new jobstats with entries for %d sites: " % len(self.newjobstats))
+        self.jobstats = self.newjobstats
+    
+    def updateSiteConfig(self):
+        self.log.info('Polling Panda for Site Configuration')
+        error, self.newsiteconfig = Client.getSiteSpecs(siteType='all')
+        if error != 0:
+            raise PandaStatusFailure, 'Client.getSiteSpecs() error: %s' % (error)
+        #self.log.debug("Got new site config: %s" % pprint.pformat(self.newsiteconfig))
+        self.log.debug("Got new site configs for %d sites" % len(self.newsiteconfig))
+        self.siteconfig = self.newsiteconfig
+    
+
+class BatchStatus(object):
+    '''
+    Batch-agnostic aggregate information container returned by the BatchStatus getInfo() call. 
+    
+    ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD   
+    
+    '''
+    def _init__(self, queue, jobid, owner, submittime, runtime, state, priority  ):
+        self.queue = queue
+        
+class JobStatus(object):
+    '''
+    Batch agnostic information container about particular job. Returned by getJobInfo() call 
+    
+    '''
+
+
+####################################################################################
+#           Interface definitions, for clarity in plugin programming. 
+####################################################################################
+
+class BatchStatusInterface(object):
+    '''
+    Interacts with the underlying batch system to get job status. 
+    Instantiated at the Factory level. 
+    Should return information about number of jobs currently on the desired queue. 
+    
+    '''
+    def getInfo(self, queue):
+        '''
+        Returns aggregate info about jobs on queue in batch system. 
+        '''
+        raise NotImplementedError
+    
+    def getJobInfo(self, queue):
+        '''
+        Returns a list of JobStatus objects, one for each job. 
+        '''
+        raise NotImplementedError
+    
+class BatchSubmitInterface(object):
+    '''
+    Interacts with underlying batch system to submit jobs. 
+    It should be instantiated one per queue. 
+    
+    '''
+    def submitPilots(self, number):
+        '''
+        
+        '''
+        raise NotImplementedError
+
+class SchedInterface(object):
+    '''
+    Calculates the number of jobs to submit for a queue. 
+    
+    ''' 
+
+    def calcSubmitNum(self, config, activated, failed, running, transferring):
+        '''
+        Calculates and exact number of new pilots to submit, based on provided Panda site info
+        and whatever relevant parameters are in config.
+        All Panda info, not all relevant:    
+        'activated': 0,
+        'assigned': 0,
+        'cancelled': 0,
+        'defined': 0,
+        'failed': 4
+        'finished': 493,
+        'holding' : 3,
+        'running': 18,
+        'transferring': 38},
+        '''
+        raise NotImplementedError
+
+
+def testPandaRetrieve():
+    import pprint
+    error, cloudconfig = Client.getCloudSpecs()
+    print("Error: %s" % error)
+    pprint.pprint(cloudconfig)
+    error, jobstats = Client.getJobStatisticsPerSite(countryGroup='',workingGroup='')
+    print("Error: %s" % error)
+    pprint.pprint(jobstats)    
+    error, siteconfig = Client.getSiteSpecs(siteType='all')
+    print("Error: %s" % error)
+    pprint.pprint(siteconfig)
+
+
+if __name__ == "__main__":
+    testPandaRetrieve()
+    
+
+        

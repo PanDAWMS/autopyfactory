@@ -1,51 +1,5 @@
-AutoPyFactory NOTES
-
-BUILDING
-To build this package from source do
-          
-          python setup.py bdist --formats=rpm
-
-Because of a problem in the way Redhat flavour RPMs are built
-you must have this rpm macro defined:
-
-       %_unpackaged_files_terminate_build 0
-
-which prevents rpmbuild from failing because of the .pyo files which
-get built automatically.
-
-The easiest way to do this is to add that line to ~/.rpmmacros:
-
-  echo %_unpackaged_files_terminate_build 0 >> ~/.rpmmacros
-
-N.B. You must have the rpm-build package installed, or distutils will
-fallback to rpm and fail.
-
-
-PILOT WRAPPER
-With the v2.0 release, a new top-level generic wrapper (libexec/wrapper.sh) is 
-included with the distribution. This top-level wrapper is part of a complete 
-multi-level wrapper system created by Jose Caballero. 
-
-The top-level wrapper is intended to rarely (if ever) require changes. It simply 
-pulls the next-level wrapper from the provided URL and executes it. This, in turn, 
-pulls and executes more specific functionality to adjust for grid, VO, project, 
-purpose. 
-
-Please email caballer@bnl.gov for any wrapper-related issues. 
-
-
-MONITORING
-The AutoPyFactory Monitor is a separate project. Enable monitoring by including
-this line in the factory.conf, then visit the URL for the web interface:
-    monitorURL = http://apfmon.lancs.ac.uk/
-
-By default monitoring is disabled. Please email p.love@lancaster.ac.uk for
-any monitoring questions.
-
-PLUGIN ARCHITECTURE
-
-With the v2.0 refactoring, various aspects of the internal functioning 
-were converted over to a plugin architecture. 
+Notes about plugins architecture and refactoring.
+---------------------------------------------------------
 
 factory (shell) 
   -> factory.py -- handles command line args, config file parsing,    
@@ -54,17 +8,12 @@ factory (shell)
            contains:
               Monitor (singleton)--handles updates to APF monitor. 
               ProxyManager
-              BatchStatus (singleton)--queries underlying batch system for 
-                use by all PandaQueues
+              BatchStatus (singleton)--queries underlying batch system for use by all PandaQueues
               PandaQueue (xN) (one for each Panda site-queue)
               contains:
-                 BatchStatus -- Retrieves and encapsulates job status for a 
-                   queue from underlying batch system.  
-                 BatchSubmit -- Handles submission (JDL creation, submit) to 
-                   underlying batch system. 
+                 BatchStatus -- Retrieves and encapsulates job status for a queue from underlying batch system.  
+                 BatchSubmit -- Handles submission (JDL creation, submit) to underlying batch system. 
                  SchedPlugin -- Calculates number of jobs to submit        
-                 QueueInfo
-            
-See the class diagram included in the source tree for a graphic representation of this arrangement
 
- 
+               
+            QueueInfo
