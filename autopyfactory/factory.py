@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 
 __author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
-__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2016 John Hover; 2010-2016 Jose Caballero"
+__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2015 John Hover; 2010-2015 Jose Caballero"
 __credits__ = []
 __license__ = "GPL"
-__version__ = "2.4.8"
+__version__ = "2.4.2"
 __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
@@ -44,6 +44,7 @@ from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.logserver import LogServer
 from autopyfactory.pluginsmanagement import QueuePluginDispatcher
 from autopyfactory.pluginsmanagement import FactoryPluginDispatcher
+from autopyfactory.proxymanager import ProxyManager
 from autopyfactory.queues import APFQueuesManager
 
 major, minor, release, st, num = sys.version_info
@@ -136,7 +137,7 @@ Graeme A Stewart <g.stewart@physics.gla.ac.uk>
 Peter Love <p.love@lancaster.ac.uk>
 John Hover <jhover@bnl.gov>
 Jose Caballero <jcaballero@bnl.gov>
-''', version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $" )
+''', version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $")
 
 
         parser.add_option("--trace", 
@@ -216,14 +217,11 @@ Jose Caballero <jcaballero@bnl.gov>
         -- Logging syntax and semantics should be uniform throughout the program,  
            based on whatever organization scheme is appropriate.  
         
-        -- Have at least a single log message at TRACE at beginning and end of each function call.  
+        -- Have at least a single log message at DEBUG at beginning and end of each function call.  
            The entry message should mention input parameters,  
            and the exit message should not any important result.  
-           TRACE output should be detailed enough that almost any logic error should become apparent.  
-           It is OK if TRACE messages are produced too fast to read interactively. 
-        
-        -- Have sufficient DEBUG messages to show domain problem calculations input and output.
-           DEBUG messages should never span more than one line. 
+           DEBUG output should be detailed enough that almost any logic error should become apparent.  
+           It is OK if DEBUG messages are produced too fast to read interactively. 
         
         -- A moderate number of INFO messages should be logged to mark major  
            functional steps in the operation of the program,  
@@ -246,11 +244,8 @@ Jose Caballero <jcaballero@bnl.gov>
         -- We keep the original python levels meaning,  
            including WARNING as being the default level.  
         
-                TRACE      Detailed code execution information related to housekeeping, 
-                           parsing, objects, threads.
-                DEBUG      Detailed domain problem information related to scheduling, calculations,
-                           program state.  
-                INFO       High level confirmation that things are working as expected.  
+                DEBUG      Detailed information, typically of interest only when diagnosing problems. 
+                INFO       Confirmation that things are working as expected. 
                 WARNING    An indication that something unexpected happened,  
                            or indicative of some problem in the near future (e.g. 'disk space low').  
                            The software is still working as expected. 
@@ -258,11 +253,13 @@ Jose Caballero <jcaballero@bnl.gov>
                 CRITICAL   A serious error, indicating that the program itself may be unable to continue running. 
         
         -- We add a new custom level -TRACE- to be more verbose than DEBUG.
-           
-           Info: http://docs.python.org/howto/logging.html#logging-advanced-tutorial  
+
+        Info: 
+        
+          http://docs.python.org/howto/logging.html#logging-advanced-tutorial  
 
         """
-        self.log = logging.getLogger('main')
+        self.log = logging.getLogger()
         if self.options.logfile == "stdout":
             logStream = logging.StreamHandler()
         elif self.options.logfile == 'syslog':
@@ -303,7 +300,7 @@ Jose Caballero <jcaballero@bnl.gov>
         envmsg = ''        
         for k in sorted(os.environ.keys()):
             envmsg += '\n%s=%s' %(k, os.environ[k])
-        self.log.trace('Environment : %s' %envmsg)
+        self.log.debug('Environment : %s' %envmsg)
 
 
     def __platforminfo(self):
@@ -490,29 +487,26 @@ class Factory(object):
         #self.username = os.getlogin()
         self.username = pwd.getpwuid(os.getuid()).pw_name   
 
+        self._listener()
+
         # the the queues config loader object, to be filled by a Config plugin
         self.qcl = Config()
 
         self._plugins()
 
+        self._serialization()
+
         # Log some info...
-        self.log.trace('Factory shell PATH: %s' % os.getenv('PATH') )     
+        self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )     
         self.log.info("Factory: Object initialized.")
 
 
     def _proxymanager(self):
 
         # Handle ProxyManager configuration
-        usepman = self.fcl.getboolean('Factory', 'proxymanager.enabled')
+        usepman = fcl.getboolean('Factory', 'proxymanager.enabled')
         if usepman:      
-
-            try:
-                from autopyfactory.proxymanager import ProxyManager
-            except:
-                self.log.critical('proxymanager cannot be imported')
-                sys.exit(0) 
-
-            pcf = self.fcl.get('Factory','proxyConf')
+            pcf = fcl.get('Factory','proxyConf')
             self.log.debug("proxy.conf file(s) = %s" % pcf)
             pcl = ConfigParser()
 
@@ -520,14 +514,14 @@ class Factory(object):
                 got_config = pcl.read(pcf)
             except Exception, e:
                 self.log.error('Failed to create ProxyConfigLoader')
-                self.log.error("Exception: %s" % traceback.format_exc())
+                self.log.debug("Exception: %s" % traceback.format_exc())
                 sys.exit(0)
 
-            self.log.trace("Read config file %s, return value: %s" % (pcf, got_config)) 
+            self.log.debug("Read config file %s, return value: %s" % (pcf, got_config)) 
             self.proxymanager = ProxyManager(pcl, self)
             self.log.info('ProxyManager initialized. Starting...')
             self.proxymanager.start()
-            self.log.trace('ProxyManager thread started.')
+            self.log.debug('ProxyManager thread started.')
         else:
             self.log.info("ProxyManager disabled.")
 
@@ -545,7 +539,7 @@ class Factory(object):
             self.log.error('Failed to create MonitorConfigLoader')
             sys.exit(0)
 
-        self.log.trace("mcl is %s" % self.mcl)
+        self.log.debug("mcl is %s" % self.mcl)
        
 
     def _mappings(self):
@@ -561,7 +555,16 @@ class Factory(object):
             self.log.error('Failed to create ConfigLoader object for mappings')
             sys.exit(0)
         
-        self.log.trace("mappingscl is %s" % self.mappingscl)
+        self.log.debug("mappingscl is %s" % self.mappingscl)
+
+
+    def _listener(self):
+        
+        # start the Listener
+        from autopyfactory.listener import APFListener
+        self.listener = APFListener(self)
+        self.listener.start()
+
 
     def _dumpqcl(self):
 
@@ -581,10 +584,25 @@ class Factory(object):
         fpd = FactoryPluginDispatcher(self)
         self.config_plugins = fpd.getconfigplugin()
 
+    
+    def _serialization(self):
+        '''
+        here we setup everything needed to 
+        queue condor tasks
+        '''
+
+        # to queue condor tasks
+        self.condorrequestsqueue = Queue()
+
+        # thread that process objects in condorrequestqueue
+        self.processcondorrequests = ProcessCondorRequests(self)
+        self.processcondorrequests.start()
+
+
 
     def _initLogserver(self):
         # Set up LogServer
-        self.log.trace("Handling LogServer...")
+        self.log.debug("Handling LogServer...")
         ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean')
         if ls:
             self.log.info("LogServer enabled. Initializing...")
@@ -594,22 +612,22 @@ class Factory(object):
             logurl = self.fcl.get('Factory','baseLogDirUrl')            
             logport = self._parseLogPort(logurl)
             if not os.path.exists(logpath):
-                self.log.trace("Creating log path: %s" % logpath)
+                self.log.debug("Creating log path: %s" % logpath)
                 os.makedirs(logpath)
             if not lsrobots:
                 rf = "%s/robots.txt" % logpath
-                self.log.trace("logserver.allowrobots is False, creating file: %s" % rf)
+                self.log.debug("logserver.allowrobots is False, creating file: %s" % rf)
                 try:
                     f = open(rf , 'w' )
                     f.write("User-agent: * \nDisallow: /")
                     f.close()
                 except IOError:
                     self.log.warn("Unable to create robots.txt file...")
-            self.log.trace("Creating LogServer object...")
+            self.log.debug("Creating LogServer object...")
             self.logserver = LogServer(port=logport, docroot=logpath, index=lsidx)
             self.log.info('LogServer initialized. Starting...')
             self.logserver.start()
-            self.log.trace('LogServer thread started.')
+            self.log.debug('LogServer thread started.')
         else:
             self.log.info('LogServer disabled. Not running.')
 
@@ -646,7 +664,7 @@ class Factory(object):
                    stops all queues when that happens.
         '''
 
-        self.log.trace("Starting.")
+        self.log.debug("Starting.")
         self.log.info("Starting all Queue threads...")
 
         # first call to reconfig() to load initial qcl configuration
@@ -658,7 +676,7 @@ class Factory(object):
             while True:
                 mainsleep = int(self.fcl.get('Factory', 'factory.sleep'))
                 time.sleep(mainsleep)
-                self.log.trace('Checking for interrupt.')
+                self.log.debug('Checking for interrupt.')
                         
         except (KeyboardInterrupt): 
             # FIXME
@@ -669,7 +687,7 @@ class Factory(object):
             self.shutdown()
             raise
             
-        self.log.trace("Leaving.")
+        self.log.debug("Leaving.")
 
 
     def reconfig(self):
@@ -683,7 +701,7 @@ class Factory(object):
         main loop code or from any method capturing specific signals.
         '''
 
-        self.log.trace("Starting")
+        self.log.debug("Starting")
 
         try:
             newqcl = Config()
@@ -700,7 +718,7 @@ class Factory(object):
         # dump the new qcl content
         self._dumpqcl()
 
-        self.log.trace("Leaving")
+        self.log.debug("Leaving")
 
 
     def _cleanlogs(self):
@@ -708,10 +726,10 @@ class Factory(object):
         starts the thread that will clean the condor logs files
         '''
 
-        self.log.trace('Starting')
+        self.log.debug('Starting')
         self.clean = CleanLogs(self)
         self.clean.start()
-        self.log.trace('Leaving')
+        self.log.debug('Leaving')
 
     def shutdown(self):
         '''
@@ -747,3 +765,113 @@ class Factory(object):
         s.sendmail(email_from , tolist , msg.as_string())
         s.quit()
             
+
+
+
+########################################
+#   DEVELOOMENT CODE                   #
+########################################
+
+
+### class ConfigManager(object):
+###     '''
+###     class to handle config plugins that manage APFQueues configurations
+###     The plugins are in directory  plugins/config/
+###     '''
+### 
+###     def __init__(self, factory):
+###         '''
+###         self.configs contains objects Config, which is a Thread
+###         '''
+### 
+###         self.log = logging.getLogger('main.configmanager')
+###         self.factory = factory
+###         self.configs = {}
+###         self._getconfigs()
+###         self.log.debug('ConfigManager: Object initialized.')
+### 
+### 
+###     def _getconfigs(self):
+###         '''
+###         create the list of Config objects, 
+###         based on information comming from 
+###             -- autopyfactory.conf 
+###             -- configs.conf
+###         '''
+### 
+###         # Queues Config plugins Config Loader (qccl)
+###         qccl = None 
+### 
+###         queueConfigConf = self.factory.fcl.generic_get('Factory', 'queuesConfigConf') 
+###         if queueConfigConf:
+###             # Queues Config plugins Config Loader (qccl)
+###             qccl = ConfigManager().getConfig(queueConfigConf)  #FIXME: use the new code in ConfigManager(), when ready
+###             
+###         
+###         queueConf = self.factory.fcl.generic_get('Factory', 'queueConf', default_value="None") 
+###         queueDirConf = self.factory.fcl.generic_get('Factory', 'queueDirConf', default_value="None") 
+###         queueDefaults = self.factory.fcl.generic_get('Factory', 'queueDefaults', default_value="None")
+###         # if queueConf and/or queuesDirConf and/or queuesDefaults are defined, 
+###         # they need to be converted into a File plugin  
+###         # we do this for backward compatibility
+###         qccl.addsection('NO_SECTION', {'configplugin':'File', 'queueConf': queueConf, 'queueDirConf': queueDirConf, 'queueDefaults':queueDefaults})
+###         # FIXME !!! VERY IMPORTANT !!!  this section is fake, it is not in the config file, so cannot be traced back via  self.factory.<anything>...
+###         # FIXME !!! VERY IMPORTANT !!!  in other words, the Config plugin __init__( ) needs to receive the configloader object itself
+### 
+### 
+###         for section in qccl.sections():
+###             if qccl.generic_get(section, 'enabled', 'getboolean', default_value=True):
+###                 # if the section is enabled...
+###                 configthread = ConfigThread(section, self)  # ??? FIXME ???
+###                 self.configs[section] = configthread
+### 
+
+
+### 
+### class ConfigThread(threading.Thread):
+###     '''
+###     each queues config plugin is managed 
+###     by a Config object.
+###     These object are thread, so they can loop and re-config
+###     '''
+### 
+###     def __init__(self, section, configmanager):
+###         '''
+###         section is the section name in the qccl (Queues Config plugins Config Loader)
+###         configmanager is the class creating objects ConfigThread
+###         '''
+### 
+###         threading.Thread.__init__(self) # init the thread
+### 
+###         self.configmanager = configmanager
+###         self.stopevent = threading.Event()
+### 
+###         self.renew = self.configmanager.qccl.generic_get(section, 'renew', 'getboolean')
+###         self.time = self.configmanager.qccl.generic_get(section, 'time', 'getint', default_value=0)
+###         self.plugin = self._getplugin()
+###         
+### 
+###     def _getplugin(self):
+### 
+###         plugin = None
+###         pluginname = self.configmanager.qccl.generic_get(section, 'configplugin', defaul_value='File')
+###         # FIXME here create the plugin
+###         return plugin
+### 
+### 
+###     def run(self):
+###         '''
+###         method called by thread.start() 
+###         main loop
+###         '''
+### 
+###         while not self.stopevent.isSet():
+###             # FIXME  here to call the plugin over and over and
+###             #        call self.configmanager.factory.apfqueuesmanager.update( )
+###             #        and self.configmanager.factory.setqcl( )
+###             time.sleep(self.time)
+
+
+
+
+

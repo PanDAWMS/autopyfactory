@@ -1,0 +1,207 @@
+
+| *Variable* | *Description* |
+| =baseLogDir= | where outputs from pilots are stored NOTE: No trailing '/'!!! |
+| =baseLogDirUrl= |where outputs from pilots are available via http.  NOTE: It must include the port.  NOTE: No trailing '/'!!! |
+| =batchstatus.condor.sleep= |time the Condor !BatchStatus Plugin waits between cycles Value is in seconds. |
+| =batchstatus.maxtime= |maximum time while the info is considered reasonable.  If info stored is older than that, is considered not valid, and some NULL output will be returned. |
+| =cycles= |maximum number of times the queues will loop.  None means forever. |
+| =cleanlogs.keepdays= |maximum number of days the condor logs will be kept, in case they are placed in a subdirectory for an APFQueue that is not being currently managed by !AutoPyFactory.  For example, an apfqueue that has been created and used for a short amount of time, and it does not exist anymore.  Still the created logs have to be cleaned at some point... |
+| =enablequeues= |default value to enable/disable all queues at once.  When True, its value will be overriden by the queue config variable 'enabled', queue by queue.  When False, all queues will stop working, but the factory will still be alive performing basic actions (eg. printing logs). |
+| =factoryId= |Name that the factory instance will have in the APF web monitor.  Make factoryId something descriptive and unique for your factory, for example <site>-<host>-<admin> (e.g. BNL-gridui11-jhover) |
+| =factoryAdminEmail= |Email of the local admin to contact in case of a problem with an specific APF instance. |
+| =factorySMTPServer= |Server to use to send alert emails to admin.  |
+| =factory.sleep= |sleep time between cycles in mainLoop in Factory object Value is in seconds. |
+| =factoryUser= |account under which APF will run |
+| =maxperfactory.maximum= |maximum number of condor jobs to be running at the same time per Factory.  It is a global number, used by all APFQueues submitting pilots with condor.  The value will be used by !MaxPerFactorySchedPlugin plugin |
+| =logserver.enabled= |determines if batch logs are exported via HTTP.  Valid values are True&verbar;False |
+| =logserver.index= |determines if automatic directory indexing is allowed when log directories are browsed.  Valid values are True&verbar;False |
+| =logserver.allowrobots= |if false, creates a robots.txt file in the docroot.  Valid valudes are True&verbar;False |
+| =proxyConf= |local path to the configuration file for automatic proxy management.  NOTE: must be a local path, not a URI.  |
+| =proxymanager.enabled= |to determine if automatic proxy management is used or not.  Accepted values are True&verbar;False |
+| =proxymanager.sleep= | Sleep interval for proxymanager thread.  |
+| =queueConf= |URI plus path to the configuration file for APF queues.  NOTE: Must be expressed as a URI (file:// or http://) Cannot be used at the same time that queueDirConf |
+| =queueDirConf= |directory with a set of configuration files, all of them to be used at the same time.  i.e.  /etc/autopyfactory/queues.d/ Cannot be used at the same time that queueConf |
+| =monitorConf= |local path to the configuration file for Monitor plugins. |
+| =mappingsConf= |local path to the configuration file with the mappings: for example, globus2info, jobstatus2info, etc. |
+| =wmsstatus.maximum= |maximum time while the info is considered reasonable.  If info stored is older than that, is considered not valid, and some NULL output will be returned. |
+| =wmsstatus.panda.sleep= |time the WMSStatus Plugin waits between cycles Value is in seconds. |
+
+---## queues.conf
+
+| *Variable* | *Description* |
+| =cloud= | is the cloud this queue is in. You should set this to suppress pilot submission when the cloud goes offline N.B. Panda clouds are UPPER CASE, e.g., UK |
+| =vo= | Virtual Organization |
+| =grid= | Grid middleware flavor at the site. (e.g. OSG, EGI, !NorduGrid)  |
+| =batchqueue= | the Batch system related queue name.  E.g. the !PanDA queue name (formerly called nickname) |
+| =wmsqueue= | the WMS system queue name.  E.g. the !PanDA siteid name |
+| =enabled= | determines if each queue section must be used by !AutoPyFactory or not. Allows to disable a queue without commenting out all the values.  Valid values are True&verbar;False. |
+| =status= | can be "test", "offline" or "online" |
+| =apfqueue.sleep= | sleep time between cycles in APFQueue object.  Value is in seconds.    |
+| =cleanlogs.keepdays= | maximum number of days the condor logs will be kept |
+|  WMS Status Plugin variables  ||
+| =wmsstatusplugin= | WMS Status Plugin. |
+| =wmsstatus.condor.queryargs= | list of command line input options to be included in the query command *verbatim*. E.g.  wmsstatus.condorqueryargs = -name <schedd_name> ...  |
+|  Batch Status Plugin variables  ||
+| =batchstatusplugin= | Batch Status Plugin. |
+| =batchstatus.condor.queryargs= | list of command line input options to be included in the query command *verbatim*. E.g.  batchstatus.condor.queryargs = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]> |
+|  Sched Plugin variables  ||
+| =schedplugin= | specific Scheduler Plugin implementing the algorithm deciding how many new pilots to submit next cycle.  The value can be a single Plugin or a split by comma list of Plugins.  In the case of more than one plugin, each one will acts as a filter with respect to the value returned by the previous one.  By selecting the right combination of Plugins in a given order, a complex algorithm can be built. <BR> E.g., the algorithm can start by using Ready Plugin, which will determine the number of pilots based on the number of activated jobs in the WMS queue and the number of already submitted pilots.  After that, this number can be filtered to a maximum (!MaxPerCycleSchedPlugin) or a minimum (!MinPerCycleSchedPlugin) number of pilots.  Or even can be filtered to a maximum number of pilots per factory (!MaxPerFactorySchedPlugin) Also it can be filtered depending on the status of the wmsqueue (!StatusTestSchedPlugin, !StatusOfflineSchedPlugin). |
+|  Configuration when schedplugin is Ready  ||
+| =sched.ready.offset= | the minimum value in the number of ready jobs to trigger submission. |
+|  Configuration when schedplugin is Fixed   ||
+| =sched.fixed.pilotspercycle= | fixed number of pilots to be submitted each cycle, when using the Fixed Scheduler Plugin. |
+|  Configuration when schedplugin is !MaxPerCycle  ||
+| =sched.maxpercycle.maximum= | maximum number of pilots to be submitted per cycle |
+|  Configuration when schedplugin is !MinPerCycle  ||
+| =sched.minpercycle.minimum= | minimum number of pilots to be submitted per cycle |
+|  Configuration when schedplugin is !MaxPending  ||
+| =sched.maxpending.maximum= | maximum number of pilots to be pending |
+|  Configuration when schedplugin is !MinPending  ||
+| =sched.minpending.minimum= | minimum number of pilots to be pending |
+|  Configuration when schedplugin is !MaxToRun  ||
+| =sched.maxtorun.maximum= | maximum number of pilots allowed to, potentially, be running at a time.  |
+|  Configuration when schedplugin is !StatusTest  ||
+| =sched.statustest.pilots= | number of pilots to submit when the wmsqueue is in status = test |
+|  Configuration when schedplugin is !StatusOffline  ||
+| =sched.statusoffline.pilots= | number of pilots to submit when the wmsqueue or the cloud is in status = offline |
+|  Configuration when schedplugin is Simple  ||
+| =sched.simple.default= | default number of pilots to be submitted when the context information does not exist or is not reliable.  To be used in Simple Scheduler Plugin. |
+| =sched.simple.maxpendingpilots= | maximum number of pilots to be idle on queue waiting to start execution.  To be used in Simple Scheduler Plugin. |
+| =sched.simple.maxpilotspercycle= | maximum number of pilots to be submitted per cycle.  To be used in Simple Scheduler Plugin. |
+|  Configuration when schedplugin is Trivial  ||
+| =sched.trivial.default= | default number of pilots to be submitted when the context information does not exist or is not reliable.  To be used in Trivial Scheduler Plugin. |
+|  Configuration when schedplugin is Scale  ||
+| =sched.scale.factor= | scale factor to correct the previous value of the number of pilots.  Value is a float number. |
+|  Configuration when schedplugin is !KeepNRunning  ||
+| =sched.keepnrunning.keep_running= | number of total jobs to keep running and/or pending |
+|  Batch Submit Plugin variables  ||
+| =batchsubmitplugin= | Batch Submit Plugin.  Currently available options are: !CondorGT2, !CondorGT5, !CondorCREAM, !CondorLocal, !CondorLSF, !CondorEC2, !CondorDeltaCloud. |
+|  Configuration when batchsubmitplugin is condorgt2   ||
+| =batchsubmit.condorgt2.gridresource= | name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor) |
+| =batchsubmit.condorgt2.submitargs= | list of command line input options to be included in the submission command *verbatim* e.g.  batchsubmit.condorgt2.submitargs = -remote my_schedd will drive into a command like condor_submit -remote my_schedd submit.jdl |
+| =batchsubmit.condorgt2.condor_attributes= | list of condor attributes, splited by comma, to be included in the condor submit file *verbatim* <BR>e.g. +Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas" Can be used to include any line in the Condor-G file that is not otherwise added programmatically by !AutoPyFactory.  Note the following directives are added by default: <BR>transfer_executable=True <BR>stream_output=False <BR>stream_error=False <BR>notification=Error <BR>copy_to_spool=false |
+| =batchsubmit.condorgt2.environ= | list of environment variables, splitted by white spaces, to be included in the condor attribute environment *verbatim* Therefore, the format should be env1=var1 env2=var2 envN=varN split by whitespaces. |
+| =batchsubmit.condorgt2.proxy= | name of the proxy handler in proxymanager for automatic proxy renewal (See etc/proxy.conf) None if no automatic proxy renewal is desired. |
+|  !GlobusRSL GRAM2 variables  ||
+| =gram2= | The following are GRAM2 RSL variables.  They are just used to build batchsubmit.condorgt2.globusrsl (if needed) The globusrsl directive in the condor submission file looks like globusrsl=(jobtype=single)(queue=short) Documentation can be found here: http://www.globus.org/toolkit/docs/2.4/gram/gram_rsl_parameters.html |
+| =globusrsl.gram2.&#60;argument&#62;= | globusrsl.gram2.count <BR> globusrsl.gram2.directory <BR> globusrsl.gram2.dryRun <BR> globusrsl.gram2.environment <BR> globusrsl.gram2.executable <BR> globusrsl.gram2.gramMyJob <BR> globusrsl.gram2.hostCount <BR> globusrsl.gram2.jobType <BR> globusrsl.gram2.maxCpuTime <BR> globusrsl.gram2.maxMemory <BR> globusrsl.gram2.maxTime <BR> globusrsl.gram2.maxWallTime <BR> globusrsl.gram2.minMemory <BR> globusrsl.gram2.project <BR> globusrsl.gram2.queue <BR> globusrsl.gram2.remote_io_url <BR> globusrsl.gram2.restart <BR> globusrsl.gram2.save_state <BR> globusrsl.gram2.stderr <BR> globusrsl.gram2.stderr_position <BR> globusrsl.gram2.stdin <BR> globusrsl.gram2.stdout <BR> globusrsl.gram2.stdout_position <BR> globusrsl.gram2.two_phase |
+| =globusrsl.gram2.globusrsl= | GRAM RSL directive.  If this variable is not setup, then it will be built programmatically from all non empty globusrsl.gram2.XYZ variables.  If this variable is setup, then its value will be taken *verbatim*, and all possible values for globusrsl.gram2.XYZ variables will be ignored.  |
+| =globusrsl.gram2.globusrsladd= | custom fields to be added *verbatim* to the GRAM RSL directive, after it has been built either from globusrsl.gram2.globusrsl value or from all globusrsl.gram2.XYZ variables.  e.g. (condorsubmit=('+AccountingGroup' '\"group_atlastest.usatlas1\"')('+Requirements' 'True')) |
+|  Configuration when batchsubmitplugin is condorgt5  ||
+| =batchsubmit.condorgt5.gridresource= | name of the CE (e.g. gridtest01.racf.bnl.gov/jobmanager-condor) |
+| =batchsubmit.condorgt5.submitargs= | list of command line input options to be included in the submission command *verbatim* e.g.  batchsubmit.condorgt2.submitargs = -remote my_schedd will drive into a command like condor_submit -remote my_schedd submit.jdl |
+| =batchsubmit.condorgt5.condor_attributes= | list of condor attributes, splited by comma, to be included in the condor submit file *verbatim* e.g. +Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas" Can be used to include any line in the Condor-G file that is not otherwise added programmatically by !AutoPyFactory.  Note the following directives are added by default: <BR>transfer_executable=True <BR>stream_output=False <BR>stream_error=False <BR>notification=Error <BR>copy_to_spool=false |
+| =batchsubmit.condorgt5.environ= | list of environment variables, splitted by white spaces, to be included in the condor attribute environment *verbatim* Therefore, the format should be env1=var1 env2=var2 envN=varN split by whitespaces. |
+| =batchsubmit.condorgt5.proxy= | name of the proxy handler in proxymanager for automatic proxy renewal (See etc/proxy.conf) None if no automatic proxy renewal is desired. |
+|  !GlobusRSL GRAM5 variables  ||
+| =gram5= | The following are GRAM5 RSL variables.  They are just used to build batchsubmit.condorgt5.globusrsl (if needed) The globusrsl directive in the condor submission file looks like globusrsl=(jobtype=single)(queue=short) Documentation can be found here: http://www.globus.org/toolkit/docs/5.2/5.2.0/gram5/user/#gram5-user-rsl  |
+| =globusrsl.gram5.&#60;argument&#62;= | globusrsl.gram5.count <BR> globusrsl.gram5.directory <BR> globusrsl.gram5.dry_run <BR> globusrsl.gram5.environment <BR> globusrsl.gram5.executable <BR> globusrsl.gram5.file_clean_up <BR> globusrsl.gram5.file_stage_in <BR> globusrsl.gram5.file_stage_in_shared <BR> globusrsl.gram5.file_stage_out <BR> globusrsl.gram5.gass_cache <BR> globusrsl.gram5.gram_my_job <BR> globusrsl.gram5.host_count <BR> globusrsl.gram5.job_type <BR> globusrsl.gram5.library_path <BR> globusrsl.gram5.loglevel <BR> globusrsl.gram5.logpattern <BR> globusrsl.gram5.max_cpu_time <BR> globusrsl.gram5.max_memory <BR> globusrsl.gram5.max_time <BR> globusrsl.gram5.max_wall_time <BR> globusrsl.gram5.min_memory <BR> globusrsl.gram5.project <BR> globusrsl.gram5.proxy_timeout <BR> globusrsl.gram5.queue <BR> globusrsl.gram5.remote_io_url <BR> globusrsl.gram5.restart <BR> globusrsl.gram5.rsl_substitution <BR> globusrsl.gram5.savejobdescription <BR> globusrsl.gram5.save_state <BR> globusrsl.gram5.scratch_dir <BR> globusrsl.gram5.stderr <BR> globusrsl.gram5.stderr_position <BR> globusrsl.gram5.stdin <BR> globusrsl.gram5.stdout <BR> globusrsl.gram5.stdout_position <BR> globusrsl.gram5.two_phase <BR> globusrsl.gram5.username |
+| =globusrsl.gram5.globusrsl= | GRAM RSL directive.  If this variable is not setup, then it will be built programmatically from all non empty globusrsl.gram5.XYZ variables.  If this variable is setup, then its value will be taken *verbatim*, and all possible values for globusrsl.gram5.XYZ variables will be ignored.  |
+| =globusrsl.gram5.globusrsladd= | custom fields to be added *verbatim* to the GRAM RSL directive, after it has been built either from globusrsl.gram5.globusrsl value or from all globusrsl.gram5.XYZ variables.  e.g. (condorsubmit=('+AccountingGroup' '\"group_atlastest.usatlas1\"')('+Requirements' 'True')) |
+|  Configuration when batchsubmitplugin is condorcream  ||
+| =batchsubmit.condorcream.webservice= | web service address (e.g. ce04.esc.qmul.ac.uk:8443/ce-cream/services/CREAM2) |
+| =batchsubmit.condorcream.submitargs= | list of command line input options to be included in the submission command *verbatim* e.g.  batchsubmit.condorgt2.submitargs = -remote my_schedd will drive into a command like condor_submit -remote my_schedd submit.jdl |
+| =batchsubmit.condorcream.condor_attributes= | list of condor attributes, splited by comma, to be included in the condor submit file *verbatim* e.g. +Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas" Can be used to include any line in the Condor-G file that is not otherwise added programmatically by !AutoPyFactory.  Note the following directives are added by default: <BR>transfer_executable=True <BR>stream_output=False <BR>stream_error=False <BR>notification=Error <BR>copy_to_spool=false |
+| =batchsubmit.condorcream.environ= | list of environment variables, splitted by white spaces, to be included in the condor attribute environment *verbatim* Therefore, the format should be env1=var1 env2=var2 envN=varN split by whitespaces. |
+| =batchsubmit.condorcream.queue= | queue within the local batch system (e.g. short) |
+| =batchsubmit.condorcream.port= | port number. |
+| =batchsubmit.condorcream.batch= | local batch system (pbs, sge...) |
+| =batchsubmit.condorcream.gridresource= | grid resource, built from other vars using interpolation: batchsubmit.condorcream.gridresource = %(batchsubmit.condorcream.webservice)s:%(batchsubmit.condorcream.port)s/ce-cream/services/CREAM2 %(batchsubmit.condorcream.batch)s %(batchsubmit.condorcream.queue)s |
+| =batchsubmit.condorcream.proxy= | name of the proxy handler in proxymanager for automatic proxy renewal (See etc/proxy.conf) None if no automatic proxy renewal is desired. |
+|  Configuration when batchsubmitplugin is condorosgce  ||
+| =batchsubmit.condorosgce.remote_condor_schedd= | condor schedd  |
+| =batchsubmit.condorosgce.remote_condor_collector= | condor collector |
+| =batchsubmit.condorosgce.gridresource= | to be used in case schedd and collector are the same |
+| =batchsubmit.condorosgce.proxy= | name of the proxy handler in proxymanager for automatic proxy renewal (See etc/proxy.conf) None if no automatic proxy renewal is desired. |
+| =batchsubmit.condorosgce.condor_attributes= | list of condor attributes, splited by comma, to be included in the condor submit file *verbatim* |
+|  Configuration when batchsubmitplugin is condorec2  ||
+| =batchsubmit.condorec2.gridresource= | ec2 service's URL (e.g. https://ec2.amazonaws.com/ ) |
+| =batchsubmit.condorec2.submitargs= | list of command line input options to be included in the submission command *verbatim* e.g.  batchsubmit.condorgt2.submitargs = -remote my_schedd will drive into a command like condor_submit -remote my_schedd submit.jdl |
+| =batchsubmit.condorec2.condor_attributes= | list of condor attributes, splited by comma, to be included in the condor submit file *verbatim* |
+| =batchsubmit.condorec2.environ= | list of environment variables, splitted by white spaces, to be included in the condor attribute environment *verbatim* Therefore, the format should be env1=var1 env2=var2 envN=varN split by whitespaces. |
+| =batchsubmit.condorec2.ami_id= | identifier for the VM image, previously registered in one of Amazon's storage service (S3 or EBS) |
+| =batchsubmit.condorec2.ec2_spot_price= | max price to pay, in dollars to three decimal places. e.g. .040 |
+| =batchsubmit.condorec2.instance_type= | hardware configurations for instances to run on, .e.g m1.medium |
+| =batchsubmit.condorec2.user_data= | up to 16Kbytes of contextualization data.  This makes it easy for many instances to share the same VM image, but perform different work. |
+| =batchsubmit.condorec2.access_key_id= | path to file with the EC2 Access Key ID |
+| =batchsubmit.condorec2.secret_access_key= | path to file with the EC2 Secret Access Key |
+| =batchsubmit.condorec2.proxy= | name of the proxy handler in proxymanager for automatic proxy renewal (See etc/proxy.conf) None if no automatic proxy renewal is desired. |
+|  Configuration when batchsubmitplugin is condordeltacloud  ||
+| =batchsubmit.condordeltacloud.gridresource= | ec2 service's URL (e.g. https://deltacloud.foo.org/api ) |
+| =batchsubmit.condordeltacloud.username= | credentials in !DeltaCloud |
+| =batchsubmit.condordeltacloud.password_file= | path to the file with the password |
+| =batchsubmit.condordeltacloud.image_id= | identifier for the VM image, previously registered with the cloud service. |
+| =batchsubmit.condordeltacloud.keyname= | in case of using SSH, the command keyname specifies the identifier of the SSH key pair to use.  |
+| =batchsubmit.condordeltacloud.realm_id= | selects one between multiple locations the cloud service may have. |
+| =batchsubmit.condordeltacloud.hardware_profile= | selects one between the multiple hardware profiles the cloud service may provide |
+| =batchsubmit.condordeltacloud.hardware_profile_memory= | customize the hardware profile |
+| =batchsubmit.condordeltacloud.hardware_profile_cpu= | customize the hardware profile |
+| =batchsubmit.condordeltacloud.hardware_profile_storage= | customize the hardware profile |
+| =batchsubmit.condordeltacloud.user_data= | contextualization data |
+|  Configuration when batchsubmitplugin is condorlocal  ||
+| =batchsubmit.condorlocal.submitargs= | list of command line input options to be included in the submission command *verbatim* e.g.  batchsubmit.condorgt2.submitargs = -remote my_schedd will drive into a command like condor_submit -remote my_schedd submit.jdl |
+| =batchsubmit.condorlocal.condor_attributes= | list of condor attributes, splited by comma, to be included in the condor submit file *verbatim* e.g. +Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas" Can be used to include any line in the Condor-G file that is not otherwise added programmatically by !AutoPyFactory.  Note the following directives are added by default: <BR>universe = vanilla <BR>transfer_executable = True <BR>should_transfer_files = IF_NEEDED <BR>+TransferOutput = "" <BR>stream_output=False <BR>stream_error=False <BR>notification=Error <BR>periodic_remove = (!JobStatus == 5 && (!CurrentTime - !EnteredCurrentStatus) > 3600) &verbar;&verbar; (!JobStatus == 1 && globusstatus =!= 1 && (!CurrentTime - !EnteredCurrentStatus) > 86400) <BR>To be used in !CondorLocal Batch Submit Plugin. |
+| =batchsubmit.condorlocal.environ= | list of environment variables, splitted by white spaces, to be included in the condor attribute environment *verbatim* To be used by !CondorLocal Batch Submit Plugin.  Therefore, the format should be env1=var1 env2=var2 envN=varN split by whitespaces. |
+| =batchsubmit.condorlocal.proxy= | name of the proxy handler in proxymanager for automatic proxy renewal (See etc/proxy.conf) None if no automatic proxy renewal is desired. |
+|  Configuration when batchsubmitplugin is condorlsf  ||
+| =batchsubmit.condorlsf.proxy= | name of the proxy handler in proxymanager for automatic proxy renewal (See etc/proxy.conf) None if no automatic proxy renewal is desired. |
+|  Configuration when batchsubmitplugin is nordugrid  ||
+| =batchsubmit.condornordugrid.gridresource= | name of the ARC CE i.e. lcg-lrz-ce2.grid.lrz.de |
+| =nordugridrsl= | Entire RSL line.  i.e. (jobname = 'prod_pilot')(queue=lcg)(runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY ) (environment = ('APFFID' 'voatlas94') ('PANDA_JSID' 'voatlas94') ('GTAG' 'http://voatlas94.cern.ch/pilots/2012-11-19/LRZ-LMU_arc/$(Cluster).$(Process).out') ('RUCIO_ACCOUNT' 'pilot') ('APFCID' '$(Cluster).$(Process)') ('APFMON' 'http://apfmon.lancs.ac.uk/mon/') ('FACTORYQUEUE' 'LRZ-LMU_arc')  |
+| =nordugridrsladd= | A given tag to be added to the Nordugrid RSL line |
+| =nordugridrsl.addenv.<XYZ>= | A given tag to be added within the 'environment' tag to the Nordugrid RSL line i.e. nordugridrsl.addenv.RUCIO_ACCOUNT = pilot will be added as ('RUCIO_ACCOUNT' 'pilot' ) |
+
+  Monitor Section 
+
+
+| *Variable* | *Description* |
+| =monitorsection= | section in monitor.conf where info about the actual monitor plugin can be found.  The value can be a single section or a split by comma list of sections.  Monitor plugins handle job info publishing to one or more web monitor/dashboards.  To specify more than one (sections) simply use a comma-separated list.    |
+
+  Executable variables 
+
+As the purpose of the factory is to submit jobs to the different resources (local batch queues, grid sites, etc.) an executable, with its corresponding list of input arguments, is needed.
+This executable can be anything.
+Details on how to install the executable and the list of arguments are out of the scope of this documentation.
+
+| *Variable* | *Description* |
+| =executable= | path to the script which will be run by condor. |
+| =executable.arguments= | input options to be passed verbatim to the executable script. |
+
+<!--
+ This variable can be built making use of an auxiliar variable called executable.defaultarguments This proposed ancilla works as a template, and its content is created on the fly from the value of other variables.  This mechanism is called "interpolation", docs can be found here: http://docs.python.org/library/configparser.html 
+An example of this type of templates (included in the DEFAULTS block) is like this: executable.defaultarguments = --wrappergrid=%(grid)s \ --wrapperwmsqueue=%(wmsqueue)s \ --wrapperbatchqueue=%(batchqueue)s \ --wrappervo=%(vo)s \ --wrappertarballurl=http://dev.racf.bnl.gov/dist/wrapper/wrapper.tar.gz \ --wrapperserverurl=http://pandaserver.cern.ch:25080/cache/pilot \ --wrapperloglevel=debug executable.defaultarguments =  -s %(wmsqueue)s \ -h %(batchqueue)s -p 25443 \ -w https://pandaserver.cern.ch  -j false  -k 0  -u user |
+-->
+
+---## proxy.conf
+
+| *Variable* | *Description* |
+| =baseproxy= | If used, create a very long-lived proxy, e.g. grid-proxy-init -valid 720:0 -out /tmp/plainProxy Note that maintenance of this proxy must occur completely outside of APF. |
+| =proxyfile= | Target proxy path.|
+| =lifetime= | Initial lifetime, in seconds (604800 = 7 days)|
+| =checktime= | How often to check proxy validity, in seconds|
+| =minlife= | Minimum lifetime of VOMS attributes for a proxy (renew if less) in seconds|
+| =interruptcheck= | Frequency to check for keyboard/signal interrupts, in seconds|
+| =renew= | If you do not want to use !ProxyManager to renew proxies, set this False and only define 'proxyfile' If renew is set to false, then no grid client setup is necessary. |
+| =usercert= | Path to the user grid certificate file|
+| =userkey= | Path to the user grid key file|
+| =vorole= | User VO role for target proxy. !MyProxy Retrieval Functionality: Assumes you have created a long-lived proxy in a !MyProxy server, out of band. |
+| =flavor= | voms or myproxy. voms directly generates proxy using cert or baseproxy myproxy retrieves a proxy from myproxy, then generates the target proxy against voms using it as baseproxy.|
+| =myproxy_hostname= | Myproxy server host. |
+| =myproxy_username= | User name to be used on !MyProxy service|
+| =myproxy_passphrase= | Passphrase for proxy retrieval from !MyProxy|
+| =retriever_profile= | A list of other proxymanager profiles to be used to authorize proxy retrieval from !MyProxy. |
+| =initdelay= | In seconds, how long to wait before generating. Needed for !MyProxy when using cert authentication--we need to allow time for the auth credential to be generated (by another proxymanager profile). |
+| =owner= | If running standalone (as root) and you want the proxy to be owned by another account. |
+| =Remote= | Proxy Maintenance: Assumes you have enabled ssh-agent key-based access to the remote host where you want to maintain a proxy file. |
+| =remote_host= | copy proxyfile to same path on remote host |
+| =remote_user= | User to connect as? |
+| =remote_owner= | If connect user is root, what account should own the file? |
+| =remote_group= | If connect user is root, what group should own the file? |
+| =voms.args= | Any extra arbitrary input option to be added to voms-proxy-init command|
+
+---## monitor.conf
+
+| *Variable* | *Description* |
+| =monitorplugin= | the type of plugin to handle this monitor instance |
+| =monitorURL= | URL for the web monitor |
+

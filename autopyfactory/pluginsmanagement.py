@@ -69,7 +69,7 @@ class QueuePluginDispatcher(object):
 
     def getschedplugins(self):
 
-        scheduler_plugin_handlers = self._getplugin('queue', 'sched')  # list of PluginHandler objects
+        scheduler_plugin_handlers = self._getplugin('sched')  # list of PluginHandler objects
                                                       # Note that for the Sched category,
                                                       # we allow more than one plugin 
                                                       # (split by comma in the config file)
@@ -87,7 +87,7 @@ class QueuePluginDispatcher(object):
             queryargs = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs')
             if queryargs:
                     condor_q_id = self.__queryargs2condorqid(queryargs)    
-        batchstatus_plugin_handler = self._getplugin('queue', 'batchstatus')[0]
+        batchstatus_plugin_handler = self._getplugin('batchstatus')[0]
         batchstatus_cls = batchstatus_plugin_handler.plugin_class
 
         # calls __init__() to instantiate the class
@@ -127,7 +127,7 @@ class QueuePluginDispatcher(object):
             if queryargs:
                     condor_q_id = self.__queryargs2condorqid(queryargs)
 
-        wmsstatus_plugin_handler = self._getplugin('queue', 'wmsstatus')[0]
+        wmsstatus_plugin_handler = self._getplugin('wmsstatus')[0]
         wmsstatus_cls = wmsstatus_plugin_handler.plugin_class
 
         # calls __init__() to instantiate the class
@@ -152,7 +152,7 @@ class QueuePluginDispatcher(object):
 
     def getsubmitplugin(self):
     
-        batchsubmit_plugin_handler = self._getplugin('queue', 'batchsubmit')[0]
+        batchsubmit_plugin_handler = self._getplugin('batchsubmit')[0]
         batchsubmit_cls = batchsubmit_plugin_handler.plugin_class
     
         # calls __init__() to instantiate the class
@@ -162,7 +162,7 @@ class QueuePluginDispatcher(object):
 
 
     def getmonitorplugins(self):
-        monitor_plugin_handlers = self._getplugin('queue', 'monitor', self.mcl)  # list of classes 
+        monitor_plugin_handlers = self._getplugin('monitor', self.mcl)  # list of classes 
         self.log.debug("monitor_plugin_handlers =   %s" % monitor_plugin_handlers)
         monitor_plugins = []
         for monitor_ph in monitor_plugin_handlers:
@@ -202,13 +202,10 @@ class QueuePluginDispatcher(object):
             return '%s:%s' %(name, pool)
 
 
-    def _getplugin(self, level, action, config=None):
+    def _getplugin(self, action, config=None):
         '''
         Generic private method to find out the specific plugin
-        to be used depending on the level and action.
-        Level can be:
-                - queue
-                - factory
+        to be used for this queue, depending on the action.
         Action can be:
                 - sched
                 - batchstatus
@@ -252,8 +249,16 @@ class QueuePluginDispatcher(object):
 
         self.log.debug("Starting for action %s" %action)
 
+        plugin_prefixes = {
+                'sched' : 'Sched',
+                'wmsstatus': 'WMSStatus',
+                'batchstatus': 'BatchStatus',
+                'batchsubmit': 'BatchSubmit',
+                'monitor' : 'Monitor',
+        }
 
         plugin_config_item = '%splugin' %action # i.e. schedplugin
+        plugin_prefix = plugin_prefixes[action] 
         plugin_action = action
         
         # list of objects PluginHandler
@@ -298,9 +303,10 @@ class QueuePluginDispatcher(object):
 
             name = ph.plugin_name 
 
-            plugin_module_name = name
+            plugin_module_name = '%s%sPlugin' %(name, plugin_prefix)
+            # Example of plugin_module_name is CondorGT2 + BatchSubmit + Plugin => CondorGT2BatchSubmitPlugin
 
-            plugin_path = "autopyfactory.plugins.%s.%s.%s" % ( level, plugin_action, plugin_module_name)
+            plugin_path = "autopyfactory.plugins.%s.%s" % ( plugin_action, plugin_module_name)
             self.log.debug("Attempting to import derived classnames: %s"
                 % plugin_path)
 
@@ -321,20 +327,6 @@ class QueuePluginDispatcher(object):
 
         return plugin_handlers
 
-
-
-
-
-####################################################
-#   FIXME
-#       -- Too much code duplicated between
-#          FactoryPluginDispatcher and
-#          QueuePluginDispatcher
-#       -- things in the code that only 
-#          make sense to queues plugins
-#       -- the concept of "default" here
-#          may be also valid for queues plugins
-####################################################
 
 class FactoryPluginDispatcher(object):
     '''
@@ -357,7 +349,7 @@ class FactoryPluginDispatcher(object):
         Typically from queues.conf or from an URL
         """
 
-        config_plugin_handlers = self._getplugin('factory', 'config', default_plugins='File') # list of PluginHander objects, 
+        config_plugin_handlers = self._getplugin('config') # list of PluginHander objects, 
                                                            # as we allow more than one config plugin
         config_plugins = []
         for config_ph in config_plugin_handlers:
@@ -369,13 +361,23 @@ class FactoryPluginDispatcher(object):
 
 
 
-    def _getplugin(self, level, action, config=None, default_plugins=None):
+    def _getplugin(self, action, config=None):
         '''
         '''
 
         self.log.debug("Starting for action %s" %action)
 
+        plugin_prefixes = {
+                'sched' : 'Sched',
+                'wmsstatus': 'WMSStatus',
+                'batchstatus': 'BatchStatus',
+                'batchsubmit': 'BatchSubmit',
+                'monitor' : 'Monitor',
+                'config' : 'Config',
+        }
+
         plugin_config_item = '%splugin' %action # i.e. schedplugin
+        plugin_prefix = plugin_prefixes[action] 
         plugin_action = action
         
         # list of objects PluginHandler
@@ -411,22 +413,6 @@ class FactoryPluginDispatcher(object):
                         ph.plugin_name = plugin_name 
                         ph.config_section = ['Factory']
                         plugin_handlers.append(ph)
-
-            # FIXME
-            # too much duplicated code here
-            else:
-                if default_plugins:
-                    plugin_names = default_plugins
-                    plugin_names = plugin_names.split(',') # we convert a string split by comma into a list
-               
-                    for plugin_name in plugin_names: 
-                        if plugin_name != "None":
-                            plugin_name = plugin_name.strip()
-                            ph = PluginHandler()
-                            ph.plugin_name = plugin_name 
-                            ph.config_section = ['Factory']
-                            plugin_handlers.append(ph)
-
             
             #else:
             #    return [PluginHandler()] # temporary solution  
@@ -436,9 +422,10 @@ class FactoryPluginDispatcher(object):
 
             name = ph.plugin_name 
 
-            plugin_module_name = name
+            plugin_module_name = '%s%sPlugin' %(name, plugin_prefix)
+            # Example of plugin_module_name is CondorGT2 + BatchSubmit + Plugin => CondorGT2BatchSubmitPlugin
 
-            plugin_path = "autopyfactory.plugins.%s.%s.%s" % ( level, plugin_action, plugin_module_name)
+            plugin_path = "autopyfactory.plugins.%s.%s" % ( plugin_action, plugin_module_name)
             self.log.debug("Attempting to import derived classnames: %s"
                 % plugin_path)
 
@@ -458,103 +445,4 @@ class FactoryPluginDispatcher(object):
             ph.plugin_class = plugin_class
 
         return plugin_handlers
-
-
-
-##############################################################################################
-#           NEW CODE 
-##############################################################################################
-
-# FIXME 
-log = logging.getLogger('main.pluginsdispatcher')
-
-def getpluginclass(level, type, name):
-    """
-    returns the plugin class (not an object)
-    """
-
-    log.debug('starting, with values: level=%s, type=%s, name=%s' %(level, type, name))
-
-    plugin_path = "autopyfactory.plugins.%s.%s.%s" % (level, type, name)
-    plugin_module = __import__(plugin_path,
-                               globals(),
-                               locals(),
-                               [name])
-    # NOTE:
-    # an alternative to __import__ would be like this
-    #
-    #       plugin_path = "autopyfactory/plugins/%s/%s/%s.py" % (level, type, name)
-    #       import imp
-    #       plugin_module = imp.load_source(name, plugin_path)
-    #
-
-    # with getattr() we extract the actual class from the module object
-    # the name of the class is always the name of the module
-    plugin_class = getattr(plugin_module, name)  
-
-    log.info('returning plugin class %s' %plugin_class) 
-    return plugin_class
-
-
-def initializeplugin(plugin_class, *args, **kwargs):
-    """
-    initializes an object for a given plugin class
-    and returns the object, 
-    or raises an exception in case of failure
-    """
-
-    log.debug('starting, with values plugin_class=%s, *args=%s, **kwargs=%s' %(plugin_class, args, kwargs))
-
-    try:
-        plugin_object = plugin_class(*args, **kwargs)
-        log.info('returning object for plugin class %s' %plugin_class)
-        return plugin_object
-    except:
-        log.error('there was an error initializing an object for plugin class %s. Raising an exception.' %plugin_class)
-        raise Exception
-
-
-def getpluginnames(conf, section, type,  auxconf=None):
-    """
-    gets the name of the plugins to be retrieved
-    from a ConfigParser object
-    
-    Sometimes the name of the plugin is not in the ConfigParser object.
-    Instead of that, the ConfigParser objects contains the name of a section 
-    in a secondary config file (auxconf) 
-    """
-    
-    log.debug('starting, with values conf=%s, section=%s, type=%s, auxconf=%s' %(conf, section, type, auxconf))
-
-    names = []
-
-    if auxconf:
-        auxconf_section_item = '%ssection' % type # i.e. monitorsection
-        log.info('the auxiliar section name is %s' %auxconf_section_item)
-        if conf.has_option(section, auxconf_section_item):
-            sections = conf.get(section, auxconf_section_item)
-            sections = [section.strip() for section in sections.split(',') if section.strip() != "None"]
-            for section in sections:
-                log.info('getting plugin names for section %s' %section)
-                # recursive call to the same getpluginname() function
-                # but passing the auxconf ConfigParser as primary conf 
-                newnames = getpluginnames(auxconf, section, type)
-                log.info('new plugin names for section %s are: %s' %(section, newnames))
-                names += newnames
-    
-    else:
-        plugin_config_item = '%splugin' %type  # i.e. schedplugin
-        log.info('the section item is %s' %plugin_config_item)
-        if conf.has_option(section, plugin_config_item):
-            names = conf.get(section, plugin_config_item)  # i.e. Activated
-            # and we convert a string split by comma into a list
-            names = [name.strip() for name in names.split(',') if name.strip() != "None"]
-            log.info('new plugin names are: %s' %names)
-
-    log.info('returning list of plugin names: %s' %names)
-    return names 
-
-
-
-
 

@@ -191,20 +191,20 @@ class Config(SafeConfigParser, object):
         example of usage:
                 x = generic_get("Sec1", "x", get_function='getint', default_value=0  )
         '''
-        self.log.trace('called for section %s option %s get_function %s default_value %s' % ( section,
+        self.log.debug('called for section %s option %s get_function %s default_value %s' % ( section,
                                                                                               option,
                                                                                               get_function,
                                                                                               default_value ))                                                                                                         
         has_option = self.has_option(section, option)
         if not has_option:
-            self.log.trace('option %s is not present in section %s. Return default %s' %(option, section, default_value))
+            self.log.debug('option %s is not present in section %s. Return default %s' %(option, section, default_value))
             return default_value
         else:
             get_f = getattr(self, get_function)
             value = get_f(section, option)
             if value == "None" or value == "none":
                 value = None
-            self.log.trace('option %s in section %s has value %s' %(option, section, value))
+            self.log.debug('option %s in section %s has value %s' %(option, section, value))
             return value
 
 
@@ -259,16 +259,16 @@ class Config(SafeConfigParser, object):
         sections1.sort()
         sections2.sort()
         if sections1 != sections2:
-            self.log.trace('configloader object has different list of SECTIONS than current one. Returning False') 
+            self.log.debug('configloader object has different list of SECTIONS than current one. Returning False') 
             return False
 
         # else...
         for section in self.sections():
             if not self.sectionisequal(config, section):
-                self.log.trace('section %s is different in the current configloader object and the input one. Returning False' %section)
+                self.log.debug('section %s is different in the current configloader object and the input one. Returning False' %section)
                 return False
         else:
-            self.log.trace('Returning True')
+            self.log.debug('Returning True')
             return True
 
 
@@ -289,16 +289,16 @@ class Config(SafeConfigParser, object):
         options1.sort()
         options2.sort()
         if options1 != options2:
-            self.log.trace('current configloader object and the input one has different list of options for section %s. Returning False' %section)
+            self.log.debug('current configloader object and the input one has different list of options for section %s. Returning False' %section)
             return False
 
         # else...
         for option in self.options(section):
             if self.get(section, option) != config.get(section, option):
-                self.log.trace('the value of option %s for section %s is different between the current configloader object and the input one. Returning False' %(option, section))
+                self.log.debug('the value of option %s for section %s is different between the current configloader object and the input one. Returning False' %(option, section))
                 return False
         else:
-            self.log.trace('Returning True')
+            self.log.debug('Returning True')
             return True
             
 
@@ -356,7 +356,7 @@ class Config(SafeConfigParser, object):
                 else:
                     out['MODIFIED'].append(section)
         
-        self.log.trace('returning with output: %s' %out) 
+        self.log.debug('returning with output: %s' %out) 
         return out
 
 
@@ -375,8 +375,6 @@ class Config(SafeConfigParser, object):
         
         self.add_section(section)
         for k,v in items.iteritems():
-            if v == None:
-                v = "None" # method set() only accepts strings
             self.set(section, k, v)
 
     
@@ -425,7 +423,7 @@ class ConfigManager(object):
             if sources:
                 for src in sources.split(','):
                     src = src.strip()
-                    self.log.trace("Calling _getConfig for source %s" % src)
+                    self.log.debug("Calling _getConfig for source %s" % src)
                     newconfig = self.__getConfig(src)
                     if newconfig:
                         config.merge(newconfig)
@@ -532,7 +530,7 @@ class ConfigManager(object):
 
             for src in self.sources.split(','):
                 src = src.strip()
-                self.log.trace("Calling _getConfig for source %s" % src)
+                self.log.debug("Calling _getConfig for source %s" % src)
                 newconfig = self.__getConfig(src)
                 if newconfig:
                     config.merge(newconfig)

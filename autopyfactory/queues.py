@@ -42,7 +42,9 @@ from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailur
 from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
+from autopyfactory.proxymanager import ProxyManager
 from autopyfactory.pluginsmanagement import QueuePluginDispatcher
+from autopyfactory.pluginsmanagement import FactoryPluginDispatcher
 
 
 class APFQueuesManager(object):
@@ -78,8 +80,8 @@ class APFQueuesManager(object):
 
         qcldiff = self.factory.qcl.compare(newqcl)
         #qcldiff is a dictionary like this
-        #    {'REMOVED': [ <list of removed queues> ],
-        #     'ADDED':   [ <list of new queues> ],
+        #    {'REMOVED': [ <list of removed queues ],
+        #     'ADDED':   [ <list of new queues ],
         #     'EQUAL':   [ <list of queues that did not change> ],
         #     'MODIFIED':[ <list of queues that changed> ] 
         #    }
@@ -90,22 +92,7 @@ class APFQueuesManager(object):
         self._addqueues(qcldiff['ADDED'])
         self._delqueues(qcldiff['MODIFIED'])
         self._addqueues(qcldiff['MODIFIED'])
-        self._refresh()  # right now it does not do anything...
-
-        self._start() #starts all threads
-        
-
-    def _start(self):
-        '''
-        starts all APFQueue threads.
-        We do it here, instead of one by one at the same time the object is created (old style),
-        so can control which APFQueue threads are started and which ones are not
-        in a more clear way
-        '''
-
-        for q in self.queues.values():
-            if not q.isAlive():
-                q.start()
+        self._refresh()
 
 
     def join(self):
@@ -146,7 +133,7 @@ class APFQueuesManager(object):
             try:
                 qobject = APFQueue(apfqname, self.factory)
                 self.queues[apfqname] = qobject
-                #qobject.start()
+                qobject.start()
                 self.log.info('Queue %s enabled.' %apfqname)
             except Exception, ex:
                 self.log.error('Exception captured when initializing [%s]. Queue omitted. ' %apfqname)
@@ -179,13 +166,13 @@ class APFQueuesManager(object):
         self.log.debug('%d queues joined and removed' %count)
 
 
-    #def _del(self, apfqname):
-    #    '''
-    #    Deletes a single queue object from the list and stops it.
-    #    '''
-    #    qobject = self._get(apfqname)
-    #    qname.join()
-    #    self.queues.pop(apfqname)
+    def _del(self, apfqname):
+        '''
+        Deletes a single queue object from the list and stops it.
+        '''
+        qobject = self._get(apfqname)
+        qname.join()
+        self.queues.pop(apfqname)
 
     
     def _refresh(self):
@@ -252,6 +239,7 @@ class APFQueue(threading.Thread):
         try: 
             self.wmsqueue = self.qcl.generic_get(apfqname, 'wmsqueue')
             #self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue')
+            self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue', default_value=None)
             #self.cloud = self.qcl.generic_get(apfqname, 'cloud')
             self.cycles = self.fcl.generic_get("Factory", 'cycles' )
             self.sleep = self.qcl.generic_get(apfqname, 'apfqueue.sleep', 'getint')
@@ -304,10 +292,26 @@ class APFQueue(threading.Thread):
         while not self.stopevent.isSet():
             self.log.debug("APFQueue [%s] run(): Beginning submit cycle." % self.apfqname)
             try:
-
-                self._callscheds()
-                self._submitpilots()
-                self._monitor()
+                nsub = 0
+                fullmsg = ""
+                self.log.debug("APFQueue [%s] run(): Calling sched plugins..." % self.apfqname)
+                for sched_plugin in self.scheduler_plugins:
+                    (nsub, msg) = sched_plugin.calcSubmitNum(nsub)
+                    if msg:
+                        if fullmsg:
+                            fullmsg = "%s;%s" % (fullmsg, msg)
+                        else:
+                            fullmsg = msg
+                        
+                self.log.debug("APFQueue[%s]: All Sched plugins called. Result nsub=%s" % (self.apfqname, nsub))
+                jobinfolist = self._submitpilots(nsub)
+                self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
+                for m in self.monitor_plugins:
+                    self.log.debug('APFQueue[%s] run(): calling registerJobs for monitor plugin %s' % (self.apfqname, m))
+                    m.registerJobs(self, jobinfolist)
+                    if fullmsg:
+                        self.log.debug('APFQueue[%s] run(): calling updateLabel for monitor plugin %s' % (self.apfqname, m))
+                        m.updateLabel(self.apfqname, fullmsg)
                 self._exitloop()
                 self._logtime() 
                           
@@ -317,50 +321,18 @@ class APFQueue(threading.Thread):
                 self.log.debug("APFQueue[%s] run(): Exception: %s" % (self.apfqname, traceback.format_exc()))
             time.sleep(self.sleep)
 
-
-    def _callscheds(self):
-        '''
-        calls the sched plugins 
-        and calculates the number of pilot to submit
-        '''
-        nsub = 0
-        fullmsg = ""
-        self.log.debug("APFQueue [%s] run(): Calling sched plugins..." % self.apfqname)
-        for sched_plugin in self.scheduler_plugins:
-            (nsub, msg) = sched_plugin.calcSubmitNum(nsub)
-            if msg:
-                if fullmsg:
-                    fullmsg = "%s;%s" % (fullmsg, msg)
-                else:
-                    fullmsg = msg
-        self.log.debug("APFQueue[%s]: All Sched plugins called. Result nsub=%s" % (self.apfqname, nsub))
-        #return nsub, fullmsg
-        self.nsub = nsub
-        self.fullmsg = fullmsg
-
-    def _submitpilots(self):
+    def _submitpilots(self, nsub):
         '''
         submit using this number
         call for cleanup
         '''
         self.log.debug("Starting")
-        msg = 'Attempt to submit %s pilots for queue %s' %(self.nsub, self.apfqname)
-        jobinfolist = self.batchsubmit_plugin.submit(self.nsub)
-        self.log.debug("Attempted submission of %d pilots and got jobinfolist %s" % (self.nsub, jobinfolist))
+        msg = 'Attempt to submit %s pilots for queue %s' %(nsub, self.apfqname)
+        jobinfolist = self.batchsubmit_plugin.submit(nsub)
+        self.log.debug("Attempted submission of %d pilots and got jobinfolist %s" % (nsub, jobinfolist))
         self.batchsubmit_plugin.cleanup()
         self.cyclesrun += 1
-        self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
-        #return jobinfolist
-        self.jobinfolist = jobinfolist
-
-    def _monitor(self):
-
-        for m in self.monitor_plugins:
-            self.log.debug('APFQueue[%s] run(): calling registerJobs for monitor plugin %s' % (self.apfqname, m))
-            m.registerJobs(self, self.jobinfolist)
-            if self.fullmsg:
-                self.log.debug('APFQueue[%s] run(): calling updateLabel for monitor plugin %s' % (self.apfqname, m))
-                m.updateLabel(self.apfqname, self.fullmsg)
+        return jobinfolist
 
 
     def _exitloop(self):
@@ -411,6 +383,3 @@ class APFQueue(threading.Thread):
         threading.Thread.join(self, timeout)
 
                  
-
-
-
