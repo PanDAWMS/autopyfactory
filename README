@@ -1,17 +1,51 @@
-AutoPyFactory README
+autopyfactory
+-------------
 
-INTRO
-AutoPyFactory (APF) is a general-purpose pilot job factory, written originally to
-serve as the primary production factory for the ATLAS workload management system. 
+autopyfactory is a (still fairly) simple pilot factory for ATLAS
+production. Configured sites have pilots dispatched to them depending
+on their status in production (i.e., if jobs are waiting to be picked
+up) and how many pilots are currently queued or running.
 
-DOCUMENTATION
+autopyfactory will now mainly autoconfigure itself from schedconfig
+so only queue nicknames need be defined.
 
-Documentation can be found in here: 
 
-        https://twiki.grid.iu.edu/bin/view/Documentation/Release3/AutoPyFactory
+How the factory works:
 
-DEVELOPERS
-Jose Caballero <jcaballero@bnl.gov>           Developer
-John Hover <jhover@bnl.gov>                   Developer 
-Peter Love <p.love@lancaster.ac.uk>           Monitor developer 
-Graeme Stewart <g.stewart@physics.gla.ac.uk>  Original author
+For each site the factory looks at the status of jobs already
+submitted (running and queued) and the status of the site in panda
+production (particularly activated jobs, which are the jobs now ready
+to run at the site).
+
+For sites which are "online" in panda and have activated jobs
+the factory ensures that a minimum depth of queued jobs are maintained
+on the site. If the site has no activated jobs the factory idles the
+site by sending one pilot.
+
+
+How the pilot wrapper works:
+
+The default wrapper is called runpilot3-wrapper.sh. Essentially
+it changes to a proper working directory, fetches the pilot tarball
+(downloaded via curl), prints out some useful debug environment 
+information, finds a working python for the LFC plugin, then fires 
+off the pilot code. Recently added features include sourcing the DDM 
+setup code and the ATLAS local site setup scripts.
+
+
+Building
+--------
+
+To build this package from source do
+
+python setup.py bdist --formats=rpm
+
+*** N.B. Because of a problem in the way Redhat flavour RPMs are built
+you must have this rpm macro defined:
+
+%_unpackaged_files_terminate_build 0
+
+which prevents rpmbuild from failing because of the .pyo files which
+get built automatically.
+
+The easiest way to do this is to add that line to ~/.rpmmacros.

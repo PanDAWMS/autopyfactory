@@ -1,0 +1,47 @@
+## Configuration settings for the whole factory
+# factoryOwner and factoryId are mandatory
+# Make factoryId something descriptive and unique for your factory
+# schedConfigPollTime is the number of cycles which pass between reloads
+# of schedconfig data
+
+[Factory]
+factoryOwner = g.stewart@physics.gla.ac.uk
+factoryId = graeme-UK
+# condorUser = unixUserName
+# schedConfigPollTime = 5
+
+## Configure the pilots which are sent
+# Executable, baseLogDir and baseLogDirUrl are mandatory
+queueConf = file:///home/apf/etc/queue.conf
+#queueconf = file:///etc/apf/queue.conf
+
+# How often to update panda status, in seconds
+pandaCheckInterval = 120   
+
+# How often to update local batch status, in seconds
+batchCheckInterval = 45
+
+[Pilots]
+# Executable is the script which will be run by condor. This can contain
+# the uuencoded pilot tarball (rebuild with mkPilotWraper.py), but it is now
+# recommended only to send the script and let it download the latest
+# pilot code from CERN (which it will do automatically).
+#
+# If you are doing pilot development you can set the PILOT_HTTP_SOURCES variable
+# to get your pilot code downloaded on any queue.
+#
+# *** N.B. there is a caching bug in condor_g which means that changes to this
+#  script are not picked up by condor. Best to make a soft link from a 
+#  fake name back to the original when you modify this script, e.g,
+#  "emacs runpilot3-wrapper.sh"
+#  "ln -s runpilot3-wrapper.sh runpilot3-wrapper-1.sh"
+#  "executable = runpilot3-wrapper-1.sh"
+executable = /home/apf/libexec/runpilot3-wrapper.sh
+#executable = /usr/libexec/apf/runpilot3-wrapper.sh
+
+# Where outputs from pilots are stored
+baseLogDir = /home/apf/var/log/apf
+#baseLogDir = /var/log/apf/
+
+# Where outputs from pilots are available via http
+baseLogDirUrl = http://myhost.domain.edu/factory/logs

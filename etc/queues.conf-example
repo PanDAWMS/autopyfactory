@@ -1,0 +1,124 @@
+## Defaults for queues - these values are set when there is not an explicit value
+## If you don't sent them here the factory takes sensible default values, so nothing is mandatory
+## see ConfigLoader._configurationDefaults() for these values. 
+#
+# Most important values can now be detected from schedconfig, so there is no need to set them
+# at all. These values are marked with a *. N.B. Even if you do set these values in the factory
+# they will be overwritten unless the "override = True" setting is used.
+#
+#  *status can be "test", "offline" or "online"
+#  *nqueue is the number of pilots submitted when the queue falls below nqueue
+#  *pilotdepthboost is a multiplying factor which allows more pilots to be submitted than nqueue
+#    if there are sufficient activated jobs - helps when the jobs are short
+#  *idlepilotsupression makes the single pilot submission to sites with no jobs (the 'hello, panda!' 
+#    pilots) only happen every N cycles (Default 1 - i.e., idling pilot every cycle)
+#  wallClock and *memory are in minutes and MB - 'None' means nothing is added to JDL
+#   Any setting for memory is now used as a flag to the pilot wrapper which will set this 
+#   as a ulimit before starting the pilot.
+#  jobRecovery switches flag on pilot to enable/disable job recovery.
+#     This is generally useless as it is overridden in schedconfig and job recovery
+#     is being redeveloped.
+#  *pilotlimit sets a hard limit on the total number of pilots at a site, active + queued
+#  *transferringlimit sets a limit on the number of jobs in transferring status allowed at a site -
+#    when this limit is reached no pilots will be submitted to allow backlogs to clear
+#  *cloud is the cloud this queue is in. You should set this to suppress pilot submission when the cloud
+#    goes offline
+#    N.B. Panda clouds are UPPER CASE, e.g., UK
+#  user is the parameter passed to the pilot as the "-u USER" parameter allowing special pilot types
+#    to be sent. (Default None for production queues, but "user" for ANALY queues)
+#  country is used to pickup jobs only from a particlar VOMS group, e.g., for /atlas/ca users use
+#    country = ca. This should only be used when submitting to special analysis resources. On
+#    ATLAS pledged resources it should be unset (Default None)
+#  group is used to pickup jobs only from a particlar VOMS group, e.g., poweruser0 
+#    (Default None)
+#  override, if True then schedconfig does not clobber configuration file values.
+
+[DEFAULT]
+#status = test
+#nqueue = 10
+#depthboost = 2
+#idlepilotsupression = 1
+#wallClock = None
+#memory = None
+#jobRecovery = False
+#pilotlimit = None
+#transferringlimit = 3000
+#user = None
+cloud = US
+country = US
+#group = None
+
+## Set the server and port to contact for jobs
+## These can be overridden on a per-queue basis
+## But in general do not touch these
+server = https://pandaserver.cern.ch
+port = 25443
+
+## Note that the analysisGridProxy is the default set for ANALY_ queues - very
+## useful for mixed mode factories.
+
+# Comma-separated list of vo+group+role attributes to request
+# vorole=/atlas/usatlas/Role=production,/atlas/Role=production
+vorole=/atlas/usatlas/Role=production
+
+# Long-lived grid proxy to create VOMS proxy from. 
+gridProxy = /tmp/x509up_u500
+
+# Output file for VOMS proxy
+vomsProxy = /tmp/prodProxy
+
+# How long a VOMS proxy to request
+vomsLifetime=96:00
+
+# Interval to check proxy at, in minutes
+vomsCheck = 180 
+
+# analysisGridProxy = /tmp/pilotRoleProxy
+
+## Individual queue configurations
+# It is recommended now only to have a nickname and let everything else
+# be detected from schedconfig
+
+# Two examples of the simplest and recommended configuration for sites
+[UKI-NORTHGRID-LANCS-HEP]
+nickname = UKI-NORTHGRID-LANCS-HEP-fal-pygrid-18-atlas-lcgpbs
+
+[UKI-SCOTGRID-GLASGOW-svr021]
+nickname = UKI-SCOTGRID-GLASGOW-svr021-atlprd-lcgpbs
+
+# Pilots going to an analysis site usually use a different proxy.
+# *** Please now see the setting analysisGridProxy in the QueueDefaults section
+[ANALY_GLASGOW]
+nickname = ANALY_GLASGOW
+#gridProxy = /tmp/myPilotRoleProxy  <--- No longer needed
+
+
+# If any values are set in the factory then these will be overwritten
+# by schedconfig, unless you set override = True. e.g., testing a new
+# gatekeeper
+[UKI-SCOTGRID-GLASGOW-testCE]
+nickname = UKI-SCOTGRID-GLASGOW-svr029-atlprd-lcgpbs
+jdl = svr029.gla.scotgrid.ac.uk/jobmanager-lcgpbs
+localqueue = atlprd
+status = test
+nqueue = 1
+override = True
+
+# Another override example is used here to submit pilots to an additional
+# resource supporting an ANALY queue. Note the old "gatekeeper" now breaks
+# into two parts: jdl and queue.
+[ANALY_GLASGOW-svr026]
+nickname = ANALY_GLASGOW
+jdl = svr026.gla.scotgrid.ac.uk/jobmanager-lcgpbs
+localqueue = atlanaly
+override = True
+
+# CREAM CE example
+# Currently CREAM CEs have incorrect parameters in schedconfig, so they
+# must have jdl (and probably localqueue) overrides.
+# If you don't specify the port then 8443 is assumed.
+[UKI-SCOTGRID-GLASGOW-cream14]
+nickname = UKI-SCOTGRID-GLASGOW-svr014-atlprd-pbs
+jdl = svr014.gla.scotgrid.ac.uk:8443/cream-pbs
+localqueue = atlprd
+override = True
