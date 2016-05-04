@@ -3,10 +3,7 @@
 # Setup prog for autopyfactory
 #
 #
-
-from autopyfactory import factory
-
-release_version=factory.__version__
+release_version='2.2.0'
 
 import commands
 import os
@@ -30,43 +27,43 @@ if major == 2:
 
 libexec_files = ['libexec/%s' %file for file in os.listdir('libexec') if os.path.isfile('libexec/%s' %file)]
 
-etc_files = ['etc/autopyfactory.conf',
-             'etc/queues.conf',
-             'etc/proxy.conf',
-             'etc/monitor.conf',
-             'etc/mappings.conf',
-             ]
+etc_files = ['etc/factory.conf-example',
+             'etc/queues.conf-example',
+             'etc/proxy.conf-example',
+             'etc/monitor.conf-example',
+             'etc/factory.sysconfig-example',]
 
-sysconfig_files = [
-             'etc/sysconfig/autopyfactory',
-             'etc/sysconfig/proxymanager',
-]
+initd_files = ['etc/factory',]
 
-logrotate_files = ['etc/logrotate/autopyfactory',]
+logrotate_files = ['etc/factory.logrotate',]
 
-initd_files = ['etc/autopyfactory',
-               'etc/proxymanager']
-
-# NOTES: the docs are actually handled by setup.cfg. They are moved directory under /usr/share/doc/autopyfactory-<version>/
+# docs files:
+#   --everything in the docs/ directory
+#   -- RELEASE_NOTES file 
 docs_files = ['docs/%s' %file for file in os.listdir('docs') if os.path.isfile('docs/%s' %file)]
+docs_files.append('RELEASE_NOTES')
 
+utils_files = ['misc/apf-agis-config',
+               'misc/apf-queue-status',
+               'misc/apf-queue-jobs-by-status.sh',
+               'misc/apf-test-pandaclient',
+               ]
 
 # -----------------------------------------------------------
 
-rpm_data_files=[#('/etc/autopyfactory', libexec_files),
-                ('/etc/autopyfactory', etc_files),
-                ('/etc/sysconfig', sysconfig_files),
-                ('/etc/logrotate.d', logrotate_files),                                        
-                ('/etc/init.d', initd_files),
-                #('/usr/share/doc/autopyfactory', docs_files),                                        
+rpm_data_files=[('/etc/apf',           libexec_files),
+                ('/etc/apf',           etc_files),
+                ('/etc/init.d',        initd_files),
+                ('/etc/logrotate.d',   logrotate_files),                                        
+                ('/usr/share/doc/apf', docs_files),                                        
+                ('/usr/share/apf',     utils_files),                                        
                ]
 
-
-home_data_files=[#('etc', libexec_files),
-                 ('etc', etc_files),
-                 ('etc', initd_files),
-                 ('etc', sysconfig_files),
-                 ('doc/autopyfactory', docs_files),
+home_data_files=[('etc',       libexec_files),
+                 ('etc',       etc_files),
+                 ('etc',       initd_files),
+                 ('doc/apf',   docs_files ),
+                 ('share/apf', utils_files),                                        
                 ]
 
 # -----------------------------------------------------------
@@ -96,9 +93,9 @@ def choose_data_files():
 
 # setup for distutils
 setup(
-    name="autopyfactory",
+    name="panda-autopyfactory",
     version=release_version,
-    description='autopyfactory package',
+    description='panda-autopyfactory package',
     long_description='''This package contains autopyfactory''',
     license='GPL',
     author='Panda Team',
@@ -108,21 +105,14 @@ setup(
     url='https://twiki.cern.ch/twiki/bin/view/Atlas/PanDA',
     packages=['autopyfactory',
               'autopyfactory.plugins',
-              'autopyfactory.plugins.factory',
-              'autopyfactory.plugins.factory.config',
-              'autopyfactory.plugins.queue',
-              'autopyfactory.plugins.queue.batchstatus',
-              'autopyfactory.plugins.queue.batchsubmit',
-              'autopyfactory.plugins.queue.monitor',
-              'autopyfactory.plugins.queue.sched',
-              'autopyfactory.plugins.queue.wmsstatus',
-              'autopyfactory.external',
-              'autopyfactory.external.panda',
+              'autopyfactory.plugins.batchstatus',
+              'autopyfactory.plugins.batchsubmit',
+              'autopyfactory.plugins.monitor',
+              'autopyfactory.plugins.sched',
+              'autopyfactory.plugins.wmsstatus',
               ],
     scripts = [ # Utilities and main script
-               'bin/autopyfactory',
-               'bin/autopyfactory_version',
-               'bin/proxymanager'
+               'bin/factory',
               ],
     
     data_files = choose_data_files()
