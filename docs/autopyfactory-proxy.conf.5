@@ -1,0 +1,151 @@
+.\" Process this file with
+ autopyfactory-proxy.conf.5
+.\"
+.TH AUTOPYFACTORY PROXY.CONF 5 "JUNE 2013" Linux "User Manuals"
+.SH NAME
+AutoPyFactory proxy.conf \- proxy.conf configuration file for autopyfactory
+.SH DESCRIPTION
+.B proxy.conf
+
+/etc/apf/proxy.conf  Configuration file for the proxies management for AutoPyFactory.
+
+.B baseproxy
+
+
+if used, create a very long-lived proxy, e.g.
+
+    grid-proxy-init -valid 720:0 -out /tmp/plainProxy
+
+Note that maintenance of this proxy must occur completely outside of APF. 
+
+
+
+.B proxyfile
+
+
+path to the user grid proxy file.
+
+
+
+.B checktime
+
+
+How often to check proxy validity, in seconds
+
+
+
+.B interruptcheck
+
+
+Frequency to check for keyboard/signal interrupts, in seconds
+
+
+
+.B lifetime
+
+
+initial voms lifetime, in seconds (604800 = 7 days).  345600 is ATLAS VOMS maximum
+
+
+
+.B minlife
+
+
+Minimum lifetime of proxy (renew if less) in seconds
+
+
+
+.B renew
+
+
+If you do not want to use ProxyManager to renew proxies, set this  False and only define 'proxyfile'.  If renew is set to false, then no grid client setup is necessary. 
+
+
+
+.B usercert
+
+
+path to the user grid certificate file
+
+
+
+.B userkey
+
+
+path to the user grid key file
+
+
+
+.B vorole
+
+
+user VO role
+
+
+.B flavor
+
+
+voms or myproxy. voms directly generates proxy using cert or baseproxy myproxy retrieves a proxy from myproxy, then generates the target proxy against voms using it as baseproxy.
+
+
+.B myproxy_hostname
+
+
+Myproxy server host.
+
+
+.B myproxy_username
+
+
+User name to be used on MyProxy service
+
+
+.B myproxy_passphrase
+
+
+Passphrase for proxy retrieval from MyProxy
+
+
+.B retriever_profile
+
+
+A list of other proxymanager profiles to be used to authorize proxy retrieval from MyProxy.
+
+
+.B initdelay
+
+
+In seconds, how long to wait before generating. Needed for MyProxy when using cert authentication--we need to allow time for the auth credential to be generated (by another proxymanager profile).
+
+
+.B owner
+
+
+If running standalone (as root) and you want the proxy to be owned by another account.
+
+
+.B remote_host
+
+
+If defined, copy proxyfile to same path on remote host
+
+
+.B remote_user
+
+
+User to connect as?
+
+
+.B remote_owner
+
+
+If connect user is root, what account should own the file?
+
+
+.B remote_group
+
+
+If connect user is root, what group should own the file?
+
+
+
