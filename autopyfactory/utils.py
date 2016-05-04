@@ -10,6 +10,14 @@ import subprocess
 import threading
 import time
 
+__author__ = "Jose Caballero"
+__copyright__ = "2011, Jose Caballero"
+__credits__ = []
+__license__ = "GPL"
+__version__ = "2.1.0"
+__maintainer__ = "Jose Caballero"
+__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
+__status__ = "Production"
 
 class TimeOutException(Exception):
        pass
@@ -168,46 +176,8 @@ def checkDaemon(daemon, pattern='running'):
     checks if a given daemon service is active
     '''
     import commands 
-    status = commands.getoutput('service %s status' %daemon)
+    status = commands.getoutput('/etc/init.d/%s status' %daemon)
     return status.lower().find(pattern) > 0
-
-
-def which(file):
-    for path in os.environ["PATH"].split(":"):
-        if os.path.exists(path + "/" + file):
-                return path + "/" + file
-
-
-def renamekeys(dict, mappings):
-    """
-    function to change the keys of a dictionary
-    according to the mappings.
-    For example:
-
-        dict = {'a':1,
-                'b':2,
-                'c':3,
-                'd':4}
-
-        mapppings = {'a':'A',
-                     'b':'B',
-                     'c':'C',
-                     'd':'D',
-                     'e':'E'}
-
-    returns
-
-        {'A':1,
-         'B':2,
-         'C':3,
-         'D':4}
-    """
-
-    for k in dict.keys():
-        dict[mappings[k]] = dict.pop(k)
-    return dict
-
-
 
 
 if __name__ == "__main__":

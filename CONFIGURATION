@@ -7,14 +7,10 @@ locations depend on method of installation:
 
 FILE                RPM LOCATION            USER LOCATION  
 ---------------------------------------------------------
-factory.sysconfig   /etc/sysconfig/         <apfhead>/etc/
-factory.conf        /etc/apf                <apfhead>/etc/
-queues.conf         /etc/apf                <apfhead>/etc/
-proxy.conf          /etc/apf                <apfhead>/etc/
-
-where <apfhead> is the directory indicated at the momment of deploying APF with distutils:
-
-    $ python setup.py install -home=<apfhead>
+factory.sysconfig   /etc/sysconfig/         ~/etc/
+factory.conf        /etc/apf                ~/etc/
+queues.conf         /etc/apf                ~/etc/
+proxy.conf          /etc/apf                ~/etc/
 
 For factory.conf, queues.conf, and proxy.conf files, simply copy the 
 example files within the etc/ directory, removing the '-example' suffix. Edit 
@@ -30,16 +26,12 @@ Examine the file for a couple examples. IMPORTANT: If you have a grid environmen
 up for root, then comment out GRIDSETUP in the sysconfig, otherwise you must point to
 a valid grid client setup, e.g. an OSG-Client setup.sh. 
 
-This file includes also the location of the APF log files. 
-
 /etc/apf/factory.conf: 
 
 This file governs overall factory run parameters. At a minimum factoryOwner, factoryID, 
 and monitorURL, and baseLogUrl hostname must be customized. All other values should
 be valid for the RPM install. Note that submit system logfiles are now exported natively by
 APF using a built-in Python HTTP server. No need to set up Apache to export these directories. 
-
-This file includes also the location of the proxy.conf and queues.conf files.
 
 /etc/apf/queues.conf:
 
@@ -73,12 +65,8 @@ the file:
 Note that this is no less secure than having password-handling within APF, and less subject to
 errors. 
 
- 
-NETWORKING
+. 
 
-If you are in a firewalled/NAT environment, make sure that whatever ports are necessary are open. For 
-standard grid submission, we use 20000-30000. On EC2 this will need to be defined in the security group 
-for the node. 
 
 
 
