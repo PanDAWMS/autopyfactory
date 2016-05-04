@@ -76,11 +76,7 @@ else
     PIDFILE=$APFHEAD/var/run/autopyfactory.pid
 fi
 
-# Sensible defaults
 CONFFILE=$ETCDIR/autopyfactory.conf
-LOGFILE=/var/log/autopyfactory/autopyfactory.log
-CONSOLE_LOG=/var/log/autopyfactory/console.log
-OPTIONS="--debug --sleep=60 --runas=autopyfactory --log=$LOGFILE"
 
 # Source settings from sysconfig
 # overriding default if present
@@ -96,6 +92,7 @@ fi
 if [ -n "$GRIDSETUP" ]; then
    . $GRIDSETUP
 fi
+
 
 
 RETVAL=0
@@ -186,17 +183,6 @@ restart() {
 	return $RETVAL
 }	
 
-debugrestart() {
-    stop
-    sleep 2
-    # make a copy of the latest log file
-    if [ -f $LOGFILE ]; then 
-    	mv $LOGFILE $LOGFILE-`date -u +%Y%m%d.%H%M%S`
-    fi
-    start
-    RETVAL=$?
-    return $RETVAL
-}
 
 case "$1" in
 start)
@@ -209,10 +195,6 @@ stop)
 	;;
 restart)
 	restart
-	RETVAL=$?
-	;;
-debugrestart)
-	debugrestart
 	RETVAL=$?
 	;;
 condrestart)
