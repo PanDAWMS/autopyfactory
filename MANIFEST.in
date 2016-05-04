@@ -1,9 +1,4 @@
-include CHANGELOG INSTALL* LICENSE README NOTES CONFIGURATION 
+include CHANGELOG INSTALLATION LICENSE README
 include bin/*
 include etc/*
-include etc/sysconfig/*
-include etc/logrotate/*
 include libexec/*
-include misc/*
-include docs/*
-include docs/man/*
