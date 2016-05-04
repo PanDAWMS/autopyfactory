@@ -2,6 +2,7 @@
 
 WRAPPERVERSION="0.9.7"
 
+# 
 # A generic wrapper with minimal functionalities
 #
 # input options:
@@ -49,9 +50,12 @@ WRAPPERVERSION="0.9.7"
 #     the same VO. An example is VO OSG, shared by 
 #     CHARMM, Daya, OSG ITB testing group...
 #    
-#     - wrapperserverurl is the url with the PanDA server instance
+#     - wrapperserverurl is the base url with the pilot code. 
+#     NOTE: this variable is removed and replaced by a different one in future versions of wrapper. 
 #    
-#     - wrappertarballurl is the base url with the wrapper tarball to be downloaded
+#     - wrappertarballurl is the complete url with the wrapper tarball to be downloaded
+#     including the name of the actual tarball file.
+#     DEFAULT: http://dev.racf.bnl.gov/dist/wrapper/wrapper.tar.gz
 #    
 #     - wrapperspecialcmd is special command to be performed, 
 #     for some specific reason, just after sourcing the Grid environment,
@@ -63,6 +67,7 @@ WRAPPERVERSION="0.9.7"
 #     - wrapperplugin is the plug-in module with the code corresponding to the final wrapper flavor.
 #    
 #     - wrapperpilottype is the actual  pilot code to be executed at the end.
+#     NOTE: this variable is removed and replaced by a different one in future versions of wrapper. 
 #
 #     - wrapperloglevel is a flag to activate high verbosity mode.
 #     Accepted values are debug or info.  
@@ -297,6 +302,14 @@ f_usage(){
 [--wrappermode=<operation mode>]"
 }
 
+f_setup_defaults_inputs(){
+        # setups default values for the input options. 
+        # They can then be overriden by the values
+        # provided as input. 
+
+        WRAPPERTARBALLURL=http://dev.racf.bnl.gov/dist/wrapper/wrapper.tar.gz
+}
+
 f_parse_arguments(){
         # Function to parse the command line input options.
         #         --wrappervo=...
@@ -313,6 +326,9 @@ f_parse_arguments(){
         #         --wrappermode
         # An error/warning message is displayed in case a different 
         # input option is passed
+        #
+        # Before parsing the inputs, possible defaults values are setup. 
+        #
 
         # NOTE:
         # when the input is not one of the expected 
@@ -322,6 +338,8 @@ f_parse_arguments(){
         # to the pilots (i.e. pythonwrapperopts), then the warning message
         # will be replaced by an error message and the function
         # will return a RC != 0
+
+	f_setup_defaults_inputs	
 
         # first, the input options are re-tokenized to parse properly whitespaces
         items=
@@ -463,10 +481,20 @@ f_build_pythonwrapper_opts(){
 # ------------------------------------------------------------------------- # 
 
 f_monping() {
-    CMD="curl -fksS --connect-timeout 10 --max-time 20 ${APFMON}$1/$APFFID/$APFCID/$2"
+    #CMD="curl -fksS --connect-timeout 10 --max-time 20 ${APFMON}$1/$APFFID/$APFCID/$2"
+    #CMD="curl -ksS -d state=$1 --connect-timeout 10 --max-time 20 ${APFMON}/jobs/${APFFID}:${APFCID}"
+
+    if [ "$1" == "running" ]; then
+        CMD="curl -ksS -d state=$1 --connect-timeout 10 --max-time 20 ${APFMON}/jobs/${APFFID}:${APFCID}"
+    fi
+    if [ "$1" == "exiting" ]; then
+        CMD="curl -ksS -d state=$1 -d rc=$2 --connect-timeout 10 --max-time 20 ${APFMON}/jobs/${APFFID}:${APFCID}"
+    fi
+
+    echo "Monitor ping: $CMD"
 
     NTRIALS=0
-    MAXTRIALS=3
+    MAXTRIALS=1
     DELAY=30
     while [ $NTRIALS -lt "$MAXTRIALS" ] ; do 
         out=`$CMD`
@@ -474,7 +502,6 @@ f_monping() {
             echo "Monitor ping: out=$out" 
             NTRIALS="$MAXTRIALS"
         else
-            echo "Monitor ping: $CMD"
             echo "Monitor ping: ERROR: out=$out"
             echo "Monotor ping: http_proxy=$http_proxy"
             NTRIALS=$(($NTRIALS+1))
@@ -579,7 +606,7 @@ f_exit(){
         f_print_msg "exiting with RC = $RETVAL"
 
         # notify the monitor just after execution
-        f_monping ex $rc
+        f_monping exiting $rc
 
         exit $RETVAL
 }
@@ -589,7 +616,7 @@ f_exit(){
 # ------------------------------------------------------------------------- #  
 
 # notify the monitor
-f_monping rn
+f_monping running
 
 f_init
 
@@ -642,3 +669,4 @@ rc=$?
 
 # exit
 f_exit $rc
+
