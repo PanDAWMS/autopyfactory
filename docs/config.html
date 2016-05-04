@@ -11,7 +11,7 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Generic variables">Generic variables</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#WMS Status Plugin variables">WMS Status Plugin variables</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when wmsstatusplugin is CondorLocal">Configuration when wmsstatusplugin is CondorLocal</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Config Plugin variables">Config Plugin variables</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Batch Status Plugin variables">Batch Status Plugin variables</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Sched Plugin variables">Sched Plugin variables</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Activated">Configuration when schedplugin is Activated</a><br>
@@ -223,8 +223,7 @@ URI plus path to the configuration file for APF queues.
 <br>
 NOTE: Must be expressed as a URI (file:// or http://)
 <br>
-It can be one or more split-by-comma.
-In case of more than one, they are merged 
+Cannot be used at the same time that queueDirConf
 <br>
 
 <br>
@@ -234,13 +233,7 @@ directory with a set of configuration files, all of them to be used at the same 
 <br>
 i.e.  /etc/apf/queues.d/
 <br>
-When this directory exists, the files in it are merged using
-python method SafeConfigParser.read()
-which allows having the [DEFAULT] section in a single file
-and it will applied to all files in the directory
-NOTE: if the directory is used in combination with queueConf,
-the resulting object after parsing the content of the directory
-is merged with the resulting object after parsing queueConf content
+Cannot be used at the same time that queueConf
 <br>
 
 
@@ -248,14 +241,6 @@ is merged with the resulting object after parsing queueConf content
 <li><strong>monitorConf</strong>
 <br>
 local path to the configuration file for Monitor plugins.
-<br>
-
-<br>
-<li><strong>mappingsConf</strong>
-<br>
-local path to the configuration file with the mappings:
-<br>
-for example, globus2info, jobstatus2info, etc.
 <br>
 
 <br>
@@ -348,18 +333,14 @@ WMS Status Plugin.
 <br>
 </ul>
 
-
-
-<a name="Configuration when wmsstatusplugin is CondorLocal"><h3><span style="color: black; "><span>Configuration when wmsstatusplugin is CondorLocal</span></span></h3></a>
+<a name="Config Plugin variables"><h3><span style="color: black; "><span>Config Plugin variables</span></span></h3></a>
 <ul>
-<li><strong>wmsstatus.condor.queryargs</strong><br>
-list of command line input options
-to be included in the query command *verbatim*. E.g. 
-wmsstatus.condor.queryargs = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]>
+<li><strong>configplugin</strong><br>
+Config Plugin.
+Optional.
+E.g. Panda.
 <br>
 </ul>
-
-
 
 <a name="Batch Status Plugin variables"><h3><span style="color: black; "><span>Batch Status Plugin variables</span></span></h3></a>
 <ul>
@@ -370,7 +351,7 @@ Batch Status Plugin.
 <li><strong>batchstatus.condor.queryargs</strong><br>
 list of command line input options
 to be included in the query command *verbatim*. E.g. 
-batchstatus.condor.queryargs = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]>
+batchstatus.condor.query = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]>
 <br>
 </ul>
 
@@ -1267,14 +1248,14 @@ Frequency to check for keyboard/signal interrupts, in seconds
 <br>
 <li><strong>lifetime</strong>
 <br>
-initial lifetime, in seconds (604800 = 7 days).
+initial voms lifetime, in seconds (604800 = 7 days).
 345600 is ATLAS VOMS maximum
 <br>
 
 <br>
 <li><strong>minlife</strong>
 <br>
-Minimum lifetime of VOMS attributes for a proxy (renew if less) in seconds
+Minimum lifetime of proxy (renew if less) in seconds
 <br>
 
 <br>
@@ -1351,33 +1332,27 @@ If running standalone (as root) and you want the proxy to be owned by another ac
 <br>
 
 <br>
-<li><strong> remote.remote_host</strong>
+<li><strong> remote_host</strong>
 <br>
-If remote=True: copy proxyfile to same path on remote host
-<br>
-
-<br>
-<li><strong> remote.remote_user</strong>
-<br>
-If remote=True: user to connect as? 
+If defined, copy proxyfile to same path on remote host
 <br>
 
 <br>
-<li><strong> remote.remote_owner</strong>
+<li><strong> remote_user</strong>
 <br>
-If remote=True: if connect user is root, what account should own the file?
-<br>
-
-<br>
-<li><strong> remote.remote_group</strong>
-<br>
-If remote=True: If connect user is root, what group should own the file?
+User to connect as? 
 <br>
 
 <br>
-<li><strong> voms.args</strong>
+<li><strong> remote_owner</strong>
 <br>
-Any extra arbitrary input option to be added to voms-proxy-init command
+If connect user is root, what account should own the file?
+<br>
+
+<br>
+<li><strong> remote_group</strong>
+<br>
+If connect user is root, what group should own the file?
 <br>
 
 </ul>
