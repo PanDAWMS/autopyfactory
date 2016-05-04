@@ -1,0 +1,83 @@
+.\" Process this file with
+ autopyfactory-proxy.conf.5
+.\"
+.TH AUTOPYFACTORY PROXY.CONF 5 "JUNE 2013" Linux "User Manuals"
+.SH NAME
+AutoPyFactory proxy.conf \- proxy.conf configuration file for autopyfactory
+.SH DESCRIPTION
+.B proxy.conf
+
+/etc/apf/proxy.conf  Configuration file for the proxies management for AutoPyFactory.
+
+.B baseproxy
+
+
+if used, create a very long-lived proxy, e.g.
+
+    grid-proxy-init -valid 720:0 -out /tmp/plainProxy
+
+Note that maintenance of this proxy must occur completely outside of APF. 
+
+
+
+.B proxyfile
+
+
+path to the user grid proxy file.
+
+
+
+.B checktime
+
+
+How often to check proxy validity, in seconds
+
+
+
+.B interruptcheck
+
+
+Frequency to check for keyboard/signal interrupts, in seconds
+
+
+
+.B lifetime
+
+
+initial voms lifetime, in seconds (604800 = 7 days).  345600 is ATLAS VOMS maximum
+
+
+
+.B minlife
+
+
+Minimum lifetime of proxy (renew if less) in seconds
+
+
+
+.B renew
+
+
+If you do not want to use ProxyManager to renew proxies, set this  False and only define 'proxyfile'.  If renew is set to false, then no grid client setup is necessary. 
+
+
+
+.B usercert
+
+
+path to the user grid certificate file
+
+
+
+.B userkey
+
+
+path to the user grid key file
+
+
+
+.B vorole
+
+
+user VO role
+
