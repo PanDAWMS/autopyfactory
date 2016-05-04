@@ -9,15 +9,9 @@ Software available from  http://www.cs.wisc.edu/condor/. Condor/Condor-G setup a
 configuration is beyond the scope of this documentation. Ensure that it is working
 properly before proceeding. 
 
-The YUM repo files for Condor are at: 
-   http://research.cs.wisc.edu/htcondor/yum/
- 
 2) Install a grid client and set up the grid certificate+key under the user APF will run as. 
 Please read the CONFIGURATION documentation regarding the proxy.conf file, so you see what 
 will be needed. Make sure voms-proxy-* commands work properly. 
-
-An easy way to get a grid client is to install the OSG Client via RPM:
-  https://twiki.grid.iu.edu/bin/view/Documentation/Release3/InstallWNClient
 
 3) Add the racf-grid YUM repo to your system
  rpm -ivh http://dev.racf.bnl.gov/yum/grid/production/rhel/5Client/x86_64/racf-grid-release-latest.noarch.rpm
@@ -70,12 +64,7 @@ This performs several setup steps that otherwise would need to be done manually:
     -- Check to be sure jobs are being submitted by whatever account APF is using by 
          executing condor_q manually:  
              condor_q | grep apf
-
-9) IF you intend to use the ATLAS/OSG/EGI modular wrapper, it will need to be installed. 
-  yum install wrapper
-  
-  
-       
+     
 
 
  
