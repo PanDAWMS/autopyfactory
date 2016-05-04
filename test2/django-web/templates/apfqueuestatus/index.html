@@ -1,0 +1,22 @@
+{% for fact in factories %}
+
+    <b>Factory: {{ fact }}</b> <br>
+    <table>
+        <tr>
+          <td></td>
+          <td>UNSUB</td> <td>IDLE</td> <td>RUNNING</td> <td>COMPETE</td> <td>HELD</td> <td>ERROR</td> <td>REMOVED</td>
+        </tr>
+
+        {% for line in tables|get_item:fact %}
+          <tr>
+          {% for token in line.split %}
+            <td> {{ token }} </td>
+          {% endfor%}
+          </tr>
+        {% endfor %}
+
+    </table>
+    <br>
+
+{% endfor %}
+
