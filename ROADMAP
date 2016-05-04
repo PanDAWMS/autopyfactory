@@ -1,0 +1,20 @@
+Roadmap
+---------------
+See https://svn.racf.bnl.gov/trac/gridgroup/wiki/AutoPyFactory for most up to date list, and other
+longer-term plans. 
+
+2011-12-02
+
+* Currently there are several Condor batch submit plugin files (GT2, EC2, Local) 
+  which share a lot of code. If these can be unified cleanly, that is the plan. 
+  
+* We need to do more sanity checking during object initialization, e.g. the Condor plugins
+  should confirm executables on the PATH, and that Condor is running. And we need to decide
+  to either consider problems fatal overall, or make sure dependent components can either cope
+  or stop, rather than forging onward with possible errors.   
+  
+* Fatal error handling is in place, but we need finer-grained error detection, reaction, and recovery.
+
+ 
+
+

@@ -37,7 +37,7 @@ Please email caballer@bnl.gov for any wrapper-related issues.
 MONITORING
 The AutoPyFactory Monitor is a separate project. Enable monitoring by including
 this line in the factory.conf, then visit the URL for the web interface:
-    monitorURL = http://apfmon.lancs.ac.uk/
+    monitorURL = http://py-dev.lancs.ac.uk/mon/
 
 By default monitoring is disabled. Please email p.love@lancaster.ac.uk for
 any monitoring questions.
