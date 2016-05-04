@@ -1,18 +1,7 @@
-
-
-#
-#     DO NOT USE THIS SPEC FILE
-#     IT IS JUST FOR GUIDANCE
-#     
-#     PAY ATTENTION TO THE {?dist} TOKEN IN THE RELEASE FIELD
-#
-
-
-
 %define name autopyfactory
 %define version 2.4.1
 %define unmangled_version 2.4.1
-%define release 1
+%define release 2
 
 Summary: autopyfactory package
 Name: %{name}
@@ -48,9 +37,8 @@ python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
 
 mkdir -pm0755 $RPM_BUILD_ROOT%{_var}/log/autopyfactory
 
-# at least for the time being, we are not going to distribute manpages, given disutils does not support them properly
-## add .gz extension to man files
-#sed -i '/\/man\/man[1-9]\/.*\.[1-9]/s/$/\.gz/' INSTALLED_FILES
+# add .gz extension to man files
+sed -i '/\/man\/man[1-9]\/.*\.[1-9]/s/$/\.gz/' INSTALLED_FILES
 
 %clean
 rm -rf $RPM_BUILD_ROOT
