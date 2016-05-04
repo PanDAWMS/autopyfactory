@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id$
+# $Id: runpilot3-wrapper.sh 14033 2013-01-29 10:31:09Z plove $
 #
 function lfc_test() {
     echo -n "Testing LFC module for $1: "
@@ -28,22 +28,6 @@ function find_lfc_compatible_python() {
     # use the site environment in which to run the pilot and
     # let the pilot setup the correct ATLAS environment for the
     # job.
-
-    pybin=`which python`
-    pyver=`$pybin -c "import sys; print '%03d%03d%03d' % sys.version_info[0:3]"`
-    # check if native python version > 2.6.0
-    if [ $pyver -ge 002006000 ] ; then
-      echo "Native python version is > 2.6.0"
-      lfc_test $pybin
-      if [ $? = "0" ]; then
-        return 0
-      else
-        echo "Trying cvmfs version..."
-      fi
-    else
-      echo "Native python $pybin is old: $pyver"
-      echo "Trying cvmfs version..."
-    fi
     
     # firstly try the cvmfs python2.6 binary
     if [ -n "$APF_PYTHON26" ]; then
@@ -60,6 +44,8 @@ function find_lfc_compatible_python() {
         lfc_test $pybin
         if [ $? = "0" ]; then
           return 0
+        else
+          echo "lfc_test failed for cvmfs python"
         fi
       else
         echo "cvmfs python2.6 not found"
@@ -94,7 +80,7 @@ function get_pilot() {
     mkdir pilot3
     cd pilot3
 
-    get_pilot_http $myargs
+    get_pilot_http $@
     if [ $? = "0" ]; then
         return 0
     fi
@@ -111,7 +97,7 @@ function get_pilot_http() {
     # N.B. an RC pilot is chosen once every 100 downloads for production and
     # ptest jobs use Paul's development release.
     if [ -z "$PILOT_HTTP_SOURCES" ]; then
-        if echo $myargs | grep -- "-u ptest" > /dev/null; then 
+        if echo $@ | grep -- "-u ptest" > /dev/null; then 
             echo "DEBUG: This is a ptest pilot. Will use development pilot code with python2.6"
             PILOT_HTTP_SOURCES="http://project-atlas-gmsb.web.cern.ch/project-atlas-gmsb/pilotcode-dev.tar.gz"
             PILOT_TYPE=PT
@@ -123,7 +109,7 @@ function get_pilot_http() {
             APF_PYTHON26=1
         else
             echo "DEBUG: Normal production pilot code used." 
-            PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25085/cache/pilot/pilotcode.tar.gz"
+            PILOT_HTTP_SOURCES="http://pandaserver.cern.ch:25085/cache/pilot/pilotcode.tar.gz http://svr017.gla.scotgrid.ac.uk/factory/release/pilot3-svn.tgz"
             PILOT_TYPE=PR
         fi
     fi
@@ -167,25 +153,14 @@ function set_limits() {
     fi
 }
 
-function monrunning() {
+function monping() {
     echo -n 'Monitor ping: '
-    curl -ksS --connect-timeout 10 --max-time 20 -d state=running ${APFMON}/jobs/${APFFID}:${APFCID}
+    curl -fksS --connect-timeout 10 --max-time 20 ${APFMON}$1/$APFFID/$APFCID/$2
     if [ $? -eq 0 ]; then
         echo
     else
         echo $?
-        echo ARGS: -d state=exiting ${APFMON}/jobs/${APFFID}:${APFCID}
-    fi
-}
-
-function monexiting() {
-    echo -n 'Monitor ping: '
-    curl -ksS --connect-timeout 10 --max-time 20 -d state=exiting -d rc=$1 ${APFMON}/jobs/${APFFID}:${APFCID}
-    if [ $? -eq 0 ]; then
-        echo
-    else
-        echo $?
-        echo ARGS: -d state=exiting -d rc=$1 ${APFMON}/jobs/${APFFID}:${APFCID}
+        echo ARGS: ${APFMON}$1/$APFFID/$APFCID/$2
     fi
 }
 
@@ -208,11 +183,11 @@ function set_forced_env() {
 
 ## main ##
 
-echo "This is pilot wrapper $Id$"
+echo "This is pilot wrapper $Id: runpilot3-wrapper.sh 14033 2013-01-29 10:31:09Z plove $"
 echo "Please send development requests to p.love@lancaster.ac.uk"
 
 # notify monitoring, job running
-monrunning
+monping rn
 
 # Check what was delivered
 echo "Scanning landing zone..."
@@ -221,8 +196,10 @@ startdir=$(pwd)
 echo $startdir
 ls -l
 me=$0
-myargs=$@
-echo "Me and my args: $0 $myargs"
+echo "Me and my args: $0 $@"
+if [ ! -f $me ]; then
+    echo "Trouble ahead - cannot find myself. Should I try psychoanalysis?"
+fi
 echo
 
 # If we have TMPDIR defined, then move into this directory
@@ -242,7 +219,7 @@ echo Changing work directory to $temp
 cd $temp
 
 # Try to get pilot code...
-get_pilot
+get_pilot $@
 ls -l
 if [ ! -f pilot.py ]; then
     echo "FATAL: Problem with pilot delivery - failing after dumping environment"
@@ -251,7 +228,7 @@ fi
 # Set any limits we need to stop jobs going crazy
 echo
 echo "---- Setting crazy job protection limits ----"
-set_limits
+set_limits $@
 echo
 
 # Set any forced environment variables
@@ -323,17 +300,15 @@ echo
 
 # Add DQ2 clients to the PYTHONPATH
 echo "---- DDM setup ----"
-if [ -n "$APF_PYTHON26" ] && [ -f /cvmfs/atlas.cern.ch/repo/sw/ddm/latest/setup.sh ]; then
-  echo "Sourcing /cvmfs/atlas.cern.ch/repo/sw/ddm/latest/setup.sh"
-  source /cvmfs/atlas.cern.ch/repo/sw/ddm/latest/setup.sh
+if [ -n "$APF_PYTHON26" ] && [ -f /cvmfs/atlas.cern.ch/repo/sw/ddm/2.3.0/setup.sh ]; then
+  echo "Sourcing /cvmfs/atlas.cern.ch/repo/sw/ddm/2.3.0/setup.sh"
+  source /cvmfs/atlas.cern.ch/repo/sw/ddm/2.3.0/setup.sh
 elif [ -f $ATLAS_AREA/ddm/latest/setup.sh ]; then
   echo "Sourcing $ATLAS_AREA/ddm/latest/setup.sh"
   source $ATLAS_AREA/ddm/latest/setup.sh
 else
   echo "WARNING: No DDM setup found to source."
 fi
-echo "$ rucio ping"
-echo `rucio ping`
 echo
 
 # Search for local setup file
@@ -351,15 +326,13 @@ echo
 scratch=`pwd`
 
 echo "---- Ready to run pilot ----"
-echo "Arglist: $@"
-echo "My Arguments: $myargs"
-
+echo "My Arguments: $@"
 
 # If we know the pilot type then set this
 if [ -n "$PILOT_TYPE" ]; then
-    pilot_args="-d $scratch $myargs -i $PILOT_TYPE"
+    pilot_args="-d $scratch $@ -i $PILOT_TYPE"
 else
-    pilot_args="-d $scratch $myargs"
+    pilot_args="-d $scratch $@"
 fi
 
 # Prd server and pass arguments
@@ -381,7 +354,7 @@ else
 fi
 echo -n STATUSCODE:
 echo $scode
-monexiting $scode
+monping ex $scode
 monpost
 
 

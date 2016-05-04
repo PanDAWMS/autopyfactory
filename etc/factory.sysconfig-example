@@ -1,0 +1,29 @@
+#
+# Sysconfig file for autopyfactory
+#
+
+#  OPTIONS:
+# 
+#  --debug              Set logging level to DEBUG [default WARNING]
+#  --info               Set logging level to INFO [default WARNING]
+#  --quiet              Set logging level to WARNING [default WARNING]
+#  --conf=FILE1[,FILE2,FILE3]
+#                        Load configuration from FILEs (comma separated list)
+#  --runas=ACCOUNT       User account to run as. [apf]
+#  --sleep=TIME          Time to sleep between cycles. [60] 
+#  --log=LOGFILE         Send logging output to LOGFILE or SYSLOG or stdout
+#                        [default <syslog>]
+
+#
+# Override default conffile path if desired. 
+#
+# CONFFILE=/etc/apf/factory.conf
+# CONFFILE="/usatlas/us/caballer/etc/factory.conf"
+
+OPTIONS="--debug --sleep=60 --runas=apf --log=/var/log/apf/apf.log"
+
+#
+# Use this to provide voms-proxy-* on the path if it is not pre-setup by
+# default. 
+#
+# GRIDSETUP=/opt/osg-client/setup.sh
