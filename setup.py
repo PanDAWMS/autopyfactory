@@ -30,19 +30,19 @@ if major == 2:
 
 libexec_files = ['libexec/%s' %file for file in os.listdir('libexec') if os.path.isfile('libexec/%s' %file)]
 
-etc_files = ['etc/autopyfactory.conf',
-             'etc/queues.conf',
-             'etc/proxy.conf',
-             'etc/monitor.conf',
-             'etc/mappings.conf',
+etc_files = ['etc/autopyfactory.conf-example',
+             'etc/queues.conf-example',
+             'etc/proxy.conf-example',
+             'etc/monitor.conf-example',
+             'etc/mappings.conf-example',
              ]
 
 sysconfig_files = [
-             'etc/sysconfig/autopyfactory',
-             'etc/sysconfig/proxymanager',
+             'etc/sysconfig/autopyfactory-example',
+             'etc/sysconfig/proxymanager-example',
 ]
 
-logrotate_files = ['etc/logrotate/autopyfactory',]
+logrotate_files = ['etc/logrotate/autopyfactory-example',]
 
 initd_files = ['etc/autopyfactory',
                'etc/proxymanager']
@@ -50,15 +50,23 @@ initd_files = ['etc/autopyfactory',
 # NOTES: the docs are actually handled by setup.cfg. They are moved directory under /usr/share/doc/autopyfactory-<version>/
 docs_files = ['docs/%s' %file for file in os.listdir('docs') if os.path.isfile('docs/%s' %file)]
 
+# at least for the time being, we are not going to distribute manpages, given disutils does not support them properly
+#man_files = ['docs/man/%s' %file for file in os.listdir('docs/man') if os.path.isfile('docs/man/%s' %file)]
+#man1_files = ['docs/man/%s' %file for file in os.listdir('docs/man') if os.path.isfile('docs/man/%s' %file) and file.endswith('.1')]
+#man5_files = ['docs/man/%s' %file for file in os.listdir('docs/man') if os.path.isfile('docs/man/%s' %file) and file.endswith('.5')]
+
 
 # -----------------------------------------------------------
 
 rpm_data_files=[#('/etc/autopyfactory', libexec_files),
-                ('/etc/autopyfactory', etc_files),
-                ('/etc/sysconfig', sysconfig_files),
-                ('/etc/logrotate.d', logrotate_files),                                        
+                #('/etc/autopyfactory', etc_files),
+                #('/etc/sysconfig', sysconfig_files),
+                #('/etc/logrotate.d', logrotate_files),                                        
                 ('/etc/init.d', initd_files),
                 #('/usr/share/doc/autopyfactory', docs_files),                                        
+                #('/tmp', man_files),                                        
+                #('/usr/share/man/man1', man1_files),
+                #('/usr/share/man/man5', man5_files),
                ]
 
 
@@ -108,20 +116,14 @@ setup(
     url='https://twiki.cern.ch/twiki/bin/view/Atlas/PanDA',
     packages=['autopyfactory',
               'autopyfactory.plugins',
-              'autopyfactory.plugins.factory',
-              'autopyfactory.plugins.factory.config',
-              'autopyfactory.plugins.queue',
-              'autopyfactory.plugins.queue.batchstatus',
-              'autopyfactory.plugins.queue.batchsubmit',
-              'autopyfactory.plugins.queue.monitor',
-              'autopyfactory.plugins.queue.sched',
-              'autopyfactory.plugins.queue.wmsstatus',
-              'autopyfactory.external',
-              'autopyfactory.external.panda',
+              'autopyfactory.plugins.batchstatus',
+              'autopyfactory.plugins.batchsubmit',
+              'autopyfactory.plugins.monitor',
+              'autopyfactory.plugins.sched',
+              'autopyfactory.plugins.wmsstatus',
               ],
     scripts = [ # Utilities and main script
                'bin/autopyfactory',
-               'bin/autopyfactory_version',
                'bin/proxymanager'
               ],
     
