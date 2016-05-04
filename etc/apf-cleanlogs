@@ -1,1 +1,1 @@
-17 3 * * * /usr/bin/cleanLogs.py --compress=3 --delete=10 --conf=/etc/autopyfactory/factory.conf
+17 3 * * * /opt/panda/autopyfactory/bin/cleanLogs.py --compress=3 --delete=10 --conf=/opt/panda/autopyfactory/etc/factory.conf
