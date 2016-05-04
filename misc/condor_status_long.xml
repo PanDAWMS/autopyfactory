@@ -1,0 +1,3224 @@
+<?xml version="1.0"?>
+<!DOCTYPE classads SYSTEM "classads.dtd">
+<classads>
+<c>
+    <a n="TotalCondorLoadAvg"><r>6.650000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>54.242.95.210</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698505</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_analy.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12797</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>6.990000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57410.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>1.100000000000000E-01</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:93:a8:64</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8004680</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144045</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>9</i></a>
+    <a n="PublicClaimId"><s>&lt;10.147.168.100:26132&gt;#1370636333#61#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2091</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699328</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62701</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.147.168.100:26132?CCBID=130.199.185.166:29675#4&amp;PrivNet=localdomain&amp;sock=1634_fa5c_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>4.790000000000000E-03</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>6.088000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57410.0#1370690992</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-147-168-100</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370694876</i></a>
+    <a n="MonitorSelfAge"><i>62173</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1143525</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>24806</i></a>
+    <a n="LastHeardFrom"><i>1370698730</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>6</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot1@ip-10-147-168-100</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>61126</i></a>
+    <a n="SlotID"><i>1</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-147-168-100</s></a>
+    <a n="UpdatesSequenced"><i>2090</i></a>
+    <a n="TotalClaimRunTime"><i>3853</i></a>
+    <a n="EnteredCurrentState"><i>1370694876</i></a>
+    <a n="CondorLoadAvg"><r>1.100000000000000E-01</r></a>
+    <a n="ImageSize"><i>1223316</i></a>
+    <a n="MonitorSelfImageSize"><r>9.857600000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62701</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636333</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>3853</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>6384</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>1236</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-147-168-100</s></a>
+    <a n="LastUpdate"><i>1370687080</i></a>
+    <a n="TotalTimeUnclaimedBenchmarking"><i>22</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1627251</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698730</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>24806</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.627450000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370687080</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699328</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2090</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29675</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-fd178590</s></a>
+    <a n="MyAddress"><s>&lt;10.147.168.100:26132?CCBID=130.199.185.166:29675#4&amp;PrivNet=localdomain&amp;sock=1634_fa5c_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-54-242-95-210.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370694877</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.978141480000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>6.650000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>54.242.95.210</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698505</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_prod.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12797</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>6.990000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57362.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>1.370000000000000E+00</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:93:a8:64</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8004680</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144045</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>8</i></a>
+    <a n="PublicClaimId"><s>&lt;10.147.168.100:26132&gt;#1370636333#70#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2092</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699328</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62701</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.147.168.100:26132?CCBID=130.199.185.166:29675#4&amp;PrivNet=localdomain&amp;sock=1634_fa5c_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>4.788000000000000E-03</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>6.088000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57362.0#1370610157</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-147-168-100</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370696379</i></a>
+    <a n="MonitorSelfAge"><i>62173</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1143525</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>24806</i></a>
+    <a n="LastHeardFrom"><i>1370698731</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>4</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot2@ip-10-147-168-100</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>61096</i></a>
+    <a n="SlotID"><i>2</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-147-168-100</s></a>
+    <a n="UpdatesSequenced"><i>2091</i></a>
+    <a n="TotalClaimRunTime"><i>2352</i></a>
+    <a n="EnteredCurrentState"><i>1370696379</i></a>
+    <a n="CondorLoadAvg"><r>1.370000000000000E+00</r></a>
+    <a n="ImageSize"><i>2838760</i></a>
+    <a n="MonitorSelfImageSize"><r>9.857600000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62701</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636333</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>2352</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>6384</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>1291</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-147-168-100</s></a>
+    <a n="LastUpdate"><i>1370687080</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1627251</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698731</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>24806</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.627450000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370687080</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699328</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2091</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29675</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-fd178590</s></a>
+    <a n="MyAddress"><s>&lt;10.147.168.100:26132?CCBID=130.199.185.166:29675#4&amp;PrivNet=localdomain&amp;sock=1634_fa5c_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-54-242-95-210.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370696379</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.978141480000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>6.650000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>54.242.95.210</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698505</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_analy.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12797</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>6.990000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57411.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>8.800000000000000E-01</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:93:a8:64</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8004680</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144045</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>10</i></a>
+    <a n="PublicClaimId"><s>&lt;10.147.168.100:26132&gt;#1370636333#63#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2093</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699328</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62701</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.147.168.100:26132?CCBID=130.199.185.166:29675#4&amp;PrivNet=localdomain&amp;sock=1634_fa5c_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>4.786000000000000E-03</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>6.088000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57411.0#1370692074</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-147-168-100</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370695178</i></a>
+    <a n="MonitorSelfAge"><i>62173</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1143525</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>24806</i></a>
+    <a n="LastHeardFrom"><i>1370698732</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>5</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot3@ip-10-147-168-100</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>61188</i></a>
+    <a n="SlotID"><i>3</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-147-168-100</s></a>
+    <a n="UpdatesSequenced"><i>2092</i></a>
+    <a n="TotalClaimRunTime"><i>3554</i></a>
+    <a n="EnteredCurrentState"><i>1370695177</i></a>
+    <a n="CondorLoadAvg"><r>8.800000000000000E-01</r></a>
+    <a n="ImageSize"><i>2249728</i></a>
+    <a n="MonitorSelfImageSize"><r>9.857600000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62701</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636333</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>3554</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>6384</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>1193</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-147-168-100</s></a>
+    <a n="LastUpdate"><i>1370687080</i></a>
+    <a n="TotalTimeUnclaimedBenchmarking"><i>6</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1627251</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698732</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>24806</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.627450000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370687080</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699328</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2092</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29675</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-fd178590</s></a>
+    <a n="MyAddress"><s>&lt;10.147.168.100:26132?CCBID=130.199.185.166:29675#4&amp;PrivNet=localdomain&amp;sock=1634_fa5c_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-54-242-95-210.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370695178</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.978141480000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>6.650000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>54.242.95.210</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698505</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_analy.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12797</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>6.990000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57412.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>1.380000000000000E+00</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:93:a8:64</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8004680</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144045</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>12</i></a>
+    <a n="PublicClaimId"><s>&lt;10.147.168.100:26132&gt;#1370636333#65#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2083</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699328</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62701</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.147.168.100:26132?CCBID=130.199.185.166:29675#4&amp;PrivNet=localdomain&amp;sock=1634_fa5c_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>4.784000000000000E-03</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>6.088000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57412.0#1370694958</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-147-168-100</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370695478</i></a>
+    <a n="MonitorSelfAge"><i>62173</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1143525</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>24806</i></a>
+    <a n="LastHeardFrom"><i>1370698733</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>4</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot4@ip-10-147-168-100</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>62004</i></a>
+    <a n="TotalTimePreemptingVacating"><i>2</i></a>
+    <a n="SlotID"><i>4</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-147-168-100</s></a>
+    <a n="UpdatesSequenced"><i>2082</i></a>
+    <a n="TotalClaimRunTime"><i>3254</i></a>
+    <a n="EnteredCurrentState"><i>1370695478</i></a>
+    <a n="CondorLoadAvg"><r>1.380000000000000E+00</r></a>
+    <a n="ImageSize"><i>1483972</i></a>
+    <a n="MonitorSelfImageSize"><r>9.857600000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62701</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636333</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>3254</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>6384</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>383</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-147-168-100</s></a>
+    <a n="LastUpdate"><i>1370687080</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1627251</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698733</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>24806</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.627450000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370687080</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699328</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2082</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29675</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-fd178590</s></a>
+    <a n="MyAddress"><s>&lt;10.147.168.100:26132?CCBID=130.199.185.166:29675#4&amp;PrivNet=localdomain&amp;sock=1634_fa5c_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-54-242-95-210.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370695479</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.978141480000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>6.680000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>54.242.95.210</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698505</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_prod.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12797</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>6.990000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57363.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>1.280000000000000E+00</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:93:a8:64</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8004688</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144045</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>8</i></a>
+    <a n="PublicClaimId"><s>&lt;10.147.168.100:26132&gt;#1370636333#69#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2086</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699333</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62706</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.147.168.100:26132?CCBID=130.199.185.166:29675#4&amp;PrivNet=localdomain&amp;sock=1634_fa5c_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>4.789000000000000E-03</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>6.088000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57363.0#1370610878</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-147-168-100</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370696379</i></a>
+    <a n="MonitorSelfAge"><i>62173</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1143526</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>24841</i></a>
+    <a n="LastHeardFrom"><i>1370698734</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>4</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot5@ip-10-147-168-100</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>61674</i></a>
+    <a n="SlotID"><i>5</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-147-168-100</s></a>
+    <a n="UpdatesSequenced"><i>2085</i></a>
+    <a n="TotalClaimRunTime"><i>2355</i></a>
+    <a n="EnteredCurrentState"><i>1370696379</i></a>
+    <a n="CondorLoadAvg"><r>1.280000000000000E+00</r></a>
+    <a n="ImageSize"><i>2807584</i></a>
+    <a n="MonitorSelfImageSize"><r>9.857600000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62706</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636333</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>2355</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>6384</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>716</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-147-168-100</s></a>
+    <a n="LastUpdate"><i>1370687080</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1627251</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698734</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>24841</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.627450000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370687080</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699333</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2085</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29675</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-fd178590</s></a>
+    <a n="MyAddress"><s>&lt;10.147.168.100:26132?CCBID=130.199.185.166:29675#4&amp;PrivNet=localdomain&amp;sock=1634_fa5c_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-54-242-95-210.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370696379</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.978141480000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>6.680000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>54.242.95.210</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698505</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_analy.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12797</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>6.990000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57413.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>9.300000000000000E-01</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:93:a8:64</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8004688</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144045</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>5</i></a>
+    <a n="PublicClaimId"><s>&lt;10.147.168.100:26132&gt;#1370636333#67#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2084</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699333</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62706</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.147.168.100:26132?CCBID=130.199.185.166:29675#4&amp;PrivNet=localdomain&amp;sock=1634_fa5c_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>4.787000000000000E-03</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>6.088000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57413.0#1370695319</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-147-168-100</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370695778</i></a>
+    <a n="MonitorSelfAge"><i>62173</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1143526</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>24841</i></a>
+    <a n="LastHeardFrom"><i>1370698735</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>2</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot6@ip-10-147-168-100</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>61925</i></a>
+    <a n="TotalTimePreemptingVacating"><i>1</i></a>
+    <a n="SlotID"><i>6</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-147-168-100</s></a>
+    <a n="UpdatesSequenced"><i>2083</i></a>
+    <a n="TotalClaimRunTime"><i>2957</i></a>
+    <a n="EnteredCurrentState"><i>1370695778</i></a>
+    <a n="CondorLoadAvg"><r>9.300000000000000E-01</r></a>
+    <a n="ImageSize"><i>1761968</i></a>
+    <a n="MonitorSelfImageSize"><r>9.857600000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62706</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636333</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>2957</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>6384</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>467</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-147-168-100</s></a>
+    <a n="LastUpdate"><i>1370687080</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1627251</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698735</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>24841</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.627450000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370687080</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699333</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2083</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29675</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-fd178590</s></a>
+    <a n="MyAddress"><s>&lt;10.147.168.100:26132?CCBID=130.199.185.166:29675#4&amp;PrivNet=localdomain&amp;sock=1634_fa5c_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-54-242-95-210.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370695778</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.978141480000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>6.680000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>54.242.95.210</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698505</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_analy.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12797</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>6.990000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57416.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>1.120000000000000E+00</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:93:a8:64</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8004688</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144045</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>10</i></a>
+    <a n="PublicClaimId"><s>&lt;10.147.168.100:26132&gt;#1370636333#73#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2083</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699333</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62706</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.147.168.100:26132?CCBID=130.199.185.166:29675#4&amp;PrivNet=localdomain&amp;sock=1634_fa5c_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>4.785000000000000E-03</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>6.088000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57416.0#1370696401</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-147-168-100</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370696420</i></a>
+    <a n="MonitorSelfAge"><i>62173</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1143526</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>24841</i></a>
+    <a n="LastHeardFrom"><i>1370698736</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>6</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot7@ip-10-147-168-100</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>61834</i></a>
+    <a n="SlotID"><i>7</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-147-168-100</s></a>
+    <a n="UpdatesSequenced"><i>2082</i></a>
+    <a n="TotalClaimRunTime"><i>2316</i></a>
+    <a n="EnteredCurrentState"><i>1370696419</i></a>
+    <a n="CondorLoadAvg"><r>8.100000000000001E-01</r></a>
+    <a n="ImageSize"><i>2557168</i></a>
+    <a n="MonitorSelfImageSize"><r>9.857600000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62706</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636333</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>2316</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>6384</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>556</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-147-168-100</s></a>
+    <a n="LastUpdate"><i>1370687080</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1627251</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698736</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>24841</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.627450000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370687080</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699333</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2082</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29675</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-fd178590</s></a>
+    <a n="MyAddress"><s>&lt;10.147.168.100:26132?CCBID=130.199.185.166:29675#4&amp;PrivNet=localdomain&amp;sock=1634_fa5c_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-54-242-95-210.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370696420</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.978141480000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>4.860000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>67.202.55.91</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698506</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_analy.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12827</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>5.810000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57414.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>5.800000000000000E-01</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:9a:81:4b</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8006208</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144055</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>7</i></a>
+    <a n="PublicClaimId"><s>&lt;10.154.129.75:25402&gt;#1370636338#23#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2083</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699317</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62683</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.154.129.75:25402?CCBID=130.199.185.166:29669#328&amp;PrivNet=localdomain&amp;sock=1616_af9a_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>1.028800000000000E-02</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>4.018000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57414.0#1370695679</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-154-129-75</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370696041</i></a>
+    <a n="MonitorSelfAge"><i>62168</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1143744</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>32661</i></a>
+    <a n="LastHeardFrom"><i>1370698721</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>6</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot1@ip-10-154-129-75</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>61877</i></a>
+    <a n="SlotID"><i>1</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-154-129-75</s></a>
+    <a n="UpdatesSequenced"><i>2082</i></a>
+    <a n="TotalClaimRunTime"><i>2680</i></a>
+    <a n="EnteredCurrentState"><i>1370696040</i></a>
+    <a n="CondorLoadAvg"><r>5.800000000000000E-01</r></a>
+    <a n="ImageSize"><i>2177308</i></a>
+    <a n="MonitorSelfImageSize"><r>9.838000000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62683</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636338</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>2680</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>7156</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>472</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-154-129-75</s></a>
+    <a n="LastUpdate"><i>1370690093</i></a>
+    <a n="TotalTimeUnclaimedBenchmarking"><i>20</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1620751</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698721</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>32661</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.372020000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370690093</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699317</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2082</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29669</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-8d03e8ec</s></a>
+    <a n="MyAddress"><s>&lt;10.154.129.75:25402?CCBID=130.199.185.166:29669#328&amp;PrivNet=localdomain&amp;sock=1616_af9a_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-67-202-55-91.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370696041</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.964926760000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>4.860000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>67.202.55.91</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698506</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_analy.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12827</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>5.810000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57415.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>5.800000000000000E-01</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:9a:81:4b</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8006208</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144055</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>7</i></a>
+    <a n="PublicClaimId"><s>&lt;10.154.129.75:25402&gt;#1370636338#24#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2081</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699317</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62683</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.154.129.75:25402?CCBID=130.199.185.166:29669#328&amp;PrivNet=localdomain&amp;sock=1616_af9a_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>1.028200000000000E-02</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>4.018000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57415.0#1370696040</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-154-129-75</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370696041</i></a>
+    <a n="MonitorSelfAge"><i>62168</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1143744</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>32661</i></a>
+    <a n="LastHeardFrom"><i>1370698722</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>5</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot2@ip-10-154-129-75</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>62005</i></a>
+    <a n="SlotID"><i>2</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-154-129-75</s></a>
+    <a n="UpdatesSequenced"><i>2080</i></a>
+    <a n="TotalClaimRunTime"><i>2681</i></a>
+    <a n="EnteredCurrentState"><i>1370696040</i></a>
+    <a n="CondorLoadAvg"><r>5.800000000000000E-01</r></a>
+    <a n="ImageSize"><i>2184596</i></a>
+    <a n="MonitorSelfImageSize"><r>9.838000000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62683</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636338</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>2681</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>7156</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>366</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-154-129-75</s></a>
+    <a n="LastUpdate"><i>1370690093</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1620751</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698722</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>32661</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.372020000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370690093</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699317</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2080</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29669</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-8d03e8ec</s></a>
+    <a n="MyAddress"><s>&lt;10.154.129.75:25402?CCBID=130.199.185.166:29669#328&amp;PrivNet=localdomain&amp;sock=1616_af9a_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-67-202-55-91.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370696041</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.964926760000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>4.960000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>67.202.55.91</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698506</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_prod.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12827</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>5.900000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57360.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>2.700000000000000E-01</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:9a:81:4b</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8006184</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144055</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>14</i></a>
+    <a n="PublicClaimId"><s>&lt;10.154.129.75:25402&gt;#1370636338#25#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2081</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699322</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62688</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.154.129.75:25402?CCBID=130.199.185.166:29669#328&amp;PrivNet=localdomain&amp;sock=1616_af9a_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>1.028200000000000E-02</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>4.018000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57360.0#1370607994</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-154-129-75</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370696041</i></a>
+    <a n="MonitorSelfAge"><i>62168</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1143740</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>32696</i></a>
+    <a n="LastHeardFrom"><i>1370698723</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>6</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot3@ip-10-154-129-75</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>62061</i></a>
+    <a n="SlotID"><i>3</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-154-129-75</s></a>
+    <a n="UpdatesSequenced"><i>2080</i></a>
+    <a n="TotalClaimRunTime"><i>2682</i></a>
+    <a n="EnteredCurrentState"><i>1370696040</i></a>
+    <a n="CondorLoadAvg"><r>2.700000000000000E-01</r></a>
+    <a n="ImageSize"><i>1099020</i></a>
+    <a n="MonitorSelfImageSize"><r>9.838000000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62688</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636338</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>2682</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>7156</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>310</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-154-129-75</s></a>
+    <a n="LastUpdate"><i>1370690093</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1620751</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698723</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>32696</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.372020000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370690093</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699322</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2080</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29669</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-8d03e8ec</s></a>
+    <a n="MyAddress"><s>&lt;10.154.129.75:25402?CCBID=130.199.185.166:29669#328&amp;PrivNet=localdomain&amp;sock=1616_af9a_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-67-202-55-91.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370696041</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.964926760000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>4.960000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>67.202.55.91</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698506</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_analy.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12827</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>5.900000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57407.1</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>6.000000000000000E-01</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:9a:81:4b</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8006184</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144055</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>12</i></a>
+    <a n="PublicClaimId"><s>&lt;10.154.129.75:25402&gt;#1370636338#19#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2082</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699322</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62688</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.154.129.75:25402?CCBID=130.199.185.166:29669#328&amp;PrivNet=localdomain&amp;sock=1616_af9a_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>1.027500000000000E-02</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>4.018000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57407.1#1370688468</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-154-129-75</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370690368</i></a>
+    <a n="MonitorSelfAge"><i>62168</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1143740</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>32696</i></a>
+    <a n="LastHeardFrom"><i>1370698724</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>2</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot4@ip-10-154-129-75</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>61544</i></a>
+    <a n="SlotID"><i>4</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-154-129-75</s></a>
+    <a n="UpdatesSequenced"><i>2081</i></a>
+    <a n="TotalClaimRunTime"><i>8356</i></a>
+    <a n="EnteredCurrentState"><i>1370690368</i></a>
+    <a n="CondorLoadAvg"><r>6.000000000000000E-01</r></a>
+    <a n="ImageSize"><i>2188936</i></a>
+    <a n="MonitorSelfImageSize"><r>9.838000000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62688</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636338</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>8356</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>7156</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>827</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-154-129-75</s></a>
+    <a n="LastUpdate"><i>1370690093</i></a>
+    <a n="TotalTimeUnclaimedBenchmarking"><i>5</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1620751</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698724</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>32696</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.372020000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370690093</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699322</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2081</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29669</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-8d03e8ec</s></a>
+    <a n="MyAddress"><s>&lt;10.154.129.75:25402?CCBID=130.199.185.166:29669#328&amp;PrivNet=localdomain&amp;sock=1616_af9a_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-67-202-55-91.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370690368</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.964926760000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>4.960000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>67.202.55.91</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698506</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_analy.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12827</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>5.900000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57408.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>5.900000000000000E-01</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:9a:81:4b</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8006184</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144055</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>12</i></a>
+    <a n="PublicClaimId"><s>&lt;10.154.129.75:25402&gt;#1370636338#21#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2082</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699322</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62688</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.154.129.75:25402?CCBID=130.199.185.166:29669#328&amp;PrivNet=localdomain&amp;sock=1616_af9a_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>1.026900000000000E-02</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>4.018000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57408.0#1370689189</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-154-129-75</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370690632</i></a>
+    <a n="MonitorSelfAge"><i>62168</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1143740</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>32696</i></a>
+    <a n="LastHeardFrom"><i>1370698725</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>2</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot5@ip-10-154-129-75</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>61831</i></a>
+    <a n="SlotID"><i>5</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-154-129-75</s></a>
+    <a n="UpdatesSequenced"><i>2081</i></a>
+    <a n="TotalClaimRunTime"><i>8093</i></a>
+    <a n="EnteredCurrentState"><i>1370690632</i></a>
+    <a n="CondorLoadAvg"><r>5.900000000000000E-01</r></a>
+    <a n="ImageSize"><i>2173964</i></a>
+    <a n="MonitorSelfImageSize"><r>9.838000000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62688</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636338</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>8093</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>7156</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>546</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-154-129-75</s></a>
+    <a n="LastUpdate"><i>1370690093</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1620751</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698725</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>32696</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.372020000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370690093</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699322</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2081</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29669</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-8d03e8ec</s></a>
+    <a n="MyAddress"><s>&lt;10.154.129.75:25402?CCBID=130.199.185.166:29669#328&amp;PrivNet=localdomain&amp;sock=1616_af9a_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-67-202-55-91.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370690632</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.964926760000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>4.960000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>67.202.55.91</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698506</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_prod.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12827</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>5.900000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57368.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>2.080000000000000E+00</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:9a:81:4b</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8006184</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144055</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>8</i></a>
+    <a n="PublicClaimId"><s>&lt;10.154.129.75:25402&gt;#1370636338#29#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2083</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="t"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699322</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62688</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>2553</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.154.129.75:25402?CCBID=130.199.185.166:29669#328&amp;PrivNet=localdomain&amp;sock=1616_af9a_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>1.026200000000000E-02</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>4.018000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57368.0#1370612682</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-154-129-75</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370696708</i></a>
+    <a n="MonitorSelfAge"><i>62168</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1143740</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>32696</i></a>
+    <a n="LastHeardFrom"><i>1370698726</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>1</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot6@ip-10-154-129-75</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>61667</i></a>
+    <a n="SlotID"><i>6</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-154-129-75</s></a>
+    <a n="UpdatesSequenced"><i>2082</i></a>
+    <a n="TotalClaimRunTime"><i>2346</i></a>
+    <a n="EnteredCurrentState"><i>1370696379</i></a>
+    <a n="CondorLoadAvg"><r>1.140000000000000E+00</r></a>
+    <a n="ImageSize"><i>2836752</i></a>
+    <a n="MonitorSelfImageSize"><r>9.838000000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62688</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636338</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>2018</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>7156</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>712</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-154-129-75</s></a>
+    <a n="LastUpdate"><i>1370690093</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1620751</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698726</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>32696</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.372020000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370690093</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699322</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2082</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29669</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-8d03e8ec</s></a>
+    <a n="MyAddress"><s>&lt;10.154.129.75:25402?CCBID=130.199.185.166:29669#328&amp;PrivNet=localdomain&amp;sock=1616_af9a_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-67-202-55-91.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370696708</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.964926760000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>4.960000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>67.202.55.91</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698506</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_prod.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12827</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>5.900000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57370.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>1.160000000000000E+00</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:9a:81:4b</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8006184</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144055</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>8</i></a>
+    <a n="PublicClaimId"><s>&lt;10.154.129.75:25402&gt;#1370636338#30#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2081</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699322</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62688</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.154.129.75:25402?CCBID=130.199.185.166:29669#328&amp;PrivNet=localdomain&amp;sock=1616_af9a_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>1.025500000000000E-02</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>4.018000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57370.0#1370613764</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-154-129-75</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370696727</i></a>
+    <a n="MonitorSelfAge"><i>62168</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1143740</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>32696</i></a>
+    <a n="LastHeardFrom"><i>1370698727</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>3</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot7@ip-10-154-129-75</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>61789</i></a>
+    <a n="SlotID"><i>7</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-154-129-75</s></a>
+    <a n="UpdatesSequenced"><i>2080</i></a>
+    <a n="TotalClaimRunTime"><i>2346</i></a>
+    <a n="EnteredCurrentState"><i>1370696379</i></a>
+    <a n="CondorLoadAvg"><r>1.160000000000000E+00</r></a>
+    <a n="ImageSize"><i>2809120</i></a>
+    <a n="MonitorSelfImageSize"><r>9.838000000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62688</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636338</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>2000</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>7156</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>589</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-154-129-75</s></a>
+    <a n="LastUpdate"><i>1370690093</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1620751</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698727</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>32696</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.372020000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370690093</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699322</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2080</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29669</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-8d03e8ec</s></a>
+    <a n="MyAddress"><s>&lt;10.154.129.75:25402?CCBID=130.199.185.166:29669#328&amp;PrivNet=localdomain&amp;sock=1616_af9a_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-67-202-55-91.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370696727</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.964926760000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>6.650000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>54.224.63.115</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698717</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_prod.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12649</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>6.990000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57382.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>1.250000000000000E+00</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:9b:da:bd</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8010212</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144055</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>10</i></a>
+    <a n="PublicClaimId"><s>&lt;10.155.218.189:21679&gt;#1370636550#1#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2074</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699317</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62669</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.155.218.189:21679?CCBID=130.199.185.166:29663#4&amp;PrivNet=localdomain&amp;sock=1631_c33c_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>2.602000000000000E-03</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>3.495000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57382.0#1370623496</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-155-218-189</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370636589</i></a>
+    <a n="MonitorSelfAge"><i>62168</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1144316</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>141741</i></a>
+    <a n="LastHeardFrom"><i>1370698721</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot1@ip-10-155-218-189</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>62132</i></a>
+    <a n="SlotID"><i>1</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-155-218-189</s></a>
+    <a n="UpdatesSequenced"><i>2073</i></a>
+    <a n="TotalClaimRunTime"><i>62132</i></a>
+    <a n="EnteredCurrentState"><i>1370636589</i></a>
+    <a n="CondorLoadAvg"><r>1.250000000000000E+00</r></a>
+    <a n="ImageSize"><i>2189276</i></a>
+    <a n="MonitorSelfImageSize"><r>9.840800000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62669</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636550</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>62132</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>6444</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>11</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-155-218-189</s></a>
+    <a n="LastUpdate"><i>1370691767</i></a>
+    <a n="TotalTimeUnclaimedBenchmarking"><i>21</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1626824</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698721</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>141741</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.256360000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370691767</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699317</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2073</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29663</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-348ef651</s></a>
+    <a n="MyAddress"><s>&lt;10.155.218.189:21679?CCBID=130.199.185.166:29663#4&amp;PrivNet=localdomain&amp;sock=1631_c33c_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-54-224-63-115.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370636589</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.730928960000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>6.650000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>54.224.63.115</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698717</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_analy.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12649</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>6.990000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57416.1</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>5.800000000000000E-01</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:9b:da:bd</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8010212</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144055</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>10</i></a>
+    <a n="PublicClaimId"><s>&lt;10.155.218.189:21679&gt;#1370636550#19#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2075</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699317</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62669</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.155.218.189:21679?CCBID=130.199.185.166:29663#4&amp;PrivNet=localdomain&amp;sock=1631_c33c_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>2.602000000000000E-03</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>3.495000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57416.1#1370696401</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-155-218-189</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370697281</i></a>
+    <a n="MonitorSelfAge"><i>62168</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1144316</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>141741</i></a>
+    <a n="LastHeardFrom"><i>1370698722</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>2</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot2@ip-10-155-218-189</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>62001</i></a>
+    <a n="SlotID"><i>2</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-155-218-189</s></a>
+    <a n="UpdatesSequenced"><i>2074</i></a>
+    <a n="TotalClaimRunTime"><i>1441</i></a>
+    <a n="EnteredCurrentState"><i>1370697281</i></a>
+    <a n="CondorLoadAvg"><r>5.800000000000000E-01</r></a>
+    <a n="ImageSize"><i>2312132</i></a>
+    <a n="MonitorSelfImageSize"><r>9.840800000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62669</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636550</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>1441</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>6444</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>162</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-155-218-189</s></a>
+    <a n="LastUpdate"><i>1370691767</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1626824</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698722</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>141741</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.256360000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370691767</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699317</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2074</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29663</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-348ef651</s></a>
+    <a n="MyAddress"><s>&lt;10.155.218.189:21679?CCBID=130.199.185.166:29663#4&amp;PrivNet=localdomain&amp;sock=1631_c33c_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-54-224-63-115.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370697281</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.730928960000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>6.680000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>54.224.63.115</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698717</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_prod.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12649</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>6.990000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57382.2</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>1.220000000000000E+00</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:9b:da:bd</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8010200</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144055</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>10</i></a>
+    <a n="PublicClaimId"><s>&lt;10.155.218.189:21679&gt;#1370636550#3#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2074</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699322</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62674</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.155.218.189:21679?CCBID=130.199.185.166:29663#4&amp;PrivNet=localdomain&amp;sock=1631_c33c_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>2.610000000000000E-03</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>3.495000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57382.2#1370623496</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-155-218-189</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370636592</i></a>
+    <a n="MonitorSelfAge"><i>62168</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1144314</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>141776</i></a>
+    <a n="LastHeardFrom"><i>1370698723</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>3</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot3@ip-10-155-218-189</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>62131</i></a>
+    <a n="SlotID"><i>3</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-155-218-189</s></a>
+    <a n="UpdatesSequenced"><i>2073</i></a>
+    <a n="TotalClaimRunTime"><i>62131</i></a>
+    <a n="EnteredCurrentState"><i>1370636589</i></a>
+    <a n="CondorLoadAvg"><r>1.220000000000000E+00</r></a>
+    <a n="ImageSize"><i>2186108</i></a>
+    <a n="MonitorSelfImageSize"><r>9.840800000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62674</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636550</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>62131</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>6444</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>32</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-155-218-189</s></a>
+    <a n="LastUpdate"><i>1370691767</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1626824</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698723</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>141776</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.256360000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370691767</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699322</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2073</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29663</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-348ef651</s></a>
+    <a n="MyAddress"><s>&lt;10.155.218.189:21679?CCBID=130.199.185.166:29663#4&amp;PrivNet=localdomain&amp;sock=1631_c33c_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-54-224-63-115.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370636592</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.730928960000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>6.680000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>54.224.63.115</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698717</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_prod.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12649</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>6.990000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57364.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>1.160000000000000E+00</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:9b:da:bd</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8010200</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144055</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>8</i></a>
+    <a n="PublicClaimId"><s>&lt;10.155.218.189:21679&gt;#1370636550#17#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2074</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699322</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62674</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.155.218.189:21679?CCBID=130.199.185.166:29663#4&amp;PrivNet=localdomain&amp;sock=1631_c33c_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>2.609000000000000E-03</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>3.495000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57364.0#1370611599</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-155-218-189</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370696379</i></a>
+    <a n="MonitorSelfAge"><i>62168</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1144314</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>141776</i></a>
+    <a n="LastHeardFrom"><i>1370698724</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>5</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot4@ip-10-155-218-189</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>61913</i></a>
+    <a n="SlotID"><i>4</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-155-218-189</s></a>
+    <a n="UpdatesSequenced"><i>2073</i></a>
+    <a n="TotalClaimRunTime"><i>2345</i></a>
+    <a n="EnteredCurrentState"><i>1370696379</i></a>
+    <a n="CondorLoadAvg"><r>1.160000000000000E+00</r></a>
+    <a n="ImageSize"><i>1985336</i></a>
+    <a n="MonitorSelfImageSize"><r>9.840800000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62674</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636550</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>2345</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>6444</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>249</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-155-218-189</s></a>
+    <a n="LastUpdate"><i>1370691767</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1626824</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698724</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>141776</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.256360000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370691767</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699322</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2073</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29663</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-348ef651</s></a>
+    <a n="MyAddress"><s>&lt;10.155.218.189:21679?CCBID=130.199.185.166:29663#4&amp;PrivNet=localdomain&amp;sock=1631_c33c_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-54-224-63-115.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370696379</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.730928960000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>6.680000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>54.224.63.115</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698717</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_analy.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12649</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>6.990000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57417.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>6.300000000000000E-01</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:9b:da:bd</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8010200</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144055</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>10</i></a>
+    <a n="PublicClaimId"><s>&lt;10.155.218.189:21679&gt;#1370636550#20#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2075</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699322</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62674</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.155.218.189:21679?CCBID=130.199.185.166:29663#4&amp;PrivNet=localdomain&amp;sock=1631_c33c_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>2.609000000000000E-03</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>3.495000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57417.0#1370696762</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-155-218-189</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370697281</i></a>
+    <a n="MonitorSelfAge"><i>62168</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1144314</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>141776</i></a>
+    <a n="LastHeardFrom"><i>1370698725</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>3</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot5@ip-10-155-218-189</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>62053</i></a>
+    <a n="SlotID"><i>5</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-155-218-189</s></a>
+    <a n="UpdatesSequenced"><i>2074</i></a>
+    <a n="TotalClaimRunTime"><i>1444</i></a>
+    <a n="EnteredCurrentState"><i>1370697281</i></a>
+    <a n="CondorLoadAvg"><r>6.300000000000000E-01</r></a>
+    <a n="ImageSize"><i>1920692</i></a>
+    <a n="MonitorSelfImageSize"><r>9.840800000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62674</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636550</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>1444</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>6444</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>112</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-155-218-189</s></a>
+    <a n="LastUpdate"><i>1370691767</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1626824</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698725</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>141776</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.256360000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370691767</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699322</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2074</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29663</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-348ef651</s></a>
+    <a n="MyAddress"><s>&lt;10.155.218.189:21679?CCBID=130.199.185.166:29663#4&amp;PrivNet=localdomain&amp;sock=1631_c33c_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-54-224-63-115.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370697281</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.730928960000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>6.680000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>54.224.63.115</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698717</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_analy.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12649</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>6.990000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57418.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>1.300000000000000E+00</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:9b:da:bd</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8010200</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144055</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>11</i></a>
+    <a n="PublicClaimId"><s>&lt;10.155.218.189:21679&gt;#1370636550#23#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2074</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699322</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62674</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.155.218.189:21679?CCBID=130.199.185.166:29663#4&amp;PrivNet=localdomain&amp;sock=1631_c33c_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>2.609000000000000E-03</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>3.495000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57418.0#1370697483</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-155-218-189</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370697484</i></a>
+    <a n="MonitorSelfAge"><i>62168</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1144314</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>141776</i></a>
+    <a n="LastHeardFrom"><i>1370698726</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>3</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot6@ip-10-155-218-189</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>62049</i></a>
+    <a n="SlotID"><i>6</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-155-218-189</s></a>
+    <a n="UpdatesSequenced"><i>2073</i></a>
+    <a n="TotalClaimRunTime"><i>1242</i></a>
+    <a n="EnteredCurrentState"><i>1370697484</i></a>
+    <a n="CondorLoadAvg"><r>9.900000000000000E-01</r></a>
+    <a n="ImageSize"><i>1746668</i></a>
+    <a n="MonitorSelfImageSize"><r>9.840800000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62674</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636550</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>1242</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>6444</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>117</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-155-218-189</s></a>
+    <a n="LastUpdate"><i>1370691767</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1626824</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698726</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>141776</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.256360000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370691767</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699322</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2073</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29663</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-348ef651</s></a>
+    <a n="MyAddress"><s>&lt;10.155.218.189:21679?CCBID=130.199.185.166:29663#4&amp;PrivNet=localdomain&amp;sock=1631_c33c_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-54-224-63-115.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370697484</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.730928960000000E+02</r></a>
+</c>
+
+<c>
+    <a n="TotalCondorLoadAvg"><r>6.680000000000000E+00</r></a>
+    <a n="JavaSpecificationVersion"><s>1.6</s></a>
+    <a n="IsValidCheckpointPlatform"><e>( TARGET.JobUniverse isnt 1 || ( ( MY.CheckpointPlatform isnt undefined ) &amp;&amp; ( ( TARGET.LastCheckpointPlatform is MY.CheckpointPlatform ) || ( TARGET.NumCkpts == 0 ) ) ) )</e></a>
+    <a n="EC2PublicIP"><s>54.224.63.115</s></a>
+    <a n="RemoteAutoregroup"><b v="f"/></a>
+    <a n="JavaVendor"><s>Sun Microsystems Inc.</s></a>
+    <a n="MonitorSelfTime"><i>1370698717</i></a>
+    <a n="OpSys"><s>LINUX</s></a>
+    <a n="AccountingGroup"><s>group_analy.apf@bnl.gov</s></a>
+    <a n="DetectedCpus"><i>4</i></a>
+    <a n="Mips"><i>12649</i></a>
+    <a n="LastFetchWorkSpawned"><i>0</i></a>
+    <a n="AuthenticatedIdentity"><s>condor_pool@bnl.gov</s></a>
+    <a n="NodeType"><s>atlas</s></a>
+    <a n="HibernationState"><s>NONE</s></a>
+    <a n="TotalLoadAvg"><r>6.990000000000000E+00</r></a>
+    <a n="HasMPI"><b v="t"/></a>
+    <a n="JobId"><s>57409.0</s></a>
+    <a n="OpSysAndVer"><s>SL6</s></a>
+    <a n="MyType"><s>Machine</s></a>
+    <a n="Rank"><i>0</i></a>
+    <a n="LoadAvg"><r>8.600000000000000E-01</r></a>
+    <a n="VirtualMemory"><i>2195941</i></a>
+    <a n="SlotWeight"><e>Cpus</e></a>
+    <a n="CheckpointPlatform"><s>LINUX X86_64 2.6.x normal N/A</s></a>
+    <a n="HardwareAddress"><s>22:00:0a:9b:da:bd</s></a>
+    <a n="HasJobDeferral"><b v="t"/></a>
+    <a n="TotalSlots"><i>7</i></a>
+    <a n="TotalDisk"><i>8010200</i></a>
+    <a n="HasJICLocalStdin"><b v="t"/></a>
+    <a n="TotalSlotDisk"><i>1144055</i></a>
+    <a n="JobUniverse"><i>5</i></a>
+    <a n="HasFileTransferPluginMethods"><s>file,ftp,http,data</s></a>
+    <a n="Requirements"><e>( START ) &amp;&amp; ( IsValidCheckpointPlatform )</e></a>
+    <a n="NumPids"><i>10</i></a>
+    <a n="PublicClaimId"><s>&lt;10.155.218.189:21679&gt;#1370636550#15#...</s></a>
+    <a n="ClockMin"><i>578</i></a>
+    <a n="UpdatesTotal"><i>2074</i></a>
+    <a n="HasJICLocalConfig"><b v="t"/></a>
+    <a n="UtsnameVersion"><s>#1 SMP Tue Mar 12 14:18:09 CDT 2013</s></a>
+    <a n="CpuIsBusy"><b v="f"/></a>
+    <a n="CpuBusy"><e>( ( LoadAvg - CondorLoadAvg ) &gt;= 5.000000000000000E-01 )</e></a>
+    <a n="UidDomain"><s>localhost.localdomain</s></a>
+    <a n="Arch"><s>X86_64</s></a>
+    <a n="HasCheckpointing"><b v="t"/></a>
+    <a n="ExpectedMachineQuickDrainingCompletion"><i>1370699322</i></a>
+    <a n="WakeOnLanEnabledFlags"><s>NONE</s></a>
+    <a n="TargetType"><s>Job</s></a>
+    <a n="HasFileTransfer"><b v="t"/></a>
+    <a n="SubnetMask"><s>255.255.255.192</s></a>
+    <a n="KeyboardIdle"><i>62674</i></a>
+    <a n="CondorPlatform"><s>$CondorPlatform: x86_64_rhap_6.3 $</s></a>
+    <a n="OpSysVer"><i>603</i></a>
+    <a n="CpuBusyTime"><i>0</i></a>
+    <a n="StartdIpAddr"><s>&lt;10.155.218.189:21679?CCBID=130.199.185.166:29663#4&amp;PrivNet=localdomain&amp;sock=1631_c33c_2&gt;</s></a>
+    <a n="StarterAbilityList"><s>HasTDP,HasFileTransferPluginMethods,HasJobDeferral,HasJICLocalConfig,HasJICLocalStdin,HasPerFileEncryption,HasFileTransfer,HasVM,HasReconnect,HasMPI,HasJava,HasRemoteSyscalls,HasCheckpointing</s></a>
+    <a n="RecentDaemonCoreDutyCycle"><r>2.609000000000000E-03</r></a>
+    <a n="HasReconnect"><b v="t"/></a>
+    <a n="CanHibernate"><b v="t"/></a>
+    <a n="DaemonCoreDutyCycle"><r>3.495000000000000E-03</r></a>
+    <a n="GlobalJobId"><s>gridtest03.racf.bnl.gov#57409.0#1370690631</s></a>
+    <a n="TotalMemory"><i>15011</i></a>
+    <a n="Machine"><s>ip-10-155-218-189</s></a>
+    <a n="UpdatesLost"><i>0</i></a>
+    <a n="JobStart"><i>1370691872</i></a>
+    <a n="MonitorSelfAge"><i>62168</i></a>
+    <a n="MaxJobRetirementTime"><i>0</i></a>
+    <a n="Disk"><i>1144314</i></a>
+    <a n="Unhibernate"><e>MY.MachineLastMatchTime isnt undefined</e></a>
+    <a n="IsWakeOnLanEnabled"><b v="f"/></a>
+    <a n="CondorVersion"><s>$CondorVersion: 7.8.8 Mar 20 2013 BuildID: 110288 $</s></a>
+    <a n="ExpectedMachineGracefulDrainingBadput"><i>141776</i></a>
+    <a n="LastHeardFrom"><i>1370698727</i></a>
+    <a n="HasJava"><b v="t"/></a>
+    <a n="Activity"><s>Busy</s></a>
+    <a n="TotalSlotMemory"><i>2144</i></a>
+    <a n="TotalVirtualMemory"><i>15371588</i></a>
+    <a n="OpSysName"><s>SL</s></a>
+    <a n="TotalTimeClaimedIdle"><i>2</i></a>
+    <a n="TotalCpus"><i>7</i></a>
+    <a n="HasVM"><b v="f"/></a>
+    <a n="TotalSlotCpus"><i>1</i></a>
+    <a n="IsWakeAble"><b v="f"/></a>
+    <a n="Name"><s>slot7@ip-10-155-218-189</s></a>
+    <a n="HasRemoteSyscalls"><b v="t"/></a>
+    <a n="TotalTimeClaimedBusy"><i>62011</i></a>
+    <a n="SlotID"><i>7</i></a>
+    <a n="HibernationSupportedStates"><s>S4</s></a>
+    <a n="MonitorSelfRegisteredSocketCount"><i>7</i></a>
+    <a n="MonitorSelfSecuritySessions"><i>30</i></a>
+    <a n="IsWakeOnLanSupported"><b v="f"/></a>
+    <a n="UtsnameRelease"><s>2.6.32-358.2.1.el6.x86_64</s></a>
+    <a n="OpSysShortName"><s>SL</s></a>
+    <a n="OpSysMajorVer"><i>6</i></a>
+    <a n="FileSystemDomain"><s>ip-10-155-218-189</s></a>
+    <a n="UpdatesSequenced"><i>2073</i></a>
+    <a n="TotalClaimRunTime"><i>6855</i></a>
+    <a n="EnteredCurrentState"><i>1370691872</i></a>
+    <a n="CondorLoadAvg"><r>8.600000000000000E-01</r></a>
+    <a n="ImageSize"><i>2298184</i></a>
+    <a n="MonitorSelfImageSize"><r>9.840800000000000E+04</r></a>
+    <a n="ConsoleIdle"><i>62674</i></a>
+    <a n="State"><s>Claimed</s></a>
+    <a n="DaemonStartTime"><i>1370636550</i></a>
+    <a n="UtsnameSysname"><s>Linux</s></a>
+    <a n="TotalJobRunTime"><i>6855</i></a>
+    <a n="UtsnameMachine"><s>x86_64</s></a>
+    <a n="Start"><b v="t"/></a>
+    <a n="MonitorSelfResidentSetSize"><i>6444</i></a>
+    <a n="TotalTimeUnclaimedIdle"><i>155</i></a>
+    <a n="DetectedMemory"><i>15011</i></a>
+    <a n="HasTDP"><b v="t"/></a>
+    <a n="CurrentRank"><r>0.0</r></a>
+    <a n="UtsnameNodename"><s>ip-10-155-218-189</s></a>
+    <a n="LastUpdate"><i>1370691767</i></a>
+    <a n="TotalTimeUnclaimedBenchmarking"><i>2</i></a>
+    <a n="RemoteOwner"><s>apf@bnl.gov</s></a>
+    <a n="Cpus"><i>1</i></a>
+    <a n="Memory"><i>2144</i></a>
+    <a n="HasIOProxy"><b v="t"/></a>
+    <a n="TimeToLive"><i>2147483647</i></a>
+    <a n="OpSysLegacy"><s>LINUX</s></a>
+    <a n="KFlops"><i>1626824</i></a>
+    <a n="JavaVersion"><s>1.6.0_43</s></a>
+    <a n="MyCurrentTime"><i>1370698727</i></a>
+    <a n="LastFetchWorkCompleted"><i>0</i></a>
+    <a n="MachineMaxVacateTime"><e>10 * 60</e></a>
+    <a n="NextFetchWorkDelay"><i>-1</i></a>
+    <a n="ExecutableSize"><i>22</i></a>
+    <a n="ExpectedMachineQuickDrainingBadput"><i>141776</i></a>
+    <a n="UpdatesHistory"><s>0x00000000000000000000000000000000</s></a>
+    <a n="RemoteNegotiatingGroup"><s>&lt;none&gt;</s></a>
+    <a n="MonitorSelfCPUUsage"><r>2.256360000000000E-01</r></a>
+    <a n="LastBenchmark"><i>1370691767</i></a>
+    <a n="ExpectedMachineGracefulDrainingCompletion"><i>1370699322</i></a>
+    <a n="CurrentTime"><e>time()</e></a>
+    <a n="WakeOnLanSupportedFlags"><s>NONE</s></a>
+    <a n="UpdateSequenceNumber"><i>2073</i></a>
+    <a n="COLLECTOR_HOST_STRING"><s>gridui09.usatlas.bnl.gov:29663</s></a>
+    <a n="NiceUser"><b v="f"/></a>
+    <a n="OpSysLongName"><s>Scientific Linux release 6.3 (Carbon)</s></a>
+    <a n="ClockDay"><i>6</i></a>
+    <a n="RemoteUser"><s>apf@bnl.gov</s></a>
+    <a n="EC2InstanceID"><s>i-348ef651</s></a>
+    <a n="MyAddress"><s>&lt;10.155.218.189:21679?CCBID=130.199.185.166:29663#4&amp;PrivNet=localdomain&amp;sock=1631_c33c_2&gt;</s></a>
+    <a n="HibernationLevel"><i>0</i></a>
+    <a n="HasPerFileEncryption"><b v="t"/></a>
+    <a n="EC2PublicDNS"><s>ec2-54-224-63-115.compute-1.amazonaws.com</s></a>
+    <a n="EnteredCurrentActivity"><i>1370691872</i></a>
+    <a n="ClientMachine"><s>gridtest03.racf.bnl.gov</s></a>
+    <a n="JavaMFlops"><r>7.730928960000000E+02</r></a>
+</c>
+</classads>
+
