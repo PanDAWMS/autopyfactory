@@ -74,11 +74,7 @@ Note that this is no less secure than having password-handling within APF, and l
 errors. 
 
  
-NETWORKING
 
-If you are in a firewalled/NAT environment, make sure that whatever ports are necessary are open. For 
-standard grid submission, we use 20000-30000. On EC2 this will need to be defined in the security group 
-for the node. 
 
 
 
