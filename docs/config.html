@@ -223,8 +223,7 @@ URI plus path to the configuration file for APF queues.
 <br>
 NOTE: Must be expressed as a URI (file:// or http://)
 <br>
-It can be one or more split-by-comma.
-In case of more than one, they are merged 
+Cannot be used at the same time that queueDirConf
 <br>
 
 <br>
@@ -234,13 +233,7 @@ directory with a set of configuration files, all of them to be used at the same 
 <br>
 i.e.  /etc/apf/queues.d/
 <br>
-When this directory exists, the files in it are merged using
-python method SafeConfigParser.read()
-which allows having the [DEFAULT] section in a single file
-and it will applied to all files in the directory
-NOTE: if the directory is used in combination with queueConf,
-the resulting object after parsing the content of the directory
-is merged with the resulting object after parsing queueConf content
+Cannot be used at the same time that queueConf
 <br>
 
 
