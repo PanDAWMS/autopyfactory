@@ -1,3 +1,11 @@
+__author__ = "Jose Caballero, John Hover"
+__copyright__ = "2011, Jose Caballero, John Hover"
+__credits__ = []
+__license__ = "GPL"
+__version__ = "2.1.0"
+__maintainer__ = "Jose Caballero, John Hover"
+__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
+__status__ = "Production"
 
 
 class SchedInterface(object):
@@ -24,25 +32,20 @@ class BatchStatusInterface(object):
     -----------------------------------------------------------------------
     Public Interface:
             getInfo()
-            getJobInfo()
     
     Returns BatchStatusInfo object
      
     -----------------------------------------------------------------------
     '''
-    def getInfo(self, queue=None, maxtime=0):
+    def getInfo(self, maxtime=0):
         '''
-        Returns aggregate statistics about jobs in batch system. Indexed by queue.
-        If queue is provided, returns just the secondary object containing aggregate info
-        about that queue.  
+        Returns aggregate statistics about jobs in batch system. Indexed by apfqeueue. 
         '''
         raise NotImplementedError
 
-    def getJobInfo(self, queue=None, maxtime=0):
+    def getJobInfo(self, maxtime=0):
         '''
-        Returns per-job info about jobs in batch system. Indexed by queue. 
-        If queue is provided, returns just the secondary object containing aggregate info
-        about that queue.  
+        Returns per-job info about jobs in batch system. 
         '''
         raise NotImplementedError
     
@@ -59,7 +62,7 @@ class WMSStatusInterface(object):
             getJobsInfo()
     -----------------------------------------------------------------------
     '''
-    def getCloudInfo(self, cloud=None, maxtime=0):
+    def getCloudInfo(self, cloud, maxtime=0):
         '''
         Method to get and updated picture of the cloud status. 
         It returns a dictionary to be inserted directly into an
@@ -67,7 +70,7 @@ class WMSStatusInterface(object):
         '''
         raise NotImplementedError
 
-    def getSiteInfo(self, site=None, maxtime=0):
+    def getSiteInfo(self, site, maxtime=0):
         '''
         Method to get and updated picture of the site status. 
         It returns a dictionary to be inserted directly into an
@@ -75,7 +78,7 @@ class WMSStatusInterface(object):
         '''
         raise NotImplementedError
 
-    def getInfo(self, queue=None, maxtime=0):
+    def getJobsInfo(self, site, maxtime=0):
         '''
         Method to get and updated picture of the jobs status. 
         It returns a dictionary to be inserted directly into an
@@ -87,16 +90,15 @@ class WMSStatusInterface(object):
 class ConfigInterface(object):
     '''
     -----------------------------------------------------------------------
-    Reads configuration from different sources to create a ConfigLoader
-    object for the APFQueues configuration
+    Returns info to complete the queues config objects
     -----------------------------------------------------------------------
     Public Interface:
-            getConfig()
+            getInfo()
     -----------------------------------------------------------------------
     '''
     def getConfig(self):
         '''
-        returns a ConfigLoader object 
+        returns info 
         '''
         raise NotImplementedError
 
@@ -142,12 +144,6 @@ class BatchSubmitInterface(object):
         '''
         raise NotImplementedError
 
-    def cleanup(self):
-        '''
-        Provides a method that gets called unconditionally every cycle. 
-        
-        '''
-        raise NotImplementedError
 
 
 class MonitorInterface(object):
@@ -180,110 +176,4 @@ class MonitorInterface(object):
          
         '''
         raise NotImplementedError
-   
-
-# ==============================================================================                                
-#                      SINGLETON CLASSES 
-# ==============================================================================  
-
-class Singleton(type):
-    '''
-    -----------------------------------------------------------------------
-    Ancillary class to be used as metaclass to make other classes Singleton.
-    -----------------------------------------------------------------------
-    '''
     
-    def __init__(cls, name, bases, dct):
-        cls.__instance = None 
-        type.__init__(cls, name, bases, dct)
-    def __call__(cls, *args, **kw): 
-        if cls.__instance is None:
-            cls.__instance = type.__call__(cls, *args,**kw)
-        return cls.__instance
-
-
-class CondorSingleton(type):
-    '''
-    -----------------------------------------------------------------------
-    Ancillary class to be used as metaclass to make other classes Singleton.
-    This particular implementation is for CondorBatchStatusPlugin.
-    It allow to create different instances, one per schedd.
-    Each instance is a singleton. 
-    -----------------------------------------------------------------------
-    '''
-    
-    def __init__(cls, name, bases, dct):
-        cls.__instance = {} 
-        type.__init__(cls, name, bases, dct)
-
-    def __call__(cls, *args, **kw): 
-        condor_q_id = kw.get('condor_q_id', 'local')
-        if condor_q_id not in cls.__instance.keys():
-            cls.__instance[condor_q_id] = type.__call__(cls, *args,**kw)
-        return cls.__instance[condor_q_id]
-
-
-def singletonfactory(id_var=None, id_default=None):
-    '''
-    This is an abstraction of the two previous classes. 
-    We have here a metaclass factory, which will decide 
-    which type of Singleton metaclass returns based on the inputs
-
-    If id_var is not passed, then we asume a regular singleton __metaclass__ is expected.
-    If id_var has a value, then it is a multi-singleton.
-    We understand by multi-singleton a class that can instantiate the same object or not,
-    depending on the value of id_var. Same value of id_var will generate the same object.
-  
-    id_var is the name of a key variable to be passed via __init__() when asking for a new object.
-    The value of that variable will be the ID to determine if a real new object is needed or not.
-
-    Note: when calling __init__(), the id_var has to be passed as a key=value variable,
-    not just as a positional variable. 
-
-    Examples:
-
-        class A(object):
-            __metaclass__ = singletonfactory()
-
-        ---------------------------------------------------------------------
-
-        class B(object):
-            __metaclass__ = singletonfactory(id_var='condorpool', id_default='local')
-        
-        obj1 = B(..., condorpool='pool1', ...)
-        obj2 = B(..., condorpool='pool1', ...)
-        obj3 = B(..., condorpool='pool2', ...)
-
-        obj1 and obj2 will be the same. obj3 will not. 
-    '''
-
-    class Singleton(type):
-
-        # regular singleton __metaclass__
-        if not id_var:
-
-            def __init__(cls, name, bases, dct):
-                cls.__instance = None 
-                type.__init__(cls, name, bases, dct)
-            def __call__(cls, *args, **kw):
-                if cls.__instance is None:
-                    cls.__instance = type.__call__(cls, *args,**kw)
-                return cls.__instance
-
-        # multi-singleton __metaclass__
-        else:
-
-            def __init__(cls, name, bases, dct):
-                cls.__instance = {}
-                type.__init__(cls, name, bases, dct)
-            def __call__(cls, *args, **kw):
-                id = kw.get(id_var, id_default)
-                # note: we read the value of id_var from **kw
-                #       so it has to be passed as a key=value variable,
-                #       not as a positional variable. 
-                if id not in cls.__instance.keys():
-                    cls.__instance[id] = type.__call__(cls, *args,**kw)
-                return cls.__instance[id]
-
-    return Singleton
-
