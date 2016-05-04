@@ -14,13 +14,13 @@ import re
 import shutil
 
 
-PKGNAME="autopyfactory"
-REPOROOTS=["/afs/usatlas.bnl.gov/mgmt/repo/grid","/afs/usatlas.bnl.gov/mgmt/repo/autopyfactory"]
-REGENCMD="/afs/usatlas.bnl.gov/mgmt/repo/regen-autopyfactory-repos.py"
-ARCHS=['x86_64']
+PKGNAME="panda-autopyfactory"
+REPOROOT="/afs/usatlas.bnl.gov/mgmt/repo/grid"
+REGENCMD="/afs/usatlas.bnl.gov/mgmt/repo/regen-repos.py"
+ARCHS=['i386','x86_64']
 PLATFORMS=['fedora','rhel']
 REPOS=['development','testing','production']
-USAGE="publish-rpms.py <repos>"
+USAGE="apf-deploy.py <repos>"
 RELEASEMAP={ 'Fedora release 14 (Laughlin)' : ('fedora','14'),
              'Fedora release 16 (Verne)' : ('fedora','16'),
              'Red Hat Enterprise Linux Client release 5.7 (Tikanga)' : ('rhel','5Client'),
@@ -30,9 +30,7 @@ RELEASEMAP={ 'Fedora release 14 (Laughlin)' : ('fedora','14'),
              'Red Hat Enterprise Linux Workstation release 6.3 (Santiago)' : ('rhel','6Workstation'),            
              'Red Hat Enterprise Linux Workstation release 6.4 (Santiago)' : ('rhel','6Workstation'),            
              'Red Hat Enterprise Linux Workstation release 6.5 (Santiago)' : ('rhel','6Workstation'),            
-             'Red Hat Enterprise Linux Workstation release 6.6 (Santiago)' : ('rhel','6Workstation'),
-             'Red Hat Enterprise Linux Workstation release 6.7 (Santiago)' : ('rhel','6Workstation'),
-             'Red Hat Enterprise Linux Workstation release 6.8 (Santiago)' : ('rhel','6Workstation'),   
+
             }
 RPMGLOB='.*.noarch.rpm$'
 RPMRE=re.compile(RPMGLOB, re.IGNORECASE)
@@ -84,17 +82,16 @@ class DeployManager(object):
         
         # copy them to appropriate places. 
         for f in matches:
-            for o in REPOROOTS:
-                for r in self.repos:
-                    for a in ARCHS:
-                        src = 'dist/%s' % f
-                        dst = "%s/%s/%s/%s/%s/" % ( o, 
-                                                    r,
-                                                    self.dist,
-                                                    self.distver,
-                                                    a ) 
-                        logging.info("%s -> %s" % (src,dst))
-                        shutil.copy(src,dst)
+            for r in self.repos:
+                for a in ARCHS:
+                    src = 'dist/%s' % f
+                    dst = "%s/%s/%s/%s/%s/" % ( REPOROOT, 
+                                          r ,
+                                          self.dist,
+                                          self.distver,
+                                          a ) 
+                    logging.info("%s -> %s" % (src,dst))
+                    shutil.copy(src,dst)
     
     def regen(self):
         '''

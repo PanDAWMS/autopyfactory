@@ -1,0 +1,20 @@
+#!/bin/bash 
+
+# 
+#  this script is supposed to be place underneath
+#       /etc/cron.hourly
+#  for example.
+#
+#  Actual script  apf-search-failed accepts input options
+#   
+
+
+# first, do file rotation
+/usr/sbin/logrotate -f -s /dev/null /etc/apf/logsmonitor.rotate.conf
+
+# second, create new file
+/usr/share/apf/apf-search-failed > /tmp/error.lasthour.html
+rc=$?
+if [ $rc -eq 0 ]; then
+    mv -f /tmp/error.lasthour.html /home/apf/factory/logs/logsmonitor/error.lasthour.html
+fi
