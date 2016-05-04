@@ -1,16 +1,26 @@
 #! /usr/bin/env python
-
-__author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
-__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2016 John Hover; 2010-2016 Jose Caballero"
-__credits__ = []
-__license__ = "GPL"
-__version__ = "2.4.8"
-__maintainer__ = "Jose Caballero"
-__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
-__status__ = "Production"
-
+#
+# Simple(ish) python condor_g factory for panda pilots
+#
+# $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $
+#
+#
+#  Copyright (C) 2007,2008,2009 Graeme Andrew Stewart
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-    Main module for autopyfactory. 
+    Main module for autopyfactory, a pilot factory for PanDA
 '''
 
 import datetime
@@ -22,31 +32,33 @@ import traceback
 import os
 import platform
 import pwd
-import smtplib
 import socket
 import sys
 
-from optparse import OptionParser
 from pprint import pprint
+from optparse import OptionParser
 from ConfigParser import ConfigParser
-from Queue import Queue
 
-try:
-    from email.mime.text import MIMEText
-except:
-    from email.MIMEText import MIMEText
-
-from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
-from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailure
-from autopyfactory.cleanlogs import CleanLogs
-from autopyfactory.condor import ProcessCondorRequests
+from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
 from autopyfactory.configloader import Config, ConfigManager
+#from autopyfactory.cleanLogs import CleanCondorLogs
+from autopyfactory.cleanLogs import CleanLogs
 from autopyfactory.logserver import LogServer
-from autopyfactory.pluginsmanagement import QueuePluginDispatcher
-from autopyfactory.pluginsmanagement import FactoryPluginDispatcher
-from autopyfactory.queues import APFQueuesManager
+from autopyfactory.proxymanager import ProxyManager
+
+import userinterface.Client as Client
+
+__author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
+__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010,2011 John Hover; 2011 Jose Caballero"
+__credits__ = []
+__license__ = "GPL"
+__version__ = "2.1.0"
+__maintainer__ = "Jose Caballero"
+__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
+__status__ = "Production"
 
 major, minor, release, st, num = sys.version_info
+
 
 class FactoryCLI(object):
     """class to handle the command line invocation of APF. 
@@ -58,74 +70,8 @@ class FactoryCLI(object):
         self.args = None
         self.log = None
         self.fcl = None
-
-        self.__presetups()
-        self.__parseopts()
-        self.__setuplogging()
-        self.__platforminfo()
-        self.__checkroot()
-        self.__createconfig()
-
-
-    def __presetups(self):
-        '''
-        we put here some preliminary steps that 
-        for one reason or another 
-        must be done before anything else
-        '''
-
-        self.__addloggingtrace()
-
-
-    def __addloggingtrace(self):
-        """
-        Adding custom TRACE level
-        This must be done here, because parseopts()
-        uses logging.TRACE, so it must be defined
-        by that time
-        """
-
-        logging.TRACE = 5
-        logging.addLevelName(logging.TRACE, 'TRACE')
-        def trace(self, msg, *args, **kwargs):
-            self.log(logging.TRACE, msg, *args, **kwargs)
-        logging.Logger.trace = trace
-
-        #
-        #   NOTE:
-        #
-        #   I have been told that this way, messing with the root logging,
-        #   can have problems with multi-threaded applications...
-        #   Apparently, the best way to do it is
-        #   with a dedicated Logger class:
-        #   
-        #           class MyLogger(logging.getLoggerClass()):
-        #           
-        #               TRACE = 5
-        #               logging.addLevelName(TRACE, "TRACE")
-        #           
-        #               def trace(self, msg, *args, **kwargs):
-        #                   self.log(self.TRACE, msg, *args, **kwargs)
-        #           
-        #           logging.setLoggerClass(MyLogger)
-        #
-        #   but that only works fine is we never 
-        #   call the logger root, as we are doing
-        #   Also, it has the problem that logging.TRACE would not be defined.
-        #
-        #
-        #   Another option is
-        #       
-        #           logging.trace = functools.partial(logging.log, logging.TRACE)
-        #
-        #   Related documentation on partial() can be found here
-        #
-        #           http://docs.python.org/2/library/functools.html
-        #
-
-
     
-    def __parseopts(self):
+    def parseopts(self):
         parser = OptionParser(usage='''%prog [OPTIONS]
 autopyfactory is an ATLAS pilot factory.
 
@@ -136,15 +82,9 @@ Graeme A Stewart <g.stewart@physics.gla.ac.uk>
 Peter Love <p.love@lancaster.ac.uk>
 John Hover <jhover@bnl.gov>
 Jose Caballero <jcaballero@bnl.gov>
-''', version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $" )
+''', version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $")
 
 
-        parser.add_option("--trace", 
-                          dest="logLevel", 
-                          default=logging.WARNING,
-                          action="store_const", 
-                          const=logging.TRACE, 
-                          help="Set logging level to TRACE [default WARNING], super verbose")
         parser.add_option("-d", "--debug", 
                           dest="logLevel", 
                           default=logging.WARNING,
@@ -186,7 +126,7 @@ Jose Caballero <jcaballero@bnl.gov>
                           metavar="TIME", 
                           help="Sleep TIME seconds between cycles [default %default]")
         parser.add_option("--conf", dest="confFiles", 
-                          default="/etc/autopyfactory/autofactory.conf",
+                          default="/etc/apf/factory.conf",
                           action="store", 
                           metavar="FILE1[,FILE2,FILE3]", 
                           help="Load configuration from FILEs (comma separated list)")
@@ -207,7 +147,7 @@ Jose Caballero <jcaballero@bnl.gov>
 
         #self.options.confFiles = self.options.confFiles.split(',')
 
-    def __setuplogging(self):
+    def setuplogging(self):
         """ 
         Setup logging 
         
@@ -216,14 +156,11 @@ Jose Caballero <jcaballero@bnl.gov>
         -- Logging syntax and semantics should be uniform throughout the program,  
            based on whatever organization scheme is appropriate.  
         
-        -- Have at least a single log message at TRACE at beginning and end of each function call.  
+        -- Have at least a single log message at DEBUG at beginning and end of each function call.  
            The entry message should mention input parameters,  
            and the exit message should not any important result.  
-           TRACE output should be detailed enough that almost any logic error should become apparent.  
-           It is OK if TRACE messages are produced too fast to read interactively. 
-        
-        -- Have sufficient DEBUG messages to show domain problem calculations input and output.
-           DEBUG messages should never span more than one line. 
+           DEBUG output should be detailed enough that almost any logic error should become apparent.  
+           It is OK if DEBUG messages are produced too fast to read interactively. 
         
         -- A moderate number of INFO messages should be logged to mark major  
            functional steps in the operation of the program,  
@@ -246,22 +183,20 @@ Jose Caballero <jcaballero@bnl.gov>
         -- We keep the original python levels meaning,  
            including WARNING as being the default level.  
         
-                TRACE      Detailed code execution information related to housekeeping, 
-                           parsing, objects, threads.
-                DEBUG      Detailed domain problem information related to scheduling, calculations,
-                           program state.  
-                INFO       High level confirmation that things are working as expected.  
+                DEBUG      Detailed information, typically of interest only when diagnosing problems. 
+                INFO       Confirmation that things are working as expected. 
                 WARNING    An indication that something unexpected happened,  
                            or indicative of some problem in the near future (e.g. 'disk space low').  
                            The software is still working as expected. 
                 ERROR      Due to a more serious problem, the software has not been able to perform some function. 
                 CRITICAL   A serious error, indicating that the program itself may be unable to continue running. 
         
-        -- We add a new custom level -TRACE- to be more verbose than DEBUG.
-           
-           Info: http://docs.python.org/howto/logging.html#logging-advanced-tutorial  
+        Info: 
+        
+          http://docs.python.org/howto/logging.html#logging-advanced-tutorial  
 
         """
+
         self.log = logging.getLogger('main')
         if self.options.logfile == "stdout":
             logStream = logging.StreamHandler()
@@ -277,11 +212,7 @@ Jose Caballero <jcaballero@bnl.gov>
             os.chown(logdir, runuid, rungid)
             logStream = logging.FileHandler(filename=lf)    
 
-        if major == 2 and minor == 4:
-            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d : %(message)s'
-        else:
-            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
-        formatter = logging.Formatter(FORMAT)
+        formatter = logging.Formatter('%(asctime)s (UTC) - %(name)s: %(levelname)s: %(module)s: %(message)s')
         formatter.converter = time.gmtime  # to convert timestamps to UTC
         logStream.setFormatter(formatter)
         self.log.addHandler(logStream)
@@ -295,27 +226,44 @@ Jose Caballero <jcaballero@bnl.gov>
                 console.setLevel(self.options.logLevel)
                 self.log.addHandler(console)
         self.log.setLevel(self.options.logLevel)
-        self.log.info('Logging initialized.')
+        self.log.debug('logging initialised')
 
 
-    def _printenv(self):
-
-        envmsg = ''        
-        for k in sorted(os.environ.keys()):
-            envmsg += '\n%s=%s' %(k, os.environ[k])
-        self.log.trace('Environment : %s' %envmsg)
-
-
-    def __platforminfo(self):
+    def platforminfo(self):
         '''
         display basic info about the platform, for debugging purposes 
         '''
-        self.log.info('platform: uname = %s %s %s %s %s %s' %platform.uname())
-        self.log.info('platform: platform = %s' %platform.platform())
-        self.log.info('platform: python version = %s' %platform.python_version())
-        self._printenv()
 
-    def __checkroot(self): 
+        self.log.debug('platform: uname = %s %s %s %s %s %s' %platform.uname())
+        self.log.debug('platform: platform = %s' %platform.platform())
+        self.log.debug('platform: python version = %s' %platform.python_version())
+        envmsg = ''
+        for k,v in os.environ.iteritems():
+            envmsg += '\n%s : %s' %(k,v)
+        self.log.debug('environment : %s' %envmsg)
+
+
+    def setuppandaenv(self):
+        '''
+        setting up some panda variables.
+        '''
+
+        if not 'APF_NOSQUID' in os.environ:
+            if not 'PANDA_URL_MAP' in os.environ:
+                os.environ['PANDA_URL_MAP'] = 'CERN,http://pandaserver.cern.ch:25085/server/panda,https://pandaserver.cern.ch:25443/server/panda'
+                self.log.debug('Set PANDA_URL_MAP to %s' % os.environ['PANDA_URL_MAP'])
+            else:
+                self.log.debug('Found PANDA_URL_MAP set to %s. Not changed.' % os.environ['PANDA_URL_MAP'])
+            if not 'PANDA_URL' in os.environ:
+                os.environ['PANDA_URL'] = 'http://pandaserver.cern.ch:25085/server/panda'
+                self.log.debug('Set PANDA_URL to %s' % os.environ['PANDA_URL'])
+            else:
+                self.log.debug('Found PANDA_URL set to %s. Not changed.' % os.environ['PANDA_URL'])
+        else:
+            self.log.debug('Found APF_NOSQUID set. Not changing/setting panda client environment.')
+
+
+    def checkroot(self): 
         """
         If running as root, drop privileges to --runas' account.
         """
@@ -340,11 +288,8 @@ Jose Caballero <jcaballero@bnl.gov>
                 os.setegid(rungid)
 
                 self._changehome()
-                self._changewd()
 
                 self.log.info("Now running as user %d:%d at %s..." % (runuid, rungid, hostname))
-                self._printenv()
-
             
             except KeyError, e:
                 self.log.error('No such user %s, unable run properly. Error: %s' % (self.options.runAs, e))
@@ -362,43 +307,22 @@ Jose Caballero <jcaballero@bnl.gov>
         in order to renew proxy.   
         The thing is that expanduser() uses the value of $HOME
         as it is stored in os.environ, and that value still is /root/
-        Ergo, if we want the path to be expanded to a different user, i.e. autopyfactory,
+        Ergo, if we want the path to be expanded to a different user, i.e. apf,
         we need to change by hand the value of $HOME in the environment
         '''
-        runAs_home = pwd.getpwnam(self.options.runAs).pw_dir 
-        os.environ['HOME'] = runAs_home
-        self.log.debug('Setting up environment variable HOME to %s' %runAs_home)
+        os.environ['HOME'] = pwd.getpwnam(self.options.runAs).pw_dir 
 
-
-    def _changewd(self):
-        '''
-        changing working directory to the HOME directory of the new user,
-        typically "autopyfactory". 
-        When APF starts as a daemon, working directory may be "/".
-        If APF was called from the command line as root, working directory is "/root".
-        It is better is current working directory is just the HOME of the running user,
-        so it is easier to debug in case of failures.
-        '''
-        runAs_home = pwd.getpwnam(self.options.runAs).pw_dir
-        os.chdir(runAs_home)
-        self.log.debug('Switching working directory to %s' %runAs_home)
-
-
-    def __createconfig(self):
+    def createconfig(self):
         """Create config, add in options...
         """
         if self.options.confFiles != None:
-            try:
-                self.fcl = ConfigManager().getConfig(self.options.confFiles)
-            except ConfigFailure, errMsg:
-                self.log.error('Failed to create FactoryConfigLoader')
-                sys.exit(1)
+            self.fcl = ConfigManager().getConfig(self.options.confFiles)
         
         self.fcl.set("Factory","cyclesToDo", str(self.options.cyclesToDo))
         self.fcl.set("Factory", "sleepTime", str(self.options.sleepTime))
         self.fcl.set("Factory", "confFiles", self.options.confFiles)
            
-    def run(self):
+    def mainloop(self):
         """Create Factory and enter main loop
         """
 
@@ -408,18 +332,16 @@ Jose Caballero <jcaballero@bnl.gov>
             self.log.info('Creating Factory and entering main loop...')
 
             f = Factory(self.fcl)
-            f.run()
-            
+            f.mainLoop()
         except KeyboardInterrupt:
             self.log.info('Caught keyboard interrupt - exitting')
-            f.join()
             sys.exit(0)
         except FactoryConfigurationFailure, errMsg:
             self.log.error('Factory configuration failure: %s', errMsg)
-            sys.exit(1)
+            sys.exit(0)
         except ImportError, errorMsg:
             self.log.error('Failed to import necessary python module: %s' % errorMsg)
-            sys.exit(1)
+            sys.exit(0)
         except:
             # TODO - make this a logger.exception() call
             self.log.error('''Unexpected exception! \
@@ -433,11 +355,10 @@ please send output from this message onwards. \
 Exploding in 5...4...3...2...1... Have a nice day!''')
             # The following line prints the exception to the logging module
             self.log.error(traceback.format_exc(None))
-            print(traceback.format_exc(None))
-            sys.exit(1)          
+            raise
+
+
           
-
-
 class Factory(object):
     '''
     -----------------------------------------------------------------------
@@ -467,177 +388,64 @@ class Factory(object):
         '''
         fcl is a FactoryConfigLoader object. 
         '''
-        self.version = __version__
+
         self.log = logging.getLogger('main.factory')
-        self.log.info('AutoPyFactory version %s' %self.version)
+        self.log.debug('Factory: Initializing object...')
+
         self.fcl = fcl
-
-        # APF Queues Manager 
-        self.apfqueuesmanager = APFQueuesManager(self)
-
-        self._proxymanager()
-        self._monitor()
-        self._mappings()
-
-        # Handle Log Serving
-        self._initLogserver()
-
-        # Collect other factory attibutes
-        self.adminemail = self.fcl.get('Factory','factoryAdminEmail')
-        self.factoryid = self.fcl.get('Factory','factoryId')
-        self.smtpserver = self.fcl.get('Factory','factorySMTPServer')
-        self.hostname = socket.gethostname()
-        #self.username = os.getlogin()
-        self.username = pwd.getpwuid(os.getuid()).pw_name   
-
-        # the the queues config loader object, to be filled by a Config plugin
-        self.qcl = Config()
-
-        self._plugins()
-
-        # Log some info...
-        self.log.trace('Factory shell PATH: %s' % os.getenv('PATH') )     
-        self.log.info("Factory: Object initialized.")
-
-
-    def _proxymanager(self):
-
-        # Handle ProxyManager configuration
-        usepman = self.fcl.getboolean('Factory', 'proxymanager.enabled')
-        if usepman:      
-
-            try:
-                from autopyfactory.proxymanager import ProxyManager
-            except:
-                self.log.critical('proxymanager cannot be imported')
-                sys.exit(0) 
-
-            pcf = self.fcl.get('Factory','proxyConf')
-            self.log.debug("proxy.conf file(s) = %s" % pcf)
-            pcl = ConfigParser()
-
-            try:
-                got_config = pcl.read(pcf)
-            except Exception, e:
-                self.log.error('Failed to create ProxyConfigLoader')
-                self.log.error("Exception: %s" % traceback.format_exc())
-                sys.exit(0)
-
-            self.log.trace("Read config file %s, return value: %s" % (pcf, got_config)) 
-            self.proxymanager = ProxyManager(pcl, self)
+        
+        self.log.info("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
+        self.qcl = ConfigManager().getConfig(fcl.get('Factory', 'queueConf'))
+      
+        # Handle ProxyManager
+        usepman = fcl.getboolean('Factory', 'proxymanager.enabled')
+        if usepman:
+                            
+            pconfig = ConfigParser()
+            pconfig_file = fcl.get('Factory','proxyConf')
+            got_config = pconfig.read(pconfig_file)
+            self.log.debug("Read config file %s, return value: %s" % (pconfig_file, got_config)) 
+            self.proxymanager = ProxyManager(pconfig)
             self.log.info('ProxyManager initialized. Starting...')
             self.proxymanager.start()
-            self.log.trace('ProxyManager thread started.')
+            self.log.debug('ProxyManager thread started.')
         else:
             self.log.info("ProxyManager disabled.")
-
-
-    def _monitor(self):
-
-        # Handle monitor configuration
-        self.mcl = None
-        self.mcf = self.fcl.generic_get('Factory', 'monitorConf')
-        self.log.debug("monitor.conf file(s) = %s" % self.mcf)
-        
-        try:
-            self.mcl = ConfigManager().getConfig(self.mcf)
-        except ConfigFailure, e:
-            self.log.error('Failed to create MonitorConfigLoader')
-            sys.exit(0)
-
-        self.log.trace("mcl is %s" % self.mcl)
        
-
-    def _mappings(self):
-
-        # Handle mappings configuration
-        self.mappingscl = None      # mappings config loader object
-        self.mappingscf = self.fcl.generic_get('Factory', 'mappingsConf') 
-        self.log.debug("mappings.conf file(s) = %s" % self.mappingscf)
-
-        try:
-            self.mappingscl = ConfigManager().getConfig(self.mappingscf)
-        except ConfigFailure, e:
-            self.log.error('Failed to create ConfigLoader object for mappings')
-            sys.exit(0)
+        # APF Queues Manager 
+        self.apfqueuesmanager = APFQueuesManager(self)
         
-        self.log.trace("mappingscl is %s" % self.mappingscl)
-
-    def _dumpqcl(self):
-
-        # dump the content of queues.conf 
-        qclstr = self.qcl.getContent(raw=False)
-        logpath = self.fcl.get('Factory', 'baseLogDir')
-        if not os.path.isdir(logpath):
-            # the directory does not exist yet. Let's create it
-            os.makedirs(logpath)
-        qclfile = open('%s/queues.conf' %logpath, 'w')
-        print >> qclfile, qclstr
-        qclfile.close()
-
-
-    def _plugins(self):
-    
-        fpd = FactoryPluginDispatcher(self)
-        self.config_plugins = fpd.getconfigplugin()
-
-
-    def _initLogserver(self):
         # Set up LogServer
-        self.log.trace("Handling LogServer...")
-        ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean')
+        ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean', logger=self.log)
+        lsidx = self.fcl.generic_get('Factory','logserver.index', 'getboolean', logger=self.log)
+        lsrobots = self.fcl.generic_get('Factory','logserver.allowrobots', 'getboolean', logger=self.log)
         if ls:
-            self.log.info("LogServer enabled. Initializing...")
-            lsidx = self.fcl.generic_get('Factory','logserver.index', 'getboolean')
-            lsrobots = self.fcl.generic_get('Factory','logserver.allowrobots', 'getboolean')
             logpath = self.fcl.get('Factory', 'baseLogDir')
-            logurl = self.fcl.get('Factory','baseLogDirUrl')            
-            logport = self._parseLogPort(logurl)
             if not os.path.exists(logpath):
-                self.log.trace("Creating log path: %s" % logpath)
                 os.makedirs(logpath)
-            if not lsrobots:
-                rf = "%s/robots.txt" % logpath
-                self.log.trace("logserver.allowrobots is False, creating file: %s" % rf)
-                try:
-                    f = open(rf , 'w' )
-                    f.write("User-agent: * \nDisallow: /")
-                    f.close()
-                except IOError:
-                    self.log.warn("Unable to create robots.txt file...")
-            self.log.trace("Creating LogServer object...")
-            self.logserver = LogServer(port=logport, docroot=logpath, index=lsidx)
+        if not lsrobots:
+            try:
+                f = open("%s/robots.txt", 'w')
+                f.write("User-agent: * \nDisallow: /")
+                f.close()
+            except IOError:
+                self.log.warn("Unable to create robots.txt file...")
+            
+            self.logserver = LogServer(port=self.fcl.get('Factory', 'baseLogHttpPort'),
+                           docroot=logpath, index=lsidx
+                           )
+
             self.log.info('LogServer initialized. Starting...')
             self.logserver.start()
-            self.log.trace('LogServer thread started.')
+            self.log.debug('LogServer thread started.')
         else:
             self.log.info('LogServer disabled. Not running.')
-
-
-    def _parseLogPort(self, logurl):
-        '''
-        logUrl is like:  http[s]://hostname[:port]
-        if port exists, return port
-        if port is omitted, 
-           if http, return 80
-           if https, return 443
-           
-        Return value must be an int. 
-        '''
-        urlparts = logurl.split(':')
-        urltype = urlparts[0]
-        port = 80
-        if len(urlparts) == 3:
-            port = int(urlparts[2])
-        elif len(urlparts) == 2:
-            if urltype == "http":
-                port = 80
-            elif urltype == "https":
-                port = 443
-        return int(port)
         
-        
-    def run(self):
+        self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )
+             
+        self.log.info("Factory: Object initialized.")
+
+    def mainLoop(self):
         '''
         Main functional loop of overall Factory. 
         Actions:
@@ -646,33 +454,26 @@ class Factory(object):
                    stops all queues when that happens.
         '''
 
-        self.log.trace("Starting.")
+        self.log.debug("mainLoop: Starting.")
         self.log.info("Starting all Queue threads...")
 
-        # first call to reconfig() to load initial qcl configuration
-        self.reconfig()
-
-        self._cleanlogs()
+        self.update()
+        self.__cleanlogs()
         
         try:
             while True:
                 mainsleep = int(self.fcl.get('Factory', 'factory.sleep'))
                 time.sleep(mainsleep)
-                self.log.trace('Checking for interrupt.')
+                self.log.debug('Checking for interrupt.')
                         
         except (KeyboardInterrupt): 
-            # FIXME
-            # this probably is not needed anymore,
-            # if a KeyboardInterrupt is captured by class FactoryCLI,
-            # it would perform a clean join( )
             logging.info("Shutdown via Ctrl-C or -INT signal.")
             self.shutdown()
             raise
             
-        self.log.trace("Leaving.")
+        self.log.debug("mainLoop: Leaving.")
 
-
-    def reconfig(self):
+    def update(self):
         '''
         Method to update the status of the APFQueuesManager object.
         This method will be used every time the 
@@ -683,35 +484,22 @@ class Factory(object):
         main loop code or from any method capturing specific signals.
         '''
 
-        self.log.trace("Starting")
+        self.log.debug("update: Starting")
 
-        try:
-            newqcl = Config()
-            for config_plugin in self.config_plugins:
-                tmpqcl = config_plugin.getConfig()
-                newqcl.merge(tmpqcl)
+        newqueues = self.qcl.sections()
+        self.apfqueuesmanager.update(newqueues) 
 
-        except Exception, e:
-            self.log.critical('Failed getting the Factory plugins. Aborting')
-            raise
+        self.log.debug("update: Leaving")
 
-        self.apfqueuesmanager.update(newqcl) 
-
-        # dump the new qcl content
-        self._dumpqcl()
-
-        self.log.trace("Leaving")
-
-
-    def _cleanlogs(self):
+    def __cleanlogs(self):
         '''
         starts the thread that will clean the condor logs files
         '''
 
-        self.log.trace('Starting')
+        self.log.debug('__cleanlogs: Starting')
         self.clean = CleanLogs(self)
         self.clean.start()
-        self.log.trace('Leaving')
+        self.log.debug('__cleanlogs: Leaving')
 
     def shutdown(self):
         '''
@@ -730,20 +518,982 @@ class Factory(object):
             self.log.info("Shutting down Logserver...")
             self.logserver.join()
             self.log.info("Logserver stopped.")            
-            
                             
-    def sendAdminEmail(self, subject, messagestring):
-        msg = MIMEText(messagestring)
-        msg['Subject'] = subject
-        email_from = "%s@%s" % ( self.username, self.hostname)
-        msg['From'] = email_from
-        msg['To'] = self.adminemail
-        tolist = self.adminemail.split(",")
-        
-        # Send the message via our own SMTP server, but don't include the
-        # envelope header.
-        s = smtplib.SMTP(self.smtpserver)
-        self.log.info("Sending email: %s" % msg.as_string())
-        s.sendmail(email_from , tolist , msg.as_string())
-        s.quit()
             
+            
+
+            
+            
+            
+
+# ==============================================================================                                
+#                       QUEUES MANAGEMENT
+# ==============================================================================                                
+
+class APFQueuesManager(object):
+    '''
+    -----------------------------------------------------------------------
+    Container with the list of APFQueue objects.
+    -----------------------------------------------------------------------
+    Public Interface:
+            __init__(factory)
+            update(newqueues)
+            join()
+    -----------------------------------------------------------------------
+    '''
+    def __init__(self, factory):
+        '''
+        Initializes a container of APFQueue objects
+        '''
+
+        self.log = logging.getLogger('main.apfquuesmanager')
+        self.log.debug('APFQueuesManager: Initializing object...')
+
+        self.queues = {}
+        self.factory = factory
+
+        self.log.info('APFQueuesManager: Object initialized.')
+
+# ----------------------------------------------------------------------
+#            Public Interface
+# ---------------------------------------------------------------------- 
+    def update(self, newqueues):
+        '''
+        Compares the new list of queues with the current one
+                1. creates and starts new queues if needed
+                2. stops and deletes old queues if needed
+        '''
+
+        self.log.debug("update: Starting with input %s" %newqueues)
+
+        currentqueues = self.queues.keys()
+        queues_to_remove, queues_to_add = \
+                self._diff_lists(currentqueues, newqueues)
+        self._addqueues(queues_to_add) 
+        self._delqueues(queues_to_remove)
+        self._refresh()
+
+        self.log.debug("update: Leaving")
+
+    def join(self):
+        '''
+        Joins all APFQueue objects
+        QUESTION: should the queues also be removed from self.queues ?
+        '''
+
+        self.log.debug("join: Starting")
+
+        count = 0
+        for q in self.queues.values():
+            q.join()
+            count += 1
+        self.log.debug('join: %d queues joined' %count)
+
+        self.log.debug("join: Leaving")
+    
+    # ----------------------------------------------------------------------
+    #  private methods
+    # ----------------------------------------------------------------------
+
+    def _addqueues(self, apfqnames):
+        '''
+        Creates new APFQueue objects
+        '''
+
+        self.log.debug("_addqueues: Starting with input %s" %apfqnames)
+
+        count = 0
+        for apfqname in apfqnames:
+            self._add(apfqname)
+            count += 1
+        self.log.debug('_addqueues: %d queues in the config file' %count)
+        self.log.info('%d queues in the configuration.' %count)
+        self.log.debug("_addqueues: Leaving")
+
+    def _add(self, apfqname):
+        '''
+        Creates a single new APFQueue object and starts it
+        '''
+
+        self.log.debug("_add: Starting with input %s" %apfqname)
+
+        enabled = self.factory.qcl.getboolean(apfqname, 'enabled') 
+        if enabled:
+            qobject = APFQueue(apfqname, self.factory)
+            self.queues[apfqname] = qobject
+            qobject.start()
+            self.log.debug('_add: %s enabled.' %apfqname)
+            self.log.info('Queue %s enabled.' %apfqname)
+        else:
+            self.log.debug('_add: %s not enabled.' %apfqname)
+            self.log.info('Queue %s not enabled.' %apfqname)
+        self.log.debug("_add: Leaving")
+            
+    def _delqueues(self, apfqnames):
+        '''
+        Deletes APFQueue objects
+        '''
+
+        self.log.debug("_delqueues: Starting with input %s" %apfqnames)
+
+        count = 0
+        for apfqname in apfqnames:
+            q = self.queues[apfqname]
+            q.join()
+            self.queues.pop(apfqname)
+            count += 1
+        self.log.debug('_delqueues: %d queues joined and removed' %count)
+
+        self.log.debug("_delqueues: Leaving")
+
+    def _del(self, apfqname):
+        '''
+        Deletes a single queue object from the list and stops it.
+        '''
+
+        self.log.debug("_del: Starting with input %s" %apfqname)
+
+        qobject = self._get(apfqname)
+        qname.join()
+        self.queues.pop(apfqname)
+
+        self.log.debug("_del: Leaving")
+    
+    def _refresh(self):
+        '''
+        Calls method refresh() for all APFQueue objects
+        '''
+
+        self.log.debug("_refresh: Starting")
+
+        count = 0
+        for q in self.queues.values():
+            q.refresh()
+            count += 1
+        self.log.debug('_refresh: %d queues refreshed' %count)
+
+        self.log.debug("_refresh: Leaving")
+
+    # ----------------------------------------------------------------------
+    #  ancillary functions 
+    # ----------------------------------------------------------------------
+
+    def _diff_lists(self, l1, l2):
+        '''
+        Ancillary method to calculate diff between two lists
+        '''
+        d1 = [i for i in l1 if not i in l2]
+        d2 = [i for i in l2 if not i in l1]
+        return d1, d2
+ 
+
+class APFQueue(threading.Thread):
+    '''
+    -----------------------------------------------------------------------
+    Encapsulates all the functionality related to servicing each queue (i.e. siteid, i.e. site).
+    -----------------------------------------------------------------------
+    Public Interface:
+            The class is inherited from Thread, so it has the same public interface.
+    -----------------------------------------------------------------------
+    '''
+    
+    def __init__(self, apfqname, factory):
+        '''
+        siteid is the name of the section in the queueconfig, 
+        i.e. the queue name, 
+        factory is the Factory object who created the queue 
+        '''
+
+        # recording moment the object was created
+        self.inittime = datetime.datetime.now()
+
+        threading.Thread.__init__(self) # init the thread
+        self.log = logging.getLogger('main.apfqueue[%s]' %apfqname)
+        self.log.debug('APFQueue: Initializing object...')
+
+        self.stopevent = threading.Event()
+
+        # apfqname is the APF queue name, i.e. the section heading in queues.conf
+        self.apfqname = apfqname
+        self.factory = factory
+        self.fcl = self.factory.fcl 
+        self.qcl = self.factory.qcl 
+
+        self.log.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(apfqname).getContent())
+    
+        self.siteid = self.qcl.generic_get(apfqname, 'wmsqueue', default_value=apfqname, logger=self.log)
+        self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue', logger=self.log)
+        self.cloud = self.qcl.generic_get(apfqname, 'cloud', logger=self.log)
+        self.cycles = self.fcl.generic_get("Factory", 'cycles', logger=self.log )
+        self.sleep = self.qcl.generic_get(apfqname, 'apfqueue.sleep', 'getint', logger=self.log)
+        self.cyclesrun = 0
+        
+        self.batchstatusmaxtime = self.fcl.generic_get('Factory', 'batchstatus.maxtime', default_value=0, logger=self.log)
+        self.wmsstatusmaxtime = self.fcl.generic_get('Factory', 'wmsstatus.maxtime', default_value=0, logger=self.log)
+
+        self._startmonitor()
+        self._plugins()
+
+        self.log.info('APFQueue: Object initialized.')
+
+    def _startmonitor(self):
+
+        self.log.debug('_startmonitor: Starting')
+
+        if self.fcl.has_option('Factory', 'monitorURL'):
+            self.log.info('Instantiating a monitor...')
+            from autopyfactory.monitor import Monitor
+            args = dict(self.fcl.items('Factory'))
+            self.monitor = Monitor(self.fcl)
+
+        self.log.debug('_startmonitor: Leaving')
+
+    def _plugins(self):
+        '''
+         method just to instantiate the plugin objects
+        '''
+        self.log.debug('_plugins: Starting')
+
+        pd = PluginDispatcher(self)
+        self.scheduler_plugins = pd.schedplugins  # it is a list with 1 or more plugins
+        self.wmsstatus_plugin = pd.wmsstatusplugin
+        self.batchsubmit_plugin = pd.submitplugin
+        self.batchstatus_plugin = pd.batchstatusplugin
+        self.config_plugin = pd.configplugin
+
+        self.log.debug('_plugins: Leaving')
+ 
+# Run methods
+
+    def run(self):
+        '''
+        Method called by thread.start()
+        Main functional loop of this APFQueue. 
+        '''        
+
+        self.log.debug("run: Starting" )
+        # give information gathering, and proxy generation enough time to perhaps have info
+        time.sleep(15)
+        while not self.stopevent.isSet():
+            try:
+                if not self._autofill():
+                    self.log.warning('run: _autofill() returned False. Wait another loop')
+                    time.sleep(self.sleep)
+                    continue
+                nsub = 0
+                for sched_plugin in self.scheduler_plugins:
+                    nsub = sched_plugin.calcSubmitNum(nsub)
+
+                self._submitpilots(nsub)
+                self._monitor_shout()
+                self._exitloop()
+                self._reporttime()           
+            except Exception, e:
+                self.log.error("Caught exception: %s " % str(e))
+                self.log.debug("Exception: %s" % traceback.format_exc())
+            time.sleep(self.sleep)
+
+        self.log.debug("run: Leaving")
+
+    def _autofill(self):
+        '''
+        checks if the config loader needs to be autofilled
+        with info coming from a Config Plugin.
+        '''
+        self.log.debug('_autofill: Starting')
+        if self.qcl.getboolean(self.apfqname, 'autofill'):
+            self.log.info('_autofill: is True, proceeding to query config plugin and merge')
+            schedconfigs = self.config_plugin.getInfo()
+            if not schedconfigs:
+                self.log.warning('_autofill: schedconfig object returned by getInfo() is None. Leaving method _autofill() returning False.')
+                return False
+            newqcl = schedconfigs[self.batchqueue].getConfig(self.apfqname)
+            id = self.batchsubmit_plugin.id
+            newqcl.filterkeys('batchsubmit', 'batchsubmit.%s' %id)
+            self.qcl.merge(newqcl) 
+            self.log.debug('_autofill: new configuration:\n%s' %self.qcl.getSection(self.apfqname).getContent())
+        else:
+            self.log.info('_autofill: is False, not needed to do anything')
+
+        self.log.debug('_autofill: Leaving')
+        return True
+
+    def _submitpilots(self, nsub):
+        '''
+        submit using this number
+        '''
+
+        self.log.debug("_submitpilots: Starting")
+        # message for the monitor
+        msg = 'Attempt to submit %s pilots for queue %s' %(nsub, self.apfqname)
+        self._monitor_note(msg)
+
+        (status, output) = self.batchsubmit_plugin.submit(nsub)
+        if output:
+            if status == 0:
+                self._monitor_notify(output)
+
+        self.cyclesrun += 1
+
+        self.log.debug("_submitpilots: Leaving")
+
+    # Monitor-releated methods
+
+    def _monitor_shout(self):
+        '''
+        call monitor.shout() method
+        '''
+
+        self.log.debug("__monitor_shout: Starting.")
+        if hasattr(self, 'monitor'):
+            self.monitor.shout(self.apfqname, self.cyclesrun)
+        else:
+            self.log.debug('__monitor_shout: no monitor instantiated')
+        self.log.debug("__monitor_shout: Leaving.")
+
+    def _monitor_note(self, msg):
+        '''
+        collects messages for the Monitor
+        '''
+
+        self.log.debug('__monitor_note: Starting.')
+
+        if hasattr(self, 'monitor'):
+            nick = self.qcl.get(self.apfqname, 'batchqueue')
+            self.monitor.msg(nick, self.apfqname, msg)
+        else:
+            self.log.debug('__monitor_note: no monitor instantiated')
+                
+        self.log.debug('__monitor__note: Leaving.')
+
+    def _monitor_notify(self, output):
+        '''
+        sends all collected messages to the Monitor server
+        '''
+
+        self.log.debug('__monitor_notify: Starting.')
+
+        if hasattr(self, 'monitor'):
+            nick = self.qcl.get(self.apfqname, 'batchqueue')
+            label = self.apfqname
+            self.monitor.notify(nick, label, output)
+        else:
+            self.log.debug('__monitor_notify: no monitor instantiated')
+
+        self.log.debug('__monitor_notify: Leaving.')
+
+
+    def _exitloop(self):
+        '''
+        Exit loop if desired number of cycles is reached...  
+        '''
+
+        self.log.debug("__exitloop: Starting")
+
+        self.log.debug("__exitloop. Checking to see how many cycles to run.")
+        if self.cycles and self.cyclesrun >= self.cycles:
+                self.log.debug('__exitloop: stopping the thread because high cyclesrun')
+                self.stopevent.set()                        
+        self.log.debug("__exitloop. Incrementing cycles...")
+
+        self.log.debug("__exitloop: Leaving")
+
+    def _reporttime(self):
+        '''
+        report the time passed since the object was created
+        '''
+
+        self.log.debug("__reporttime: Starting")
+
+        now = datetime.datetime.now()
+        delta = now - self.inittime
+        days = delta.days
+        seconds = delta.seconds
+        hours = seconds/3600
+        minutes = (seconds%3600)/60
+        total_seconds = days*86400 + seconds
+        average = total_seconds/self.cyclesrun
+
+        self.log.debug('__reporttime: up %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
+        self.log.info('Up %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
+        self.log.debug("__reporttime: Leaving")
+
+    # End of run-related methods
+
+    def refresh(self):
+        '''
+        Method to reload, when requested, the config file
+        '''
+        pass 
+        # TO BE IMPLEMENTED
+                      
+    def join(self,timeout=None):
+        '''
+        Stop the thread. Overriding this method required to handle Ctrl-C from console.
+        '''
+
+        self.log.debug("join: Starting")
+
+        self.stopevent.set()
+        self.log.debug('Stopping thread...')
+        threading.Thread.join(self, timeout)
+
+        self.log.debug("join: Leaving")
+                 
+
+# ==============================================================================                                
+#                     PLUGIN CLASS 
+# ==============================================================================  
+
+class PluginDispatcher(object):
+    '''
+    class to create a deliver, on request, the different plug-ins.
+    Does not really implement any generic API, each plugin has different characteristics.
+    It is just to take all the code out of the APFQueue class. 
+    '''
+
+    def __init__(self, apfqueue):
+
+        self.log = logging.getLogger('main.plugindispatcher')
+
+        self.apfqueue = apfqueue
+        self.qcl = apfqueue.qcl
+        self.fcl = apfqueue.fcl
+        self.apfqname = apfqueue.apfqname
+
+        # collect all plugins
+        self.schedplugins =  self.getschedplugins()
+        self.batchstatusplugin =  self.getbatchstatusplugin()
+        self.wmsstatusplugin =  self.getwmsstatusplugin()
+        self.submitplugin =  self.getsubmitplugin()
+        self.configplugin =  self.getconfigplugin()
+
+        self.log.info('PluginDispatcher: Object initialized.')
+
+    def getschedplugins(self):
+
+        #scheduler_cls = self._getplugin('sched')
+        #scheduler_plugin = scheduler_cls(self.apfqueue)
+        #return scheduler_plugin
+
+        scheduler_classes = self._getplugin('sched')  # list of classes 
+        scheduler_plugins = []
+        for scheduler_cls in scheduler_classes:
+            scheduler_plugin = scheduler_cls(self.apfqueue)
+            scheduler_plugins.append(scheduler_plugin)
+        return scheduler_plugins
+
+    def getbatchstatusplugin(self):
+
+        condor_q_id = 'local'
+        if self.qcl.generic_get(self.apfqname, 'batchstatusplugin') == 'Condor': 
+            queryargs = self.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs', logger=self.log)
+            if queryargs:
+                    condor_q_id = self.__queryargs2condorqid(queryargs)    
+        batchstatus_cls = self._getplugin('batchstatus')[0]
+        batchstatus_plugin = batchstatus_cls(self.apfqueue, condor_q_id=condor_q_id)
+        batchstatus_plugin.start() # starts the thread
+        
+        return batchstatus_plugin
+
+    def getwmsstatusplugin(self):
+
+        wmsstatus_cls = self._getplugin('wmsstatus')[0]
+        wmsstatus_plugin = wmsstatus_cls(self.apfqueue)
+        wmsstatus_plugin.start()   # starts the thread
+
+        return wmsstatus_plugin
+
+    def getsubmitplugin(self):
+
+        batchsubmit_cls = self._getplugin('batchsubmit')[0]
+        batchsubmit_plugin = batchsubmit_cls(self.apfqueue)
+
+        return batchsubmit_plugin
+
+    def getconfigplugin(self):
+
+        config_cls = self._getplugin('config')[0]
+        if config_cls:
+            # Note it could be None
+            config_plugin = config_cls(self.apfqueue)
+            config_plugin.start()  # starts the thread
+            return config_plugin
+        else:
+            return None    
+
+    def __queryargs2condorqid(self, queryargs):
+        """
+        method to get the name for the condor_q singleton,
+        based on the combination of the values from 
+        -name and -pool input options.
+        The entire list of input options come from the queues conf file,
+        and it is recorded in queryargs. 
+        """
+        l = queryargs.split()  # convert the string into a list
+                               # e.g.  ['-name', 'foo', '-pool', 'bar'....]
+
+        name = ''
+        pool = ''
+        
+        if '-name' in l:
+            name = l[l.index('-name') + 1]
+        if '-pool' in l:
+            pool = l[l.index('-pool') + 1]
+
+        return '%s:%s' %(name, pool)
+
+    def _getplugin(self, action):
+        '''
+        Generic private method to find out the specific plugin
+        to be used for this queue, depending on the action.
+        Action can be:
+                - sched
+                - batchstatus
+                - wmsstatus
+                - batchsubmit
+                - config
+
+        Steps taken are:
+                1. The name of the item in the config file is calculated.
+                   It is supposed to have format <action>plugin.
+                   For example:  schedplugin, batchstatusplugin, ...
+                2. The name of the plugin module is calculated.
+                   It is supposed to have format <config item><prefix>Plugin.
+                   The prefix is taken from a map.
+                   For example: SimpleSchedPlugin, CondorBatchStatusPlugin
+                3. The plugin module is imported, using __import__
+                4. The plugin class is retrieved. 
+                   The name of the class is the same as the name of the module
+
+        It has been added the option of getting more than one plugins 
+        of the same category. 
+        The value is comma-split, and one class is retrieve for each field. 
+        Then, it will be up to the invoking entity to determine if only one item
+        is expected, and therefore a [0] is needed, or a list of item is possible.
+        '''
+
+        self.log.debug("_getplugin: Starting for action %s" %action)
+
+        plugin_prefixes = {
+                'sched' : 'Sched',
+                'wmsstatus': 'WMSStatus',
+                'batchstatus': 'BatchStatus',
+                'batchsubmit': 'BatchSubmit',
+                'config': 'Config'
+        }
+
+        plugin_config_item = '%splugin' %action
+        plugin_prefix = plugin_prefixes[action] 
+
+        #if self.qcl.has_option(self.apfqname, plugin_config_item):
+        #        schedclass = self.qcl.get(self.apfqname, plugin_config_item)
+        #else:
+        #        return None
+
+        #plugin_module_name = '%s%sPlugin' %(schedclass, plugin_prefix)
+        #
+        #self.log.debug("_getplugin: Attempting to import derived classname: autopyfactory.plugins.%s"
+        #                % plugin_module_name)
+
+        #plugin_module = __import__("autopyfactory.plugins.%s" % plugin_module_name, 
+        #                           globals(), 
+        #                           locals(),
+        #                           ["%s" % plugin_module_name])
+
+        #plugin_class = plugin_module_name  #  the name of the class is the name of the module
+
+        #self.log.debug("_getplugin: Attempting to return plugin with classname %s" %plugin_class)
+        #self.log.debug("_getplugin: Leaving with plugin named %s" %plugin_class)
+        #return getattr(plugin_module, plugin_class)
+
+        if self.qcl.has_option(self.apfqname, plugin_config_item):
+            plugin_names = self.qcl.get(self.apfqname, plugin_config_item)
+        else:
+            return [None]
+
+        out = []
+        for name in plugin_names.split(','):
+            plugin_module_name = '%s%sPlugin' %(name, plugin_prefix)
+
+            self.log.debug("_getplugin: Attempting to import derived classnames: autopyfactory.plugins.%s"
+                    % plugin_module_name)
+
+            plugin_module = __import__("autopyfactory.plugins.%s" % plugin_module_name,
+                                       globals(),
+                                       locals(),
+                                       ["%s" % plugin_module_name])
+
+            plugin_class = plugin_module_name  #  the name of the class is the name of the module
+
+            self.log.debug("_getplugin: Attempting to return plugin with classname %s" %plugin_class)
+            self.log.debug("_getplugin: Leaving with plugin named %s" %plugin_class)
+            out.append( getattr(plugin_module, plugin_class) )
+        return out
+
+
+
+# ==============================================================================                                
+#                     INFO CLASSES 
+# ==============================================================================  
+                            
+
+class WMSStatusInfo(object):
+    '''
+    -----------------------------------------------------------------------
+    Class to collect info from WMS Status Plugin 
+    -----------------------------------------------------------------------
+    Public Interface:
+            valid()
+    -----------------------------------------------------------------------
+    '''
+    def __init__(self):
+
+        self.log = logging.getLogger('main.wmsstatus')
+        self.log.debug('Status: Initializing object...')
+
+        self.cloud = None
+        self.site = None
+        self.jobs = None
+        self.lasttime = None
+
+        self.log.info('Status: Object Initialized')
+
+    def valid(self):
+        '''
+        checks if all attributes have a valid value, or
+        some of them is None and therefore the collected info 
+        is not reliable
+        '''
+        self.log.debug('valid: Starting.')
+
+        out = True  # default
+        if self.cloud == None:
+            out = False 
+        if self.site == None:
+            out = False 
+        if self.jobs == None:
+            out = False 
+
+        self.log.debug('valid: Leaving with output %s.' %out)
+        return out
+
+    def __len__(self):
+        length = 3
+        if self.cloud is None:
+            length -= 1
+        if self.site is None:
+            length -= 1
+        if self.jobs is None:
+            length -= 1
+        return length
+            
+
+
+#
+# At some point it would be good to encapsulate a non-Panda-specific vocabulary
+# for WMSStatusInfo information. For now, the existing Python Dictionaries are 
+# good enough. 
+
+class CloudInfo(object):
+    def __init__(self):
+        pass
+
+    
+class SiteInfo(object):
+    def __init__(self):
+        pass
+    
+
+class JobInfo(object):
+    def __init__(self):
+        pass
+  
+
+class BatchStatusInfo(object):
+    '''
+    -----------------------------------------------------------------------
+    Class to collect info from Batch Status Plugin 
+    
+    In a nutshell, the class is a dictionary of QueueInfo objects
+    stored in self.queues
+    -----------------------------------------------------------------------
+    Public Interface:
+            valid()
+    -----------------------------------------------------------------------
+    '''
+    def __init__(self):
+        '''
+        Info for each queue is retrieved, set, and adjusted via APF queuename, e.g.
+            numrunning = info.queues['BNL_ATLAS_1'].running
+            info.queues['BNL_ITB_1'].pending = 17
+            info.queues['BNL_ITB_1'].finished += 1
+            
+        Any alteration access updates the info.mtime attribute. 
+        '''
+        
+        self.log = logging.getLogger('main.batchstatus')
+        self.log.debug('Status: Initializing object...')
+        
+        # queues is a dictionary of QueueInfo objects
+        self.queues = {}
+        self.lasttime = None
+        self.log.info('Status: Object Initialized')
+
+
+    def valid(self):
+        '''
+        checks if all attributes have a valid value, or
+        some of them is None and therefore the collected info 
+        is not reliable
+        '''
+        self.log.debug('valid: Starting.')
+
+        out = True  # default
+        #if self.batch == None:
+        #    out = False 
+
+        #self.log.info('valid: Leaving with output %s.' %out)
+        return out
+
+    def __str__(self):
+        s = "BatchstatusInfo containing %d queues" % len(self.queues)
+        return s
+
+
+    def __len__(self):
+        '''
+        Implement len() so debug can confirm number of queueInfo objects in this BatchStatusInfo. 
+        '''
+        return len(self.queues)
+
+
+class QueueInfo(object):
+    '''
+    -----------------------------------------------------------------------
+     Empty anonymous placeholder for attribute-based queue information.
+     One per queue. 
+     
+        Primary attributes are:
+            pending            job is queued (somewhere) but not running yet.
+            running            job is currently active (run + stagein + stageout)
+            error              job has been reported to be in an error state
+            suspended          job is active, but held or suspended
+            done               job has completed
+            unknown            unknown or transient intermediate state
+
+        Secondary attributes are:
+            transferring       stagein + stageout
+            stagein
+            stageout           
+            failed             (done - success)
+            success            (done - failed)
+            ?
+    -----------------------------------------------------------------------
+    '''
+    def __init__(self):
+        self.pending = 0
+        self.running = 0
+        self.suspended = 0
+        self.done = 0
+        self.unknown = 0
+        self.error = 0
+
+    def __str__(self):
+        s = "QueueInfo: pending=%d, running=%d, suspended=%d" % (self.pending, 
+                                                                 self.running, 
+                                                                 self.suspended)
+        return s
+
+
+# ==============================================================================                                
+#                      INTERFACES & TEMPLATES
+# ==============================================================================  
+
+class Singleton(type):
+    '''
+    -----------------------------------------------------------------------
+    Ancillary class to be used as metaclass to make other classes Singleton.
+    -----------------------------------------------------------------------
+    '''
+    def __init__(cls, name, bases, dct):
+        cls.__instance = None 
+        type.__init__(cls, name, bases, dct)
+    def __call__(cls, *args, **kw): 
+        if cls.__instance is None:
+            cls.__instance = type.__call__(cls, *args,**kw)
+        return cls.__instance
+
+
+class CondorSingleton(type):
+    '''
+    -----------------------------------------------------------------------
+    Ancillary class to be used as metaclass to make other classes Singleton.
+    This particular implementation is for CondorBatchStatusPlugin.
+    It allow to create different instances, one per schedd.
+    Each instance is a singleton. 
+    -----------------------------------------------------------------------
+    '''
+    def __init__(cls, name, bases, dct):
+        cls.__instance = {} 
+        type.__init__(cls, name, bases, dct)
+    def __call__(cls, *args, **kw): 
+        condor_q_id = kw.get('condor_q_id', 'local')
+        if condor_q_id not in cls.__instance.keys():
+            cls.__instance[condor_q_id] = type.__call__(cls, *args,**kw)
+        return cls.__instance[condor_q_id]
+
+
+class SchedInterface(object):
+    '''
+    -----------------------------------------------------------------------
+    Calculates the number of jobs to be submitted for a given queue. 
+    -----------------------------------------------------------------------
+    Public Interface:
+            calcSubmitNum()
+            valid()
+    -----------------------------------------------------------------------
+    '''
+    def calcSubmitNum(self, nsub=0):
+        '''
+        Calculates number of jobs to submit for the associated APF queue. 
+        '''
+        raise NotImplementedError
+
+    def valid(self):
+        '''
+        Says if the object has been initialized properly
+        '''
+        raise NotImplementedError
+
+
+class BatchStatusInterface(object):
+    '''
+    -----------------------------------------------------------------------
+    Interacts with the underlying batch system to get job status. 
+    Should return information about number of jobs currently on the desired queue. 
+    -----------------------------------------------------------------------
+    Public Interface:
+            getInfo()
+            valid()
+    
+    Returns BatchStatusInfo object
+     
+    -----------------------------------------------------------------------
+    '''
+    def getInfo(self, maxtime=0):
+        '''
+        Returns aggregate info about jobs in batch system. 
+        '''
+        raise NotImplementedError
+
+    def valid(self):
+        '''
+        Says if the object has been initialized properly
+        '''
+        raise NotImplementedError
+
+class WMSStatusInterface(object):
+    '''
+    -----------------------------------------------------------------------
+    Interface for all WMSStatus plugins. 
+    Should return information about cloud status, site status and jobs status. 
+    -----------------------------------------------------------------------
+    Public Interface:
+            getCloudInfo()
+            getSiteInfo()
+            getJobsInfo()
+            valid()
+    -----------------------------------------------------------------------
+    '''
+    def getCloudInfo(self, cloud, maxtime=0):
+        '''
+        Method to get and updated picture of the cloud status. 
+        It returns a dictionary to be inserted directly into an
+        Status object.
+        '''
+        raise NotImplementedError
+
+    def getSiteInfo(self, site, maxtime=0):
+        '''
+        Method to get and updated picture of the site status. 
+        It returns a dictionary to be inserted directly into an
+        Status object.
+        '''
+        raise NotImplementedError
+
+    def getJobsInfo(self, site, maxtime=0):
+        '''
+        Method to get and updated picture of the jobs status. 
+        It returns a dictionary to be inserted directly into an
+        Status object.
+        '''
+        raise NotImplementedError
+
+    def valid(self):
+        '''
+        Says if the object has been initialized properly
+        '''
+        raise NotImplementedError
+
+
+class ConfigInterface(object):
+    '''
+    -----------------------------------------------------------------------
+    Returns info to complete the queues config objects
+    -----------------------------------------------------------------------
+    Public Interface:
+            getInfo()
+            valid()
+    -----------------------------------------------------------------------
+    '''
+    def getConfig(self):
+        '''
+        returns info 
+        '''
+        raise NotImplementedError
+
+    def valid(self):
+        '''
+        Says if the object has been initialized properly
+        '''
+        raise NotImplementedError
+
+
+class BatchSubmitInterface(object):
+    '''
+    -----------------------------------------------------------------------
+    Interacts with underlying batch system to submit jobs. 
+    It should be instantiated one per queue. 
+    -----------------------------------------------------------------------
+    Public Interface:
+            submit(number)
+            valid()
+            addJSD()
+            writeJSD()
+    -----------------------------------------------------------------------
+    '''
+    def submit(self, n):
+        '''
+        Method to submit pilots 
+        '''
+        raise NotImplementedError
+
+    def valid(self):
+        '''
+        Says if the object has been initialized properly
+        '''
+        raise NotImplementedError
+
+    def addJSD(self):
+        '''
+        Adds content to the JSD file
+        '''
+        raise NotImplementedError
+        
+    def writeJSD(self):
+        '''
+        Writes on file the content of the JSD file
+        '''
+        raise NotImplementedError
+
