@@ -4,9 +4,6 @@
 
 <br>
 <br>
-<b>IMPORTANT NOTE: starting with version wrapper.sh-0.9.8, this documentation is moved to the wrapper package itself. This section is therefore not under maintenance.</b>
-<br>
-<br>
 
                         <a href='#newwrapper'>New wrapper</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href='#motivation'>Motivation</a><br>
@@ -205,21 +202,21 @@ To take advantage from that, the different wrapper flavors will be implmented as
 <p>The current mechanism to choose the right plugin is implemented by inspecting a lookup table like this one:</p>
 
 <pre style="color: black; background-color: rgb(102, 255, 255); ">
-# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------  
-#   VO          PURPOSE           GRID            WMSQUEUE              BATCHQUEUE                            PLUGIN                  PILOTCODE                 PILOTCODEURL 
-# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------  
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------  
+#   VO          PURPOSE           GRID            WMSQUEUE              BATCHQUEUE                            PLUGIN                  PILOTTYPE
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------  
                                           
 # --- default values ---
-    ATLAS       *                 *               +                     +                                     atlasprodpilot         pilotcode,pilotcode-rc      http://pandaserver.cern.ch:25080/cache/pilot
-    ATLAS       devel             *               +                     +                                     atlasprodpilotdev      pilotcode-dev               http://project-atlas-gmsb.web.cern.ch/project-atlas-gmsb
-    OSG         *                 OSG             +                     +                                     trivial                trivialPilot                http://pandaserver.cern.ch:25080/cache/pilot
+    ATLAS       *                 *               +                     +                                     atlasprodpilot         pilotcode,pilotcode-rc
+    ATLAS       devel             *               +                     +                                     atlasprodpilotdev      pilotcode-dev
+    OSG         *                 OSG             +                     +                                     trivial                trivialPilot
 
 # --- testing sites ---                       
-    OSG         *                 *               TEST2                 TEST2                                 trivial                 trivialPilot               http://pandaserver.cern.ch:25080/cache/pilot  
-    OSG         *                 *               TEST3                 TEST3                                 trivial                 trivialPilot               http://pandaserver.cern.ch:25080/cache/pilot 
-    ATLAS       *                 *               ANALY_TEST-APF        ANALY_TEST-APF-condor                 atlasprodpilot          pilotcode,pilotcode-rc     http://pandaserver.cern.ch:25080/cache/pilot   
-    ATLAS       *                 *               ANALY_TEST-APF2       ANALY_TEST-APF2-condor                atlasprodpilot          pilotcode,pilotcode-rc     http://pandaserver.cern.ch:25080/cache/pilot  
-    ATLAS       *                 *               BNL_TEST_APF          BNL_TEST_APF-condor                   atlasprodpilot          pilotcode,pilotcode-rc     http://pandaserver.cern.ch:25080/cache/pilot 
+    OSG         *                 *               TEST2                 TEST2                                 trivial                 trivialPilot
+    OSG         *                 *               TEST3                 TEST3                                 trivial                 trivialPilot
+    ATLAS       *                 *               ANALY_TEST-APF        ANALY_TEST-APF-condor                 atlasprodpilot          pilotcode,pilotcode-rc 
+    ATLAS       *                 *               ANALY_TEST-APF2       ANALY_TEST-APF2-condor                atlasprodpilot          pilotcode,pilotcode-rc 
+    ATLAS       *                 *               BNL_TEST_APF          BNL_TEST_APF-condor                   atlasprodpilot          pilotcode,pilotcode-rc 
 
 </pre>
 
