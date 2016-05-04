@@ -86,7 +86,7 @@ class MySimpleHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             """
             
             log = logging.getLogger('main.logserver')
-            log.debug("%s - - [%s] %s\n" %
+            log.info("%s - - [%s] %s\n" %
                              (self.address_string(),
                               self.log_date_time_string(),
                               format%args))
@@ -219,7 +219,7 @@ class MyNoListingHTTPRequestHandler(MySimpleHTTPRequestHandler):
 
 class LogServer(threading.Thread):
     
-    def __init__(self, port=25880, docroot="/home/autopyfactory/factory/logs", index = True):
+    def __init__(self, port=25880, docroot="/home/apf/factory/logs", index = True):
         '''
         docroot is the path to the base directory of the files to be served. 
         '''
@@ -250,9 +250,9 @@ class LogServer(threading.Thread):
     def _init_socketserver(self):
         while not self.httpd:
             try:
-                self.log.trace("Attempting to bind to socket for HTTP server on port %s" % self.port)
+                self.log.debug("Attempting to bind to socket for HTTP server on port %s" % self.port)
                 self.httpd = SocketServer.TCPServer(("", self.port), self.handler)
-                self.log.trace("Initialized HTTP SocketServer port=%d, root=%s, index=%s" % (self.port, 
+                self.log.debug("Initialized HTTP SocketServer port=%d, root=%s, index=%s" % (self.port, 
                                                                                              self.docroot, 
                                                                                              self.index)) 
             except Exception, e:
@@ -263,8 +263,10 @@ class LogServer(threading.Thread):
     def run(self):
         self.log.info("Initializing HTTP server...")
         self._init_socketserver()
+        
+        
         os.chdir(self.docroot)
-        self.log.trace("Changing working dir to %s"%  self.docroot)
+        self.log.debug("Changing working dir to %s"%  self.docroot)
         while not self.stopevent.isSet():
             try:
                 self.httpd.serve_forever()
@@ -276,7 +278,7 @@ class LogServer(threading.Thread):
         Stop the thread. Overriding this method required to handle Ctrl-C from console.
         '''        
         self.stopevent.set()
-        self.log.trace('Stopping thread...')
+        self.log.info('Stopping thread...')
         self.httpd.shutdown()
         threading.Thread.join(self, timeout)
 
