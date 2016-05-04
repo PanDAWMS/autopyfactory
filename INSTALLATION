@@ -1,0 +1,123 @@
+Installation
+------------
+
+1. Get yourself a condor_g installed. Instructions are here:
+   https://twiki.cern.ch/twiki//bin/view/Atlas/CondorG, with the
+   following caveats:
+
+    condorg.cern.ch doesn't exist anymore, but you don't need it. In
+    condor_config set
+
+	CONDOR_HOST = my.pilot.factory.host.name
+
+    and (much lower down) set
+
+	DAEMON_LIST = MASTER, SCHEDD, COLLECTOR
+
+    as well as setting your email address in CONDOR_ADMIN.
+
+    You should submit a test job to your favourite site to ensure it's
+    working (use the JDL on the twiki page, change the globusscheduler
+    to the gatekeeper URL and rsl string to the site's queue).
+
+
+2. Checkout the panda client code from SVN:
+   $ mkdir ~/panda
+   $ svn co http://svnweb.cern.ch/guest/panda/panda-server/current/pandaserver/userinterface
+   $ export PYTHONPATH=~/panda:$PYTHONPATH
+   Make sure the PYTHONPATH is defined for the factory's environment.
+   
+3. If you are using python < 2.6 then install the simplejson module
+   (you do not need the C speedups, so the python module files are
+   sufficient). Make sure simplejson is also in your PYTHONPATH.
+   
+   http://pypi.python.org/pypi/simplejson/
+
+4. Install the autopyfactory RPM or tarball.
+
+5. Create a factory.conf for your sites. Usually this should live in 
+   /opt/panda/autopyfactory/etc. (You will want to chown it to the
+   autopyfactory user, it's installed as root from the RPM.)
+
+   In the configuration you need to:
+
+   Change factoryOwner to be your email address (I've never got an
+   email from a condor job, but one day maybe I will...).
+
+   Change factoryId to be a unique identifier for this factory
+   instance - try to make it meaningful for someone else looking at
+   the monitoring, e.g., "factoryId = graeme-UK-apf".
+
+   Change baseLogDir to somewhere with a lot of space - pilot outputs
+   can fill up a lot of disk once you are running well. The factory
+   will store outputs for a queue in
+   baseLogDir/YYYY-MM-DD/QUEUE_NAME/.
+
+   It's very useful to have this directory available over http
+   so that sites can see how pilots are working at their sites
+   (e.g., http://svr017.gla.scotgrid.ac.uk/factory/logs/). Define this
+   path as baseLogDirUrl. This string is passed to the panda dashboard.
+
+   Define your sites. factory.conf-example shows how to do this. In 
+   autopyfactory you should generally let the factory pull all the
+   configuration parameters from schedconfig.
+   
+   If you wish schedconfig values to be ignored then set
+   
+     override = True
+     
+   for this queue.
+
+   Note that multiple configuration files can be used. These are comma 
+   separated, e.g.,
+
+   $ factory.py --conf=generic.conf,factory-1.conf,factory-2.conf
+
+6. Get a VOMS proxy: production for production, pilot for user
+   analysis.
+
+7. To check that the syntax is ok and that the factory can get status
+   for sites run it in test/oneshot mode:
+
+	$ /opt/panda/autopyfactory/bin/factory.py --verbose --test --oneshot --output=stdout
+
+    This will define the jdls in the log area, but not actually call
+    condor_submit.
+
+8. Run the factory:
+
+       $ nohup /opt/panda/autopyfactory/bin/factory.py [--verbose] &
+
+   Take note of which option you use for output - syslog is now the 
+   default. 
+
+Maintinance
+-----------
+
+1. If you change something in any of the configuration files then the
+   factory will detect this and reload the configuration
+   automatically.
+
+2. You'll want to use the vomsrenew.sh script, running out of cron, to
+   maintain your voms credentials when thing are working.
+
+3. There is a python script called "cleanLogs.py" which you can
+   run from cron. This tar gzips old log directories (default old = 7
+   days) and deletes very old ones (default very old = 21 days). 
+   
+4. It is no longer recommended to uuencode the pilot in the script -
+   just leave it to download the latest release from CERN using curl.
+   If you want to send special pilots then make them available via
+   http and use the PILOT_HTTP_SOURCES environment option for that
+   queue. N.B. Use the environ setting in schedconfig!
+
+   If you do need to change the wrapper script, remember the condor
+   caching bug - create a soft link and update factory.conf to get
+   around this.
+
+5. If you really do want to build your own wrapper script for testing
+   then the mkPilotWraper.py will rebuild the wrapper for
+   you. ("./mkPilotWraper.py --help" or, see Makefile.)  Generally
+   it's easier to set PILOT_HTTP_SOURCES in a queue's environment
+   though, as noted above.
+
