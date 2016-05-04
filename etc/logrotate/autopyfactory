@@ -4,10 +4,14 @@
   sharedscripts
   size 100M
   rotate 10 
+  prerotate
+    [ -e /etc/init.d/autopyfactory ] && /etc/init.d/autopyfactory stop >/dev/null 2>&1 || true
+    sleep 5
+  endscript
   postrotate
     sleep 5
     [ -e /etc/profile ] && . /etc/profile >/dev/null 2>&1 || true
-    [ -f /var/run/autopyfactory.pid ] && /etc/init.d/autopyfactory restart >/dev/null 2>&1 || true
+    [ -e /etc/init.d/autopyfactory ] && /etc/init.d/autopyfactory start >/dev/null 2>&1 || true
   endscript
 }
 /var/log/autopyfactory/console.log {
@@ -16,9 +20,13 @@
   sharedscripts
   size 50M
   rotate 2
+  prerotate
+    [ -e /etc/init.d/autopyfactory ] && /etc/init.d/autopyfactory stop >/dev/null 2>&1 || true
+    sleep 5
+  endscript
   postrotate
     sleep 5
     [ -e /etc/profile ] && . /etc/profile >/dev/null 2>&1 || true
-    [ -f /var/run/autopyfactory.pid ] && /etc/init.d/autopyfactory restart >/dev/null 2>&1 || true
+    [ -e /etc/init.d/autopyfactory ] && /etc/init.d/autopyfactory start >/dev/null 2>&1 || true
   endscript
 }

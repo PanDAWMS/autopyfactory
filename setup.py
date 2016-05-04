@@ -50,6 +50,7 @@ initd_files = ['etc/autopyfactory',
 # NOTES: the docs are actually handled by setup.cfg. They are moved directory under /usr/share/doc/autopyfactory-<version>/
 docs_files = ['docs/%s' %file for file in os.listdir('docs') if os.path.isfile('docs/%s' %file)]
 
+man_files = ['docs/man/%s' %file for file in os.listdir('docs/man') if os.path.isfile('docs/man/%s' %file)]
 
 # -----------------------------------------------------------
 
@@ -59,6 +60,7 @@ rpm_data_files=[#('/etc/autopyfactory', libexec_files),
                 ('/etc/logrotate.d', logrotate_files),                                        
                 ('/etc/init.d', initd_files),
                 #('/usr/share/doc/autopyfactory', docs_files),                                        
+                #('/tmp', man_files),                                        
                ]
 
 
@@ -108,20 +110,14 @@ setup(
     url='https://twiki.cern.ch/twiki/bin/view/Atlas/PanDA',
     packages=['autopyfactory',
               'autopyfactory.plugins',
-              'autopyfactory.plugins.factory',
-              'autopyfactory.plugins.factory.config',
-              'autopyfactory.plugins.queue',
-              'autopyfactory.plugins.queue.batchstatus',
-              'autopyfactory.plugins.queue.batchsubmit',
-              'autopyfactory.plugins.queue.monitor',
-              'autopyfactory.plugins.queue.sched',
-              'autopyfactory.plugins.queue.wmsstatus',
-              'autopyfactory.external',
-              'autopyfactory.external.panda',
+              'autopyfactory.plugins.batchstatus',
+              'autopyfactory.plugins.batchsubmit',
+              'autopyfactory.plugins.monitor',
+              'autopyfactory.plugins.sched',
+              'autopyfactory.plugins.wmsstatus',
               ],
     scripts = [ # Utilities and main script
                'bin/autopyfactory',
-               'bin/autopyfactory_version',
                'bin/proxymanager'
               ],
     
