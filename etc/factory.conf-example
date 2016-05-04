@@ -1,0 +1,91 @@
+#
+# factory.conf Configuration file for main Factory component of AutoPyFactory.
+#
+# factoryOwner and factoryId are mandatory
+# Make factoryId something descriptive and unique for your factory
+# schedConfigPollTime is the number of cycles which pass between reloads
+# of schedconfig data
+# Monitoring should be enabled for all factories.
+
+[Factory]
+factoryOwner = jcaballero@bnl.gov
+factoryId = BNL-gridui11-jhover
+factoryUser = apf
+# condorUser = unixUserName
+# schedConfigPollTime = 5
+# monitorURL =  http://apfmon.lancs.ac.uk/mon/
+#HTTPproxy = http://proxy.sec.bnl.local
+#HTTPproxyport = 3128
+versionTag = 2.0.0
+
+## Configure the pilots which are sent
+# Executable, baseLogDir and baseLogDirUrl are mandatory
+
+# Where is the queue config file?
+#queueConf = file:///home/apf/etc/queues.conf
+#queueConf = http://my.globalconfig.host/generateqconf/hostname
+queueConf = file:///etc/apf/queues.conf
+
+# Where is the proxy config file
+proxyConf = /etc/apf/proxy.conf
+
+# How often (seconds) to pull information from Panda Server
+# Choose prime number to balance load. 
+pandaCheckInterval = 67
+
+# Variables potentially altered by command-line options. Passed in via Config.
+# Defaults:
+dryRun=False         
+cycles=None   # None means forever
+
+# sleep time between cycles in mainLoop in Factory object
+factorysleep=30
+
+##### MOVED TO QUEUE.CONF
+##### sleep time between cycles in WMSQueue object
+#####sleep=17
+
+# Time the WMSStatus Plugin waits between cycles
+wmsstatussleep = 50
+# Time the BatchStatus Plugin waits between cycles
+batchstatussleep = 50
+
+conffiles=None
+logfile=None
+
+
+[Pilots]
+
+##### MOVED TO QUEUE.CONF
+# Executable is the script which will be run by condor. This can contain
+# the uuencoded pilot tarball (rebuild with mkPilotWraper.py), but it is now
+# recommended only to send the script and let it download the latest
+# pilot code from CERN (which it will do automatically).
+#
+# If you are doing pilot development you can set the PILOT_HTTP_SOURCES variable
+# to get your pilot code downloaded on any queue.
+#
+# *** N.B. there is a caching bug in condor_g which means that changes to this
+#  script are not picked up by condor. Best to make a soft link from a 
+#  fake name back to the original when you modify this script, e.g,
+#  "emacs runpilot3-wrapper.sh"
+#  "ln -s runpilot3-wrapper.sh runpilot3-wrapper-1.sh"
+#  "executable = runpilot3-wrapper-1.sh"
+#executable = /usr/libexec/wrapper.sh
+############################################################
+
+# Batch Log Export via HTTP
+# Do you want to export via built-in Python webserver? 0|1
+logserver.enabled = True
+# Where outputs from pilots are stored
+baseLogDir = /home/apf/factory/logs
+# Where outputs from pilots are available via http NOTE: No trailing '/'!!!
+baseLogDirUrl = http://my.host.domain:25880
+
+# What port to run the HTTP server to export logs. Make sure this matches
+# the value in the baseLogDirUrl above!!
+baseLogHttpPort = 25880 
+
+
+
+

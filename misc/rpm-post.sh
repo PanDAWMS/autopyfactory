@@ -1,41 +1,8 @@
 #!/bin/bash
-
-#if [ -f /etc/autopyfactory/autopyfactory.conf.bak ] ; then
-#	cp -f /etc/autopyfactory/autopyfactory.conf /etc/autopyfactory/autopyfactory.conf.rpmnew
-#	cp -f /etc/autopyfactory/autopyfactory.conf.bak /etc/autopyfactory/autopyfactory.conf
+#if [ -f /etc/apf/factory.conf.bak ] ; then
+#	cp -f /etc/apf/factory.conf /etc/apf/factory.conf.rpmnew
+#	cp -f /etc/apf/factory.conf.bak /etc/apf/factory.conf
 #fi
-
-chmod ugo+x /etc/init.d/autopyfactory
-#chmod ugo+x /usr/libexec/wrapper.sh
-/sbin/chkconfig --add autopyfactory
-# By default on install set factory off?
-#/sbin/chkconfig autopyfactory off
-
-####  check that factory.sysconfig has been placed in /etc/sysconfig/factory.sysconfig 
-###SYSCONF=/etc/sysconfig/autopyfactory
-###SYSCONFEXAMPLE=/etc/autopyfactory/autopyfactory.sysconfig-example
-###if [ ! -f $SYSCONF ] ; then 
-###        cp $SYSCONFEXAMPLE $SYSCONF
-###fi
-   
-
-# WARNING: this should be done by the spec file, in %files section
-if [ ! -d /etc/autopyfactory/ ] ; then
-    mkdir /etc/autopyfactory/
-fi
-
-#### --- install the man pages, only if root  ---
-###gzip /tmp/autopyfactory.1
-###mv -f /tmp/autopyfactory.1.gz /usr/share/man/man1/
-###
-###gzip /tmp/autopyfactory-queues.conf.5
-###mv -f /tmp/autopyfactory-queues.conf.5.gz /usr/share/man/man5/
-###
-###gzip /tmp/autopyfactory-factory.conf.5
-###mv -f /tmp/autopyfactory-factory.conf.5.gz /usr/share/man/man5/ 
-###
-###gzip /tmp/autopyfactory-proxy.conf.5
-###mv -f /tmp/autopyfactory-proxy.conf.5.gz /usr/share/man/man5/ 
-###
-###gzip /tmp/autopyfactory-monitor.conf.5
-###mv -f /tmp/autopyfactory-monitor.conf.5.gz /usr/share/man/man5/  
+chmod ugo+x /etc/init.d/factory
+chmod ugo+x /usr/libexec/wrapper.sh
+/sbin/chkconfig --add factory

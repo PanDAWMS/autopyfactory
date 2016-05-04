@@ -3,233 +3,107 @@
    Convenience utilities for AutoPyFactory.
 '''
 
+import popen2
 
-import os
-import signal
-import subprocess
-import threading
-import time
+__author__ = "Jose Caballero"
+__copyright__ = "2011, Jose Caballero"
+__credits__ = []
+__license__ = "GPL"
+__version__ = "2.0.0"
+__maintainer__ = "Jose Caballero"
+__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
+__status__ = "Production"
 
+class CommandLine(object):
+        '''
+        ------------------------------------------------------------------
+        class to execute a program in the command line
+        and get the output, error, and return code
 
-class TimeOutException(Exception):
-       pass
+        Making use of this class would allow to centralize
+           - checking the executable exists, 
+           - checking versions, 
+           - retrials in case of failure,
+           - raise an exception is case of failure,
+           - change the way to perform the shell command
+             (i.e. from popen2 to subprocess when all hosts migrate to python3)
+           - etc. 
 
-class ExecutionFailedException(Exception):
-       pass
+        Also can be used for executed commands bookkeeping.
+        ------------------------------------------------------------------
+        Public Interface:
+                * Methods:
+                        - __init__(program, exception=None)
+                        - __str__()
+                        - __call__()
+                        - execute(tmp_options='', failure_message='', exception=None)
+        ------------------------------------------------------------------
+        '''
+        def __init__(self, cmd, check=True, exception=None):
 
+                self.cmd = cmd       # program to be executed
+                self.output = None   # the std output after execution
+                self.error = None    # the std error after execution
+                self.status = None   # the return code after execution
 
-class TimedCommand(object):
-    """
-    -----------------------------------------------------------------------
-    class to run shell commands.
-    It encapsulates calls to subprocess.Popen()
-    Can implement a timeout and abort execution if needed.
-    Can print a custom failure message and/or raise custom exceptions.
-    -----------------------------------------------------------------------
-    Public Interface:
-        __init__(): inherited from threading.Thread
-        self.output
-        self.error 
-        self.status
-        self.pid   
-        self.time  
-    -----------------------------------------------------------------------
-    """
-    
-    def __init__(self, cmd, timeout=None, failure_msg=None, exception=None):
-        
-        class SubProcess(threading.Thread):
-            def __init__(self, program):
-                threading.Thread.__init__(self)
-                self.program   = program
-                self.output    = None
-                self.error     = None
-                self.status    = None
-                self.pid       = None
+        def execute(self, failure_message='', exception=None):
+                '''
+                Executes the program, if possible
 
-            def run(self):
-                self.p = subprocess.Popen(self.program, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
-                self.pid = self.p.pid
-                self.output = self.p.stdout.read()
-                self.error = self.p.stderr.read()
-                self.status  = self.p.wait()
+                - failure message is a message to display is execution fails
+                - exception is to be raised in case the execution fails
+                '''
 
+                ###status, output = commands.getstatusoutput(self.cmd)
+                popen = popen2.Popen3(self.cmd, capturestderr=True) 
+                output = popen.fromchild.read()
+                error = popen.childerr.read() 
+                status =  popen.wait() >> 8
 
-        self.timeout = timeout
-        self.failure_msg = failure_msg
-        self.exception = exception
+                #removing the last '\n' char
+                if output:
+                        output = output[:-1]  
+                if error:
+                        error = error[:-1]
+                        
+                self.output = output
+                self.error = error
+                self.status = status
 
-        self.cmd = SubProcess(cmd)
+                if self.status != 0:
+                        if failure_message:
+                                print failure_message
+                        if exception:
+                                raise exception
 
-        now = time.time()
-        self.run()
-        self.time = time.time() - now
+                def __str__(self):
+                        return self.command
+                
+                def __call__(self):
+                        return self.command
+                
 
-        self.checkoutput()
+if __name__ == '__main__':
 
-    def run(self):
-        
-        self.cmd.start()
-
-        if self.timeout:
-            while self.cmd.isAlive() and self.timeout > 0:
-                time.sleep(1)
-                self.timeout -= 1
-            if not self.timeout > 0:
-                os.kill(self.cmd.pid, signal.SIGKILL)
-                raise TimeOutException
-
-        self.cmd.join()
-
-        self.output = self.cmd.output
-        self.error  = self.cmd.error
-        self.status = self.cmd.status
-        self.pid    = self.cmd.pid
-
-    def checkoutput(self):
-
-        if self.status != 0:
-            if self.failure_msg:
-                print self.failure_message
-            if self.exception:
-                raise self.exception
-
-def fill(object, dictionary, mapping=None):
-    '''
-    function to fill an object with info 
-    comming from a dictionary.
-
-    Each key of the dictionary is supposed 
-    to be one attribute in the object.
-
-    For example, if object is instance of class
-        class C():
-            def __init__(self):
-                self.x = ...
-                self.y = ...
-    then, the dictionary should look like
-        d = {'x': ..., 'y':...}
-
-    In case the dictionary keys and object attributes
-    do not match, a dictionary mapping can be passed. 
-    For exmaple, the object is instance of class
-        class C():
-            def __init__(self):
-                self.x = ...
-                self.y = ...
-    and the dictionary look like
-        d = {'a': ..., 'b':...}
-    then, the mapping must be like
-        mapping = {'a':'x', 'b':'y'}
-    '''
-    for k,v in dictionary.iteritems():
-        if mapping:
-            k = mapping[k]
-        setattr(object, k, v)
-
-def add(object, dictionary, mapping=None):
-    '''
-    function to add values from a dictionary
-    to values already stored in an object.
-
-    Each key of the dictionary is supposed 
-    to be one attribute in the object.
-
-    For example, if object is instance of class
-        class C():
-            def __init__(self):
-                self.x = ...
-                self.y = ...
-    then, the dictionary should look like
-        d = {'x': ..., 'y':...}
-
-    In case the dictionary keys and object attributes
-    do not match, a dictionary mapping can be passed. 
-    For exmaple, the object is instance of class
-        class C():
-            def __init__(self):
-                self.x = ...
-                self.y = ...
-    and the dictionary look like
-        d = {'a': ..., 'b':...}
-    then, the mapping must be like
-        mapping = {'a':'x', 'b':'y'}
-    '''
-
-    for k,v in dictionary.iteritems():
-        if mapping:
-            k = mapping[k]
-        current = object.__getattribute__(k)
-        new = current + v
-        setattr(object,k,new)
-
-def checkDaemon(daemon, pattern='running'):
-    '''
-    checks if a given daemon service is active
-    '''
-    import commands 
-    status = commands.getoutput('service %s status' %daemon)
-    return status.lower().find(pattern) > 0
-
-
-def which(file):
-    for path in os.environ["PATH"].split(":"):
-        if os.path.exists(path + "/" + file):
-                return path + "/" + file
-
-
-def renamekeys(dict, mappings):
-    """
-    function to change the keys of a dictionary
-    according to the mappings.
-    For example:
-
-        dict = {'a':1,
-                'b':2,
-                'c':3,
-                'd':4}
-
-        mapppings = {'a':'A',
-                     'b':'B',
-                     'c':'C',
-                     'd':'D',
-                     'e':'E'}
-
-    returns
-
-        {'A':1,
-         'B':2,
-         'C':3,
-         'D':4}
-    """
-
-    for k in dict.keys():
-        dict[mappings[k]] = dict.pop(k)
-    return dict
+        print '-----------------------------------------'
+        cmd1 = '/bin/ls -ltr /tmp/'
+        exe1 = CommandLine(cmd1)
+        exe1.execute()
+        print exe1.output
+        print exe1.error
+        print exe1.status
+        print '-----------------------------------------'
+        cmd2 = '/bin/ls -ltr /tmpx/'
+        exe2 = CommandLine(cmd2)
+        exe2.execute()
+        print exe2.output
+        print exe2.error
+        print exe2.status
+        print '-----------------------------------------'
 
 
 
 
-if __name__ == "__main__":
-        
-    try:
-        #cmd = CommandLine('ls -ltr /tmpp/', exception=ExecutionFailedException)
-        #cmd = CommandLine('ls -ltr /tmp/', exception=ExecutionFailedException)
-        cmd = CommandLine('for i in a b c d e f g h; do echo $i; sleep 1; done', 2)
-        #cmd = CommandLine('for i in a b c d e f g h; do echo $i; sleep 1; done')
-        print '=================='
-        print cmd.output
-        print '------------------'
-        print cmd.error
-        print '------------------'
-        print cmd.status
-        print '------------------'
-        print cmd.pid
-        print '------------------'
-        print cmd.time
-        print '=================='
-    except TimeOutException:
-        print 'timeout'
-    except ExecutionFailedException:
-        print 'failed'
+
+
 

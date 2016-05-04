@@ -1,0 +1,185 @@
+#
+# queues.conf  Configuration file for WMSQueue component of AutoPyFactory.
+#
+
+## Defaults for queues - these values are set when there is not an explicit value
+## If you don't set them here the factory takes sensible default values, so nothing is mandatory
+## see ConfigLoader._configurationDefaults() for these values. 
+#
+# Most important values can now be detected from schedconfig, so there is no need to set them
+# at all. These values are marked with a *. N.B. Even if you do set these values in the factory
+# they will be overwritten unless the "override = True" setting is used.
+#
+# Some of these values may be in the process of deprecation, especially submission parameters 
+# which are now handled by the submit plugins. 
+
+[DEFAULT]
+# Status can be test, offline, or online 
+#status = test
+
+#nqueue = 10
+#depthboost = 2
+#idlepilotsupression = 1
+
+#   wallClock and *memory are in minutes and MB - 'None' means nothing is added to JDL
+#   Any setting for memory is now used as a flag to the pilot wrapper which will set this 
+#   as a ulimit before starting the pilot.
+# wallClock = None
+# memory = None
+# jobRecovery = False
+
+# pilotlimit sets a hard limit on the total number of pilots at a site, active + queued
+# pilotlimit = None
+
+#  *transferringlimit sets a limit on the number of jobs in transferring status allowed at a site -
+#    when this limit is reached no pilots will be submitted to allow backlogs to clear
+#transferringlimit = 3000
+#user = None
+
+#  *cloud is the cloud this queue is in. You should set this to suppress pilot submission when the cloud
+#   goes offline
+#   N.B. Panda clouds are UPPER CASE, e.g., UK
+cloud = US
+country = US
+group = None
+
+## Set the server and port to contact for jobs
+## These can be overridden on a per-queue basis
+## But in general do not touch these
+server = https://pandaserver.cern.ch
+port = 25443
+
+# plugins
+batchstatusplugin = Condor
+wmsstatusplugin = Panda
+batchsubmitplugin = CondorGT2
+schedplugin = Trivial
+
+# number of pilots to be submitted when the info
+# collected from the batch system and/or the WMS system
+# is not reliable 
+defaultnbpilots = 0
+
+# New proxy configuration. Uses internal proxymanager.
+# Entry value should be the name of the proxy handler for the proxy you
+# wish to use. See etc/proxy.conf
+# proxy = atlas-usatlas
+
+# URL with the wrapper tar ball
+pandawrappertarballurl = http://www.usatlas.bnl.gov/~caballer/panda/wrapper-devel/
+# base URL with the VO-specific pilot tarball
+pandaserverurl = http://pandaserver.cern.ch:25080/cache/pilot
+
+# MOVED FROM FACTORY.CONF
+# sleep time between cycles in WMSQueue object
+sleep = 360
+
+# MOVED FROM FACTORY.CONF
+# Executable is the script which will be run by condor. This can contain
+# the uuencoded pilot tarball (rebuild with mkPilotWraper.py), but it is now
+# recommended only to send the script and let it download the latest
+# pilot code from CERN (which it will do automatically).
+#
+# If you are doing pilot development you can set the PILOT_HTTP_SOURCES variable
+# to get your pilot code downloaded on any queue.
+#
+# *** N.B. there is a caching bug in condor_g which means that changes to this
+#  script are not picked up by condor. Best to make a soft link from a 
+#  fake name back to the original when you modify this script, e.g,
+#  "emacs runpilot3-wrapper.sh"
+#  "ln -s runpilot3-wrapper.sh runpilot3-wrapper-1.sh"
+#  "executable = runpilot3-wrapper-1.sh"
+executable = /usr/libexec/wrapper.sh
+
+
+#  override, if True then schedconfig does not clobber configuration file values.
+override = True
+
+# ====================================================================== 
+#               Individual queue configurations
+# ====================================================================== 
+
+[BNL_ITB_Test1]
+siteid = BNL_ITB_Test1
+nickname = BNL_ITB_Test1-condor
+jdl = gridtest01.racf.bnl.gov/jobmanager-condor
+status = test
+sftemplate=/path/to/file
+localqueue = OSG_ITB_Jose
+pandagrid = OSG
+batchsubmitplugin = CondorLocal
+schedplugin = Trivial
+arguments = -j false -k 600 -u panda 
+
+# list of condor attributes, splited by comma, to be included in the condor submit file *verbatim*
+condor_attributes = +RACF_Group = "osgitb",+Experiment = "ATLAS",+VO = "usatlas",+Job_Type = "cas"
+
+# list of environment variables, splitted by white spaces, to be included in the
+# condor attribute environment *verbatim*
+environ = OSG_GRID=/afs/usatlas/osg/wn-client/@sys/itb
+
+
+# [TEST2]
+# siteid = TEST2
+# nickname = TEST2
+# jdl = gridtest01.racf.bnl.gov/jobmanager-condor
+# status = test
+# nqueue = 1
+# sftemplate=/path/to/file
+# memory = 600
+# user = Jose
+# localqueue = OSG_ITB_Jose
+# pandagrid = OSG
+
+
+# # Two examples of the simplest and recommended configuration for sites
+# [UKI-NORTHGRID-LANCS-HEP]
+# siteid = UKI-NORTHGRID-LANCS-HEP
+# nickname = UKI-NORTHGRID-LANCS-HEP-fal-pygrid-18-atlas-lcgpbs
+# 
+# [UKI-SCOTGRID-GLASGOW-svr021]
+# siteid = UKI-SCOTGRID-GLASGOW-svr021
+# nickname = UKI-SCOTGRID-GLASGOW-svr021-atlprd-lcgpbs
+# 
+# # Pilots going to an analysis site usually use a different proxy.
+# # *** Please now see the setting analysisGridProxy in the QueueDefaults section
+# [ANALY_GLASGOW]
+# siteid = ANALY_GLASGOW
+# nickname = ANALY_GLASGOW
+# #gridProxy = /tmp/myPilotRoleProxy  <--- No longer needed
+# 
+# 
+# # If any values are set in the factory then these will be overwritten
+# # by schedconfig, unless you set override = True. e.g., testing a new
+# # gatekeeper
+# [UKI-SCOTGRID-GLASGOW]
+# siteid = UKI-SCOTGRID-GLASGOW
+# nickname = UKI-SCOTGRID-GLASGOW-svr029-atlprd-lcgpbs
+# jdl = svr029.gla.scotgrid.ac.uk/jobmanager-lcgpbs
+# localqueue = atlprd
+# status = test
+# nqueue = 1
+# override = True
+# sftemplate=/path/to/file
+# 
+
+# # Another override example is used here to submit pilots to an additional
+# # resource supporting an ANALY queue. Note the old "gatekeeper" now breaks
+# # into two parts: jdl and queue.
+# [ANALY_GLASGOW-2]
+# siteid = ANALY_GLASGOW
+# nickname = ANALY_GLASGOW
+# jdl = svr026.gla.scotgrid.ac.uk/jobmanager-lcgpbs
+# localqueue = atlanaly
+# override = True
+# 
+# # CREAM CE example
+# # Currently CREAM CEs have incorrect parameters in schedconfig, so they
+# # must have jdl (and probably localqueue) overrides.
+# # If you don't specify the port then 8443 is assumed.
+# [UKI-SCOTGRID-GLASGOW-cream14]
+# siteid = UKI-SCOTGRID-GLASGOW-cream14
+# nickname = UKI-SCOTGRID-GLASGOW-svr014-atlprd-pbs
+# jdl = svr014.gla.scotgrid.ac.uk:8443/cream-pbs
+# localqueue = atlprd
+# override = True

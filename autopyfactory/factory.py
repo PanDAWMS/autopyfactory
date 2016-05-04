@@ -1,749 +1,808 @@
 #! /usr/bin/env python
-
-__author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
-__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2016 John Hover; 2010-2016 Jose Caballero"
-__credits__ = []
-__license__ = "GPL"
-__version__ = "2.4.8"
-__maintainer__ = "Jose Caballero"
-__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
-__status__ = "Production"
-
+#
+# $Id: factory.py 7688 2011-04-08 22:15:52Z jhover $
+#
 '''
-    Main module for autopyfactory. 
+    Main module for autopyfactory, a pilot factory for PanDA
 '''
 
 import datetime
 import logging
-import logging.handlers
 import threading
 import time
-import traceback
 import os
-import platform
-import pwd
-import smtplib
-import socket
-import sys
 
-from optparse import OptionParser
-from pprint import pprint
 from ConfigParser import ConfigParser
-from Queue import Queue
 
-try:
-    from email.mime.text import MIMEText
-except:
-    from email.MIMEText import MIMEText
-
-from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
-from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailure
-from autopyfactory.cleanlogs import CleanLogs
-from autopyfactory.condor import ProcessCondorRequests
-from autopyfactory.configloader import Config, ConfigManager
+from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
+from autopyfactory.configloader import FactoryConfigLoader, QueueConfigLoader
+from autopyfactory.cleanLogs import CleanCondorLogs
 from autopyfactory.logserver import LogServer
-from autopyfactory.pluginsmanagement import QueuePluginDispatcher
-from autopyfactory.pluginsmanagement import FactoryPluginDispatcher
-from autopyfactory.queues import APFQueuesManager
+from autopyfactory.proxymanager import ProxyManager
 
-major, minor, release, st, num = sys.version_info
+import userinterface.Client as Client
 
-class FactoryCLI(object):
-    """class to handle the command line invocation of APF. 
-       parse the input options,
-       setup everything, and run Factory class
-    """
-    def __init__(self):
-        self.options = None 
-        self.args = None
-        self.log = None
-        self.fcl = None
-
-        self.__presetups()
-        self.__parseopts()
-        self.__setuplogging()
-        self.__platforminfo()
-        self.__checkroot()
-        self.__createconfig()
-
-
-    def __presetups(self):
-        '''
-        we put here some preliminary steps that 
-        for one reason or another 
-        must be done before anything else
-        '''
-
-        self.__addloggingtrace()
-
-
-    def __addloggingtrace(self):
-        """
-        Adding custom TRACE level
-        This must be done here, because parseopts()
-        uses logging.TRACE, so it must be defined
-        by that time
-        """
-
-        logging.TRACE = 5
-        logging.addLevelName(logging.TRACE, 'TRACE')
-        def trace(self, msg, *args, **kwargs):
-            self.log(logging.TRACE, msg, *args, **kwargs)
-        logging.Logger.trace = trace
-
-        #
-        #   NOTE:
-        #
-        #   I have been told that this way, messing with the root logging,
-        #   can have problems with multi-threaded applications...
-        #   Apparently, the best way to do it is
-        #   with a dedicated Logger class:
-        #   
-        #           class MyLogger(logging.getLoggerClass()):
-        #           
-        #               TRACE = 5
-        #               logging.addLevelName(TRACE, "TRACE")
-        #           
-        #               def trace(self, msg, *args, **kwargs):
-        #                   self.log(self.TRACE, msg, *args, **kwargs)
-        #           
-        #           logging.setLoggerClass(MyLogger)
-        #
-        #   but that only works fine is we never 
-        #   call the logger root, as we are doing
-        #   Also, it has the problem that logging.TRACE would not be defined.
-        #
-        #
-        #   Another option is
-        #       
-        #           logging.trace = functools.partial(logging.log, logging.TRACE)
-        #
-        #   Related documentation on partial() can be found here
-        #
-        #           http://docs.python.org/2/library/functools.html
-        #
-
-
-    
-    def __parseopts(self):
-        parser = OptionParser(usage='''%prog [OPTIONS]
-autopyfactory is an ATLAS pilot factory.
-
-This program is licenced under the GPL, as set out in LICENSE file.
-
-Author(s):
-Graeme A Stewart <g.stewart@physics.gla.ac.uk>
-Peter Love <p.love@lancaster.ac.uk>
-John Hover <jhover@bnl.gov>
-Jose Caballero <jcaballero@bnl.gov>
-''', version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $" )
-
-
-        parser.add_option("--trace", 
-                          dest="logLevel", 
-                          default=logging.WARNING,
-                          action="store_const", 
-                          const=logging.TRACE, 
-                          help="Set logging level to TRACE [default WARNING], super verbose")
-        parser.add_option("-d", "--debug", 
-                          dest="logLevel", 
-                          default=logging.WARNING,
-                          action="store_const", 
-                          const=logging.DEBUG, 
-                          help="Set logging level to DEBUG [default WARNING]")
-        parser.add_option("-v", "--info", 
-                          dest="logLevel", 
-                          default=logging.WARNING,
-                          action="store_const", 
-                          const=logging.INFO, 
-                          help="Set logging level to INFO [default WARNING]")
-        parser.add_option("--console", 
-                          dest="console", 
-                          default=False,
-                          action="store_true", 
-                          help="Forces debug and info messages to be sent to the console")
-        parser.add_option("--quiet", dest="logLevel", 
-                          default=logging.WARNING,
-                          action="store_const", 
-                          const=logging.WARNING, 
-                          help="Set logging level to WARNING [default]")
-        parser.add_option("--oneshot", "--one-shot", 
-                          dest="cyclesToDo", 
-                          default=0,
-                          action="store_const", 
-                          const=1, 
-                          help="Run one cycle only")
-        parser.add_option("--cycles", 
-                          dest="cyclesToDo",
-                          action="store", 
-                          type="int", 
-                          metavar="CYCLES", 
-                          help="Run CYCLES times, then exit [default infinite]")
-        parser.add_option("--sleep", dest="sleepTime", 
-                          default=120,
-                          action="store", 
-                          type="int", 
-                          metavar="TIME", 
-                          help="Sleep TIME seconds between cycles [default %default]")
-        parser.add_option("--conf", dest="confFiles", 
-                          default="/etc/autopyfactory/autofactory.conf",
-                          action="store", 
-                          metavar="FILE1[,FILE2,FILE3]", 
-                          help="Load configuration from FILEs (comma separated list)")
-        parser.add_option("--log", dest="logfile", 
-                          default="syslog", 
-                          metavar="LOGFILE", 
-                          action="store", 
-                          help="Send logging output to LOGFILE or SYSLOG or stdout [default <syslog>]")
-        parser.add_option("--runas", dest="runAs", 
-                          #
-                          # By default
-                          #
-                          default=pwd.getpwuid(os.getuid())[0],
-                          action="store", 
-                          metavar="USERNAME", 
-                          help="If run as root, drop privileges to USER")
-        (self.options, self.args) = parser.parse_args()
-
-        #self.options.confFiles = self.options.confFiles.split(',')
-
-    def __setuplogging(self):
-        """ 
-        Setup logging 
-        
-        General principles we have tried to used for logging: 
-        
-        -- Logging syntax and semantics should be uniform throughout the program,  
-           based on whatever organization scheme is appropriate.  
-        
-        -- Have at least a single log message at TRACE at beginning and end of each function call.  
-           The entry message should mention input parameters,  
-           and the exit message should not any important result.  
-           TRACE output should be detailed enough that almost any logic error should become apparent.  
-           It is OK if TRACE messages are produced too fast to read interactively. 
-        
-        -- Have sufficient DEBUG messages to show domain problem calculations input and output.
-           DEBUG messages should never span more than one line. 
-        
-        -- A moderate number of INFO messages should be logged to mark major  
-           functional steps in the operation of the program,  
-           e.g. when a persistent object is instantiated and initialized,  
-           when a functional cycle/loop is complete.  
-           It would be good if these messages note summary statistics,  
-           e.g. "the last submit cycle submitted 90 jobs and 10 jobs finished".  
-           A program being run with INFO log level should provide enough output  
-           that the user can watch the program function and quickly observe interesting events. 
-        
-        -- Initially, all logging should be directed to a single file.  
-           But provision should be made for eventually directing logging output from different subsystems  
-           (submit, info, proxy management) to different files,  
-           and at different levels of verbosity (DEBUG, INFO, WARN), and with different formatters.  
-           Control of this distribution should use the standard Python "logging.conf" format file: 
-        
-        -- All messages are always printed out in the logs files, 
-           but also to the stderr when DEBUG or INFO levels are selected. 
-        
-        -- We keep the original python levels meaning,  
-           including WARNING as being the default level.  
-        
-                TRACE      Detailed code execution information related to housekeeping, 
-                           parsing, objects, threads.
-                DEBUG      Detailed domain problem information related to scheduling, calculations,
-                           program state.  
-                INFO       High level confirmation that things are working as expected.  
-                WARNING    An indication that something unexpected happened,  
-                           or indicative of some problem in the near future (e.g. 'disk space low').  
-                           The software is still working as expected. 
-                ERROR      Due to a more serious problem, the software has not been able to perform some function. 
-                CRITICAL   A serious error, indicating that the program itself may be unable to continue running. 
-        
-        -- We add a new custom level -TRACE- to be more verbose than DEBUG.
-           
-           Info: http://docs.python.org/howto/logging.html#logging-advanced-tutorial  
-
-        """
-        self.log = logging.getLogger('main')
-        if self.options.logfile == "stdout":
-            logStream = logging.StreamHandler()
-        elif self.options.logfile == 'syslog':
-            logStream = logging.handlers.SysLogHandler('/dev/log')
-        else:
-            lf = self.options.logfile
-            logdir = os.path.dirname(lf)
-            if not os.path.exists(logdir):
-                os.makedirs(logdir)
-            runuid = pwd.getpwnam(self.options.runAs).pw_uid
-            rungid = pwd.getpwnam(self.options.runAs).pw_gid                  
-            os.chown(logdir, runuid, rungid)
-            logStream = logging.FileHandler(filename=lf)    
-
-        if major == 2 and minor == 4:
-            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d : %(message)s'
-        else:
-            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
-        formatter = logging.Formatter(FORMAT)
-        formatter.converter = time.gmtime  # to convert timestamps to UTC
-        logStream.setFormatter(formatter)
-        self.log.addHandler(logStream)
-
-        # adding a new Handler for the console, 
-        # to be used only for DEBUG and INFO modes. 
-        if self.options.logLevel in [logging.DEBUG, logging.INFO]:
-            if self.options.console:
-                console = logging.StreamHandler(sys.stdout)
-                console.setFormatter(formatter)
-                console.setLevel(self.options.logLevel)
-                self.log.addHandler(console)
-        self.log.setLevel(self.options.logLevel)
-        self.log.info('Logging initialized.')
-
-
-    def _printenv(self):
-
-        envmsg = ''        
-        for k in sorted(os.environ.keys()):
-            envmsg += '\n%s=%s' %(k, os.environ[k])
-        self.log.trace('Environment : %s' %envmsg)
-
-
-    def __platforminfo(self):
-        '''
-        display basic info about the platform, for debugging purposes 
-        '''
-        self.log.info('platform: uname = %s %s %s %s %s %s' %platform.uname())
-        self.log.info('platform: platform = %s' %platform.platform())
-        self.log.info('platform: python version = %s' %platform.python_version())
-        self._printenv()
-
-    def __checkroot(self): 
-        """
-        If running as root, drop privileges to --runas' account.
-        """
-        starting_uid = os.getuid()
-        starting_gid = os.getgid()
-        starting_uid_name = pwd.getpwuid(starting_uid)[0]
-
-        hostname = socket.gethostname()
-        
-        if os.getuid() != 0:
-            self.log.info("Already running as unprivileged user %s at %s" % (starting_uid_name, hostname))
-            
-        if os.getuid() == 0:
-            try:
-                runuid = pwd.getpwnam(self.options.runAs).pw_uid
-                rungid = pwd.getpwnam(self.options.runAs).pw_gid
-                os.chown(self.options.logfile, runuid, rungid)
-                
-                os.setgid(rungid)
-                os.setuid(runuid)
-                os.seteuid(runuid)
-                os.setegid(rungid)
-
-                self._changehome()
-                self._changewd()
-
-                self.log.info("Now running as user %d:%d at %s..." % (runuid, rungid, hostname))
-                self._printenv()
-
-            
-            except KeyError, e:
-                self.log.error('No such user %s, unable run properly. Error: %s' % (self.options.runAs, e))
-                sys.exit(1)
-                
-            except OSError, e:
-                self.log.error('Could not set user or group id to %s:%s. Error: %s' % (runuid, rungid, e))
-                sys.exit(1)
-
-    def _changehome(self):
-        '''
-        at some point, proxyManager will make use of method
-              os.path.expanduser()
-        to find out the absolute path of the usercert and userkey files
-        in order to renew proxy.   
-        The thing is that expanduser() uses the value of $HOME
-        as it is stored in os.environ, and that value still is /root/
-        Ergo, if we want the path to be expanded to a different user, i.e. autopyfactory,
-        we need to change by hand the value of $HOME in the environment
-        '''
-        runAs_home = pwd.getpwnam(self.options.runAs).pw_dir 
-        os.environ['HOME'] = runAs_home
-        self.log.debug('Setting up environment variable HOME to %s' %runAs_home)
-
-
-    def _changewd(self):
-        '''
-        changing working directory to the HOME directory of the new user,
-        typically "autopyfactory". 
-        When APF starts as a daemon, working directory may be "/".
-        If APF was called from the command line as root, working directory is "/root".
-        It is better is current working directory is just the HOME of the running user,
-        so it is easier to debug in case of failures.
-        '''
-        runAs_home = pwd.getpwnam(self.options.runAs).pw_dir
-        os.chdir(runAs_home)
-        self.log.debug('Switching working directory to %s' %runAs_home)
-
-
-    def __createconfig(self):
-        """Create config, add in options...
-        """
-        if self.options.confFiles != None:
-            try:
-                self.fcl = ConfigManager().getConfig(self.options.confFiles)
-            except ConfigFailure, errMsg:
-                self.log.error('Failed to create FactoryConfigLoader')
-                sys.exit(1)
-        
-        self.fcl.set("Factory","cyclesToDo", str(self.options.cyclesToDo))
-        self.fcl.set("Factory", "sleepTime", str(self.options.sleepTime))
-        self.fcl.set("Factory", "confFiles", self.options.confFiles)
-           
-    def run(self):
-        """Create Factory and enter main loop
-        """
-
-        from autopyfactory.factory import Factory
-
-        try:
-            self.log.info('Creating Factory and entering main loop...')
-
-            f = Factory(self.fcl)
-            f.run()
-            
-        except KeyboardInterrupt:
-            self.log.info('Caught keyboard interrupt - exitting')
-            f.join()
-            sys.exit(0)
-        except FactoryConfigurationFailure, errMsg:
-            self.log.error('Factory configuration failure: %s', errMsg)
-            sys.exit(1)
-        except ImportError, errorMsg:
-            self.log.error('Failed to import necessary python module: %s' % errorMsg)
-            sys.exit(1)
-        except:
-            # TODO - make this a logger.exception() call
-            self.log.error('''Unexpected exception! \
-There was an exception raised which the factory was not expecting \
-and did not know how to handle. You may have discovered a new bug \
-or an unforseen error condition. \
-Please report this exception to Jose <jcaballero@bnl.gov>. \
-The factory will now re-raise this exception so that the python stack trace is printed, \
-which will allow it to be debugged - \
-please send output from this message onwards. \
-Exploding in 5...4...3...2...1... Have a nice day!''')
-            # The following line prints the exception to the logging module
-            self.log.error(traceback.format_exc(None))
-            print(traceback.format_exc(None))
-            sys.exit(1)          
+__author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
+__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010,2011 John Hover; 2011 Jose Caballero"
+__credits__ = []
+__license__ = "GPL"
+__version__ = "2.0.0"
+__maintainer__ = "Jose Caballero"
+__email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
+__status__ = "Production"
           
-
-
 class Factory(object):
-    '''
-    -----------------------------------------------------------------------
-    Class implementing the main loop. 
-    The class has two main goals:
-            1. load the config files
-            2. launch a new thread per queue 
-
-    Information about queues created and running is stored in a 
-    APFQueuesManager object.
-
-    Actions are triggered by method update() 
-    update() can be invoked at the beginning, from __init__,
-    or when needed. For example, is an external SIGNAL is received.
-    When it happens, update() does:
-            1. calculates the new list of queues from the config file
-            2. updates the APFQueuesManager object 
-    -----------------------------------------------------------------------
-    Public Interface:
-            __init__(fcl)
-            mainLoop()
-            update()
-    -----------------------------------------------------------------------
-    '''
-
-    def __init__(self, fcl):
         '''
-        fcl is a FactoryConfigLoader object. 
+        -----------------------------------------------------------------------
+        Class implementing the main loop. 
+        The class has two main goals:
+                1. load the config files
+                2. launch a new thread per queue 
+
+        Information about queues created and running is stored in a 
+        WMSQueuesManager object.
+
+        Actions are triggered by method update() 
+        update() can be invoked at the beginning, from __init__,
+        or when needed. For example, is an external SIGNAL is received.
+        When it happens, update() does:
+                1. calculates the new list of queues from the config file
+                2. updates the WMSQueuesManager object 
+        -----------------------------------------------------------------------
+        Public Interface:
+                __init__(fcl)
+                mainLoop()
+                update()
+        -----------------------------------------------------------------------
         '''
-        self.version = __version__
-        self.log = logging.getLogger('main.factory')
-        self.log.info('AutoPyFactory version %s' %self.version)
-        self.fcl = fcl
 
-        # APF Queues Manager 
-        self.apfqueuesmanager = APFQueuesManager(self)
+        def __init__(self, fcl):
+                '''
+                fcl is a FactoryConfigLoader object. 
+                '''
 
-        self._proxymanager()
-        self._monitor()
-        self._mappings()
+                self.log = logging.getLogger('main.factory')
+                self.log.info('Factory: Initializing object...')
 
-        # Handle Log Serving
-        self._initLogserver()
+                self.fcl = fcl
+                
+                self.log.info("queueConf file(s) = %s" % fcl.get('Factory', 'queueConf'))
+                self.qcl = QueueConfigLoader(fcl.get('Factory', 'queueConf').split(','))
+              
+                # Handle ProxyManager
+                pconfig = ConfigParser()
+                pconfig_file = fcl.get('Factory','proxyConf')
+                got_config = pconfig.read(pconfig_file)
+                self.log.debug("Read config file %s, return value: %s" % (pconfig_file, got_config)) 
+                self.proxymanager = ProxyManager(pconfig)
+                self.log.debug('ProxyManager initialized. Starting...')
+                self.proxymanager.start()
+                self.log.debug('ProxyManager thread started.')
+               
+                # WMS Queues Manager 
+                self.wmsmanager = WMSQueuesManager(self)
+                
+                # Set up LogServer
+                ls = self.fcl.get('Pilots', 'logserver.enabled')
+                if ls:
+                    logpath = self.fcl.get('Pilots', 'baseLogDir')
+                    if not os.path.exists(logpath):
+                        os.makedirs(logpath)
+                
+                    self.logserver = LogServer(port=self.fcl.get('Pilots', 'baseLogHttpPort'),
+                                   docroot=logpath
+                                   )
 
-        # Collect other factory attibutes
-        self.adminemail = self.fcl.get('Factory','factoryAdminEmail')
-        self.factoryid = self.fcl.get('Factory','factoryId')
-        self.smtpserver = self.fcl.get('Factory','factorySMTPServer')
-        self.hostname = socket.gethostname()
-        #self.username = os.getlogin()
-        self.username = pwd.getpwuid(os.getuid()).pw_name   
+                    self.log.debug('LogServer initialized. Starting...')
+                    self.logserver.start()
+                    self.log.debug('LogServer thread started.')
+                else:
+                    self.log.info('LogServer disabled. Not running.')
+                     
+                self.log.info("Factory: Object initialized.")
 
-        # the the queues config loader object, to be filled by a Config plugin
-        self.qcl = Config()
+        def mainLoop(self):
+                '''
+                Main functional loop of overall Factory. 
+                Actions:
+                        1. Creates all queues and starts them.
+                        2. Wait for a termination signal, and
+                           stops all queues when that happens.
+                '''
 
-        self._plugins()
+                self.log.debug("mainLoop: Starting.")
+                self.log.info("Starting all Queue threads...")
 
-        # Log some info...
-        self.log.trace('Factory shell PATH: %s' % os.getenv('PATH') )     
-        self.log.info("Factory: Object initialized.")
-
-
-    def _proxymanager(self):
-
-        # Handle ProxyManager configuration
-        usepman = self.fcl.getboolean('Factory', 'proxymanager.enabled')
-        if usepman:      
-
-            try:
-                from autopyfactory.proxymanager import ProxyManager
-            except:
-                self.log.critical('proxymanager cannot be imported')
-                sys.exit(0) 
-
-            pcf = self.fcl.get('Factory','proxyConf')
-            self.log.debug("proxy.conf file(s) = %s" % pcf)
-            pcl = ConfigParser()
-
-            try:
-                got_config = pcl.read(pcf)
-            except Exception, e:
-                self.log.error('Failed to create ProxyConfigLoader')
-                self.log.error("Exception: %s" % traceback.format_exc())
-                sys.exit(0)
-
-            self.log.trace("Read config file %s, return value: %s" % (pcf, got_config)) 
-            self.proxymanager = ProxyManager(pcl, self)
-            self.log.info('ProxyManager initialized. Starting...')
-            self.proxymanager.start()
-            self.log.trace('ProxyManager thread started.')
-        else:
-            self.log.info("ProxyManager disabled.")
-
-
-    def _monitor(self):
-
-        # Handle monitor configuration
-        self.mcl = None
-        self.mcf = self.fcl.generic_get('Factory', 'monitorConf')
-        self.log.debug("monitor.conf file(s) = %s" % self.mcf)
-        
-        try:
-            self.mcl = ConfigManager().getConfig(self.mcf)
-        except ConfigFailure, e:
-            self.log.error('Failed to create MonitorConfigLoader')
-            sys.exit(0)
-
-        self.log.trace("mcl is %s" % self.mcl)
-       
-
-    def _mappings(self):
-
-        # Handle mappings configuration
-        self.mappingscl = None      # mappings config loader object
-        self.mappingscf = self.fcl.generic_get('Factory', 'mappingsConf') 
-        self.log.debug("mappings.conf file(s) = %s" % self.mappingscf)
-
-        try:
-            self.mappingscl = ConfigManager().getConfig(self.mappingscf)
-        except ConfigFailure, e:
-            self.log.error('Failed to create ConfigLoader object for mappings')
-            sys.exit(0)
-        
-        self.log.trace("mappingscl is %s" % self.mappingscl)
-
-    def _dumpqcl(self):
-
-        # dump the content of queues.conf 
-        qclstr = self.qcl.getContent(raw=False)
-        logpath = self.fcl.get('Factory', 'baseLogDir')
-        if not os.path.isdir(logpath):
-            # the directory does not exist yet. Let's create it
-            os.makedirs(logpath)
-        qclfile = open('%s/queues.conf' %logpath, 'w')
-        print >> qclfile, qclstr
-        qclfile.close()
-
-
-    def _plugins(self):
-    
-        fpd = FactoryPluginDispatcher(self)
-        self.config_plugins = fpd.getconfigplugin()
-
-
-    def _initLogserver(self):
-        # Set up LogServer
-        self.log.trace("Handling LogServer...")
-        ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean')
-        if ls:
-            self.log.info("LogServer enabled. Initializing...")
-            lsidx = self.fcl.generic_get('Factory','logserver.index', 'getboolean')
-            lsrobots = self.fcl.generic_get('Factory','logserver.allowrobots', 'getboolean')
-            logpath = self.fcl.get('Factory', 'baseLogDir')
-            logurl = self.fcl.get('Factory','baseLogDirUrl')            
-            logport = self._parseLogPort(logurl)
-            if not os.path.exists(logpath):
-                self.log.trace("Creating log path: %s" % logpath)
-                os.makedirs(logpath)
-            if not lsrobots:
-                rf = "%s/robots.txt" % logpath
-                self.log.trace("logserver.allowrobots is False, creating file: %s" % rf)
+                self.update()
+                
                 try:
-                    f = open(rf , 'w' )
-                    f.write("User-agent: * \nDisallow: /")
-                    f.close()
-                except IOError:
-                    self.log.warn("Unable to create robots.txt file...")
-            self.log.trace("Creating LogServer object...")
-            self.logserver = LogServer(port=logport, docroot=logpath, index=lsidx)
-            self.log.info('LogServer initialized. Starting...')
-            self.logserver.start()
-            self.log.trace('LogServer thread started.')
-        else:
-            self.log.info('LogServer disabled. Not running.')
+                        while True:
+                                mainsleep = int(self.fcl.get('Factory', 'factorysleep'))
+                                time.sleep(mainsleep)
+                                self.log.debug('Checking for interrupt.')
+                                
+                except (KeyboardInterrupt): 
+                        logging.info("Shutdown via Ctrl-C or -INT signal.")
+                        logging.debug(" Shutting down all threads...")
+                        self.log.info("Joining all Queue threads...")
+                        self.wmsmanager.join()
+                        self.log.info("All Queue threads joined. Exitting.")
+
+                self.log.debug("mainLoop: Leaving.")
+
+        def update(self):
+                '''
+                Method to update the status of the WMSQueuesManager object.
+                This method will be used every time the 
+                status of the queues changes: 
+                        - at the very beginning
+                        - when the config files change
+                That means this method will be invoked by the regular factory
+                main loop code or from any method capturing specific signals.
+                '''
+
+                self.log.debug("update: Starting")
+
+                newqueues = self.qcl.config.sections()
+                self.wmsmanager.update(newqueues) 
+
+                self.log.debug("update: Leaving")
 
 
-    def _parseLogPort(self, logurl):
+# ==============================================================================                                
+#                       QUEUES MANAGEMENT
+# ==============================================================================                                
+
+class WMSQueuesManager(object):
         '''
-        logUrl is like:  http[s]://hostname[:port]
-        if port exists, return port
-        if port is omitted, 
-           if http, return 80
-           if https, return 443
-           
-        Return value must be an int. 
+        -----------------------------------------------------------------------
+        Container with the list of WMSQueue objects.
+        -----------------------------------------------------------------------
+        Public Interface:
+                __init__(factory)
+                update(newqueues)
+                join()
+        -----------------------------------------------------------------------
         '''
-        urlparts = logurl.split(':')
-        urltype = urlparts[0]
-        port = 80
-        if len(urlparts) == 3:
-            port = int(urlparts[2])
-        elif len(urlparts) == 2:
-            if urltype == "http":
-                port = 80
-            elif urltype == "https":
-                port = 443
-        return int(port)
+        def __init__(self, factory):
+                '''
+                Initializes a container of WMSQueue objects
+                '''
+
+                self.log = logging.getLogger('main.wmsquuesmanager')
+                self.log.info('WMSQueuesManager: Initializing object...')
+
+                self.queues = {}
+                self.factory = factory
+
+                self.log.info('WMSQueuesManager: Object initialized.')
+
+        # ----------------------------------------------------------------------
+        #  public interface
+        # ----------------------------------------------------------------------
         
+        def update(self, newqueues):
+                '''
+                Compares the new list of queues with the current one
+                        1. creates and starts new queues if needed
+                        2. stops and deletes old queues if needed
+                '''
+
+                self.log.debug("update: Starting with input %s" %newqueues)
+
+                currentqueues = self.queues.keys()
+                queues_to_remove, queues_to_add = \
+                        self.__diff_lists(currentqueues, newqueues)
+                self.__addqueues(queues_to_add) 
+                self.__delqueues(queues_to_remove)
+                self.__refresh()
+
+                self.log.debug("update: Leaving")
+
+        def join(self):
+                '''
+                Joins all WMSQueue objects
+                QUESTION: should the queues also be removed from self.queues ?
+                '''
+
+                self.log.debug("join: Starting")
+
+                count = 0
+                for q in self.queues.values():
+                        q.join()
+                        count += 1
+                self.log.info('join: %d queues joined' %count)
+
+                self.log.debug("join: Leaving")
         
-    def run(self):
-        '''
-        Main functional loop of overall Factory. 
-        Actions:
-                1. Creates all queues and starts them.
-                2. Wait for a termination signal, and
-                   stops all queues when that happens.
-        '''
+        # ----------------------------------------------------------------------
+        #  private methods
+        # ----------------------------------------------------------------------
 
-        self.log.trace("Starting.")
-        self.log.info("Starting all Queue threads...")
+        def __addqueues(self, apfqueues):
+                '''
+                Creates new WMSQueue objects
+                '''
 
-        # first call to reconfig() to load initial qcl configuration
-        self.reconfig()
+                self.log.debug("__addqueues: Starting with input %s" %apfqueues)
 
-        self._cleanlogs()
+                count = 0
+                for apfqueue in apfqueues:
+                        self.__add(apfqueue)
+                        count += 1
+                self.log.info('__addqueues: %d queues added' %count)
+
+                self.log.debug("__addqueues: Leaving")
+
+        def __add(self, apfqueue):
+                '''
+                Creates a single new WMSQueue object and starts it
+                '''
+
+                self.log.debug("__add: Starting with input %s" %apfqueue)
+
+                qobject = WMSQueue(apfqueue, self.factory)
+                self.queues[apfqueue] = qobject
+                qobject.start()
+
+                self.log.debug("__add: Leaving")
+                
+        def __delqueues(self, apfqueues):
+                '''
+                Deletes WMSQueue objects
+                '''
+
+                self.log.debug("__delqueues: Starting with input %s" %apfqueues)
+
+                count = 0
+                for apfqueue in apfqueues:
+                        q = self.queues[apfqueue]
+                        q.join()
+                        self.queues.pop(apfqueue)
+                        count += 1
+                self.log.info('__delqueues: %d queues joined and removed' %count)
+
+                self.log.debug("__delqueues: Leaving")
+
+        def __del(self, apfqueue):
+                '''
+                Deletes a single queue object from the list and stops it.
+                '''
+
+                self.log.debug("__del: Starting with input %s" %apfqueue)
+
+                qobject = self.__get(apfqueue)
+                qname.join()
+                self.queues.pop(apfqueue)
+
+                self.log.debug("__del: Leaving")
         
-        try:
-            while True:
-                mainsleep = int(self.fcl.get('Factory', 'factory.sleep'))
-                time.sleep(mainsleep)
-                self.log.trace('Checking for interrupt.')
+        def __refresh(self):
+                '''
+                Calls method refresh() for all WMSQueue objects
+                '''
+
+                self.log.debug("__refresh: Starting")
+
+                count = 0
+                for q in self.queues.values():
+                        q.refresh()
+                        count += 1
+                self.log.info('__refresh: %d queues refreshed' %count)
+
+                self.log.debug("__refresh: Leaving")
+
+        # ----------------------------------------------------------------------
+        #  ancillas 
+        # ----------------------------------------------------------------------
+
+        def __diff_lists(self, l1, l2):
+                '''
+                Ancilla method to calculate diff between two lists
+                '''
+                d1 = [i for i in l1 if not i in l2]
+                d2 = [i for i in l2 if not i in l1]
+                return d1, d2
+ 
+
+class WMSQueue(threading.Thread):
+        '''
+        -----------------------------------------------------------------------
+        Encapsulates all the functionality related to servicing each queue (i.e. siteid, i.e. site).
+        -----------------------------------------------------------------------
+        Public Interface:
+                The class is inherited from Thread, so it has the same public interface.
+        -----------------------------------------------------------------------
+        '''
+        
+        def __init__(self, apfqueue, factory):
+                '''
+                siteid is the name of the section in the queueconfig, 
+                i.e. the queue name, 
+                factory is the Factory object who created the queue 
+                '''
+
+                # recording moment the object was created
+                self.inittime = datetime.datetime.now()
+
+                threading.Thread.__init__(self) # init the thread
+                self.log = logging.getLogger('main.wmsqueue[%s]' %apfqueue)
+                self.log.info('WMSQueue: Initializing object...')
+
+                self.stopevent = threading.Event()
+
+                self.apfqueue = apfqueue
+                #self.siteid = siteid          # Queue section designator from config
+                self.factory = factory
+                self.fcl = self.factory.fcl 
+                self.qcl = self.factory.qcl 
+
+                #self.siteid = self.qcl.get(apfqueue, "siteid")
+                if self.qcl.has_option(apfqueue, "siteid"):
+                        self.siteid = self.qcl.get(apfqueue, "siteid")
+                else:
+                        # if siteid is not in the specs, then
+                        # the very APF QUEUE name is teh siteid, as default
+                        self.siteid = apfqueue
+                self.nickname = self.qcl.get(apfqueue, "nickname")
+                self.cloud = self.qcl.get(apfqueue, "cloud")
+                self.cycles = self.fcl.get("Factory", "cycles" )
+                self.sleep = int(self.qcl.get(apfqueue, "sleep"))
+                self.cyclesrun = 0
+                
+                # object Status to handle the whole system status
+                self.status = Status()
+
+                # Handle sched plugin
+                self.scheduler = self.__getplugin('sched', self)
+
+                # Monitor
+                if self.fcl.has_option('Factory', 'monitorURL'):
+                        self.log.info('Instantiating a monitor...')
+                        from autopyfactory.monitor import Monitor
+                        args = dict(self.fcl.items('Factory'))
+                        args.update(dict(self.fcl.items('Pilots')))
+                        self.monitor = Monitor(**args)
+
+                # Condor logs cleaning
+                self.clean = CleanCondorLogs(self)
+                self.clean.start()
+
+                # Handle status and submit batch plugins. 
+                self.batchstatus = self.__getplugin('batchstatus', self)
+                self.batchstatus.start()                # starts the thread
+                self.wmsstatus = self.__getplugin('wmsstatus', self)
+                self.wmsstatus.start()                  # starts the thread
+                self.batchsubmit = self.__getplugin('batchsubmit', self)
+                self.log.info('WMSQueue: Object initialized.')
+
+                
+
+        def __getplugin(self, action, *k, **kw):
+                '''
+                Generic private method to find out the specific plugin
+                to be used for this queue, depending on the action.
+                Action can be:
+                        - sched
+                        - batchstatus
+                        - wmsstatus
+                        - batchsubmit
+                *k and *kw are inputs for the plugin class __init__() method
+
+                Steps taken are:
+                        1. The name of the item in the config file is calculated.
+                           It is supposed to have format <action>plugin.
+                           For example:  schedplugin, batchstatusplugin, ...
+                        2. The name of the plugin module is calculated.
+                           It is supposed to have format <config item><prefix>Plugin.
+                           The prefix is taken from a map.
+                           For example: SimpleSchedPlugin, CondorBatchStatusPlugin
+                        3. The plugin module is imported, using __import__
+                        4. The plugin class is retrieved. 
+                           The name of the class is supposed to have format
+                           <prefix>Plugin
+                           For example: SchedPlugin(), BatchStatusPlugin()
+                '''
+
+                self.log.debug("__getplugin: Starting with inputs %s and %s" %( k, kw))
+
+                plugin_prefixes = {
+                        'sched' : 'Sched',
+                        'wmsstatus': 'WMSStatus',
+                        'batchstatus': 'BatchStatus',
+                        'batchsubmit': 'BatchSubmit'
+                }
+
+                plugin_config_item = '%splugin' %action
+                plugin_prefix = plugin_prefixes[action] 
+                schedclass = self.qcl.get(self.apfqueue, plugin_config_item)
+                plugin_module_name = '%s%sPlugin' %(schedclass, plugin_prefix)
+                
+                self.log.info("__getplugin: Attempting to import derived classname: autopyfactory.plugins.%s"
+                                % plugin_module_name)
+
+                plugin_module = __import__("autopyfactory.plugins.%s" % plugin_module_name, 
+                                           globals(), 
+                                           locals(),
+                                           ["%s" % plugin_module_name])
+                plugin_class = '%sPlugin' %plugin_prefix
+
+                self.log.info("__getplugin: Attempting to return plugin with classname %s" %plugin_class)
+
+                self.log.debug("__getplugin: Leaving with plugin named %s" %plugin_class)
+                return getattr(plugin_module, plugin_class)(*k, **kw)
+
+        # ----------------------------------------------
+        #       run methods start here
+        # ----------------------------------------------
+
+        def run(self):
+                '''
+                Method called by thread.start()
+                Main functional loop of this WMSQueue. 
+                '''        
+
+                self.log.debug("run: Starting" )
+
+                while not self.stopevent.isSet():
+                        self.__updatestatus()
+                        nsub = self.__calculatenumberofpilots()
+                        self.__submitpilots(nsub)
+                        self.__monitor_shout()
+                        self.__exitloop()
+                        self.__sleep()
+                        self.__reporttime()
+
+                self.log.debug("run: Leaving")
+
+        def __updatestatus(self):
+                '''
+                update batch info and panda info
+                '''
+
+                self.log.debug("__updatestatus: Starting")
+
+                # checking if factory.conf has attributes to say
+                # how old the status info (batch, wms) can be
+                batchstatusmaxtime = 0
+                if self.fcl.has_option('Factory', 'batchstatusmaxtime'):
+                        batchstatusmaxtime = self.fcl.get('Factory', 'batchstatusmaxtime')
+
+                wmsstatusmaxtime = 0
+                if self.fcl.has_option('Factory', 'wmsstatusmaxtime'):
+                        wmsstatusmaxtime = self.fcl.get('Factory', 'wmsstatusmaxtime')
+
+                # getting the info
+                self.status.batch = self.batchstatus.getInfo(self.siteid, batchstatusmaxtime)
+                self.status.cloud = self.wmsstatus.getCloudInfo(self.cloud, wmsstatusmaxtime)
+                self.status.site = self.wmsstatus.getSiteInfo(self.siteid, wmsstatusmaxtime)
+                self.status.jobs = self.wmsstatus.getJobsInfo(self.siteid, wmsstatusmaxtime)
+
+                self.log.debug("__updatestatus: Leaving")
+
+        def __calculatenumberofpilots(self):
+                '''
+                calculate number to submit
+                '''
+
+                self.log.debug("__calculatenumberofpilots: Starting")
+
+                self.log.debug("Would be calculating number to submit.")
+                nsub = self.scheduler.calcSubmitNum(self.status)
+
+                self.log.debug("__calculatenumberofpilots: Leaving with output %s" %nsub)
+                return nsub
+
+        def __submitpilots(self, nsub):
+                '''
+                submit using this number
+                '''
+
+                self.log.debug("__submitpilots: Starting")
+
+                self.log.debug("Would be submitting jobs for this queue.")
+                # message for the monitor
+                msg = 'Attempt to submit %d pilots for queue %s' %(nsub, self.siteid)
+                self.__monitor_note(msg)
+
+                (status, output) = self.batchsubmit.submitPilots(self.siteid, nsub, self.fcl, self.qcl)
+                if output:
+                        if status == 0:
+                                self.__monitor_notify(output)
+
+                self.cyclesrun += 1
+
+                self.log.debug("__submitpilots: Leaving")
+
+        # ------------------------------------------------------------ 
+        #       Monitor ancillas 
+        # ------------------------------------------------------------ 
+
+        def __monitor_shout(self):
+                '''
+                call monitor.shout() method
+                '''
+
+                self.log.debug("__monitor_shout: Starting.")
+                if hasattr(self, 'monitor'):
+                        self.monitor.shout(self.siteid, self.cyclesrun)
+                else:
+                        self.log.debug('__monitor_shout: no monitor instantiated')
+                self.log.debug("__monitor_shout: Leaving.")
+
+        def __monitor_note(self, msg):
+                '''
+                collects messages for the Monitor
+                '''
+
+                self.log.debug('__monitor_note: Starting.')
+
+                if hasattr(self, 'monitor'):
+                        nick = self.qcl.get(self.apfqueue, 'nickname')
+                        self.monitor.msg(nick, self.siteid, msg) # FIXME?
+                else:
+                        self.log.debug('__monitor_note: no monitor instantiated')
                         
-        except (KeyboardInterrupt): 
-            # FIXME
-            # this probably is not needed anymore,
-            # if a KeyboardInterrupt is captured by class FactoryCLI,
-            # it would perform a clean join( )
-            logging.info("Shutdown via Ctrl-C or -INT signal.")
-            self.shutdown()
-            raise
-            
-        self.log.trace("Leaving.")
+                self.log.debug('__monitor__note: Leaving.')
+
+        def __monitor_notify(self, output):
+                '''
+                sends all collected messages to the Monitor server
+                '''
+
+                self.log.debug('__monitor_notify: Starting.')
+
+                if hasattr(self, 'monitor'):
+                        nick = self.qcl.get(self.apfqueue, 'nickname')
+                        label = self.siteid #FIXME?
+                        self.monitor.notify(nick, label, output)
+                else:
+                        self.log.debug('__monitor_notify: no monitor instantiated')
+
+                self.log.debug('__monitor_notify: Leaving.')
 
 
-    def reconfig(self):
-        '''
-        Method to update the status of the APFQueuesManager object.
-        This method will be used every time the 
-        status of the queues changes: 
-                - at the very beginning
-                - when the config files change
-        That means this method will be invoked by the regular factory
-        main loop code or from any method capturing specific signals.
-        '''
+        def __exitloop(self):
+                '''
+                Exit loop if desired number of cycles is reached...  
+                '''
 
-        self.log.trace("Starting")
+                self.log.debug("__exitloop: Starting")
 
-        try:
-            newqcl = Config()
-            for config_plugin in self.config_plugins:
-                tmpqcl = config_plugin.getConfig()
-                newqcl.merge(tmpqcl)
+                self.log.debug("__exitloop. Checking to see how many cycles to run.")
+                if self.cycles and self.cyclesrun >= self.cycles:
+                        self.log.info('__exitloop: stopping the thread because high cyclesrun')
+                        self.stopevent.set()                        
+                self.log.debug("__exitloop. Incrementing cycles...")
 
-        except Exception, e:
-            self.log.critical('Failed getting the Factory plugins. Aborting')
-            raise
+                self.log.debug("__exitloop: Leaving")
 
-        self.apfqueuesmanager.update(newqcl) 
+        def __sleep(self):
+                '''
+                sleep interval
+                '''
 
-        # dump the new qcl content
-        self._dumpqcl()
+                self.log.debug("__sleep: Starting")
 
-        self.log.trace("Leaving")
+                self.log.debug("__sleep. Sleeping for %d seconds..." %self.sleep)
+                time.sleep(self.sleep)
 
+                self.log.debug("__sleep: Leaving")
 
-    def _cleanlogs(self):
-        '''
-        starts the thread that will clean the condor logs files
-        '''
+        def __reporttime(self):
+                '''
+                report the time passed since the object was created
+                '''
 
-        self.log.trace('Starting')
-        self.clean = CleanLogs(self)
-        self.clean.start()
-        self.log.trace('Leaving')
-
-    def shutdown(self):
-        '''
-        Method to cleanly shut down all factory activity, joining threads, etc. 
-        '''
-
-        logging.debug(" Shutting down all Queue threads...")
-        self.log.info("Joining all Queue threads...")
-        self.apfqueuesmanager.join()
-        self.log.info("All Queue threads joined.")
-        if self.fcl.getboolean('Factory', 'proxymanager.enabled'):
-            self.log.info("Shutting down Proxymanager...")
-            self.proxymanager.join()
-            self.log.info("Proxymanager stopped.")
-        if self.fcl.getboolean('Factory', 'logserver.enabled'):
-            self.log.info("Shutting down Logserver...")
-            self.logserver.join()
-            self.log.info("Logserver stopped.")            
-            
-                            
-    def sendAdminEmail(self, subject, messagestring):
-        msg = MIMEText(messagestring)
-        msg['Subject'] = subject
-        email_from = "%s@%s" % ( self.username, self.hostname)
-        msg['From'] = email_from
-        msg['To'] = self.adminemail
-        tolist = self.adminemail.split(",")
+                self.log.debug("__reporttime: Starting")
         
-        # Send the message via our own SMTP server, but don't include the
-        # envelope header.
-        s = smtplib.SMTP(self.smtpserver)
-        self.log.info("Sending email: %s" % msg.as_string())
-        s.sendmail(email_from , tolist , msg.as_string())
-        s.quit()
-            
+                now = datetime.datetime.now()
+                delta = now - self.inittime
+                days = delta.days
+                seconds = delta.seconds
+                hours = seconds/3600
+                minutes = (seconds%3600)/60
+                total_seconds = days*86400 + seconds
+                average = total_seconds/self.cyclesrun
+
+                self.log.info('__reporttime: up %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
+                
+                self.log.debug("__reporttime: Leaving")
+
+        # ----------------------------------------------
+        #       run methods end here
+        # ----------------------------------------------
+
+        def refresh(self):
+                '''
+                Method to reload, when requested, the config file
+                '''
+                pass 
+                # TO BE IMPLEMENTED
+                          
+        def join(self,timeout=None):
+                '''
+                Stop the thread. Overriding this method required to handle Ctrl-C from console.
+                '''
+
+                self.log.debug("join: Starting")
+
+                self.stopevent.set()
+                self.log.info('Stopping thread...')
+                threading.Thread.join(self, timeout)
+
+                self.log.debug("join: Leaving")
+                 
+
+# ==============================================================================                                
+#                      INTERFACES & TEMPLATES
+# ==============================================================================                                
+
+class Status(object):
+        '''
+        -----------------------------------------------------------------------
+        Ancilla class to collect all relevant status variables in a single object.
+        -----------------------------------------------------------------------
+        '''
+        def __init__(self):
+
+                self.log = logging.getLogger('main.status')
+                self.log.info('Status: Initializing object...')
+
+                self.cloud = {}
+                self.site = {}
+                self.jobs = {}
+                self.batch = {}
+
+                # In the future, the collected info should be
+                # translated into universal format
+                # example:
+                #
+                #self.jobs['activated'] = None
+                #self.jobs['failed'] = None
+                #self.jobs['running'] = None
+                #self.jobs['transferring'] = None
+                #
+                # I use None instead of 0 to distinguish between
+                #       - value has been provided and it is 0
+                #       - value not provided 
+
+                self.log.info('Status: Object Initialized')
+
+        def valid(self):
+                '''
+                checks if all attributes have a valid value, or
+                some of them is None and therefore the collected info 
+                is not reliable
+                '''
+                self.log.info('valid: Starting.')
+
+                out = True  # default
+                if self.cloud == None:
+                        out = False 
+                if self.site == None:
+                        out = False 
+                if self.jobs == None:
+                        out = False 
+                if self.batch == None:
+                        out = False 
+
+                self.log.info('valid: Leaving with output %s.' %out)
+                return out
+
+
+class Singleton(type):
+        '''
+        -----------------------------------------------------------------------
+        Ancilla class to be used as metaclass to make other classes Singleton.
+        -----------------------------------------------------------------------
+        '''
+        def __init__(cls, name, bases, dct):
+                cls.__instance = None 
+                type.__init__(cls, name, bases, dct)
+        def __call__(cls, *args, **kw): 
+                if cls.__instance is None:
+                        cls.__instance = type.__call__(cls, *args,**kw)
+                return cls.__instance
+
+
+
+class SchedInterface(object):
+        '''
+        -----------------------------------------------------------------------
+        Calculates the number of jobs to be submitted for a given queue. 
+        -----------------------------------------------------------------------
+        Public Interface:
+                calcSubmitNum(status)
+        -----------------------------------------------------------------------
+        '''
+        def calcSubmitNum(self, status):
+                '''
+                Calculates and exact number of new pilots to submit, 
+                based on provided Panda site info
+                and whatever relevant parameters are in config.
+                All Panda info, not all relevant:    
+                'activated': 0,
+                'assigned': 0,
+                'cancelled': 0,
+                'defined': 0,
+                'failed': 4
+                'finished': 493,
+                'holding' : 3,
+                'running': 18,
+                'transferring': 38},
+                '''
+                raise NotImplementedError
+
+
+class BatchStatusInterface(object):
+        '''
+        -----------------------------------------------------------------------
+        Interacts with the underlying batch system to get job status. 
+        Should return information about number of jobs currently on the desired queue. 
+        -----------------------------------------------------------------------
+        Public Interface:
+                getInfo(queue)
+                getJobInfo(queue) 
+        -----------------------------------------------------------------------
+        '''
+        def getInfo(self, queue, maxtime=0):
+                '''
+                Returns aggregate info about jobs on queue in batch system. 
+                '''
+                raise NotImplementedError
+
+
+class WMSStatusInterface(object):
+        '''
+        -----------------------------------------------------------------------
+        Interface for all WMSStatus plugins. 
+        Should return information about cloud status, site status and jobs status. 
+        -----------------------------------------------------------------------
+        Public Interface:
+                getCloudInfo()
+                getSiteInfo()
+                getJobsInfo()
+        -----------------------------------------------------------------------
+        '''
+        def getCloudInfo(self, cloud, maxtime=0):
+                '''
+                Method to get and updated picture of the cloud status. 
+                It returns a dictionary to be inserted directly into an
+                Status object.
+                '''
+                raise NotImplementedError
+
+        def getSiteInfo(self, site, maxtime=0):
+                '''
+                Method to get and updated picture of the site status. 
+                It returns a dictionary to be inserted directly into an
+                Status object.
+                '''
+                raise NotImplementedError
+
+        def getJobsInfo(self, site, maxtime=0):
+                '''
+                Method to get and updated picture of the jobs status. 
+                It returns a dictionary to be inserted directly into an
+                Status object.
+                '''
+                raise NotImplementedError
+
+
+class BatchSubmitInterface(object):
+        '''
+        -----------------------------------------------------------------------
+        Interacts with underlying batch system to submit jobs. 
+        It should be instantiated one per queue. 
+        -----------------------------------------------------------------------
+        Public Interface:
+                submitPilots(number)
+        -----------------------------------------------------------------------
+        '''
+        def submitPilots(self, queue, number, fcl, qcl):
+                '''
+                Method to submit pilots 
+                '''
+                raise NotImplementedError
+
