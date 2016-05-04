@@ -1,96 +1,18 @@
 AutoPyFactory INSTALL-USER
 
-User installation assumes that APF will be installed in the user's home directory using the 
+User installation assumes that APF will be installed in the users home directory using the 
 standard Python distutils setup commands. It assumes that pre-requisites have already
 been installed and properly configured, either within the user's home directory or on
 the general system. 
 
-Software Prerequisites
-----------------------------------------------------------------------
-* Python 2.4 or above:
-	-- Comes default with RHEL 5+ and most current operating systems.    
- 	 
-* python-simplejson:
-	-- Available in stock RHEL 5+. yum install python-simplejson
-    -- http://pypi.python.org/pypi/simplejson/
-    
-* python-pycurl:
-	-- Available in stock RHEL 5+. yum install python-pycurl
-       (We will work to eliminate this prerequisite by using pure Python urllib.) 
-    -- http://pycurl.sourceforge.net/download/
 
-* voms-proxy-* tools:
-	-- Available in stock RHEL 5+. yum install voms-clients
-	-- Or install the OSG client
-     
-* Condor 7.6 or above:
-	-- http://research.cs.wisc.edu/condor/      
-      
-* Panda Client userinterface Python library:
-
-    mkdir ~/lib/python
-	cd ~/lib/python
-    svn co http://svnweb.cern.ch/guest/panda/panda-server/current/pandaserver/userinterface
-
-Installation
------------------------------------------------------------------------
-
-1) Check out the project from SVN, or download the tarball, and install
-
-     svn co http://svnweb.cern.ch/guest/panda/panda-autopyfactory/current/ panda-autopyfactory
-     cd panda-autopyfactory
-     python setup.py install --home=~/
-     
-
-2) Unless you are running a Python installed in your home directory, you must 
-   add ~/lib/python to your PYTHONPATH. The preferred way is to add the following
-   to your ~/.bash_profile
-      
-      export PYTHONPATH=~/lib/python:$PYTHONPATH
-      
-Configuration
------------------------------------------------------------------------
-
-1) Copy the configuration -example files to their final names. And adjust the variables
-   within to reasonable values. Each configuration file has detailed instructions on proper
-   settings for various purposes. 
+Prerequisites:
+   -- Python  
+   -- Condor (Condor-G)
+   -- Panda Client library 
+   -- simplejson
    
-       cd $HOME/etc
-       cp factory.conf-example factory.conf
-       cp queues.conf-example queues.conf
-       cp proxy.conf-example proxy.conf
-       cp factory.sysconfig-example factory.sysconfig
+   
+Unlike the root/RPM install, you must add ~/lib/python to your PYTHONPATH:
 
-Notable issues for initial installation or upgrades:
-
--- Be aware that the factoryId in factory.conf will be what your factory appears under on the 
-   APF monitor. Once chosen, it will be awkward to change it. See
-       http://apfmon.lancs.ac.uk/mon/
-
--- The integrated proxy management (proxy.conf) and log serving (logserver.* variables in 
-   factory.conf) are new with 2.X. Be sure you understand them before moving beyond testing.
- 
--- Because of the way gatekeepers cache job executables, changing the file used as a job wrapper
-   does not necessarily trigger an update of that filename on site gatekeepers. The only way to
-   guarantee a re-send of a wrapper file is to rename it (or make a unique symlink) and change 
-   the executable var in queues.conf e.g.,
-        executable = /usr/libexec/wrapper ->  executable/libexec/wrapper-0.9.4.sh 
-   We intend to look into this issue to hide it from the factory administrator, but for now it
-   is an unavoidable problem. 
-
-              
-2) Start the factory, and trace the log files to determine if behavior is as expected:
-
-       cd $HOME/etc
-       ./factory start
-       tail -f ~/var/log/apf.log
-       
-  
-       
-       
-      
-      
-      
-      
-      
-      
+  export PYTHONPATH=~/lib/python:$PYTHONPATH

@@ -1,0 +1,117 @@
+#
+# factory.conf Configuration file for main Factory component of AutoPyFactory.
+#
+
+# ===========================================================================
+#               VARIABLES
+# ===========================================================================
+
+# baseLogDir
+# baseLogDirUrl
+# baseLogHttpPort 
+# batchstatus.condor.sleep
+# batchstatus.maxtime
+# cycles
+# factoryId
+# factoryAdminEmail
+# factory.sleep
+# factoryUser
+# monitorURL
+# logserver.enabled 
+# logserver.index 
+# proxyConf
+# proxymanager.enabled = True
+# queueConf
+# versionTag
+# wmsstatus.maxtime
+# wmsstatus.panda.sleep
+
+# ---------------------------------------------------------------------------
+# Description:
+# ---------------------------------------------------------------------------
+
+# baseLogDir =  where outputs from pilots are stored
+#               NOTE: No trailing '/'!!!
+#
+# baseLogDirUrl = where outputs from pilots are available via http 
+#               NOTE: No trailing '/'!!!
+#
+# baseLogHttpPort = What port to run the HTTP server to export logs. 
+#               Make sure this matchesthe value in the baseLogDirUrl.
+#
+# batchstatus.condor.sleep = time the BatchStatus Plugin waits between cycles
+#               Value is in seconds.
+#
+# batchstatus.maxtime = maximum time while the info is considered reasonable. 
+#               If info stored is older than that, is considered not valid, 
+#               and some NULL output will be returned.
+#
+# cycles = maximum number of times the queues will loop. 
+#               None means forever.
+#
+# factoryId = Name that the factory instance will have in the APF web monitor. 
+#               Make factoryId something descriptive and unique for your factory,
+#               for example <site>-<host>-<admin> (e.g. BNL-gridui11-jhover)
+#
+# factoryAdminEmail = Email of the local admin to contact in case of a problem
+#               with an specific APF instance.
+#
+# factory.sleep = sleep time between cycles in mainLoop in Factory object
+#               Value is in seconds.
+#
+# factoryUser = account under which APF will run
+#
+# monitorURL = URL for the web monitor
+#
+# logserver.enabled = determines if batch logs are exported via HTTP.
+#               Valid values are True|False
+#
+# logserver.index = determines if automatic directory indexing is allowed
+#               when log directories are browsed. 
+#               Valid values are True|Faose
+#
+# proxyConf = path to the configuration file for automatic proxy management
+#
+# proxymanager.enabled = to determine is automatic proxy management is used or not.
+#               Accepted values are True|False
+#
+# queueConf = path to the configuration file for APF queues.
+#
+# versionTag = APF version number as it will be displayed in the web monitor
+#
+# wmsstatus.maximum = maximum time while the info is considered reasonable. 
+#               If info stored is older than that, is considered not valid, 
+#               and some NULL output will be returned.
+#
+# wmsstatus.panda.sleep = time the WMSStatus Plugin waits between cycles
+#               Value is in seconds.
+
+
+# ===========================================================================
+
+
+[Factory]
+
+factoryAdminEmail = neo@matrix.net
+factoryId = BNL-gridui11-jhover
+factoryUser = apf
+versionTag = 2.1.0
+
+monitorURL =  http://apfmon.lancs.ac.uk/mon/
+
+queueConf = file:///etc/apf/queues.conf
+proxyConf = /etc/apf/proxy.conf
+proxymanager.enabled = True
+
+cycles = None
+
+factory.sleep=30
+wmsstatus.panda.sleep = 50
+batchstatus.condor.sleep = 50
+
+baseLogDir = /home/apf/factory/logs
+baseLogDirUrl = http://my.host.domain:25880
+baseLogHttpPort = 25880 
+
+logserver.enabled = True
+logserver.index = True
