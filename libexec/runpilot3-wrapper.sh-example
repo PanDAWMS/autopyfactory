@@ -332,8 +332,6 @@ elif [ -f $ATLAS_AREA/ddm/latest/setup.sh ]; then
 else
   echo "WARNING: No DDM setup found to source."
 fi
-echo "$ rucio ping"
-echo `rucio ping`
 echo
 
 # Search for local setup file
