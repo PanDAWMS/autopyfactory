@@ -1,25 +1,34 @@
 #!/usr/bin/env python
 
 import logging
-import os
 
 from autopyfactory.apfexceptions import ConfigFailure
 from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.interfaces import ConfigInterface
 
 
-class File(ConfigInterface):
+class FileConfigPlugin(ConfigInterface):
 
-    def __init__(self, factory):
+    def __init__(self, factory, qccl, id):
 
         self.log = logging.getLogger("main.configplugin")
         self.factory = factory
         self.fcl = factory.fcl
+        self.qccl = qccl   # a ConfigParser object with everything in file queueConfigConf, AND from autopyfactory.conf for backwards compatibility
+        self.id = id       # the [SECTION] name in the qccl
+        # an alternative is to pass a reduced qccl with only the corresponding section
         self.log.info('ConfigPlugin: Object initialized.')
 
     def getConfig(self):
 
         qcl = None
+
+        
+        defaults = self.fcl.get('Factory', 'queueDefaults')
+        if defaults:
+            qcl = Config()
+            qcl.read([defaults, <sources>, <q.d>])
+
 
         # 1. we try to read the list of files in queueConf and create a config loader
         qcf = None
@@ -27,7 +36,6 @@ class File(ConfigInterface):
             qcf = self.fcl.get('Factory', 'queueConf')    # the configuration files for queues are a list of URIs
             self.log.debug("queues.conf file(s) = %s" % qcf)
             qcl_files = ConfigManager().getConfig(sources=qcf)
-            self.log.trace("successfully read config file(s) %s" % qcf)
         except:
             pass
         
@@ -38,28 +46,19 @@ class File(ConfigInterface):
             if qcd == "None" or qcd == "":
                 qcd = None
             if qcd:
-                # FIXME : temporary solution. 
-                #         The ConfigManager.getConfig( ) method should know how to handle properly empty directories
-                if os.listdir(qcd) == []:
-                    self.log.debug("queues.conf directory = %s exists but it is empty" % qcd)
-                    qcd = None
-                else:
-                    self.log.debug("queues.conf directory = %s" % qcd)
-                    qcl_dir = ConfigManager().getConfig(configdir=qcd)
+                self.log.debug("queues.conf directory = %s" % qcd)
+                qcl_dir = ConfigManager().getConfig(configdir=qcd)
         except:
             pass
         
         # 3. we merge both loader objects
         try:
             if qcf and qcd:
-                self.log.trace("both queues file(s) and dir")
                 qcl = qcl_files
-                qcl.merge(qcl_dir)
+                self.qcl.merge(qcl_dir)
             elif qcf and not qcd:
-                self.log.trace("queues file(s) only")
                 qcl = qcl_files
             elif not qcf and qcd:
-                self.log.trace("queues dir only")
                 qcl = qcl_dir
             else:
                 self.log.error('no files or directory with queues configuration specified')
@@ -70,3 +69,6 @@ class File(ConfigInterface):
 
         self.log.info('queues ConfigLoader object created')
         return qcl
+
+
+
