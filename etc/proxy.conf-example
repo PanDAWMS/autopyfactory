@@ -1,0 +1,149 @@
+#
+# proxy.conf   Configuration file for ProxyManager component of AutoPyFactory. 
+#
+
+# =========================================================================== 
+#               DESCRIPTION 
+# =========================================================================== 
+
+# baseproxy     If used, create a very long-lived proxy, e.g.
+#               grid-proxy-init -valid 720:0 -out /tmp/plainProxy
+#               Note that maintenance of this proxy must 
+#               occur completely outside of APF. 
+#
+# proxyfile     Target proxy path.
+#
+# lifetime      Initial voms lifetime, in seconds (604800 = 7 days)
+#               345600 is ATLAS VOMS maximum
+#
+# checktime     How often to check proxy validity, in seconds
+#
+# minlife       Minimum lifetime of proxy (renew if less) in seconds
+#
+# interruptcheck Frequency to check for keyboard/signal interrupts, in seconds
+#
+# renew         If you do not want to use ProxyManager to renew proxies, 
+#               set this  False and only define 'proxyfile'
+#               If renew is set to false, 
+#               then no grid client setup is necessary. 
+#
+# usercert      Path to the user grid certificate file
+#
+# userkey       Path to the user grid key file
+#
+# vorole        User VO role for target proxy. 
+#
+#             MyProxy Retrieval Functionality: Assumes you have created a long-lived
+#               proxy in a MyProxy server, out of band. 
+#
+# flavor        voms or myproxy. voms directly generates proxy using cert or baseproxy
+#               myproxy retrieves a proxy from myproxy, then generates the target proxy against
+#               voms using it as baseproxy.
+#
+# myproxy_hostname     Myproxy server host.   
+#
+# myproxy_username     User name to be used on MyProxy service
+# 
+# myproxy_passphrase   Passphrase for proxy retrieval from MyProxy
+#
+# retriever_profile    A list of other proxymanager profiles to be used to authorize proxy
+#                      retrieval from MyProxy. 
+#
+# initdelay            In seconds, how long to wait before generating. Needed for
+#                      MyProxy when using cert authentication--we need to allow time
+#                      for the auth credential to be generated (by another proxymanager profile). 
+#
+# owner                If running standalone (as root) and you want the proxy to be owned by another account. 
+#
+#             Remote Proxy Maintenance: Assumes you have enabled ssh-agent key-based access
+#               to the remote host where you want to maintain a proxy file. 
+#
+# remote_host          If defined, copy proxyfile to same path on remote host
+# remote_user          User to connect as? 
+# remote_owner         If connect user is root, what account should own the file?
+# remote_group         If connect user is root, what group should own the file?
+#
+#
+#
+# =========================================================================== 
+
+[DEFAULT]
+#envset_KEY = VALUE
+#envunset = VAR1,VAR2,VAR3
+# Baseproxy, if used.
+# If used, create a very long-lived proxy, e.g.
+#     grid-proxy-init -valid 720:0 -out /tmp/plainProxy
+# Note that maintenance of this proxy must occur completely outside of APF. 
+# baseproxy = /tmp/plainProxy
+
+baseproxy = None
+
+# flavor = voms OR myproxy
+flavor = voms
+remote_host = None         
+remote_user = None         
+remote_owner = None        
+remote_group = None
+
+usercert=~/.globus/usercert.pem
+userkey=~/.globus/userkeynopw.pem
+
+# Initial voms lifetime, in seconds (604800 = 7 days)
+# 345600 is ATLAS VOMS maximum
+# lifetime = 345600
+lifetime = 604800
+# How often to check proxy validity, in seconds
+checktime = 3600
+# checktime = 120
+# Minimum lifetime of proxy (renew if less) in seconds
+minlife = 259200
+# Frequency to check for keyboard/signal interrupts, in seconds
+interruptcheck = 1
+# Allow for init delay for MyProxy proxies that rely on other profiles. 
+initdelay = 0
+
+
+# If set, proxymanager will try to set the UNIX owner of the target proxy file accordingly. 
+# If unset, proxymanager will leave it owned by whatever user APF or the proxymanager is already 
+# running as. 
+# owner = apf
+
+#
+# If you don't want to use ProxyManager to renew proxies, set this  False
+# and only define 'proxyfile'
+#  If renew is set to false, then no grid client setup is necessary. 
+renew = True
+
+[atlas-usatlas]
+vorole = atlas:/atlas/usatlas
+proxyfile = /tmp/atlasProxy
+
+[atlas-production]
+# baseproxy = /tmp/plainProxy
+vorole = atlas:/atlas/Role=production
+proxyfile = /tmp/prodProxy
+
+#[osgvo]
+#vorole = osg:/osg
+
+# MyProxy proxy retrieved by certificate authentication
+[atlas-userproxy-one]
+myproxy_username = apfuser1
+flavor = myproxy
+initdelay = 15
+myproxy_hostname = myproxy.cern.ch
+vorole = atlas:/atlas/usatlas
+proxyfile = /tmp/userProxyOne
+retriever_list = atlas-production
+
+# MyProxy proxy retrieved by passphrase authentication
+[atlas-userproxy-two]
+myproxy_username = apfproxy
+flavor = myproxy
+# No init delay needed for passphrase retrieval
+initdelay = 0
+myproxy_hostname = myproxy.cern.ch
+vorole = atlas:/atlas/usatlas
+proxyfile = /tmp/userProxyTwo
+myproxy_passphrase = ppfortwo
+
