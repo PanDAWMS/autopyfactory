@@ -90,7 +90,7 @@ class CleanLogs(threading.Thread):
 
         self.log.trace("Starting with input %s." %dir.dir)
 
-        self.keepdays = KeepDays(self.fcl, self.factory.qcl)
+        self.keepdays = KeepDays(self.fcl, self.qcl)
         dir.rm(self.keepdays)
 
         self.log.trace("Leaving.")

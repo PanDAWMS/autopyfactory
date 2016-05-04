@@ -26,8 +26,6 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-
-
 class MySimpleHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
     def guess_type(self, path):

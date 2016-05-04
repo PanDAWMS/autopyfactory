@@ -1,0 +1,58 @@
+#! /usr/bin/env python
+#
+
+
+from autopyfactory.interfaces import SchedInterface
+from autopyfactory.factory import Singleton
+import logging
+
+
+class MaxPerFactorySchedPlugin(SchedInterface):
+
+    id = 'maxperfactory'
+    
+    def __init__(self, apfqueue):
+
+        try:
+            self.apfqueue = apfqueue                
+            self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
+
+            self.max_pilots_per_factory = self.apfqueue.fcl.generic_get('Factory', 'maxperfactory.maximum', 'getint')
+
+            self.log.trace("SchedPlugin: Object initialized.")
+        except Exception, ex:
+            self.log.error("SchedPlugin object initialization failed. Raising exception")
+            raise ex
+
+    def calcSubmitNum(self, n=0):
+        """ 
+        """
+        self.log.trace('Starting.')
+
+        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
+        self.log.trace("Got batchinfo with %d queues" % len(self.batchinfo))
+        self.total_pilots = 0 
+        for batchqueue in self.batchinfo.keys():  
+            self.total_pilots += self.batchinfo[batchqueue].running
+            self.total_pilots += self.batchinfo[batchqueue].pending
+        self.log.trace('Total pending+running in factory is %s' % self.total_pilots)
+
+        out = n
+        msg = None
+
+        if self.total_pilots > self.max_pilots_per_factory:
+            out = 0
+        elif n + self.total_pilots > self.max_pilots_per_factory:
+            out = self.max_pilots_per_factory - self.total_pilots
+
+        # Catch all to prevent negative numbers
+        #if n < 0:
+        #    self.log.info('calculated output was negative. Returning 0')
+        #    out = 0
+
+        msg = 'MaxPerFactory:in=%s,total=%s,max=%s,out=%s' %(n, 
+                                                             self.total_pilots, 
+                                                             self.max_pilots_per_factory, 
+                                                             out)
+        self.log.info(msg)
+        return (out, msg)

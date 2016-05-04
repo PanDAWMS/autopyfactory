@@ -2,6 +2,7 @@
 '''
     An X.509 proxy management component for AutoPyFactory 
 
+
 '''
 import logging
 import math
@@ -54,15 +55,15 @@ class ProxyManager(threading.Thread):
             
     def mainLoop(self):
         for ph in self.handlers:
-            self.log.trace("Starting handler [%s]" % ph.name)
+            self.log.info("Starting handler [%s]" % ph.name)
             ph.start()
         
         try:
             while not self.stopevent.isSet():
-                #self.log.trace('Checking for interrupt.')
+                #self.log.debug('Checking for interrupt.')
                 time.sleep(self.sleep)                  
         except (KeyboardInterrupt): 
-                self.log.debug("Shutdown via Ctrl-C or -INT signal.")
+                self.log.info("Shutdown via Ctrl-C or -INT signal.")
                 self.log.trace("Shutting down all threads...")
                 for ph in self.handlers:
                     ph.join()
@@ -141,25 +142,10 @@ class ProxyHandler(threading.Thread):
         self.initdelay = int(initdelaystr)     
 
         # transfer proxy to remote host?
-        if config.has_option(section, 'remote_host'):
-            self.remote_host = config.get(section, 'remote_host')
-        else:
-            self.remote_host = None
-
-        if config.has_option(section, 'remote_user'):
-            self.remote_user = config.get(section, 'remote_user')
-        else:
-            self.remote_user = None
-
-        if config.has_option(section, 'remote_owner'):
-            self.remote_owner = config.get(section, 'remote_owner')
-        else:
-            self.remote_owner = None
-
-        if config.has_option(section, 'remote_group'):
-            self.remote_group = config.get(section, 'remote_group')
-        else:
-            self.remote_group = None
+        self.remote_host = config.get(section, 'remote_host')
+        self.remote_user = config.get(section, 'remote_user')
+        self.remote_owner = config.get(section, 'remote_owner')
+        self.remote_group = config.get(section, 'remote_group')
 
         # extra argument
         self.voms_args = None
@@ -181,16 +167,16 @@ class ProxyHandler(threading.Thread):
         # Flavors are 'voms' or 'myproxy'
         self.flavor = config.get(section, 'flavor')
         
-        if self.flavor == 'voms':
-            if config.has_option(section, 'baseproxy') and\
-                config.get(section, 'baseproxy').lower().strip() != "none":
-                baseproxy = config.get(section,'baseproxy')
-                self.baseproxy = os.path.expanduser(baseproxy)
-            else:
+        if self.flavor == 'voms':        
+            self.baseproxy = config.get(section,'baseproxy' ) 
+            if self.baseproxy.lower().strip() == "none":
                 self.baseproxy = None
-                self.usercert = os.path.expanduser(config.get(section, 'usercert'))
-                self.userkey = os.path.expanduser(config.get(section, 'userkey'))
-
+            else:
+                self.baseproxy = os.path.expanduser(self.baseproxy)
+            
+            
+            self.usercert = os.path.expanduser(config.get(section, 'usercert'))
+            self.userkey = os.path.expanduser(config.get(section, 'userkey'))
             
             # Handle booleans
             renewstr = config.get(section, 'renew').lower().strip()
@@ -241,7 +227,7 @@ class ProxyHandler(threading.Thread):
         # Handle objects
         self.stopevent = threading.Event()
 
-        self.log.debug("[%s] ProxyHandler initialized." % self.name)
+        self.log.info("[%s] ProxyHandler initialized." % self.name)
 
     def _generateProxy(self):
         '''
@@ -249,7 +235,7 @@ class ProxyHandler(threading.Thread):
         Uses existing baseproxy if configured. 
         
         '''
-        self.log.trace("[%s] Generating new proxy..." % self.name)
+        self.log.debug("[%s] Generating new proxy..." % self.name)
         cmd = 'voms-proxy-init '
         #cmd += ' -dont-verify-ac '
         cmd += ' -ignorewarn '
@@ -272,14 +258,14 @@ class ProxyHandler(threading.Thread):
         if self.voms_args:
             cmd += self.voms_args
 
-             
+            
         # Run command
-        self.log.debug("[%s] Running Command: %s" % (self.name, cmd))
+        self.log.info("[%s] Running Command: %s" % (self.name, cmd))
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
         stdout, stderr = p.communicate()
         if p.returncode == 0:
-            self.log.debug("[%s] Command OK. Output = %s" % (self.name, stdout))
-            self.log.debug("[%s] Proxy generated successfully. VOMS Timeleft = %d" % (self.name, self._checkVOMSTimeLeft()))
+            self.log.trace("[%s] Command OK. Output = %s" % (self.name, stdout))
+            self.log.trace("[%s] Proxy generated successfully. VOMS Timeleft = %d" % (self.name, self._checkVOMSTimeLeft()))
         elif p.returncode == 1:
             self.log.error("[%s] Command RC = 1. Error = %s" % (self.name, stderr))
         else:
@@ -354,18 +340,18 @@ class ProxyHandler(threading.Thread):
         cmd += ' --out %s ' % self.proxyfile
              
         # Run command
-        self.log.debug("[%s] Running Command: %s" % (self.name, cmd))
+        self.log.info("[%s] Running Command: %s" % (self.name, cmd))
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
         stdout, stderr = p.communicate()
         if p.returncode == 0:
-            self.log.debug("[%s] Command OK. Output = %s" % (self.name, stdout))
-            self.log.debug("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkVOMSTimeLeft()))
+            self.log.trace("[%s] Command OK. Output = %s" % (self.name, stdout))
+            self.log.trace("[%s] Proxy generated successfully. Timeleft = %d" % (self.name, self._checkVOMSTimeLeft()))
         elif p.returncode == 1:
             self.log.error("[%s] Command RC = 1. Error = %s" % (self.name, stderr))
         else:
             raise Exception("Strange error using command myproxy_get_delegation. Return code = %d" % p.returncode)
         self._setProxyOwner()
-        self.log.trace("[%s] End." % self.name)
+        self.log.debug("[%s] End." % self.name)
 
 
     def _checkVOMSTimeLeft(self):
@@ -380,11 +366,11 @@ class ProxyHandler(threading.Thread):
             cmd += ' -file %s ' % self.proxyfile
             
             # Run command
-            self.log.trace("[%s] Running Command: %s" % (self.name, cmd))
+            self.log.info("[%s] Running Command: %s" % (self.name, cmd))
             p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
             stdout, stderr = p.communicate()
             if p.returncode == 0:
-                self.log.debug("[%s] Command OK. VOMS Timeleft = %s" % (self.name, stdout.strip() ))
+                self.log.trace("[%s] Command OK. VOMS Timeleft = %s" % (self.name, stdout.strip() ))
                 r = int(stdout.strip())
             elif p.returncode == 1:
                 self.log.warn("[%s] Command RC = 1" % self.name)
@@ -392,7 +378,7 @@ class ProxyHandler(threading.Thread):
             else:
                 raise Exception("Strange error using command voms-proxy-info -actimeleft. Return code = %d" % p.returncode)
         else:
-            self.log.debug('No proxy file at path %s.' % self.proxyfile)
+            self.log.info('No proxy file at path %s.' % self.proxyfile)
             r = 0
         return r
 
@@ -405,14 +391,14 @@ class ProxyHandler(threading.Thread):
         # FIXME: this method is almost 100% identical to _checkVOMSTimeLeft()
         #        figure out how to eliminate so much duplicate code
 
-        self.log.trace("[%s] Begin..." % self.name)
+        self.log.debug("[%s] Begin..." % self.name)
         r = 0
         if os.path.exists(self.proxyfile):
             cmd = 'voms-proxy-info -dont-verify-ac -timeleft '
             cmd += ' -file %s ' % self.proxyfile
             
             # Run command
-            self.log.debug("[%s] Running Command: %s" % (self.name, cmd))
+            self.log.info("[%s] Running Command: %s" % (self.name, cmd))
             p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
             stdout, stderr = p.communicate()
             if p.returncode == 0:
@@ -424,7 +410,7 @@ class ProxyHandler(threading.Thread):
             else:
                 raise Exception("Strange error using command voms-proxy-info -timeleft. Return code = %d" % p.returncode)
         else:
-            self.log.debug('No proxy file at path %s.' % self.proxyfile)
+            self.log.warn('No proxy file at path %s.' % self.proxyfile)
             r = 0
         return r
 
@@ -532,7 +518,7 @@ class ProxyHandler(threading.Thread):
         Stop the thread. Overriding this method required to handle Ctrl-C from console.
         '''
         self.stopevent.set()
-        self.log.debug('Stopping thread...')
+        self.log.info('Stopping thread...')
         threading.Thread.join(self, timeout)
 
    
@@ -551,7 +537,7 @@ class ProxyHandler(threading.Thread):
             if (now - lastrun ) < self.checktime:
                 pass
             else:
-                self.log.debug("[%s] Running ProxyHandler..." % self.name)
+                self.log.info("[%s] Running ProxyHandler..." % self.name)
                 self.handleProxy()
                 lastrun = int(time.time())    
             # Check relatively frequently for interrupts
@@ -566,17 +552,17 @@ class ProxyHandler(threading.Thread):
                 tl = self._checkVOMSTimeLeft()
                 self.log.trace("[%s] Time left is %d" % (self.name, tl))
                 if tl < self.minlife:
-                    self.log.debug("[%s] Need proxy. Generating..." % self.name)
+                    self.log.info("[%s] Need proxy. Generating..." % self.name)
                     rc = self._generateProxy()
                     if rc == 0:
                         self.log.info("[%s] Proxy generated successfully. VOMS Timeleft = %d" % (self.name, self._checkVOMSTimeLeft()))    
                     else:
                         self.log.critical("[%s] Proxy not generated successfully" % self.name)    
                 else:
-                    self.log.trace("[%s] VOMS Time left %d seconds." % (self.name, self._checkVOMSTimeLeft() ))
+                    #self.log.debug("[%s] VOMS Time left %d seconds." % (self.name, self._checkVOMSTimeLeft() ))
                     self.log.info("[%s] Proxy OK (VOMS Timeleft %ds)." % ( self.name, self._checkVOMSTimeLeft()))
             else:
-                self.log.debug("Proxy checking and renewal disabled in config.")
+                self.log.info("Proxy checking and renewal disabled in config.")
         elif self.flavor == 'myproxy':
             tl = self._checkVOMSTimeLeft()
             self.log.trace("[%s] Time left is %d" % (self.name, tl))
@@ -586,7 +572,7 @@ class ProxyHandler(threading.Thread):
                 self.log.info("[%s] Credential retrieved and proxy renewed successfully. VOMS Timeleft = %d" % (self.name, 
                                                                                                            self._checkVOMSTimeLeft()))    
             else:
-                self.log.trace("[%s] VOMS Time left %d seconds." % (self.name, self._checkVOMSTimeLeft() ))
+                #self.log.debug("[%s] VOMS Time left %d seconds." % (self.name, self._checkVOMSTimeLeft() ))
                 self.log.info("[%s] Proxy OK (VOMS Timeleft %ds)." % ( self.name, self._checkVOMSTimeLeft()))
 
         # transfer
@@ -659,6 +645,7 @@ if __name__ == '__main__':
         self.log(logging.TRACE, msg, *args, **kwargs)
     
     logging.Logger.trace = trace
+    
     # Check python version 
     major, minor, release, st, num = sys.version_info
     
@@ -692,7 +679,7 @@ if __name__ == '__main__':
         log.setLevel(logging.DEBUG) # Override with command line switches
     if info:
         log.setLevel(logging.INFO) # Override with command line switches
-    log.debug("Logging initialized.")      
+    log.info("Logging initialized.")      
     
     # Read in config file
     pconfig=ConfigParser()
@@ -711,7 +698,7 @@ if __name__ == '__main__':
             time.sleep(2)
             log.trace('Checking for interrupt.')
     except (KeyboardInterrupt): 
-        log.debug("Shutdown via Ctrl-C or -INT signal.")
+        log.info("Shutdown via Ctrl-C or -INT signal.")
         pm.stopevent.set()
     
     

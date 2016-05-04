@@ -1,0 +1,61 @@
+#
+# mappings between the different systems (Panda, Condor...) 
+# and internal AutoPyFactory nomenclature.
+# Do not touch it unless you really know what you are doing. 
+# Changes in these mappings can change completely the behavior of the factory.
+#
+
+[CONDORBATCHSTATUS-GLOBUSSTATUS2INFO]
+1   = pending
+2   = running
+4   = done
+8   = done
+16  = suspended
+32  = pending
+64  = pending
+128 = running
+ 
+[CONDORBATCHSTATUS-JOBSTATUS2INFO]
+0 = pending
+1 = pending
+2 = running
+3 = done
+4 = done
+5 = pending
+6 = pending
+
+
+[CONDOREC2BATCHSTATUS-JOBSTATUS2INFO]
+0 = pending
+1 = pending
+2 = running
+3 = done
+4 = done
+5 = done 
+6 = pending
+
+
+[PANDAWMSSTATUS-JOBSSTATISTICSPERSITE2INFO]
+pending      = notready
+defined      = notready
+assigned     = notready
+waiting      = notready
+activated    = ready
+starting     = running
+sent         = running
+running      = running
+holding      = running
+transferring = running
+finished     = done
+failed       = failed
+cancelled    = failed
+
+
+[CONDORWMSSTATUS-JOBSTATUS2INFO]
+0 = ready
+1 = ready
+2 = running
+3 = done
+4 = done
+5 = failed
+6 = running
