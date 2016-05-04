@@ -11,7 +11,7 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Generic variables">Generic variables</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#WMS Status Plugin variables">WMS Status Plugin variables</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when wmsstatusplugin is CondorLocal">Configuration when wmsstatusplugin is CondorLocal</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Config Plugin variables">Config Plugin variables</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Batch Status Plugin variables">Batch Status Plugin variables</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Sched Plugin variables">Sched Plugin variables</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Activated">Configuration when schedplugin is Activated</a><br>
@@ -25,6 +25,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is StatusTest">Configuration when schedplugin is StatusTest</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is StatusOffline">Configuration when schedplugin is StatusOffline</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Simple">Configuration when schedplugin is Simple</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is SimpleNQueue">Configuration when schedplugin is SimpleNQueue</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Trivial">Configuration when schedplugin is Trivial</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is Scale">Configuration when schedplugin is Scale</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Configuration when schedplugin is KeepNRunning">Configuration when schedplugin is KeepNRunning</a><br>
@@ -61,9 +62,15 @@ NOTE: No trailing '/'!!!
 <br>
 where outputs from pilots are available via http
 <br>
-NOTE: It must include the port.
-<br>
 NOTE: No trailing '/'!!!
+<br>
+
+<br>
+<li><strong>baseLogHttpPort</strong>
+<br>
+What port to run the HTTP server to export logs.
+<br>
+Make sure this matchesthe value in the baseLogDirUrl.
 <br>
 
 <br>
@@ -126,12 +133,6 @@ for example <site>-<host>-<admin> (e.g. BNL-gridui11-jhover)
 Email of the local admin to contact in case of a problem
 <br>
 with an specific APF instance.
-<br>
-
-<br>
-<li><strong>factorySMTPServer</strong>
-<br>
-Server to use to send alert emails to admin.
 <br>
 
 <br>
@@ -211,38 +212,12 @@ Accepted values are True|False
 <br>
 
 <br>
-<li><strong>proxymanager.sleep</strong>
-<br>
-Sleep interval for proxymanager thread. 
-<br>
-
-<br>
 <li><strong>queueConf</strong>
 <br>
 URI plus path to the configuration file for APF queues.
 <br>
 NOTE: Must be expressed as a URI (file:// or http://)
 <br>
-It can be one or more split-by-comma.
-In case of more than one, they are merged 
-<br>
-
-<br>
-<li><strong>queueDirConf</strong>
-<br>
-directory with a set of configuration files, all of them to be used at the same time. 
-<br>
-i.e.  /etc/apf/queues.d/
-<br>
-When this directory exists, the files in it are merged using
-python method SafeConfigParser.read()
-which allows having the [DEFAULT] section in a single file
-and it will applied to all files in the directory
-NOTE: if the directory is used in combination with queueConf,
-the resulting object after parsing the content of the directory
-is merged with the resulting object after parsing queueConf content
-<br>
-
 
 <br>
 <li><strong>monitorConf</strong>
@@ -251,11 +226,9 @@ local path to the configuration file for Monitor plugins.
 <br>
 
 <br>
-<li><strong>mappingsConf</strong>
+<li><strong>versionTag</strong>
 <br>
-local path to the configuration file with the mappings:
-<br>
-for example, globus2info, jobstatus2info, etc.
+APF version number as it will be displayed in the web monitor
 <br>
 
 <br>
@@ -348,18 +321,14 @@ WMS Status Plugin.
 <br>
 </ul>
 
-
-
-<a name="Configuration when wmsstatusplugin is CondorLocal"><h3><span style="color: black; "><span>Configuration when wmsstatusplugin is CondorLocal</span></span></h3></a>
+<a name="Config Plugin variables"><h3><span style="color: black; "><span>Config Plugin variables</span></span></h3></a>
 <ul>
-<li><strong>wmsstatus.condor.queryargs</strong><br>
-list of command line input options
-to be included in the query command *verbatim*. E.g. 
-wmsstatus.condor.queryargs = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]>
+<li><strong>configplugin</strong><br>
+Config Plugin.
+Optional.
+E.g. Panda.
 <br>
 </ul>
-
-
 
 <a name="Batch Status Plugin variables"><h3><span style="color: black; "><span>Batch Status Plugin variables</span></span></h3></a>
 <ul>
@@ -370,7 +339,7 @@ Batch Status Plugin.
 <li><strong>batchstatus.condor.queryargs</strong><br>
 list of command line input options
 to be included in the query command *verbatim*. E.g. 
-batchstatus.condor.queryargs = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]>
+batchstatus.condor.query = -name <schedd_name> -pool <centralmanagerhostname[:portnumber]>
 <br>
 </ul>
 
@@ -444,13 +413,13 @@ To be used in Activated Scheduler Plugin.
 <br>
 <li><strong>sched.activated.testmode.allowed</strong><br>
 Boolean variable to trigger
-special mode of operation when the wmsqueue is in
+special mode of operation when the wmssite is in
 in status = test
 <br>
 <br>
 <li><strong>sched.activated.testmode.pilots</strong><br>
 number of pilots to submit
-when the wmsqueue is in status = test
+when the wmssite is in status = test
 and sched.activated.testmode.allowed is True
 <br>
 </ul>
@@ -511,17 +480,31 @@ be running at a time.
 
 <a name="Configuration when schedplugin is StatusTest"><h3><span style="color: black; "><span>Configuration when schedplugin is StatusTest</span></span></h3></a>
 <ul>
+<li><strong>sched.statustest.allowed</strong><br>
+Boolean variable to trigger
+special mode of operation when the wmssite is in
+in status = test
+<br>
+<br>
 <li><strong>sched.statustest.pilots</strong><br>
 number of pilots to submit
-when the wmsqueue is in status = test
+when the wmssite is in status = test
+and sched.statustest.allowed is True
 <br>
 </ul>
 
 <a name="Configuration when schedplugin is StatusOffline"><h3><span style="color: black; "><span>Configuration when schedplugin is StatusOffline</span></span></h3></a>
 <ul>
+<li><strong>sched.statusoffline.allowed</strong><br>
+Boolean variable to trigger
+special mode of operation when the wmssite or the cloud 
+is in status = offline
+<br>
+<br>
 <li><strong>sched.statusoffline.pilots</strong><br>
 number of pilots to submit
-when the wmsqueue or the cloud is in status = offline
+when the wmssite or the cloud is in status = offline
+and sched.statusoffline.allowed is True
 <br>
 </ul>
 
@@ -547,6 +530,45 @@ To be used in Simple Scheduler Plugin.
 <br>
 </ul>
 
+<a name="Configuration when schedplugin is SimpleNQueue"><h3><span style="color: black; "><span>Configuration when schedplugin is SimpleNQueue</span></span></h3></a>
+<ul>
+<li><strong>sched.simplenqueue.default</strong><br>
+default number of pilots to be submitted
+when the context information does not exist 
+or is not reliable.
+To be used in SimpleNQueue Scheduler Plugin.
+<br>
+<br>
+<li><strong>sched.simplenqueue.maxpilotspercycle</strong><br>
+maximum number of pilots
+to be submitted each cycle.
+To be used in SimpleNQueue Scheduler Plugin.
+<br>
+<br>
+<li><strong>sched.simplenqueue.nqueue</strong><br>
+desired number of pilots
+in idle status waiting in queue to start execution.
+To be used in SimpleNQueue Scheduler Plugin.
+<br>
+<br>
+<li><strong>sched.simplenqueue.depthboost</strong><br>
+multiplying factor which allows more pilots
+to be submitted than nqueue if there are 
+sufficient activated jobs - helps when the jobs are short 
+<br>
+<br>
+<li><strong>sched.simplenqueue.pilotlimit</strong><br>
+sets a hard limit on the total number
+of pilots at a site, active + queued
+<br>
+<br>
+<li><strong>sched.simplenqueue.transferringlimit</strong><br>
+sets a limit on the number of jobs
+in transferring status allowed at a site - 
+when this limit is reached no pilots will be submitted 
+to allow backlogs to clear
+<br>
+</ul>
 
 <a name="Configuration when schedplugin is Trivial"><h3><span style="color: black; "><span>Configuration when schedplugin is Trivial</span></span></h3></a>
 <ul>
@@ -615,6 +637,8 @@ that is not otherwise added programmatically by AutoPyFactory.
 Note the following directives are added by default:
 <br>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transfer_executable&nbsp;=&nbsp;True
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;should_transfer_files&nbsp;=&nbsp;YES
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;when_to_transfer_output&nbsp;=&nbsp;ON_EXIT_OR_EVICT
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stream_output=False
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stream_error=False
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notification=Error
@@ -770,6 +794,8 @@ that is not otherwise added programmatically by AutoPyFactory.
 Note the following directives are added by default:
 <br>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transfer_executable&nbsp;=&nbsp;True
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;should_transfer_files&nbsp;=&nbsp;YES
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;when_to_transfer_output&nbsp;=&nbsp;ON_EXIT_OR_EVICT
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stream_output=False
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stream_error=False
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notification=Error
@@ -965,6 +991,8 @@ that is not otherwise added programmatically by AutoPyFactory.
 Note the following directives are added by default:
 <br>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transfer_executable&nbsp;=&nbsp;True
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;should_transfer_files&nbsp;=&nbsp;YES
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;when_to_transfer_output&nbsp;=&nbsp;ON_EXIT_OR_EVICT
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stream_output=False
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stream_error=False
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notification=Error
@@ -1154,8 +1182,8 @@ Note the following directives are added by default:
 <br>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;universe&nbsp;=&nbsp;vanilla
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transfer_executable&nbsp;=&nbsp;True
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;should_transfer_files&nbsp;=&nbsp;IF_NEEDED
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+TransferOutput&nbsp;=&nbsp;""
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;should_transfer_files&nbsp;=&nbsp;YES
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;when_to_transfer_output&nbsp;=&nbsp;ON_EXIT_OR_EVICT
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stream_output=False
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stream_error=False
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notification=Error
@@ -1267,14 +1295,14 @@ Frequency to check for keyboard/signal interrupts, in seconds
 <br>
 <li><strong>lifetime</strong>
 <br>
-initial lifetime, in seconds (604800 = 7 days).
+initial voms lifetime, in seconds (604800 = 7 days).
 345600 is ATLAS VOMS maximum
 <br>
 
 <br>
 <li><strong>minlife</strong>
 <br>
-Minimum lifetime of VOMS attributes for a proxy (renew if less) in seconds
+Minimum lifetime of proxy (renew if less) in seconds
 <br>
 
 <br>
@@ -1302,82 +1330,6 @@ path to the user grid key file
 <li><strong>vorole</strong>
 <br>
 user VO role
-<br>
-
-
-<br>
-<li><strong> flavor</strong>
-<br>
-voms or myproxy. voms directly generates proxy using cert or baseproxy
-myproxy retrieves a proxy from myproxy, then generates the target proxy against
-voms using it as baseproxy.
-<br>
-
-<br>
-<li><strong> myproxy_hostname</strong>
-<br>
-Myproxy server host.   
-<br>
-
-<br>
-<li><strong> myproxy_username</strong>
-<br>
-User name to be used on MyProxy service
-<br>
-
-<br>
-<li><strong> myproxy_passphrase</strong>
-<br>
-Passphrase for proxy retrieval from MyProxy
-<br>
-
-<br>
-<li><strong> retriever_profile</strong>
-<br>
-A list of other proxymanager profiles to be used to authorize proxy retrieval from MyProxy. 
-<br>
-
-<br>
-<li><strong> initdelay</strong>
-<br>
-In seconds, how long to wait before generating. 
-Needed for MyProxy when using cert authentication--we need to allow time for the auth credential to be generated (by another proxymanager profile). 
-<br>
-
-<br>
-<li><strong> owner</strong>
-<br>
-If running standalone (as root) and you want the proxy to be owned by another account. 
-<br>
-
-<br>
-<li><strong> remote.remote_host</strong>
-<br>
-If remote=True: copy proxyfile to same path on remote host
-<br>
-
-<br>
-<li><strong> remote.remote_user</strong>
-<br>
-If remote=True: user to connect as? 
-<br>
-
-<br>
-<li><strong> remote.remote_owner</strong>
-<br>
-If remote=True: if connect user is root, what account should own the file?
-<br>
-
-<br>
-<li><strong> remote.remote_group</strong>
-<br>
-If remote=True: If connect user is root, what group should own the file?
-<br>
-
-<br>
-<li><strong> voms.args</strong>
-<br>
-Any extra arbitrary input option to be added to voms-proxy-init command
 <br>
 
 </ul>
