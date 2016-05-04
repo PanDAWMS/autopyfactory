@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 
 __author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
-__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2016 John Hover; 2010-2016 Jose Caballero"
+__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2015 John Hover; 2010-2015 Jose Caballero"
 __credits__ = []
 __license__ = "GPL"
-__version__ = "2.4.8"
+__version__ = "2.4.2"
 __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
@@ -26,25 +26,23 @@ import smtplib
 import socket
 import sys
 
-from optparse import OptionParser
 from pprint import pprint
+from optparse import OptionParser
 from ConfigParser import ConfigParser
-from Queue import Queue
 
 try:
     from email.mime.text import MIMEText
 except:
     from email.MIMEText import MIMEText
 
+
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
 from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailure
-from autopyfactory.cleanlogs import CleanLogs
-from autopyfactory.condor import ProcessCondorRequests
 from autopyfactory.configloader import Config, ConfigManager
+from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
-from autopyfactory.pluginsmanagement import QueuePluginDispatcher
-from autopyfactory.pluginsmanagement import FactoryPluginDispatcher
-from autopyfactory.queues import APFQueuesManager
+from autopyfactory.proxymanager import ProxyManager
+from autopyfactory.pluginsmgmt import PluginDispatcher
 
 major, minor, release, st, num = sys.version_info
 
@@ -136,7 +134,7 @@ Graeme A Stewart <g.stewart@physics.gla.ac.uk>
 Peter Love <p.love@lancaster.ac.uk>
 John Hover <jhover@bnl.gov>
 Jose Caballero <jcaballero@bnl.gov>
-''', version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $" )
+''', version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $")
 
 
         parser.add_option("--trace", 
@@ -216,14 +214,11 @@ Jose Caballero <jcaballero@bnl.gov>
         -- Logging syntax and semantics should be uniform throughout the program,  
            based on whatever organization scheme is appropriate.  
         
-        -- Have at least a single log message at TRACE at beginning and end of each function call.  
+        -- Have at least a single log message at DEBUG at beginning and end of each function call.  
            The entry message should mention input parameters,  
            and the exit message should not any important result.  
-           TRACE output should be detailed enough that almost any logic error should become apparent.  
-           It is OK if TRACE messages are produced too fast to read interactively. 
-        
-        -- Have sufficient DEBUG messages to show domain problem calculations input and output.
-           DEBUG messages should never span more than one line. 
+           DEBUG output should be detailed enough that almost any logic error should become apparent.  
+           It is OK if DEBUG messages are produced too fast to read interactively. 
         
         -- A moderate number of INFO messages should be logged to mark major  
            functional steps in the operation of the program,  
@@ -246,11 +241,8 @@ Jose Caballero <jcaballero@bnl.gov>
         -- We keep the original python levels meaning,  
            including WARNING as being the default level.  
         
-                TRACE      Detailed code execution information related to housekeeping, 
-                           parsing, objects, threads.
-                DEBUG      Detailed domain problem information related to scheduling, calculations,
-                           program state.  
-                INFO       High level confirmation that things are working as expected.  
+                DEBUG      Detailed information, typically of interest only when diagnosing problems. 
+                INFO       Confirmation that things are working as expected. 
                 WARNING    An indication that something unexpected happened,  
                            or indicative of some problem in the near future (e.g. 'disk space low').  
                            The software is still working as expected. 
@@ -258,11 +250,13 @@ Jose Caballero <jcaballero@bnl.gov>
                 CRITICAL   A serious error, indicating that the program itself may be unable to continue running. 
         
         -- We add a new custom level -TRACE- to be more verbose than DEBUG.
-           
-           Info: http://docs.python.org/howto/logging.html#logging-advanced-tutorial  
+
+        Info: 
+        
+          http://docs.python.org/howto/logging.html#logging-advanced-tutorial  
 
         """
-        self.log = logging.getLogger('main')
+        self.log = logging.getLogger()
         if self.options.logfile == "stdout":
             logStream = logging.StreamHandler()
         elif self.options.logfile == 'syslog':
@@ -303,7 +297,7 @@ Jose Caballero <jcaballero@bnl.gov>
         envmsg = ''        
         for k in sorted(os.environ.keys()):
             envmsg += '\n%s=%s' %(k, os.environ[k])
-        self.log.trace('Environment : %s' %envmsg)
+        self.log.debug('Environment : %s' %envmsg)
 
 
     def __platforminfo(self):
@@ -408,11 +402,10 @@ Jose Caballero <jcaballero@bnl.gov>
             self.log.info('Creating Factory and entering main loop...')
 
             f = Factory(self.fcl)
-            f.run()
+            f.mainLoop()
             
         except KeyboardInterrupt:
             self.log.info('Caught keyboard interrupt - exitting')
-            f.join()
             sys.exit(0)
         except FactoryConfigurationFailure, errMsg:
             self.log.error('Factory configuration failure: %s', errMsg)
@@ -436,8 +429,6 @@ Exploding in 5...4...3...2...1... Have a nice day!''')
             print(traceback.format_exc(None))
             sys.exit(1)          
           
-
-
 class Factory(object):
     '''
     -----------------------------------------------------------------------
@@ -472,47 +463,48 @@ class Factory(object):
         self.log.info('AutoPyFactory version %s' %self.version)
         self.fcl = fcl
 
-        # APF Queues Manager 
-        self.apfqueuesmanager = APFQueuesManager(self)
+        # Create config loader object for queues 
+        # 1. we try to read the list of files in queueConf and create a config loader
+        qcf = None
+        try: 
+            qcf = fcl.get('Factory', 'queueConf')    # the configuration files for queues are a list of URIs
+            self.log.debug("queues.conf file(s) = %s" % qcf)
+            qcl_files = ConfigManager().getConfig(sources=qcf)
+        except:
+            pass
 
-        self._proxymanager()
-        self._monitor()
-        self._mappings()
+        # 2. we try to read the directory in queueDirConf and create a config loader
+        qcd = None
+        try:
+            qcd = fcl.get('Factory', 'queueDirConf') # the configuration files for queues are in a directory
+            self.log.debug("queues.conf directory = %s" % qcd)
+            qcl_dir = ConfigManager().getConfig(configdir=qcd)
+        except:
+            pass
 
-        # Handle Log Serving
-        self._initLogserver()
+        # 3. we merge both loader objects
+        try:
+            if qcf and qcd:
+                self.qcl = qcl_f
+                self.qcl.merge(qcl_dir)
+            elif qcf and not qcd:
+                self.qcl = qcl_f
+            elif not qcf and qcd:
+                self.qcl = qcl_dir
+            else:
+                self.log.error('no files or directory with queues configuration specified')
+                sys.exit(0)
+                
+        except ConfigFailure, errMsg:
+            self.log.error('Failed to create QueuesConfigLoader, err: %s' % str(errMsg))
+            sys.exit(0)
+        
 
-        # Collect other factory attibutes
-        self.adminemail = self.fcl.get('Factory','factoryAdminEmail')
-        self.factoryid = self.fcl.get('Factory','factoryId')
-        self.smtpserver = self.fcl.get('Factory','factorySMTPServer')
-        self.hostname = socket.gethostname()
-        #self.username = os.getlogin()
-        self.username = pwd.getpwuid(os.getuid()).pw_name   
-
-        # the the queues config loader object, to be filled by a Config plugin
-        self.qcl = Config()
-
-        self._plugins()
-
-        # Log some info...
-        self.log.trace('Factory shell PATH: %s' % os.getenv('PATH') )     
-        self.log.info("Factory: Object initialized.")
-
-
-    def _proxymanager(self):
 
         # Handle ProxyManager configuration
-        usepman = self.fcl.getboolean('Factory', 'proxymanager.enabled')
+        usepman = fcl.getboolean('Factory', 'proxymanager.enabled')
         if usepman:      
-
-            try:
-                from autopyfactory.proxymanager import ProxyManager
-            except:
-                self.log.critical('proxymanager cannot be imported')
-                sys.exit(0) 
-
-            pcf = self.fcl.get('Factory','proxyConf')
+            pcf = fcl.get('Factory','proxyConf')
             self.log.debug("proxy.conf file(s) = %s" % pcf)
             pcl = ConfigParser()
 
@@ -520,20 +512,17 @@ class Factory(object):
                 got_config = pcl.read(pcf)
             except Exception, e:
                 self.log.error('Failed to create ProxyConfigLoader')
-                self.log.error("Exception: %s" % traceback.format_exc())
+                self.log.debug("Exception: %s" % traceback.format_exc())
                 sys.exit(0)
 
-            self.log.trace("Read config file %s, return value: %s" % (pcf, got_config)) 
+            self.log.debug("Read config file %s, return value: %s" % (pcf, got_config)) 
             self.proxymanager = ProxyManager(pcl, self)
             self.log.info('ProxyManager initialized. Starting...')
             self.proxymanager.start()
-            self.log.trace('ProxyManager thread started.')
+            self.log.debug('ProxyManager thread started.')
         else:
             self.log.info("ProxyManager disabled.")
-
-
-    def _monitor(self):
-
+       
         # Handle monitor configuration
         self.mcl = None
         self.mcf = self.fcl.generic_get('Factory', 'monitorConf')
@@ -545,10 +534,7 @@ class Factory(object):
             self.log.error('Failed to create MonitorConfigLoader')
             sys.exit(0)
 
-        self.log.trace("mcl is %s" % self.mcl)
-       
-
-    def _mappings(self):
+        self.log.debug("mcl is %s" % self.mcl)
 
         # Handle mappings configuration
         self.mappingscl = None      # mappings config loader object
@@ -561,9 +547,11 @@ class Factory(object):
             self.log.error('Failed to create ConfigLoader object for mappings')
             sys.exit(0)
         
-        self.log.trace("mappingscl is %s" % self.mappingscl)
+        self.log.debug("mappingscl is %s" % self.mappingscl)
 
-    def _dumpqcl(self):
+
+        # Handle Log Serving
+        self._initLogserver()
 
         # dump the content of queues.conf 
         qclstr = self.qcl.getContent(raw=False)
@@ -575,16 +563,24 @@ class Factory(object):
         print >> qclfile, qclstr
         qclfile.close()
 
-
-    def _plugins(self):
-    
-        fpd = FactoryPluginDispatcher(self)
-        self.config_plugins = fpd.getconfigplugin()
-
+        # APF Queues Manager 
+        self.apfqueuesmanager = APFQueuesManager(self)
+        
+        # Collect other factory attibutes
+        self.adminemail = self.fcl.get('Factory','factoryAdminEmail')
+        self.factoryid = self.fcl.get('Factory','factoryId')
+        self.smtpserver = self.fcl.get('Factory','factorySMTPServer')
+        self.hostname = socket.gethostname()
+        #self.username = os.getlogin()
+        self.username = pwd.getpwuid(os.getuid()).pw_name   
+        
+        # Log some info...
+        self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )     
+        self.log.info("Factory: Object initialized.")
 
     def _initLogserver(self):
         # Set up LogServer
-        self.log.trace("Handling LogServer...")
+        self.log.debug("Handling LogServer...")
         ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean')
         if ls:
             self.log.info("LogServer enabled. Initializing...")
@@ -594,25 +590,24 @@ class Factory(object):
             logurl = self.fcl.get('Factory','baseLogDirUrl')            
             logport = self._parseLogPort(logurl)
             if not os.path.exists(logpath):
-                self.log.trace("Creating log path: %s" % logpath)
+                self.log.debug("Creating log path: %s" % logpath)
                 os.makedirs(logpath)
             if not lsrobots:
                 rf = "%s/robots.txt" % logpath
-                self.log.trace("logserver.allowrobots is False, creating file: %s" % rf)
+                self.log.debug("logserver.allowrobots is False, creating file: %s" % rf)
                 try:
                     f = open(rf , 'w' )
                     f.write("User-agent: * \nDisallow: /")
                     f.close()
                 except IOError:
                     self.log.warn("Unable to create robots.txt file...")
-            self.log.trace("Creating LogServer object...")
+            self.log.debug("Creating LogServer object...")
             self.logserver = LogServer(port=logport, docroot=logpath, index=lsidx)
             self.log.info('LogServer initialized. Starting...')
             self.logserver.start()
-            self.log.trace('LogServer thread started.')
+            self.log.debug('LogServer thread started.')
         else:
             self.log.info('LogServer disabled. Not running.')
-
 
     def _parseLogPort(self, logurl):
         '''
@@ -637,7 +632,7 @@ class Factory(object):
         return int(port)
         
         
-    def run(self):
+    def mainLoop(self):
         '''
         Main functional loop of overall Factory. 
         Actions:
@@ -646,33 +641,26 @@ class Factory(object):
                    stops all queues when that happens.
         '''
 
-        self.log.trace("Starting.")
+        self.log.debug("Starting.")
         self.log.info("Starting all Queue threads...")
 
-        # first call to reconfig() to load initial qcl configuration
-        self.reconfig()
-
-        self._cleanlogs()
+        self.update()
+        self.__cleanlogs()
         
         try:
             while True:
                 mainsleep = int(self.fcl.get('Factory', 'factory.sleep'))
                 time.sleep(mainsleep)
-                self.log.trace('Checking for interrupt.')
+                self.log.debug('Checking for interrupt.')
                         
         except (KeyboardInterrupt): 
-            # FIXME
-            # this probably is not needed anymore,
-            # if a KeyboardInterrupt is captured by class FactoryCLI,
-            # it would perform a clean join( )
             logging.info("Shutdown via Ctrl-C or -INT signal.")
             self.shutdown()
             raise
             
-        self.log.trace("Leaving.")
+        self.log.debug("Leaving.")
 
-
-    def reconfig(self):
+    def update(self):
         '''
         Method to update the status of the APFQueuesManager object.
         This method will be used every time the 
@@ -683,35 +671,22 @@ class Factory(object):
         main loop code or from any method capturing specific signals.
         '''
 
-        self.log.trace("Starting")
+        self.log.debug("Starting")
 
-        try:
-            newqcl = Config()
-            for config_plugin in self.config_plugins:
-                tmpqcl = config_plugin.getConfig()
-                newqcl.merge(tmpqcl)
+        newqueues = self.qcl.sections()
+        self.apfqueuesmanager.update(newqueues) 
 
-        except Exception, e:
-            self.log.critical('Failed getting the Factory plugins. Aborting')
-            raise
+        self.log.debug("Leaving")
 
-        self.apfqueuesmanager.update(newqcl) 
-
-        # dump the new qcl content
-        self._dumpqcl()
-
-        self.log.trace("Leaving")
-
-
-    def _cleanlogs(self):
+    def __cleanlogs(self):
         '''
         starts the thread that will clean the condor logs files
         '''
 
-        self.log.trace('Starting')
+        self.log.debug('Starting')
         self.clean = CleanLogs(self)
         self.clean.start()
-        self.log.trace('Leaving')
+        self.log.debug('Leaving')
 
     def shutdown(self):
         '''
@@ -747,3 +722,426 @@ class Factory(object):
         s.sendmail(email_from , tolist , msg.as_string())
         s.quit()
             
+# ==============================================================================                                
+#                       QUEUES MANAGEMENT
+# ==============================================================================                                
+
+class APFQueuesManager(object):
+    '''
+    -----------------------------------------------------------------------
+    Container with the list of APFQueue objects.
+    -----------------------------------------------------------------------
+    Public Interface:
+            __init__(factory)
+            update(newqueues)
+            join()
+    -----------------------------------------------------------------------
+    '''
+    def __init__(self, factory):
+        '''
+        Initializes a container of APFQueue objects
+        '''
+
+        self.log = logging.getLogger('main.apfqueuesmanager')
+        self.queues = {}
+        self.factory = factory
+        self.log.debug('APFQueuesManager: Object initialized.')
+
+# ----------------------------------------------------------------------
+#            Public Interface
+# ---------------------------------------------------------------------- 
+    def update(self, newqueues):
+        '''
+        Compares the new list of queues with the current one
+                1. creates and starts new queues if needed
+                2. stops and deletes old queues if needed
+        '''
+        currentqueues = self.queues.keys()
+        queues_to_remove, queues_to_add = \
+                self._diff_lists(currentqueues, newqueues)
+        self._addqueues(queues_to_add) 
+        self._delqueues(queues_to_remove)
+        self._refresh()
+
+
+    def join(self):
+        '''
+        Joins all APFQueue objects
+        QUESTION: should the queues also be removed from self.queues ?
+        '''
+        count = 0
+        for q in self.queues.values():
+            q.join()
+            count += 1
+        self.log.debug('%d queues joined' %count)
+
+    
+    # ----------------------------------------------------------------------
+    #  private methods
+    # ----------------------------------------------------------------------
+
+    def _addqueues(self, apfqnames):
+        '''
+        Creates new APFQueue objects
+        '''
+        count = 0
+        for apfqname in apfqnames:
+            self._add(apfqname)
+            count += 1
+        self.log.debug('%d queues in the configuration.' %count)
+
+    def _add(self, apfqname):
+        '''
+        Creates a single new APFQueue object and starts it
+        '''
+        queueenabled = self.factory.qcl.generic_get(apfqname, 'enabled', 'getboolean')
+        globalenabled = self.factory.fcl.generic_get('Factory', 'enablequeues', 'getboolean', default_value=True)
+        enabled = queueenabled and globalenabled
+        
+        if enabled:
+            try:
+                qobject = APFQueue(apfqname, self.factory)
+                self.queues[apfqname] = qobject
+                qobject.start()
+                self.log.info('Queue %s enabled.' %apfqname)
+            except Exception, ex:
+                self.log.error('Exception captured when initializing [%s]. Queue omitted. ' %apfqname)
+                self.log.debug("Exception: %s" % traceback.format_exc())
+        else:
+            self.log.debug('Queue %s not enabled.' %apfqname)
+            
+    def _delqueues(self, apfqnames):
+        '''
+        Deletes APFQueue objects
+        '''
+
+        count = 0
+        for apfqname in apfqnames:
+            q = self.queues[apfqname]
+            q.join()
+            self.queues.pop(apfqname)
+            count += 1
+        self.log.debug('%d queues joined and removed' %count)
+
+
+    def _del(self, apfqname):
+        '''
+        Deletes a single queue object from the list and stops it.
+        '''
+        qobject = self._get(apfqname)
+        qname.join()
+        self.queues.pop(apfqname)
+
+    
+    def _refresh(self):
+        '''
+        Calls method refresh() for all APFQueue objects
+        '''
+        count = 0
+        for q in self.queues.values():
+            q.refresh()
+            count += 1
+        self.log.debug('%d queues refreshed' %count)
+
+
+
+    # ----------------------------------------------------------------------
+    #  ancillary functions 
+    # ----------------------------------------------------------------------
+
+    def _diff_lists(self, l1, l2):
+        '''
+        Ancillary method to calculate diff between two lists
+        '''
+        d1 = [i for i in l1 if not i in l2]
+        d2 = [i for i in l2 if not i in l1]
+        return d1, d2
+ 
+
+class APFQueue(threading.Thread):
+    '''
+    -----------------------------------------------------------------------
+    Encapsulates all the functionality related to servicing each queue (i.e. siteid, i.e. site).
+    -----------------------------------------------------------------------
+    Public Interface:
+            The class is inherited from Thread, so it has the same public interface.
+    -----------------------------------------------------------------------
+    '''
+    
+    def __init__(self, apfqname, factory):
+        '''
+        apfqname is the name of the section in the queueconfig, 
+        i.e. the queue name, 
+        factory is the Factory object who created the queue 
+        '''
+
+        # recording moment the object was created
+        self.inittime = datetime.datetime.now()
+
+        threading.Thread.__init__(self) # init the thread
+        self.log = logging.getLogger('main.apfqueue[%s]' %apfqname)
+        self.log.debug('APFQueue: Initializing object...')
+
+        self.stopevent = threading.Event()
+
+        # apfqname is the APF queue name, i.e. the section heading in queues.conf
+        self.apfqname = apfqname
+        self.factory = factory
+        self.fcl = self.factory.fcl 
+        self.qcl = self.factory.qcl 
+        self.mcl = self.factory.mcl
+
+        self.log.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(apfqname).getContent())
+   
+        try: 
+            self.wmsqueue = self.qcl.generic_get(apfqname, 'wmsqueue')
+            #self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue')
+            self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue', default_value=None)
+            #self.cloud = self.qcl.generic_get(apfqname, 'cloud')
+            self.cycles = self.fcl.generic_get("Factory", 'cycles' )
+            self.sleep = self.qcl.generic_get(apfqname, 'apfqueue.sleep', 'getint')
+            self.cyclesrun = 0
+            
+            self.batchstatusmaxtime = self.fcl.generic_get('Factory', 'batchstatus.maxtime', default_value=0)
+            self.wmsstatusmaxtime = self.fcl.generic_get('Factory', 'wmsstatus.maxtime', default_value=0)
+        except Exception, ex:
+            self.log.error('APFQueue: exception captured while reading configuration variables to create the object.')
+            self.log.debug("Exception: %s" % traceback.format_exc())
+            raise ex
+
+        try:
+            self._plugins()
+        
+        except CondorVersionFailure, cvf:
+            self.log.error('APFQueue: No condor or bad version: %s' % str(cvf))
+            raise cvf
+        
+        except Exception, ex:
+            self.log.error('APFQueue: Exception getting plugins: %s' % str(ex))
+            self.log.debug("Exception: %s" % traceback.format_exc())
+            raise ex
+        
+        self.log.debug('APFQueue: Object initialized.')
+
+    def _plugins(self):
+        '''
+         method just to instantiate the plugin objects
+        '''
+
+        pd = PluginDispatcher(self)
+        self.scheduler_plugins = pd.schedplugins        # a list of 1 or more plugins
+        self.wmsstatus_plugin = pd.wmsstatusplugin      # a single WMSStatus plugin
+        self.batchsubmit_plugin = pd.submitplugin       # a single BatchSubmit plugin
+        self.batchstatus_plugin = pd.batchstatusplugin  # a single BatchStatus plugin
+        self.monitor_plugins = pd.monitorplugins        # a list of 1 or more plugins
+
+ 
+# Run methods
+
+    def run(self):
+        '''
+        Method called by thread.start()
+        Main functional loop of this APFQueue. 
+        '''        
+
+        # give information gathering, and proxy generation enough time to perhaps have info
+        time.sleep(15)
+        while not self.stopevent.isSet():
+            self.log.debug("APFQueue [%s] run(): Beginning submit cycle." % self.apfqname)
+            try:
+                nsub = 0
+                fullmsg = ""
+                self.log.debug("APFQueue [%s] run(): Calling sched plugins..." % self.apfqname)
+                for sched_plugin in self.scheduler_plugins:
+                    (nsub, msg) = sched_plugin.calcSubmitNum(nsub)
+                    if msg:
+                        if fullmsg:
+                            fullmsg = "%s;%s" % (fullmsg, msg)
+                        else:
+                            fullmsg = msg
+                        
+                self.log.debug("APFQueue[%s]: All Sched plugins called. Result nsub=%s" % (self.apfqname, nsub))
+                jobinfolist = self._submitpilots(nsub)
+                self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
+                for m in self.monitor_plugins:
+                    self.log.debug('APFQueue[%s] run(): calling registerJobs for monitor plugin %s' % (self.apfqname, m))
+                    m.registerJobs(self, jobinfolist)
+                    if fullmsg:
+                        self.log.debug('APFQueue[%s] run(): calling updateLabel for monitor plugin %s' % (self.apfqname, m))
+                        m.updateLabel(self.apfqname, fullmsg)
+                self._exitloop()
+                self._logtime() 
+                          
+            except Exception, e:
+                ms = str(e)
+                self.log.error("APFQueue[%s] run(): Caught exception: %s " % (self.apfqname, ms))
+                self.log.debug("APFQueue[%s] run(): Exception: %s" % (self.apfqname, traceback.format_exc()))
+            time.sleep(self.sleep)
+
+    def _submitpilots(self, nsub):
+        '''
+        submit using this number
+        call for cleanup
+        '''
+        self.log.debug("Starting")
+        msg = 'Attempt to submit %s pilots for queue %s' %(nsub, self.apfqname)
+        jobinfolist = self.batchsubmit_plugin.submit(nsub)
+        self.log.debug("Attempted submission of %d pilots and got jobinfolist %s" % (nsub, jobinfolist))
+        self.batchsubmit_plugin.cleanup()
+        self.cyclesrun += 1
+        return jobinfolist
+
+
+    def _exitloop(self):
+        '''
+        Exit loop if desired number of cycles is reached...  
+        '''
+        self.log.debug("__exitloop. Checking to see how many cycles to run.")
+        if self.cycles and self.cyclesrun >= self.cycles:
+                self.log.debug('_ stopping the thread because high cyclesrun')
+                self.stopevent.set()                        
+        self.log.debug("__exitloop. Incrementing cycles...")
+
+    def _logtime(self):
+        '''
+        report the time passed since the object was created
+        '''
+
+        self.log.debug("__reporttime: Starting")
+
+        now = datetime.datetime.now()
+        delta = now - self.inittime
+        days = delta.days
+        seconds = delta.seconds
+        hours = seconds/3600
+        minutes = (seconds%3600)/60
+        total_seconds = days*86400 + seconds
+        average = total_seconds/self.cyclesrun
+
+        self.log.debug('__reporttime: up %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
+        self.log.info('Up %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
+        self.log.debug("__reporttime: Leaving")
+
+    # End of run-related methods
+
+    def refresh(self):
+        '''
+        Method to reload, when requested, the config file
+        '''
+        pass 
+        # TO BE IMPLEMENTED
+                      
+    def join(self,timeout=None):
+        '''
+        Stop the thread. Overriding this method required to handle Ctrl-C from console.
+        '''
+        self.stopevent.set()
+        self.log.debug('Stopping thread...')
+        threading.Thread.join(self, timeout)
+
+                 
+
+
+# ==============================================================================                                
+#                      INTERFACES & TEMPLATES
+# ==============================================================================  
+
+class Singleton(type):
+    '''
+    -----------------------------------------------------------------------
+    Ancillary class to be used as metaclass to make other classes Singleton.
+    -----------------------------------------------------------------------
+    '''
+    def __init__(cls, name, bases, dct):
+        cls.__instance = None 
+        type.__init__(cls, name, bases, dct)
+    def __call__(cls, *args, **kw): 
+        if cls.__instance is None:
+            cls.__instance = type.__call__(cls, *args,**kw)
+        return cls.__instance
+
+
+class CondorSingleton(type):
+    '''
+    -----------------------------------------------------------------------
+    Ancillary class to be used as metaclass to make other classes Singleton.
+    This particular implementation is for CondorBatchStatusPlugin.
+    It allow to create different instances, one per schedd.
+    Each instance is a singleton. 
+    -----------------------------------------------------------------------
+    '''
+    def __init__(cls, name, bases, dct):
+        cls.__instance = {} 
+        type.__init__(cls, name, bases, dct)
+
+    def __call__(cls, *args, **kw): 
+        condor_q_id = kw.get('condor_q_id', 'local')
+        if condor_q_id not in cls.__instance.keys():
+            cls.__instance[condor_q_id] = type.__call__(cls, *args,**kw)
+        return cls.__instance[condor_q_id]
+
+
+def singletonfactory(id_var=None, id_default=None):
+    '''
+    This is an abstraction of the two previous classes. 
+    We have here a metaclass factory, which will decide 
+    which type of Singleton metaclass returns based on the inputs
+
+    If id_var is not passed, then we asume a regular singleton __metaclass__ is expected.
+    If id_var has a value, then it is a multi-singleton.
+    We understand by multi-singleton a class that can instantiate the same object or not,
+    depending on the value of id_var. Same value of id_var will generate the same object.
+  
+    id_var is the name of a key variable to be passed via __init__() when asking for a new object.
+    The value of that variable will be the ID to determine if a real new object is needed or not.
+
+    Note: when calling __init__(), the id_var has to be passed as a key=value variable,
+    not just as a positional variable. 
+
+    Examples:
+
+        class A(object):
+            __metaclass__ = singletonfactory()
+
+        ---------------------------------------------------------------------
+
+        class B(object):
+            __metaclass__ = singletonfactory(id_var='condorpool', id_default='local')
+        
+        obj1 = B(..., condorpool='pool1', ...)
+        obj2 = B(..., condorpool='pool1', ...)
+        obj3 = B(..., condorpool='pool2', ...)
+
+        obj1 and obj2 will be the same. obj3 will not. 
+    '''
+
+    class Singleton(type):
+
+        # regular singleton __metaclass__
+        if not id_var:
+
+            def __init__(cls, name, bases, dct):
+                cls.__instance = None 
+                type.__init__(cls, name, bases, dct)
+            def __call__(cls, *args, **kw):
+                if cls.__instance is None:
+                    cls.__instance = type.__call__(cls, *args,**kw)
+                return cls.__instance
+
+        # multi-singleton __metaclass__
+        else:
+
+            def __init__(cls, name, bases, dct):
+                cls.__instance = {}
+                type.__init__(cls, name, bases, dct)
+            def __call__(cls, *args, **kw):
+                id = kw.get(id_var, id_default)
+                # note: we read the value of id_var from **kw
+                #       so it has to be passed as a key=value variable,
+                #       not as a positional variable. 
+                if id not in cls.__instance.keys():
+                    cls.__instance[id] = type.__call__(cls, *args,**kw)
+                return cls.__instance[id]
+
+    return Singleton
+
