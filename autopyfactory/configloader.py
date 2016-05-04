@@ -30,7 +30,7 @@ class Config(SafeConfigParser, object):
         self.optionxform = str
         super(Config, self).__init__()
 
-    def merge(self, config, override=False, includemissing=True):
+    def merge(self, config, override=None, includemissing=True):
         '''
         merge the current Config object 
         with the content of another Config object.
@@ -67,7 +67,6 @@ class Config(SafeConfigParser, object):
                 if includemissing:
                     self.__clonesection(section, config)
             else:
-                self.log.warning('section %s is duplicated. Being merged anyway.' %section)
                 self.__mergesection(section, config, override, includemissing)
     
     def __clonesection(self, section, config):
@@ -98,12 +97,6 @@ class Config(SafeConfigParser, object):
             else:
                 # when no one knows what to do...
                 _override = False
-
-        # NOTE:
-        #   since we set default value of override=False in 
-        #   method merge( ) the last else block is never executed
-        #   therefore, the config variable 'override' is useless
-        #   But we keep the code just in case we need it in the future
 
         for opt in config.options(section):
             value = config.get(section, opt, raw=True)        
@@ -191,20 +184,20 @@ class Config(SafeConfigParser, object):
         example of usage:
                 x = generic_get("Sec1", "x", get_function='getint', default_value=0  )
         '''
-        self.log.trace('called for section %s option %s get_function %s default_value %s' % ( section,
+        self.log.debug('called for section %s option %s get_function %s default_value %s' % ( section,
                                                                                               option,
                                                                                               get_function,
                                                                                               default_value ))                                                                                                         
         has_option = self.has_option(section, option)
         if not has_option:
-            self.log.trace('option %s is not present in section %s. Return default %s' %(option, section, default_value))
+            self.log.debug('option %s is not present in section %s. Return default %s' %(option, section, default_value))
             return default_value
         else:
             get_f = getattr(self, get_function)
             value = get_f(section, option)
             if value == "None" or value == "none":
                 value = None
-            self.log.trace('option %s in section %s has value %s' %(option, section, value))
+            self.log.debug('option %s in section %s has value %s' %(option, section, value))
             return value
 
 
@@ -247,141 +240,6 @@ class Config(SafeConfigParser, object):
         return str
 
 
-    def isequal(self, config):
-        '''
-        this method checks if two config loader objects are equivalents:
-            -- same set of sections
-            -- each section have the same variables and values 
-        '''
-
-        sections1 = self.sections()
-        sections2 = config.sections()
-        sections1.sort()
-        sections2.sort()
-        if sections1 != sections2:
-            self.log.trace('configloader object has different list of SECTIONS than current one. Returning False') 
-            return False
-
-        # else...
-        for section in self.sections():
-            if not self.sectionisequal(config, section):
-                self.log.trace('section %s is different in the current configloader object and the input one. Returning False' %section)
-                return False
-        else:
-            self.log.trace('Returning True')
-            return True
-
-
-
-    def sectionisequal(self, config, section):
-        '''
-        this method checks if a given section is equal in two configloader objects
-        '''
-
-        # probably it can be done simply by 
-        #   return ( self.items(section) == config.items(section) )
-        # it is not done like that, yet, because I am not sure if items() would return the dictionary sorted in the same way,
-        # or if that matters when comparing dictionaries
-        # so, meanwhile, we just compare variable by variable
-
-        options1 = self.options(section)
-        options2 = config.options(section)
-        options1.sort()
-        options2.sort()
-        if options1 != options2:
-            self.log.trace('current configloader object and the input one has different list of options for section %s. Returning False' %section)
-            return False
-
-        # else...
-        for option in self.options(section):
-            if self.get(section, option) != config.get(section, option):
-                self.log.trace('the value of option %s for section %s is different between the current configloader object and the input one. Returning False' %(option, section))
-                return False
-        else:
-            self.log.trace('Returning True')
-            return True
-            
-
-
-
-
-    def compare(self, config):
-        '''
-        this method compares the current configloader object with a new one.
-        It returns an structure saying 
-            -- the list of SECTIONS that are equal,
-            -- the list of SECTIONS that have changed,
-            -- the list of SECTIONS that have been removed,
-            -- the list of SECTIONS that have been added,
-        The output is a dictionary of lists:
-        
-            out = {'EQUAL': ['SEC1', ..., 'SECn'],
-                   'MODIFIED': ['SEC1', ..., 'SECn'],
-                   'REMOVED': ['SEC1', ..., 'SECn'],
-                   'ADDED': ['SEC1', ..., 'SECn'],
-                  }
-        '''
-
-        out = {'EQUAL': [],
-               'MODIFIED': [],
-               'REMOVED': [],
-               'ADDED': [],
-              }
-
-        sections1 = self.sections()
-        sections1.sort()
-        sections2 = config.sections()
-        sections2.sort()
-        
-        # first, we check for the SECTIONS that have been removed
-        for section in sections1:
-            if section not in sections2:
-                out['REMOVED'].append(section)
-        # it could be done in a single line like  
-        # out = [section for section in sections1 if section not in sections2]
-
-        
-        # second, we check for the SECTIONS that have been added 
-        for section in sections2:
-            if section not in sections1:
-                out['ADDED'].append(section)
-        # it could be done in a single line like  
-        # out = [section for section in sections2 if section not in sections1]
-
-        # finally we search for the SECTIONS that are equal or modified
-        for section in sections1:
-            if section in sections2:
-                if self.sectionisequal(config, section):
-                    out['EQUAL'].append(section)
-                else:
-                    out['MODIFIED'].append(section)
-        
-        self.log.trace('returning with output: %s' %out) 
-        return out
-
-
-
-
-
-    def addsection(self, section, items):
-        '''
-        method to add an entire section to a config object
-        items is a dictionary with the list of key/values pairs
-        '''
-
-        if section in self.sections():
-            self.log.warning('section already exists. Doing nothing.')
-            return
-        
-        self.add_section(section)
-        for k,v in items.iteritems():
-            if v == None:
-                v = "None" # method set() only accepts strings
-            self.set(section, k, v)
-
-    
-
-
 class ConfigManager(object):
     '''
     -----------------------------------------------------------------------
@@ -394,15 +252,7 @@ class ConfigManager(object):
     '''
 
     def __init__(self):
-        self.log = logging.getLogger("main.configmanager")
-
-        ###################################
-        #  NEW CODE, UNDER DEVELOPMENT    #
-        ###################################
-        self.sources = None
-        self.configdir = None
-        self.defaults = None
-        ###################################
+        pass
         
 
     def getConfig(self, sources=None, configdir=None):
@@ -411,7 +261,7 @@ class ConfigManager(object):
 
         -- sources is an split by comma string, 
            where each items points to the info to feed the object:
-                - path to physical file on disk
+                - path to phisical file on disk
                 - an URL
 
         -- configdir is path to a directory with a 
@@ -419,34 +269,22 @@ class ConfigManager(object):
            all of them to be processed 
 
         '''
-        self.log.debug("Beginning with sources=%s and configdir=%s" % (sources,configdir))
+
         try:
             config = Config()
             if sources:
                 for src in sources.split(','):
                     src = src.strip()
-                    self.log.trace("Calling _getConfig for source %s" % src)
                     newconfig = self.__getConfig(src)
                     if newconfig:
                         config.merge(newconfig)
-                        # IMPORTANT NOTE:
-                        # because we create here the final configloader object
-                        # by merge() of each config object (one per source)
-                        # with an empty one, the 'defaults' dictionary {...} of each one
-                        # is lost. 
-                        # Therefore, the final configloader object has empty 'defaults' dictionary {}
             elif configdir:
-                self.log.debug("Processing  configs for dir %s" % configdir)
                 if os.path.isdir(configdir):
                     conffiles = [os.path.join(configdir, f) for f in os.listdir(configdir)]
                     config.read(conffiles)
-                    # IMPORTANT NOTE:
-                    # here, as we use the native python method read()
-                    # the configloader object still keeps the 'defaults' dictionary {...}
                 else:
                     raise ConfigFailure('configuration directory %s does not exist' %configdir)
             config.fixpathvalues()
-            self.log.debug("Finished creating config object.")
             return config
         except:
             raise ConfigFailure('creating config object from source %s failed' %sources)
@@ -512,70 +350,5 @@ class ConfigManager(object):
             raise FactoryConfigurationFailure("Problem with URI source %s" % uri)
 
 
-    ###################################
-    #  NEW CODE, UNDER DEVELOPMENT    #
-    ###################################
 
-    def updateConfig(self):  # FIXME temporary name 
-
-        if self.sources:
-           config = self._updateConfigFromSources()
-        if self.configdir:
-           config = self._updateConfigFromDir()
-        return config
-
-    def _updateConfigFromSources(self):
-
-        config = Config()
-
-        if not self.defaults:
-
-            for src in self.sources.split(','):
-                src = src.strip()
-                self.log.trace("Calling _getConfig for source %s" % src)
-                newconfig = self.__getConfig(src)
-                if newconfig:
-                    config.merge(newconfig)
-
-        else:
-
-            tmplist = []
-            for src in self.sources.split(','):
-                src = src.strip()
-                src = src[7:]
-                tmplist.append( Config() )
-                tmplist[-1].read([self.defaults, src])
-            for conf in tmplist:
-                config.merge(conf)
-
-        config.fixpathvalues()
-        return config
-
-
-    def _updateConfigFromDir(self):
-
-        config = Config()
-
-        if not self.defaults:
-            self.log.debug("Processing  configs for dir %s" % self.configdir)
-            if os.path.isdir(self.configdir):
-                conffiles = [os.path.join(self.configdir, f) for f in os.listdir(self.configdir)]
-                config.read(conffiles)
-            else:
-                raise ConfigFailure('configuration directory %s does not exist' %self.configdir)
-
-        else:
-
-            tmplist = []
-            sources = [os.path.join(self.configdir, f) for f in os.listdir(self.configdir)]
-            for src in sources:
-                tmplist.append( Config() )
-                tmplist[-1].read([self.defaults, src])
-            for conf in tmplist:
-                config.merge(conf)
-
-
-        config.fixpathvalues()
-        return config
-
- 
+    
