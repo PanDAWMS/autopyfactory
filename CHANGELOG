@@ -1,15 +1,3 @@
-2.4.8
-
-* simplified the name of plugins modules and classes, and pluginsmanagement code accordingly
-* added a new layer to the plugins directory structure
-* distinguish between self.keep_running is None than when is 0
-* MaxToRun returns 0 when there is no BatchInfo
-* added function debugrestart to init script
-* added TRACE level to logging systems
-* manually merged various changes to loglevels and sched plugins from ec2fixed adhoc branch.
-* fixed minor bug with debugrestart when log file doesn't exist
-* cleaned up sched plugin messages to be more consistent 
-
 2.4.7 
 
 * port number in case of submit plugin CondorOSGCE not hardcoded. But default is still 9619
