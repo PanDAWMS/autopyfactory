@@ -1,0 +1,13 @@
+[General]
+gridSetup = /path/to/my/setup/file
+envset_KEY = VALUE
+envunset = VAR1,VAR2,VAR3
+baseProxy = /tmp/plainProxy
+
+[Production]
+proxy = /tmp/prodRoleProxy
+vomsRole = atlas:/atlas/Role=production
+
+[Analysis]
+proxy = /tmp/pilotRoleProxy
+vomsRole = atlas:/atlas/Role=pilot
