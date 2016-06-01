@@ -559,7 +559,7 @@ class ConfigManager(object):
         if not self.defaults:
             self.log.debug("Processing  configs for dir %s" % self.configdir)
             if os.path.isdir(self.configdir):
-                conffiles = [os.path.join(self.configdir, f) for f in os.listdir(self.configdir)]
+                conffiles = [os.path.join(self.configdir, f) for f in os.listdir(self.configdir) if f.endswith('.conf')]
                 config.read(conffiles)
             else:
                 raise ConfigFailure('configuration directory %s does not exist' %self.configdir)
@@ -567,7 +567,7 @@ class ConfigManager(object):
         else:
 
             tmplist = []
-            sources = [os.path.join(self.configdir, f) for f in os.listdir(self.configdir)]
+            sources = [os.path.join(self.configdir, f) for f in os.listdir(self.configdir) if f.endswith('.conf')]
             for src in sources:
                 tmplist.append( Config() )
                 tmplist[-1].read([self.defaults, src])
