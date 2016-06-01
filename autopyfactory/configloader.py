@@ -438,7 +438,7 @@ class ConfigManager(object):
             elif configdir:
                 self.log.debug("Processing  configs for dir %s" % configdir)
                 if os.path.isdir(configdir):
-                    conffiles = [os.path.join(configdir, f) for f in os.listdir(configdir)]
+                    conffiles = [os.path.join(configdir, f) for f in os.listdir(configdir) if f.endswith('.conf')]
                     config.read(conffiles)
                     # IMPORTANT NOTE:
                     # here, as we use the native python method read()
