@@ -486,8 +486,12 @@ class Factory(object):
         self.adminemail = self.fcl.get('Factory','factoryAdminEmail')
         self.factoryid = self.fcl.get('Factory','factoryId')
         self.smtpserver = self.fcl.get('Factory','factorySMTPServer')
+        miners = self.fcl.generic_get('Factory','factoryMinEmailRepeatSeconds', get_function='getint', default_value= 3600)
+        self.minemailrepeat = int(self.miners)
+        # Dictionary of emails sent, indexed by subject + message, with value
+        # being a Date object of when it was sent. 
+        self.emaildict = {}
         self.hostname = socket.gethostname()
-        #self.username = os.getlogin()
         self.username = pwd.getpwuid(os.getuid()).pw_name   
 
         # the the queues config loader object, to be filled by a Config plugin
@@ -733,6 +737,40 @@ class Factory(object):
             
                             
     def sendAdminEmail(self, subject, messagestring):
+        '''
+        Sends email with given subject and message to the factory admin. 
+        Can be throttled by setting a minimum time between identical messages.
+        
+        '''
+        self.log.debug("Email requested. Checking for repeat time...")
+        key = "%s:%s" % (subject, messagestring)
+        minseconds = self.minemailrepeat
+        mintd = datetime.timedelta(seconds = minseconds)
+        lasttime = None
+        now = datetime.datetime.now()
+        try:
+            lasttime = self.emaildict[key]
+        except KeyError:
+            pass
+
+        if lasttime:
+            tdiff = now - lasttime
+            if tdiff > mintd:
+                self.log.debug("Email: %s > %s" % (tdiff, mintd))
+                # Send message and insert/update to dict
+                self._sendEmail(subject,messagestring)
+                self.emaildict[key] = now
+            else:
+                self.log.debug("Email: %s < %s" % (tdiff, mintd))
+                self.log.info("Not sending email: %s" % msg.as_string())
+        else:
+            self.log.debug("Email: Never send before.")
+            # Send message and insert/update to dict
+            self._sendEmail(subject,messagestring)
+            self.emaildict[key] = now
+
+                
+    def _sendEmail(self,subject,messagestring):       
         msg = MIMEText(messagestring)
         msg['Subject'] = subject
         email_from = "%s@%s" % ( self.username, self.hostname)

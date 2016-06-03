@@ -10,6 +10,7 @@
 * manually merged various changes to loglevels and sched plugins from ec2fixed adhoc branch.
 * fixed minor bug with debugrestart when log file doesn't exist
 * cleaned up sched plugin messages to be more consistent 
+* introduced email notification throttling at factory level per message content
 
 2.4.7 
 
