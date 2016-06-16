@@ -487,7 +487,7 @@ class Factory(object):
         self.factoryid = self.fcl.get('Factory','factoryId')
         self.smtpserver = self.fcl.get('Factory','factorySMTPServer')
         miners = self.fcl.generic_get('Factory','factoryMinEmailRepeatSeconds', get_function='getint', default_value= 3600)
-        self.minemailrepeat = int(self.miners)
+        self.minemailrepeat = int(miners)
         # Dictionary of emails sent, indexed by subject + message, with value
         # being a Date object of when it was sent. 
         self.emaildict = {}
