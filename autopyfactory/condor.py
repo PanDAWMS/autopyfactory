@@ -324,23 +324,18 @@ def querycondor(queryargs=None):
     for further processing.
 
     queryargs are potential extra query arguments from queues.conf    
-    queryargs are possible extra query arguments from queues.conf 
+ 
     '''
 
     log = logging.getLogger('main.condor')
     log.trace('Starting.')
-    querycmd = "condor_q "
+    querycmd = "condor_q -xml "
+    querycmd += " -attributes match_apf_queue,jobstatus,globusstatus,procid,clusterid"
     log.trace('_querycondor: using executable condor_q in PATH=%s' %utils.which('condor_q'))
-
 
     # adding extra query args from queues.conf
     if queryargs:
         querycmd += queryargs 
-
-    querycmd += " -format ' MATCH_APF_QUEUE=%s' match_apf_queue"
-    querycmd += " -format ' JobStatus=%d\n' jobstatus"
-    querycmd += " -format ' GlobusStatus=%d\n' globusstatus"
-    querycmd += " -xml"
 
     log.trace('Querying cmd = %s' %querycmd.replace('\n','\\n'))
 

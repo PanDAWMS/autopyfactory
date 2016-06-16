@@ -241,8 +241,7 @@ class Condor(threading.Thread, BatchStatusInterface):
                     self.currentinfo = newinfo
             except Exception, e:
                 self.log.error("Exception: %s" % str(e))
-                self.log.trace("Exception: %s" % traceback.format_exc())            
-
+                self.log.trace("Exception: %s" % traceback.format_exc())
         self.log.trace('Leaving.')
 
 
@@ -317,19 +316,23 @@ class Condor(threading.Thread, BatchStatusInterface):
 
         self.log.trace('Starting.')
         batchstatusinfo = BatchStatusInfo()
-        for site in input.keys():
-            qi = QueueInfo()
-            batchstatusinfo[site] = qi
-            attrdict = input[site]
-            
-            # use finer-grained globus statuses in preference to local summaries, if they exist. 
-            if 'globusstatus' in attrdict.keys():
-                valdict = attrdict['globusstatus']
-                qi.fill(valdict, mappings=self.globusstatus2info)
-            # must be a local-only job or other. 
-            else:
-                valdict = attrdict['jobstatus']
-                qi.fill(valdict, mappings=self.jobstatus2info)
+        try:
+            for site in input.keys():
+                qi = QueueInfo()
+                batchstatusinfo[site] = qi
+                attrdict = input[site]
+                
+                # use finer-grained globus statuses in preference to local summaries, if they exist. 
+                if 'globusstatus' in attrdict.keys():
+                    valdict = attrdict['globusstatus']
+                    qi.fill(valdict, mappings=self.globusstatus2info)
+                # must be a local-only job or other. 
+                else:
+                    valdict = attrdict['jobstatus']
+                    qi.fill(valdict, mappings=self.jobstatus2info)
+        except Exception, e:
+            self.log.error("Exception: %s" % str(e))
+            self.log.trace("Exception: %s" % traceback.format_exc()) 
                     
         batchstatusinfo.lasttime = int(time.time())
         self.log.trace('Returning : %s' % batchstatusinfo )
