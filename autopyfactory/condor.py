@@ -24,7 +24,7 @@ from autopyfactory.apfexceptions import ConfigFailure, CondorVersionFailure
 from pprint import pprint
 from Queue import Queue
 
-
+from autopyfactory.info import JobInfo
 
 
 # FIXME !!!
