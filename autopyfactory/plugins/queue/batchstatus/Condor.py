@@ -133,6 +133,8 @@ class Condor(threading.Thread, BatchStatusInterface):
                 self.log.trace('Leaving and returning info of %d entries.' % len(self.currentinfo))
                 return self.currentinfo[queue]
             else:
+                self.log.trace('Current info is %s' % self.currentinfo)
+                self.log.trace('No queue given, returning entire BatchStatusInfo object')
                 return self.currentinfo
 
 
@@ -235,8 +237,11 @@ class Condor(threading.Thread, BatchStatusInterface):
                     self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
                 else:
                     outlist = parseoutput(strout)
+                    self.log.trace("Got outlist.")
                     aggdict = aggregateinfo(outlist)
+                    self.log.trace("Got aggredated info.")
                     newinfo = self._map2info(aggdict)
+                    self.log.trace("Got new batchstatusinfo object: %s" % newinfo)
                     self.log.info("Replacing old info with newly generated info.")
                     self.currentinfo = newinfo
             except Exception, e:
@@ -332,7 +337,7 @@ class Condor(threading.Thread, BatchStatusInterface):
                     qi.fill(valdict, mappings=self.jobstatus2info)
         except Exception, e:
             self.log.error("Exception: %s" % str(e))
-            self.log.trace("Exception: %s" % traceback.format_exc()) 
+            self.log.error("Exception: %s" % traceback.format_exc()) 
                     
         batchstatusinfo.lasttime = int(time.time())
         self.log.trace('Returning : %s' % batchstatusinfo )
