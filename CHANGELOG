@@ -1,3 +1,7 @@
+2.4.9
+
+* fixed bug in sched plugin StatusOffline not checking if siteinfo is None 
+
 2.4.8
 
 * only reading configuration files that ends with string ".conf"

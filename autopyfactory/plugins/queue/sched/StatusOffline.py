@@ -27,37 +27,31 @@ class StatusOffline(SchedInterface):
     def calcSubmitNum(self, n=0):
         
         self.log.trace('Starting.')
-        self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue=self.apfqueue.wmsqueue, 
-                                                                   maxtime = self.apfqueue.wmsstatusmaxtime)
-        
-        self.siteinfo = self.apfqueue.wmsstatus_plugin.getSiteInfo(site=self.apfqueue.wmsqueue,
-                                                                    maxtime = self.apfqueue.wmsstatusmaxtime)
+        self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(
+                                queue=self.apfqueue.wmsqueue, 
+                                maxtime = self.apfqueue.wmsstatusmaxtime
+                                )
+        self.siteinfo = self.apfqueue.wmsstatus_plugin.getSiteInfo(
+                                site=self.apfqueue.wmsqueue,
+                                maxtime = self.apfqueue.wmsstatusmaxtime
+                                )
+        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(
+                                queue=self.apfqueue.apfqname, 
+                                maxtime = self.apfqueue.batchstatusmaxtime
+                                )
 
-        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue=self.apfqueue.apfqname, 
-                                                                  maxtime = self.apfqueue.batchstatusmaxtime)
-
-        #if self.siteinfo:
-            #sitecloud = self.siteinfo.cloud
-            #self.cloudinfo = self.apfqueue.wmsstatus_plugin.getCloudInfo(cloud=sitecloud, 
-            #                                                      maxtime = self.apfqueue.batchstatusmaxtime)
-
-        #if self.wmsqueueinfo is None or self.batchinfo is None or self.cloudinfo is None:
-        if self.wmsqueueinfo is None or self.batchinfo is None:
-            self.log.warning("wmsinfo, batchinfo, or cloudinfo is None!")
+        if self.wmsqueueinfo is None or self.siteinfo is None or self.batchinfo is None:
+            self.log.warning("wmsinfo, siteinfo, or batchinfo is None!")
             out = 0
-            msg = "StatusOffline[no wms/batch/cloudinfo]:in=%s;ret=0" %n
+            msg = "StatusOffline[no wms/site/batchinfo]:in=%s;ret=0" %n
         else:
             sitestatus = self.siteinfo.status
             self.log.trace('site status is %s' %sitestatus)
-
-            #cloudstatus = self.cloudinfo.status
-            #self.log.trace('cloud %s status is %s' %(sitecloud, cloudstatus))
 
             out = n
             msg = None
 
             # choosing algorithm 
-            #if cloudstatus == 'offline' or sitestatus == 'offline':
             if sitestatus == 'offline':
                 self.log.info('Return=%s' %self.pilots_in_offline_mode)
                 out = self.pilots_in_offline_mode
