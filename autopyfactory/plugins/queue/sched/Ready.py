@@ -61,6 +61,6 @@ class Ready(SchedInterface):
         
         out = max(0, ( activated_jobs - self.offset)  - pending_pilots )
 
-        msg = "Ready:in=%s;activated=%d,offset=%d,pending=%d;ret=%d" % (input, activated_jobs, self.offset, pending_pilots, out)
+        msg = "Ready:in=%s,activated=%d,offset=%d,pending=%d,ret=%d" % (input, activated_jobs, self.offset, pending_pilots, out)
         self.log.info(msg)
         return (out,msg)

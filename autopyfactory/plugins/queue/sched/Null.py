@@ -21,5 +21,5 @@ class Null(SchedInterface):
             raise ex
 
     def calcSubmitNum(self, n=0):
-        msg = "Null:in=%d;out=0" % n
+        msg = "Null:in=%d,out=0" % n
         return (0, msg)

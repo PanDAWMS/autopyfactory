@@ -46,7 +46,7 @@ class MaxPending(SchedInterface):
                         tosubmit = 0
                     out = min(n, tosubmit )
                          
-            msg = "MaxPending:in=%s;pending=%s,maxpending=%s;ret=%s" %(n, 
+            msg = "MaxPending:in=%s,pending=%s,maxpending=%s,ret=%s" %(n, 
                                                              pending_pilots, 
                                                              self.max_pilots_pending, 
                                                              out)

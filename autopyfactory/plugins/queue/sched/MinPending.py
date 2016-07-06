@@ -31,9 +31,9 @@ class MinPending(SchedInterface):
         pending_pilots = self.queueinfo.pending
         if self.min_pilots_pending is not None:
             out = max(n, self.min_pilots_pending - pending_pilots)     
-            msg = "MinPending:in=%s;minpending=%s,pending=%s;ret=%s" %(n, self.min_pilots_pending, pending_pilots, out)
+            msg = "MinPending:in=%s,minpending=%s,pending=%s,ret=%s" %(n, self.min_pilots_pending, pending_pilots, out)
         else:
-            msg = "MinPending:(not set);in=%s;pending=%s;ret=%s" %(n, pending_pilots, out) 
+            msg = "MinPending:(not set),in=%s,pending=%s,ret=%s" %(n, pending_pilots, out) 
            
         self.log.info(msg)
         return (out, msg) 

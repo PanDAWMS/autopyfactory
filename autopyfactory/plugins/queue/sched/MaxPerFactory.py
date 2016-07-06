@@ -50,6 +50,6 @@ class MaxPerFactory(SchedInterface):
         #    self.log.info('calculated output was negative. Returning 0')
         #    out = 0
 
-        msg = 'MaxPerFactory:in=%s,total=%s,maxperfactory=%s;ret=%s' %(n, self.total_pilots, self.max_pilots_per_factory, out)
+        msg = 'MaxPerFactory:in=%s,total=%s,maxperfactory=%s,ret=%s' %(n, self.total_pilots, self.max_pilots_per_factory, out)
         self.log.info(msg)
         return (out, msg)

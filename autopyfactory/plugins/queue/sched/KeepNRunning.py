@@ -82,7 +82,7 @@ class KeepNRunning(SchedInterface):
             self.log.debug("keep_running is set %d, use it." % self.keep_running) 
             out = self.keep_running - ( running_pilots  + pending_pilots)
 
-        msg = "KeepNRunning:in=%s;keep=%s,running=%s,pending=%s,retiring=%s;ret=%s" % (str(input), 
+        msg = "KeepNRunning:in=%s,keep=%s,running=%s,pending=%s,retiring=%s,ret=%s" % (str(input), 
                                                                            self.keep_running, 
                                                                            running_pilots, 
                                                                            pending_pilots, 

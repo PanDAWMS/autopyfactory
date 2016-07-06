@@ -33,6 +33,6 @@ class Scale(SchedInterface):
         out = math.ceil(n * self.factor)
         out = int(out)  #because the output of ceil() is float
 
-        msg = "Scale:in=%s;factor=%s;ret=%s" %(n, self.factor, out )
+        msg = "Scale:in=%s,factor=%s,ret=%s" %(n, self.factor, out )
         self.log.info(msg)
         return (out, msg) 

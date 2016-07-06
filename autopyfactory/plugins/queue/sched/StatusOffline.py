@@ -43,7 +43,7 @@ class StatusOffline(SchedInterface):
         if self.wmsqueueinfo is None or self.siteinfo is None or self.batchinfo is None:
             self.log.warning("wmsinfo, siteinfo, or batchinfo is None!")
             out = 0
-            msg = "StatusOffline[no wms/site/batchinfo]:in=%s;ret=0" %n
+            msg = "StatusOffline[no wms/site/batchinfo]:in=%s,ret=0" %n
         else:
             sitestatus = self.siteinfo.status
             self.log.trace('site status is %s' %sitestatus)
@@ -55,9 +55,9 @@ class StatusOffline(SchedInterface):
             if sitestatus == 'offline':
                 self.log.info('Return=%s' %self.pilots_in_offline_mode)
                 out = self.pilots_in_offline_mode
-                msg = "StatusOffline:(offline);in=%s;ret=%s" %(n, self.pilots_in_offline_mode)
+                msg = "StatusOffline:(offline),in=%s,ret=%s" %(n, self.pilots_in_offline_mode)
             else:
-                msg = "StatusOffline:(not offline);in=%s;ret=%s" %(n, self.pilots_in_offline_mode)
+                msg = "StatusOffline:(not offline),in=%s,ret=%s" %(n, self.pilots_in_offline_mode)
         self.log.info(msg)
         return (out, msg) 
             

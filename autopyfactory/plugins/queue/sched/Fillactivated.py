@@ -93,5 +93,5 @@ class Fillactivated(SchedInterface):
                                                                           pending_pilots, 
                                                                           running_pilots, 
                                                                           out))
-        msg = "Fillactivated:in=%s;activated=%s,pending=%s,running=%s;ret=%s" %(n, activated_jobs, pending_pilots, running_pilots, out)
+        msg = "Fillactivated:in=%s,activated=%s,pending=%s,running=%s,ret=%s" %(n, activated_jobs, pending_pilots, running_pilots, out)
         return (out, msg)

@@ -24,11 +24,11 @@ class MaxPerCycle(SchedInterface):
 
         orign = n
         out = n
-        msg = msg = "MaxPerCycle:in=%s; Not set." % n
+        msg = msg = "MaxPerCycle:in=%s, Not set." % n
 
         if self.max_pilots_per_cycle is not None:
             out = min(n, self.max_pilots_per_cycle)
-            msg = "MaxPerCycle:in=%s;maxpercycle=%s;ret=%s" %(orign, 
+            msg = "MaxPerCycle:in=%s,maxpercycle=%s,ret=%s" %(orign, 
                                          self.max_pilots_per_cycle, 
                                          out)
                 

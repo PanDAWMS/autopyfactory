@@ -39,14 +39,14 @@ class WeightedActivated(SchedInterface):
         if self.wmsinfo is None:
             self.log.warning("wsinfo is None!")
             out = self.default
-            msg = "WeightedActivated[no wmsinfo]:in=%s;ret=%s" %(n, out)
+            msg = "WeightedActivated[no wmsinfo]:in=%s,ret=%s" %(n, out)
         elif self.batchinfo is None:
             self.log.warning("self.batchinfo is None!")
             out = self.default            
-            msg = "WeightedActivated[no batchinfo]:in=%;ret=%s" %(n, out)
+            msg = "WeightedActivated[no batchinfo]:in=%,ret=%s" %(n, out)
         elif not self.wmsinfo.valid() and self.batchinfo.valid():
             out = self.default
-            msg = "WeightedActivated[no wms/batchinfo]:in=%s;ret=%s" %(n, out)
+            msg = "WeightedActivated[no wms/batchinfo]:in=%s,ret=%s" %(n, out)
             self.log.warn('a status is not valid, returning default = %s' %out)
         else:
             # Carefully get wmsinfo, activated. 
@@ -88,6 +88,6 @@ class WeightedActivated(SchedInterface):
 
         out = max(0, activated_jobs_w - pending_pilots_w)
 
-        msg = "WeightedActivated:in=%s;activated=%s,weightedactivated=%s,pending=%s,weightedpending=%s;ret=%s" %(n, activated_jobs, activated_jobs_w, pending_pilots, pending_pilots_w, out)
+        msg = "WeightedActivated:in=%s,activated=%s,weightedactivated=%s,pending=%s,weightedpending=%s,ret=%s" %(n, activated_jobs, activated_jobs_w, pending_pilots, pending_pilots_w, out)
         self.log.info(msg)
         return (out, msg)
