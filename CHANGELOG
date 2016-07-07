@@ -1,3 +1,5 @@
+* format of the messages returned by the Sched plugins fixed
+
 2.4.9
 
 * fixed bug in sched plugin StatusOffline not checking if siteinfo is None 
