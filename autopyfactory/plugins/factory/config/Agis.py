@@ -25,7 +25,18 @@ class Agis(ConfigInterface):
     def getConfig(self):
 
         qcl = Config()
-
+        
+        # FIXME
+        # here the code to query AGIS
+        # and create the config object
 
         self.log.info('queues ConfigLoader object created')
         return qcl
+
+# -------------------------------------------------------------------
+#   For stand-alone usage
+# -------------------------------------------------------------------
+if __name__ == '__main__':
+    agis = Agis()
+    qcl = agis.getConfig()
+    qcl.write('/tmp/conf')  # FIXME, the path must be an input option
