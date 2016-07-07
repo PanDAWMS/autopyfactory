@@ -24,7 +24,7 @@ class MaxPerCycle(SchedInterface):
 
         orign = n
         out = n
-        msg = msg = "MaxPerCycle:in=%s, Not set." % n
+        msg = msg = "MaxPerCycle:comment=Not set,in=%s" % n
 
         if self.max_pilots_per_cycle is not None:
             out = min(n, self.max_pilots_per_cycle)

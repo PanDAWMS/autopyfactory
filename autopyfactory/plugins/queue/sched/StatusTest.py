@@ -40,15 +40,15 @@ class StatusTest(SchedInterface):
         if self.wmsqueueinfo is None or self.batchinfo is None or self.siteinfo is None:
             self.log.warning("wmsinfo, batchinfo, or siteinfo is None!")
             out = 0
-            msg = "StatusTest[no wms/batch/siteinfo]:in=%s,ret=0" %n
+            msg = "StatusTest:comment=no wms/batch/siteinfo,in=%s,ret=0" %n
         else:
             sitestatus = self.siteinfo.status
             self.log.trace('site status is %s' %sitestatus)
             out = n
             if sitestatus == 'test':
                 out = self.pilots_in_test_mode
-                msg='StatusTest:(test),in=%d,out=%d' % ( n,  self.pilots_in_test_mode )
+                msg='StatusTest:comment=test,in=%d,out=%d' % ( n,  self.pilots_in_test_mode )
             else:
-                msg='StatusTest:(not test),in=%s,ret=%s' % (n, out)
+                msg='StatusTest:comment=not test,in=%s,ret=%s' % (n, out)
         return (out, msg)
 

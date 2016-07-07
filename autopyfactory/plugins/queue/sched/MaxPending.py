@@ -30,7 +30,7 @@ class MaxPending(SchedInterface):
     
         if not queueinfo:
             out = n
-            msg = "MaxPending: No queueinfo."
+            msg = "MaxPending:comment=No queueinfo."
         else:
             pending_pilots = queueinfo.pending
             self.log.trace('Pending is %s' % pending_pilots)

@@ -24,7 +24,7 @@ class MinPerCycle(SchedInterface):
         self.log.trace('Starting with n=%s' %n)
 
         out = n
-        msg = "MinPerCycle:Not set."
+        msg = "MinPerCycle:comment=Not set"
 
         if self.min_pilots_per_cycle is not None:
             out = max(n, self.min_pilots_per_cycle)

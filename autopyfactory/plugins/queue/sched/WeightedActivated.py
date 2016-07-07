@@ -39,14 +39,14 @@ class WeightedActivated(SchedInterface):
         if self.wmsinfo is None:
             self.log.warning("wsinfo is None!")
             out = self.default
-            msg = "WeightedActivated[no wmsinfo]:in=%s,ret=%s" %(n, out)
+            msg = "WeightedActivated:comment=no wmsinfo,in=%s,ret=%s" %(n, out)
         elif self.batchinfo is None:
             self.log.warning("self.batchinfo is None!")
             out = self.default            
-            msg = "WeightedActivated[no batchinfo]:in=%,ret=%s" %(n, out)
+            msg = "WeightedActivated:comment=no batchinfo,in=%,ret=%s" %(n, out)
         elif not self.wmsinfo.valid() and self.batchinfo.valid():
             out = self.default
-            msg = "WeightedActivated[no wms/batchinfo]:in=%s,ret=%s" %(n, out)
+            msg = "WeightedActivated:comment=no wms/batchinfo,in=%s,ret=%s" %(n, out)
             self.log.warn('a status is not valid, returning default = %s' %out)
         else:
             # Carefully get wmsinfo, activated. 

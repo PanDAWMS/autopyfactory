@@ -38,7 +38,7 @@ class Ready(SchedInterface):
         if self.wmsqueueinfo is None or self.queueinfo is None:
             self.log.warning("Missing info. wmsinfo is %s batchinfo is %s. Return=0" % (self.wmsqueueinfo, self.queueinfo))
             out = 0 
-            msg = 'Invalid wmsinfo or batchinfo' 
+            msg = 'Ready:comment=Invalid wmsinfo or batchinfo' 
         else:
             (out, msg) = self._calc(n)
         return (out, msg)

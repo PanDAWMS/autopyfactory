@@ -44,7 +44,7 @@ class KeepNRunning(SchedInterface):
         if not self.queueinfo:
             self.log.warning("self.queueinfo is None!")
             out = 0
-            msg = "Invalid queueinfo"
+            msg = "KeepNRunning:comment=Invalid queueinfo"
         else:
             (out, msg) = self._calc(n)
             self.log.trace("Returning %d" % out)

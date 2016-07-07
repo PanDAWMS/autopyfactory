@@ -28,7 +28,7 @@ class MaxToRun(SchedInterface):
         batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue=self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
         if batchinfo is None:
             out = 0
-            msg = "MaxToRun:in=%s,No batchinfo." % n
+            msg = "MaxToRun:comment=No batchinfo,in=%s" % n
             self.log.warning("self.batchinfo is None!")
         else:
             pending_pilots = batchinfo.pending
