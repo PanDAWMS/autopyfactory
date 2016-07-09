@@ -318,19 +318,22 @@ def statuscondormaster(queryargs = None):
         out = None
     return out
 
-def querycondor(queryargs=None):
+def querycondor(queryargs=None, queueskey="match_apf_queue"):
     '''
     Query condor for specific job info and return xml representation string
     for further processing.
 
     queryargs are potential extra query arguments from queues.conf    
- 
+
+    queueskey is the classad being used to distinguish between types of jobs.
+    By default it is MATCH_APF_QUEUE
     '''
 
     log = logging.getLogger('main.condor')
     log.trace('Starting.')
+    queueskey = queueskey.lower()
     querycmd = "condor_q -xml "
-    querycmd += " -attributes match_apf_queue,jobstatus,globusstatus,procid,clusterid"
+    querycmd += " -attributes %s,jobstatus,globusstatus,procid,clusterid" %queueskey
     log.trace('_querycondor: using executable condor_q in PATH=%s' %utils.which('condor_q'))
 
     # adding extra query args from queues.conf
@@ -504,7 +507,7 @@ def node2dict(node):
     return dic
 
 
-def aggregateinfo(input):
+def aggregateinfo(input, queueskey="match_apf_queue"):
     '''
     This function takes a list of job status dicts, and aggregates them by queue,
     ignoring entries without MATCH_APF_QUEUE
@@ -546,10 +549,10 @@ def aggregateinfo(input):
     log.trace('Starting with list of %d items.' % len(input))
     queues = {}
     for item in input:
-        if not item.has_key('match_apf_queue'):
+        if not item.has_key(queueskey):
             # This job is not managed by APF. Ignore...
             continue
-        apfqname = item['match_apf_queue']
+        apfqname = item[queueskey]
         # get current dict for this apf queue
         try:
             qdict = queues[apfqname]
@@ -560,8 +563,8 @@ def aggregateinfo(input):
         
         # Iterate over attributes and increment counts...
         for attrkey in item.keys():
-            # ignore the match_apf_queue attrbute. 
-            if attrkey == 'match_apf_queue':
+            # ignore the queueskey attrbute. 
+            if attrkey == queueskey:
                 continue
             attrval = item[attrkey]
             # So attrkey : attrval in joblist
@@ -773,7 +776,7 @@ import htcondor
 import classad
 import copy
 
-def querycondorlib(remotecollector=None, remoteschedd=None):
+def querycondorlib(remotecollector=None, remoteschedd=None, queueskey='match_apf_queue'):
     ''' 
     queries condor to get a list of ClassAds objects
     We query for a few specific ClassAd attributes
@@ -796,13 +799,13 @@ def querycondorlib(remotecollector=None, remoteschedd=None):
     else:
         schedd = htcondor.Schedd() # Defaults to the local schedd.
 
-    list_attrs = ['match_apf_queue', 'jobstatus', 'ec2instanceid']
+    list_attrs = [queueskey, 'jobstatus', 'ec2instanceid']
     out = schedd.query('true', list_attrs)
     out = aggregateinfolib(out) 
     log.trace(out)
     return out 
 
-def aggregateinfolib(input):
+def aggregateinfolib(input, queueskey='match_apf_queue'):
     
     log = logging.getLogger('main.condor')
 
@@ -816,10 +819,10 @@ def aggregateinfolib(input):
 
     queues = {}
     for job in input:
-       if not 'match_apf_queue' in job.keys():
+       if not queueskey in job.keys():
            # This job is not managed by APF. Ignore...
            continue
-       apfqname = job['match_apf_queue']
+       apfqname = job[queueskey]
        if apfqname not in queues.keys():
            queues[apfqname] = copy.copy(emptydict)
 

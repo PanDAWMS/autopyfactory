@@ -54,6 +54,7 @@ class Condor(threading.Thread, WMSStatusInterface):
         #self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
         self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.condor.sleep')
         self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queryargs')
+        self.queueskey = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queueskey', default_value='MATCH_APF_QUEUE')
 
         self.currentcloudinfo = None
         self.currentjobinfo = None
@@ -220,12 +221,12 @@ class Condor(threading.Thread, WMSStatusInterface):
         self.currentsiteinfo = None
 
         try:
-            strout = querycondor(self.queryargs)
+            strout = querycondor(self.queryargs, self.queueskey)
             if not strout:
                 self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
             else:
                 outlist = parseoutput(strout)
-                aggdict = aggregateinfo(outlist)
+                aggdict = aggregateinfo(outlist, self.queueskey)
                 newjobinfo = self._map2info(aggdict)
                 self.log.info("Replacing old info with newly generated info.")
                 self.currentjobinfo = newjobinfo
