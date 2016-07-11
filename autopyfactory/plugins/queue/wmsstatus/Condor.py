@@ -55,6 +55,8 @@ class Condor(threading.Thread, WMSStatusInterface):
         self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.condor.sleep')
         self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queryargs')
         self.queueskey = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queueskey', default_value='MATCH_APF_QUEUE')
+        # FIXME
+        # check if this works with a Singleton, or I need a different Singleton per value
 
         self.currentcloudinfo = None
         self.currentjobinfo = None
