@@ -1,3 +1,5 @@
+* made the classad optional when WMS is Condor, instead of forcing it to be MATCH_APF_QUEUE
+* removed unneded import in factory.py that triggered undesired dependency to htcondor
 * format of the messages returned by the Sched plugins fixed
 
 2.4.9

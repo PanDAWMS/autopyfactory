@@ -39,7 +39,6 @@ except:
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
 from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailure
 from autopyfactory.cleanlogs import CleanLogs
-from autopyfactory.condor import ProcessCondorRequests
 from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.logserver import LogServer
 from autopyfactory.pluginsmanagement import QueuePluginDispatcher
