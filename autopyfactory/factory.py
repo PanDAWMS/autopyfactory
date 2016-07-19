@@ -475,6 +475,7 @@ class Factory(object):
         # APF Queues Manager 
         self.apfqueuesmanager = APFQueuesManager(self)
 
+        self._authmanager()
         self._proxymanager()
         self._monitor()
         self._mappings()
@@ -535,6 +536,37 @@ class Factory(object):
         else:
             self.log.info("ProxyManager disabled.")
 
+    def _authmanager(self):
+
+        # Handle ProxyManager configuration
+        try:
+            useaman = self.fcl.getboolean('Factory', 'authmanager.enabled')
+        except Exception, e:
+            self.log.error('No authmanager var in config. Skipping. ')
+        
+        if useaman:      
+            try:
+                from autopyfactory.authmanager import AuthManager
+            except:
+                self.log.critical('authmanager cannot be imported')
+                sys.exit(0) 
+
+            acf = self.fcl.get('Factory','authConf')
+            self.log.debug("auth.conf file(s) = %s" % pcf)
+            acl = ConfigParser()
+
+            try:
+                got_config = acl.read(pcf)
+            except Exception, e:
+                self.log.error('Failed to create AuthConfigLoader')
+                self.log.error("Exception: %s" % traceback.format_exc())
+                sys.exit(0)
+
+            self.log.trace("Read config file %s, return value: %s" % (acf, got_config)) 
+            self.authmanager = AuthManager(acl, self)
+            self.log.info('AuthManager initialized.')
+        else:
+            self.log.info("AuthManager disabled.")
 
     def _monitor(self):
 
