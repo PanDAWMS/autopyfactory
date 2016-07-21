@@ -11,12 +11,15 @@ import threading
 import time
 import socket
 
+
 # Added to support running module as script from arbitrary location. 
 from os.path import dirname, realpath, sep, pardir
 fullpathlist = realpath(__file__).split(sep)
 prepath = sep.join(fullpathlist[:-2])
 import sys
 sys.path.insert(0, prepath)
+import autopyfactory
+from autopyfactory.plugins.factory.auth.X509 import X509Handler
 
 
 class AuthManager(object):
@@ -27,8 +30,9 @@ class AuthManager(object):
     
     '''
     def __init__(self, aconfig, factory=None):
-        threading.Thread.__init__(self) # init the thread 
+        
         self.log = logging.getLogger('main.authmanager')
+        self.log.info("Creating new authmanager...")
         self.aconfig = aconfig
         self.factory = factory
         self.handlers = []
@@ -39,11 +43,27 @@ class AuthManager(object):
             self.sleep = 5
         
         for sect in self.aconfig.sections():
-            # create handler for each type of credentail in auth.conf
+            c = "\n[%s] \n" % sect
+            for o in self.aconfig.options(sect):
+                c += "%s = %s \n" % (o, self.aconfig.get(sect, o))
+            self.log.trace(c)           
             
-                        
-            #ph = ProxyHandler(pconfig, sect, self)
-            self.handlers.append(ph)
+            try:
+                pclass = self.aconfig.get(sect, 'plugin')
+            except Exception, e:
+                self.log.warn("No plugin attribute for section %s" % sect)
+                
+            if pclass == 'X509':
+                self.log.trace("Creating X509 handler for %s" % sect )
+  
+                x509h = X509Handler(aconfig, sect, self)
+                # create handler for each type of credential in auth.conf                       
+                #ph = ProxyHandler(pconfig, sect, self)
+                self.handlers.append(x509h)
+            else:
+                self.log.warn("Unrecognized auth plugin %s" % pclass )
+               
+        
         
     def startHandlers(self):
         for ah in self.handlers:
@@ -124,24 +144,27 @@ if __name__ == '__main__':
     
     debug = 0
     info = 0
-    pconfig_file = None
+    trace = 0
+    aconfig_file = None
     default_configfile = os.path.expanduser("~/etc/auth.conf")     
     usage = """Usage: authmanager.py [OPTIONS]  
     OPTIONS: 
         -h --help                   Print this message
         -d --debug                  Debug messages
         -v --verbose                Verbose information
-        -c --config                 Config file [~/etc/sshcred.conf]"""
+        -t --trace                  Trace level info
+        -c --config                 Config file [~/etc/auth.conf]"""
     
     # Handle command line options
     argv = sys.argv[1:]
     try:
         opts, args = getopt.getopt(argv, 
-                                   "c:hdv", 
+                                   "c:hdvt", 
                                    ["config=",
                                     "help", 
                                     "debug", 
                                     "verbose",
+                                    "trace",
                                     ])
     except getopt.GetoptError, error:
         print( str(error))
@@ -152,11 +175,13 @@ if __name__ == '__main__':
             print(usage)                     
             sys.exit()            
         elif opt in ("-c", "--config"):
-            pconfig_file = arg
+            aconfig_file = arg
         elif opt in ("-d", "--debug"):
             debug = 1
         elif opt in ("-v", "--verbose"):
             info = 1
+        elif opt in ("-t", "--trace"):
+            trace = 1
 
     # Set up logging. 
     # Add TRACE level
@@ -200,6 +225,8 @@ if __name__ == '__main__':
         log.setLevel(logging.DEBUG) # Override with command line switches
     if info:
         log.setLevel(logging.INFO) # Override with command line switches
+    if trace:
+        log.setLevel(logging.TRACE) 
     log.debug("Logging initialized.")      
     
     # Read in config file
@@ -207,17 +234,19 @@ if __name__ == '__main__':
     if not aconfig_file:
         aconfig_file = os.path.expanduser(default_configfile)
     else:
-        aconfig_file = os.path.expanduser(sconfig_file)
+        aconfig_file = os.path.expanduser(aconfig_file)
     got_config = aconfig.read(aconfig_file)
     log.trace("Read config file %s, return value: %s" % (aconfig_file, got_config))
     
     am = AuthManager(aconfig)
+    log.info("Authmanager created. Starting handlers...")
+    am.startHandlers()
     #am.start()
     
     try:
         while True:
             time.sleep(2)
-            log.trace('Checking for interrupt.')
+            #log.trace('Checking for interrupt.')
     except (KeyboardInterrupt): 
         log.debug("Shutdown via Ctrl-C or -INT signal.")
         

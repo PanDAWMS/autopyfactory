@@ -28,7 +28,7 @@ class X509Handler(threading.Thread):
     or retrieves suitable credential from MyProxy 
            
     '''
-    def __init__(self,config, section, manager ):
+    def __init__(self, config, section, manager ):
         threading.Thread.__init__(self) # init the thread
         self.log = logging.getLogger('main.x509handler')
         self.name = section
@@ -374,8 +374,11 @@ class X509Handler(threading.Thread):
         verify the proxy generated
         is valid, has the right expiration time, VOMS attributes, etc.
         '''
+        if self.manager is not None:
+            email_subject = "AutoPyFactory on %s: problem with X509 proxy" % self.manager.factory.factoryid
+        else:
+                        email_subject = "AutoPyFactory on problem with X509 proxy"
 
-        email_subject = "AutoPyFactory on %s: problem with X509 proxy" % self.manager.factory.factoryid
         
         timestamp = '%s-%s-%s %s:%s:%s (UTC)' %time.gmtime()[:6]
         host = '[%s] : ' %socket.gethostname()
