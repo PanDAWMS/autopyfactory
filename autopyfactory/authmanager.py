@@ -114,8 +114,6 @@ class AuthManager(object):
         pass
 
 
-
-
 if __name__ == '__main__':
 
    
@@ -127,8 +125,8 @@ if __name__ == '__main__':
     debug = 0
     info = 0
     pconfig_file = None
-    default_configfile = os.path.expanduser("~/etc/proxy.conf")     
-    usage = """Usage: sshmanager.py [OPTIONS]  
+    default_configfile = os.path.expanduser("~/etc/auth.conf")     
+    usage = """Usage: authmanager.py [OPTIONS]  
     OPTIONS: 
         -h --help                   Print this message
         -d --debug                  Debug messages
@@ -205,16 +203,16 @@ if __name__ == '__main__':
     log.debug("Logging initialized.")      
     
     # Read in config file
-    sconfig=ConfigParser()
-    if not sconfig_file:
-        sconfig_file = os.path.expanduser(default_configfile)
+    aconfig=ConfigParser()
+    if not aconfig_file:
+        aconfig_file = os.path.expanduser(default_configfile)
     else:
-        sconfig_file = os.path.expanduser(sconfig_file)
-    got_config = sconfig.read(sconfig_file)
-    log.trace("Read config file %s, return value: %s" % (sconfig_file, got_config))
+        aconfig_file = os.path.expanduser(sconfig_file)
+    got_config = aconfig.read(aconfig_file)
+    log.trace("Read config file %s, return value: %s" % (aconfig_file, got_config))
     
-    sm = SSHManager(sconfig)
-    sm.start()
+    am = AuthManager(aconfig)
+    #am.start()
     
     try:
         while True:
@@ -222,4 +220,4 @@ if __name__ == '__main__':
             log.trace('Checking for interrupt.')
     except (KeyboardInterrupt): 
         log.debug("Shutdown via Ctrl-C or -INT signal.")
-        pm.stopevent.set()
+        
