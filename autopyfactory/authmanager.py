@@ -19,7 +19,7 @@ prepath = sep.join(fullpathlist[:-2])
 import sys
 sys.path.insert(0, prepath)
 import autopyfactory
-from autopyfactory.plugins.factory.auth.X509 import X509Handler
+from autopyfactory.plugins.auth.X509 import X509Handler
 
 
 class AuthManager(object):
@@ -62,8 +62,6 @@ class AuthManager(object):
                 self.handlers.append(x509h)
             else:
                 self.log.warn("Unrecognized auth plugin %s" % pclass )
-               
-        
         
     def startHandlers(self):
         for ah in self.handlers:
