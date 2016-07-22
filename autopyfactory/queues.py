@@ -257,8 +257,8 @@ class APFQueue(threading.Thread):
             self.sleep = self.qcl.generic_get(apfqname, 'apfqueue.sleep', 'getint')
             self.cyclesrun = 0
             
-            self.batchstatusmaxtime = self.fcl.generic_get('Factory', 'batchstatus.maxtime', default_value=0)
-            self.wmsstatusmaxtime = self.fcl.generic_get('Factory', 'wmsstatus.maxtime', default_value=0)
+            #self.batchstatusmaxtime = self.fcl.generic_get('Factory', 'batchstatus.maxtime', default_value=0)
+            #self.wmsstatusmaxtime = self.fcl.generic_get('Factory', 'wmsstatus.maxtime', default_value=0)
         except Exception, ex:
             self.log.error('APFQueue: exception captured while reading configuration variables to create the object.')
             self.log.debug("Exception: %s" % traceback.format_exc())
@@ -290,7 +290,7 @@ class APFQueue(threading.Thread):
         self.batchstatus_plugin = pd.batchstatusplugin  # a single BatchStatus plugin
         self.monitor_plugins = pd.monitorplugins        # a list of 1 or more plugins
 
- 
+        
 # Run methods
 
     def run(self):
