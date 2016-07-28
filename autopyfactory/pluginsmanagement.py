@@ -363,8 +363,7 @@ class FactoryPluginDispatcher(object):
         for config_ph in config_plugin_handlers:
             config_cls = config_ph.plugin_class
             config_plugin = config_cls(self.factory)  # calls __init__() to instantiate the class
-            config_plugins.append(config_plugin)
-    
+            config_plugins.append(config_plugin)  
         return config_plugins
 
 
