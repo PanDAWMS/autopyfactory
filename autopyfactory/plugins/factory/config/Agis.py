@@ -12,6 +12,7 @@ def trace(self, msg, *args, **kwargs):
     self.log(logging.TRACE, msg, *args, **kwargs)
 logging.Logger.trace = trace
 
+import copy
 import json
 import os
 import sys
@@ -22,7 +23,7 @@ from urllib import urlopen
 # Added to support running module as script from arbitrary location. 
 from os.path import dirname, realpath, sep, pardir
 fullpathlist = realpath(__file__).split(sep)
-print(fullpathlist)
+#print(fullpathlist)
 prepath = sep.join(fullpathlist[:-5])
 sys.path.insert(0, prepath)
 
@@ -37,8 +38,6 @@ from autopyfactory.interfaces import ConfigInterface
 #####################################################
 
 # Used to calculate scale factory, along with CEs per PQ  
-JOBS_PER_PILOT = 1.5
-NUM_FACTORIES = 4.0
 APF_DEFAULT = '''
 [DEFAULT]
 vo = ATLAS
@@ -72,7 +71,7 @@ apfqueue.sleep = 120
 # NEG maps list *prohibited* attribute and values. Object is removed if present. 
 PQFILTERREQMAP = { 'pilot_manager' : ['apf'],
                    'resource_type' : ['grid'],
-                   'vo_name'       : ['atlas'],
+#                   'vo_name'       : ['atlas'],
                    'site_state' : ['active']
                    } 
 
@@ -82,7 +81,7 @@ CQFILTERREQMAP = {'ce_state' : ['active'],
                    'ce_status' : ['production'],
                    'ce_queue_status'   : ['production',''],
                }
-CQFILTERNEGMAP = { 'ce_flavour' : ['lcg-ce'], }
+CQFILTERNEGMAP = { 'ce_flavour' : ['lcg-ce','cream-ce', 'arc-ce'], }
 
 ######################################################
 #
@@ -90,35 +89,61 @@ CQFILTERNEGMAP = { 'ce_flavour' : ['lcg-ce'], }
 #
 #######################################################
 
+
+class AgisCEQueueCreationError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)    
+    
+class AgisPandaQueueCreationError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value) 
+
 class AgisPandaQueue(object):
     
-    def __init__(self, d, key):
+    def __init__(self, parent, d, key):
         self.log = logging.getLogger("main.agis")
+        self.parent = parent
         self.panda_queue_name = key
-        self.panda_resource = d[key]['panda_resource']              # AGLT2_LMEM     
+        try:
+            self.panda_resource = d[key]['panda_resource']              # AGLT2_LMEM     
+            
+            # Will be calculated later... 
+            self.numvalidces = 0.0
+            
+            self.corecount = d[key]['corecount']
+            self.memory = d[key]['memory']
+            self.maxtime = d[key]['maxtime']
+            self.maxmemory = d[key]['maxmemory']
+            self.site_state = d[key]['site_state'].lower()
+            self.maxrss = d[key].get('maxrss', 0)
+            self.maxswap = d[key].get('maxswap', 0)
+            self.pilot_manager = d[key]['pilot_manager'].lower()
+            self.pilot_version = d[key].get('pilot_version', 'current')
+            self.resource_type = d[key]['resource_type'].lower()        # grid
+            self.type = d[key]['type'].lower()                          # production (activity)
+            self.vo_name = d[key]['vo_name'].lower()                    # atlas
+            self.cloud = d[key]['cloud'].lower()                        # us
+            self.queues = d[key]['queues']                              # list of dictionaries
+            #self.ce_queues = self._make_cequeues(d, key)
+            self.ce_queues = self._make_cequeues(self.queues)
         
-        # Will be calculated later... 
-        self.numvalidces = 0.0
-        
-        self.corecount = d[key]['corecount']
-        self.memory = d[key]['memory']
-        self.maxtime = d[key]['maxtime']
-        self.maxmemory = d[key]['maxmemory']
-        self.site_state = d[key]['site_state'].lower()
-        self.maxrss = d[key].get('maxrss', 0)
-        self.maxswap = d[key].get('maxswap', 0)
-        self.pilot_manager = d[key]['pilot_manager'].lower()
-        self.pilot_version = d[key].get('pilot_version', 'current')
-        self.resource_type = d[key]['resource_type'].lower()        # grid
-        self.type = d[key]['type'].lower()                          # production 
-        self.vo_name = d[key]['vo_name'].lower()                    # atlas
-        self.queues = d[key]['queues']                              # list of ditionaries
-        #self.ce_queues = self._make_cequeues(d, key)
-        self.ce_queues = self._make_cequeues(self.queues)
+        except Exception, e:
+            self.log.error("Problem creating a PandaQueue %s Exception: %s" % (self.panda_queue_name, 
+                                                                               traceback.format_exc()))
+            raise AgisCEQueueCreationError("Problem creating a PandaQueue %s" % (self.panda_queue_name) )
+           
 
     def __str__(self):
         s = "AgisPandaQueue: "
         s += "panda_resource=%s " %  self.panda_resource
+        s += "vo_name=%s " % self.vo_name
+        s += "cloud=%s " % self.cloud 
+        s += "type=%s " % self.type
+        
         for ceq in self.ce_queues:
             s += "   %s" % ceq
         return s
@@ -150,6 +175,7 @@ class AgisCEQueue(object):
         self.log = logging.getLogger("main.agis")
         self.parent = parent
         self.panda_queue_name = parent.panda_queue_name 
+        #try:
         self.ce_name = cedict['ce_name']                  # AGLT2-CE-gate04.aglt2.org
         self.ce_endpoint = cedict['ce_endpoint']          # gate04.aglt2.org:2119
         self.ce_host = self.ce_endpoint.split(":")[0]
@@ -191,9 +217,9 @@ class AgisCEQueue(object):
             self.submitpluginstr = 'condorcream'
             # glue 1.3 uses minutes and this / operator uses floor value
             # https://wiki.italiangrid.it/twiki/bin/view/CREAM/UserGuideEMI2#Forward_of_requirements_to_the_b
-            self.maxtime = self.maxtime / 60
-            self.creamattr += ' CpuNumber=%d;WholeNodes=false;SMPGranularity=%d; ' % (self.parent.corecount,
-                                                                                      self.parent.corecount) 
+            #self.maxtime = self.maxtime / 60
+            #self.creamattr += ' CpuNumber=%d;WholeNodes=false;SMPGranularity=%d; ' % (self.parent.corecount,
+            #                                                                          self.parent.corecount) 
 
         elif self.ce_flavour == 'arc-ce':
             pass
@@ -202,16 +228,17 @@ class AgisCEQueue(object):
             self.gridresource = self.ce_host
             self.submitplugin = 'CondorOSGCE'
             self.submitpluginstr = 'condorosgce'
-            
         else:
-            self.log.warning("Unknown ce_flavour: %s" % self.ce_flavour)
-        
-        
-    def getApfConf(self):
+            self.log.error("Unknown ce_flavour: %s" % self.ce_flavour)
+            #raise AgisCEQueueCreationError("Unknown ce_flavour: %s" % self.ce_flavour)
+        #except Exception, e:
+        #    self.log.error("Problem creating a CEqueue for PQ %s" % (self.panda_queue_name))
+        #    raise AgisCEQueueCreationError("Problem creating a CEqueue for PQ %s" % (self.panda_queue_name) )
+
+    def getAPFConfigString(self):
         '''
         Returns string of valid APF configuration for this queue-ce entry.  
         '''
-        
         # Unconditional config
         s = "[%s-%s] \n" % ( self.panda_queue_name, self.ce_host )
         s += "enabled=True\n"
@@ -220,16 +247,14 @@ class AgisCEQueue(object):
         
         
         try:       
-            self.apf_scale_factor = ((( 1.0 / NUM_FACTORIES) / self.parent.numvalidces ) / JOBS_PER_PILOT) 
+            self.apf_scale_factor = ((( 1.0 / float(self.parent.parent.numfactories) ) / len(self.parent.ce_queues) ) / float(self.parent.parent.jobsperpilot) ) 
         except ZeroDivisionError:
             self.log.error("Division by zero. Something wrong with scale factory calc.")
             self.apf_scale_factor = 1.0
         s += "sched.scale.factor = %f \n" % self.apf_scale_factor
-        
         s += "batchsubmitplugin = %s \n" % self.submitplugin
         s += "batchsubmit.%s.gridresource = %s \n" % (self.submitpluginstr, self.gridresource)
         
-
         if self.creamenv is not None:
             s += 'batchsubmit.condorcream.environ = %s' % self.creamenv
             if self.creamattr is not None:
@@ -237,20 +262,23 @@ class AgisCEQueue(object):
                 s += 'batchsubmit.condorcream.condor_attributes = %(req)s,%(hold)s,%(remove)s,cream_attributes = %(creamattr)s,notification=Never'
             else:
                 s += 'batchsubmit.condorcream.condor_attributes = %(req)s,%(hold)s,%(remove)s,notification=Never'
-        
-
-        
         return s 
+
+    def getAPFConfig(self):
+        '''
+        Returns ConfigParser object representing config
+        
+        '''
 
     def __str__(self):
         s = "AgisCEQueue: "
         s += "PQ=%s " %  self.panda_queue_name
-        s += "wmsqueue=%s" % self.parent.panda_resource
-        s += "submitplugin=%s" % self.submitplugin
-        s += "host=%s" % self.ce_host
-        s += "endpoint=%s" %self.ce_endpoint
-        s += "gridresource=%s" % self.gridresource
-        s += "maxtime=%s" % self.parent.maxtime
+        s += "wmsqueue=%s " % self.parent.panda_resource
+        s += "submitplugin=%s " % self.submitplugin
+        s += "host=%s " % self.ce_host
+        s += "endpoint=%s " %self.ce_endpoint
+        s += "gridresource=%s " % self.gridresource
+        s += "maxtime=%s " % self.parent.maxtime
         return s
 
 class Agis(ConfigInterface):
@@ -259,89 +287,139 @@ class Agis(ConfigInterface):
     information retrieved from AGIS
     """
 
-    
-    def __init__(self, factory):
+    def __init__(self, factory=None, volist=None, cloudlist=None, activitylist=None, defaultfile=None):
         self.log = logging.getLogger("main.agis")
         if factory is not None:
-            
             self.factory = factory
             self.fcl = factory.fcl
+            self.baseurl = self.fcl.get('Factory', 'config.agis.baseurl')
+            self.vos = [ vo.strip().lower() for vo in self.fcl.get('Factory', 'config.agis.vos').split(',') ]
+            self.clouds = [ cl.strip().lower() for cl in self.fcl.get('Factory', 'config.agis.clouds').split(',') ]
+            self.activities = [ ac.strip().lower() for ac in self.fcl.get('Factory', 'config.agis.activities').split(',') ]
+            self.defaultsfile = self.fcl.get('Factory', 'config.agis.defaultsfile')
+            self.sleep = self.fcl.get('Factory', 'config.agis.sleep')
+            self.jobsperpilot = self.fcl.get('Factory', 'config.agis.jobsperpilot')
+            self.numfactories = self.fcl.get('Factory', 'config.agis.numfactories')
         else:
             self.baseurl = 'http://atlas-agis-api.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'
-            self.vos = ['atlas',]
-            self.clouds = ['US',]
-            self.activities = ['analysis','production']
-            self.queuesdefault = "~/etc/autopyfactory/agisdefaults.conf"
-            self.basescale = .20
+            self.vos = volist
+            self.clouds = cloudlist
+            self.activities = activitylist
+            self.defaultsfile = "~/etc/autopyfactory/agisdefaults.conf"
             self.sleep = 120
-        self.log.trace('ConfigPlugin: Object initialized.')
+            self.jobsperpilot = 1.5
+            self.numfactories = 4
+        self.log.trace('Perform initial info download...')
+        self._updateInfo()
+        self.log.trace('ConfigPlugin: Object initialized. %s' % self)
 
-    def getConfig(self):
+    def _updateInfo(self):
         '''
-        For embedded usage. Handles everything in config.  
+        Contact AGIS and update full queue info.
         '''
-        allqueues = []
-        for v in self.vos:
-            for c in self.clouds:
-                for a in self.activities:
-                    self.log.debug("Handling vo=%s cloud=%s activity=%s" % (v,c,a))
-                    d = self._downloadJSON(vo, cloud)
-                    self.log.trace("Calling _handleJSON")
-                    queues = self._handleJSON(d, a)
-                    self.log.debug("AGIS provided %d queues for activity %s" % ( len(queues), a))
-                    for q in queues:
-                        allqueues.append(q)
-        self.log.debug("AGIS provided list of %d total queues." % len(allqueues))
-        goodqueues = self._filterobjs(allqueues, PQFILTERREQMAP, PQFILTERNEGMAP)
-        cequeues = []
-        for q in goodqueues:
-            for cq in q.ce_queues:
-                cequeues.append(cq)
-        self.log.debug("Assembled list of %d CEs from AGIS." % len(cequeues))
-        goodcequeues = self._filterobjs(cequeues, CQFILTERREQMAP, CQFILTERNEGMAP )
+        try:
+            d = self._downloadJSON()
+            self.log.trace("Calling _handleJSON")
+            queues = self._handleJSON(d)
+            self.log.debug("AGIS provided list of %d total queues." % len(queues))
+            self.allqueues = queues
+        except Exception, e:
+                self.log.error('Failed to contact AGIS or parse problem: %s' %  traceback.format_exc() )
+                                                                              
+                
+    def getAPFConfigString(self):
+        '''
+        For embedded usage. Handles everything in config.
+        Pulls out valid PQ/CEs for specified vo, cloud, activity
+        Returns string APF config. 
+        PQ filtering:
+            VO
+              'vo_name'       : ['atlas'],
+            CLOUD  
+              'cloud'
+            ACTIVITY
+               'type'      
+        '''
         
-        self._setcenum(goodcequeues)
+        # Don't mess with the built-in default. 
+        mypqfilter = copy.deepcopy(PQFILTERREQMAP)
+        if len(self.vos) > 0:
+            mypqfilter['vo_name'] = self.vos
+        if len(self.clouds ) > 0:
+            mypqfilter['cloud'] = self.clouds         
+        if len(self.activities) > 0:
+            mypqfilter['type'] = self.activities
+
+        self.log.trace("Before filtering. allqueues has %d objects" % len(self.allqueues))
+        self.allqueues = self._filterobjs(self.allqueues, mypqfilter, PQFILTERNEGMAP)
+        self.log.trace("After filtering. allqueues has %d objects" % len(self.allqueues))
+        
+        for q in self.allqueues:
+            self.log.trace("Before filtering. ce_queues has %d objects" % len(q.ce_queues))
+            q.ce_queues = self._filterobjs(q.ce_queues, CQFILTERREQMAP, CQFILTERNEGMAP )
+            self.log.trace("After filtering. ce_queues has %d objects" % len(q.ce_queues))
                 
         s = ""
         s += APF_DEFAULT
-        for c in goodcequeues:
-            s += "%s\n" % c.getApfConf()        
+        for q in self.allqueues:
+            for cq in q.ce_queues:
+                s += "%s\n" % cq.getAPFConfigString()        
         return s
-            
-    def _setcenum(self, celist):
+    
+    def getAPFConfig(self):
         '''
-        Calculates the number of still-valid CEs serving a Panda queue, and 
-        sets the <numces> attribute on parent PQ. 
+        Returns ConfigParser representing config
         '''
-        for cq in celist:
-            cq.parent.numvalidces += 1.0
-
+    
   
     def _filterobjs(self, objlist, reqdict=None, negdict=None):
         '''
         Generic filtering method. 
         '''
-        goodobjs = []
+        newobjlist = []
         kept = 0
         filtered = 0
         for ob in objlist:
             keep = True
             for attrstr in reqdict.keys():
-                self.log.trace("Checking obj %s for value %s" % (attrstr, reqdict[attrstr]))
+                self.log.trace("Confirming %s.%s for value %s" % (type(ob), 
+                                                                    attrstr, 
+                                                                    reqdict[attrstr]))
                 if getattr(ob, attrstr) not in reqdict[attrstr]:
+                    self.log.trace("%s: %s does not have value %s. Removing." % (ob, 
+                                                                               attrstr, 
+                                                                               reqdict[attrstr]))
                     keep = False
             if keep:
-                goodobjs.append(ob)
                 kept += 1
+                newobjlist.append(ob)
+            else:
+                self.log.trace("Remove obj %s" % ob)
+                #newobjlist.remove(ob)
+                filtered += 1
+        self.log.trace("Keeping %d objects, filtered %d objects for required attribute values." % (kept, filtered))
+        
+        newlist2 = []
+        kept = 0
+        filtered = 0
+        for ob in newobjlist:
+            keep = True
+            for attrstr in negdict.keys():
+                if getattr(ob, attrstr) in negdict[attrstr]:
+                    filtered += 1
+                    keep = False
+            if keep:
+                kept += 1
+                newlist2.append(ob)
             else:
                 self.log.trace("Remove obj %s" % ob)
                 filtered += 1
-        self.log.trace("Keeping %d CQs, filtered %d CQs" % (kept, filtered))
-        return goodobjs    
+        self.log.trace("Keeping %d objects, filtered %d objects for prohibited attribute values." % (kept, filtered))
+        return newlist2
 
     
-    def _downloadJSON(self, vo, cloud):
-        url = '%s&vo_name=%s&cloud=%s' % (self.baseurl, vo, cloud)
+    def _downloadJSON(self):
+        url = '%s' % self.baseurl
         self.log.trace('Contacting %s' % url)
         handle = urlopen(url)
         d = json.load(handle, 'utf-8')
@@ -349,17 +427,16 @@ class Agis(ConfigInterface):
         self.log.trace('Done.')
         return d
 
-    def _handleJSON(self, jsondoc, activity):
+    def _handleJSON(self, jsondoc):
         '''
         Returns all PQ objects in list.  
-        
         '''
         self.log.trace("handleJSON called for activity %s" % activity)
         queues = []
         for key in sorted(jsondoc):
             self.log.trace("key = %s" % key)
             try:
-                qo = AgisPandaQueue(jsondoc, key)
+                qo = AgisPandaQueue(self, jsondoc, key)
                 queues.append(qo)
             except Exception, e:
                 self.log.error('Failed to create AgisPandaQueue %s Exception: %s' % (key,
@@ -368,7 +445,16 @@ class Agis(ConfigInterface):
         self.log.trace("Made list of %d PQ objects" % len(queues))
         return queues
     
-
+    def __str__(self):
+        s = 'Agis top-level object: '
+        s+= 'vos=%s ' % self.vos
+        s+= 'clouds=%s' % self.clouds
+        s+= 'activities=%s ' % self.activities
+        s+= 'defaultsfile=%s ' % self.defaultsfile
+        s += 'numfactories=%s ' % self.numfactories
+        s += 'jobsperpilot=%s ' % self.jobsperpilot
+        return s
+        
 # -------------------------------------------------------------------
 #   For stand-alone usage
 # -------------------------------------------------------------------
@@ -396,8 +482,8 @@ if __name__ == '__main__':
         -v --verbose                Verbose information
         -t --trace                  Trace level info
         -c --config                 Config file [~/etc/autopyfactory.conf]
-        -C --cloud                  Cloud ['US']
         -V --vo                     Virtual organization ['atlas']
+        -C --cloud                  Cloud ['US']
         -A --activity               Activity ['analysis']
         -D --default                Defaults file [~/etc/defaults.conf
         
@@ -407,14 +493,14 @@ if __name__ == '__main__':
     argv = sys.argv[1:]
     try:
         opts, args = getopt.getopt(argv, 
-                                   "c:hdvtCVAo:D:", 
+                                   "c:hdvtVCAo:D:", 
                                    ["config=",
                                     "help", 
                                     "debug", 
                                     "verbose",
                                     "trace",
-                                    "cloud=",
                                     "vo=",
+                                    "cloud=",
                                     "activity=",
                                     "outfile=",
                                     "defaults="
@@ -436,28 +522,17 @@ if __name__ == '__main__':
         elif opt in ("-t", "--trace"):
             trace = 1
         elif opt in ("-C", "--cloud"):
-            cloud = arg 
+            cloud = arg.lower() 
         elif opt in ("-V", "--vo"):
-            vo = arg
+            vo = arg.lower()
         elif opt in ("-A", "--activity"):
-            activity = arg            
+            activity = arg.lower()            
         elif opt in ("-o", "--outfile"):
             outfile = arg
         elif opt in ("-D", "--defaults"):
             defaultsfile = arg
  
-            
-            
-    # Set up logging. 
-    # Add TRACE level
-    #logging.TRACE = 5
-    #logging.addLevelName(logging.TRACE, 'TRACE')
-    
-    # Create trace log function and assign
-    #def trace(self, msg, *args, **kwargs):
-    #    self.log(logging.TRACE, msg, *args, **kwargs)
-    #logging.Logger.trace = trace
-    
+   
     # Check python version 
     major, minor, release, st, num = sys.version_info
     
@@ -496,26 +571,39 @@ if __name__ == '__main__':
         log.setLevel(logging.TRACE) 
     log.debug("Logging initialized.")      
     
-    # Read in config file
-    #fconfig=ConfigParser()
-    #if not fconfig_file:
-    #    fconfig_file = os.path.expanduser(default_configfile)
-    #else:
-    #    fconfig_file = os.path.expanduser(aconfig_file)
-    #got_config = fconfig.read(aconfig_file)
-    #log.trace("Read config file %s, return value: %s" % (fconfig_file, got_config))
-
     
-    log.debug("Creating Agis object")  
-    acp = Agis(None)
+    configstr = None
+    
+    
+    # Read in config file if provided
+    if fconfig_file is not None:
+        fconfig_file = os.path.expanduser(fconfig_file)
+        fconfig=ConfigParser()
+        got_config = fconfig.read(fconfig_file)
+        log.trace("Read config file %s, return value: %s" % (fconfig_file, got_config))
+        
+        class MockFactory(object):
+            def __init__(self, fcl):
+                self.fcl = fcl
+        
+        mf = MockFactory(fconfig)
+        
+        log.debug("Creating Agis object using mockfactory+configparser") 
+        acp = Agis(mf)
+        
+    else:
+        log.debug("Creating Agis object without factory")  
+        acp = Agis(None)
+    
     log.debug("Agis object created")
-    configstr = acp.getConfig()
-    log.debug("Got config string for writing to outfile %s" % outfile)
-    # outfile = "./%s" % outfile
-    outfile = os.path.expanduser(outfile)
-    f = open(outfile, 'w')
-    f.write(configstr)
-    f.close()
+    configstr = acp.getAPFConfigString()
+        
+    if configstr is not None:    
+        log.debug("Got config string for writing to outfile %s" % outfile)
+        outfile = os.path.expanduser(outfile)
+        f = open(outfile, 'w')
+        f.write(configstr)
+        f.close()
     
     
     
