@@ -343,11 +343,11 @@ class Agis(ConfigInterface):
         
         # Don't mess with the built-in default. 
         mypqfilter = copy.deepcopy(PQFILTERREQMAP)
-        if len(self.vos) > 0:
+        if self.vos is not None and len(self.vos) > 0:
             mypqfilter['vo_name'] = self.vos
-        if len(self.clouds ) > 0:
+        if self.clouds is not None and len(self.clouds ) > 0:
             mypqfilter['cloud'] = self.clouds         
-        if len(self.activities) > 0:
+        if self.activities is not None and len(self.activities) > 0:
             mypqfilter['type'] = self.activities
 
         self.log.trace("Before filtering. allqueues has %d objects" % len(self.allqueues))
