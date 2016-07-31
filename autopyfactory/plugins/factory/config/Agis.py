@@ -485,7 +485,8 @@ if __name__ == '__main__':
         -V --vo                     Virtual organization ['atlas']
         -C --cloud                  Cloud ['US']
         -A --activity               Activity ['analysis']
-        -D --default                Defaults file [~/etc/defaults.conf
+        -o --outfile                Output file ['/tmp/agis-apf-config.conf']
+        -D --defaults               Defaults file [~/etc/defaults.conf
         
         """
     
