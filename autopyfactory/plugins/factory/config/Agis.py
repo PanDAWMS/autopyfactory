@@ -111,7 +111,11 @@ class AgisPandaQueue(object):
         try:
             self.panda_resource = d[key]['panda_resource']              # AGLT2_LMEM     
             self.cloud = d[key]['cloud'].lower()                        # us
-            self.corecount = int(d[key]['corecount'])
+            self.corecount = d[key]['corecount']
+            if self.corecount is None:
+                self.corecount = 1
+            else:
+                self.corecount = int(self.corecount)
             self.maxmemory = int(d[key]['maxmemory'])
             self.maxrss = int(d[key].get('maxrss', 0))
             self.maxswap = int(d[key].get('maxswap', 0))
