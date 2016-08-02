@@ -35,6 +35,7 @@ etc_files = ['etc/autopyfactory.conf',
              'etc/proxy.conf',
              'etc/monitor.conf',
              'etc/mappings.conf',
+             'etc/agisdefaults.conf',
              ]
 
 sysconfig_files = [

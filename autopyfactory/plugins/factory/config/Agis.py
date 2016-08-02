@@ -560,7 +560,7 @@ if __name__ == '__main__':
         -C --cloud                  A single cloud ['US']
         -A --activity               A single activity (PQ 'type') ['analysis']
         -o --outfile                Output file ['/tmp/agis-apf-config.conf']
-        -D --defaults               Defaults file [~/etc/defaults.conf
+        -D --defaults               Defaults file [~/etc/agisdefaults.conf
         
         """
     
