@@ -110,23 +110,20 @@ class AgisPandaQueue(object):
         self.panda_queue_name = key
         try:
             self.panda_resource = d[key]['panda_resource']              # AGLT2_LMEM     
-            
-            # Will be calculated later... 
-            self.numvalidces = 0.0
-            
-            self.corecount = d[key]['corecount']
-            self.memory = d[key]['memory']
-            self.maxtime = d[key]['maxtime']
-            self.maxmemory = d[key]['maxmemory']
-            self.site_state = d[key]['site_state'].lower()
-            self.maxrss = d[key].get('maxrss', 0)
-            self.maxswap = d[key].get('maxswap', 0)
+            self.cloud = d[key]['cloud'].lower()                        # us
+            self.corecount = int(d[key]['corecount'])
+            self.maxmemory = int(d[key]['maxmemory'])
+            self.maxrss = int(d[key].get('maxrss', 0))
+            self.maxswap = int(d[key].get('maxswap', 0))
+            self.maxtime = int(d[key]['maxtime'])
+            self.memory = int(d[key]['memory'])
             self.pilot_manager = d[key]['pilot_manager'].lower()
             self.pilot_version = d[key].get('pilot_version', 'current')
             self.resource_type = d[key]['resource_type'].lower()        # grid
+            self.site_state = d[key]['site_state'].lower()
             self.type = d[key]['type'].lower()                          # production (activity)
             self.vo_name = d[key]['vo_name'].lower()                    # atlas
-            self.cloud = d[key]['cloud'].lower()                        # us
+                    
             self.queues = d[key]['queues']                              # list of dictionaries
             #self.ce_queues = self._make_cequeues(d, key)
             self.ce_queues = self._make_cequeues(self.queues)
@@ -196,55 +193,108 @@ class AgisCEQueue(object):
         self.gramqueue = None
         self.creamenv = None
         self.creamattr = ''
-        self.condorattr = False
+        self.condorattr = None
 
         if self.ce_flavour in ['osg-ce','globus']:
-            self.gridresource = '%s/jobmanager-%s' % (self.ce_endpoint, self.ce_jobmanager)
-            if self.ce_version == 'gt2':
-                self.submitplugin = 'CondorGT2'
-                self.submitpluginstr = 'condorgt2'
-            elif self.ce_version == 'gt5':
-                self.submitplugin = 'CondorGT5'
-                self.submitpluginstr = 'condorgt5'                
-                self.gramversion = 'gram5'
-                self.gramqueue = self.ce_queue_name
-        
-        elif self.ce_flavour == 'cream-ce':
-            self.gridresource = '%s/ce-cream/services/CREAM2 %s %s' % (self.ce_endpoint, 
-                                                                       self.ce_jobmanager, 
-                                                                       self.ce_queue_name)
-            self.submitplugin = 'CondorCREAM'
-            self.submitpluginstr = 'condorcream'
-            # glue 1.3 uses minutes and this / operator uses floor value
-            # https://wiki.italiangrid.it/twiki/bin/view/CREAM/UserGuideEMI2#Forward_of_requirements_to_the_b
-            #self.maxtime = self.maxtime / 60
-            #self.creamattr += ' CpuNumber=%d;WholeNodes=false;SMPGranularity=%d; ' % (self.parent.corecount,
-            #                                                                          self.parent.corecount) 
+            self._initglobus()
 
-        elif self.ce_flavour == 'arc-ce':
-            pass
-        
         elif self.ce_flavour == 'htcondor-ce':
-            self.gridresource = self.ce_host
-            self.submitplugin = 'CondorOSGCE'
-            self.submitpluginstr = 'condorosgce'
+            self._initcondorce()
+            
+        elif self.ce_flavour == 'cream-ce':
+            self._initcream()
+        
+        elif self.ce_flavour == 'arc-ce':
+            self._initarc()
         else:
             self.log.error("Unknown ce_flavour: %s" % self.ce_flavour)
             #raise AgisCEQueueCreationError("Unknown ce_flavour: %s" % self.ce_flavour)
-        #except Exception, e:
-        #    self.log.error("Problem creating a CEqueue for PQ %s" % (self.panda_queue_name))
-        #    raise AgisCEQueueCreationError("Problem creating a CEqueue for PQ %s" % (self.panda_queue_name) )
+            #except Exception, e:
+            #    self.log.error("Problem creating a CEqueue for PQ %s" % (self.panda_queue_name))
+            #    raise AgisCEQueueCreationError("Problem creating a CEqueue for PQ %s" % (self.panda_queue_name) )
+
+    def _initcondorce(self):
+        self.gridresource = self.ce_host
+        self.submitplugin = 'CondorOSGCE'
+        self.submitpluginstr = 'condorosgce'
+
+    def _initglobus(self):
+        self.gridresource = '%s/jobmanager-%s' % (self.ce_endpoint, self.ce_jobmanager)
+        if self.ce_version == 'gt2':
+            self.submitplugin = 'CondorGT2'
+            self.submitpluginstr = 'condorgt2'
+        elif self.ce_version == 'gt5':
+            self.submitplugin = 'CondorGT5'
+            self.submitpluginstr = 'condorgt5'                
+            self.gramversion = 'gram5'
+            self.gramqueue = self.ce_queue_name
+
+    def _initcream(self):
+        self.gridresource = '%s/ce-cream/services/CREAM2 %s %s' % (self.ce_endpoint, 
+                                                                       self.ce_jobmanager, 
+                                                                       self.ce_queue_name)
+        self.submitplugin = 'CondorCREAM'
+        self.submitpluginstr = 'condorcream'
+        # glue 1.3 uses minutes and this / operator uses floor value
+        # https://wiki.italiangrid.it/twiki/bin/view/CREAM/UserGuideEMI2#Forward_of_requirements_to_the_b
+        self.maxtime = self.parent.maxtime / 60
+        self.creamenv = 'RUCIO_ACCOUNT=pilot'
+        self.creamattr = 'CpuNumber=%d;WholeNodes=false;SMPGranularity=%d;' % (self.parent.corecount, 
+                                                                               self.parent.corecount)
+        self.cputime = self.parent.corecount * self.maxtime
+        self.creamattr += 'CERequirements = "other.GlueCEPolicyMaxCPUTime == %d ' % self.cputime
+        self.creamattr += '&& other.GlueCEPolicyMaxWallClockTime == %d ' % self.maxtime
+        self.creamattr += '&& other.GlueHostMainMemoryRAMSize == %d' % self.parent.maxrss
+        
+
+
+    def _initarc(self):
+        self.gridresource = self.ce_host
+        self.submitplugin = 'CondorOSGCE'
+        self.submitpluginstr = 'condorosgce'
+        self.nordugridrsl = '(jobname = arc_pilot)'
+        self.rsladd = '(runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY)'
+        self.rsladd += '(jobname = arc_pilot)'
+        self.rsladd += '(count = %d)' % self.parent.corecount
+        self.rsladd += '(countpernode = %d)' % self.parent.corecount
+        #if maxrss and corecount:
+        #    percore = maxrss/corecount
+        #    rsladd += '(memory = %d)' % percore
+        #elif maxrss:
+        #    rsladd += '(memory = %d)' % maxrss
+        #elif maxmemory and corecount:
+        #    percore = maxmemory/corecount
+        #    rsladd += '(memory = %d)' % percore
+        #elif maxmemory:
+        #    rsladd += '(memory = %d)' % maxmemory
+        #if maxtime:
+        #    rsladd += '(walltime = %d)' % maxtime
+        #if maxtime and corecount:
+        #    totaltime = maxtime*corecount
+        #    rsladd += '(cputime = %d)' % totaltime
+
+
+
+
+
 
     def getAPFConfigString(self):
         '''
-        Returns string of valid APF configuration for this queue-ce entry.  
+        Returns string of valid APF configuration for this queue-ce entry.
+        Calculates scale factor based on how many other CEs serve this PQ
+          
         '''
         # Unconditional config
         s = "[%s-%s] \n" % ( self.panda_queue_name, self.ce_host )
         s += "enabled=True\n"
         s += "batchqueue = %s \n" % self.panda_queue_name        
         s += "wmsqueue = %s \n" % self.parent.panda_resource
-        
+        s += "batchsubmitplugin = %s \n" % self.submitplugin
+        s += "batchsubmit.%s.gridresource = %s \n" % (self.submitpluginstr, self.gridresource)
+        if self.parent.type == 'analysis':
+            s += "executable.arguments = %(executable.defaultarguments)s -u user \n"
+        else:
+            s += "executable.arguments = %(executable.defaultarguments)s -u managed \n"
         
         try:       
             self.apf_scale_factor = ((( 1.0 / float(self.parent.parent.numfactories) ) / len(self.parent.ce_queues) ) / float(self.parent.parent.jobsperpilot) ) 
@@ -252,17 +302,37 @@ class AgisCEQueue(object):
             self.log.error("Division by zero. Something wrong with scale factory calc.")
             self.apf_scale_factor = 1.0
         s += "sched.scale.factor = %f \n" % self.apf_scale_factor
-        s += "batchsubmitplugin = %s \n" % self.submitplugin
-        s += "batchsubmit.%s.gridresource = %s \n" % (self.submitpluginstr, self.gridresource)
         
-        if self.creamenv is not None:
+        #HTCondor CE
+        if self.ce_flavour == 'htcondor-ce':
+            s += 'batchsubmit.condorosgce.condor_attributes = periodic_remove = (JobStatus == 2 && (CurrentTime - EnteredCurrentStatus) > 604800) \n'
+            if self.parent.maxrss:
+                s += 'batchsubmit.condorosgce.condor_attributes.+maxMemory = %d \n' % self.parent.maxrss
+            else:
+                s += 'batchsubmit.condorosgce.condor_attributes.+maxMemory = %d \n' % self.parent.maxmemory
+            s += 'batchsubmit.condorosgce.condor_attributes.+xcount = %d \n' % self.parent.corecount
+
+        # Globus
+        if self.ce_flavour in ['osg-ce','globus']:
+            s += 'globusrsl.%s.queue = %s \n' % (self.gramversion, self.gramqueue)
+            
+    
+        # Cream-specific JDL
+        if self.ce_flavour == 'cream-ce':
             s += 'batchsubmit.condorcream.environ = %s' % self.creamenv
             if self.creamattr is not None:
                 s += 'creamattr = %s' % self.creamattr
                 s += 'batchsubmit.condorcream.condor_attributes = %(req)s,%(hold)s,%(remove)s,cream_attributes = %(creamattr)s,notification=Never'
             else:
                 s += 'batchsubmit.condorcream.condor_attributes = %(req)s,%(hold)s,%(remove)s,notification=Never'
+        
+        
+        
         return s 
+    
+         
+    
+    
 
     def getAPFConfig(self):
         '''
@@ -287,7 +357,7 @@ class Agis(ConfigInterface):
     information retrieved from AGIS
     """
 
-    def __init__(self, factory=None, volist=None, cloudlist=None, activitylist=None, defaultfile=None):
+    def __init__(self, factory=None, volist=None, cloudlist=None, activitylist=None, defaultsfile=None):
         self.log = logging.getLogger("main.agis")
         if factory is not None:
             self.factory = factory
@@ -305,7 +375,10 @@ class Agis(ConfigInterface):
             self.vos = volist
             self.clouds = cloudlist
             self.activities = activitylist
-            self.defaultsfile = "~/etc/autopyfactory/agisdefaults.conf"
+            if defaultsfile is not None:
+                self.defaultsfile = defaultsfile
+            else:
+                self.defaultsfile = "~/etc/autopyfactory/agisdefaults.conf"
             self.sleep = 120
             self.jobsperpilot = 1.5
             self.numfactories = 4
@@ -474,6 +547,7 @@ if __name__ == '__main__':
     outfile = '/tmp/agis-apf-config.conf'
     fconfig_file = None
     default_configfile = os.path.expanduser("~/etc/autopyfactory.conf")
+    defaultsfile = None
          
     usage = """Usage: Agis.py [OPTIONS]  
     OPTIONS: 
@@ -482,9 +556,9 @@ if __name__ == '__main__':
         -v --verbose                Verbose information
         -t --trace                  Trace level info
         -c --config                 Config file [~/etc/autopyfactory.conf]
-        -V --vo                     Virtual organization ['atlas']
-        -C --cloud                  Cloud ['US']
-        -A --activity               Activity ['analysis']
+        -V --vo                     A single virtual organization ['atlas']
+        -C --cloud                  A single cloud ['US']
+        -A --activity               A single activity (PQ 'type') ['analysis']
         -o --outfile                Output file ['/tmp/agis-apf-config.conf']
         -D --defaults               Defaults file [~/etc/defaults.conf
         
@@ -594,7 +668,18 @@ if __name__ == '__main__':
         
     else:
         log.debug("Creating Agis object without factory")  
-        acp = Agis(None)
+        volist = None
+        cloudlist = None
+        activitylist = None
+        
+        if vo is not None:
+            volist = [vo]
+        if cloud is not None:
+            cloudlist = [cloud]
+        if activity is not None:
+            activitylist = [activity]
+ 
+        acp = Agis(factory=None, volist=volist, cloudlist=cloudlist, activitylist=activitylist, defaultsfile=defaultsfile)
     
     log.debug("Agis object created")
     configstr = acp.getAPFConfigString()
