@@ -10,8 +10,13 @@ ARGS=" --trace --vo atlas --cloud us --defaults $DEFAULTSFILE "
 CONFDIR="/etc/autopyfactory"
 
 for activity in $ACTS ; do
-	echo "$CMD $ARGS --activity $activity --outfile $CONFDIR/us-$activity-q.conf >> $LOGFILE"
-		 $CMD $ARGS --activity $activity --outfile $CONFDIR/us-$activity-q.conf >> $LOGFILE
+	echo "$CMD $ARGS --activity $activity --outfile $CONFDIR/us-$activity-q.conf.tmp >> $LOGFILE"
+		$CMD $ARGS --activity $activity --outfile $CONFDIR/us-$activity-q.conf.tmp >> $LOGFILE
+		if [ $? -eq 0 ]; then
+			mv -v $CONFDIR/us-$activity-q.conf.tmp $CONFDIR/us-$activity-q.conf
+		else	
+			echo "Command returned non-zero code. See $LOGFILE"
+		fi
 	echo "Done."
 done
 

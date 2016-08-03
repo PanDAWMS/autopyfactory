@@ -1,4 +1,16 @@
 #!/usr/bin/env python
+'''
+
+Design goals:
+-- download and parse JSON once, allow subsequent filtering for specific APF config requests.
+-- Calculate scale factory based on *dynamic examination* of the number of valid CEs serving a PQ
+-- Include the scale calculation to use a provided number of factories. 
+-- function both as a one-shot, command-line, config generator and a long-running built-in config plugin
+-- abstract out attribute matching and rejection
+-- ensure exceptions allow clean failure for both modes, so that any previous configs can be preserved. 
+
+
+'''
 from __future__ import print_function
 
 import logging
@@ -13,6 +25,7 @@ def trace(self, msg, *args, **kwargs):
 logging.Logger.trace = trace
 
 import copy
+import datetime
 import json
 import os
 import sys
@@ -101,6 +114,13 @@ class AgisPandaQueueCreationError(Exception):
         self.value = value
     def __str__(self):
         return repr(self.value) 
+
+class AgisFailureError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)     
+
 
 class AgisPandaQueue(object):
     
@@ -315,6 +335,8 @@ class AgisCEQueue(object):
             else:
                 s += 'batchsubmit.condorosgce.condor_attributes.+maxMemory = %d \n' % self.parent.maxmemory
             s += 'batchsubmit.condorosgce.condor_attributes.+xcount = %d \n' % self.parent.corecount
+            s += 'batchsubmit.condorosgce.condor_attributes.+voactivity = %s \n' % self.parent.type
+            s += 'batchsubmit.condorosgce.condor_attributes.+remote_queue = %s \n' % self.ce_queue_name
 
         # Globus
         if self.ce_flavour in ['osg-ce','globus']:
@@ -363,6 +385,9 @@ class Agis(ConfigInterface):
 
     def __init__(self, factory=None, volist=None, cloudlist=None, activitylist=None, defaultsfile=None):
         self.log = logging.getLogger("main.agis")
+        self.allqueues = None
+        self.lastupdate = None
+        
         if factory is not None:
             self.factory = factory
             self.fcl = factory.fcl
@@ -374,6 +399,7 @@ class Agis(ConfigInterface):
             self.sleep = self.fcl.get('Factory', 'config.agis.sleep')
             self.jobsperpilot = self.fcl.get('Factory', 'config.agis.jobsperpilot')
             self.numfactories = self.fcl.get('Factory', 'config.agis.numfactories')
+
         else:
             self.baseurl = 'http://atlas-agis-api.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'
             self.vos = volist
@@ -386,8 +412,8 @@ class Agis(ConfigInterface):
             self.sleep = 120
             self.jobsperpilot = 1.5
             self.numfactories = 4
-        self.log.trace('Perform initial info download...')
-        self._updateInfo()
+        #self.log.trace('Perform initial info download...')
+        #self._updateInfo()
         self.log.trace('ConfigPlugin: Object initialized. %s' % self)
 
     def _updateInfo(self):
@@ -400,11 +426,12 @@ class Agis(ConfigInterface):
             queues = self._handleJSON(d)
             self.log.debug("AGIS provided list of %d total queues." % len(queues))
             self.allqueues = queues
+            self.lastupdate =  datetime.datetime.now()
         except Exception, e:
                 self.log.error('Failed to contact AGIS or parse problem: %s' %  traceback.format_exc() )
-                                                                              
+                raise AgisFailureError("Unable to contact AGIS or parsing error.")                                                              
                 
-    def getAPFConfigString(self):
+    def getAPFConfigString(self, volist=None, cloudlist=None, activitylist=None, defaultsfile=None):
         '''
         For embedded usage. Handles everything in config.
         Pulls out valid PQ/CEs for specified vo, cloud, activity
@@ -417,8 +444,14 @@ class Agis(ConfigInterface):
             ACTIVITY
                'type'      
         '''
+        if self.allqueues is None:
+            self._updateInfo()
+
+        td = datetime.datetime.now() - self.lastupdate
+        if td.total_seconds()  > self.sleep:
+            self._updateInfo()
         
-        # Don't mess with the built-in default. 
+        # Don't mess with the built-in default filters. 
         mypqfilter = copy.deepcopy(PQFILTERREQMAP)
         if self.vos is not None and len(self.vos) > 0:
             mypqfilter['vo_name'] = self.vos
@@ -686,16 +719,16 @@ if __name__ == '__main__':
         acp = Agis(factory=None, volist=volist, cloudlist=cloudlist, activitylist=activitylist, defaultsfile=defaultsfile)
     
     log.debug("Agis object created")
-    configstr = acp.getAPFConfigString()
-        
-    if configstr is not None:    
-        log.debug("Got config string for writing to outfile %s" % outfile)
-        outfile = os.path.expanduser(outfile)
-        f = open(outfile, 'w')
-        f.write(configstr)
-        f.close()
-    
-    
-    
-    
-
+    try:
+        configstr = acp.getAPFConfigString()
+        if configstr is not None:    
+            log.debug("Got config string for writing to outfile %s" % outfile)
+            outfile = os.path.expanduser(outfile)
+            f = open(outfile, 'w')
+            f.write(configstr)
+            f.close()
+            sys.exit(0)
+        else:
+            sys.exit(1)
+    except Exception, e:
+        log.error("Got exception during APF config generation: %s" % traceback.format_exc() )
