@@ -310,56 +310,7 @@ class AgisCEQueue(object):
         cp = self.getAPFConfig()
         sio = StringIO()
         s = cp.write(sio)
-        sio.close()
-        return sio.getValue()
-        
-        # Unconditional config
-        #s = "[%s-%s] \n" % ( self.panda_queue_name, self.ce_host )
-        #s += "enabled=True\n"
-        #s += "batchqueue = %s \n" % self.panda_queue_name        
-        #s += "wmsqueue = %s \n" % self.parent.panda_resource
-        #s += "batchsubmitplugin = %s \n" % self.submitplugin
-        #s += "batchsubmit.%s.gridresource = %s \n" % (self.submitpluginstr, self.gridresource)
-        #if self.parent.type == 'analysis':
-        #    s += "executable.arguments = %(executable.defaultarguments)s -u user \n"
-        #else:
-        #    s += "executable.arguments = %(executable.defaultarguments)s -u managed \n"
-        
-        #try:       
-        #    self.apf_scale_factor = ((( 1.0 / float(self.parent.parent.numfactories) ) / len(self.parent.ce_queues) ) / float(self.parent.parent.jobsperpilot) ) 
-        #except ZeroDivisionError:
-        #    self.log.error("Division by zero. Something wrong with scale factory calc.")
-        #    self.apf_scale_factor = 1.0
-        #s += "sched.scale.factor = %f \n" % self.apf_scale_factor
-        
-        #HTCondor CE
-        #if self.ce_flavour == 'htcondor-ce':
-        #    s += 'batchsubmit.condorosgce.condor_attributes = periodic_remove = (JobStatus == 2 && (CurrentTime - EnteredCurrentStatus) > 604800) \n'
-        #    if self.parent.maxrss:
-        #        s += 'batchsubmit.condorosgce.condor_attributes.+maxMemory = %d \n' % self.parent.maxrss
-        #    else:
-        #        s += 'batchsubmit.condorosgce.condor_attributes.+maxMemory = %d \n' % self.parent.maxmemory
-        #    s += 'batchsubmit.condorosgce.condor_attributes.+xcount = %d \n' % self.parent.corecount
-        #    s += 'batchsubmit.condorosgce.condor_attributes.+voactivity = %s \n' % self.parent.type
-        #    s += 'batchsubmit.condorosgce.condor_attributes.+remote_queue = %s \n' % self.ce_queue_name
-
-        # Globus
-        #if self.ce_flavour in ['osg-ce','globus']:
-        #    s += 'globusrsl.%s.queue = %s \n' % (self.gramversion, self.gramqueue)
-            
-    
-        # Cream-specific JDL
-        #if self.ce_flavour == 'cream-ce':
-        #    s += 'batchsubmit.condorcream.environ = %s' % self.creamenv
-        #    if self.creamattr is not None:
-        #        s += 'creamattr = %s' % self.creamattr
-        #        s += 'batchsubmit.condorcream.condor_attributes = %(req)s,%(hold)s,%(remove)s,cream_attributes = %(creamattr)s,notification=Never'
-        #    else:
-        #        s += 'batchsubmit.condorcream.condor_attributes = %(req)s,%(hold)s,%(remove)s,notification=Never'
-        #return s 
-    
-         
-    
+        return sio.getvalue()
     
 
     def getAPFConfig(self):
@@ -393,11 +344,11 @@ class AgisCEQueue(object):
             pr = 'periodic_remove = (JobStatus == 2 && (CurrentTime - EnteredCurrentStatus) > 604800)'
             self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes', pr )          
             if self.parent.maxrss is not None:
-                self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+maxMemory', self.parent.maxrss )
+                self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+maxMemory', str(self.parent.maxrss) )
             else:
-                self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+maxMemory', self.parent.maxmemory )
+                self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+maxMemory', str(self.parent.maxmemory) )
 
-            self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+xcount', self.parent.corecount )
+            self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+xcount', str(self.parent.corecount) )
             self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+voactivity', self.parent.type )
             self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+remote_queue', self.ce_queue_name )
 
@@ -413,6 +364,9 @@ class AgisCEQueue(object):
                 self.cp.set(sect, 'batchsubmit.condorcream.condor_attributes' , '%(req)s,%(hold)s,%(remove)s,cream_attributes = %(creamattr)s,notification=Never' )      
             else:
                 self.cp.set(sect, 'batchsubmit.condorcream.condor_attributes' , '%(req)s,%(hold)s,%(remove)s,notification=Never' )
+
+        return self.cp
+
     
     def __str__(self):
         s = "AgisCEQueue: "
