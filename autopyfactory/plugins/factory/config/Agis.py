@@ -386,7 +386,7 @@ class AgisCEQueue(object):
         except ZeroDivisionError:
             self.log.error("Division by zero. Something wrong with scale factory calc.")
             self.apf_scale_factor = 1.0
-        self.cp.set( sect, 'sched.scale.factor', self.apf_scale_factor )
+        self.cp.set( sect, 'sched.scale.factor', str(self.apf_scale_factor) )
         
         #HTCondor CE
         if self.ce_flavour == 'htcondor-ce':
