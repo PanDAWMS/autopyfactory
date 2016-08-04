@@ -53,36 +53,6 @@ from autopyfactory.interfaces import ConfigInterface
 #
 #####################################################
 
-# Used to calculate scale factory, along with CEs per PQ  
-APF_DEFAULT = '''
-[DEFAULT]
-vo = ATLAS
-status = online
-override = True
-enabled = True
-cleanlogs.keepdays = 21
-# plugins
-batchstatusplugin = Condor
-wmsstatusplugin = Panda
-schedplugin = Ready
-monitorsection = apfmon-lancaster
-schedplugin = Ready, Scale, MaxPerCycle, MinPerCycle, StatusTest, StatusOffline, MaxPending
-sched.maxtorun.maximum = 9999
-sched.maxpending.maximum = 100
-sched.maxpercycle.maximum = 50
-sched.minpercycle.minimum = 0
-sched.statusoffline.allowed = True
-sched.statusoffline.pilots = 0
-sched.statustest.allowed = True
-sched.statustest.pilots = 1
-executable = /usr/libexec/wrapper.sh
-executable.defaultarguments = -s %(wmsqueue)s -h %(batchqueue)s -p 25443 -w https://pandaserver.cern.ch
-req = requirements = JobRunCount == 0
-hold = periodic_hold = ( JobStatus==1 && gridjobstatus=?=UNDEFINED && CurrentTime-EnteredCurrentStatus>3600 ) || ( JobStatus == 1 && (JobRunCount =!= UNDEFINED && JobRunCount > 0) ) || ( JobStatus == 2 && CurrentTime-EnteredCurrentStatus>604800 )
-remove = periodic_remove = (JobStatus == 5 && (CurrentTime - EnteredCurrentStatus) > 3600) || (JobStatus == 1 && globusstatus =!= 1 && (CurrentTime - EnteredCurrentStatus) > 86400)
-apfqueue.sleep = 120
-
-'''
 # REQ maps list *required* attribute and values. Object is removed if absent. 
 # NEG maps list *prohibited* attribute and values. Object is removed if present. 
 PQFILTERREQMAP = { 'pilot_manager' : ['apf'],
@@ -385,37 +355,23 @@ class Agis(ConfigInterface):
     information retrieved from AGIS
     """
 
-    def __init__(self, factory=None, volist=None, cloudlist=None, activitylist=None, defaultsfile=None):
+    def __init__(self, config):
+        '''
+
+        '''
         self.log = logging.getLogger("main.agis")
         self.allqueues = None
         self.lastupdate = None
-        
-        if factory is not None:
-            self.factory = factory
-            self.fcl = factory.fcl
-            self.baseurl = self.fcl.get('Factory', 'config.agis.baseurl')
-            self.vos = [ vo.strip().lower() for vo in self.fcl.get('Factory', 'config.agis.vos').split(',') ]
-            self.clouds = [ cl.strip().lower() for cl in self.fcl.get('Factory', 'config.agis.clouds').split(',') ]
-            self.activities = [ ac.strip().lower() for ac in self.fcl.get('Factory', 'config.agis.activities').split(',') ]
-            self.defaultsfile = self.fcl.get('Factory', 'config.agis.defaultsfile')
-            self.sleep = self.fcl.get('Factory', 'config.agis.sleep')
-            self.jobsperpilot = self.fcl.get('Factory', 'config.agis.jobsperpilot')
-            self.numfactories = self.fcl.get('Factory', 'config.agis.numfactories')
+        self.config = config
+        self.baseurl = self.config.get('Factory', 'config.agis.baseurl')
+        self.sleep = self.config.get('Factory', 'config.agis.sleep')
+        self.jobsperpilot = self.config.get('Factory', 'config.agis.jobsperpilot')
+        self.numfactories = self.config.get('Factory', 'config.agis.numfactories')
+        self.vos = [ vo.strip().lower() for vo in self.config.get('Factory', 'config.agis.vos').split(',') ]
+        self.clouds = [ cl.strip().lower() for cl in self.config.get('Factory', 'config.agis.clouds').split(',') ]
+        self.activities = [ ac.strip().lower() for ac in self.config.get('Factory', 'config.agis.activities').split(',') ]
+        self.defaultsfile = self.config.get('Factory', 'config.agis.defaultsfile')
 
-        else:
-            self.baseurl = 'http://atlas-agis-api.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'
-            self.vos = volist
-            self.clouds = cloudlist
-            self.activities = activitylist
-            if defaultsfile is not None:
-                self.defaultsfile = defaultsfile
-            else:
-                self.defaultsfile = "~/etc/autopyfactory/agisdefaults.conf"
-            self.sleep = 120
-            self.jobsperpilot = 1.5
-            self.numfactories = 4
-        #self.log.trace('Perform initial info download...')
-        #self._updateInfo()
         self.log.trace('ConfigPlugin: Object initialized. %s' % self)
 
     def _updateInfo(self):
@@ -472,16 +428,26 @@ class Agis(ConfigInterface):
             self.log.trace("After filtering. ce_queues has %d objects" % len(q.ce_queues))
                 
         s = ""
-        s += APF_DEFAULT
+        if self.defaultsfile != "None":
+            df = open(self.defaultsfile)
+            for line in df.readlines():
+                s += line
+            s += "\n"
         for q in self.allqueues:
             for cq in q.ce_queues:
                 s += "%s\n" % cq.getAPFConfigString()        
         return s
     
-    def getAPFConfig(self):
+    
+    def getConfig(self):
         '''
+        Required for autopyfactory Config plugin interface. 
         Returns ConfigParser representing config
         '''
+        
+        cp = SafeConfigParser()
+        
+        
     
   
     def _filterobjs(self, objlist, reqdict=None, negdict=None):
@@ -580,12 +546,14 @@ if __name__ == '__main__':
     debug = 0
     info = 0
     trace = 0
-    vo = 'atlas'
-    cloud = 'US'
-    activity = 'analysis'
+    vo = None
+    cloud = None
+    activity = None
+    jobsperpilot = 1.5
+    numfactories = 4
     outfile = '/tmp/agis-apf-config.conf'
     fconfig_file = None
-    default_configfile = os.path.expanduser("~/etc/autopyfactory.conf")
+    default_configfile = os.path.expanduser("/etc/autopyfactory/autopyfactory.conf")
     defaultsfile = None
          
     usage = """Usage: Agis.py [OPTIONS]  
@@ -595,11 +563,13 @@ if __name__ == '__main__':
         -v --verbose                Verbose information
         -t --trace                  Trace level info
         -c --config                 Config file [~/etc/autopyfactory.conf]
-        -V --vo                     A single virtual organization ['atlas']
-        -C --cloud                  A single cloud ['US']
-        -A --activity               A single activity (PQ 'type') ['analysis']
         -o --outfile                Output file ['/tmp/agis-apf-config.conf']
+        -j --jobsperpilot           Scale factor. [1.5]
+        -n --numfactories           Multi-factory scale factor. 
         -D --defaults               Defaults file [~/etc/agisdefaults.conf
+        -V --vo                     A single virtual organization [<all>]
+        -C --cloud                  A single cloud [<all>]
+        -A --activity               A single activity (PQ 'type') [<all>]
         
         """
     
@@ -607,17 +577,19 @@ if __name__ == '__main__':
     argv = sys.argv[1:]
     try:
         opts, args = getopt.getopt(argv, 
-                                   "c:hdvtVCAo:D:", 
-                                   ["config=",
-                                    "help", 
+                                   "hdvtc:o:j:n:D:V:C:A:", 
+                                   ["help", 
                                     "debug", 
                                     "verbose",
                                     "trace",
+                                    "config=",
+                                    "outfile=",
+                                    "jobsperpilot=",
+                                    "numfactories=",
+                                    "defaults=",
                                     "vo=",
                                     "cloud=",
                                     "activity=",
-                                    "outfile=",
-                                    "defaults="
                                     ])
     except getopt.GetoptError, error:
         print( str(error))
@@ -627,25 +599,28 @@ if __name__ == '__main__':
         if opt in ("-h", "--help"):
             print(usage)                     
             sys.exit()            
-        elif opt in ("-c", "--config"):
-            fconfig_file = arg
         elif opt in ("-d", "--debug"):
             debug = 1
         elif opt in ("-v", "--verbose"):
             info = 1
         elif opt in ("-t", "--trace"):
             trace = 1
+        elif opt in ("-c", "--config"):
+            fconfig_file = arg
+        elif opt in ("-o", "--outfile"):
+            outfile = arg        
+        elif opt in ('-j', '--jobsperpilot'):
+            jobsperpilot = arg
+        elif opt in ('-n', '--numfactories'):
+            numfactories = arg
+        elif opt in ("-D", "--defaults"):
+            defaultsfile = arg        
         elif opt in ("-C", "--cloud"):
             cloud = arg.lower() 
         elif opt in ("-V", "--vo"):
             vo = arg.lower()
         elif opt in ("-A", "--activity"):
             activity = arg.lower()            
-        elif opt in ("-o", "--outfile"):
-            outfile = arg
-        elif opt in ("-D", "--defaults"):
-            defaultsfile = arg
- 
    
     # Check python version 
     major, minor, release, st, num = sys.version_info
@@ -685,42 +660,41 @@ if __name__ == '__main__':
         log.setLevel(logging.TRACE) 
     log.debug("Logging initialized.")      
     
-    
-    configstr = None
-    
-    
-    # Read in config file if provided
+    fconfig=ConfigParser()
     if fconfig_file is not None:
         fconfig_file = os.path.expanduser(fconfig_file)
-        fconfig=ConfigParser()
         got_config = fconfig.read(fconfig_file)
-        log.trace("Read config file %s, return value: %s" % (fconfig_file, got_config))
-        
-        class MockFactory(object):
-            def __init__(self, fcl):
-                self.fcl = fcl
-        
-        mf = MockFactory(fconfig)
-        
-        log.debug("Creating Agis object using mockfactory+configparser") 
-        acp = Agis(mf)
-        
+        log.trace("Read config file %s, return value: %s" % (fconfig_file, got_config))  
     else:
-        log.debug("Creating Agis object without factory")  
-        volist = None
-        cloudlist = None
-        activitylist = None
+        # Create valid config...
+        fconfig.add_section('Factory')
+
+        # Set unconditional defaults
+        fconfig.set('Factory', 'config.agis.baseurl', 'http://atlas-agis-api.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'   )
+        fconfig.set('Factory', 'config.agis.sleep', '3600'  )
+        fconfig.set('Factory', 'config.agis.jobsperpilot', '1.5' )
+        fconfig.set('Factory', 'config.agis.numfactories', '4')
         
-        if vo is not None:
-            volist = [vo]
-        if cloud is not None:
-            cloudlist = [cloud]
-        if activity is not None:
-            activitylist = [activity]
+        '''
+        config.agis.vos = atlas
+        config.agis.clouds = US
+        config.agis.activities = analysis,production
+        config.agis.defaultsfile= /etc/autopyfactory/agisdefaults.conf
+        '''
+
+    # Override defaults with command line values, if given    
+    if vo is not None:
+        fconfig.set('Factory', 'config.agis.vos', vo)
+    if cloud is not None:
+        fconfig.set('Factory', 'config.agis.clouds', cloud)
+    if activity is not None:
+        fconfig.set('Factory', 'config.agis.activities', activity)
+    if defaultsfile is not None:
+        fconfig.set('Factory', 'config.agis.defaultsfile', defaultsfile)
  
-        acp = Agis(factory=None, volist=volist, cloudlist=cloudlist, activitylist=activitylist, defaultsfile=defaultsfile)
-    
+    acp = Agis(fconfig)
     log.debug("Agis object created")
+
     try:
         configstr = acp.getAPFConfigString()
         if configstr is not None:    
