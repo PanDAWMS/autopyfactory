@@ -371,7 +371,7 @@ class AgisCEQueue(object):
         sect = '%s-%s' % ( self.panda_queue_name, self.ce_host )
         self.cp.add_section(sect)      
         # Unconditional config
-        self.cp.set( sect, 'enabled', True)
+        self.cp.set( sect, 'enabled', 'True')
         self.cp.set( sect, 'batchqueue', self.panda_queue_name)
         self.cp.set( sect, 'wmsqueue', self.parent.panda_resource )
         self.cp.set( sect, 'batchsubmitplugin', self.submitplugin )
