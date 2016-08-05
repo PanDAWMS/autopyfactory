@@ -1,25 +1,25 @@
 #!/usr/bin/env python
 '''
 
-Design goals:
--- download and parse JSON once, allow subsequent filtering for specific APF config requests.
--- Calculate scale factory based on *dynamic examination* of the number of valid CEs serving a PQ
--- Include the scale calculation to use a provided number of factories. 
--- function both as a one-shot, command-line, config generator and a long-running built-in config plugin
--- abstract out attribute matching and rejection
--- ensure exceptions allow clean failure for both modes, so that any previous configs can be preserved. 
-
+Design goals/features:
+-- Download and parse JSON once, allow subsequent filtering for specific APF config requests to CE
+   queues satisfying a set of specific properties (vo, cloud, activity)
+-- Calculate scale factor based on *dynamic examination* of the number of valid CEs serving a PQ
+-- Include the scale calculation to use a provided number of factories. (useful until distributed load-
+   balancing is implemented.  
+-- Function both as a one-shot, command-line, config generator and a long-running built-in config plugin
+-- Abstract out attribute matching and rejection
+-- Ensure exceptions allow clean failure for both modes, so that a bad queue definition in AGIS
+   doesn't prevent a reload, and any previous config files can be preserved. 
 
 '''
 from __future__ import print_function
 
 import logging
-# Set up logging. 
-# Add TRACE level
+
+# Set up trace logging for command line script usage. 
 logging.TRACE = 5
-logging.addLevelName(logging.TRACE, 'TRACE')
-    
-# Create trace log function and assign
+logging.addLevelName(logging.TRACE, 'TRACE') 
 def trace(self, msg, *args, **kwargs):
     self.log(logging.TRACE, msg, *args, **kwargs)
 logging.Logger.trace = trace
@@ -28,18 +28,16 @@ import copy
 import datetime
 import json
 import os
-
 import sys
 import traceback
-from ConfigParser import SafeConfigParser
+
+from ConfigParser import NoOptionError
 from StringIO import StringIO
 from urllib import urlopen
-
 
 # Added to support running module as script from arbitrary location. 
 from os.path import dirname, realpath, sep, pardir
 fullpathlist = realpath(__file__).split(sep)
-#print(fullpathlist)
 prepath = sep.join(fullpathlist[:-5])
 sys.path.insert(0, prepath)
 
@@ -47,34 +45,18 @@ from autopyfactory.apfexceptions import ConfigFailure
 from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.interfaces import ConfigInterface
 
-#####################################################
-#
-#  Edittable constants/maps. Will be moved to config file(s)
-#
-#####################################################
-
 # REQ maps list *required* attribute and values. Object is removed if absent. 
 # NEG maps list *prohibited* attribute and values. Object is removed if present. 
 PQFILTERREQMAP = { 'pilot_manager' : ['apf'],
                    'resource_type' : ['grid'],
-#                   'vo_name'       : ['atlas'],
                    'site_state' : ['active']
                    } 
-
 PQFILTERNEGMAP = { } 
-
 CQFILTERREQMAP = {'ce_state' : ['active'],
                    'ce_status' : ['production'],
                    'ce_queue_status'   : ['production',''],
                }
-CQFILTERNEGMAP = { 'ce_flavour' : ['lcg-ce','cream-ce', 'arc-ce'], }
-
-######################################################
-#
-#   DO NOT EDIT BELOW THIS LINE
-#
-#######################################################
-
+CQFILTERNEGMAP = { 'ce_flavour' : ['lcg-ce'], }
 
 class AgisCEQueueCreationError(Exception):
     def __init__(self, value):
@@ -105,15 +87,11 @@ class AgisPandaQueue(object):
             self.panda_resource = d[key]['panda_resource']              # AGLT2_LMEM     
             self.cloud = d[key]['cloud'].lower()                        # us
             self.corecount = d[key]['corecount']
-            if self.corecount is None:
-                self.corecount = 1
-            else:
-                self.corecount = int(self.corecount)
-            self.maxmemory = int(d[key]['maxmemory'])
-            self.maxrss = int(d[key].get('maxrss', 0))
-            self.maxswap = int(d[key].get('maxswap', 0))
-            self.maxtime = int(d[key]['maxtime'])
-            self.memory = int(d[key]['memory'])
+            self.maxmemory = int(d[key]['maxmemory'])                   # always present
+            self.maxrss = int(d[key].get('maxrss', None))               # not present
+            self.maxswap = int(d[key].get('maxswap', None) )            # not present
+            self.maxtime = int(d[key].get('maxtime', None) )            # not present
+            self.memory = int(d[key].get('memory', None) )              # not present
             self.pilot_manager = d[key]['pilot_manager'].lower()
             self.pilot_version = d[key].get('pilot_version', 'current')
             self.resource_type = d[key]['resource_type'].lower()        # grid
@@ -122,36 +100,37 @@ class AgisPandaQueue(object):
             self.vo_name = d[key]['vo_name'].lower()                    # atlas
                     
             self.queues = d[key]['queues']                              # list of dictionaries
-            #self.ce_queues = self._make_cequeues(d, key)
             self.ce_queues = self._make_cequeues(self.queues)
         
         except Exception, e:
             self.log.error("Problem creating a PandaQueue %s Exception: %s" % (self.panda_queue_name, 
                                                                                traceback.format_exc()))
             raise AgisCEQueueCreationError("Problem creating a PandaQueue %s" % (self.panda_queue_name) )
-           
-
+          
     def __str__(self):
         s = "AgisPandaQueue: "
         s += "panda_resource=%s " %  self.panda_resource
         s += "vo_name=%s " % self.vo_name
         s += "cloud=%s " % self.cloud 
         s += "type=%s " % self.type
-        
+        s += "maxtime=%s " % self.maxtime
+        s += "memory=%s " % self.memory
+        s += "maxmemory=%s " % self.maxmemory      
+        s += "maxrss=%s " % self.maxrss
+        s += "maxswap=%s " % self.maxswap
         for ceq in self.ce_queues:
-            s += "   %s" % ceq
+            s += " %s " % ceq
         return s
 
     def _make_cequeues(self, celist):
         '''
-          Makes CEqueue objects, key is PQ name, cek is ce queue dictionary
+          Makes CEqueue objects, key is PQ name 
         '''
         self.log.trace("Handling cequeues for PQ %s" % self.panda_queue_name)
         cequeues = []
         for cedict in celist:
             self.log.trace("Handling cedict %s" % cedict)
             try:
-                #cqo = AgisCEQueue(jdoc, key, cek)
                 cqo = AgisCEQueue( self, cedict)
                 cequeues.append( cqo)
             except Exception, e:
@@ -160,28 +139,30 @@ class AgisPandaQueue(object):
         self.log.trace("Made list of %d CEQ objects" % len(cequeues))
         return cequeues    
     
+    
 class AgisCEQueue(object):
     '''
     Represents a single CE queue within a Panda queue description.  
-    ['queues']
     '''
     def __init__(self, parent, cedict ):
         self.log = logging.getLogger("main.agis")
         self.parent = parent
         self.panda_queue_name = parent.panda_queue_name 
-        #try:
-        self.ce_name = cedict['ce_name']                  # AGLT2-CE-gate04.aglt2.org
-        self.ce_endpoint = cedict['ce_endpoint']          # gate04.aglt2.org:2119
+        self.ce_name = cedict['ce_name']                         # AGLT2-CE-gate04.aglt2.org
+        self.ce_endpoint = cedict['ce_endpoint']                 # gate04.aglt2.org:2119
         self.ce_host = self.ce_endpoint.split(":")[0]
         self.ce_state = cedict['ce_state'].lower()
         self.ce_status = cedict['ce_status'].lower()
         self.ce_queue_status = cedict['ce_queue_status'].lower()
-        self.ce_flavour = cedict['ce_flavour'].lower()        # GLOBUS
-        self.ce_version = cedict['ce_version'].lower()        # GT5
-        self.ce_queue_name = cedict['ce_queue_name']          # default
-        self.ce_jobmanager = cedict['ce_jobmanager'].lower()  # condor
+        self.ce_flavour = cedict['ce_flavour'].lower()           # GLOBUS
+        self.ce_version = cedict['ce_version'].lower()           # GT5
+        self.ce_queue_name = cedict['ce_queue_name']             # default
+        self.ce_jobmanager = cedict['ce_jobmanager'].lower()     # condor
+        self.ce_queue_maxcputime = cedict['ce_queue_maxcputime'] # in seconds
+        self.ce_queue_maxwctime = cedict['ce_queue_maxwctime']   # in seconds
+        
         self.apf_scale_factor = 1.0
-
+        
         # Empty/default attributes:
         self.gridresource = None
         self.submitplugin = None
@@ -191,24 +172,22 @@ class AgisCEQueue(object):
         self.creamenv = None
         self.creamattr = ''
         self.condorattr = None
+        self.maxmemory = None
+        self.maxtime = None
 
         if self.ce_flavour in ['osg-ce','globus']:
             self._initglobus()
-
         elif self.ce_flavour == 'htcondor-ce':
             self._initcondorce()
-            
         elif self.ce_flavour == 'cream-ce':
             self._initcream()
-        
         elif self.ce_flavour == 'arc-ce':
             self._initarc()
+        elif self.ce_flavour == 'lcg-ce':
+            self.log.debug("Ignoring old CE type 'LCG-CE'")
+                    
         else:
-            self.log.error("Unknown ce_flavour: %s" % self.ce_flavour)
-            #raise AgisCEQueueCreationError("Unknown ce_flavour: %s" % self.ce_flavour)
-            #except Exception, e:
-            #    self.log.error("Problem creating a CEqueue for PQ %s" % (self.panda_queue_name))
-            #    raise AgisCEQueueCreationError("Problem creating a CEqueue for PQ %s" % (self.panda_queue_name) )
+            self.log.warning("Unknown ce_flavour: %s" % self.ce_flavour)
 
     def _initcondorce(self):
         self.gridresource = self.ce_host
@@ -232,28 +211,47 @@ class AgisCEQueue(object):
                                                                        self.ce_queue_name)
         self.submitplugin = 'CondorCREAM'
         self.submitpluginstr = 'condorcream'
-        # glue 1.3 uses minutes and this / operator uses floor value
-        # https://wiki.italiangrid.it/twiki/bin/view/CREAM/UserGuideEMI2#Forward_of_requirements_to_the_b
-        self.maxtime = self.parent.maxtime / 60
         self.creamenv = 'RUCIO_ACCOUNT=pilot'
+
+        # glue 1.3 uses minutes and this / operator uses floor value
+        # https://wiki.italiangrid.it/twiki/bin/view/CREAM/UserGuideEMI2#Forward_of_requirements_to_the_b       
+        self.maxtime = self.parent.maxtime / 60
+        self.maxmemory = self.parent.maxmemory
+        self.cputime = self.parent.corecount * self.maxtime
+
+        #self.maxtime = self.parent.maxtime / 60
+        #self.maxrss
+        #self.maxswap
+        #self.maxvirtual
+
         self.creamattr = 'CpuNumber=%d;WholeNodes=false;SMPGranularity=%d;' % (self.parent.corecount, 
                                                                                self.parent.corecount)
-        self.cputime = self.parent.corecount * self.maxtime
-        self.creamattr += 'CERequirements = "other.GlueCEPolicyMaxCPUTime == %d ' % self.cputime
-        self.creamattr += '&& other.GlueCEPolicyMaxWallClockTime == %d ' % self.maxtime
-        self.creamattr += '&& other.GlueHostMainMemoryRAMSize == %d' % self.parent.maxrss
-        
+        if self.maxmemory and self.maxtime:
+            self.creamattr += 'CERequirements = "other.GlueCEPolicyMaxCPUTime == %d && other.GlueCEPolicyMaxWallClockTime == %d" ' % (self.cputime,                                                                                                                     self.maxtime)
+        elif self.maxmemory:
+            self.creamattr += 'CERequirements = "other.GlueHostMainMemoryRAMSize == %d";' % self.maxmemory
+        elif self.maxtime:
+            self.creamattr += 'CERequirements = "other.GlueHostPolicyMaxWallClockTime == %d";' % self.maxtime
 
 
     def _initarc(self):
         self.gridresource = self.ce_host
         self.submitplugin = 'CondorOSGCE'
         self.submitpluginstr = 'condorosgce'
+        self.maxmemory = self.parent.maxmemory
+        self.maxtime = self.ce_queue_maxwctime
+        
         self.nordugridrsl = '(jobname = arc_pilot)'
         self.rsladd = '(runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY)'
         self.rsladd += '(jobname = arc_pilot)'
         self.rsladd += '(count = %d)' % self.parent.corecount
         self.rsladd += '(countpernode = %d)' % self.parent.corecount
+        if self.maxmemory:
+            self.rsladd += '(memory = %d)' % self.maxmemory
+        if self.maxtime:
+            self.rsladd += '(walltime = %d)' % self.maxtime    
+            
+            
         #if maxrss and corecount:
         #    percore = maxrss/corecount
         #    rsladd += '(memory = %d)' % percore
@@ -282,13 +280,12 @@ class AgisCEQueue(object):
         s = cp.write(sio)
         return sio.getvalue()
     
-
     def getAPFConfig(self):
         '''
         Returns ConfigParser object representing config
         
         '''
-        self.cp = SafeConfigParser()
+        self.cp = Config()
         sect = '%s-%s' % ( self.panda_queue_name, self.ce_host )
         self.cp.add_section(sect)      
         # Unconditional config
@@ -357,6 +354,8 @@ class Agis(ConfigInterface):
 
     def __init__(self, config):
         '''
+        Top-level object fo contacting, parsing, and providing APF configs from AGIS
+        
 
         '''
         self.log = logging.getLogger("main.agis")
@@ -365,13 +364,59 @@ class Agis(ConfigInterface):
         self.config = config
         self.baseurl = self.config.get('Factory', 'config.agis.baseurl')
         self.sleep = self.config.get('Factory', 'config.agis.sleep')
-        self.jobsperpilot = self.config.get('Factory', 'config.agis.jobsperpilot')
-        self.numfactories = self.config.get('Factory', 'config.agis.numfactories')
-        self.vos = [ vo.strip().lower() for vo in self.config.get('Factory', 'config.agis.vos').split(',') ]
-        self.clouds = [ cl.strip().lower() for cl in self.config.get('Factory', 'config.agis.clouds').split(',') ]
-        self.activities = [ ac.strip().lower() for ac in self.config.get('Factory', 'config.agis.activities').split(',') ]
-        self.defaultsfile = self.config.get('Factory', 'config.agis.defaultsfile')
-
+        self.jobsperpilot = 1.0
+        self.numfactories = 1.0
+        
+        # For vos, clouds, and activities, 'None' means everything in AGIS
+        self.vos = None
+        self.clouds = None
+        self.activities = None
+        self.defaultsfile = None
+        try:
+            self.jobsperpilot = self.config.getfloat('Factory', 'config.agis.jobsperpilot')
+        except NoOptionError, noe:
+            pass
+        
+        try:
+            self.numfactories = self.config.getfloat('Factory', 'config.agis.numfactories')
+        except NoOptionError, noe:
+            pass
+        
+        # For defaultsfile, None means no defaults included in config. Only explicit values returned. 
+        try:         
+            self.defaultsfile = self.config.get('Factory', 'config.agis.defaultsfile')
+            if self.defaultsfile.strip().lower() == 'none':
+                self.defaultsfile = None
+        except NoOptionError, noe:
+            pass
+        
+        try:
+            vostr = self.config.get('Factory', 'config.agis.vos')
+            if vostr.strip().lower() == 'none':
+                self.vos = None
+            else:
+                self.vos = [ vo.strip().lower() for vo in self.config.get('Factory', 'config.agis.vos').split(',') ]    
+        except NoOptionError, noe:
+            pass
+        
+        try:
+            cldstr = self.config.get('Factory', 'config.agis.clouds')
+            if cldstr.strip().lower() == 'none':
+                self.clouds = None
+            else:
+                self.clouds = [ cl.strip().lower() for cl in self.config.get('Factory', 'config.agis.clouds').split(',') ]
+        except NoOptionError, noe:
+            pass
+        
+        try:
+            actstr = self.config.get('Factory', 'config.agis.activities')
+            if actstr.strip().lower() == 'none':
+                self.activities = None
+            else:
+                self.activities = [ ac.strip().lower() for ac in self.config.get('Factory', 'config.agis.activities').split(',') ]
+        except NoOptionError, noe:
+            pass
+        
         self.log.trace('ConfigPlugin: Object initialized. %s' % self)
 
     def _updateInfo(self):
@@ -389,7 +434,7 @@ class Agis(ConfigInterface):
                 self.log.error('Failed to contact AGIS or parse problem: %s' %  traceback.format_exc() )
                 raise AgisFailureError("Unable to contact AGIS or parsing error.")                                                              
                 
-    def getAPFConfigString(self, volist=None, cloudlist=None, activitylist=None, defaultsfile=None):
+    def getConfigString(self, volist=None, cloudlist=None, activitylist=None, defaultsfile=None):
         '''
         For embedded usage. Handles everything in config.
         Pulls out valid PQ/CEs for specified vo, cloud, activity
@@ -428,7 +473,7 @@ class Agis(ConfigInterface):
             self.log.trace("After filtering. ce_queues has %d objects" % len(q.ce_queues))
                 
         s = ""
-        if self.defaultsfile != "None":
+        if self.defaultsfile is not None:
             df = open(self.defaultsfile)
             for line in df.readlines():
                 s += line
@@ -444,11 +489,15 @@ class Agis(ConfigInterface):
         Required for autopyfactory Config plugin interface. 
         Returns ConfigParser representing config
         '''
+        cp = Config()
         
-        cp = SafeConfigParser()
-        
-        
-    
+        if self.defaultsfile is not None:
+            cp.readfp(self.defaultsfile)
+        for q in self.allqueues:
+            for cq in q.ce_queues:
+                qc = cq.getConfig()
+                cp.merge(qc)
+        return cp    
   
     def _filterobjs(self, objlist, reqdict=None, negdict=None):
         '''
@@ -503,6 +552,9 @@ class Agis(ConfigInterface):
         d = json.load(handle, 'utf-8')
         handle.close()
         self.log.trace('Done.')
+        of = open('/tmp/agis-json.txt', 'w')
+        json.dump(d,of, indent=2, sort_keys=True)
+        of.close()
         return d
 
     def _handleJSON(self, jsondoc):
@@ -660,7 +712,7 @@ if __name__ == '__main__':
         log.setLevel(logging.TRACE) 
     log.debug("Logging initialized.")      
     
-    fconfig=ConfigParser()
+    fconfig=Config()
     if fconfig_file is not None:
         fconfig_file = os.path.expanduser(fconfig_file)
         got_config = fconfig.read(fconfig_file)
@@ -696,7 +748,7 @@ if __name__ == '__main__':
     log.debug("Agis object created")
 
     try:
-        configstr = acp.getAPFConfigString()
+        configstr = acp.getConfigString()
         if configstr is not None:    
             log.debug("Got config string for writing to outfile %s" % outfile)
             outfile = os.path.expanduser(outfile)
