@@ -22,6 +22,7 @@ sys.path.insert(0, prepath)
 
 
 class BoscoCluster(object):
+
     
     def __init__(self, entry, cluster_type='pbs', port=22, max_queued=-1,  ):
         self.log = logging.getLogger('boscocluster')
@@ -40,6 +41,7 @@ class BoscoCluster(object):
     
 
 class BoscoCLI(object):
+    lock = threading.Lock()
     
     def __init__(self):
         self.log = logging.getLogger("main.bosco")
@@ -109,14 +111,16 @@ class BoscoCLI(object):
         
         
         try:
-            CondorBosco.lock.acquire()
+            self.log.trace("getting lock")
+            BoscoCLI.lock.acquire()
             
         except Exception, e:
             self.log.error("Exception during bosco remote installation. ")
             raise
     
         finally:
-            CondorBosco.lock.release()
+            self.log.trace("releasing lock")
+            CondorBoscoCLI.lock.release()
             
 if __name__ == '__main__':
     # Set up logging. 

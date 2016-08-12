@@ -27,7 +27,7 @@ from autopyfactory import bosco
 
 class CondorSSH(CondorBase):
     id = 'condorssh'
-    lock = threading.Lock()
+    
     '''
     This class is expected to have separate instances for each PandaQueue object. 
     '''
@@ -41,8 +41,7 @@ class CondorSSH(CondorBase):
         newqcl = qcl.clone().filterkeys('batchsubmit.condorssh', 'batchsubmit.condorbase')
         super(CondorBosco, self).__init__(apfqueue, config=newqcl) 
         # check local bosco install, will throw exeption if not present
-        self._checkbosco()
-        
+         
         try:
             
             self.batch = qcl.generic_get(self.apfqname, 'batchsubmit.condorssh.batch')
@@ -56,7 +55,7 @@ class CondorSSH(CondorBase):
             self._getSSHAuthTokens()
             
             self._checkbosco()
-            self._checktarget()
+            self._checktarget(self.host, self.port, self.batch)
                         
             self.log.debug("SSH target attributes gathered from config. ")
         
@@ -120,7 +119,7 @@ class CondorSSH(CondorBase):
         self.JSD.add('+TransferOutput', '""')
         
         
-        super(CondorBosco, self)._addJSD()
+        super(CondorSSH, self)._addJSD()
         self.log.debug('CondorBosco.addJSD: Leaving.')
 
 
