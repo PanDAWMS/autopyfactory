@@ -116,18 +116,17 @@ class AuthManager(object):
 #   API for SSHKeyHandler
 #
 
-    def getSSHKeyPair(self, profilelist):
+    def getSSHKeyPair(self, profile):
         '''
-         Returns tuple (public, private) keypair string from first valid profile in list. 
+         Returns tuple (public, private, pass) key/phrase string from first valid profile in list. 
         '''
         
         pass
         
         
-    def getSSHKeyPairPaths(self, profilelist):
+    def getSSHKeyPairPaths(self, profile):
         '''
-        Returns tuple (public, private) keypair paths to files from first valid profile in 
-        list. 
+        Returns tuple (public, private, pass) key/passfile paths to files from profile. 
         '''
         pass
 

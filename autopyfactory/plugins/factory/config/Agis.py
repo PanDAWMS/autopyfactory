@@ -87,6 +87,8 @@ class AgisPandaQueue(object):
             self.panda_resource = d[key]['panda_resource']              # AGLT2_LMEM     
             self.cloud = d[key]['cloud'].lower()                        # us
             self.corecount = d[key]['corecount']
+            if self.corecount is None:
+                self.corecount = 1
             self.maxmemory = int(d[key]['maxmemory'])                   # always present
             self.maxrss = int(d[key].get('maxrss', None))               # not present
             self.maxswap = int(d[key].get('maxswap', None) )            # not present
@@ -317,7 +319,7 @@ class AgisCEQueue(object):
 
             self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+xcount', str(self.parent.corecount) )
             self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+voactivity', self.parent.type )
-            self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+remote_queue', self.ce_queue_name )
+            self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+remote_queue', self.ce_queue_name)
 
         # Globus
         if self.ce_flavour in ['osg-ce','globus']:
