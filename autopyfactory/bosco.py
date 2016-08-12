@@ -107,7 +107,7 @@ class BoscoCLI(object):
         '''
         self.log.debug("Checking to see if remote bosco is installed and up to date...")
         
-
+        
         try:
             CondorBosco.lock.acquire()
             
@@ -170,6 +170,6 @@ if __name__ == '__main__':
     log.debug("Logging initialized.")      
     
     bcli = BoscoCLI()
-
+    bcli._checktarget('gridev03.racf.bnl.gov', 'slurm')
     
     
