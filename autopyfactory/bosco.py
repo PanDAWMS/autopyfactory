@@ -120,7 +120,7 @@ class BoscoCLI(object):
     
         finally:
             self.log.trace("releasing lock")
-            CondorBoscoCLI.lock.release()
+            BoscoCLI.lock.release()
             
 if __name__ == '__main__':
     # Set up logging. 
