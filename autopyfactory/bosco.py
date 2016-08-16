@@ -20,10 +20,14 @@ prepath = sep.join(fullpathlist[:-2])
 import sys
 sys.path.insert(0, prepath)
 
+# module level threadlock
+lock = threading.Lock()
+
+
 
 class BoscoCluster(object):
 
-    
+
     def __init__(self, entry, cluster_type='pbs', port=22, max_queued=-1,  ):
         self.log = logging.getLogger('boscocluster')
         self.entry = entry
@@ -41,13 +45,14 @@ class BoscoCluster(object):
     
 
 class BoscoCLI(object):
-    lock = threading.Lock()
+
     
     def __init__(self):
         self.log = logging.getLogger("main.bosco")
         self.log.debug("Initializing bosco module...")
-        self.boscopubkeypath = os.path.expanduser("~/.ssh/bosco_key.rsa.pub")
-        self.boscoprivkeypath = os.path.expanduser("~/.ssh/bosco_key.rsa")
+        self.boscopubkeyfile = os.path.expanduser("~/.ssh/bosco_key.rsa.pub")
+        self.boscoprivkeyfile = os.path.expanduser("~/.ssh/bosco_key.rsa")
+        self.boscopassfile = os.path.expanduser("~/.bosco/.pass")
         self.boscokeydir = os.path.expanduser("~/.ssh")
         if os.path.exists(self.boscokeydir) and os.path.isdir(self.boscokeydir):
             self.log.debug("boscokeydir exists.")
@@ -99,28 +104,65 @@ class BoscoCLI(object):
         for line in out:
              host, batch = line.split('/')
                 
-        
         return self.clusters
+
+    def _clusteradd(self, host, port, batch, pubkeyfile, privkeyfile, passfile):
+        self.log.info("Setting up cluster %s/%s " % (host, batch))                 
+        
+        self.log.trace("ensuring pubkeyfile") 
+        shutil.copy(pubkeyfile, self.boscopubkeyfile)
+        self.log.trace("ensuring privkeyfile") 
+        shutil.copy(privkeyfile, self.boscoprivkeyfile)        
+        self.log.trace("ensuring passfile")        
+        shutil.copy(passfile, self.boscopassfile )
+             
+        cmd = 'bosco_cluster -a %s %s ' % (host, setupbatch)
+        self.log.trace("cmd is %s" % cmd) 
+        before = time.time()
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        out = None
+        (out, err) = p.communicate()        
+        delta = time.time() - before
+        
+        self.log.trace('It took %s seconds to issue the command' %delta)
+        self.log.trace('%s seconds to issue command' %delta)
+        
+
+    def _clusteraddnative(self,host,batch):
+        self.log.info("Setting up cluster %s/%s " % (host,batch))
+
              
     
-    def _checktarget(self, host, batch):
+    def _checktarget(self, host, port, batch, pubkeyfile, privkeyfile, passfile ):
         '''
         Ensure bosco_cluster has been run.         
         '''
         self.log.debug("Checking to see if remote bosco is installed and up to date...")
-        
-        
+        host = host.lower()
+        batch = batch.lower()
         try:
             self.log.trace("getting lock")
-            BoscoCLI.lock.acquire()
+            bosco.lock.acquire()
+            clist = self._getBoscoClusters()
+            self.log.trace("got list of %d clusters" % len(clist))
+            found = False
+            for c in clist:
+                if c.entry == host and c.cluster_type == batch:
+                    found = True
+            if not found:
+                self.log.info("Setting up cluster %s/%s " % (host,batch))
+                self._clusteradd(host, port, batch, pubkeyfile, privkeyfile, passfile)
+            else:
+                self.log.trace("cluster %s/%s already set up." % (host,batch))    
             
         except Exception, e:
             self.log.error("Exception during bosco remote installation. ")
-            raise
     
         finally:
             self.log.trace("releasing lock")
-            BoscoCLI.lock.release()
+            bosco.lock.release()
+            
+            
             
 if __name__ == '__main__':
     # Set up logging. 
@@ -174,6 +216,6 @@ if __name__ == '__main__':
     log.debug("Logging initialized.")      
     
     bcli = BoscoCLI()
-    bcli._checktarget('gridev03.racf.bnl.gov', 'slurm')
+    bcli._checktarget('gridev03.racf.bnl.gov', 'slurm', '~/etc/apf/jhover/pass')
     
     

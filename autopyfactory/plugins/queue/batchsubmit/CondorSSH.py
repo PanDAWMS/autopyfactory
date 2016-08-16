@@ -27,7 +27,6 @@ from autopyfactory import bosco
 
 class CondorSSH(CondorBase):
     id = 'condorssh'
-    
     '''
     This class is expected to have separate instances for each PandaQueue object. 
     '''
@@ -49,32 +48,34 @@ class CondorSSH(CondorBase):
             self.port = qcl.generic_get(self.apfqname,'batchsubmit.condorssh.port' )
             self.user = qcl.generic_get(self.apfqname,'batchsubmit.condorssh.user' )
             self.authprofile  = qcl.generic_get(self.apfqname,'batchsubmit.condorssh.authprofile' )
+            self.log.debug("SSH target attributes gathered from config. ")
+            
+            # Get auth info
             self.pubkeyfile = None
             self.privkeyfile = None
             self.passfile = None
             self._getSSHAuthTokens()
             
+            #Handle bosco
             self._checkbosco()
-            self._checktarget(self.host, self.port, self.batch)
-                        
-            self.log.debug("SSH target attributes gathered from config. ")
-        
+            self._checktarget(self.host, self.port, self.batch, self.pubkeyfile, self.privkeyfile, self.passfile)
+            
+            self.log.info('CondorSSH: Object initialized.')
+            
         except Exception, e:
             self.log.error("Caught exception: %s " % str(e))
             raise
         
-        self.log.info('CondorSSH: Object initialized.')
 
     def _getSSHAuthTokens(self):
         '''
         uses authmanager to find out the paths to SSH auth info
-        '''
-    
+        '''    
         self.log.trace("Determining proxy, if necessary. Profile: %s" % self.authprofile)
         (self.pubkeyfile, self.privkeyfile, self.passfile) = self.factory.authmanager.getSSHKeyPairPaths(self.authprofile)
-        
-
-
+        self.log.trace("Got paths: pubkey %s privkey %s passfile %s" % (self.pubkeyfile, 
+                                                                        self.privkeyfile, 
+                                                                        self.passfile))
 
     def submit(self, num):
         '''
@@ -85,11 +86,6 @@ class CondorSSH(CondorBase):
         joblist = super(CondorBosco, self).submit(num)
        
         self.log.debug("Exiting bosco submit.")
-
-
-
-
-
 
     def _addJSD(self):
         '''
