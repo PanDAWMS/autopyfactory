@@ -24,6 +24,7 @@
 
 from autopyfactory import jsd
 from autopyfactory import bosco
+from CondorBase import CondorBase
 
 class CondorSSH(CondorBase):
     id = 'condorssh'
