@@ -540,25 +540,24 @@ class Factory(object):
         # Handle ProxyManager configuration
         try:
             useaman = self.fcl.getboolean('Factory', 'authmanager.enabled')
+            self.log.debug("Authmanager enabled in config.")
         except Exception, e:
             self.log.error('No authmanager var in config. Skipping. ')
         
         if useaman:      
             try:
                 from autopyfactory.authmanager import AuthManager
-            except:
-                self.log.critical('authmanager cannot be imported')
-                sys.exit(0) 
+            except Exception, e:
+                self.log.exception('authmanager cannot be imported')
 
             acf = self.fcl.get('Factory','authConf')
-            self.log.debug("auth.conf file(s) = %s" % pcf)
+            self.log.debug("auth.conf file(s) = %s" % acf)
             acl = ConfigParser()
 
             try:
-                got_config = acl.read(pcf)
+                got_config = acl.read(acf)
             except Exception, e:
-                self.log.error('Failed to create AuthConfigLoader')
-                self.log.error("Exception: %s" % traceback.format_exc())
+                self.log.exception('Failed to create AuthConfigLoader')
                 sys.exit(0)
 
             self.log.trace("Read config file %s, return value: %s" % (acf, got_config)) 
