@@ -120,6 +120,7 @@ setup(
               'autopyfactory.plugins.queue.wmsstatus',
               'autopyfactory.external',
               'autopyfactory.external.panda',
+              'autopyfactory.plugins.auth',
               ],
     scripts = [ # Utilities and main script
                'bin/autopyfactory',
