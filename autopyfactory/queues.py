@@ -149,8 +149,7 @@ class APFQueuesManager(object):
                 #qobject.start()
                 self.log.info('Queue %s enabled.' %apfqname)
             except Exception, ex:
-                self.log.error('Exception captured when initializing [%s]. Queue omitted. ' %apfqname)
-                self.log.debug("Exception: %s" % traceback.format_exc())
+                self.log.xception('Exception captured when initializing [%s]. Queue omitted. ' %apfqname)
         else:
             self.log.debug('Queue %s not enabled.' %apfqname)
             
@@ -260,20 +259,18 @@ class APFQueue(threading.Thread):
             #self.batchstatusmaxtime = self.fcl.generic_get('Factory', 'batchstatus.maxtime', default_value=0)
             #self.wmsstatusmaxtime = self.fcl.generic_get('Factory', 'wmsstatus.maxtime', default_value=0)
         except Exception, ex:
-            self.log.error('APFQueue: exception captured while reading configuration variables to create the object.')
-            self.log.debug("Exception: %s" % traceback.format_exc())
+            self.log.exception('APFQueue: exception captured while reading configuration variables to create the object.')
             raise ex
 
         try:
             self._plugins()
         
         except CondorVersionFailure, cvf:
-            self.log.error('APFQueue: No condor or bad version: %s' % str(cvf))
+            self.log.exception('APFQueue: No condor or bad version')
             raise cvf
         
         except Exception, ex:
-            self.log.error('APFQueue: Exception getting plugins: %s' % str(ex))
-            self.log.debug("Exception: %s" % traceback.format_exc())
+            self.log.exception('APFQueue: Exception getting plugins' )
             raise ex
         
         self.log.debug('APFQueue: Object initialized.')
