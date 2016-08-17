@@ -7,6 +7,7 @@ import logging
 import math
 import os
 import pwd, grp
+import sys
 import threading
 import time
 import socket
@@ -15,7 +16,6 @@ import socket
 from os.path import dirname, realpath, sep, pardir
 fullpathlist = realpath(__file__).split(sep)
 prepath = sep.join(fullpathlist[:-2])
-import sys
 sys.path.insert(0, prepath)
 
 from subprocess import Popen, PIPE, STDOUT

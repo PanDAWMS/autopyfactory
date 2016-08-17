@@ -7,17 +7,17 @@ import logging
 import math
 import os
 import pwd, grp
+import sys
 import threading
 import time
 import socket
-
 
 # Added to support running module as script from arbitrary location. 
 from os.path import dirname, realpath, sep, pardir
 fullpathlist = realpath(__file__).split(sep)
 prepath = sep.join(fullpathlist[:-2])
-import sys
 sys.path.insert(0, prepath)
+
 import autopyfactory
 from autopyfactory.plugins.auth.X509 import X509Handler
 
