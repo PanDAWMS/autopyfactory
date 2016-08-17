@@ -149,7 +149,7 @@ class APFQueuesManager(object):
                 #qobject.start()
                 self.log.info('Queue %s enabled.' %apfqname)
             except Exception, ex:
-                self.log.xception('Exception captured when initializing [%s]. Queue omitted. ' %apfqname)
+                self.log.exception('Exception captured when initializing [%s]. Queue omitted. ' %apfqname)
         else:
             self.log.debug('Queue %s not enabled.' %apfqname)
             
