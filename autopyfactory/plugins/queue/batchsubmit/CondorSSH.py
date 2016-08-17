@@ -39,7 +39,7 @@ class CondorSSH(CondorBase):
         else:
             qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorssh', 'batchsubmit.condorbase')
-        super(CondorBosco, self).__init__(apfqueue, config=newqcl) 
+        super(CondorSSH, self).__init__(apfqueue, config=newqcl) 
         # check local bosco install, will throw exeption if not present
          
         try:
