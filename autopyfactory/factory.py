@@ -44,6 +44,7 @@ from autopyfactory.logserver import LogServer
 from autopyfactory.pluginsmanagement import QueuePluginDispatcher
 from autopyfactory.pluginsmanagement import FactoryPluginDispatcher
 from autopyfactory.queues import APFQueuesManager
+from autopyfactory.authmanager import AuthManager
 
 major, minor, release, st, num = sys.version_info
 
