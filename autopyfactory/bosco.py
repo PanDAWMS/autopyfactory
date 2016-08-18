@@ -160,7 +160,7 @@ class BoscoCLI(object):
                 self.log.trace("cluster %s/%s already set up." % (host,batch))    
             
         except Exception, e:
-            self.log.error("Exception during bosco remote installation. ")
+            self.log.exception("Exception during bosco remote installation. ")
     
         finally:
             self.log.trace("releasing lock")
