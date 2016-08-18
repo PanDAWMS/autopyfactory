@@ -110,7 +110,9 @@ class BoscoCLI(object):
         for line in lines:
             self.log.trace("line is %s" % line)
             if line.strip() == 'No clusters configured':
-                self.log.debug("No clusters defined.")
+                self.log.debug("No clusters configured.")
+            elif len(line) < 2:
+                self.log.trace('empty line discarded')
             else:
                 host, batch = line.split('/')
                 #  entry, cluster_type='pbs', port=22, max_queued=-1,
