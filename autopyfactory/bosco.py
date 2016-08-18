@@ -106,11 +106,17 @@ class BoscoCLI(object):
             self.log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err )) 
         self.clusters = []
         for line in out:
-            if line.strip() != 'No clusters configured':
+            self.log.trace("line is %s" % line)
+            if line.strip() == 'No clusters configured':
+                self.log.debug("No clusters defined.")
+            else:
                 host, batch = line.split('/')
                 #  entry, cluster_type='pbs', port=22, max_queued=-1,
+                self.log.trace('got entry from bosco: %s %s Making object... ' % (host, batch))
                 bentry = BoscoCluster(entry=host, cluster_type=batch)
+                self.log.trace('made bentry object, appending.')
                 self.clusters.append(bentry)
+                
         return self.clusters
 
     def _clusteradd(self, host, port, batch, pubkeyfile, privkeyfile, passfile):
