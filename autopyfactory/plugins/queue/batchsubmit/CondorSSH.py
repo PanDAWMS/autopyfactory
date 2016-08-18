@@ -24,6 +24,7 @@
 
 from autopyfactory import jsd
 from autopyfactory import bosco
+from bosco import BoscoCLI
 from CondorBase import CondorBase
 
 class CondorSSH(CondorBase):
@@ -58,8 +59,14 @@ class CondorSSH(CondorBase):
             self._getSSHAuthTokens()
             
             #Handle bosco
-            self._checkbosco()
-            self._checktarget(self.host, self.port, self.batch, self.pubkeyfile, self.privkeyfile, self.passfile)
+            self.boscocli = BoscoCLI()
+            self.boscocli._checkbosco()
+            self.boscocli._checktarget(self.host, 
+                               self.port, 
+                               self.batch, 
+                               self.pubkeyfile, 
+                               self.privkeyfile, 
+                               self.passfile)
             
             self.log.info('CondorSSH: Object initialized.')
             

@@ -23,7 +23,7 @@ sys.path.insert(0, prepath)
 # module level threadlock
 lock = threading.Lock()
 
-
+singleton = None
 
 class BoscoCluster(object):
 
@@ -46,8 +46,9 @@ class BoscoCluster(object):
 
 class BoscoCLI(object):
 
-    
     def __init__(self):
+        if bosco.singleton is not None:
+            return bosco.singleton
         self.log = logging.getLogger("main.bosco")
         self.log.debug("Initializing bosco module...")
         self.boscopubkeyfile = os.path.expanduser("~/.ssh/bosco_key.rsa.pub")
@@ -59,6 +60,7 @@ class BoscoCLI(object):
         else:
             self.log.debug("Making boscokeydir.")
             os.mkdir(self.boscokeydir)
+        bosco.singleton = self
 
     def _checkbosco(self):
         '''
