@@ -106,6 +106,7 @@ class BoscoCLI(object):
             self.log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err )) 
         self.clusters = []
         lines = out.split("\n")
+        self.log.trace("got %d lines" % len(lines))
         for line in lines:
             self.log.trace("line is %s" % line)
             if line.strip() == 'No clusters configured':
