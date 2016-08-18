@@ -35,6 +35,8 @@ class SSHHandler(object):
             self.privkeypath = None
         if self.pubkeypath.lower() == 'none':
             self.pubkeypath = None
+              
+        
         # Create files if needed
         # TODO
         
@@ -59,6 +61,8 @@ class SSHHandler(object):
         self.log.debug('[%s] Retrieving privkeypath: %s' % (self.name, self.privkeypath))
         return self.privkeypath
     
-    
+    def getSSHPassFilePath(self):
+        self.log.debug('[%s] Retrieving passpath: %s' % (self.name, self.privkeypasspath))
+        return self.privkeypasspath
     
         

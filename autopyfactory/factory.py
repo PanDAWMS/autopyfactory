@@ -36,6 +36,14 @@ try:
 except:
     from email.MIMEText import MIMEText
 
+# Add TRACE log level 
+logging.TRACE = 5
+logging.addLevelName(logging.TRACE, 'TRACE')
+def trace(self, msg, *args, **kwargs):
+    self.log(logging.TRACE, msg, *args, **kwargs)
+logging.Logger.trace = trace
+
+
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
 from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailure
 from autopyfactory.cleanlogs import CleanLogs
@@ -73,56 +81,6 @@ class FactoryCLI(object):
         for one reason or another 
         must be done before anything else
         '''
-
-        self.__addloggingtrace()
-
-
-    def __addloggingtrace(self):
-        """
-        Adding custom TRACE level
-        This must be done here, because parseopts()
-        uses logging.TRACE, so it must be defined
-        by that time
-        """
-
-        logging.TRACE = 5
-        logging.addLevelName(logging.TRACE, 'TRACE')
-        def trace(self, msg, *args, **kwargs):
-            self.log(logging.TRACE, msg, *args, **kwargs)
-        logging.Logger.trace = trace
-
-        #
-        #   NOTE:
-        #
-        #   I have been told that this way, messing with the root logging,
-        #   can have problems with multi-threaded applications...
-        #   Apparently, the best way to do it is
-        #   with a dedicated Logger class:
-        #   
-        #           class MyLogger(logging.getLoggerClass()):
-        #           
-        #               TRACE = 5
-        #               logging.addLevelName(TRACE, "TRACE")
-        #           
-        #               def trace(self, msg, *args, **kwargs):
-        #                   self.log(self.TRACE, msg, *args, **kwargs)
-        #           
-        #           logging.setLoggerClass(MyLogger)
-        #
-        #   but that only works fine is we never 
-        #   call the logger root, as we are doing
-        #   Also, it has the problem that logging.TRACE would not be defined.
-        #
-        #
-        #   Another option is
-        #       
-        #           logging.trace = functools.partial(logging.log, logging.TRACE)
-        #
-        #   Related documentation on partial() can be found here
-        #
-        #           http://docs.python.org/2/library/functools.html
-        #
-
 
     
     def __parseopts(self):

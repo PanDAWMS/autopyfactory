@@ -12,6 +12,7 @@ import threading
 import time
 import socket
 
+
 # Added to support running module as script from arbitrary location. 
 from os.path import dirname, realpath, sep, pardir
 fullpathlist = realpath(__file__).split(sep)
@@ -118,9 +119,8 @@ class AuthManager(object):
 
     def getSSHKeyPair(self, profile):
         '''
-         Returns tuple (public, private, pass) key/phrase string from first valid profile in list. 
+         Returns tuple (public, private, pass) key/phrase string from profile. 
         '''
-        
         pass
         
         
@@ -128,11 +128,37 @@ class AuthManager(object):
         '''
         Returns tuple (public, private, pass) key/passfile paths to files from profile. 
         '''
-        pass
+        h = self._getHandler(profile)
+        pub = h.getSSHPubKeyFilePath()
+        priv = h.getSSHPrivKeyFilePath()
+        pasf = h.getSSHPassFilePath()
+        self.log.info('Got file paths for pub, priv, pass for SSH profile %s' % profile)
+        return (pub,priv,pasf)
 
+
+    def _getHandler(self, profile):
+        '''
+        
+        '''
+        handler = None
+        for h in self.handlers:
+            self.log.trace("Finding handler. Checking %s" % h.name)
+            if h.name == profile:
+                self.log.debug("Found handler for %s" % h.name)
+                handler = h
+        return handler
+        
 
 if __name__ == '__main__':
 
+    # Add TRACE level
+    logging.TRACE = 5
+    logging.addLevelName(logging.TRACE, 'TRACE')
+    
+    def trace(self, msg, *args, **kwargs):
+        self.log(logging.TRACE, msg, *args, **kwargs)
+    
+    logging.Logger.trace = trace
    
     import getopt
     import sys
@@ -179,16 +205,7 @@ if __name__ == '__main__':
             info = 1
         elif opt in ("-t", "--trace"):
             trace = 1
-
-    # Set up logging. 
-    # Add TRACE level
-    logging.TRACE = 5
-    logging.addLevelName(logging.TRACE, 'TRACE')
-    
-    def trace(self, msg, *args, **kwargs):
-        self.log(logging.TRACE, msg, *args, **kwargs)
-    
-    logging.Logger.trace = trace
+            
     # Check python version 
     major, minor, release, st, num = sys.version_info
     

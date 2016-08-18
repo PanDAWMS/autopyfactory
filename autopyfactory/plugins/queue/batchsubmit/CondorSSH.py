@@ -72,7 +72,7 @@ class CondorSSH(CondorBase):
         '''
         uses authmanager to find out the paths to SSH auth info
         '''    
-        self.log.trace("Determining proxy, if necessary. Profile: %s" % self.authprofile)
+        self.log.trace("Retrieving SSH auth token info. Profile: %s" % self.authprofile)
         (self.pubkeyfile, self.privkeyfile, self.passfile) = self.factory.authmanager.getSSHKeyPairPaths(self.authprofile)
         self.log.trace("Got paths: pubkey %s privkey %s passfile %s" % (self.pubkeyfile, 
                                                                         self.privkeyfile, 
