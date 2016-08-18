@@ -20,10 +20,10 @@ prepath = sep.join(fullpathlist[:-2])
 import sys
 sys.path.insert(0, prepath)
 
+from autopyfactory.interfaces import Singleton
+
 # module level threadlock
 lock = threading.Lock()
-
-singleton = None
 
 class BoscoCluster(object):
 
@@ -45,11 +45,14 @@ class BoscoCluster(object):
     
 
 class BoscoCLI(object):
+    '''
+    Encapsulates all bosco_cluster command functionality. 
+    
+    '''
+    __metaclass__ = Singleton
 
     def __init__(self):
-        if bosco.singleton is not None:
-            return bosco.singleton
-        self.log = logging.getLogger("main.bosco")
+        self.log = logging.getLogger("bosco")
         self.log.debug("Initializing bosco module...")
         self.boscopubkeyfile = os.path.expanduser("~/.ssh/bosco_key.rsa.pub")
         self.boscoprivkeyfile = os.path.expanduser("~/.ssh/bosco_key.rsa")
@@ -60,7 +63,6 @@ class BoscoCLI(object):
         else:
             self.log.debug("Making boscokeydir.")
             os.mkdir(self.boscokeydir)
-        bosco.singleton = self
 
     def _checkbosco(self):
         '''
