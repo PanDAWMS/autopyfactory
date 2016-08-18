@@ -100,12 +100,13 @@ class BoscoCLI(object):
         delta = time.time() - before
         self.log.trace('It took %s seconds to issue the command' %delta)
         self.log.trace('%s seconds to issue command' %delta)
-        if p.returncode == 0:
+        if p.returncode == 0 or p.returncode == 2:
             self.log.trace('Leaving with OK return code.')
         else:
             self.log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err )) 
         self.clusters = []
-        for line in out:
+        lines = out.split("\n")
+        for line in lines:
             self.log.trace("line is %s" % line)
             if line.strip() == 'No clusters configured':
                 self.log.debug("No clusters defined.")
