@@ -154,6 +154,10 @@ class BoscoCLI(object):
         '''
         Ensure bosco_cluster has been run.         
         '''
+        #Ensure paths
+        pubkeyfile = os.path.expanduser(pubkeyfile)
+        privkeyfile = os.path.expanduser(privkeyfile)
+        passfile = os.path.expanduser(passfile)
         self.log.debug("Checking to see if remote bosco is installed and up to date...")
         host = host.lower()
         batch = batch.lower()
