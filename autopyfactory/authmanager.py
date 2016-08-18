@@ -21,6 +21,7 @@ sys.path.insert(0, prepath)
 
 import autopyfactory
 from autopyfactory.plugins.auth.X509 import X509Handler
+from autopyfactory.plugins.auth.SSH import SSHHandler
 from autopyfactory.apfexceptions import InvalidAuthFailure
 
 
@@ -57,11 +58,14 @@ class AuthManager(object):
                 
             if pclass == 'X509':
                 self.log.trace("Creating X509 handler for %s" % sect )
-  
                 x509h = X509Handler(aconfig, sect, self)
-                # create handler for each type of credential in auth.conf                       
-                #ph = ProxyHandler(pconfig, sect, self)
                 self.handlers.append(x509h)
+            
+            elif pclass == 'SSH':
+                self.log.trace("Creating SSH handler for %s" % sect )
+                sshh = SSHHandler(aconfig, sect, self)
+                self.handlers.append(sshh)
+                            
             else:
                 self.log.warn("Unrecognized auth plugin %s" % pclass )
         
