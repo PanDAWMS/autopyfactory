@@ -23,7 +23,7 @@ sys.path.insert(0, prepath)
 from autopyfactory.interfaces import Singleton
 
 # module level threadlock
-lock = threading.Lock()
+boscolock = threading.Lock()
 
 class BoscoCluster(object):
 
@@ -146,7 +146,7 @@ class BoscoCLI(object):
         batch = batch.lower()
         try:
             self.log.trace("getting lock")
-            bosco.lock.acquire()
+            boscolock.acquire()
             clist = self._getBoscoClusters()
             self.log.trace("got list of %d clusters" % len(clist))
             found = False
@@ -164,7 +164,7 @@ class BoscoCLI(object):
     
         finally:
             self.log.trace("releasing lock")
-            bosco.lock.release()
+            boscolock.release()
             
             
             
