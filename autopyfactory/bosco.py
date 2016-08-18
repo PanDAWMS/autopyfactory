@@ -85,7 +85,7 @@ class BoscoCLI(object):
         return isinstalled
    
    
-    def _getBoscoClusters():
+    def _getBoscoClusters(self):
         '''
         [jhover@grid05 ~]$ bosco_cluster -l
         griddev03.racf.bnl.gov/slurm
