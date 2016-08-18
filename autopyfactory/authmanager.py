@@ -21,6 +21,7 @@ sys.path.insert(0, prepath)
 
 import autopyfactory
 from autopyfactory.plugins.auth.X509 import X509Handler
+from autopyfactory.apfexceptions import InvalidAuthFailure
 
 
 class AuthManager(object):
@@ -146,6 +147,8 @@ class AuthManager(object):
             if h.name == profile:
                 self.log.debug("Found handler for %s" % h.name)
                 handler = h
+        if handler is None:
+            raise InvalidAuthFailure('No handler for %s ' % profile)
         return handler
         
 

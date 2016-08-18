@@ -60,10 +60,19 @@ class MissingDependencyFailure(Exception):
         return self.value
 
 class MissingPluginException(Exception):
-    """
-    exception to be raised when a plugin is being imported
+    '''
+    Exception to be raised when a plugin is being imported
     but the RPM with that plugin has not been deployed.
-    """
+    '''
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return self.value
+    
+class InvalidAuthFailure(Exception):
+    '''
+    Exception to signal when an auth profile is missing or invalid. 
+    '''
     def __init__(self, value):
         self.value = value
     def __str__(self):
