@@ -58,7 +58,7 @@ class BoscoCLI(object):
         self.boscoprivkeyfile = os.path.expanduser("~/.ssh/bosco_key.rsa")
         self.boscopassfile = os.path.expanduser("~/.bosco/.pass")
         self.boscokeydir = os.path.expanduser("~/.ssh")
-        self.boscodir = osg.path.expanduser('~/.bosco')
+        self.boscodir = os.path.expanduser('~/.bosco')
         if os.path.exists(self.boscokeydir) and os.path.isdir(self.boscokeydir):
             self.log.debug("boscokeydir exists.")
         else:
@@ -139,12 +139,13 @@ class BoscoCLI(object):
         self.log.trace("ensuring passfile")        
         shutil.copy(passfile, self.boscopassfile )
              
-        cmd = 'bosco_cluster -a %s %s ' % (host, setupbatch)
+        cmd = 'bosco_cluster -a %s %s ' % (host, batch)
         self.log.trace("cmd is %s" % cmd) 
         before = time.time()
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out = None
         (out, err) = p.communicate()        
+        self.log.debug('bosco_cluster -a output is %s' % out)
         delta = time.time() - before
         
         self.log.trace('It took %s seconds to issue the command' %delta)
