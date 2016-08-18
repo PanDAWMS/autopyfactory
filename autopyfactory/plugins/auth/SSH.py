@@ -21,14 +21,16 @@ class SSHHandler(object):
         self.sshtype = config.get(section, 'ssh.type' )
         self.privkey = config.get(section, 'ssh.privatekey' )
         self.pubkey = config.get(section, 'ssh.publickey' )
-        self.privkeypath = config.get(section, 'ssh.privatekeyfile' )
-        self.pubkeypath =  config.get(section, 'ssh.publickeyfile' )
         self.privkeypass = config.get(section, 'ssh.privkeypass')
+        self.privkeypath = config.get(section, 'ssh.privatekeyfile' )
+        self.pubkeypath = config.get(section, 'ssh.publickeyfile' )
         self.privkeypasspath = config.get(section, 'ssh.privkeypassfile')
         
         # Handle empty values
         if self.privkey.lower() == 'none':
             self.privkey = None
+        if self.privkeypass.lower() == 'none':
+            self.privkeypass = None
         if self.pubkey.lower() == 'none':
             self.pubkey = None
         if self.privkeypath.lower() == 'none':
@@ -36,7 +38,6 @@ class SSHHandler(object):
         if self.pubkeypath.lower() == 'none':
             self.pubkeypath = None
               
-        
         # Create files if needed
         # TODO
         

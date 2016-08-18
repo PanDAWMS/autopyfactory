@@ -34,7 +34,7 @@ class AuthManager(object):
     '''
     def __init__(self, aconfig, factory=None):
         
-        self.log = logging.getLogger('main.authmanager')
+        self.log = logging.getLogger('authmanager')
         self.log.info("Creating new authmanager...")
         self.aconfig = aconfig
         self.factory = factory

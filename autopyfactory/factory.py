@@ -514,13 +514,15 @@ class Factory(object):
             acl = ConfigParser()
 
             try:
+            
                 got_config = acl.read(acf)
+
             except Exception, e:
                 self.log.exception('Failed to create AuthConfigLoader')
                 sys.exit(0)
 
             self.log.trace("Read config file %s, return value: %s" % (acf, got_config)) 
-            self.authmanager = AuthManager(acl, self)
+            self.authmanager = AuthManager(aconfig=acl, factory=self)
             self.log.info('AuthManager initialized.')
         else:
             self.log.info("AuthManager disabled.")
