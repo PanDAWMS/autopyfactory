@@ -58,11 +58,17 @@ class BoscoCLI(object):
         self.boscoprivkeyfile = os.path.expanduser("~/.ssh/bosco_key.rsa")
         self.boscopassfile = os.path.expanduser("~/.bosco/.pass")
         self.boscokeydir = os.path.expanduser("~/.ssh")
+        self.boscodir = osg.path.expanduser('~/.bosco')
         if os.path.exists(self.boscokeydir) and os.path.isdir(self.boscokeydir):
             self.log.debug("boscokeydir exists.")
         else:
             self.log.debug("Making boscokeydir.")
-            os.mkdir(self.boscokeydir)
+            os.makedirs(self.boscokeydir)
+        if os.path.exists(self.boscodir) and os.path.isdir(self.boscodir):
+            self.log.debug('bosco dir exists')
+        else:
+            self.log.debug("Making boscodir.")
+            os.makedirs(self.boscodir)
 
     def _checkbosco(self):
         '''
