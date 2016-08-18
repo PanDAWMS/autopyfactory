@@ -138,6 +138,9 @@ class BoscoCLI(object):
         shutil.copy(privkeyfile, self.boscoprivkeyfile)        
         self.log.trace("ensuring passfile")        
         shutil.copy(passfile, self.boscopassfile )
+        
+        self._start_agent(pubkeyfile, privkeyfile, passfile)        
+        
              
         cmd = 'bosco_cluster -a %s %s ' % (host, batch)
         self.log.trace("cmd is %s" % cmd) 
@@ -151,6 +154,42 @@ class BoscoCLI(object):
         self.log.trace('It took %s seconds to issue the command' %delta)
         self.log.trace('%s seconds to issue command' %delta)
         
+    def _start_agent(self, pubkeyfile, privkeyfile, passfile):
+        self.log.trace('cmd is ssh-agent')
+        cmd = 'ssh-agent'
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        out = None
+        (out,err) = p.communicate()
+        lines = out.split('\n')
+        for line in lines:
+            self.log.trace('line is %s' % line)
+            exp = line.split(';')
+            if line.contains('='):
+                (k,v) = exp[0].split('=')[0]
+                if k == 'SSH_AUTH_SOCK':
+                    os.environ['SSH_AUTH_SOCK'] = v
+                    self.log.trace('setting SSH_AUTH_SOCK= %s' % v )
+                elif k == 'SSH_AGENT_PID':
+                    os.environ['SSH_AGENT_PID'] = v
+                    self.log.trace('setting SSH_AGENT_PID= %s' % v )
+                else:
+                    pass
+        self.log.debug('SSH agent started...')
+        
+        cmd = '/usr/bin/bosco_ssh_start --key %s --pass %s ' % (privkeyfile, passfile) 
+        self.log.trace('cmd is %s' % cmd)
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        out = None
+        (out,err) = p.communicate()
+        self.log.debug('ssh_start completed.')
+
+        cmd = 'ssh-add -l ' 
+        self.log.trace('cmd is %s' % cmd)
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        out = None
+        (out,err) = p.communicate()
+        self.log.debug('ssh-add -l : %s' % out)        
+
 
     def _clusteraddnative(self,host,batch):
         self.log.info("Setting up cluster %s/%s " % (host,batch))
