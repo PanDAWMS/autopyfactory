@@ -27,15 +27,19 @@ class SSHHandler(object):
         self.privkeypasspath = config.get(section, 'ssh.privkeypassfile')
         self.passwordfile = config.get(section, 'ssh.passwordfile')
         
-        # Handle empty values
+        # Handle raw empty values
         if self.privkey.lower() == 'none':
             self.privkey = None
         if self.privkeypass.lower() == 'none':
             self.privkeypass = None
         if self.pubkey.lower() == 'none':
             self.pubkey = None
+        
+        # Handle path empty values    
         if self.privkeypath.lower() == 'none':
             self.privkeypath = None
+        if self.privkeypasspath.lower() == 'none':
+            self.privkeypasspath = None
         if self.pubkeypath.lower() == 'none':
             self.pubkeypath = None
         if self.passwordfile.lower() == 'none':

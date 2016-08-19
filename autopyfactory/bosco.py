@@ -131,7 +131,7 @@ class BoscoCLI(object):
         return self.clusters
 
     def _clusteradd(self, user,  host, port, batch, pubkeyfile, privkeyfile, passfile=None):
-        self.log.info("Setting up cluster %s/%s " % (host, batch))                 
+        self.log.info("Setting up cluster %s@%s/%s " % (user, host, batch))                 
         
         self.log.trace("ensuring pubkeyfile") 
         shutil.copy(pubkeyfile, self.boscopubkeyfile)
