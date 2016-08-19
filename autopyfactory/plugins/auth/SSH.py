@@ -22,8 +22,8 @@ class SSHHandler(object):
         self.privkey = config.get(section, 'ssh.privatekey' )
         self.pubkey = config.get(section, 'ssh.publickey' )
         self.privkeypass = config.get(section, 'ssh.privkeypass')
-        self.privkeypath = config.get(section, 'ssh.privatekeyfile' )
-        self.pubkeypath = config.get(section, 'ssh.publickeyfile' )
+        self.privkeypath = os.path.expanduser(config.get(section, 'ssh.privatekeyfile' ))
+        self.pubkeypath = os.path.expanduser(config.get(section, 'ssh.publickeyfile' ))
         self.privkeypasspath = config.get(section, 'ssh.privkeypassfile')
         self.passwordfile = config.get(section, 'ssh.passwordfile')
         
