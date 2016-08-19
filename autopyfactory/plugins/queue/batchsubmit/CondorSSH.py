@@ -60,12 +60,13 @@ class CondorSSH(CondorBase):
             #Handle bosco
             self.boscocli = bosco.BoscoCLI()
             self.boscocli._checkbosco()
-            self.boscocli._checktarget(self.host, 
-                               self.port, 
-                               self.batch, 
-                               self.pubkeyfile, 
-                               self.privkeyfile, 
-                               self.passfile)
+            self.boscocli._checktarget(self.user,
+                                       self.host, 
+                                       self.port, 
+                                       self.batch, 
+                                       self.pubkeyfile, 
+                                       self.privkeyfile, 
+                                       self.passfile)
             
             self.log.info('CondorSSH: Object initialized.')
             

@@ -31,6 +31,7 @@ class BoscoCluster(object):
     def __init__(self, entry, cluster_type='pbs', port=22, max_queued=-1,  ):
         self.log = logging.getLogger('boscocluster')
         self.entry = entry
+        (self.user, self.host) = entry.split('@')
         self.port = port
         self.max_queued = max_queued
         self.cluster_type = cluster_type
@@ -136,7 +137,7 @@ class BoscoCLI(object):
         shutil.copy(pubkeyfile, self.boscopubkeyfile)
         self.log.trace("ensuring privkeyfile") 
         shutil.copy(privkeyfile, self.boscoprivkeyfile)        
-        if passfile is not None:
+        if passfile:
             self.log.trace("ensuring passfile")        
             shutil.copy(passfile, self.boscopassfile )
         
@@ -210,7 +211,7 @@ class BoscoCLI(object):
 
              
     
-    def _checktarget(self, host, port, batch, pubkeyfile, privkeyfile, passfile=None ):
+    def _checktarget(self, user, host, port, batch, pubkeyfile, privkeyfile, passfile=None ):
         '''
         Ensure bosco_cluster has been run.         
         '''
@@ -232,7 +233,7 @@ class BoscoCLI(object):
             self.log.trace("got list of %d clusters" % len(clist))
             found = False
             for c in clist:
-                if c.entry == host and c.cluster_type == batch:
+                if c.user == user and c.host == host and c.cluster_type == batch:
                     found = True
             if not found:
                 self.log.info("Setting up cluster %s/%s " % (host,batch))
