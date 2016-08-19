@@ -130,7 +130,7 @@ class BoscoCLI(object):
                 
         return self.clusters
 
-    def _clusteradd(self, host, port, batch, pubkeyfile, privkeyfile, passfile=None):
+    def _clusteradd(self, user,  host, port, batch, pubkeyfile, privkeyfile, passfile=None):
         self.log.info("Setting up cluster %s/%s " % (host, batch))                 
         
         self.log.trace("ensuring pubkeyfile") 
@@ -144,7 +144,7 @@ class BoscoCLI(object):
         self._start_agent(pubkeyfile, privkeyfile, passfile)        
         
              
-        cmd = 'bosco_cluster -a %s %s ' % (host, batch)
+        cmd = 'bosco_cluster -a %s@%s %s ' % (user, host, batch)
         self.log.trace("cmd is %s" % cmd) 
         before = time.time()
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -237,9 +237,9 @@ class BoscoCLI(object):
                     found = True
             if not found:
                 self.log.info("Setting up cluster %s/%s " % (host,batch))
-                self._clusteradd(host, port, batch, pubkeyfile, privkeyfile, passfile)
+                self._clusteradd(user, host, port, batch, pubkeyfile, privkeyfile, passfile)
             else:
-                self.log.trace("cluster %s/%s already set up." % (host,batch))    
+                self.log.trace("Cluster %s@%s/%s already set up." % (user,host,batch))    
             
         except Exception, e:
             self.log.exception("Exception during bosco remote installation. ")
