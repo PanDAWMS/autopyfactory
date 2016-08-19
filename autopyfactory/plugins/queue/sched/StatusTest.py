@@ -25,17 +25,11 @@ class StatusTest(SchedInterface):
         
         self.log.trace('Starting.')
         self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(
-                                queue=self.apfqueue.wmsqueue, 
-                                maxtime = self.apfqueue.wmsstatusmaxtime
-                                )
+                                queue=self.apfqueue.wmsqueue)
         self.siteinfo = self.apfqueue.wmsstatus_plugin.getSiteInfo(
-                                site=self.apfqueue.wmsqueue,
-                                maxtime = self.apfqueue.wmsstatusmaxtime
-                                )
+                                site=self.apfqueue.wmsqueue)
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(
-                                queue=self.apfqueue.apfqname,
-                                maxtime = self.apfqueue.batchstatusmaxtime
-                                )
+                                queue=self.apfqueue.apfqname)
 
         if self.wmsqueueinfo is None or self.batchinfo is None or self.siteinfo is None:
             self.log.warning("wmsinfo, batchinfo, or siteinfo is None!")

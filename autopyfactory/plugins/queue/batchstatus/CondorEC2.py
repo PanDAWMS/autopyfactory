@@ -63,6 +63,7 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
         try:
             self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
             self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
+            self.maxage = apfqueue.fcl.generic_get('Factory', 'batchstatus.condor.maxtime', default_value=360)
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
             self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs') 
 

@@ -23,8 +23,7 @@ class MaxPending(SchedInterface):
 
     def calcSubmitNum(self, n=0):
         self.log.trace('Starting with n=%s' %n)
-        #batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
-        queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
+        queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname)
         out = n
         msg = None
     

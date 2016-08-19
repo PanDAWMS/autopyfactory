@@ -58,9 +58,11 @@ class Condor(threading.Thread, BatchStatusInterface):
         
         try:
             self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
-            self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
+            self.factoryid = apfqueue.fcl.get('Factory', 'factoryId')
+            self.maxage = apfqueue.fcl.generic_get('Factory', 'batchstatus.condor.maxage', default_value=360) 
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
             self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs') 
+            
 
         except AttributeError:
             self.condoruser = 'apf'
@@ -109,22 +111,21 @@ class Condor(threading.Thread, BatchStatusInterface):
 
 
 
-    def getInfo(self, queue=None, maxtime=0):
+    def getInfo(self, queue=None):
         '''
         Returns a  object populated by the analysis 
         over the output of a condor_q command
 
-        Optionally, a maxtime parameter can be passed.
-        In that case, if the info recorded is older than that maxtime,
+        If the info recorded is older than that maxage,
         None is returned, as we understand that info is too old and 
         not reliable anymore.
         '''           
-        self.log.trace('Starting with maxtime=%s' % maxtime)
+        self.log.trace('Starting with self.maxage=%s' % self.maxage)
         
         if self.currentinfo is None:
             self.log.trace('Not initialized yet. Returning None.')
             return None
-        elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
+        elif self.maxage > 0 and (int(time.time()) - self.currentinfo.lasttime) > self.maxage:
             self.log.trace('Info too old. Leaving and returning None.')
             return None
         else:

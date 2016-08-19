@@ -60,9 +60,7 @@ class Panda(threading.Thread, WMSStatusInterface):
             self.apfqueue = apfqueue
             self.log = logging.getLogger("main.pandawmsstatusplugin[%s]" %apfqueue.apfqname)
             self.log.trace("WMSStatusPlugin: Initializing object...")
-            self.wmsstatusmaxtime = 0
-            if self.apfqueue.fcl.has_option('Factory', 'wmsstatus.maxtime'):
-                self.wmsstatusmaxtime = self.fcl.get('Factory', 'wmsstatus.maxtime')
+            self.maxage = self.apfqueue.fcl.generic_get('Factory', 'wmsstatus.panda.maxage', default_value=360)
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.panda.sleep')
 
             # current WMSStatusIfno object
@@ -87,21 +85,20 @@ class Panda(threading.Thread, WMSStatusInterface):
         Client.useWebCache()
 
 
-    def getInfo(self, queue=None, maxtime=0):
+    def getInfo(self, queue=None):
         '''
         Returns current WMSStatusInfo object
-
-        Optionally, and maxtime parameter can be passed.
-        In that case, if the info recorded is older than that maxtime,
+    
+        If the info recorded is older than that maxage,
         None is returned, 
         
         '''
-        self.log.trace('get: Starting with inputs maxtime=%s' % maxtime)
+        self.log.trace('get: Starting with inputs maxtime=%s' % self.maxage)
         if self.currentjobinfo is None:
             self.log.trace('Info not initialized. Return None.')
             return None    
-        elif maxtime > 0 and (int(time.time()) - self.currentjobinfo.lasttime) > maxtime:
-            self.log.trace('Info is too old. Maxtime = %d. Returning None' % maxtime)
+        elif self.maxage > 0 and (int(time.time()) - self.currentjobinfo.lasttime) > self.maxage:
+            self.log.trace('Info is too old. Maxage = %d. Returning None' % self.maxage)
             return None    
         else:
             if queue:
@@ -111,7 +108,7 @@ class Panda(threading.Thread, WMSStatusInterface):
                 return self.currentjobinfo
 
 
-    def getCloudInfo(self, cloud=None, maxtime=0):
+    def getCloudInfo(self, cloud=None):
         '''
         selects the entry corresponding to cloud
         from the info retrieved from the PanDA server (as a dict)
@@ -121,8 +118,8 @@ class Panda(threading.Thread, WMSStatusInterface):
         if self.currentcloudinfo is None:
             self.log.trace('Info not initialized. Return None.')
             return None    
-        elif maxtime > 0 and (int(time.time()) - self.currentcloudinfo.lasttime) > maxtime:
-            self.log.trace('Info is too old. Maxtime = %d. Returning None' % maxtime)
+        elif self.maxage > 0 and (int(time.time()) - self.currentcloudinfo.lasttime) > self.maxage:
+            self.log.trace('Info is too old. Maxage = %d. Returning None' % self.maxage)
             return None    
         else:
             if cloud:
@@ -131,7 +128,7 @@ class Panda(threading.Thread, WMSStatusInterface):
                 self.log.trace('getInfo: Leaving. Returning info with %d items' %len(self.currentcloudinfo))
                 return self.currentcloudinfo
             
-    def getSiteInfo(self, site=None, maxtime=0):
+    def getSiteInfo(self, site=None):
         '''
         selects the entry corresponding to sites
         from the info retrieved from the PanDA server (as a dict)
@@ -140,8 +137,8 @@ class Panda(threading.Thread, WMSStatusInterface):
         if self.currentsiteinfo is None:
             self.log.trace('Info not initialized. Return None.')
             return None    
-        elif maxtime > 0 and (int(time.time()) - self.currentsiteinfo.lasttime) > maxtime:
-            self.log.trace('Info is too old. Maxtime = %d. Returning None' % maxtime)
+        elif self.maxage > 0 and (int(time.time()) - self.currentsiteinfo.lasttime) > self.maxage:
+            self.log.trace('Info is too old. Maxage = %d. Returning None' % self.maxage)
             return None    
         else:
             if site:

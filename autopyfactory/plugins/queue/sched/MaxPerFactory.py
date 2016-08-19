@@ -29,9 +29,7 @@ class MaxPerFactory(SchedInterface):
         """
 
         self.log.trace('Starting.')
-
-        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
-
+        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo()
         self.total_pilots = 0 
         for batchqueue in self.batchinfo.keys():  
             self.total_pilots += self.batchinfo[batchqueue].running

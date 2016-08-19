@@ -39,7 +39,7 @@ class KeepNRunning(SchedInterface):
         """
         self.log.trace('Starting.')
 
-        self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
+        self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname)
        
         if not self.queueinfo:
             self.log.warning("self.queueinfo is None!")
