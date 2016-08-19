@@ -174,7 +174,8 @@ class CondorBase(BatchSubmitInterface):
 
        
         self.JSD.add("executable", "%s" % self.executable)
-        self.JSD.add('arguments', '%s' % self.arguments)
+        if self.arguments:
+            self.JSD.add('arguments', '%s' % self.arguments)
 
         # -- fixed stuffs -- 
         self.JSD.add("output", "$(Dir)/$(Cluster).$(Process).out")
