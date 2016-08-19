@@ -156,10 +156,10 @@ class BoscoCLI(object):
         self.log.trace('%s seconds to issue command' %delta)
         
         # remove bosco files to ensure account separation...
-        for i in [self.boscopubkeyfile, self.boscoprivkeyfile, self.boscopassfile ]:
+        for fn in [self.boscopubkeyfile, self.boscoprivkeyfile, self.boscopassfile ]:
             try:
-                self.log.trace("removing %s" % i) 
-                os.remove(item)
+                self.log.trace("removing %s" % fn) 
+                os.remove(fn)
             except OSError:
                 # file might not exist
                 pass
