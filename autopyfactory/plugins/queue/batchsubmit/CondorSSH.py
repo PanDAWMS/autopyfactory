@@ -90,7 +90,7 @@ class CondorSSH(CondorBase):
         
         '''
         self.log.debug("Entering bosco submit.")    
-        joblist = super(CondorBosco, self).submit(num)
+        joblist = super(CondorSSH, self).submit(num)
        
         self.log.debug("Exiting bosco submit.")
 
@@ -114,18 +114,12 @@ class CondorSSH(CondorBase):
         
         self.log.debug('CondorBosco.addJSD: Starting.')
         self.JSD.add("universe", "grid")
-        self.JSD.add('grid_resource', 'batch %s %s:%s --rgahp-key %s --rgahp-pass %s' % (self.batch, 
+        self.JSD.add('grid_resource', 'batch %s %s --rgahp-key %s ' % (self.batch, 
                                                           self.host, 
-                                                          self.port,
+                                                          #self.port,
                                                           self.privkeyfile, 
-                                                          self.passfile))
+                                                          #self.passfile
+                                                          ) )
         self.JSD.add('+TransferOutput', '""')
-        
-        
         super(CondorSSH, self)._addJSD()
         self.log.debug('CondorBosco.addJSD: Leaving.')
-
-
-
-
-
