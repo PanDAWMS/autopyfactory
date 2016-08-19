@@ -129,15 +129,16 @@ class BoscoCLI(object):
                 
         return self.clusters
 
-    def _clusteradd(self, host, port, batch, pubkeyfile, privkeyfile, passfile):
+    def _clusteradd(self, host, port, batch, pubkeyfile, privkeyfile, passfile=None):
         self.log.info("Setting up cluster %s/%s " % (host, batch))                 
         
         self.log.trace("ensuring pubkeyfile") 
         shutil.copy(pubkeyfile, self.boscopubkeyfile)
         self.log.trace("ensuring privkeyfile") 
         shutil.copy(privkeyfile, self.boscoprivkeyfile)        
-        self.log.trace("ensuring passfile")        
-        shutil.copy(passfile, self.boscopassfile )
+        if passfile is not None:
+            self.log.trace("ensuring passfile")        
+            shutil.copy(passfile, self.boscopassfile )
         
         self._start_agent(pubkeyfile, privkeyfile, passfile)        
         
@@ -148,13 +149,25 @@ class BoscoCLI(object):
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out = None
         (out, err) = p.communicate()        
-        self.log.debug('bosco_cluster -a output is %s' % out)
+        self.log.debug('bosco_cluster -a output was %s' % out)
         delta = time.time() - before
-        
         self.log.trace('It took %s seconds to issue the command' %delta)
         self.log.trace('%s seconds to issue command' %delta)
         
-    def _start_agent(self, pubkeyfile, privkeyfile, passfile):
+        # remove bosco files to ensure account separation...
+        for i in [self.boscopubkeyfile, self.boscoprivkeyfile, self.boscopassfile ]:
+            try:
+                self.log.trace("removing %s" % i) 
+                os.remove(item)
+            except OSError:
+                # file might not exist
+                pass
+            except TypeError:
+                # passfile might be None
+                pass
+            
+                
+    def _start_agent(self, pubkeyfile, privkeyfile, passfile=None):
         self.log.trace('cmd is ssh-agent')
         cmd = 'ssh-agent'
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -164,8 +177,8 @@ class BoscoCLI(object):
         for line in lines:
             self.log.trace('line is %s' % line)
             exp = line.split(';')
-            if line.contains('='):
-                (k,v) = exp[0].split('=')[0]
+            if '=' in line:
+                (k,v) = exp[0].split('=')
                 if k == 'SSH_AUTH_SOCK':
                     os.environ['SSH_AUTH_SOCK'] = v
                     self.log.trace('setting SSH_AUTH_SOCK= %s' % v )
@@ -174,9 +187,10 @@ class BoscoCLI(object):
                     self.log.trace('setting SSH_AGENT_PID= %s' % v )
                 else:
                     pass
-        self.log.debug('SSH agent started...')
-        
-        cmd = '/usr/bin/bosco_ssh_start --key %s --pass %s ' % (privkeyfile, passfile) 
+        self.log.debug('SSH agent started, environment set....')
+         
+        #cmd = '/usr/bin/bosco_ssh_start --key %s --pass %s ' % (privkeyfile, passfile) 
+        cmd = '/usr/bin/bosco_ssh_start --key %s --nopass' % privkeyfile
         self.log.trace('cmd is %s' % cmd)
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out = None
@@ -196,14 +210,18 @@ class BoscoCLI(object):
 
              
     
-    def _checktarget(self, host, port, batch, pubkeyfile, privkeyfile, passfile ):
+    def _checktarget(self, host, port, batch, pubkeyfile, privkeyfile, passfile=None ):
         '''
         Ensure bosco_cluster has been run.         
         '''
         #Ensure paths
         pubkeyfile = os.path.expanduser(pubkeyfile)
         privkeyfile = os.path.expanduser(privkeyfile)
-        passfile = os.path.expanduser(passfile)
+        try:
+            passfile = os.path.expanduser(passfile)
+        except AttributeError:
+            pass
+        
         self.log.debug("Checking to see if remote bosco is installed and up to date...")
         host = host.lower()
         batch = batch.lower()
