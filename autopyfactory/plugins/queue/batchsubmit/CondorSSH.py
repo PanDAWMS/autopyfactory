@@ -115,7 +115,8 @@ class CondorSSH(CondorBase):
         
         self.log.debug('CondorBosco.addJSD: Starting.')
         self.JSD.add("universe", "grid")
-        self.JSD.add('grid_resource', 'batch %s %s --rgahp-key %s ' % (self.batch, 
+        self.JSD.add('grid_resource', 'batch %s %s@%s --rgahp-key %s ' % (self.batch, 
+                                                          self.user,
                                                           self.host, 
                                                           #self.port,
                                                           self.privkeyfile, 
