@@ -41,6 +41,7 @@ class CondorLocal(CondorBase):
         if self.proxylist:
             self.x509userproxy = self.factory.proxymanager.getProxyPath(self.proxylist)
         else:
+            self.x509userproxy = None
             self.log.debug("No proxy profile defined.")       
        
     def _addJSD(self):
