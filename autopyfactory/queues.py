@@ -252,7 +252,7 @@ class APFQueue(threading.Thread):
             self.wmsqueue = self.qcl.generic_get(apfqname, 'wmsqueue')
             #self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue')
             #self.cloud = self.qcl.generic_get(apfqname, 'cloud')
-            self.cycles = self.fcl.generic_get("Factory", 'cycles' )
+            self.cycles = self.fcl.generic_get("Factory", 'cycles' ,'getint')
             self.sleep = self.qcl.generic_get(apfqname, 'apfqueue.sleep', 'getint')
             self.cyclesrun = 0
             
