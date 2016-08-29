@@ -23,6 +23,7 @@ class CondorLocal(CondorBase):
         newqcl = qcl.clone().filterkeys('batchsubmit.condorlocal', 'batchsubmit.condorbase')           
         super(CondorLocal, self).__init__(apfqueue, config=newqcl) 
         
+        self.x509userproxy = None
         plist = qcl.generic_get(self.apfqname, 'batchsubmit.condorlocal.proxy')
         # This is alist of proxy profile names specified in proxy.conf
         # We will only attempt to derive proxy file path during submission
@@ -41,7 +42,6 @@ class CondorLocal(CondorBase):
         if self.proxylist:
             self.x509userproxy = self.factory.proxymanager.getProxyPath(self.proxylist)
         else:
-            self.x509userproxy = None
             self.log.debug("No proxy profile defined.")       
        
     def _addJSD(self):
