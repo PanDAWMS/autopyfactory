@@ -453,8 +453,15 @@ class Agis(ConfigInterface):
             self._updateInfo()
 
         td = datetime.datetime.now() - self.lastupdate
-        if td.total_seconds()  > self.sleep:
+        #
+        totalseconds = td.seconds + ( td.days * 24 * 3600)
+        if totalseconds > self.sleep:
             self._updateInfo()
+        
+        # total_seconds() introduced in Python 2.7
+        # Should be used when possible. 
+        #if td.total_seconds()  > self.sleep:
+        #    self._updateInfo()
         
         # Don't mess with the built-in default filters. 
         mypqfilter = copy.deepcopy(PQFILTERREQMAP)
