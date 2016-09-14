@@ -23,6 +23,7 @@ class CondorLocal(CondorBase):
         newqcl = qcl.clone().filterkeys('batchsubmit.condorlocal', 'batchsubmit.condorbase')           
         super(CondorLocal, self).__init__(apfqueue, config=newqcl) 
         
+        self.x509userproxy = None
         plist = qcl.generic_get(self.apfqname, 'batchsubmit.condorlocal.proxy')
         # This is alist of proxy profile names specified in proxy.conf
         # We will only attempt to derive proxy file path during submission

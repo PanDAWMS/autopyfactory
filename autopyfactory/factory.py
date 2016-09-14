@@ -654,6 +654,18 @@ class Factory(object):
                 mainsleep = int(self.fcl.get('Factory', 'factory.sleep'))
                 time.sleep(mainsleep)
                 self.log.trace('Checking for interrupt.')
+
+
+                ### # check if queues are alive
+                ### to_abort = self.fcl.getbool('Factory', 'abort_if_no_queues')
+                ### if to_abort:
+                ###     for q in self.apfqueuesmanager.queues.values():
+                ###         if q.isAlive():
+                ###             break
+                ###     else:
+                ###         self.shutdown()
+                                
+
                         
         except (KeyboardInterrupt): 
             # FIXME
