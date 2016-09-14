@@ -459,7 +459,8 @@ class Agis(ConfigInterface):
             self._updateInfo()
         
         # total_seconds() introduced in Python 2.7
-        # Should be used when possible. 
+        # Should be used when possible.
+        # Change back when 2.6 not needed.  
         #if td.total_seconds()  > self.sleep:
         #    self._updateInfo()
         
