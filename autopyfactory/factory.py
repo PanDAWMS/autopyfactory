@@ -452,6 +452,8 @@ class Factory(object):
         self.emaildict = {}
         self.hostname = socket.gethostname()
         self.username = pwd.getpwuid(os.getuid()).pw_name   
+        # to shutdown the factory when there are no active queues
+        self.abort_no_queues = self.fcl.generic_get('Factory', 'abort_no_queues', get_function='getboolean', default_value=False)
 
         # the the queues config loader object, to be filled by a Config plugin
         self.qcl = Config()
@@ -655,15 +657,13 @@ class Factory(object):
                 time.sleep(mainsleep)
                 self.log.trace('Checking for interrupt.')
 
-
-                ### # check if queues are alive
-                ### to_abort = self.fcl.getbool('Factory', 'abort_if_no_queues')
-                ### if to_abort:
-                ###     for q in self.apfqueuesmanager.queues.values():
-                ###         if q.isAlive():
-                ###             break
-                ###     else:
-                ###         self.shutdown()
+                # check if queues are alive
+                if self.abort_no_queues:
+                    for q in self.apfqueuesmanager.queues.values():
+                        if q.isAlive():
+                            break
+                    else:
+                        self.shutdown()
                                 
 
                         
