@@ -390,6 +390,15 @@ class APFQueue(threading.Thread):
         self.log.info('Up %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
         self.log.debug("__reporttime: Leaving")
 
+
+    def wmsstatus(self):
+        '''
+        method to make this APFQueue to 
+        be a valid WMS Status plugin for another APFQueue
+        '''
+        return 0 # for now...
+
+
     # End of run-related methods
 
     def refresh(self):
