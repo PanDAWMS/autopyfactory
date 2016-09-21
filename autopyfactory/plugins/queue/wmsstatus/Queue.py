@@ -44,7 +44,7 @@ class Queue(threading.Thread, WMSStatusInterface):
             self.num = None
 
             self.wmsqname = self.apfqueue.qcl.get(apfqueue.apfqname, 'wmsstatus.queue.qname')
-            self.wmsqueue = self.apfqueue.apfqueuesmanager.queues[self.wmsqname]
+            self.wmsqueue = self.apfqueue.factory.apfqueuesmanager.queues[self.wmsqname]
 
             threading.Thread.__init__(self) # init the thread
             self.stopevent = threading.Event()
