@@ -114,7 +114,7 @@ class AuthManager(object):
                 subject = "Proxy problem on %s" % self.factory.factoryid
                 messagestring = "Unable to get valid proxy from configured profiles: %s" % profilelist
                 self.factory.sendAdminEmail(subject, messagestring)
-                raise InvalidProxyFailure("Problem getting proxy for profile %s" % profilelist)
+                raise InvalidAuthFailure("Problem getting proxy for profile %s" % profilelist)
             
             return pp
 
