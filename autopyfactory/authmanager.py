@@ -68,6 +68,7 @@ class AuthManager(object):
                             
             else:
                 self.log.warn("Unrecognized auth plugin %s" % pclass )
+        self.log.trace("Completed creation of %d auth handlers." % len(self.handlers))
         
     def startHandlers(self):
         for ah in self.handlers:

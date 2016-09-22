@@ -32,6 +32,7 @@ class X509Handler(threading.Thread):
         threading.Thread.__init__(self) # init the thread
         self.log = logging.getLogger('main.x509handler')
         self.name = section
+        self.log.debug("[%s] Starting X509Handler init." % self.name)
         self.manager = manager
         self.owner = None
         self.group = None
@@ -92,8 +93,7 @@ class X509Handler(threading.Thread):
                 self.baseproxy = None
                 self.usercert = os.path.expanduser(config.get(section, 'x509.usercert'))
                 self.userkey = os.path.expanduser(config.get(section, 'x509.userkey'))
-
-            
+  
             # Handle booleans
             renewstr = config.get(section, 'x509.renew').lower().strip()
             if renewstr == 'true':
@@ -445,9 +445,11 @@ class X509Handler(threading.Thread):
         '''
         Main thread loop. 
         '''
+        self.log.debug("[%s] Starting X509Handler thread." % self.name)
         # Delay running to allow for other profiles to complete
         self.log.trace("Delaying %d seconds..." % self.initdelay)
         time.sleep(self.initdelay)
+        
         
         # Always run the first time!
         lastrun = int(time.time()) - 10000000

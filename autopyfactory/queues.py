@@ -250,14 +250,10 @@ class APFQueue(threading.Thread):
    
         try: 
             self.wmsqueue = self.qcl.generic_get(apfqname, 'wmsqueue')
-            #self.batchqueue = self.qcl.generic_get(apfqname, 'batchqueue')
-            #self.cloud = self.qcl.generic_get(apfqname, 'cloud')
             self.cycles = self.fcl.generic_get("Factory", 'cycles' ,'getint')
             self.sleep = self.qcl.generic_get(apfqname, 'apfqueue.sleep', 'getint')
             self.cyclesrun = 0
-            
-            #self.batchstatusmaxtime = self.fcl.generic_get('Factory', 'batchstatus.maxtime', default_value=0)
-            #self.wmsstatusmaxtime = self.fcl.generic_get('Factory', 'wmsstatus.maxtime', default_value=0)
+           
         except Exception, ex:
             self.log.exception('APFQueue: exception captured while reading configuration variables to create the object.')
             raise ex
