@@ -107,7 +107,7 @@ class AuthManager(object):
                     
                 if ph:  
                     self.log.trace("Found handler %s. Getting proxypath..." % ph.name)
-                    pp = ph._getProxyPath()
+                    pp = ph.getProxyPath()
                     self.log.trace("Proxypath is %s" % pp)
                     if pp:
                         break
