@@ -765,7 +765,7 @@ class Factory(object):
                 self.emaildict[key] = now
             else:
                 self.log.debug("Email: %s < %s" % (tdiff, mintd))
-                self.log.info("Not sending email: %s" % msg.as_string())
+                self.log.info("Not sending email: %s" % messagestring)
         else:
             self.log.debug("Email: Never send before.")
             # Send message and insert/update to dict
