@@ -47,7 +47,7 @@ class CondorGrid(CondorBase):
     
         self.log.trace("Determining proxy, if necessary. Profile: %s" % self.proxylist)
         if self.proxylist:
-            self.x509userproxy = self.factory.proxymanager.getProxyPath(self.proxylist)
+            self.x509userproxy = self.factory.authmanager.getProxyPath(self.proxylist)
         else:
             self.log.trace("No proxy profile defined.")
 
