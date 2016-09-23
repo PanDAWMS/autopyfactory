@@ -153,8 +153,8 @@ class AgisCEQueue(object):
         self.ce_name = cedict['ce_name']                         # AGLT2-CE-gate04.aglt2.org
         self.ce_endpoint = cedict['ce_endpoint']                 # gate04.aglt2.org:2119
         self.ce_host = self.ce_endpoint.split(":")[0]
-        self.ce_state = cedict['ce_state'].lower()
-        self.ce_status = cedict['ce_status'].lower()
+        self.ce_state = cedict['ce_state'].lower()               # 'active'
+        self.ce_status = cedict['ce_status'].lower()             # 
         self.ce_queue_status = cedict['ce_queue_status'].lower()
         self.ce_flavour = cedict['ce_flavour'].lower()           # GLOBUS
         self.ce_version = cedict['ce_version'].lower()           # GT5
@@ -519,11 +519,13 @@ class Agis(ConfigInterface):
         for ob in objlist:
             keep = True
             for attrstr in reqdict.keys():
-                self.log.trace("Confirming %s.%s for value %s" % (type(ob), 
+                self.log.trace("Checking object %s attribute %s for values in %s" % (type(ob), 
                                                                     attrstr, 
                                                                     reqdict[attrstr]))
+                value = getattr(ob, attrstr)
+                self.log.trace("%s: Checking value %s for match..." % (ob, value))
                 if getattr(ob, attrstr) not in reqdict[attrstr]:
-                    self.log.trace("%s: %s does not have value %s. Removing." % (ob, 
+                    self.log.trace("%s: %s does not contain any entries from %s. Setting to remove." % (ob, 
                                                                                attrstr, 
                                                                                reqdict[attrstr]))
                     keep = False
