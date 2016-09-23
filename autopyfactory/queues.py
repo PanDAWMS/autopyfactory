@@ -250,7 +250,15 @@ class APFQueue(threading.Thread):
    
         try: 
             self.wmsqueue = self.qcl.generic_get(apfqname, 'wmsqueue')
-            self.cycles = self.fcl.generic_get("Factory", 'cycles' ,'getint')
+
+            #### BEGIN TEST ###
+            #self.cycles = self.fcl.generic_get("Factory", 'cycles' ,'getint')
+            cycles = self.fcl.generic_get("Factory", 'cycles')
+            if cycles != None:
+                cycles = int(cycles)
+            self.cycles = cycles
+            #### END TEST ###
+
             self.sleep = self.qcl.generic_get(apfqname, 'apfqueue.sleep', 'getint')
             self.cyclesrun = 0
            
