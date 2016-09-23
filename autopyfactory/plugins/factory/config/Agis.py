@@ -318,8 +318,8 @@ class AgisCEQueue(object):
                 self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+maxMemory', str(self.parent.maxmemory) )
 
             self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+xcount', str(self.parent.corecount) )
-            self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+voactivity', self.parent.type )
-            self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+remote_queue', self.ce_queue_name)
+            self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+voactivity', '"%s"' % self.parent.type )
+            self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+remote_queue', '"%s"' % self.ce_queue_name)
 
         # Globus
         if self.ce_flavour in ['osg-ce','globus']:
@@ -630,11 +630,11 @@ if __name__ == '__main__':
         -d --debug                  Debug messages
         -v --verbose                Verbose information
         -t --trace                  Trace level info
-        -c --config                 Config file [~/etc/autopyfactory.conf]
+        -c --config                 Config file [/etc/autopyfactory/autopyfactory.conf]
         -o --outfile                Output file ['/tmp/agis-apf-config.conf']
         -j --jobsperpilot           Scale factor. [1.5]
         -n --numfactories           Multi-factory scale factor. 
-        -D --defaults               Defaults file [~/etc/agisdefaults.conf
+        -D --defaults               Defaults file [None]
         -V --vo                     A single virtual organization [<all>]
         -C --cloud                  A single cloud [<all>]
         -A --activity               A single activity (PQ 'type') [<all>]
