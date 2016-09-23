@@ -529,6 +529,10 @@ class Agis(ConfigInterface):
                                                                                attrstr, 
                                                                                reqdict[attrstr]))
                     keep = False
+                else:
+                    self.log.trace("%s: %s did contain a value from %s. Retaining..."  % (ob, 
+                                                                               attrstr, 
+                                                                               reqdict[attrstr]))                                    
             if keep:
                 kept += 1
                 newobjlist.append(ob)
