@@ -47,6 +47,16 @@ class BatchStatusInterface(object):
         raise NotImplementedError
     
 
+class BatchHistoryInterface(object):
+    def getInfo(self, queue=None, maxtime=0):
+        raise NotImplementedError
+    def getXYZ(self, queue=None, maxtime=0):
+        raise NotImplementedError
+
+
+
+
+
 class WMSStatusInterface(object):
     '''
     -----------------------------------------------------------------------
