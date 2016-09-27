@@ -296,10 +296,10 @@ class AgisCEQueue(object):
         self.cp.set( sect, 'wmsqueue', self.parent.panda_resource )
         self.cp.set( sect, 'batchsubmitplugin', self.submitplugin )
         self.cp.set( sect, 'batchsubmit.%s.gridresource' % self.submitpluginstr , self.gridresource )
-        if self.parent.type == 'analysis':
-            self.cp.set( sect, 'executable.arguments' , '%(executable.defaultarguments)s -u user'  )
-        else:
-            self.cp.set( sect, 'executable.arguments' , '%(executable.defaultarguments)s -u managed'  )
+        #if self.parent.type == 'analysis':
+        #    self.cp.set( sect, 'executable.arguments' , '%(executable.defaultarguments)s -u user'  )
+        #else:
+        #    self.cp.set( sect, 'executable.arguments' , '%(executable.defaultarguments)s -u managed'  )
         
         try:       
             self.apf_scale_factor = ((( 1.0 / float(self.parent.parent.numfactories) ) / len(self.parent.ce_queues) ) / float(self.parent.parent.jobsperpilot) ) 
