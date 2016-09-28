@@ -213,7 +213,10 @@ class AgisCEQueue(object):
                                                                        self.ce_queue_name)
         self.submitplugin = 'CondorCREAM'
         self.submitpluginstr = 'condorcream'
-        self.creamenv = 'RUCIO_ACCOUNT=pilot'
+        if self.parent.pilot_version not in ['current']:
+            self.creamenv = 'RUCIO_ACCOUNT=pilot PILOT_HTTP_SOURCES=%s' % self.parent.pilot_version
+        else:
+            self.creamenv = 'RUCIO_ACCOUNT=pilot'
 
         # glue 1.3 uses minutes and this / operator uses floor value
         # https://wiki.italiangrid.it/twiki/bin/view/CREAM/UserGuideEMI2#Forward_of_requirements_to_the_b       
@@ -221,20 +224,23 @@ class AgisCEQueue(object):
         self.maxmemory = self.parent.maxmemory
         self.cputime = self.parent.corecount * self.maxtime
 
-        #self.maxtime = self.parent.maxtime / 60
-        #self.maxrss
-        #self.maxswap
-        #self.maxvirtual
+        # maxrss and maxtime are expected to be set in AGIS for all queues
+        if self.parent.corecount:
+            self.creamattr = 'CpuNumber=%d;WholeNodes=false;SMPGranularity=%d;' % (self.parent.corecount,
+                                                                                   self.parent.corecount)
+        if self.parent.corecount:
+            cputime = self.parent.corecount * self.maxtime
+        else:
+            cputime = self.maxtime
 
-        self.creamattr = 'CpuNumber=%d;WholeNodes=false;SMPGranularity=%d;' % (self.parent.corecount, 
-                                                                               self.parent.corecount)
-        if self.maxmemory and self.maxtime:
-            self.creamattr += 'CERequirements = "other.GlueCEPolicyMaxCPUTime == %d && other.GlueCEPolicyMaxWallClockTime == %d" ' % (self.cputime,                                                                                                                     self.maxtime)
-        elif self.maxmemory:
-            self.creamattr += 'CERequirements = "other.GlueHostMainMemoryRAMSize == %d";' % self.maxmemory
-        elif self.maxtime:
-            self.creamattr += 'CERequirements = "other.GlueHostPolicyMaxWallClockTime == %d";' % self.maxtime
-
+        self.creamattr += 'CERequirements = "other.GlueCEPolicyMaxCPUTime == %d ' % cputime
+        self.creamattr += '&& other.GlueCEPolicyMaxWallClockTime == %d ' % self.maxtime
+        self.creamattr += '&& other.GlueHostMainMemoryRAMSize == %d' % self.parent.maxrss
+        if self.parent.maxswap:
+            maxvirtual = self.parent.maxrss + self.parent.maxswap
+            self.creamattr += ' && other.GlueHostMainMemoryVirtualSize == %d";' % maxvirtual
+        else:
+            self.creamattr += '";'
 
     def _initarc(self):
         self.gridresource = self.ce_host
@@ -252,7 +258,6 @@ class AgisCEQueue(object):
             self.rsladd += '(memory = %d)' % self.maxmemory
         if self.maxtime:
             self.rsladd += '(walltime = %d)' % self.maxtime    
-            
             
         #if maxrss and corecount:
         #    percore = maxrss/corecount
