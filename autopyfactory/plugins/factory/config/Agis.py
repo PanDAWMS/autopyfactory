@@ -189,10 +189,10 @@ class AgisCEQueue(object):
             self.log.debug("Ignoring old CE type 'LCG-CE'")
                     
         else:
-            self.log.warning("Unknown ce_flavour: %s" % self.ce_flavour)
+            self.log.warning("CEQueue %s has unknown ce_flavour: %s" % (self.ce_name, self.ce_flavour))
 
     def _initcondorce(self):
-        self.gridresource = self.ce_host
+        self.gridresource = self.ce_endpoint.split(':')[0]
         self.submitplugin = 'CondorOSGCE'
         self.submitpluginstr = 'condorosgce'
 
@@ -243,39 +243,32 @@ class AgisCEQueue(object):
             self.creamattr += '";'
 
     def _initarc(self):
-        self.gridresource = self.ce_host
-        self.submitplugin = 'CondorOSGCE'
-        self.submitpluginstr = 'condorosgce'
+        # ignore :port part
+        self.gridresource = self.ce_endpoint.split(':')[0]
+        self.submitplugin = 'CondorNordugrid'
+        self.submitpluginstr = 'condornordugrid'
+
         self.maxmemory = self.parent.maxmemory
-        self.maxtime = self.ce_queue_maxwctime
+####        self.maxtime = self.ce_queue_maxwctime
+        self.maxtime = self.parent.maxtime
         
         self.nordugridrsl = '(jobname = arc_pilot)'
         self.rsladd = '(runtimeenvironment = APPS/HEP/ATLAS-SITE-LCG)(runtimeenvironment = ENV/PROXY)'
-        self.rsladd += '(jobname = arc_pilot)'
         self.rsladd += '(count = %d)' % self.parent.corecount
         self.rsladd += '(countpernode = %d)' % self.parent.corecount
-        if self.maxmemory:
-            self.rsladd += '(memory = %d)' % self.maxmemory
+        if self.parent.maxrss:
+            percore = self.parent.maxrss/self.parent.corecount
+            self.rsladd += '(memory = %d)' % percore
+        else:
+            percore = self.parent.maxmemory/self.parent.corecount
+            self.rsladd += '(memory = %d)' % percore
+
         if self.maxtime:
-            self.rsladd += '(walltime = %d)' % self.maxtime    
+            self.rsladd += '(walltime = %d)' % self.maxtime
             
-        #if maxrss and corecount:
-        #    percore = maxrss/corecount
-        #    rsladd += '(memory = %d)' % percore
-        #elif maxrss:
-        #    rsladd += '(memory = %d)' % maxrss
-        #elif maxmemory and corecount:
-        #    percore = maxmemory/corecount
-        #    rsladd += '(memory = %d)' % percore
-        #elif maxmemory:
-        #    rsladd += '(memory = %d)' % maxmemory
-        #if maxtime:
-        #    rsladd += '(walltime = %d)' % maxtime
-        #if maxtime and corecount:
-        #    totaltime = maxtime*corecount
-        #    rsladd += '(cputime = %d)' % totaltime
-
-
+        if self.maxtime:
+            self.rsladd += '(cputime = %d)' % (self.maxtime * self.parent.corecount)    
+            
     def getAPFConfigString(self):
         '''
         Returns string of valid APF configuration for this queue-ce entry.
@@ -338,6 +331,17 @@ class AgisCEQueue(object):
                 self.cp.set(sect, 'batchsubmit.condorcream.condor_attributes' , '%(req)s,%(hold)s,%(remove)s,cream_attributes = %(creamattr)s,notification=Never' )      
             else:
                 self.cp.set(sect, 'batchsubmit.condorcream.condor_attributes' , '%(req)s,%(hold)s,%(remove)s,notification=Never' )
+
+        # Arc-CE
+        if self.ce_flavour == 'arc-ce':
+            pr = 'periodic_remove = (JobStatus == 2 && (CurrentTime - EnteredCurrentStatus) > 604800)'
+            pr = '%(req)s,%(hold)s,%(remove)s,notification=Never'
+            self.cp.set( sect, 'batchsubmit.condornordugrid.condor_attributes', pr )
+            self.cp.set( sect, 'batchsubmit.condornordugrid.condor_attributes.+remote_queue', self.ce_queue_name )
+            self.cp.set( sect, 'batchsubmit.condornordugrid.nordugridrsl', self.nordugridrsl )
+            self.cp.set( sect, 'nordugridrsl.nordugridrsladd', self.rsladd )
+            self.cp.set( sect, 'nordugridrsl.queue', self.ce_queue_name )
+            self.cp.set( sect, 'nordugridrsl.addenv.RUCIO_ACCOUNT', 'pilot' )
 
         return self.cp
 
