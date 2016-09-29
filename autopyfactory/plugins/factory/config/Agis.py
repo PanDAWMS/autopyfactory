@@ -768,6 +768,10 @@ if __name__ == '__main__':
         fconfig.set('Factory', 'config.agis.activities', activity)
     if defaultsfile is not None:
         fconfig.set('Factory', 'config.agis.defaultsfile', defaultsfile)
+    if jobsperpilot is not None:
+        fconfig.set('Factory', 'config.agis.jobsperpilot', jobsperpilot)
+    if numfactories is not None:
+        fconfig.set('Factory', 'config.agis.numfactories', numfactories)
  
     acp = Agis(fconfig)
     log.debug("Agis object created")
