@@ -793,27 +793,20 @@ def _aggregateinfolib(input, queueskey='match_apf_queue'):
     
     log = logging.getLogger('main.condor')
 
-    emptydict = {'0' : 0,
-                 '1' : 0,
-                 '2' : 0,
-                 '3' : 0,
-                 '4' : 0,
-                 '5' : 0,
-                 '6' : 0}
-
     queues = {}
     for job in input:
-       if not queueskey in job.keys():
-           # This job is not managed by APF. Ignore...
-           continue
-       apfqname = job[queueskey]
-       if apfqname not in queues.keys():
-           queues[apfqname] = {}
-           queues[apfqname]['jobstatus'] = copy.copy(emptydict)
+        if not queueskey in job.keys():
+            # This job is not managed by APF. Ignore...
+            continue
+        apfqname = job[queueskey]
+        if apfqname not in queues.keys():
+            queues[apfqname] = {}
+            queues[apfqname]['jobstatus'] = {}
 
-       jobstatus = str(job['jobstatus'])
-
-       queues[apfqname]['jobstatus'][jobstatus] += 1
+        jobstatus = str(job['jobstatus'])
+        if jobstatus not in queues[apfqname]['jobstatus'].keys():
+            queues[apfqname]['jobstatus'][jobstatus] = 0
+        queues[apfqname]['jobstatus'][jobstatus] += 1
     
     log.trace(queues)
     return queues
