@@ -316,7 +316,7 @@ def querycondor(queryargs=None, queueskey="match_apf_queue"):
     log.trace('Starting.')
     queueskey = queueskey.lower()
     querycmd = "condor_q -xml "
-    querycmd += " -attributes %s,jobstatus,globusstatus,procid,clusterid" %queueskey
+    querycmd += " -attributes %s,jobstatus,procid,clusterid" %queueskey
     log.trace('_querycondor: using executable condor_q in PATH=%s' %utils.which('condor_q'))
 
     # adding extra query args from queues.conf
@@ -788,6 +788,7 @@ def querycondorlib(remotecollector=None, remoteschedd=None, queueskey='match_apf
     log.trace(out)
     return out 
 
+
 def _aggregateinfolib(input, queueskey='match_apf_queue'):
     
     log = logging.getLogger('main.condor')
@@ -807,11 +808,12 @@ def _aggregateinfolib(input, queueskey='match_apf_queue'):
            continue
        apfqname = job[queueskey]
        if apfqname not in queues.keys():
-           queues[apfqname] = copy.copy(emptydict)
+           queues[apfqname] = {}
+           queues[apfqname]['jobstatus'] = copy.copy(emptydict)
 
        jobstatus = str(job['jobstatus'])
 
-       queues[apfqname][jobstatus] += 1
+       queues[apfqname]['jobstatus'][jobstatus] += 1
     
     log.trace(queues)
     return queues

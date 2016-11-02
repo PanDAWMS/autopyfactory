@@ -163,13 +163,13 @@ class Condor(threading.Thread, BatchStatusInterface):
         self.log.trace('Starting')
         while not self.stopevent.isSet():
             try:
-                self._update()
-                #self._updatelib()
+                self._updatelib()
             except Exception, e:
                 self.log.error("Main loop caught exception: %s " % str(e))
             self.log.trace("Sleeping for %d seconds..." % self.sleeptime)
             time.sleep(self.sleeptime)
         self.log.trace('Leaving')
+
 
     def join(self, timeout=None):
         ''' 
@@ -181,75 +181,6 @@ class Condor(threading.Thread, BatchStatusInterface):
         self.log.trace('Stopping thread....')
         threading.Thread.join(self, timeout)
         self.log.trace('Leaving')
-
-
-
-    def _update(self):
-        '''        
-        Query Condor for job status, validate ?, and populate  object.
-        Condor-G query template example:
-        
-        condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
-                 -format 'jobStatus=%d ' jobStatus 
-                 -format 'globusStatus=%d ' GlobusStatus 
-                 -format 'gkUrl=%s' MATCH_gatekeeper_url
-                 -format '-%s ' MATCH_queue 
-                 -format '%s\n' Environment
-
-        NOTE: using a single backslash in the final part of the 
-              condor_q command '\n' only works with the 
-              latest versions of condor. 
-              With older versions, there are two options:
-                      - using 4 backslashes '\\\\n'
-                      - using a raw string and two backslashes '\\n'
-
-        The JobStatus code indicates the current Condor status of the job.
-        
-                Value   Status                            
-                0       U - Unexpanded (the job has never run)    
-                1       I - Idle                                  
-                2       R - Running                               
-                3       X - Removed                              
-                4       C -Completed                            
-                5       H - Held                                 
-                6       > - Transferring Output
-
-        The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
-        
-                Value   Status
-                1       PENDING 
-                2       ACTIVE 
-                4       FAILED 
-                8       DONE 
-                16      SUSPENDED 
-                32      UNSUBMITTED 
-                64      STAGE_IN 
-                128     STAGE_OUT 
-        '''
-
-        self.log.trace('Starting.')
-       
-        if not utils.checkDaemon('condor'):
-            self.log.error('condor daemon is not running. Doing nothing')
-        else:
-            try:
-                strout = querycondor(self.queryargs)
-                if not strout:
-                    self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
-                else:
-                    outlist = parseoutput(strout)
-                    self.log.trace("Got outlist.")
-                    aggdict = aggregateinfo(outlist)
-                    self.log.trace("Got aggredated info.")
-                    newinfo = self._map2info(aggdict)
-                    self.log.trace("Got new batchstatusinfo object: %s" % newinfo)
-                    self.log.info("Replacing old info with newly generated info.")
-                    self.currentinfo = newinfo
-            except Exception, e:
-                self.log.error("Exception: %s" % str(e))
-                self.log.trace("Exception: %s" % traceback.format_exc())
-        self.log.trace('Leaving.')
-
 
 
     def _map2info(self, input):
@@ -292,27 +223,12 @@ class Condor(threading.Thread, BatchStatusInterface):
                     5       Held
                     6       Transferring Output
 
-            The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
-            
-                    Value   Status
-                    1       PENDING 
-                    2       ACTIVE 
-                    4       FAILED 
-                    8       DONE 
-                    16      SUSPENDED 
-                    32      UNSUBMITTED 
-                    64      STAGE_IN 
-                    128     STAGE_OUT 
         Input:
           Dictionary of APF queues consisting of dicts of job attributes and counts.
           { 'UC_ITB' : { 'Jobstatus' : { '1': '17',
                                        '2' : '24',
                                        '3' : '17',
                                      },
-                       'Globusstatus' : { '1':'13',
-                                          '2' : '26',
-                                          }
-                      }
            }          
         Output:
             A  object which maps attribute counts to generic APF
@@ -327,7 +243,7 @@ class Condor(threading.Thread, BatchStatusInterface):
                 qi = QueueInfo()
                 batchstatusinfo[site] = qi
                 attrdict = input[site]
-                
+
                 # use finer-grained globus statuses in preference to local summaries, if they exist. 
                 if 'globusstatus' in attrdict.keys():
                     valdict = attrdict['globusstatus']
@@ -338,13 +254,17 @@ class Condor(threading.Thread, BatchStatusInterface):
                     qi.fill(valdict, mappings=self.jobstatus2info)
         except Exception, e:
             self.log.error("Exception: %s" % str(e))
-            self.log.error("Exception: %s" % traceback.format_exc()) 
-                    
+            self.log.error("Exception: %s" % traceback.format_exc())
+
         batchstatusinfo.lasttime = int(time.time())
         self.log.trace('Returning : %s' % batchstatusinfo )
         for site in batchstatusinfo.keys():
-            self.log.trace('Queue %s = %s' % (site, batchstatusinfo[site]))           
-        return batchstatusinfo 
+            self.log.trace('Queue %s = %s' % (site, batchstatusinfo[site]))
+        return batchstatusinfo
+
+
+
+
 
 
 ###############################################################################
@@ -352,6 +272,22 @@ class Condor(threading.Thread, BatchStatusInterface):
 ###############################################################################
 
     def _updatelib(self):
+        """
+        Query Condor for job status, and populate  object.
+        It uses the condor python bindings.
+
+        The JobStatus code indicates the current Condor status of the job.
+        
+                Value   Status                            
+                0       U - Unexpanded (the job has never run)    
+                1       I - Idle                                  
+                2       R - Running                               
+                3       X - Removed                              
+                4       C -Completed                            
+                5       H - Held                                 
+                6       > - Transferring Output
+
+        """
 
         self.log.trace('Starting.')
         self.log.debug('Starting.')
@@ -365,7 +301,7 @@ class Condor(threading.Thread, BatchStatusInterface):
                 if not strout:
                     self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.')
                 else:
-                    newinfo = self._map2infolib(strout)
+                    newinfo = self._map2info(strout)
                     self.log.info("Replacing old info with newly generated info.")
                     self.currentinfo = newinfo
             except Exception, e:
@@ -373,33 +309,6 @@ class Condor(threading.Thread, BatchStatusInterface):
                 self.log.trace("Exception: %s" % traceback.format_exc())
 
         self.log.trace('Leaving.')
-
-
-
-    def _map2infolib(self, input):
-        '''
-        devel version of _map2info( ) to process the output of condor query 
-        methods using the python bindings.
-
-        Also, assumes that no more globusstatus, only jobstatus
-        is in the output 
-        '''
-
-
-        self.log.trace('Starting.')
-        batchstatusinfo = BatchStatusInfo()
-        for site in input.keys():
-            qi = QueueInfo()
-            batchstatusinfo[site] = qi
-            attrdict = input[site]
-
-            qi.fill(attrdict, mappings=self.jobstatus2info)
-
-        batchstatusinfo.lasttime = int(time.time())
-        self.log.trace('Returning : %s' % batchstatusinfo )
-        for site in batchstatusinfo.keys():
-            self.log.trace('Queue %s = %s' % (site, batchstatusinfo[site]))
-        return batchstatusinfo
 
 
 
