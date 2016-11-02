@@ -23,7 +23,7 @@ from autopyfactory.info import BatchStatusInfo
 from autopyfactory.info import QueueInfo
 
 from autopyfactory.condor import checkCondor, querycondorxml, statuscondor, statuscondormaster
-from autopyfactory.condor import parseoutput, xml2nodelist, node2dict 
+from autopyfactory.condor import parseoutput
 from autopyfactory.condor import listnodesfromxml, aggregateinfo, killids
 from autopyfactory.condor import mincondorversion
 
