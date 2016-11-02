@@ -525,6 +525,7 @@ class Factory(object):
 
             self.log.trace("Read config file %s, return value: %s" % (acf, got_config)) 
             self.authmanager = AuthManager(aconfig=acl, factory=self)
+            self.authmanager.startHandlers()
             self.log.info('AuthManager initialized.')
         else:
             self.log.info("AuthManager disabled.")
