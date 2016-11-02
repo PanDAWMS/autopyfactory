@@ -94,6 +94,74 @@ class TimedCommand(object):
             if self.exception:
                 raise self.exception
 
+def fill(object, dictionary, mapping=None):
+    '''
+    function to fill an object with info 
+    comming from a dictionary.
+
+    Each key of the dictionary is supposed 
+    to be one attribute in the object.
+
+    For example, if object is instance of class
+        class C():
+            def __init__(self):
+                self.x = ...
+                self.y = ...
+    then, the dictionary should look like
+        d = {'x': ..., 'y':...}
+
+    In case the dictionary keys and object attributes
+    do not match, a dictionary mapping can be passed. 
+    For exmaple, the object is instance of class
+        class C():
+            def __init__(self):
+                self.x = ...
+                self.y = ...
+    and the dictionary look like
+        d = {'a': ..., 'b':...}
+    then, the mapping must be like
+        mapping = {'a':'x', 'b':'y'}
+    '''
+    for k,v in dictionary.iteritems():
+        if mapping:
+            k = mapping[k]
+        setattr(object, k, v)
+
+def add(object, dictionary, mapping=None):
+    '''
+    function to add values from a dictionary
+    to values already stored in an object.
+
+    Each key of the dictionary is supposed 
+    to be one attribute in the object.
+
+    For example, if object is instance of class
+        class C():
+            def __init__(self):
+                self.x = ...
+                self.y = ...
+    then, the dictionary should look like
+        d = {'x': ..., 'y':...}
+
+    In case the dictionary keys and object attributes
+    do not match, a dictionary mapping can be passed. 
+    For exmaple, the object is instance of class
+        class C():
+            def __init__(self):
+                self.x = ...
+                self.y = ...
+    and the dictionary look like
+        d = {'a': ..., 'b':...}
+    then, the mapping must be like
+        mapping = {'a':'x', 'b':'y'}
+    '''
+
+    for k,v in dictionary.iteritems():
+        if mapping:
+            k = mapping[k]
+        current = object.__getattribute__(k)
+        new = current + v
+        setattr(object,k,new)
 
 def checkDaemon(daemon, pattern='running'):
     '''
@@ -108,6 +176,37 @@ def which(file):
     for path in os.environ["PATH"].split(":"):
         if os.path.exists(path + "/" + file):
                 return path + "/" + file
+
+
+def renamekeys(dict, mappings):
+    """
+    function to change the keys of a dictionary
+    according to the mappings.
+    For example:
+
+        dict = {'a':1,
+                'b':2,
+                'c':3,
+                'd':4}
+
+        mapppings = {'a':'A',
+                     'b':'B',
+                     'c':'C',
+                     'd':'D',
+                     'e':'E'}
+
+    returns
+
+        {'A':1,
+         'B':2,
+         'C':3,
+         'D':4}
+    """
+
+    for k in dict.keys():
+        dict[mappings[k]] = dict.pop(k)
+    return dict
+
 
 
 
