@@ -1,3 +1,5 @@
+* Batch Status plugin Condor queries using the condor python libraries
+* removed methods not being used from utils.py and condor.py
 * new WMSStatus plugin: Queue
 * code to shutdown the factory when there are no active queues. Default behavior is not to do it.
 * made the classad optional when WMS is Condor, instead of forcing it to be MATCH_APF_QUEUE

@@ -19,7 +19,6 @@ from autopyfactory.info import JobInfo
 from autopyfactory.info import WMSStatusInfo
 from autopyfactory.info import WMSQueueInfo
 
-#from autopyfactory.condor import checkCondor, querycondor, querycondorxml, querycondorlib  
 from autopyfactory.condor import checkCondor, querycondor, querycondorxml
 from autopyfactory.condor import parseoutput, aggregateinfo
 
