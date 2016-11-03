@@ -19,7 +19,7 @@ from autopyfactory.info import JobInfo
 from autopyfactory.info import WMSStatusInfo
 from autopyfactory.info import WMSQueueInfo
 
-from autopyfactory.condor import checkCondor, querycondor, querycondorxml
+from autopyfactory.condor import checkCondor, querycondorlib
 from autopyfactory.condor import parseoutput, aggregateinfo
 
 
@@ -224,7 +224,7 @@ class Condor(threading.Thread, WMSStatusInterface):
         self.currentsiteinfo = None
 
         try:
-            strout = querycondor(self.queryargs, self.queueskey)
+            strout = querycondorlib(self.queryargs, self.queueskey)
             if not strout:
                 self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
             else:

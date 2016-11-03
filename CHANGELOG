@@ -1,3 +1,6 @@
+2.4.10
+
+* WMS Status plugin Condor queries using the condor python libraries
 * Batch Status plugin Condor queries using the condor python libraries
 * removed methods not being used from utils.py and condor.py
 * new WMSStatus plugin: Queue

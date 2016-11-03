@@ -276,6 +276,7 @@ def statuscondor(queryargs = None):
         out = None
     return out
 
+
 def statuscondormaster(queryargs = None):
     '''
     Return info about masters. 
@@ -300,6 +301,7 @@ def statuscondormaster(queryargs = None):
         log.warning('Leaving with bad return code. rc=%s err=%s out=%s' %(p.returncode, err, out ))
         out = None
     return out
+
 
 def querycondor(queryargs=None, queueskey="match_apf_queue"):
     '''
