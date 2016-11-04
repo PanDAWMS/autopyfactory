@@ -1,5 +1,7 @@
 2.4.10
 
+* created module mappings.py
+* added a generic version of _map2info() to mappings.py
 * WMS Status plugin Condor queries using the condor python libraries
 * Batch Status plugin Condor queries using the condor python libraries
 * removed methods not being used from utils.py and condor.py
