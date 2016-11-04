@@ -23,6 +23,7 @@ from autopyfactory.info import QueueInfo
 from autopyfactory.condor import checkCondor, querycondor, querycondorxml
 from autopyfactory.condor import parseoutput, aggregateinfo
 from autopyfactory.condor import querycondorlib
+from autopyfactory.mappings import map2info
 
   
 import autopyfactory.utils as utils
@@ -182,78 +183,80 @@ class Condor(threading.Thread, BatchStatusInterface):
         threading.Thread.join(self, timeout)
         self.log.trace('Leaving')
 
-
-    def _map2info(self, input):
-        '''
-        This takes aggregated info by queue, with condor/condor-g specific status totals, and maps them 
-        to the backend-agnostic APF BatchStatusInfo object.
-        
-           APF             Condor-C/Local              Condor-G/Globus 
-        .pending           Unexp + Idle                PENDING
-        .running           Running                     RUNNING
-        .suspended         Held                        SUSPENDED
-        .done              Completed                   DONE
-        .unknown           
-        .error
-        
-        Primary attributes. Each job is in one and only one state:
-            pending            job is queued (somewhere) but not running yet.
-            running            job is currently active (run + stagein + stageout)
-            error              job has been reported to be in an error state
-            suspended          job is active, but held or suspended
-            done               job has completed
-            unknown            unknown or transient intermediate state
-            
-        Secondary attributes. Each job may be in more than one category. 
-            transferring       stagein + stageout
-            stagein
-            stageout           
-            failed             (done - success)
-            success            (done - failed)
-            ?
-        
-          The JobStatus code indicates the current status of the job.
-            
-                    Value   Status
-                    0       Unexpanded (the job has never run)
-                    1       Idle
-                    2       Running
-                    3       Removed
-                    4       Completed
-                    5       Held
-                    6       Transferring Output
-
-        Input:
-          Dictionary of APF queues consisting of dicts of job attributes and counts.
-          { 'UC_ITB' : { 'Jobstatus' : { '1': '17',
-                                       '2' : '24',
-                                       '3' : '17',
-                                     },
-           }          
-        Output:
-            A  object which maps attribute counts to generic APF
-            queue attribute counts. 
-        '''
-
-
-        self.log.trace('Starting.')
-        batchstatusinfo = BatchStatusInfo()
-        try:
-            for site in input.keys():
-                qi = QueueInfo()
-                batchstatusinfo[site] = qi
-                attrdict = input[site]
-                valdict = attrdict['jobstatus']
-                qi.fill(valdict, mappings=self.jobstatus2info)
-        except Exception, e:
-            self.log.error("Exception: %s" % str(e))
-            self.log.error("Exception: %s" % traceback.format_exc())
-
-        batchstatusinfo.lasttime = int(time.time())
-        self.log.trace('Returning : %s' % batchstatusinfo )
-        for site in batchstatusinfo.keys():
-            self.log.trace('Queue %s = %s' % (site, batchstatusinfo[site]))
-        return batchstatusinfo
+    ###
+    ###   method _map2info moved to mapppings.py
+    ###
+    ###def _map2info(self, input):
+    ###    '''
+    ###    This takes aggregated info by queue, with condor/condor-g specific status totals, and maps them 
+    ###    to the backend-agnostic APF BatchStatusInfo object.
+    ###    
+    ###       APF             Condor-C/Local              Condor-G/Globus 
+    ###    .pending           Unexp + Idle                PENDING
+    ###    .running           Running                     RUNNING
+    ###    .suspended         Held                        SUSPENDED
+    ###    .done              Completed                   DONE
+    ###    .unknown           
+    ###    .error
+    ###    
+    ###    Primary attributes. Each job is in one and only one state:
+    ###        pending            job is queued (somewhere) but not running yet.
+    ###        running            job is currently active (run + stagein + stageout)
+    ###        error              job has been reported to be in an error state
+    ###        suspended          job is active, but held or suspended
+    ###        done               job has completed
+    ###        unknown            unknown or transient intermediate state
+    ###        
+    ###    Secondary attributes. Each job may be in more than one category. 
+    ###        transferring       stagein + stageout
+    ###        stagein
+    ###        stageout           
+    ###        failed             (done - success)
+    ###        success            (done - failed)
+    ###        ?
+    ###    
+    ###      The JobStatus code indicates the current status of the job.
+    ###        
+    ###                Value   Status
+    ###                0       Unexpanded (the job has never run)
+    ###                1       Idle
+    ###                2       Running
+    ###                3       Removed
+    ###                4       Completed
+    ###                5       Held
+    ###                6       Transferring Output
+    ###
+    ###    Input:
+    ###      Dictionary of APF queues consisting of dicts of job attributes and counts.
+    ###      { 'UC_ITB' : { 'Jobstatus' : { '1': '17',
+    ###                                   '2' : '24',
+    ###                                   '3' : '17',
+    ###                                 },
+    ###       }          
+    ###    Output:
+    ###        A  object which maps attribute counts to generic APF
+    ###        queue attribute counts. 
+    ###    '''
+    ###      
+    ###
+    ###    self.log.trace('Starting.')
+    ###    batchstatusinfo = BatchStatusInfo()
+    ###    try:
+    ###        for site in input.keys():
+    ###            qi = QueueInfo()
+    ###            batchstatusinfo[site] = qi
+    ###            attrdict = input[site]
+    ###            valdict = attrdict['jobstatus']
+    ###            qi.fill(valdict, mappings=self.jobstatus2info)
+    ###    except Exception, e:
+    ###        self.log.error("Exception: %s" % str(e))
+    ###        self.log.error("Exception: %s" % traceback.format_exc())
+    ###
+    ###    batchstatusinfo.lasttime = int(time.time())
+    ###    self.log.trace('Returning : %s' % batchstatusinfo )
+    ###    for site in batchstatusinfo.keys():
+    ###        self.log.trace('Queue %s = %s' % (site, batchstatusinfo[site]))
+    ###    return batchstatusinfo
 
 
 
@@ -294,7 +297,9 @@ class Condor(threading.Thread, BatchStatusInterface):
                 if not strout:
                     self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.')
                 else:
-                    newinfo = self._map2info(strout)
+                    ###newinfo = self._map2info(strout)
+                    #### method _map2info moved to mappings.py
+                    newinfo = map2info(strout, BatchStatusInfo())
                     self.log.info("Replacing old info with newly generated info.")
                     self.currentinfo = newinfo
             except Exception, e:

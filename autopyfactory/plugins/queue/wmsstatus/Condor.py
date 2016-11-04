@@ -21,6 +21,7 @@ from autopyfactory.info import WMSQueueInfo
 
 from autopyfactory.condor import checkCondor, querycondorlib
 from autopyfactory.condor import parseoutput, aggregateinfo
+from autopyfactory.mappings import map2info
 
 
 class Condor(threading.Thread, WMSStatusInterface):
@@ -230,7 +231,9 @@ class Condor(threading.Thread, WMSStatusInterface):
             else:
                 outlist = parseoutput(strout)
                 aggdict = aggregateinfo(outlist, self.queueskey)
-                newjobinfo = self._map2info(aggdict)
+                #newjobinfo = self._map2info(aggdict)
+                # method _map2info moved to mappings.py
+                newjobinfo = map2info(aggdict, WMSStatusInfo)
                 self.log.info("Replacing old info with newly generated info.")
                 self.currentjobinfo = newjobinfo
         except Exception, e:
@@ -240,86 +243,89 @@ class Condor(threading.Thread, WMSStatusInterface):
         self.log.debug('_ Leaving.')
 
 
-    def _map2info(self, input):
-        '''
-        This takes aggregated info by queue, with condor/condor-g specific status totals, and maps them 
-        to the backend-agnostic APF BatchStatusInfo object.
-        
-           APF             Condor-C/Local              Condor-G/Globus 
-        .pending           Unexp + Idle                PENDING
-        .running           Running                     RUNNING
-        .suspended         Held                        SUSPENDED
-        .done              Completed                   DONE
-        .unknown           
-        .error
-        
-        Primary attributes. Each job is in one and only one state:
-            pending            job is queued (somewhere) but not running yet.
-            running            job is currently active (run + stagein + stageout)
-            error              job has been reported to be in an error state
-            suspended          job is active, but held or suspended
-            done               job has completed
-            unknown            unknown or transient intermediate state
-            
-        Secondary attributes. Each job may be in more than one category. 
-            transferring       stagein + stageout
-            stagein
-            stageout           
-            failed             (done - success)
-            success            (done - failed)
-            ?
-        
-          The JobStatus code indicates the current status of the job.
-            
-                    Value   Status
-                    0       Unexpanded (the job has never run)
-                    1       Idle
-                    2       Running
-                    3       Removed
-                    4       Completed
-                    5       Held
-                    6       Transferring Output
-
-            The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
-            
-                    Value   Status
-                    1       PENDING 
-                    2       ACTIVE 
-                    4       FAILED 
-                    8       DONE 
-                    16      SUSPENDED 
-                    32      UNSUBMITTED 
-                    64      STAGE_IN 
-                    128     STAGE_OUT 
-        Input:
-          Dictionary of APF queues consisting of dicts of job attributes and counts.
-          { 'UC_ITB' : { 'Jobstatus' : { '1': '17',
-                                       '2' : '24',
-                                       '3' : '17',
-                                     },
-                       'Globusstatus' : { '1':'13',
-                                          '2' : '26',
-                                          }
-                      }
-           }          
-        Output:
-            A BatchStatusInfo object which maps attribute counts to generic APF
-            queue attribute counts. 
-        '''
-        self.log.debug('Starting.')
-        wmsstatusinfo = WMSStatusInfo()
-        for site in input.keys():
-                qi = WMSQueueInfo()
-                wmsstatusinfo[site] = qi
-                attrdict = input[site]
-                valdict = attrdict['jobstatus']
-                qi.fill(valdict, mappings=self.jobstatus2info)
-                        
-        wmsstatusinfo.lasttime = int(time.time())
-        self.log.debug('Returning WMSStatusInfo: %s' % wmsstatusinfo)
-        for site in wmsstatusinfo.keys():
-            self.log.debug('Queue %s = %s' % (site, wmsstatusinfo[site]))           
-        return wmsstatusinfo
+    ###
+    ###   method _map2info moved to mappings.py
+    ###
+    ###def _map2info(self, input):
+    ###    '''
+    ###    This takes aggregated info by queue, with condor/condor-g specific status totals, and maps them 
+    ###    to the backend-agnostic APF BatchStatusInfo object.
+    ###    
+    ###       APF             Condor-C/Local              Condor-G/Globus 
+    ###    .pending           Unexp + Idle                PENDING
+    ###    .running           Running                     RUNNING
+    ###    .suspended         Held                        SUSPENDED
+    ###    .done              Completed                   DONE
+    ###    .unknown           
+    ###    .error
+    ###    
+    ###    Primary attributes. Each job is in one and only one state:
+    ###        pending            job is queued (somewhere) but not running yet.
+    ###        running            job is currently active (run + stagein + stageout)
+    ###        error              job has been reported to be in an error state
+    ###        suspended          job is active, but held or suspended
+    ###        done               job has completed
+    ###        unknown            unknown or transient intermediate state
+    ###        
+    ###    Secondary attributes. Each job may be in more than one category. 
+    ###        transferring       stagein + stageout
+    ###        stagein
+    ###        stageout           
+    ###        failed             (done - success)
+    ###        success            (done - failed)
+    ###        ?
+    ###    
+    ###      The JobStatus code indicates the current status of the job.
+    ###        
+    ###                Value   Status
+    ###                0       Unexpanded (the job has never run)
+    ###                1       Idle
+    ###                2       Running
+    ###                3       Removed
+    ###                4       Completed
+    ###                5       Held
+    ###                6       Transferring Output
+    ###
+    ###        The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
+    ###        
+    ###                Value   Status
+    ###                1       PENDING 
+    ###                2       ACTIVE 
+    ###                4       FAILED 
+    ###                8       DONE 
+    ###                16      SUSPENDED 
+    ###                32      UNSUBMITTED 
+    ###                64      STAGE_IN 
+    ###                128     STAGE_OUT 
+    ###    Input:
+    ###      Dictionary of APF queues consisting of dicts of job attributes and counts.
+    ###      { 'UC_ITB' : { 'Jobstatus' : { '1': '17',
+    ###                                   '2' : '24',
+    ###                                   '3' : '17',
+    ###                                 },
+    ###                   'Globusstatus' : { '1':'13',
+    ###                                      '2' : '26',
+    ###                                      }
+    ###                  }
+    ###       }          
+    ###    Output:
+    ###        A BatchStatusInfo object which maps attribute counts to generic APF
+    ###        queue attribute counts. 
+    ###    '''
+    ###    self.log.debug('Starting.')
+    ###    wmsstatusinfo = WMSStatusInfo()
+    ###    for site in input.keys():
+    ###            qi = WMSQueueInfo()
+    ###            wmsstatusinfo[site] = qi
+    ###            attrdict = input[site]
+    ###            valdict = attrdict['jobstatus']
+    ###            qi.fill(valdict, mappings=self.jobstatus2info)
+    ###                    
+    ###    wmsstatusinfo.lasttime = int(time.time())
+    ###    self.log.debug('Returning WMSStatusInfo: %s' % wmsstatusinfo)
+    ###    for site in wmsstatusinfo.keys():
+    ###        self.log.debug('Queue %s = %s' % (site, wmsstatusinfo[site]))           
+    ###    return wmsstatusinfo
 
 
     def join(self, timeout=None):

@@ -15,7 +15,7 @@ log = logging.getLogger('main.mappings')
 
 
 
-def _map2info(input, info_object):
+def map2info(input, info_object):
     '''
     This takes aggregated info by queue, with condor/condor-g specific status totals, and maps them 
     to the backend-agnostic APF BatchStatusInfo object.
