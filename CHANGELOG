@@ -1,5 +1,6 @@
 2.4.10
 
+* fixed TRACE custom level to print right lineno in the log message
 * created module mappings.py
 * added a generic version of _map2info() to mappings.py
 * WMS Status plugin Condor queries using the condor python libraries
