@@ -15,7 +15,7 @@ log = logging.getLogger('main.mappings')
 
 
 
-def map2info(input, info_object):
+def map2info(input, info_container):
     '''
     This takes aggregated info by queue, with condor/condor-g specific status totals, and maps them 
     to the backend-agnostic APF BatchStatusInfo object.
@@ -83,9 +83,8 @@ def map2info(input, info_object):
 
     try:
         for site in input.keys():
-            qi = queue_info_class()
-            qi = info_object.default()
-            info_object[site] = qi
+            qi = info_container.default()
+            info_container[site] = qi
             attrdict = input[site]
             valdict = attrdict['jobstatus']
             qi.fill(valdict, mappings=self.jobstatus2info)
@@ -94,10 +93,10 @@ def map2info(input, info_object):
         self.log.error("Exception: %s" % str(e))
         self.log.error("Exception: %s" % traceback.format_exc())
                     
-    info_object.lasttime = int(time.time())
-    log.debug('Returning %s: %s' % (info_object.__class__.__name__, info_object))
-    for site in info_object.keys():
-        log.debug('Queue %s = %s' % (site, info_object[site]))           
+    info_container.lasttime = int(time.time())
+    log.debug('Returning %s: %s' % (info_container.__class__.__name__, info_container))
+    for site in info_container.keys():
+        log.debug('Queue %s = %s' % (site, info_container[site]))           
 
-    return info_object 
+    return info_container 
 
