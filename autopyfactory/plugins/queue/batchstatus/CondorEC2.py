@@ -27,6 +27,10 @@ from autopyfactory.condor import parseoutput
 from autopyfactory.condor import listnodesfromxml, aggregateinfo, killids
 from autopyfactory.condor import mincondorversion
 
+from autopyfactory.mappings import map2info
+
+from autopyfactory.mappings import 
+
 import autopyfactory.utils as utils
 
 mincondorversion(8,1,1)
@@ -345,7 +349,7 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
         else:
             aggdict = aggregateinfo(dictlist)
             # Output of empty list is emptly dictionary
-            newinfo = self._map2info(aggdict)
+            newinfo = map2info(aggdict, BatchStatusInfo())
             
         return newinfo
 
@@ -485,79 +489,6 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
         self.log.trace("Constructed indexed hash: %s" % hash)
         return hash
         
-
-    def _map2info(self, input):
-        '''
-        This takes aggregated info by queue, with condor/condor-g specific status totals, and maps them 
-        to the backend-agnostic APF BatchStatusInfo object.
-        
-           APF             Condor-C/Local              Condor-G/Globus 
-        .pending           Unexp + Idle                PENDING
-        .running           Running                     RUNNING
-        .suspended         Held                        SUSPENDED
-        .done              Completed                   DONE
-        .unknown                      
-        .error
-        
-        Primary attributes. Each job is in one and only one state:
-            pending            job is queued (somewhere) but not running yet.
-            running            job is currently active (run + stagein + stageout + retiring)
-            error              job has been reported to be in an error state
-            suspended          job is active, but held or suspended
-            done               job has completed
-            unknown            unknown or transient intermediate state
-            
-        Secondary attributes. Each job may be in more than one category. 
-            transferring       stagein + stageout
-            stagein
-            stageout           
-            failed             (done - success)
-            success            (done - failed)
-            retiring
-        
-          The JobStatus code indicates the current status of the job.
-            
-                    Value   Status
-                    0       Unexpanded (the job has never run)
-                    1       Idle
-                    2       Running
-                    3       Removed
-                    4       Completed
-                    5       Held
-                    6       Transferring Output
-
-        Input:
-          Dictionary of APF queues consisting of dicts of job attributes and counts.
-          { 'UC_ITB' : { 'Jobstatus' : { '1': '17',
-                                       '2' : '24',
-                                       '3' : '17',
-                                     },
-                      }
-           }          
-        
-        Output:
-            A BatchStatusInfo object which maps attribute counts to generic APF
-            queue attribute counts.
-        
-        An empty inbound dictionary results in returning 
-        default empty BatchStatusInfo object. 
-        
-                  
-        '''
-        self.log.trace('Starting.')
-        batchstatusinfo = BatchStatusInfo()
-        for site in input.keys():
-            qi = QueueInfo()
-            batchstatusinfo[site] = qi
-            attrdict = input[site]
-            valdict = attrdict['jobstatus']
-            qi.fill(valdict, mappings=self.jobstatus2info)
-                    
-        batchstatusinfo.lasttime = int(time.time())
-        self.log.trace('Returning BatchStatusInfo: %s' % batchstatusinfo)
-        for site in batchstatusinfo.keys():
-            self.log.trace('Queue %s = %s' % (site, batchstatusinfo[site]))           
-        return batchstatusinfo
 
     def join(self, timeout=None):
         ''' 

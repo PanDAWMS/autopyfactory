@@ -1,5 +1,6 @@
 2.4.10
 
+* using mappings.map2info() in BatchStatus plugin CondorEC2.py
 * fixed TRACE custom level to print right lineno in the log message
 * created module mappings.py
 * added a generic version of _map2info() to mappings.py
