@@ -80,20 +80,9 @@ class Condor(threading.Thread, BatchStatusInterface):
         # ================================================================
         
 
-        self.globusstatus2info = self.apfqueue.factory.mappingscl.section2dict('CONDORBATCHSTATUS-GLOBUSSTATUS2INFO')
-        self.log.info('globusstatus2info mappings are %s' %self.globusstatus2info)
         self.jobstatus2info = self.apfqueue.factory.mappingscl.section2dict('CONDORBATCHSTATUS-JOBSTATUS2INFO')
         self.log.info('jobstatus2info mappings are %s' %self.jobstatus2info)
 
-        ###self.globusstatus2info = {'1':   'pending',
-        ###                          '2':   'running',
-        ###                          '4':   'done',
-        ###                          '8':   'done',
-        ###                          '16':  'suspended',
-        ###                          '32':  'pending',
-        ###                          '64':  'pending',
-        ###                          '128': 'running'}
-        ###
         ###self.jobstatus2info = {'0': 'pending',
         ###                       '1': 'pending',
         ###                       '2': 'running',
@@ -219,7 +208,7 @@ class Condor(threading.Thread, BatchStatusInterface):
                 if not strout:
                     self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.')
                 else:
-                    newinfo = map2info(strout, BatchStatusInfo())
+                    newinfo = map2info(strout, BatchStatusInfo(), self,jobstatus2info)
                     self.log.info("Replacing old info with newly generated info.")
                     self.currentinfo = newinfo
             except Exception, e:

@@ -15,10 +15,10 @@ log = logging.getLogger('main.mappings')
 
 
 
-def map2info(input, info_container):
+def map2info(input, info_container, mappings):
     '''
     This takes aggregated info by queue, with condor/condor-g specific status totals, and maps them 
-    to the backend-agnostic APF BatchStatusInfo object.
+    to the backend-agnostic APF *StatusInfo object.
     
        APF             Condor-C/Local              Condor-G/Globus 
     .pending           Unexp + Idle                PENDING
@@ -55,17 +55,6 @@ def map2info(input, info_container):
                 5       Held
                 6       Transferring Output
 
-        The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
-        
-                Value   Status
-                1       PENDING 
-                2       ACTIVE 
-                4       FAILED 
-                8       DONE 
-                16      SUSPENDED 
-                32      UNSUBMITTED 
-                64      STAGE_IN 
-                128     STAGE_OUT 
     Input:
       Dictionary of APF queues consisting of dicts of job attributes and counts.
       { 'UC_ITB' : { 'Jobstatus' : { '1': '17',
@@ -75,7 +64,8 @@ def map2info(input, info_container):
                   }
        }          
     Output:
-        A BatchStatusInfo object which maps attribute counts to generic APF
+        A *StatusInfo object (a BatchStatusInfo(), or WMSStatusInfo())
+        which maps attribute counts to generic APF
         queue attribute counts. 
     '''
 
@@ -87,7 +77,7 @@ def map2info(input, info_container):
             info_container[site] = qi
             attrdict = input[site]
             valdict = attrdict['jobstatus']
-            qi.fill(valdict, mappings=self.jobstatus2info)
+            qi.fill(valdict, mappings)
 
     except Exception, ex:
         self.log.error("Exception: %s" % str(e))

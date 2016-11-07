@@ -789,7 +789,7 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
     list_attrs = [queueskey, 'jobstatus']
     list_attrs += extra_attributes
     out = schedd.query('true', list_attrs)
-    out = _aggregateinfolib(out) 
+    out = _aggregateinfolib(out, queueskey) 
     log.trace(out)
     return out 
 

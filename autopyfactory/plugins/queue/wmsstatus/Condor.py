@@ -231,9 +231,7 @@ class Condor(threading.Thread, WMSStatusInterface):
             if not strout:
                 self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
             else:
-                outlist = parseoutput(strout)
-                aggdict = aggregateinfo(outlist, self.queueskey)
-                newjobinfo = map2info(aggdict, WMSStatusInfo)
+                newjobinfo = map2info(aggdict, WMSStatusInfo(), self.jobstatus2info)
                 self.log.info("Replacing old info with newly generated info.")
                 self.currentjobinfo = newjobinfo
         except Exception, e:
