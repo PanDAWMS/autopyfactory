@@ -29,7 +29,6 @@ from autopyfactory.condor import mincondorversion
 
 from autopyfactory.mappings import map2info
 
-from autopyfactory.mappings import 
 
 import autopyfactory.utils as utils
 
@@ -349,7 +348,7 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
         else:
             aggdict = aggregateinfo(dictlist)
             # Output of empty list is emptly dictionary
-            newinfo = map2info(aggdict, BatchStatusInfo())
+            newinfo = map2info(aggdict, BatchStatusInfo(), self.jobstatus2info)
             
         return newinfo
 
