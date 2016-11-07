@@ -225,7 +225,9 @@ class Condor(threading.Thread, WMSStatusInterface):
         self.currentsiteinfo = None
 
         try:
-            strout = querycondorlib(self.queryargs, self.queueskey)
+            #strout = querycondorlib(self.queryargs, self.queueskey)
+            # FIXME: the self.queryargs need to be decomposed into querycondorlib() input options
+            strout = querycondorlib(self.queueskey)
             if not strout:
                 self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
             else:

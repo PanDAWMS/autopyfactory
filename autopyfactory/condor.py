@@ -761,7 +761,7 @@ import htcondor
 import classad
 import copy
 
-def querycondorlib(remotecollector=None, remoteschedd=None, queueskey='match_apf_queue'):
+def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[], queueskey='match_apf_queue'):
     ''' 
     queries condor to get a list of ClassAds objects
     We query for a few specific ClassAd attributes
@@ -771,6 +771,8 @@ def querycondorlib(remotecollector=None, remoteschedd=None, queueskey='match_apf
     are passed when querying a remote HTCondor pool 
     They are the equivalent to -pool and -name input
     options to CLI condor_q
+    
+    extra_attributes are classads needed other than 'jobstatus'
     '''
 
     log = logging.getLogger('main.condor')
@@ -784,7 +786,8 @@ def querycondorlib(remotecollector=None, remoteschedd=None, queueskey='match_apf
     else:
         schedd = htcondor.Schedd() # Defaults to the local schedd.
 
-    list_attrs = [queueskey, 'jobstatus', 'ec2instanceid']
+    list_attrs = [queueskey, 'jobstatus']
+    list_attrs += extra_attributes
     out = schedd.query('true', list_attrs)
     out = _aggregateinfolib(out) 
     log.trace(out)

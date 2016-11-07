@@ -213,6 +213,7 @@ class Condor(threading.Thread, BatchStatusInterface):
             self.log.error('condor daemon is not running. Doing nothing')
         else:
             try:
+                # FIXME: the self.queryargs need to be decomposed into querycondorlib() input options
                 strout = querycondorlib()
                 self.log.debug('output of querycondorlib : ' %strout)
                 if not strout:
