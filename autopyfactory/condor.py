@@ -765,9 +765,30 @@ import copy
 def condorhistorylib():
 
     schedd = htcondor.Schedd()
-    history = schedd.history('True', ['ClusterID'], 0)
-    history = list(history)
+    history = schedd.history('True', ['MATCH_APF_QUEUE', 'JobStatus', 'RemoteWallClockTime'], 0)
     return history
+
+def filtercondorhistorylib(history, constrains=[]):
+
+    # contrains example ['JobStatus == 4', 'RemoteWallClockTime < 120']
+
+    out = []
+    for job in history:
+        if _match_constrains(job, constrains):
+            out.append(job)
+    return out
+
+def _match_constrains(job, constrains):
+
+    constrain_expression = " && ".join( ["TARGET." + i for i in constrains])
+    ad = classad.ClassAd()
+    ad['Requirements'] = classad.ExprTree(constrain_expression)
+    return job.matches(ad)
+
+    
+
+
+
 
 
 def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[], queueskey='match_apf_queue'):
