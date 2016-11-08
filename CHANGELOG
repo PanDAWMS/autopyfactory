@@ -1,5 +1,6 @@
 2.4.10
 
+* added method condorhistorylib() to condor.py
 * added input option extra_attributes to method querycondorlib()
 * using mappings.map2info() in BatchStatus plugin CondorEC2.py
 * using mappings.map2info() in BatchStatus plugin Condor.py

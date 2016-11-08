@@ -761,6 +761,15 @@ import htcondor
 import classad
 import copy
 
+
+def condorhistorylib():
+
+    schedd = htcondor.Schedd()
+    history = schedd.history('True', ['ClusterID'], 0)
+    history = list(history)
+    return history
+
+
 def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[], queueskey='match_apf_queue'):
     ''' 
     queries condor to get a list of ClassAds objects
