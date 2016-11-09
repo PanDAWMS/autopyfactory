@@ -768,23 +768,27 @@ def condorhistorylib():
     history = schedd.history('True', ['MATCH_APF_QUEUE', 'JobStatus', 'RemoteWallClockTime'], 0)
     return history
 
-def filtercondorhistorylib(history, constrains=[]):
 
-    # contrains example ['JobStatus == 4', 'RemoteWallClockTime < 120']
+def filtercondorhistorylib(history, constraints=[]):
+
+    # contraints example ['JobStatus == 4', 'RemoteWallClockTime < 120']
 
     out = []
     for job in history:
-        if _match_constrains(job, constrains):
+        if _matches_constraints(job, constraints):
             out.append(job)
     return out
 
-def _match_constrains(job, constrains):
 
-    constrain_expression = " && ".join( ["TARGET." + i for i in constrains])
+def _matches_constraints(job, constraints):
+    constraint_expression = " && ".join( ["TARGET." + i for i in constraints])
+    return _matches_constraint_expr(constraint_expression)
+
+
+def _matches_contraint_expr(job, constraint_expression):
     ad = classad.ClassAd()
-    ad['Requirements'] = classad.ExprTree(constrain_expression)
+    ad['Requirements'] = classad.ExprTree(constraint_expression)
     return job.matches(ad)
-
     
 
 
