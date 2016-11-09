@@ -780,20 +780,7 @@ def filtercondorhistorylib(history, constraints=[]):
     return out
 
 
-def _matches_constraints(job, constraints):
-    constraint_expression = " && ".join( ["TARGET." + i for i in constraints])
-    return _matches_constraint_expr(constraint_expression)
-
-
-def _matches_contraint_expr(job, constraint_expression):
-    ad = classad.ClassAd()
-    ad['Requirements'] = classad.ExprTree(constraint_expression)
-    return job.matches(ad)
     
-
-
-
-
 
 def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[], queueskey='match_apf_queue'):
     ''' 
@@ -873,6 +860,16 @@ def querystatuslib():
     return outlist
 
 
+
+def _matches_constraints(ad, constraints):
+    constraint_expression = " && ".join( ["TARGET." + i for i in constraints])
+    return _matches_constraint_expr(ad, constraint_expression)
+
+
+def _matches_contraint_expr(ad, constraint_expression):
+    req_ad = classad.ClassAd()
+    req_ad['Requirements'] = classad.ExprTree(constraint_expression)
+    return ad.matches(req_ad)
 
 
 
