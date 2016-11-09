@@ -20,9 +20,9 @@ from autopyfactory.interfaces import Singleton, CondorSingleton
 from autopyfactory.info import BatchStatusInfo
 from autopyfactory.info import QueueInfo
 
-from autopyfactory.condor import checkCondor, querycondor, querycondorxml
+from autopyfactory.condor import checkCondor
 from autopyfactory.condor import parseoutput, aggregateinfo
-from autopyfactory.condor import querycondorlib
+from autopyfactory.condor import condorhistorylib, filtercondorhistorylib
 
   
 import autopyfactory.utils as utils
@@ -208,25 +208,44 @@ class Condor(threading.Thread, BatchHistoryInterface):
         '''
 
         self.log.trace('Starting.')
+
+        ###if not utils.checkDaemon('condor'):
+        ###    self.log.error('condor daemon is not running. Doing nothing')
+        ###else:
+        ###    try:
+        ###        strout = querycondor(self.queryargs)
+        ###        if not strout:
+        ###            self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
+        ###        else:
+        ###            outlist = parseoutput(strout)
+        ###            self.log.trace("Got outlist.")
+        ###            aggdict = aggregateinfo(outlist)
+        ###            self.log.trace("Got aggredated info.")
+        ###            newinfo = self._map2info(aggdict)
+        ###            self.log.trace("Got new batchstatusinfo object: %s" % newinfo)
+        ###            self.log.info("Replacing old info with newly generated info.")
+        ###            self.currentinfo = newinfo
+        ###    except Exception, e:
+        ###        self.log.error("Exception: %s" % str(e))
+        ###        self.log.trace("Exception: %s" % traceback.format_exc())
+
        
         if not utils.checkDaemon('condor'):
             self.log.error('condor daemon is not running. Doing nothing')
         else:
             try:
-                strout = querycondor(self.queryargs)
-                if not strout:
-                    self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
-                else:
-                    outlist = parseoutput(strout)
-                    self.log.trace("Got outlist.")
-                    aggdict = aggregateinfo(outlist)
-                    self.log.trace("Got aggredated info.")
-                    newinfo = self._map2info(aggdict)
-                    self.log.trace("Got new batchstatusinfo object: %s" % newinfo)
-                    self.log.info("Replacing old info with newly generated info.")
-                    self.currentinfo = newinfo
+                out = condorhistorylib()
+                now = int( time.time() )                
+                # FIXME: this is just mock code !!!
+                old = now - 15*60
+                out = filtercondorhistorylib(out, ['JobStatus == 4', 'RemoteWallClockTime < 150', 'EnteredCurrentStatus > %s' %old])
+                   
+ 
+
+
             except Exception, e:
                 self.log.error("Exception: %s" % str(e))
                 self.log.trace("Exception: %s" % traceback.format_exc())
+
         self.log.trace('Leaving.')
 

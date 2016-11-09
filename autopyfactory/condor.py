@@ -765,7 +765,7 @@ import copy
 def condorhistorylib():
 
     schedd = htcondor.Schedd()
-    history = schedd.history('True', ['MATCH_APF_QUEUE', 'JobStatus', 'RemoteWallClockTime'], 0)
+    history = schedd.history('True', ['MATCH_APF_QUEUE', 'JobStatus', 'EnteredCurrentStatus', 'RemoteWallClockTime'], 0)
     return history
 
 
@@ -810,13 +810,16 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
     list_attrs = [queueskey, 'jobstatus']
     list_attrs += extra_attributes
     out = schedd.query('true', list_attrs)
-    out = _aggregateinfolib(out, queueskey) 
+    out = _aggregateinfolib(out, 'jobstatus', queueskey) 
     log.trace(out)
     return out 
 
 
-def _aggregateinfolib(input, queueskey='match_apf_queue'):
-    
+def _aggregateinfolib(input, key=None, queueskey='match_apf_queue'):
+    # input is a list of job classads
+    # key can be, for example: 'jobstatus'    
+    # output is a dict[apfqname] [key] [value] = # of jobs with that value
+
     log = logging.getLogger('main.condor')
 
     queues = {}
@@ -827,12 +830,12 @@ def _aggregateinfolib(input, queueskey='match_apf_queue'):
         apfqname = job[queueskey]
         if apfqname not in queues.keys():
             queues[apfqname] = {}
-            queues[apfqname]['jobstatus'] = {}
+            queues[apfqname][key] = {}
 
-        jobstatus = str(job['jobstatus'])
-        if jobstatus not in queues[apfqname]['jobstatus'].keys():
-            queues[apfqname]['jobstatus'][jobstatus] = 0
-        queues[apfqname]['jobstatus'][jobstatus] += 1
+        value = str(job[key])
+        if value not in queues[apfqname][key].keys():
+            queues[apfqname][key][value] = 0
+        queues[apfqname][key][value] += 1
     
     log.trace(queues)
     return queues
