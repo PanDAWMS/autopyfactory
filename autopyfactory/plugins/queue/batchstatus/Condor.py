@@ -22,7 +22,7 @@ from autopyfactory.info import QueueInfo
 
 from autopyfactory.condor import checkCondor, querycondor, querycondorxml
 from autopyfactory.condor import parseoutput, aggregateinfo
-from autopyfactory.condor import querycondorlib
+from autopyfactory.condorlib import querycondorlib
 from autopyfactory.mappings import map2info
 
   
