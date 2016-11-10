@@ -97,10 +97,10 @@ def _aggregateinfolib(input, primary_key='match_apf_queue', secondary_key=None):
 
     queues = {}
     for job in input:
-        if not primarykey in job.keys():
+        if not primary_key in job.keys():
             # This job is not managed by APF. Ignore...
             continue
-        apfqname = job[primarykey]
+        apfqname = job[primary_key]
         if apfqname not in queues.keys():
             queues[apfqname] = {}
             queues[apfqname][secondary_key] = {}
