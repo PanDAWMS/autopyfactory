@@ -92,6 +92,20 @@ def _aggregateinfolib(input, primary_key='match_apf_queue', secondary_keys=[]):
     # input is a list of job classads
     # secondary_keys can be, for example: ['jobstatus']    
     # output is a dict[primary_key] [secondary_key] [value] = # of jobs with that value
+    # example of output if secondary keys are ['jobstatus','globusstatus']: 
+    #       {  
+    #        'BNL_ANALY': {'globusstatus': {'0': 2}, 
+    #                      'jobstatus': {'2': 2}
+    #                     },
+    #        'BNL_PROD' : {'globusstatus': {'0': 34, '1': 9, '2': 4, '3': 2, '4': 3},
+    #                      'jobstatus': {'1': 10, '2': 46}
+    #                     },
+    #        'SITEX':     {'globusstatus': {'0': 7, '1': 4, '2': 1}, 
+    #                      'jobstatus': {'2': 12}
+    #                     },
+    #       }
+    #
+
 
     log = logging.getLogger('main.condor')
 
