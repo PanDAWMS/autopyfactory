@@ -181,6 +181,63 @@ def _aggregateinfolib(input, primary_key='match_apf_queue', secondary_keys=[]):
 ###
 ###             aggregateinfolib2(out, 'match_apf_queue', {'jobstatus': None,'QDate': lambda x: timeinqueue(x, 300, 3600)} ) 
 ###
+###
+###     #########################################################################################3
+###
+###
+###     alternative version of _aggregateinfolib() 
+###     that accepts a list of objects
+###
+###             def _aggregateinfolib3(input, primary_key='match_apf_queue', secondary_keys=[]):
+###                 # input is a list of job classads
+###                 # secondary_key is a list of objects
+###                 # output is a dict[primary_key] [secondary_key] [value] = # of jobs with that value
+###             
+###                 queues = {}
+###             
+###                 for job in input:
+###                     if not primary_key in job.keys():
+###                         # This job is not managed by APF. Ignore...
+###                         continue
+###                     apfqname = job[primary_key]
+###                     if apfqname not in queues.keys():
+###                         queues[apfqname] = {}
+###                         for sk in secondary_keys:
+###                             queues[apfqname][sk.label] = {}
+###             
+###                     for sk in secondary_keys:
+###                         value = sk.f(job)
+###                         if value not in queues[apfqname][sk.label].keys():
+###                             queues[apfqname][sk.label][value] = 0
+###                         queues[apfqname][sk.label][value] += 1
+###                 return queues
+###
+###     An example of usage:
+###
+###                 class timeinqueue(object):
+###                         def __init__(self, t1, t2):
+###                                 self.label = 'QDate'
+###                                 self.t1 = t1
+###                                 self.t2 = t2
+###                         def f(self, job):
+###                                 qdate = int(job['QDate'])
+###                                 now = int(time.time())
+###                                 rtime = now - qdate
+###                                 if rtime <= self.t1:
+###                                         return str(self.t1)
+###                                 if rtime <= self.t2:
+###                                         return str(self.t2)
+###                                 return str(self.t2)+"+"
+###                 
+###                 class jobstatus(object):
+###                         def __init__(self):
+###                                 self.label = 'jobstatus'
+###                         def f(self, job):
+###                                 return str(job[self.label])
+###                 
+###                 _aggregateinfolib3(out, 'match_apf_queue', [timeinqueue(300, 3600), jobstatus()] )
+###             
+
 
 
 
