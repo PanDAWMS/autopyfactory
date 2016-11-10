@@ -88,9 +88,9 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
     return out 
 
 
-def _aggregateinfolib(input, primary_key='match_apf_queue', secondary_key=None):
+def _aggregateinfolib(input, primary_key='match_apf_queue', secondary_keys=[]):
     # input is a list of job classads
-    # secondary_key can be, for example: 'jobstatus'    
+    # secondary_keys can be, for example: ['jobstatus']    
     # output is a dict[primary_key] [secondary_key] [value] = # of jobs with that value
 
     log = logging.getLogger('main.condor')
@@ -103,12 +103,14 @@ def _aggregateinfolib(input, primary_key='match_apf_queue', secondary_key=None):
         apfqname = job[primary_key]
         if apfqname not in queues.keys():
             queues[apfqname] = {}
-            queues[apfqname][secondary_key] = {}
+            for sk in secondary_keys:
+                queues[apfqname][sk] = {}
 
-        value = str(job[secondary_key])
-        if value not in queues[apfqname][secondary_key].keys():
-            queues[apfqname][secondary_key][value] = 0
-        queues[apfqname][secondary_key][value] += 1
+        for sk in secondary_keys:
+            value = str(job[sk])
+            if value not in queues[apfqname][sk].keys():
+                queues[apfqname][sk][value] = 0
+            queues[apfqname][sk][value] += 1
     
     log.trace(queues)
     return queues
