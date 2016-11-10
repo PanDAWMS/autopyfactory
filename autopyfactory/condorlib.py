@@ -130,6 +130,61 @@ def _aggregateinfolib(input, primary_key='match_apf_queue', secondary_keys=[]):
     return queues
 
 
+
+###
+###     alternative option for _aggregateinfolib() 
+###     that accepts a dictionary {'secondary_key': algorithm} 
+###     as input option
+###
+###         def _aggregateinfolib2(input, primary_key='match_apf_queue', secondary_keys={}):
+###             # input is a list of job classads
+###             # secondary_key is a dictionary {"attribute": algorithm}
+###             # for example {'jobstatus':None, 'QDate':timeinqueue}
+###             # output is a dict[primary_key] [secondary_key] [value] = # of jobs with that value
+###         
+###             queues = {}
+###         
+###             for job in input:
+###                 if not primary_key in job.keys():
+###                     # This job is not managed by APF. Ignore...
+###                     continue
+###                 apfqname = job[primary_key]
+###                 if apfqname not in queues.keys():
+###                     queues[apfqname] = {}
+###                     for sk in secondary_keys.keys():
+###                         queues[apfqname][sk] = {}
+###         
+###                 for sk, f in secondary_keys.iteritems():
+###                     if f == None:
+###                         value = str(job[sk])
+###                     else:
+###                         value = f(job)
+###                     if value not in queues[apfqname][sk].keys():
+###                         queues[apfqname][sk][value] = 0
+###                     queues[apfqname][sk][value] += 1
+###             return queues
+###
+###
+###     Example of one of those algorithms 
+###             
+###             def timeinqueue(job, t1, t2):
+###                     qdate = int(job['QDate'])
+###                     now = int(time.time())
+###                     rtime = now - qdate
+###                     if rtime <= t1:
+###                             return str(t1)
+###                     if rtime <= t2:
+###                             return str(t2)
+###                     return str(t2)+"+"
+###             
+###     Example of call to _aggregateinfolib2():
+###
+###             aggregateinfolib2(out, 'match_apf_queue', {'jobstatus': None,'QDate': lambda x: timeinqueue(x, 300, 3600)} ) 
+###
+
+
+
+
 def querystatuslib():
     ''' 
     Equivalent to condor_status
