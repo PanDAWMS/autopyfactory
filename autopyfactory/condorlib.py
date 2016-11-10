@@ -39,6 +39,7 @@ def condorhistorylib():
 
     schedd = htcondor.Schedd()
     history = schedd.history('True', ['MATCH_APF_QUEUE', 'JobStatus', 'EnteredCurrentStatus', 'RemoteWallClockTime'], 0)
+    history = list(history)
     return history
 
 
@@ -237,7 +238,28 @@ def _aggregateinfolib(input, primary_key='match_apf_queue', secondary_keys=[]):
 ###                 
 ###                 _aggregateinfolib3(out, 'match_apf_queue', [timeinqueue(300, 3600), jobstatus()] )
 ###             
-
+###
+###     #########################################################################################3
+###
+###     Example of using a class to filter 
+###     the output of condorhistory()
+###     using _aggregateinfolib3()
+###
+###
+###                 class filter(object):
+###                         def __init__(self):
+###                                 self.label = 'time'
+###                         def f(self, job):
+###                                 if job['jobstatus'] != 4:
+###                                         return "None"
+###                                 if int(job['RemoteWallClockTime']) < 120:
+###                                         return "120"
+###                                 else:
+###                                         return "None"
+###                 
+###
+###
+###
 
 
 
