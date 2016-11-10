@@ -83,32 +83,32 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
     list_attrs = [queueskey, 'jobstatus']
     list_attrs += extra_attributes
     out = schedd.query('true', list_attrs)
-    out = _aggregateinfolib(out, 'jobstatus', queueskey) 
+    out = _aggregateinfolib(out, queueskey, 'jobstatus') 
     log.trace(out)
     return out 
 
 
-def _aggregateinfolib(input, key=None, queueskey='match_apf_queue'):
+def _aggregateinfolib(input, primary_key='match_apf_queue', secondary_key=None):
     # input is a list of job classads
-    # key can be, for example: 'jobstatus'    
-    # output is a dict[apfqname] [key] [value] = # of jobs with that value
+    # secondary_key can be, for example: 'jobstatus'    
+    # output is a dict[primary_key] [secondary_key] [value] = # of jobs with that value
 
     log = logging.getLogger('main.condor')
 
     queues = {}
     for job in input:
-        if not queueskey in job.keys():
+        if not primarykey in job.keys():
             # This job is not managed by APF. Ignore...
             continue
-        apfqname = job[queueskey]
+        apfqname = job[primarykey]
         if apfqname not in queues.keys():
             queues[apfqname] = {}
-            queues[apfqname][key] = {}
+            queues[apfqname][secondary_key] = {}
 
-        value = str(job[key])
-        if value not in queues[apfqname][key].keys():
-            queues[apfqname][key][value] = 0
-        queues[apfqname][key][value] += 1
+        value = str(job[secondary_key])
+        if value not in queues[apfqname][secondary_key].keys():
+            queues[apfqname][secondary_key][value] = 0
+        queues[apfqname][secondary_key][value] += 1
     
     log.trace(queues)
     return queues
