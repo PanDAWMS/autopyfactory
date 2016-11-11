@@ -36,10 +36,12 @@ import copy
 
 
 def condorhistorylib():
+    attributes = ['match_apf_queue', 'jobstatus', 'enteredcurrentstatus', 'remotewallclocktime']
+    return _condorhistorylib(attributes)
 
+def _condorhistorylib(attributes):
     schedd = htcondor.Schedd()
-    history = schedd.history('True', ['MATCH_APF_QUEUE', 'JobStatus', 'EnteredCurrentStatus', 'RemoteWallClockTime'], 0)
-    history = list(history)
+    history = schedd.history('True', attributes, 0)
     return history
 
 
@@ -53,8 +55,6 @@ def filtercondorhistorylib(history, constraints=[]):
             out.append(job)
     return out
 
-
-    
 
 def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[], queueskey='match_apf_queue'):
     ''' 
@@ -72,6 +72,16 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
 
     log = logging.getLogger('main.condor')
 
+    list_attrs = [queueskey, 'jobstatus']
+    list_attrs += extra_attributes
+    out = _querycondorlib(remotecollector, remoteschedd, list_attrs)
+    out = _aggregateinfolib(out, queueskey, 'jobstatus') 
+    log.trace(out)
+    return out 
+
+
+def _querycondorlib(remotecollector=None, remoteschedd=None, attributes):
+
     if remotecollector:
         # FIXME: to be tested
         log.debug("querying remote pool %s" %remotecollector)
@@ -81,12 +91,8 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
     else:
         schedd = htcondor.Schedd() # Defaults to the local schedd.
 
-    list_attrs = [queueskey, 'jobstatus']
-    list_attrs += extra_attributes
-    out = schedd.query('true', list_attrs)
-    out = _aggregateinfolib(out, queueskey, 'jobstatus') 
-    log.trace(out)
-    return out 
+    return schedd.query('true', attributes)
+
 
 
 def _aggregateinfolib(input, primary_key='match_apf_queue', secondary_keys=[]):
