@@ -90,3 +90,69 @@ def map2info(input, info_container, mappings):
 
     return info_container 
 
+
+
+
+###############################################################################
+#           classes to analyze/parse/filter/... job classads
+#           from condor commands output (condor_q, condor_history...)
+###############################################################################
+
+class BaseAnalyzer(object):
+    def getlabel(self):
+       raise NotImplementedError 
+    def analyze(self, job):
+       raise NotImplementedError 
+
+
+class TimeInQueue(BaseAnalyzer):
+
+    def __init__(self, time1, time2):
+        self.label = 'qdate'
+        self.time1 = time1
+        self.time2 = time2
+        now = int( time.time() )
+
+    def getlabel(self):
+        return self.label
+
+    def analyze(self, job):
+        if 'qdate' not in job.keys():
+            return None
+        qdate = int(job['qdate'])
+        rtime = now - qdate
+        if rtime <= self.t1:
+                return str(self.t1)
+        if rtime <= self.t2:
+                return str(self.t2)
+        return str(self.t2)+"+"
+
+
+class JobStatus(BaseAnalyzer):
+    def __init__(self):
+        self.label = 'jobstatus'
+
+    def getlabel(self):
+        return self.label
+
+    def analyze(self, job):
+        if 'jobstatus' not in job.keys():
+            return None
+        return str(job['jobstatus'])
+
+
+class JobFilter(BaseAnalyzer):
+    def __init__(self):
+        self.label = 'time'
+
+    def getlabel(self):
+        return self.label
+
+    def analyze(self, job):
+        if job['jobstatus'] != 4:
+                return None
+        if int(job['RemoteWallClockTime']) < 120:
+                return "120"
+        else:
+                return None
+
