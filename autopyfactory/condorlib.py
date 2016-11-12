@@ -151,12 +151,11 @@ def _aggregateinfolib(input, primary_key='match_apf_queue', analyzers=[]):
         apfqname = job[primary_key]
         if apfqname not in queues.keys():
             queues[apfqname] = {}
-            for analyzer in analyzers:
-                label = analyzer.getlabel()
-                queues[apfqname][label] = {}
 
         for analyzer in analyzers:
             label = analyzer.getlabel()
+            if label not in queues[apfqname].keys():
+                queues[apfqname][label] = {}
             value = analyzer.analyze(job)
             if value != None:
                 if value not in queues[apfqname][label].keys():
