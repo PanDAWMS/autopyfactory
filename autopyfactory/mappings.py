@@ -105,7 +105,7 @@ class BaseAnalyzer(object):
        raise NotImplementedError 
 
 
-class TimeInQueue(BaseAnalyzer):
+class TimeInQueueAnalyzer(BaseAnalyzer):
 
     def __init__(self, time1, time2):
         self.label = 'qdate'
@@ -128,7 +128,7 @@ class TimeInQueue(BaseAnalyzer):
         return str(self.t2)+"+"
 
 
-class JobStatus(BaseAnalyzer):
+class JobStatusAnalyzer(BaseAnalyzer):
     def __init__(self):
         self.label = 'jobstatus'
 
@@ -141,7 +141,7 @@ class JobStatus(BaseAnalyzer):
         return str(job['jobstatus'])
 
 
-class JobFilter(BaseAnalyzer):
+class JobFilterAnalyzer(BaseAnalyzer):
     def __init__(self):
         self.label = 'time'
 
