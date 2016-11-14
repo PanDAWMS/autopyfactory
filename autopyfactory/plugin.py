@@ -55,6 +55,18 @@ class PluginManager(object):
         self.log.debug('PluginManager initialized.')
 
 
+    def getpluginlist(level, kind, namelist, config, section):
+        '''
+        Provide list of initialized plugin objects. Convenience method mainly for sched 
+        plugins. 
+        '''
+        plist = []
+        for kn in namelist:
+            kp = self.getplugin(level,kind, name, config,section)
+            plist.append(kp)
+        return plist
+
+
     def getplugin(level, type, name, config, section):
         '''
         Provide initialized plugin object using config and section. 
@@ -81,17 +93,6 @@ class PluginManager(object):
         self.log.trace("Retrieved plugin class %s" % name)
         return plugin_class
     
-    def getpluginlist(level, kind, namelist, config, section):
-        '''
-        Provide list of initialized plugin objects. Convenience method mainly for sched 
-        plugins. 
-        
-        '''
-        plist = []
-        for kn in namelist:
-            kp = self.getplugin(level,kind, name, config,section)
-            plist.append(kp)
-        return plist
 
 
 
