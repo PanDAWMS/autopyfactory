@@ -49,8 +49,9 @@ from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailur
 from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.logserver import LogServer
-from autopyfactory.pluginsmanagement import QueuePluginDispatcher
-from autopyfactory.pluginsmanagement import FactoryPluginDispatcher
+#from autopyfactory.pluginsmanagement import QueuePluginDispatcher
+#from autopyfactory.pluginsmanagement import FactoryPluginDispatcher
+from autopyfactory.plugin import PluginManager
 from autopyfactory.queues import APFQueuesManager
 from autopyfactory.authmanager import AuthManager
 
@@ -576,8 +577,9 @@ class Factory(object):
 
     def _plugins(self):
     
-        fpd = FactoryPluginDispatcher(self)
-        self.config_plugins = fpd.getconfigplugin()
+        #fpd = FactoryPluginDispatcher(self)
+        #self.config_plugins = fpd.getconfigplugin()
+        self.config_plugins = PluginManager.getplugin('factory', 'config', self, self.fcl, 'Factory')
 
 
     def _initLogserver(self):
