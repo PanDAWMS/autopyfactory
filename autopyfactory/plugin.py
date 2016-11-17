@@ -24,7 +24,7 @@
          condor
        sched
          <various>
-    profile:
+    authmanager:
        auth:
          x509
          ssh
