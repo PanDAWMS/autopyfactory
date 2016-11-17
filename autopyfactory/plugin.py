@@ -67,11 +67,11 @@ class PluginManager(object):
         return plist
 
 
-    def getplugin(level, type, name, config, section):
+    def getplugin(level, kind, name, config, section):
         '''
         Provide initialized plugin object using config and section. 
         '''
-        ko = self.getpluginclass(level,kind,name)
+        ko = self.getpluginclass(level, kind, name)
         po = ko(config=config)
         return po
         
