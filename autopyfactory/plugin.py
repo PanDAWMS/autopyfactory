@@ -83,7 +83,7 @@ class PluginManager(object):
         return self._getplugin(level, kind, config, section, name)
 
 
-    def _getplugin(level, kind, parent, config, section, name):
+    def _getplugin(self, level, kind, parent, config, section, name):
         ko = self._getpluginclass(level, kind, name)
         po = ko(self.parent, config, section)
         return po
@@ -107,11 +107,4 @@ class PluginManager(object):
         self.log.trace("Retrieved plugin class %s" % name)
         return plugin_class
     
-
-
-
-
-
-
-
 
