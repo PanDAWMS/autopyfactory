@@ -7,13 +7,13 @@ import os
 
 
 # Does not need to be a thread because it doesn't need to perform asynch actions.
-class SSHHandler(object):
+class SSH(object):
     '''
         Container for SSH account info.
         Works with provided filepaths. 
         Eventually should work with config-only provided tokens, with files created.  
     '''    
-    def __init__(self, config, section, manager ):
+    def __init__(self, manager, config, section):
         self.log = logging.getLogger('main.sshhandler')
         self.name = section
         self.manager = manager

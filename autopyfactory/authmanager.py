@@ -20,8 +20,8 @@ prepath = sep.join(fullpathlist[:-2])
 sys.path.insert(0, prepath)
 
 import autopyfactory
-from autopyfactory.plugins.auth.X509 import X509Handler
-from autopyfactory.plugins.auth.SSH import SSHHandler
+from autopyfactory.plugins.auth.X509 import X509
+from autopyfactory.plugins.auth.SSH import SSH
 from autopyfactory.apfexceptions import InvalidAuthFailure
 
 
@@ -58,12 +58,12 @@ class AuthManager(object):
                 
             if pclass == 'X509':
                 self.log.trace("Creating X509 handler for %s" % sect )
-                x509h = X509Handler(aconfig, sect, self)
+                x509h = X509(self, aconfig, sect)
                 self.handlers.append(x509h)
             
             elif pclass == 'SSH':
                 self.log.trace("Creating SSH handler for %s" % sect )
-                sshh = SSHHandler(aconfig, sect, self)
+                sshh = SSH(self, aconfig, sect)
                 self.handlers.append(sshh)
                             
             else:

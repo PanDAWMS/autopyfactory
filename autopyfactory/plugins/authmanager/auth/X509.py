@@ -22,13 +22,13 @@ from subprocess import Popen, PIPE, STDOUT
 from autopyfactory.apfexceptions import InvalidProxyFailure
 
         
-class X509Handler(threading.Thread):
+class X509(threading.Thread):
     '''
     Checks, creates, and renews a VOMS proxy. 
     or retrieves suitable credential from MyProxy 
            
     '''
-    def __init__(self, config, section, manager ):
+    def __init__(self, manager, config, section):
         threading.Thread.__init__(self) # init the thread
         self.log = logging.getLogger('main.x509handler')
         self.name = section
