@@ -10,7 +10,7 @@ from autopyfactory.interfaces import ConfigInterface
 
 class File(ConfigInterface):
 
-    def __init__(self, factory):
+    def __init__(self, factory, config, section):
 
         self.log = logging.getLogger("main.configplugin")
         self.factory = factory

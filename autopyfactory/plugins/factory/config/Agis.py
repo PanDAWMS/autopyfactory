@@ -363,12 +363,11 @@ class Agis(ConfigInterface):
     information retrieved from AGIS
     """
 
-    def __init__(self, config):
+    def __init__(self, factory, config, section):
         '''
         Top-level object fo contacting, parsing, and providing APF configs from AGIS
-        
-
         '''
+
         self.log = logging.getLogger("main.agis")
         self.allqueues = None
         self.lastupdate = None
@@ -773,7 +772,11 @@ if __name__ == '__main__':
     if numfactories is not None:
         fconfig.set('Factory', 'config.agis.numfactories', numfactories)
  
-    acp = Agis(fconfig)
+    #parent class Mock
+    class Factory:
+        pass
+
+    acp = Agis(Factory(), fconfig, "mock_section_name")
     log.debug("Agis object created")
 
     try:
