@@ -48,7 +48,7 @@ class Condor(threading.Thread, BatchStatusInterface):
         # get the ID
         apfqueue = k[0]
         conf = k[1]
-        section = k[1]
+        section = k[2]
         
         id = 'local'
         if conf.get(section, 'batchstatusplugin') == 'Condor':
