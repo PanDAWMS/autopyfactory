@@ -9,7 +9,7 @@ from autopyfactory import jsd
 
 class CondorCE(CondorGrid):
    
-    def __init__(self, apfqueue, config=None):
+    def __init__(self, apfqueue, config, section):
         if not config:
             qcl = apfqueue.qcl            
         else:
@@ -17,7 +17,7 @@ class CondorCE(CondorGrid):
             
         # we rename the queue config variables to pass a new config object to parent class
         newqcl = qcl.clone().filterkeys('batchsubmit.condorce', 'batchsubmit.condorgrid')
-        super(CondorCE, self).__init__(apfqueue, config=newqcl) 
+        super(CondorCE, self).__init__(apfqueue, config=newqcl, section) 
 
         self.log.info('CondorCE: Object initialized.')
    

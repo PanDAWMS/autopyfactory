@@ -87,17 +87,18 @@ class APF(MonitorInterface):
     """
     Notifies a monitoring webservice about condor jobs
     """
-    def __init__(self, apfqueue, monitor_id):
-        '''
-        apfqueue is a reference to the APFQueue object creating this plugin.
-        We need it to get qcl, fcl, and mcl config loaders. 
-
-        monitor_id is the value for id_var (input of the singletonfactory)
-        to decide if a new object has to be really created or not.
-        It is the name of the section [] in monitor config object
-        
-        Also sends initial ping to monitor server. 
-        '''
+    ###def __init__(self, apfqueue, monitor_id):
+    ###    '''
+    ###    apfqueue is a reference to the APFQueue object creating this plugin.
+    ###    We need it to get qcl, fcl, and mcl config loaders. 
+    ###
+    ###    monitor_id is the value for id_var (input of the singletonfactory)
+    ###    to decide if a new object has to be really created or not.
+    ###    It is the name of the section [] in monitor config object
+    ###    
+    ###    Also sends initial ping to monitor server. 
+    ###    '''
+    def __init__(self, apfqueue, config, section):
 
         self.log = logging.getLogger('main.monitor [singleton created by %s with id %s]' %(apfqueue.apfqname, monitor_id))
         mainlevel = logging.getLogger('main').getEffectiveLevel()

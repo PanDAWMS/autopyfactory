@@ -8,7 +8,7 @@ import logging
 class StatusTest(SchedInterface):
     id = 'statustest'
     
-    def __init__(self, apfqueue):
+    def __init__(self, apfqueue, config, section):
 
         try:
             self.apfqueue = apfqueue                

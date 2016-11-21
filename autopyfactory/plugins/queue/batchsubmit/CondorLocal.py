@@ -13,7 +13,7 @@ class CondorLocal(CondorBase):
     This class is expected to have separate instances for each PandaQueue object. 
     '''
     
-    def __init__(self, apfqueue, config=None):
+    def __init__(self, apfqueue, config, section):
 
         if not config:
             qcl = apfqueue.qcl            
@@ -21,7 +21,7 @@ class CondorLocal(CondorBase):
             qcl = config             
 
         newqcl = qcl.clone().filterkeys('batchsubmit.condorlocal', 'batchsubmit.condorbase')           
-        super(CondorLocal, self).__init__(apfqueue, config=newqcl) 
+        super(CondorLocal, self).__init__(apfqueue, config=newqcl, section) 
         
         self.x509userproxy = None
         plist = qcl.generic_get(self.apfqname, 'batchsubmit.condorlocal.proxy')

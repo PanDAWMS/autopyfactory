@@ -8,7 +8,7 @@ import logging
 class Fixed(SchedInterface):
     id = 'fixed'    
     
-    def __init__(self, apfqueue):
+    def __init__(self, apfqueue, config, section):
         try:
             self.apfqueue = apfqueue                
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)

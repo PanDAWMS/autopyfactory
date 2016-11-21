@@ -14,7 +14,7 @@ class Scale(SchedInterface):
     Returns the input as it is in case there is no scale factor defined.
     '''   
  
-    def __init__(self, apfqueue):
+    def __init__(self, apfqueue, config, section):
 
         try:
             self.apfqueue = apfqueue                

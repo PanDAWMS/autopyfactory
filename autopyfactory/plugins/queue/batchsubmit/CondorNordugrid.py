@@ -14,13 +14,13 @@ class CondorNordugrid(CondorCE):
     This class is expected to have separate instances for each PandaQueue object. 
     '''
    
-    def __init__(self, apfqueue, config=None):
+    def __init__(self, apfqueue, config, section):
         if not config:
             qcl = apfqueue.qcl            
         else:
             qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condornordugrid', 'batchsubmit.condorce')
-        super(CondorNordugrid, self).__init__(apfqueue, config=newqcl) 
+        super(CondorNordugrid, self).__init__(apfqueue, config=newqcl, section) 
         try:
             self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condornordugrid.gridresource') 
             self.nordugridrsl = self._nordugridrsl(qcl)

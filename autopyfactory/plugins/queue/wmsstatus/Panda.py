@@ -50,7 +50,7 @@ class Panda(threading.Thread, WMSStatusInterface):
 
     __metaclass__ = Singleton
 
-    def __init__(self, apfqueue, **kw):
+    def __init__(self, apfqueue, config, section):
         # NOTE:
         # the **kw is not needed at this time,
         # but we use it to keep compatibility with WMS Status Condor plugin

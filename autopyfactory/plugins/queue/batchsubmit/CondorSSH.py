@@ -32,14 +32,14 @@ class CondorSSH(CondorBase):
     This class is expected to have separate instances for each PandaQueue object. 
     '''
        
-    def __init__(self, apfqueue, config=None):
+    def __init__(self, apfqueue, config, section):
         
         if not config:
             qcl = apfqueue.qcl            
         else:
             qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorssh', 'batchsubmit.condorbase')
-        super(CondorSSH, self).__init__(apfqueue, config=newqcl) 
+        super(CondorSSH, self).__init__(apfqueue, config=newqcl, section) 
         # check local bosco install, will throw exeption if not present
          
         try:

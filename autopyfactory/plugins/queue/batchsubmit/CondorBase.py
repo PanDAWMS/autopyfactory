@@ -24,7 +24,7 @@ import autopyfactory.utils as utils
 
 class CondorBase(BatchSubmitInterface):
     
-    def __init__(self, apfqueue, config=None):
+    def __init__(self, apfqueue, config, section):
         if not config:
             qcl = apfqueue.qcl            
         else:

@@ -42,7 +42,7 @@ class Condor(threading.Thread, BatchHistoryInterface):
     
     __metaclass__ = CondorSingleton 
     
-    def __init__(self, apfqueue, **kw):
+    def __init__(self, apfqueue, config, section):
 
         threading.Thread.__init__(self) # init the thread
         

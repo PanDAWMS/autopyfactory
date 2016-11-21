@@ -20,7 +20,7 @@ class KeepNRunning(SchedInterface):
     '''
     id = 'keepnrunning'
     
-    def __init__(self, apfqueue):
+    def __init__(self, apfqueue, config, section):
 
         try:
             self.apfqueue = apfqueue                

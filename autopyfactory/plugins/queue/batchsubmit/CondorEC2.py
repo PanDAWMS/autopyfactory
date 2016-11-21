@@ -18,14 +18,14 @@ mincondorversion(8,1,1)
 class CondorEC2(CondorGrid):
     id = 'condorec2'
     
-    def __init__(self, apfqueue, config=None):
+    def __init__(self, apfqueue, config, section):
         if not config:
             qcl = apfqueue.qcl            
         else:
             qcl = config
         
         newqcl = qcl.clone().filterkeys('batchsubmit.condorec2', 'batchsubmit.condorgrid')
-        super(CondorEC2, self).__init__(apfqueue, newqcl)
+        super(CondorEC2, self).__init__(apfqueue, newqcl, section)
        
         try:
             self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.gridresource') 

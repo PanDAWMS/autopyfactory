@@ -10,13 +10,13 @@ from autopyfactory import jsd
 class CondorPBS(CondorGrid):
     id = 'condorpbs'
     
-    def __init__(self, apfqueue, config=None):
+    def __init__(self, apfqueue, config, section):
         if not config:
             qcl = apfqueue.qcl            
         else:
             qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorpbs', 'batchsubmit.condorgrid')
-        super(CondorPBS, self).__init__(apfqueue, config=newqcl)        
+        super(CondorPBS, self).__init__(apfqueue, config=newqcl, section)
 
         self.log.info('CondorPBS: Object initialized.')
 

@@ -8,7 +8,7 @@ import logging
 class Fillactivated(SchedInterface):
     id = 'fillactivated'
     
-    def __init__(self, apfqueue):
+    def __init__(self, apfqueue, config, section):
 
         try:
             self.apfqueue = apfqueue                

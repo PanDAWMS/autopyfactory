@@ -9,13 +9,13 @@ from autopyfactory import jsd
 
 class CondorGRAM(CondorCE):
    
-    def __init__(self, apfqueue, config=None):
+    def __init__(self, apfqueue, config, section):
         if not config:
             qcl = apfqueue.qcl            
         else:
             qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorgram', 'batchsubmit.condorce')    
-        super(CondorGRAM, self).__init__(apfqueue, config=newqcl) 
+        super(CondorGRAM, self).__init__(apfqueue, config=newqcl, section) 
         
         try:
             self.globus = self._globusrsl(apfqueue, qcl) 

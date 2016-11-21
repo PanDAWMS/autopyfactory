@@ -8,7 +8,7 @@ from autopyfactory.interfaces import SchedInterface
 class Ready(SchedInterface):
     id = 'ready'
     
-    def __init__(self, apfqueue):
+    def __init__(self, apfqueue, config, section):
 
         try:
             self.apfqueue = apfqueue                

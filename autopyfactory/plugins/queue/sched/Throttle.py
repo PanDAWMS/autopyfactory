@@ -10,7 +10,7 @@ from autopyfactory.interfaces import SchedInterface
 class Throttle(SchedInterface):
     id = 'throttle'
     
-    def __init__(self, apfqueue):
+    def __init__(self, apfqueue, config, section):
 
         try:
             self.apfqueue = apfqueue                

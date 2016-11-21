@@ -46,7 +46,7 @@ class CondorEC2(threading.Thread, BatchStatusInterface):
     '''   
     __metaclass__ = CondorSingleton 
     
-    def __init__(self, apfqueue, **kw):
+    def __init__(self, apfqueue, config, section):
         threading.Thread.__init__(self) # init the thread
         
         self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s with condor_q_id %s]" %(apfqueue.apfqname, kw['condor_q_id']))

@@ -12,7 +12,7 @@ class Null(SchedInterface):
     other features of APF have to be tested, but there is no
     interest on submitting any actual pilot at all. 
     '''       
-    def __init__(self, apfqueue):
+    def __init__(self, apfqueue, config, section):
         try:
             self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
             self.log.trace("SchedPlugin: Object initialized.")

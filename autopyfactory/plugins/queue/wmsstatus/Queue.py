@@ -29,7 +29,7 @@ class Queue(threading.Thread, WMSStatusInterface):
     '''
     '''
 
-    def __init__(self, apfqueue, **kw):
+    def __init__(self, apfqueue, config, section):
 
         try:
             self.apfqueue = apfqueue

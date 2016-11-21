@@ -37,7 +37,7 @@ class Condor(threading.Thread, WMSStatusInterface):
    
     __metaclass__ = CondorSingleton 
     
-    def __init__(self, apfqueue, **kw):
+    def __init__(self, apfqueue, config, section):
         #try:
         threading.Thread.__init__(self) # init the thread
         

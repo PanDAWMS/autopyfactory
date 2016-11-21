@@ -72,7 +72,7 @@ class Panda(MonitorInterface):
     
     __metaclass__ = singletonfactory(id_var="monitor_id")
 
-    def __init__(self, apfqueue, monitor_id):
+    def __init__(self, apfqueue, config, section):
         pass
  
  
