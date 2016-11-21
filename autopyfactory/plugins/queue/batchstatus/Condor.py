@@ -51,8 +51,8 @@ class Condor(threading.Thread, BatchStatusInterface):
         section = k[2]
         
         id = 'local'
-        if conf.get(section, 'batchstatusplugin') == 'Condor':
-            queryargs = apfqueue.qcl.generic_get(section, 'batchstatus.condor.queryargs')
+        if conf.generic_get(section, 'batchstatusplugin') == 'Condor':
+            queryargs = conf.generic_get(section, 'batchstatus.condor.queryargs')
             if queryargs:
                 l = queryargs.split()  # convert the string into a list
                                        # e.g.  ['-name', 'foo', '-pool', 'bar'....]
