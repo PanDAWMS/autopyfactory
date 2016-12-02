@@ -10,10 +10,8 @@ from autopyfactory import jsd
 class CondorGRAM(CondorCE):
    
     def __init__(self, apfqueue, config, section):
-        if not config:
-            qcl = apfqueue.qcl            
-        else:
-            qcl = config
+
+        qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorgram', 'batchsubmit.condorce')    
         super(CondorGRAM, self).__init__(apfqueue, config=newqcl, section) 
         

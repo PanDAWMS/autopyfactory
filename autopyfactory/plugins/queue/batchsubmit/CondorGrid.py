@@ -11,10 +11,8 @@ from autopyfactory import jsd
 class CondorGrid(CondorBase):
    
     def __init__(self, apfqueue, config, section):
-        if not config:
-            qcl = apfqueue.qcl            
-        else:
-            qcl = config
+
+        qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorgrid', 'batchsubmit.condorbase')
         super(CondorGrid, self).__init__(apfqueue, newqcl, section) 
         

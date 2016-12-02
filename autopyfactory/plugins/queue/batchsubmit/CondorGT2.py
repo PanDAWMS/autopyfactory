@@ -14,10 +14,7 @@ class CondorGT2(CondorGRAM):
     '''
    
     def __init__(self, apfqueue, config, section):
-        if not config:
-            qcl = apfqueue.qcl            
-        else:
-            qcl = config
+        qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorgt2', 'batchsubmit.condorgram').filterkeys('globusrsl.gram2', 'batchsubmit.condorgram.gram')
         super(CondorGT2, self).__init__(apfqueue, config=newqcl, section) 
         try:

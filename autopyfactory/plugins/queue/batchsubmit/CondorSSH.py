@@ -34,10 +34,7 @@ class CondorSSH(CondorBase):
        
     def __init__(self, apfqueue, config, section):
         
-        if not config:
-            qcl = apfqueue.qcl            
-        else:
-            qcl = config
+        qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorssh', 'batchsubmit.condorbase')
         super(CondorSSH, self).__init__(apfqueue, config=newqcl, section) 
         # check local bosco install, will throw exeption if not present

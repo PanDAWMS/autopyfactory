@@ -15,10 +15,7 @@ class CondorLocal(CondorBase):
     
     def __init__(self, apfqueue, config, section):
 
-        if not config:
-            qcl = apfqueue.qcl            
-        else:
-            qcl = config             
+        qcl = config             
 
         newqcl = qcl.clone().filterkeys('batchsubmit.condorlocal', 'batchsubmit.condorbase')           
         super(CondorLocal, self).__init__(apfqueue, config=newqcl, section) 
