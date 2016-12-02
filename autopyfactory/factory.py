@@ -577,9 +577,9 @@ class Factory(object):
 
 
     def _plugins(self):
-        self.pluginmgr = PluginManager(self)
+        self.pluginmgr = PluginManager()
         # configuration plugins
-        self.config_plugins = self.pluginmgr.getpluginlist('factory', 'config', self.fcl, 'Factory', 'configplugin')
+        self.config_plugins = self.pluginmgr.getpluginlist(self, 'factory', 'config', self.fcl, 'Factory', 'configplugin')
 
 
     def _initLogserver(self):

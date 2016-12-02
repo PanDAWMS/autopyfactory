@@ -46,16 +46,15 @@ class PluginManager(object):
     Entry point for plugins creation, initialization, starting, and configuration. 
     
     '''
-    def __init__(self, parent):
+    def __init__(self):
         '''
         Top-level object to provide plugins. 
         '''
         self.log = logging.getLogger('main.pluginmanager')
         self.log.debug('PluginManager initialized.')
-        self.parent = parent
 
 
-    def getpluginlist(self, level, kind, config, section, attribute):
+    def getpluginlist(self, parent, level, kind, config, section, attribute):
         '''
         Provide list of initialized plugin objects. Convenience method mainly for sched 
         plugins. 
@@ -67,12 +66,12 @@ class PluginManager(object):
         namelist = [i.strip() for i in namelist.split(',')]
         plist = []
         for name in namelist:
-            po = self._getplugin(level, kind, config, section, name)
+            po = self._getplugin(parent, level, kind, config, section, name)
             plist.append(po)
         return plist
 
 
-    def getplugin(self, level, kind, config, section, attribute):
+    def getplugin(self, parent, level, kind, config, section, attribute):
         '''
         Provide initialized plugin object using config and section. 
         '''
@@ -80,12 +79,12 @@ class PluginManager(object):
             name = config.get(section, attribute)
         except:
             return None
-        return self._getplugin(level, kind, config, section, name)
+        return self._getplugin(parent, level, kind, config, section, name)
 
 
-    def _getplugin(self, level, kind, config, section, name):
+    def _getplugin(self, parent,  level, kind, config, section, name):
         ko = self._getpluginclass(level, kind, name)
-        po = ko(self.parent, config, section)
+        po = ko(parent, config, section)
         return po
     
         
