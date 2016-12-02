@@ -291,9 +291,10 @@ class APFQueue(threading.Thread):
 
         self.scheduler_plugins  = pluginmanager.getpluginlist('queue', 'sched', self.qcl, self.apfqname, 'schedplugin')     # a list of 1 or more plugins
         self.wmsstatus_plugin  = pluginmanager.getplugin('queue', 'wmsstatus', self.qcl, self.apfqname, 'wmsstatusplugin')  # a single WMSStatus plugin
-        self.batchsubmit_plugin = pluginmanager.getplugin('queue', 'batchsubmit', self.qcl, self.apfqname, 'batchsubmit')   # a single BatchSubmit plugin
-        self.batchstatus_plugin = pluginmanager.getplugin('queue', 'batchstatus', self.qcl, self.apfqname, 'batchstatus')   # a single BatchStatus plugin
-        self.monitor_plugins   = pluginmanager.getpluginlist('queue', 'monitor', self.qcl, self.apfqname, 'monitor')        # a list of 1 or more plugins
+        self.batchsubmit_plugin = pluginmanager.getplugin('queue', 'batchsubmit', self.qcl, self.apfqname, 'batchsubmitplugin')   # a single BatchSubmit plugin
+        self.batchstatus_plugin = pluginmanager.getplugin('queue', 'batchstatus', self.qcl, self.apfqname, 'batchstatusplugin')   # a single BatchStatus plugin
+        monitorsection = self.qcl.generic_get(self.apfqname, 'monitorsection')
+        self.monitor_plugins   = pluginmanager.getpluginlist('queue', 'monitor', self.mcl, monitorsection, 'monitorplugin')        # a list of 1 or more plugins
 
     ###def _plugins(self):
     ###    '''
