@@ -51,7 +51,8 @@ from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.logserver import LogServer
 #from autopyfactory.pluginsmanagement import QueuePluginDispatcher
 #from autopyfactory.pluginsmanagement import FactoryPluginDispatcher
-from autopyfactory.plugin import PluginManager
+###from autopyfactory.plugin import PluginManager
+from autopyfactory.pluginmanager import PluginManager
 from autopyfactory.queues import APFQueuesManager
 from autopyfactory.authmanager import AuthManager
 
