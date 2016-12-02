@@ -445,7 +445,7 @@ class APF(object):
         # in monitor.conf 
         apfqueue = k[0]
         conf = k[1]
-        section k[2]
+        section = k[2]
         id = conf.generic_get(section, 'monitorsection')
         # ---------------------------
         
