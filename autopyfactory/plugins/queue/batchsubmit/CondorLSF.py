@@ -14,7 +14,7 @@ class CondorLSF(CondorGrid):
 
         qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorlsf', 'batchsubmit.condorgrid')
-        super(CondorLSF, self).__init__(apfqueue, config=newqcl, section)
+        super(CondorLSF, self).__init__(apfqueue, newqcl, section)
 
         self.log.info('CondorLSF: Object initialized.')
 

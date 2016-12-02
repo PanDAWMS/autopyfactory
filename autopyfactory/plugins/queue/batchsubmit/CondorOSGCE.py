@@ -17,7 +17,7 @@ class CondorOSGCE(CondorCE):
 
         qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorosgce', 'batchsubmit.condorce')
-        super(CondorOSGCE, self).__init__(apfqueue, config=newqcl, section) 
+        super(CondorOSGCE, self).__init__(apfqueue, newqcl, section) 
         try:
             self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorosgce.gridresource') 
             self.port = qcl.generic_get(self.apfqname, 'batchsubmit.condorosgce.port', default_value='9619') 

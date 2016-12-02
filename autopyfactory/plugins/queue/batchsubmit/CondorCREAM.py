@@ -18,7 +18,7 @@ class CondorCREAM(CondorCE):
 
         qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorcream', 'batchsubmit.condorce')
-        super(CondorCREAM, self).__init__(apfqueue, config=newqcl, section) 
+        super(CondorCREAM, self).__init__(apfqueue, newqcl, section) 
         try:
             self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.gridresource') 
             self.webservice = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.webservice')

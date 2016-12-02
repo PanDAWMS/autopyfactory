@@ -14,7 +14,7 @@ class CondorCE(CondorGrid):
         qcl = config
         # we rename the queue config variables to pass a new config object to parent class
         newqcl = qcl.clone().filterkeys('batchsubmit.condorce', 'batchsubmit.condorgrid')
-        super(CondorCE, self).__init__(apfqueue, config=newqcl, section) 
+        super(CondorCE, self).__init__(apfqueue, newqcl, section) 
 
         self.log.info('CondorCE: Object initialized.')
    

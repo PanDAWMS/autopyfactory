@@ -14,7 +14,7 @@ class CondorPBS(CondorGrid):
 
         qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorpbs', 'batchsubmit.condorgrid')
-        super(CondorPBS, self).__init__(apfqueue, config=newqcl, section)
+        super(CondorPBS, self).__init__(apfqueue, newqcl, section)
 
         self.log.info('CondorPBS: Object initialized.')
 

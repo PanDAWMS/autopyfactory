@@ -16,7 +16,7 @@ class CondorGT2(CondorGRAM):
     def __init__(self, apfqueue, config, section):
         qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorgt2', 'batchsubmit.condorgram').filterkeys('globusrsl.gram2', 'batchsubmit.condorgram.gram')
-        super(CondorGT2, self).__init__(apfqueue, config=newqcl, section) 
+        super(CondorGT2, self).__init__(apfqueue, newqcl, section) 
         try:
             self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorgt2.gridresource') 
         except Exception, e:

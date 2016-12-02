@@ -13,7 +13,7 @@ class CondorGRAM(CondorCE):
 
         qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorgram', 'batchsubmit.condorce')    
-        super(CondorGRAM, self).__init__(apfqueue, config=newqcl, section) 
+        super(CondorGRAM, self).__init__(apfqueue, newqcl, section) 
         
         try:
             self.globus = self._globusrsl(apfqueue, qcl) 

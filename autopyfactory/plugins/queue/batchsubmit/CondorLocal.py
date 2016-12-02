@@ -18,7 +18,7 @@ class CondorLocal(CondorBase):
         qcl = config             
 
         newqcl = qcl.clone().filterkeys('batchsubmit.condorlocal', 'batchsubmit.condorbase')           
-        super(CondorLocal, self).__init__(apfqueue, config=newqcl, section) 
+        super(CondorLocal, self).__init__(apfqueue, newqcl, section) 
         
         self.x509userproxy = None
         plist = qcl.generic_get(self.apfqname, 'batchsubmit.condorlocal.proxy')
