@@ -42,7 +42,8 @@ from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailur
 from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
-from autopyfactory.pluginsmanagement import QueuePluginDispatcher
+###from autopyfactory.pluginsmanagement import QueuePluginDispatcher
+from autopyfactory.pluginmanager import PluginManager
 
 
 class APFQueuesManager(object):
@@ -279,17 +280,31 @@ class APFQueue(threading.Thread):
         
         self.log.debug('APFQueue: Object initialized.')
 
+
+
     def _plugins(self):
         '''
-         method just to instantiate the plugin objects
+        get all the plugins needed by APFQueues
         '''
+        
+        pluginmanager = PluginManager(self)
 
-        pd = QueuePluginDispatcher(self)
-        self.scheduler_plugins = pd.schedplugins        # a list of 1 or more plugins
-        self.wmsstatus_plugin = pd.wmsstatusplugin      # a single WMSStatus plugin
-        self.batchsubmit_plugin = pd.submitplugin       # a single BatchSubmit plugin
-        self.batchstatus_plugin = pd.batchstatusplugin  # a single BatchStatus plugin
-        self.monitor_plugins = pd.monitorplugins        # a list of 1 or more plugins
+        self.scheduler_plugins  = pluginmanager.getpluginlist('queue', 'sched', self.qcl, self.apfqname, 'schedplugin')     # a list of 1 or more plugins
+        self.wmsstatus_plugin  = pluginmanager.getplugin('queue', 'wmsstatus', self.qcl, self.apfqname, 'wmsstatusplugin')  # a single WMSStatus plugin
+        self.batchsubmit_plugin = pluginmanager.getplugin('queue', 'batchsubmit', self.qcl, self.apfqname, 'batchsubmit')   # a single BatchSubmit plugin
+        self.batchstatus_plugin = pluginmanager.getplugin('queue', 'batchstatus', self.qcl, self.apfqname, 'batchstatus')   # a single BatchStatus plugin
+        self.monitor_plugins   = pluginmanager.getpluginlist('queue', 'monitor', self.qcl, self.apfqname, 'monitor')        # a list of 1 or more plugins
+
+    ###def _plugins(self):
+    ###    '''
+    ###     method just to instantiate the plugin objects
+    ###    '''
+    ###    pd = QueuePluginDispatcher(self)
+    ###    self.scheduler_plugins = pd.schedplugins        # a list of 1 or more plugins
+    ###    self.wmsstatus_plugin = pd.wmsstatusplugin      # a single WMSStatus plugin
+    ###    self.batchsubmit_plugin = pd.submitplugin       # a single BatchSubmit plugin
+    ###    self.batchstatus_plugin = pd.batchstatusplugin  # a single BatchStatus plugin
+    ###    self.monitor_plugins = pd.monitorplugins        # a list of 1 or more plugins
 
         
 # Run methods
