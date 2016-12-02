@@ -110,6 +110,8 @@ setup(
     url='https://twiki.cern.ch/twiki/bin/view/Atlas/PanDA',
     packages=['autopyfactory',
               'autopyfactory.plugins',
+              'autopyfactory.plugins.authmanager',
+              'autopyfactory.plugins.authmanager.auth',
               'autopyfactory.plugins.factory',
               'autopyfactory.plugins.factory.config',
               'autopyfactory.plugins.queue',
@@ -120,7 +122,6 @@ setup(
               'autopyfactory.plugins.queue.wmsstatus',
               'autopyfactory.external',
               'autopyfactory.external.panda',
-              'autopyfactory.plugins.auth',
               ],
     scripts = [ # Utilities and main script
                'bin/autopyfactory',
