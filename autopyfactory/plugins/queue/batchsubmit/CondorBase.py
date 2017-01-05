@@ -77,9 +77,10 @@ class CondorBase(BatchSubmitInterface):
         self.log.debug('Preparing to submit %s jobs' %n)
         joblist = None
 
-        if not utils.checkDaemon('condor'):
-            self.log.debug('condor daemon is not running. Doing nothing')
-            return joblist
+        #   This assumes job submission is local, but we want to support remote.
+        #if not utils.checkDaemon('condor'):
+        #    self.log.debug('condor daemon is not running. Doing nothing')
+        #    return joblist
         
         try:
             if n > 0:
