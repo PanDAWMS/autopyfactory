@@ -40,7 +40,7 @@ class CondorGrid(CondorBase):
 
     def _getX509Proxy(self):
         '''
-        uses proxymanager to find out the path to the X509 file
+        uses authmanager to find out the path to the X509 file
         '''
     
         self.log.trace("Determining proxy, if necessary. Profile: %s" % self.proxylist)
