@@ -65,7 +65,6 @@ Job update command:
 '''
 
 from autopyfactory.interfaces import MonitorInterface
-from autopyfactory.interfaces import Singleton, CondorSingleton
 
 
 class Panda(MonitorInterface):

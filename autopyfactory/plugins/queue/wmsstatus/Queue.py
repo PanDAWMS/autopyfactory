@@ -15,7 +15,6 @@ import traceback
 from urllib import urlopen
 
 from autopyfactory.interfaces import WMSStatusInterface
-from autopyfactory.interfaces import Singleton
 from autopyfactory.info import WMSStatusInfo
 from autopyfactory.info import WMSQueueInfo
 from autopyfactory.info import WMSStatusInfo

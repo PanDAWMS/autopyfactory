@@ -3,7 +3,6 @@
 
 
 from autopyfactory.interfaces import SchedInterface
-from autopyfactory.interfaces import Singleton
 import logging
 
 
