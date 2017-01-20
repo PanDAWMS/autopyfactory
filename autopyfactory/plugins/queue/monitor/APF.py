@@ -85,7 +85,8 @@ class _apf(MonitorInterface):
 
     def __init__(self, apfqueue, config, section):
 
-        monitor_id = config.generic_get(section, "monitorsection")
+        #monitor_id = config.generic_get(section, "monitorsection")
+        monitor_id = section
         self.log = logging.getLogger('main.monitor [singleton created by %s with id %s]' %(apfqueue.apfqname, monitor_id))
         mainlevel = logging.getLogger('main').getEffectiveLevel()
         self.log.setLevel(mainlevel)
