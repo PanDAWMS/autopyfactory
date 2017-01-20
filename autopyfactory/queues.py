@@ -294,6 +294,7 @@ class APFQueue(threading.Thread):
         self.wmsstatus_plugin.start() # start the thread
         self.batchsubmit_plugin = pluginmanager.getplugin(self, 'queue', 'batchsubmit', self.qcl, self.apfqname, 'batchsubmitplugin')   # a single BatchSubmit plugin
         self.batchstatus_plugin = pluginmanager.getplugin(self, 'queue', 'batchstatus', self.qcl, self.apfqname, 'batchstatusplugin')   # a single BatchStatus plugin
+        self.batchstatus_plugin.start() # start the thread
         monitorsection = self.qcl.generic_get(self.apfqname, 'monitorsection')
         self.monitor_plugins   = pluginmanager.getpluginlist(self, 'queue', 'monitor', self.mcl, monitorsection, 'monitorplugin')        # a list of 1 or more plugins
 
