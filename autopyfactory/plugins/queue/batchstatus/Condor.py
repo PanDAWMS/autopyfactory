@@ -28,7 +28,7 @@ from autopyfactory.mappings import map2info
 import autopyfactory.utils as utils
 
 
-class __condor(threading.Thread, BatchStatusInterface):
+class _condor(threading.Thread, BatchStatusInterface):
     '''
     -----------------------------------------------------------------------
     This class is expected to have separate instances for each PandaQueue object. 
@@ -251,7 +251,7 @@ class Condor(object):
         # ---------------------------------------------------------------------
 
         if not id in Condor.instances.keys():
-            Condor.instances[id] = Condor.__condor(*k, **kw)
+            Condor.instances[id] = _condor(*k, **kw)
         return Condor.instances[id]
 
 
