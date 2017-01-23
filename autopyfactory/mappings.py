@@ -4,6 +4,7 @@ classes and methods to map structures of info
 from one type to another
 '''
 import logging
+import time
 from Queue import Queue
 
 import autopyfactory.utils as utils
