@@ -88,7 +88,8 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
     out = _querycondorlib(list_attrs, remotecollector, remoteschedd)
     ###out = _aggregateinfolib(out, queueskey, 'jobstatus') 
     from mappings import JobStatusAnalyzer
-    out = _aggregateinfolib(out, queueskey, JobStatusAnalyzer()) 
+    jobstatusanalyzer = JobStatusAnalyzer()
+    out = _aggregateinfolib(out, queueskey, [jobstatusanalyzer]) 
     log.trace(out)
     return out 
 
