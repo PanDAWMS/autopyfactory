@@ -12,6 +12,18 @@ Design goals/features:
 -- Ensure exceptions allow clean failure for both modes, so that a bad queue definition in AGIS
    doesn't prevent a reload, and any previous config files can be preserved. 
 
+-- to use it as a script from command line:
+
+    -t trace
+    -C cloud
+    -V VO
+    -D defaults
+    -o output file
+    
+    $ python /usr/lib/python2.6/site-packages/autopyfactory/plugins/factory/config/Agis.py -t --activity analysis -C US -V ATLAS -D /etc/autopyfactory/agisdefaults-analysis.conf -o /etc/autopyfactory/us-analysis-agis.conf
+    
+    $ python /usr/lib/python2.6/site-packages/autopyfactory/plugins/factory/config/Agis.py -t --activity production -C US -V ATLAS -D /etc/autopyfactory/agisdefaults-production.conf -o /etc/autopyfactory/us-production-agis.conf
+
 '''
 from __future__ import print_function
 
@@ -510,7 +522,7 @@ class Agis(ConfigInterface):
         cp = Config()
         
         if self.defaultsfile is not None:
-            cp.readfp(self.defaultsfile)
+            cp.readfp(open(self.defaultsfile))
         for q in self.allqueues:
             for cq in q.ce_queues:
                 qc = cq.getConfig()
