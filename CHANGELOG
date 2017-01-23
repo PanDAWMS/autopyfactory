@@ -8,7 +8,6 @@
 * using mappings.map2info() in BatchStatus plugin CondorEC2.py
 * using mappings.map2info() in BatchStatus plugin Condor.py
 * using mappings.map2info() in WMSStatus plugin Condor.py
-* fixed TRACE custom level to print right lineno in the log message
 * added a generic version of _map2info() to new module mappings.py
 * WMS Status plugin Condor queries using the condor python libraries
 * Batch Status plugin Condor queries using the condor python libraries
