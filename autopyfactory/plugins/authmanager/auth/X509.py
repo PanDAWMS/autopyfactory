@@ -34,6 +34,7 @@ class X509(threading.Thread):
         self.name = section
         self.log.debug("[%s] Starting X509Handler init." % self.name)
         self.manager = manager
+        self.factory = manager.factory
         self.owner = None
         self.group = None
 

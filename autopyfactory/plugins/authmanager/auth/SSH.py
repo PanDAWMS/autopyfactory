@@ -17,6 +17,7 @@ class SSH(object):
         self.log = logging.getLogger('main.sshhandler')
         self.name = section
         self.manager = manager
+        self.factory = manager.factory
         self.basedir = os.path.expanduser(config.get(section, 'authbasedir'))
         self.sshtype = config.get(section, 'ssh.type' )
         self.privkey = config.get(section, 'ssh.privatekey' )
