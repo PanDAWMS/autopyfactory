@@ -168,10 +168,10 @@ class _condor(_thread, BatchStatusInterface):
                 # FIXME: the self.queryargs need to be decomposed into querycondorlib() input options
                 strout = querycondorlib()
                 self.log.debug('output of querycondorlib : ' %strout)
-                if not strout:
+                if strout is None:
                     self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.')
                 else:
-                    newinfo = map2info(strout, BatchStatusInfo(), self,jobstatus2info)
+                    newinfo = map2info(strout, BatchStatusInfo(), self.jobstatus2info)
                     self.log.info("Replacing old info with newly generated info.")
                     self.currentinfo = newinfo
             except Exception, e:
