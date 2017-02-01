@@ -14,7 +14,9 @@ import shutil
 import threading
 import time
 
-class CleanLogs(threading.Thread):
+from autopyfactory.interfaces import _thread
+
+class CleanLogs(_thread):
     '''
     -----------------------------------------------------------------------
     Class to handle the log files removal.
@@ -37,6 +39,8 @@ class CleanLogs(threading.Thread):
         the CleanLogs instance
         '''
 
+        _thread.__init__(self)
+
         self.log = logging.getLogger('main.cleanlogs')
         self.log.trace('CleanLogs: Initializing object...')
     
@@ -45,26 +49,27 @@ class CleanLogs(threading.Thread):
         self.qcl = factory.qcl
         self.logDir = self.fcl.get('Factory', 'baseLogDir')
 
-        threading.Thread.__init__(self) # init the thread
-        self.stopevent = threading.Event()
-
         self.log.trace('CleanLogs: Object initialized.')
 
-    def run(self):
+
+    def _time_between_loops(self):
+        '''
+        sleep for one day
+        At some point, this should be read from config file
+        '''
+        # sleep 24 hours
+        sleeptime = 24 * 60 * 60 
+        return sleeptime
+
+
+    def _run(self):
         '''
         Main loop
         '''
         self.log.trace('Starting.')
-
-        while True:
-            try:
-                while not self.stopevent.isSet():
-                    self.__process()
-                    self.__sleep()
-            except Exception, e:
-                self.log.error("Main loop caught exception: %s " % str(e))
-        
+        self.__process()
         self.log.trace('Leaving.')
+
 
     def __process(self):
         '''
@@ -96,14 +101,6 @@ class CleanLogs(threading.Thread):
         self.log.trace("Leaving.")
 
 
-    def __sleep(self):
-        '''
-        sleep for one day
-        At some point, this should be read from config file
-        '''
-        # sleep 24 hours
-        sleeptime = 24 * 60 * 60 
-        time.sleep(sleeptime) 
 
 
 # =============================================================

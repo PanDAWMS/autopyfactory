@@ -10,7 +10,7 @@ import threading
 import traceback
 import xml.dom.minidom
 
-from autopyfactory.interfaces import WMSStatusInterface
+from autopyfactory.interfaces import WMSStatusInterface, _thread
 
 from autopyfactory.info import CloudInfo
 from autopyfactory.info import SiteInfo
@@ -23,7 +23,7 @@ from autopyfactory.condorlib import querycondorlib
 from autopyfactory.mappings import map2info
 
 
-class __condor(threading.Thread, WMSStatusInterface):
+class __condor(_thread, WMSStatusInterface):
     '''
     -----------------------------------------------------------------------
     This class is expected to have separate instances for each object. 
@@ -36,15 +36,11 @@ class __condor(threading.Thread, WMSStatusInterface):
 
     def __init__(self, apfqueue, config, section):
         #try:
-        threading.Thread.__init__(self) # init the thread
+        _thread.__init__(self) 
         
         self.log = logging.getLogger("main.wmsstatusplugin[singleton created by %s]" %apfqueue.apfqname)
         self.log.debug('Initializing object...')
-        self.stopevent = threading.Event()
 
-        # to avoid the thread to be started more than once
-        self.__started = False
-        
         self.apfqueue = apfqueue   
         self.apfqname = apfqueue.apfqname
         #self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
@@ -81,6 +77,19 @@ class __condor(threading.Thread, WMSStatusInterface):
         self.lasttime = 0
         checkCondor()
         self.log.info('WMSStatusPlugin: Object initialized.')
+
+
+    def _time_between_loops(self):
+        return self.sleeptime
+
+
+    def _run(self):
+        '''
+        Main loop
+        '''
+        self.log.debug('Starting')
+        self._update()
+        self.log.debug('Leaving')
 
 
     def getInfo(self, queue=None, maxtime=0):
@@ -141,36 +150,6 @@ class __condor(threading.Thread, WMSStatusInterface):
                 self.log.debug('Leaving and returning info of %d entries.' % len(self.currentsiteinfo))
                 return self.currentsiteinfo
 
-  
-    def start(self):
-        '''
-        We override method start() to prevent the thread
-        to be started more than once
-        '''
-
-        self.log.debug('Starting')
-
-        if not self.__started:
-                self.log.debug("Creating Condor batch status thread...")
-                self.__started = True
-                threading.Thread.start(self)
-
-        self.log.debug('Leaving.')
-
-    def run(self):
-        '''
-        Main loop
-        '''
-
-        self.log.debug('Starting')
-        while not self.stopevent.isSet():
-            try:
-                self._update()
-            except Exception, e:
-                self.log.error("Main loop caught exception: %s " % str(e))
-            self.log.debug("Sleeping for %d seconds..." % self.sleeptime)
-            time.sleep(self.sleeptime)
-        self.log.debug('Leaving')
 
     def _update(self):
         '''        
@@ -238,16 +217,6 @@ class __condor(threading.Thread, WMSStatusInterface):
         self.log.debug('_ Leaving.')
 
 
-    def join(self, timeout=None):
-        ''' 
-        Stop the thread. Overriding this method required to handle Ctrl-C from console.
-        ''' 
-
-        self.log.debug('Starting with input %s' %timeout)
-        self.stopevent.set()
-        self.log.debug('Stopping thread....')
-        threading.Thread.join(self, timeout)
-        self.log.debug('Leaving')
 
 
 # =============================================================================

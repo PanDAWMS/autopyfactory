@@ -15,7 +15,7 @@ import xml.dom.minidom
 
 from datetime import datetime
 from pprint import pprint
-from autopyfactory.interfaces import BatchStatusInterface
+from autopyfactory.interfaces import BatchStatusInterface, _thread
 from autopyfactory.info import BatchStatusInfo
 from autopyfactory.info import QueueInfo
 
@@ -28,7 +28,7 @@ from autopyfactory.mappings import map2info
 import autopyfactory.utils as utils
 
 
-class _condor(threading.Thread, BatchStatusInterface):
+class _condor(_thread, BatchStatusInterface):
     '''
     -----------------------------------------------------------------------
     This class is expected to have separate instances for each PandaQueue object. 
@@ -40,15 +40,11 @@ class _condor(threading.Thread, BatchStatusInterface):
     '''
     def __init__(self, apfqueue, config, section):
 
-        threading.Thread.__init__(self) # init the thread
+        _thread.__init__(self)
         
         ###self.log = logging.getLogger("main.batchstatusplugin[singleton: %s condor_q_id: %s]" %(apfqueue.apfqname, kw['condor_q_id']))
         self.log = logging.getLogger("main.batchstatusplugin[singleton]")
         self.log.trace('BatchStatusPlugin: Initializing object...')
-        self.stopevent = threading.Event()
-
-        # to avoid the thread to be started more than once
-        self.__started = False
 
         self.apfqueue = apfqueue
         self.apfqname = apfqueue.apfqname
@@ -67,7 +63,6 @@ class _condor(threading.Thread, BatchStatusInterface):
             self.sleeptime = 10
             self.log.warning("Got AttributeError during init. We should be running stand-alone for testing.")
        
-        
 
         self.currentinfo = None              
 
@@ -95,6 +90,17 @@ class _condor(threading.Thread, BatchStatusInterface):
         self.log.info('BatchStatusPlugin: Object initialized.')
 
 
+    def _time_between_loops(self):
+        return self.sleeptime
+
+
+    def _run(self):
+        '''
+        Main loop
+        '''
+        self.log.trace('Starting')
+        self._updatelib()
+        self.log.trace('Leaving')
 
 
     def getInfo(self, queue=None):
@@ -126,47 +132,7 @@ class _condor(threading.Thread, BatchStatusInterface):
 
 
 
-    def start(self):
-        '''
-        We override method start() to prevent the thread
-        to be started more than once
-        '''
 
-        self.log.trace('Starting')
-
-        if not self.__started:
-                self.log.trace("Creating Condor batch status thread...")
-                self.__started = True
-                threading.Thread.start(self)
-
-        self.log.trace('Leaving.')
-
-    def run(self):
-        '''
-        Main loop
-        '''
-
-        self.log.trace('Starting')
-        while not self.stopevent.isSet():
-            try:
-                self._updatelib()
-            except Exception, e:
-                self.log.error("Main loop caught exception: %s " % str(e))
-            self.log.trace("Sleeping for %d seconds..." % self.sleeptime)
-            time.sleep(self.sleeptime)
-        self.log.trace('Leaving')
-
-
-    def join(self, timeout=None):
-        ''' 
-        Stop the thread. Overriding this method required to handle Ctrl-C from console.
-        ''' 
-
-        self.log.trace('Starting with input %s' %timeout)
-        self.stopevent.set()
-        self.log.trace('Stopping thread....')
-        threading.Thread.join(self, timeout)
-        self.log.trace('Leaving')
 
 
     ###############################################################################

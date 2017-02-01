@@ -17,7 +17,7 @@ import sys
 from datetime import datetime
 from pprint import pprint
 
-from autopyfactory.interfaces import BatchStatusInterface
+from autopyfactory.interfaces import BatchStatusInterface, _thread
 from autopyfactory.info import BatchStatusInfo
 from autopyfactory.info import QueueInfo
 
@@ -33,7 +33,7 @@ import autopyfactory.utils as utils
 
 mincondorversion(8,1,1)
 
-class __condorec2(threading.Thread, BatchStatusInterface):
+class __condorec2(_thread, BatchStatusInterface):
     '''
     BatchStatusPlugin intended to handle CloudInstances, i.e. a combination of a 
     submitted VM job AND startd information gathered from 'condor_status -master' output. 
@@ -44,15 +44,11 @@ class __condorec2(threading.Thread, BatchStatusInterface):
     '''   
 
     def __init__(self, apfqueue, config, section):
-        threading.Thread.__init__(self) # init the thread
+        _thread.__init__(self) 
         
         ###self.log = logging.getLogger("main.batchstatusplugin[singleton created by %s with condor_q_id %s]" %(apfqueue.apfqname, kw['condor_q_id']))
         self.log = logging.getLogger("main.batchstatusplugin[singleton]")
         self.log.trace('BatchStatusPlugin: Initializing object...')
-        self.stopevent = threading.Event()
-
-        # to avoid the thread to be started more than once
-        self.__started = False
 
         self.apfqueue = apfqueue
         self.apfqname = apfqueue.apfqname
@@ -93,6 +89,20 @@ class __condorec2(threading.Thread, BatchStatusInterface):
         # the info is recorded as seconds since epoch
         self.lasttime = 0
         self.log.info('BatchStatusPlugin: Object initialized.')
+
+
+    def _time_between_loops(self):
+        return self.sleeptime
+
+
+    def _run(self):
+        '''
+        Main loop
+        '''
+        self.log.trace('Starting')
+        self._update()
+        self.log.trace('Leaving')
+
 
     def getInfo(self, queue=None, maxtime=0):
         '''
@@ -152,37 +162,6 @@ class __condorec2(threading.Thread, BatchStatusInterface):
             else:
                 self.log.trace('getInfo: Leaving and returning all jobinfo w/ %d entries.' % len(self.currentjobs))
                 return self.currentjobs
-
-
-    def start(self):
-        '''
-        We override method start() to prevent the thread
-        to be started more than once
-        '''
-
-        self.log.trace('Starting')
-
-        if not self.__started:
-                self.log.trace("Creating Condor batch status thread...")
-                self.__started = True
-                threading.Thread.start(self)
-
-        self.log.trace('Leaving.')
-
-    def run(self):
-        '''
-        Main loop
-        '''
-
-        self.log.trace('Starting')
-        while not self.stopevent.isSet():
-            try:
-                self._update()
-            except Exception, e:
-                self.log.error("Main loop caught exception: %s " % str(e))
-            self.log.trace("Sleeping for %d seconds..." % self.sleeptime)
-            time.sleep(self.sleeptime)
-        self.log.trace('Leaving')
 
 
     def _update(self):
@@ -487,16 +466,6 @@ class __condorec2(threading.Thread, BatchStatusInterface):
         return hash
         
 
-    def join(self, timeout=None):
-        ''' 
-        Stop the thread. Overriding this method required to handle Ctrl-C from console.
-        ''' 
-
-        self.log.trace('Starting with input %s' %timeout)
-        self.stopevent.set()
-        self.log.trace('Stopping thread....')
-        threading.Thread.join(self, timeout)
-        self.log.trace('Leaving')
 
 
 # =============================================================================

@@ -44,6 +44,7 @@ from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
 ###from autopyfactory.pluginsmanagement import QueuePluginDispatcher
 from autopyfactory.pluginmanager import PluginManager
+from autopyfactory.interfaces import _thread
 
 
 class APFQueuesManager(object):
@@ -213,7 +214,7 @@ class APFQueuesManager(object):
         return d1, d2
  
 
-class APFQueue(threading.Thread):
+class APFQueue(_thread):
     '''
     -----------------------------------------------------------------------
     Encapsulates all the functionality related to servicing each queue (i.e. siteid, i.e. site).
@@ -230,14 +231,13 @@ class APFQueue(threading.Thread):
         factory is the Factory object who created the queue 
         '''
 
+        _thread.__init__(self)
+
         # recording moment the object was created
         self.inittime = datetime.datetime.now()
 
-        threading.Thread.__init__(self) # init the thread
         self.log = logging.getLogger('main.apfqueue[%s]' %apfqname)
         self.log.debug('APFQueue: Initializing object...')
-
-        self.stopevent = threading.Event()
 
         # apfqname is the APF queue name, i.e. the section heading in queues.conf
         self.apfqname = apfqname
@@ -281,6 +281,21 @@ class APFQueue(threading.Thread):
         self.log.debug('APFQueue: Object initialized.')
 
 
+    def _time_between_loops(self):
+        return self.sleep
+
+
+    def _run(self):
+        '''
+        Method called by thread.start()
+        Main functional loop of this APFQueue. 
+        '''        
+        self._callscheds()
+        self._submitpilots()
+        self._monitor()
+        self._exitloop()
+        self._logtime() 
+                          
 
     def _plugins(self):
         '''
@@ -310,31 +325,6 @@ class APFQueue(threading.Thread):
     ###    self.monitor_plugins = pd.monitorplugins        # a list of 1 or more plugins
 
         
-# Run methods
-
-    def run(self):
-        '''
-        Method called by thread.start()
-        Main functional loop of this APFQueue. 
-        '''        
-
-        # give information gathering, and proxy generation enough time to perhaps have info
-        time.sleep(15)
-        while not self.stopevent.isSet():
-            self.log.debug("APFQueue [%s] run(): Beginning submit cycle." % self.apfqname)
-            try:
-
-                self._callscheds()
-                self._submitpilots()
-                self._monitor()
-                self._exitloop()
-                self._logtime() 
-                          
-            except Exception, e:
-                ms = str(e)
-                self.log.error("APFQueue[%s] run(): Caught exception: %s " % (self.apfqname, ms))
-                self.log.debug("APFQueue[%s] run(): Exception: %s" % (self.apfqname, traceback.format_exc()))
-            time.sleep(self.sleep)
 
 
     def _callscheds(self):
@@ -430,13 +420,6 @@ class APFQueue(threading.Thread):
         pass 
         # TO BE IMPLEMENTED
                       
-    def join(self,timeout=None):
-        '''
-        Stop the thread. Overriding this method required to handle Ctrl-C from console.
-        '''
-        self.stopevent.set()
-        self.log.debug('Stopping thread...')
-        threading.Thread.join(self, timeout)
 
                  
 

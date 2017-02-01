@@ -20,16 +20,16 @@ sys.path.insert(0, prepath)
 
 from subprocess import Popen, PIPE, STDOUT
 from autopyfactory.apfexceptions import InvalidProxyFailure
+from autopyfactory.interfaces import _thread
 
         
-class X509(threading.Thread):
+class X509(_thread):
     '''
     Checks, creates, and renews a VOMS proxy. 
     or retrieves suitable credential from MyProxy 
-           
     '''
     def __init__(self, manager, config, section):
-        threading.Thread.__init__(self) # init the thread
+        _thread.__init__(self) 
         self.log = logging.getLogger('main.x509handler')
         self.name = section
         self.log.debug("[%s] Starting X509Handler init." % self.name)
@@ -141,10 +141,21 @@ class X509(threading.Thread):
         self.minlife = int(config.get(section, 'x509.minlife'))
         self.interruptcheck = int(config.get(section,'x509.interruptcheck'))
 
-        # Handle objects
-        self.stopevent = threading.Event()
-
         self.log.debug("[%s] X509Handler initialized." % self.name)
+
+
+    def _time_between_loops(self):
+        return self.checktime
+
+
+    def _run(self):
+        '''
+        Main thread loop. 
+        '''
+        self.log.debug("[%s] Running X509Handler..." % self.name)
+        self.handleProxy()
+        self.log.debug("Leaving")
+
 
     def _generateProxy(self):
         '''
@@ -332,7 +343,6 @@ class X509(threading.Thread):
         return r
 
 
-
     def _validateVOMS(self):
         '''
         returns the VOMS attributes of the proxy
@@ -424,7 +434,6 @@ class X509(threading.Thread):
         return 0
 
 
-
     def _transferproxy(self):
         '''
         transfer proxy to a remote host, if needed
@@ -432,39 +441,7 @@ class X509(threading.Thread):
         # TO BE IMPLEMENTED
         pass
 
-    
-    def join(self,timeout=None):
-        '''
-        Stop the thread. Overriding this method required to handle Ctrl-C from console.
-        '''
-        self.stopevent.set()
-        self.log.debug('Stopping thread...')
-        threading.Thread.join(self, timeout)
 
-   
-    def run(self):
-        '''
-        Main thread loop. 
-        '''
-        self.log.debug("[%s] Starting X509Handler thread." % self.name)
-        # Delay running to allow for other profiles to complete
-        self.log.trace("Delaying %d seconds..." % self.initdelay)
-        time.sleep(self.initdelay)
-        
-        
-        # Always run the first time!
-        lastrun = int(time.time()) - 10000000
-        while not self.stopevent.isSet():
-            now = int(time.time())
-            if (now - lastrun ) < self.checktime:
-                pass
-            else:
-                self.log.debug("[%s] Running X509Handler..." % self.name)
-                self.handleProxy()
-                lastrun = int(time.time())    
-            # Check relatively frequently for interrupts
-            time.sleep(int(self.interruptcheck))
-                          
     def handleProxy(self):
         '''
         Create proxy if timeleft is less than minimum...

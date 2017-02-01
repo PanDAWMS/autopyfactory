@@ -14,7 +14,7 @@ import traceback
 
 from urllib import urlopen
 
-from autopyfactory.interfaces import WMSStatusInterface
+from autopyfactory.interfaces import WMSStatusInterface, _thread
 from autopyfactory.info import WMSStatusInfo
 from autopyfactory.info import WMSQueueInfo
 from autopyfactory.info import WMSStatusInfo
@@ -36,7 +36,7 @@ import autopyfactory.external.panda.Client as Client
 
 
 
-class _panda(threading.Thread, WMSStatusInterface):
+class _panda(_thread, WMSStatusInterface):
     '''
     -----------------------------------------------------------------------
     PanDA-flavored version of WMSStatus class.
@@ -54,6 +54,8 @@ class _panda(threading.Thread, WMSStatusInterface):
         # but we use it to keep compatibility with WMS Status Condor plugin
         # However, it would allow for more than one PanDA server.
 
+        _thread.__init__(self)
+
         try:
             self.apfqueue = apfqueue
             self.log = logging.getLogger("main.pandawmsstatusplugin[%s]" %apfqueue.apfqname)
@@ -66,12 +68,6 @@ class _panda(threading.Thread, WMSStatusInterface):
             self.currentjobinfo = None
             self.currentsiteinfo = None
 
-
-            threading.Thread.__init__(self) # init the thread
-            self.stopevent = threading.Event()
-            # to avoid the thread to be started more than once
-            self._started = False 
-
             # Using the Squid Cache when contacting the PanDA server
             Client.useWebCache()
 
@@ -81,6 +77,19 @@ class _panda(threading.Thread, WMSStatusInterface):
             raise ex
         # Using the Squid Cache when contacting the PanDA server
         Client.useWebCache()
+
+
+    def _time_between_loops(self):
+        return self.sleeptime
+
+
+    def _run(self):                
+        '''
+        Main loop
+        '''
+        self.log.trace('Starting.')
+        self._update()
+        self.log.trace('Leaving.')
 
 
     def getInfo(self, queue=None):
@@ -145,33 +154,6 @@ class _panda(threading.Thread, WMSStatusInterface):
                 self.log.trace('getInfo: Leaving. Returning info with %d items' %len(self.currentsiteinfo))
                 return self.currentsiteinfo
 
-    def start(self):
-        '''
-        we override method start to prevent the thread
-        to be started more than once
-        '''
-
-        self.log.trace('Staring.')
-
-        if not self._started:
-                self._started = True
-                threading.Thread.start(self)
-
-        self.log.trace('Leaving.')
-
-    def run(self):                
-        '''
-        Main loop
-        '''
-
-        self.log.trace('Starting.')
-        while not self.stopevent.isSet():
-            try:                       
-                self._update()
-            except Exception, e:
-                self.log.error("Main loop caught exception: %s " % str(e))
-            time.sleep(self.sleeptime)
-        self.log.trace('Leaving.')
 
     def _getmaxtimeinfo(self, infotype, maxtime):
         '''
@@ -584,14 +566,6 @@ class _panda(threading.Thread, WMSStatusInterface):
                     qi.fill(attrdict, mappings=self.jobsstatisticspersite2info, reset=False)
         return wmsstatusinfo
 
-    def join(self,timeout=None):
-        '''
-        stops the thread.
-        '''
-        self.log.trace('Starting with input %s' %timeout)
-        self.stopevent.set()
-        threading.Thread.join(self, timeout)
-        self.log.trace('Leaving.')
 
 
 # =============================================================================
