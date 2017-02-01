@@ -700,9 +700,8 @@ class Factory(object):
                             break
                     else:
                         self.shutdown()
+            self.log.debug('Leaving')
                                 
-
-                        
         except (KeyboardInterrupt): 
             # FIXME
             # this probably is not needed anymore,
