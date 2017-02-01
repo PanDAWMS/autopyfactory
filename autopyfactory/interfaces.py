@@ -231,6 +231,17 @@ class _thread(threading.Thread):
 
 
     def run(self):                
+        self._preloop()
+        self._mainloop()
+        self._postloop()
+
+    def _preloop(self):
+        pass
+
+    def _postloop(self):
+        pass
+
+    def _mainloop(self):                
         while not self.stopevent.isSet():
             try:                       
                 if self._check_for_actions():
