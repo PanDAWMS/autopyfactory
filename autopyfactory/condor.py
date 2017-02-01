@@ -730,9 +730,9 @@ class ProcessCondorRequests(threading.Thread):
                 if req.cmd == 'condor_submit':       
                     self.submit(req)    
 
-    def join(self):
+    def join(self, timeout=None):
         self.stopevent.set()
-        threading.Thread.join(self)
+        threading.Thread.join(self, timeout)
 
 
     def submit(self, req):
