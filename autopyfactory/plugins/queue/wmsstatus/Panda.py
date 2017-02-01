@@ -55,6 +55,7 @@ class _panda(_thread, WMSStatusInterface):
         # However, it would allow for more than one PanDA server.
 
         _thread.__init__(self)
+        apfqueue.factory.threadsregistry.add("plugin", self)
 
         try:
             self.apfqueue = apfqueue

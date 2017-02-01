@@ -232,6 +232,7 @@ class APFQueue(_thread):
         '''
 
         _thread.__init__(self)
+        factory.threadsregistry.add("queue", self)
 
         # recording moment the object was created
         self.inittime = datetime.datetime.now()

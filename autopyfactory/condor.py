@@ -707,6 +707,7 @@ class ProcessCondorRequests(threading.Thread):
 
         self.started = False
         threading.Thread.__init__(self)
+        factory.threadsregistry.add("util", self)
         self.stopevent = threading.Event()
         
         self.factory = factory

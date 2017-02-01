@@ -30,6 +30,7 @@ class X509(_thread):
     '''
     def __init__(self, manager, config, section):
         _thread.__init__(self) 
+        manager.factory.threadsregistry.add("plugin", self)
         self.log = logging.getLogger('main.x509handler')
         self.name = section
         self.log.debug("[%s] Starting X509Handler init." % self.name)

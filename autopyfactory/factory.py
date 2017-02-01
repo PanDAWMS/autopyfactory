@@ -398,6 +398,35 @@ Exploding in 5...4...3...2...1... Have a nice day!''')
             sys.exit(1)          
           
 
+class ThreadsRegistry(object):
+
+    def __init__(self):
+
+        self.log = logging.getLogger('main.registry')
+
+        self.threads = {'queue' : [], 
+                        'plugin' : [], 
+                        'util' : []
+                       }
+
+    def add(self, threadtype, thread):
+        self.threads[threadtype].append(thread)
+
+    def join(self):
+        self.log.debug('stopping plugin threads [%s]' %len(self.threads['plugin']))
+        for thread in self.threads['plugin']: 
+            self.log.debug('stopping another plugin thread')
+            thread.join(5)
+
+        self.log.debug('stopping queue threads [%s]' %len(self.threads['queue']))
+        for thread in self.threads['queue']: 
+            self.log.debug('stopping another queue thread')
+            thread.join(5)
+
+        self.log.debug('stopping util threads [%s]' %len(self.threads['util']))
+        for thread in self.threads['util']: 
+            thread.join(5)
+
 
 class Factory(object):
     '''
@@ -432,6 +461,9 @@ class Factory(object):
         self.log = logging.getLogger('main.factory')
         self.log.info('AutoPyFactory version %s' %self.version)
         self.fcl = fcl
+
+        # threads registry
+        self.threadsregistry = ThreadsRegistry()
 
         # APF Queues Manager 
         self.apfqueuesmanager = APFQueuesManager(self)
@@ -724,24 +756,26 @@ class Factory(object):
         self.clean.start()
         self.log.trace('Leaving')
 
+
     def shutdown(self):
         '''
         Method to cleanly shut down all factory activity, joining threads, etc. 
         '''
-
         logging.debug(" Shutting down all Queue threads...")
-        self.log.info("Joining all Queue threads...")
-        self.apfqueuesmanager.join()
-        self.log.info("All Queue threads joined.")
-        if self.fcl.getboolean('Factory', 'proxymanager.enabled'):
-            self.log.info("Shutting down Proxymanager...")
-            self.proxymanager.join()
-            self.log.info("Proxymanager stopped.")
-        if self.fcl.getboolean('Factory', 'logserver.enabled'):
-            self.log.info("Shutting down Logserver...")
-            self.logserver.join()
-            self.log.info("Logserver stopped.")            
-            
+        #self.log.info("Joining all Queue threads...")
+        #self.apfqueuesmanager.join()
+        #self.log.info("All Queue threads joined.")
+        #if self.fcl.getboolean('Factory', 'proxymanager.enabled'):
+        #    self.log.info("Shutting down Proxymanager...")
+        #    self.proxymanager.join()
+        #    self.log.info("Proxymanager stopped.")
+        #if self.fcl.getboolean('Factory', 'logserver.enabled'):
+        #    self.log.info("Shutting down Logserver...")
+        #    self.logserver.join()
+        #    self.log.info("Logserver stopped.")            
+        self.threadsregistry.join() 
+        self.log.debug('Leaving')
+
                             
     def sendAdminEmail(self, subject, messagestring):
         '''

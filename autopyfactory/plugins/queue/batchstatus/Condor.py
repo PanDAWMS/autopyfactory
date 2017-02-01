@@ -41,6 +41,7 @@ class _condor(_thread, BatchStatusInterface):
     def __init__(self, apfqueue, config, section):
 
         _thread.__init__(self)
+        apfqueue.factory.threadsregistry.add("plugin", self)
         
         ###self.log = logging.getLogger("main.batchstatusplugin[singleton: %s condor_q_id: %s]" %(apfqueue.apfqname, kw['condor_q_id']))
         self.log = logging.getLogger("main.batchstatusplugin[singleton]")

@@ -224,6 +224,7 @@ class LogServer(threading.Thread):
         docroot is the path to the base directory of the files to be served. 
         '''
         threading.Thread.__init__(self)
+        factory.threadsregistry.add("util", self)
         self.log= logging.getLogger('main.logserver')
         self.docroot = docroot
         self.port = int(port)

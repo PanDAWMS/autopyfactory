@@ -40,6 +40,7 @@ class CleanLogs(_thread):
         '''
 
         _thread.__init__(self)
+        factory.threadsregistry.add("util", self)
 
         self.log = logging.getLogger('main.cleanlogs')
         self.log.trace('CleanLogs: Initializing object...')
