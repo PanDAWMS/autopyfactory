@@ -639,7 +639,7 @@ class Factory(object):
                 except IOError:
                     self.log.warn("Unable to create robots.txt file...")
             self.log.trace("Creating LogServer object...")
-            self.logserver = LogServer(port=logport, docroot=logpath, index=lsidx)
+            self.logserver = LogServer(self, port=logport, docroot=logpath, index=lsidx)
             self.log.info('LogServer initialized. Starting...')
             self.logserver.start()
             self.log.trace('LogServer thread started.')

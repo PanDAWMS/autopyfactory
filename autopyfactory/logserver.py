@@ -219,7 +219,7 @@ class MyNoListingHTTPRequestHandler(MySimpleHTTPRequestHandler):
 
 class LogServer(threading.Thread):
     
-    def __init__(self, port=25880, docroot="/home/autopyfactory/factory/logs", index = True):
+    def __init__(self, factory, port=25880, docroot="/home/autopyfactory/factory/logs", index = True):
         '''
         docroot is the path to the base directory of the files to be served. 
         '''
