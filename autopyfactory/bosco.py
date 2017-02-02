@@ -20,8 +20,6 @@ prepath = sep.join(fullpathlist[:-2])
 import sys
 sys.path.insert(0, prepath)
 
-from autopyfactory.interfaces import Singleton
-
 # module level threadlock
 boscolock = threading.Lock()
 
@@ -45,12 +43,11 @@ class BoscoCluster(object):
         return self.getentry()
     
 
-class BoscoCLI(object):
+class _boscocli(object):
     '''
     Encapsulates all bosco_cluster command functionality. 
     
     '''
-    __metaclass__ = Singleton
 
     def __init__(self):
         self.log = logging.getLogger("bosco")
@@ -248,7 +245,20 @@ class BoscoCLI(object):
             self.log.trace("releasing lock")
             boscolock.release()
             
-            
+
+
+# Singleton implementation
+class BoscoCLI(object):
+
+    instance = None
+
+    def __new__(cls, *k, **kw):
+        if not BoscoCLI.instance:
+            BoscoCLI.instance = _boscocli(*k, **kw)
+        return BoscoCLI.instance
+
+           
+# ============================================================================= 
             
 if __name__ == '__main__':
     # Set up logging. 
