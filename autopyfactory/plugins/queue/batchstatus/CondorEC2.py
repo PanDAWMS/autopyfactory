@@ -63,6 +63,7 @@ class __condorec2(_thread, BatchStatusInterface):
             self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
             self.maxage = apfqueue.fcl.generic_get('Factory', 'batchstatus.condor.maxtime', default_value=360)
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
+            self._thread_loop_interval = self.sleeptime
             self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs') 
 
         except AttributeError:
@@ -91,9 +92,6 @@ class __condorec2(_thread, BatchStatusInterface):
         self.lasttime = 0
         self.log.info('BatchStatusPlugin: Object initialized.')
 
-
-    def _time_between_loops(self):
-        return self.sleeptime
 
 
     def _run(self):

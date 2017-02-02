@@ -40,6 +40,8 @@ class CleanLogs(_thread):
         '''
 
         _thread.__init__(self)
+        self._thread_loop_interval = 24 * 60 * 60  # sleep 24 hours between loops
+
         factory.threadsregistry.add("util", self)
 
         self.log = logging.getLogger('main.cleanlogs')
@@ -51,16 +53,6 @@ class CleanLogs(_thread):
         self.logDir = self.fcl.get('Factory', 'baseLogDir')
 
         self.log.trace('CleanLogs: Object initialized.')
-
-
-    def _time_between_loops(self):
-        '''
-        sleep for one day
-        At some point, this should be read from config file
-        '''
-        # sleep 24 hours
-        sleeptime = 24 * 60 * 60 
-        return sleeptime
 
 
     def _run(self):

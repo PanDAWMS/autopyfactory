@@ -253,16 +253,15 @@ class APFQueue(_thread):
         try: 
             self.wmsqueue = self.qcl.generic_get(apfqname, 'wmsqueue')
 
-            #### BEGIN TEST ###
             #self.cycles = self.fcl.generic_get("Factory", 'cycles' ,'getint')
             cycles = self.fcl.generic_get("Factory", 'cycles')
             if cycles != None:
                 cycles = int(cycles)
             self.cycles = cycles
-            #### END TEST ###
+            self.cyclesrun = 0
 
             self.sleep = self.qcl.generic_get(apfqname, 'apfqueue.sleep', 'getint')
-            self.cyclesrun = 0
+            self._thread_loop_interval =  self.sleep
            
         except Exception, ex:
             self.log.exception('APFQueue: exception captured while reading configuration variables to create the object.')
@@ -280,10 +279,6 @@ class APFQueue(_thread):
             raise ex
         
         self.log.debug('APFQueue: Object initialized.')
-
-
-    def _time_between_loops(self):
-        return self.sleep
 
 
     def _run(self):

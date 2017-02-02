@@ -57,12 +57,13 @@ class _condor(_thread, BatchStatusInterface):
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
             self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs') 
             
-
         except AttributeError:
             self.condoruser = 'apf'
             self.facoryid = 'test-local'
             self.sleeptime = 10
             self.log.warning("Got AttributeError during init. We should be running stand-alone for testing.")
+
+        self._thread_loop_interval = self.sleeptime
        
 
         self.currentinfo = None              
@@ -89,10 +90,6 @@ class _condor(_thread, BatchStatusInterface):
         self.lasttime = 0
         checkCondor()
         self.log.info('BatchStatusPlugin: Object initialized.')
-
-
-    def _time_between_loops(self):
-        return self.sleeptime
 
 
     def _run(self):

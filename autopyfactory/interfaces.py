@@ -207,9 +207,13 @@ class _thread(threading.Thread):
         threading.Thread.__init__(self) # init the thread
         self.stopevent = threading.Event()
         # to avoid the thread to be started more than once
-        self._started = False 
+        self._thread_started = False 
         # recording last time the actions were done
-        self._last_thread_action = 0
+        self._thread_last_action = 0
+        # time to wait before checking again if the threads has been killed
+        self._thread_abort_interval = 1
+        # time to wait before next loop
+        self._thread_loop_interval = 1
 
          
     def start(self):
@@ -219,8 +223,9 @@ class _thread(threading.Thread):
         # implements the design pattern Singleton.
         # In that cases, multiple copies of the same object
         # may be instantiated, and eventually "started"
-        if not self._started:
-            self._started = True
+        
+        if not self._thread_started:
+            self._thread_started = True
             threading.Thread.start(self)
 
 
@@ -230,29 +235,40 @@ class _thread(threading.Thread):
             threading.Thread.join(self, timeout)
 
 
-    def run(self):                
+    def run(self):
         self._preloop()
         self._mainloop()
         self._postloop()
+    
 
     def _preloop(self):
+        '''
+        actions to be done before starting the main loop
+        '''
+        # default implementation is to do nothing
         pass
 
+    
     def _postloop(self):
+        '''
+        actions to be done after the main loop is finished
+        '''
+        # default implementation is to do nothing
         pass
 
-    def _mainloop(self):                
+    
+    def _mainloop(self):
         while not self.stopevent.isSet():
             try:                       
                 if self._check_for_actions():
                     self._run()
-                    self._last_thread_action = int( time.time() )
+                    self._thread_last_action = int( time.time() )
             except Exception, e:
                 if self._propagate_exception():
                     raise e
                 if self._abort_on_exception():
                     self.join()
-                self._last_thread_action = int( time.time() )
+                self._thread_last_action = int( time.time() )
             self._wait_for_abort()
 
 
@@ -261,34 +277,22 @@ class _thread(threading.Thread):
         checks if a new loop of action should take place
         '''
         # default implementation
-        return int(time.time()) - self._last_thread_action > self._time_between_loops()
-
-
-    def _time_between_loops(self):
-        '''
-        returns the amount of time to wait between action cycles
-        '''
-        raise NotImplementedError
+        now = int(time.time())
+        check = (now - self._thread_last_action) > self._thread_loop_interval
+        return check
 
 
     def _wait_for_abort(self):
         '''
         waits for the loop to be aborted because the thread has been killed
         '''
-        time.sleep( self._wait() )
+        time.sleep( self._thread_abort_interval )
 
-
-    def _wait(self):
-        '''
-        returns the amount of time to wait before checking again for interrupt. Defaults to 1 second.
-        '''
-        # reimplement this method if response is not 1 second 
-        return 1
-        
 
     def _propagate_exception(self):
         '''
-        boolean to decide if the Exception needs to be propagated. Defaults to False.
+        boolean to decide if the Exception needs to be propagated. 
+        Defaults to False.
         '''
         # reimplement this method if response is not unconditionally False
         return False 
@@ -296,7 +300,8 @@ class _thread(threading.Thread):
 
     def _abort_on_exception(self):
         '''
-        boolean to decide if the Exception triggers the thread to be killed. Defaults to False.
+        boolean to decide if the Exception triggers the thread to be killed. 
+        Defaults to False.
         '''
         # reimplement this method if response is not unconditionally False
         return False 
@@ -304,6 +309,4 @@ class _thread(threading.Thread):
 
     def _run(self):
         raise NotImplementedError
-
-
 

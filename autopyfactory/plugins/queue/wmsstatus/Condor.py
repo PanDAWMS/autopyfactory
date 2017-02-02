@@ -47,6 +47,7 @@ class __condor(_thread, WMSStatusInterface):
         #self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
         #self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
         self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.condor.sleep')
+        self._thread_loop_interval = self.sleeptime
         self.maxage = self.apfqueue.fcl.generic_get('Factory', 'wmsstatus.condor.maxage', default_value=360)
         self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queryargs')
         self.queueskey = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queueskey', default_value='MATCH_APF_QUEUE')
@@ -78,10 +79,6 @@ class __condor(_thread, WMSStatusInterface):
         self.lasttime = 0
         checkCondor()
         self.log.info('WMSStatusPlugin: Object initialized.')
-
-
-    def _time_between_loops(self):
-        return self.sleeptime
 
 
     def _run(self):

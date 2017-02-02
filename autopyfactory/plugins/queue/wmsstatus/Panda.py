@@ -63,6 +63,7 @@ class _panda(_thread, WMSStatusInterface):
             self.log.trace("WMSStatusPlugin: Initializing object...")
             self.maxage = self.apfqueue.fcl.generic_get('Factory', 'wmsstatus.panda.maxage', default_value=360)
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.panda.sleep')
+            self._thread_loop_interval = self.sleeptime
 
             # current WMSStatusIfno object
             self.currentcloudinfo = None
@@ -78,10 +79,6 @@ class _panda(_thread, WMSStatusInterface):
             raise ex
         # Using the Squid Cache when contacting the PanDA server
         Client.useWebCache()
-
-
-    def _time_between_loops(self):
-        return self.sleeptime
 
 
     def _run(self):                

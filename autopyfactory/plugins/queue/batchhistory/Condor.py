@@ -53,6 +53,7 @@ class __condor(_thread, BatchHistoryInterface):
             self.factoryid = apfqueue.fcl.get('Factory', 'factoryId')
             self.maxage = apfqueue.fcl.generic_get('Factory', 'batchhistory.condor.maxage', default_value=360) 
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchhistory.condor.sleep')
+            self._thread_loop_interval = self.sleeptime
             self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchhistory.condor.queryargs') 
 
         except AttributeError:
@@ -77,10 +78,6 @@ class __condor(_thread, BatchHistoryInterface):
         self.lasttime = 0
         checkCondor()
         self.log.info('BatchHistoryStatus: Object initialized.')
-
-
-    def _time_between_loops(self):
-        return self.sleeptime
 
 
     def _run(self):

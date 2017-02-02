@@ -139,14 +139,11 @@ class X509(_thread):
         # Handle numerics
         self.lifetime = int(config.get(section, 'x509.lifetime'))
         self.checktime = int(config.get(section, 'x509.checktime'))
+        self._thread_loop_interval = self.checktime
         self.minlife = int(config.get(section, 'x509.minlife'))
         self.interruptcheck = int(config.get(section,'x509.interruptcheck'))
 
         self.log.debug("[%s] X509Handler initialized." % self.name)
-
-
-    def _time_between_loops(self):
-        return self.checktime
 
 
     def _run(self):
