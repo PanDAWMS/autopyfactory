@@ -299,7 +299,7 @@ class APFQueue(_thread):
         wait for the info plugins to have valid content
         before doing actions
         '''
-        sel.log.debug('starting')
+        self.log.debug('starting')
         timeout = 1800 # 30 minutes
         start = int(time.time())
         loop = True
@@ -314,7 +314,7 @@ class APFQueue(_thread):
                     loop = False
                 else:
                     time.sleep(10)
-        sel.log.debug('leaving')
+        self.log.debug('leaving')
 
 
     def _plugins(self):
