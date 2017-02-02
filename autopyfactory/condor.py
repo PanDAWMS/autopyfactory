@@ -25,6 +25,7 @@ from pprint import pprint
 from Queue import Queue
 
 from autopyfactory.info import JobInfo
+from autopyfactory.interfaces import _thread
 
 
 # FIXME !!!
@@ -677,62 +678,27 @@ class CondorRequest(object):
         self.postcmd = None
 
 
-# FIXME
-# if we really need a Singleton, reuse the one in interfaces.py
-class Singleton(type):
-    '''
-    -----------------------------------------------------------------------
-    Ancillary class to be used as metaclass to make other classes Singleton.
-    -----------------------------------------------------------------------
-    '''
-    
-    def __init__(cls, name, bases, dct):
-        cls.__instance = None 
-        type.__init__(cls, name, bases, dct)
-    def __call__(cls, *args, **kw): 
-        if cls.__instance is None:
-            cls.__instance = type.__call__(cls, *args,**kw)
-        return cls.__instance
 
 
-class ProcessCondorRequests(threading.Thread):
+class _processcondorrequests(_thread):
     '''
     class to process objects
     of class CondorRequest()
     '''
 
-    __metaclass__ = Singleton
-
     def __init__(self, factory):
 
-        self.started = False
-        threading.Thread.__init__(self)
+        _thread.__init__(self)
         factory.threadsregistry.add("util", self)
-        self.stopevent = threading.Event()
         
         self.factory = factory
 
 
-    def start(self):
-        if not self.started:
-            threading.Thread.start(self)
-            self.started = True
-
-
-    def run(self):
-
-        while not self.stopevent.isSet():
-            time.sleep(5) # FIXME, find a proper number. Maybe a config variable???
-            ###if not self.factory.condorrequestsqueue.empty():
-            ###    req = self.factory.condorrequestsqueue.get() 
-            if not condorrequestsqueue.empty():
-                req = condorrequestsqueue.get() 
-                if req.cmd == 'condor_submit':       
-                    self.submit(req)    
-
-    def join(self, timeout=None):
-        self.stopevent.set()
-        threading.Thread.join(self, timeout)
+    def _run(self):
+        if not condorrequestsqueue.empty():
+            req = condorrequestsqueue.get() 
+            if req.cmd == 'condor_submit':       
+                self.submit(req)    
 
 
     def submit(self, req):
@@ -751,6 +717,18 @@ class ProcessCondorRequests(threading.Thread):
         req.out = out
         req.err = err
         req.rc = rc
+
+
+# The Singleton implementation
+class ProcessCondorRequests(object):
+
+    instance = None
+    
+    def __new__(cls, *k, **kw):
+        if not ProcessCondorRequests.instance:
+            ProcessCondorRequests.instance = _processcondorrequests(*k, **kw)
+        return ProcessCondorRequests.instance
+
 
 
 
