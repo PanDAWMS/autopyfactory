@@ -286,12 +286,36 @@ class APFQueue(_thread):
         Method called by thread.start()
         Main functional loop of this APFQueue. 
         '''        
+        self._wait_for_info_services()
         self._callscheds()
         self._submitpilots()
         self._monitor()
         self._exitloop()
         self._logtime() 
-                          
+
+
+    def _wait_for_info_services(self):
+        '''
+        wait for the info plugins to have valid content
+        before doing actions
+        '''
+        sel.log.debug('starting')
+        timeout = 1800 # 30 minutes
+        start = int(time.time())
+        loop = True
+        while loop:
+            now = int(time.time())
+            if (now - start) > timeout:
+                loop = False
+            else:
+                wms = self.wmsstatus_plugin.getInfo()
+                batch = self.batchstatus_plugin.getInfo() 
+                if wms is not None and batch is not None:
+                    loop = False
+                else:
+                    time.sleep(10)
+        sel.log.debug('leaving')
+
 
     def _plugins(self):
         '''
