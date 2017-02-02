@@ -1,5 +1,6 @@
 2.4.10
 
+* workaround the TRACE problems
 * made the single-shot mode to work
 * using a _thread interface
 * removed support for GRAM
