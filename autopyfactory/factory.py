@@ -38,11 +38,13 @@ except:
 
 # Add TRACE log level 
 logging.TRACE = 5
-logging.addLevelName(logging.TRACE, 'TRACE')
-def trace(self, msg, *args, **kwargs):
-    self.log(logging.TRACE, msg, *args, **kwargs)
-    #self._log(logging.TRACE, msg, args, **kwargs)
-logging.Logger.trace = trace
+### NOTE: the implementation of trace() has 
+###       moved into method __setuplogging()
+###logging.addLevelName(logging.TRACE, 'TRACE')
+###def trace(self, msg, *args, **kwargs):
+###    self.log(logging.TRACE, msg, *args, **kwargs)
+###    #self._log(logging.TRACE, msg, args, **kwargs)
+###logging.Logger.trace = trace
 
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
@@ -223,6 +225,21 @@ Jose Caballero <jcaballero@bnl.gov>
            Info: http://docs.python.org/howto/logging.html#logging-advanced-tutorial  
 
         """
+
+        # implementation of TRACE level
+        if self.options.logLevel == logging.TRACE:
+            def trace(self, msg, *args, **kwargs):
+                self._log(logging.TRACE, msg, args, **kwargs)
+                # self._log() prints the right line numbers
+        else:
+            def trace(self, msg, *args, **kwargs):
+                self.log(logging.TRACE, msg, *args, **kwargs)
+                # if self._log() is used always, the TRACE messages are always printed
+                # even when not requested
+        logging.addLevelName(logging.TRACE, 'TRACE')
+        logging.Logger.trace = trace
+
+
         self.log = logging.getLogger()
         if self.options.logfile == "stdout":
             logStream = logging.StreamHandler()
