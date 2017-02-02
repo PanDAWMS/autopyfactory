@@ -1,5 +1,8 @@
 2.4.10
 
+* made the single-shot mode to work
+* using a _thread interface
+* removed support for GRAM
 * new plugins API
 * new architecture for Singleton plugins
 * new plugins category: authmanager/auth/ 
