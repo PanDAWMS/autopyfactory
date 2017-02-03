@@ -236,12 +236,12 @@ class _thread(threading.Thread):
 
 
     def run(self):
-        self._preloop()
+        self._prerun()
         self._mainloop()
-        self._postloop()
+        self._postrun()
     
 
-    def _preloop(self):
+    def _prerun(self):
         '''
         actions to be done before starting the main loop
         '''
@@ -249,7 +249,7 @@ class _thread(threading.Thread):
         pass
 
     
-    def _postloop(self):
+    def _postrun(self):
         '''
         actions to be done after the main loop is finished
         '''

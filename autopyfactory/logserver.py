@@ -26,6 +26,8 @@ try:
 except ImportError:
     from StringIO import StringIO
 
+from autopyfactory.interfaces import _thread
+
 
 
 class MySimpleHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
@@ -217,19 +219,18 @@ class MyNoListingHTTPRequestHandler(MySimpleHTTPRequestHandler):
         
 
 
-class LogServer(threading.Thread):
+class LogServer(_thread):
     
     def __init__(self, factory, port=25880, docroot="/home/autopyfactory/factory/logs", index = True):
         '''
         docroot is the path to the base directory of the files to be served. 
         '''
-        threading.Thread.__init__(self)
+        _thread.__init__(self)
         factory.threadsregistry.add("util", self)
         self.log= logging.getLogger('main.logserver')
         self.docroot = docroot
         self.port = int(port)
         self.index = index
-        self.stopevent = threading.Event()
         if index:
             self.handler = MySimpleHTTPRequestHandler
         else:
@@ -261,25 +262,16 @@ class LogServer(threading.Thread):
                 self.log.warning("Attempt to initialize HTTP server failed. Will wait 60s and try again.")         
                 time.sleep(60)
     
-    def run(self):
+
+    def _prerun(self):
         self.log.info("Initializing HTTP server...")
         self._init_socketserver()
         os.chdir(self.docroot)
         self.log.trace("Changing working dir to %s"%  self.docroot)
-        while not self.stopevent.isSet():
-            try:
-                self.httpd.serve_forever()
-            except Exception, e:
-                self.log.error("HTTP Server threw exception: %s" % str(e))
 
-    def join(self,timeout=None):
-        '''
-        Stop the thread. Overriding this method required to handle Ctrl-C from console.
-        '''        
-        self.stopevent.set()
-        self.log.trace('Stopping thread...')
-        self.httpd.shutdown()
-        threading.Thread.join(self, timeout)
+
+    def _run(self):
+        self.httpd.serve_forever()
 
 
 def loop(ls):
