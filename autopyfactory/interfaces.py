@@ -1,4 +1,4 @@
-
+import logging
 
 class SchedInterface(object):
     '''
@@ -204,6 +204,8 @@ class _thread(threading.Thread):
     
     def __init__(self):
         
+        self.log = logging.getLogger('_thread')
+
         threading.Thread.__init__(self) # init the thread
         self.stopevent = threading.Event()
         # to avoid the thread to be started more than once
@@ -214,6 +216,7 @@ class _thread(threading.Thread):
         self._thread_abort_interval = 1
         # time to wait before next loop
         self._thread_loop_interval = 1
+        self.log.debug('object _thread initialized')
 
          
     def start(self):
@@ -225,20 +228,24 @@ class _thread(threading.Thread):
         # may be instantiated, and eventually "started"
         
         if not self._thread_started:
+            self.log.debug('starting thread')
             self._thread_started = True
             threading.Thread.start(self)
 
 
     def join(self,timeout=None):
         if not self.stopevent.isSet():
+            self.log.debug('joining thread')
             self.stopevent.set()
             threading.Thread.join(self, timeout)
 
 
     def run(self):
+        self.log.debug('starting run()')
         self._prerun()
         self._mainloop()
         self._postrun()
+        self.log.debug('leaving run()')
     
 
     def _prerun(self):
