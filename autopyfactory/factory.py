@@ -486,7 +486,6 @@ class Factory(object):
         self.apfqueuesmanager = APFQueuesManager(self)
 
         self._authmanager()
-        self._proxymanager()
         self._monitor()
         self._mappings()
 
@@ -516,37 +515,6 @@ class Factory(object):
         self.log.trace('Factory shell PATH: %s' % os.getenv('PATH') )     
         self.log.info("Factory: Object initialized.")
 
-
-    def _proxymanager(self):
-
-        # Handle ProxyManager configuration
-        usepman = self.fcl.getboolean('Factory', 'proxymanager.enabled')
-        if usepman:      
-
-            try:
-                from autopyfactory.proxymanager import ProxyManager
-            except:
-                self.log.critical('proxymanager cannot be imported')
-                sys.exit(0) 
-
-            pcf = self.fcl.get('Factory','proxyConf')
-            self.log.debug("proxy.conf file(s) = %s" % pcf)
-            pcl = ConfigParser()
-
-            try:
-                got_config = pcl.read(pcf)
-            except Exception, e:
-                self.log.error('Failed to create ProxyConfigLoader')
-                self.log.error("Exception: %s" % traceback.format_exc())
-                sys.exit(0)
-
-            self.log.trace("Read config file %s, return value: %s" % (pcf, got_config)) 
-            self.proxymanager = ProxyManager(pcl, self)
-            self.log.info('ProxyManager initialized. Starting...')
-            self.proxymanager.start()
-            self.log.trace('ProxyManager thread started.')
-        else:
-            self.log.info("ProxyManager disabled.")
 
     def _authmanager(self):
 
@@ -779,17 +747,6 @@ class Factory(object):
         Method to cleanly shut down all factory activity, joining threads, etc. 
         '''
         logging.debug(" Shutting down all Queue threads...")
-        #self.log.info("Joining all Queue threads...")
-        #self.apfqueuesmanager.join()
-        #self.log.info("All Queue threads joined.")
-        #if self.fcl.getboolean('Factory', 'proxymanager.enabled'):
-        #    self.log.info("Shutting down Proxymanager...")
-        #    self.proxymanager.join()
-        #    self.log.info("Proxymanager stopped.")
-        #if self.fcl.getboolean('Factory', 'logserver.enabled'):
-        #    self.log.info("Shutting down Logserver...")
-        #    self.logserver.join()
-        #    self.log.info("Logserver stopped.")            
         self.threadsregistry.join() 
         self.log.debug('Leaving')
 

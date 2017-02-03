@@ -205,7 +205,7 @@ class X509(_thread):
     def _setProxyOwner(self):
         '''
         If owner is set, try to switch ownership of the file to the provided user and group. 
-        NOTE: this only makes sense when proxymanager is run standalone by root
+        NOTE: this only makes sense when authmanger is run standalone by root
         '''
         if self.owner and os.access(self.proxyfile, os.F_OK):
             uid = pwd.getpwnam(self.owner).pw_uid
@@ -502,7 +502,7 @@ if __name__ == '__main__':
     info = 0
     pconfig_file = None
     default_configfile = os.path.expanduser("~/etc/proxy.conf")     
-    usage = """Usage: proxymanager.py [OPTIONS]  
+    usage = """Usage: authmanager.py [OPTIONS]  
     OPTIONS: 
         -h --help                   Print this message
         -d --debug                  Debug messages
