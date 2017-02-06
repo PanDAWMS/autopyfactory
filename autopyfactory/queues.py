@@ -324,28 +324,20 @@ class APFQueue(_thread):
         
         pluginmanager = PluginManager()
 
-        self.scheduler_plugins  = pluginmanager.getpluginlist(self, 'queue', 'sched', self.qcl, self.apfqname, 'schedplugin')     # a list of 1 or more plugins
-        self.wmsstatus_plugin  = pluginmanager.getplugin(self, 'queue', 'wmsstatus', self.qcl, self.apfqname, 'wmsstatusplugin')  # a single WMSStatus plugin
+        self.scheduler_plugins = pluginmanager.getpluginlist(self, 'queue', 'sched', self.qcl, self.apfqname, 'schedplugin')     # a list of 1 or more plugins
+        self.wmsstatus_plugin = pluginmanager.getplugin(self, 'queue', 'wmsstatus', self.qcl, self.apfqname, 'wmsstatusplugin')  # a single WMSStatus plugin
         self.wmsstatus_plugin.start() # start the thread
         self.batchsubmit_plugin = pluginmanager.getplugin(self, 'queue', 'batchsubmit', self.qcl, self.apfqname, 'batchsubmitplugin')   # a single BatchSubmit plugin
         self.batchstatus_plugin = pluginmanager.getplugin(self, 'queue', 'batchstatus', self.qcl, self.apfqname, 'batchstatusplugin')   # a single BatchStatus plugin
         self.batchstatus_plugin.start() # start the thread
-        monitorsection = self.qcl.generic_get(self.apfqname, 'monitorsection')
-        self.monitor_plugins   = pluginmanager.getpluginlist(self, 'queue', 'monitor', self.mcl, monitorsection, 'monitorplugin')        # a list of 1 or more plugins
-
-    ###def _plugins(self):
-    ###    '''
-    ###     method just to instantiate the plugin objects
-    ###    '''
-    ###    pd = QueuePluginDispatcher(self)
-    ###    self.scheduler_plugins = pd.schedplugins        # a list of 1 or more plugins
-    ###    self.wmsstatus_plugin = pd.wmsstatusplugin      # a single WMSStatus plugin
-    ###    self.batchsubmit_plugin = pd.submitplugin       # a single BatchSubmit plugin
-    ###    self.batchstatus_plugin = pd.batchstatusplugin  # a single BatchStatus plugin
-    ###    self.monitor_plugins = pd.monitorplugins        # a list of 1 or more plugins
-
-        
-
+        # FIXME
+        # this is to ad-hoc, think on a generic solution
+        if self.qcl.has_option(self.apfqname, 'monitorsection'):
+            monitorsection = self.qcl.generic_get(self.apfqname, 'monitorsection')
+            self.monitor_plugins = pluginmanager.getpluginlist(self, 'queue', 'monitor', self.mcl, monitorsection, 'monitorplugin')        # a list of 1 or more plugins
+        else:
+            self.monitor_plugins = []
+            
 
     def _callscheds(self):
         '''
