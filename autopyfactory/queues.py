@@ -324,20 +324,45 @@ class APFQueue(_thread):
         
         pluginmanager = PluginManager()
 
-        self.scheduler_plugins = pluginmanager.getpluginlist(self, 'queue', 'sched', self.qcl, self.apfqname, 'schedplugin')     # a list of 1 or more plugins
-        self.wmsstatus_plugin = pluginmanager.getplugin(self, 'queue', 'wmsstatus', self.qcl, self.apfqname, 'wmsstatusplugin')  # a single WMSStatus plugin
-        self.wmsstatus_plugin.start() # start the thread
-        self.batchsubmit_plugin = pluginmanager.getplugin(self, 'queue', 'batchsubmit', self.qcl, self.apfqname, 'batchsubmitplugin')   # a single BatchSubmit plugin
-        self.batchstatus_plugin = pluginmanager.getplugin(self, 'queue', 'batchstatus', self.qcl, self.apfqname, 'batchstatusplugin')   # a single BatchStatus plugin
-        self.batchstatus_plugin.start() # start the thread
-        # FIXME
-        # this is to ad-hoc, think on a generic solution
-        if self.qcl.has_option(self.apfqname, 'monitorsection'):
-            monitorsection = self.qcl.generic_get(self.apfqname, 'monitorsection')
-            self.monitor_plugins = pluginmanager.getpluginlist(self, 'queue', 'monitor', self.mcl, monitorsection, 'monitorplugin')        # a list of 1 or more plugins
-        else:
-            self.monitor_plugins = []
+        ###self.scheduler_plugins = pluginmanager.getpluginlist(self, 'queue', 'sched', self.qcl, self.apfqname, 'schedplugin')     # a list of 1 or more plugins
+        ###self.wmsstatus_plugin = pluginmanager.getplugin(self, 'queue', 'wmsstatus', self.qcl, self.apfqname, 'wmsstatusplugin')  # a single WMSStatus plugin
+        ###self.wmsstatus_plugin.start() # start the thread
+        ###self.batchsubmit_plugin = pluginmanager.getplugin(self, 'queue', 'batchsubmit', self.qcl, self.apfqname, 'batchsubmitplugin')   # a single BatchSubmit plugin
+        ###self.batchstatus_plugin = pluginmanager.getplugin(self, 'queue', 'batchstatus', self.qcl, self.apfqname, 'batchstatusplugin')   # a single BatchStatus plugin
+        ###self.batchstatus_plugin.start() # start the thread
+        #### FIXME
+        #### this is to ad-hoc, think on a generic solution
+        ###if self.qcl.has_option(self.apfqname, 'monitorsection'):
+        ###    monitorsection = self.qcl.generic_get(self.apfqname, 'monitorsection')
+        ###    self.monitor_plugins = pluginmanager.getpluginlist(self, 'queue', 'monitor', self.mcl, monitorsection, 'monitorplugin')        # a list of 1 or more plugins
+        ###else:
+        ###    self.monitor_plugins = []
             
+
+        schedpluginnames = self.qcl.get(self.apfqname, 'schedplugin')
+        schedpluginnameslist = [i.strip() for i in schedpluginnames.split(',')]
+        self.scheduler_plugins = pluginmanager.getpluginlist(self, ['autopyfactory', 'plugins', 'queue', 'sched'], schedpluginnameslist, self.qcl, self.apfqname)     # a list of 1 or more plugins
+
+        wmsstatuspluginname = self.qcl.get(self.apfqname, 'wmsstatusplugin')
+        self.wmsstatus_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'wmsstatus'], wmsstatuspluginname, self.qcl, self.apfqname)  # a single WMSStatus plugin
+        self.wmsstatus_plugin.start() # start the thread
+
+        batchsubmitpluginname = self.qcl.get(self.apfqname, 'batchsubmitplugin')
+        self.batchsubmit_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'batchsubmit'], batchsubmitpluginname, self.qcl, self.apfqname)   # a single BatchSubmit plugin
+
+        batchstatuspluginname = self.qcl.get(self.apfqname, 'batchstatusplugin')
+        self.batchstatus_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'batchstatus'], batchstatuspluginname, self.qcl, self.apfqname)   # a single BatchStatus plugin
+        self.batchstatus_plugin.start() # start the thread
+
+        self.monitor_plugins = []
+        if self.qcl.has_option(self.apfqname, 'monitorsection'):
+            monitorsections = self.qcl.generic_get(self.apfqname, 'monitorsection')
+            monitorsectionslist = [i.strip() for i in monitorsections.split(',')]
+            for monitorsection in monitorsectionslist:
+                monitorpluginname = self.mcl.get(monitorsection, 'monitorplugin')
+                monitor_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'monitor'], monitorpluginname, self.mcl, monitorsection)        # a list of 1 or more plugins
+                self.monitor_plugins.append(monitor_plugin)
+
 
     def _callscheds(self):
         '''

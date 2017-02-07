@@ -596,8 +596,13 @@ class Factory(object):
 
     def _plugins(self):
         self.pluginmgr = PluginManager()
+
         # configuration plugins
-        self.config_plugins = self.pluginmgr.getpluginlist(self, 'factory', 'config', self.fcl, 'Factory', 'configplugin')
+        ###self.config_plugins = self.pluginmgr.getpluginlist(self, 'factory', 'config', self.fcl, 'Factory', 'configplugin')
+
+        configpluginnames =  self.fcl.get('Factory', 'configplugin')
+        configpluginnameslist = [i.strip() for i in configpluginnames.split(',')]
+        self.config_plugins = self.pluginmgr.getpluginlist(self, ['autopyfactory', 'plugins', 'factory', 'config'], configpluginnameslist,  self.fcl, 'Factory')
 
 
     def _initLogserver(self):

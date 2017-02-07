@@ -61,14 +61,16 @@ class AuthManager(object):
         
             if pclass == 'X509':
                 self.log.trace("Creating X509 handler for %s" % sect )
-                ###x509h = X509(self, aconfig, sect)
-                x509h = pluginmanager.getplugin(self, 'authmanager', 'auth', self.aconfig, sect, 'plugin')
+                ###x509h = pluginmanager.getplugin(self, 'authmanager', 'auth', self.aconfig, sect, 'plugin')
+                authpluginname = self.aconfig.get(sect, 'plugin') 
+                x509h = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'authmanager', 'auth'], authpluginname, self.aconfig, sect)
                 self.handlers.append(x509h)
             
             elif pclass == 'SSH':
                 self.log.trace("Creating SSH handler for %s" % sect )
-                sshh = SSH(self, aconfig, sect)
-                sshh = pluginmanager.getplugin(self, 'authmanager', 'auth', self.aconfig, sect, 'plugin')
+                ###sshh = pluginmanager.getplugin(self, 'authmanager', 'auth', self.aconfig, sect, 'plugin')
+                authpluginname = self.aconfig.get(sect, 'plugin') 
+                sshh = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'authmanager', 'auth'], authpluginname, self.aconfig, sect)
                 self.handlers.append(sshh)
                             
             else:
