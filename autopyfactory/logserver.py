@@ -274,6 +274,10 @@ class LogServer(_thread):
         self.httpd.serve_forever()
 
 
+    def _join(self):
+        self.httpd.shutdown()
+
+
 def loop(ls):
         try:
                 while True:
