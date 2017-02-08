@@ -40,7 +40,7 @@ class CleanLogs(_thread):
         '''
 
         _thread.__init__(self)
-        self._thread_loop_interval = 24 * 60 * 60  # sleep 24 hours between loops
+        self._thread_loop_interval = 60 * 60  # sleep 1 hour between loops
 
         factory.threadsregistry.add("util", self)
 
