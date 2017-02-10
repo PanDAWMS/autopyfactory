@@ -81,8 +81,8 @@ def map2info(input, info_container, mappings):
             qi.fill(valdict, mappings)
 
     except Exception, ex:
-        self.log.error("Exception: %s" % str(e))
-        self.log.error("Exception: %s" % traceback.format_exc())
+        log.error("Exception: %s" % str(e))
+        log.error("Exception: %s" % traceback.format_exc())
                     
     info_container.lasttime = int(time.time())
     log.debug('Returning %s: %s' % (info_container.__class__.__name__, info_container))
