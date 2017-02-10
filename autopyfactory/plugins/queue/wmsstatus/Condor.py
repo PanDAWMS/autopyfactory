@@ -23,7 +23,7 @@ from autopyfactory.condorlib import querycondorlib
 from autopyfactory.mappings import map2info
 
 
-class __condor(_thread, WMSStatusInterface):
+class _condor(_thread, WMSStatusInterface):
     '''
     -----------------------------------------------------------------------
     This class is expected to have separate instances for each object. 
@@ -255,7 +255,7 @@ class Condor(object):
         # ---------------------------------------------------------------------
 
         if not id in Condor.instances.keys():
-            Condor.instances[id] = __condor(*k, **kw)
+            Condor.instances[id] = _condor(*k, **kw)
         return Condor.instances[id]
  
    
