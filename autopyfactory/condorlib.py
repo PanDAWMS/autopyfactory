@@ -96,6 +96,7 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
 
 def _querycondorlib(attributes, remotecollector=None, remoteschedd=None):
 
+    log = logging.getLogger('main.condor')
     if remotecollector:
         # FIXME: to be tested
         log.debug("querying remote pool %s" %remotecollector)
