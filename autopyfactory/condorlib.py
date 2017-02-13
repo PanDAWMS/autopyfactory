@@ -96,6 +96,10 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
 
 def _querycondorlib(attributes, remotecollector=None, remoteschedd=None):
 
+    # NOTE:
+    # when remotecollector has a valid value, 
+    # then remoteschedd must have a valid value too
+
     log = logging.getLogger('main.condor')
     if remotecollector:
         # FIXME: to be tested
