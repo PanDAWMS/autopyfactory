@@ -56,6 +56,19 @@ class _condor(_thread, BatchStatusInterface):
             self.maxage = apfqueue.fcl.generic_get('Factory', 'batchstatus.condor.maxage', default_value=360) 
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
             self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs') 
+
+
+            ### BEGIN TEST ###
+            self.remoteschedd = None
+            self.remotecollector = None
+            if self.queryargs:
+                l = queryargs.split()  # convert the string into a list
+                if '-name' in l:
+                    self.remoteschedd = l[l.index('-name') + 1]
+                if '-pool' in l:
+                    self.remotecollector = l[l.index('-pool') + 1]
+            ### END TEST ###
+
             
         except AttributeError:
             self.condoruser = 'apf'
@@ -162,8 +175,14 @@ class _condor(_thread, BatchStatusInterface):
             self.log.error('condor daemon is not running. Doing nothing')
         else:
             try:
+        
+                #### BEGIN TEST ###
                 # FIXME: the self.queryargs need to be decomposed into querycondorlib() input options
-                strout = querycondorlib()
+                #strout = querycondorlib()
+                strout = querycondorlib(self.remotecollector, self.remoteschedd)
+                #### END TEST ###
+
+
                 self.log.debug('output of querycondorlib : ' %strout)
                 if strout is None:
                     self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.')
