@@ -82,6 +82,7 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
     '''
 
     log = logging.getLogger('main.condor')
+    log.debug("Starting with values remotecollector=%s, remoteschedd=%s, extra_attributes=%s, queueskey=%s" %(remotecollector, remoteschedd, extra_attributes, queueskey))
 
     list_attrs = [queueskey, 'jobstatus']
     list_attrs += extra_attributes
@@ -101,6 +102,7 @@ def _querycondorlib(attributes, remotecollector=None, remoteschedd=None):
     # then remoteschedd must have a valid value too
 
     log = logging.getLogger('main.condor')
+    log.debug("Starting with values attributes=%s, remotecollector=%s, remoteschedd=%s" %(attributes, remotecollector, remoteschedd))
     if remotecollector:
         # FIXME: to be tested
         log.debug("querying remote pool %s" %remotecollector)
@@ -110,7 +112,9 @@ def _querycondorlib(attributes, remotecollector=None, remoteschedd=None):
     else:
         schedd = htcondor.Schedd() # Defaults to the local schedd.
 
-    return schedd.query('true', attributes)
+    out schedd.query('true', attributes)
+    log.debug(out)
+    return out
 
 
 
