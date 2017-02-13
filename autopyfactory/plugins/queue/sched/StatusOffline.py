@@ -51,7 +51,7 @@ class StatusOffline(SchedInterface):
                 out = self.pilots_in_offline_mode
                 msg = "StatusOffline:comment=offline,in=%s,ret=%s" %(n, self.pilots_in_offline_mode)
             else:
-                msg = "StatusOffline:comment=not offline,in=%s,ret=%s" %(n, self.pilots_in_offline_mode)
+                msg = "StatusOffline:comment=not offline,in=%s,ret=%s" %(n, out)
         self.log.info(msg)
         return (out, msg) 
             
