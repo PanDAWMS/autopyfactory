@@ -177,9 +177,10 @@ class _condor(_thread, BatchStatusInterface):
             try:
         
                 #### BEGIN TEST ###
-                # FIXME: the self.queryargs need to be decomposed into querycondorlib() input options
                 #strout = querycondorlib()
                 strout = querycondorlib(self.remotecollector, self.remoteschedd)
+                # FIXME: do we need the extra_attributes ???
+                # FIXME: do we need the queueskey ???
                 #### END TEST ###
 
 

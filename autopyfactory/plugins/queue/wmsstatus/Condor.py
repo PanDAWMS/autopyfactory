@@ -52,6 +52,20 @@ class _condor(_thread, WMSStatusInterface):
         self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queryargs')
         self.queueskey = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queueskey', default_value='MATCH_APF_QUEUE')
 
+
+        ### BEGIN TEST ###
+        self.remoteschedd = None
+        self.remotecollector = None
+        if self.queryargs:
+            l = queryargs.split()  # convert the string into a list
+            if '-name' in l:
+                self.remoteschedd = l[l.index('-name') + 1]
+            if '-pool' in l:
+                self.remotecollector = l[l.index('-pool') + 1]
+        ### END TEST ###
+
+
+
         # FIXME
         # check if this works with a Singleton, or I need a different Singleton per value
 
@@ -199,9 +213,13 @@ class _condor(_thread, WMSStatusInterface):
         self.currentsiteinfo = None
 
         try:
+
+            #### BEGIN TEST ####
             #strout = querycondorlib(self.queryargs, self.queueskey)
-            # FIXME: the self.queryargs need to be decomposed into querycondorlib() input options
-            strout = querycondorlib(self.queueskey)
+            strout = querycondorlib(remotecollector=self.remotecollector, remoteschedd=self.remoteschedd, queueskey=self.queueskey)
+            # FIXME: the extra_attributes is missing !!
+            #### END TEST ####
+            
             if not strout:
                 self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
             else:
