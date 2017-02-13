@@ -100,8 +100,8 @@ def _querycondorlib(attributes, remotecollector=None, remoteschedd=None):
     if remotecollector:
         # FIXME: to be tested
         log.debug("querying remote pool %s" %remotecollector)
-        collector = htcondor.collector(remotecollector)
-        scheddAd = collector.locate(condor.DaemonTypes.Schedd, remoteschedd)
+        collector = htcondor.Collector(remotecollector)
+        scheddAd = collector.locate(htcondor.DaemonTypes.Schedd, remoteschedd)
         schedd = htcondor.Schedd(scheddAd) 
     else:
         schedd = htcondor.Schedd() # Defaults to the local schedd.
