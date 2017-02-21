@@ -112,7 +112,7 @@ def _querycondorlib(attributes, remotecollector=None, remoteschedd=None):
     else:
         schedd = htcondor.Schedd() # Defaults to the local schedd.
 
-    out schedd.query('true', attributes)
+    out = schedd.query('true', attributes)
     log.debug(out)
     return out
 
