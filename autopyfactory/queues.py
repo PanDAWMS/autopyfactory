@@ -109,17 +109,17 @@ class APFQueuesManager(object):
             if not q.isAlive():
                 q.start()
 
-
-    def join(self):
-        '''
-        Joins all APFQueue objects
-        QUESTION: should the queues also be removed from self.queues ?
-        '''
-        count = 0
-        for q in self.queues.values():
-            q.join()
-            count += 1
-        self.log.debug('%d queues joined' %count)
+    ### Is this method being used by anyone???
+    ### def join(self):
+    ###     '''
+    ###     Joins all APFQueue objects
+    ###     QUESTION: should the queues also be removed from self.queues ?
+    ###     '''
+    ###     count = 0
+    ###     for q in self.queues.values():
+    ###         q.join()
+    ###         count += 1
+    ###     self.log.debug('%d queues joined' %count)
 
     
     # ----------------------------------------------------------------------
@@ -156,14 +156,15 @@ class APFQueuesManager(object):
             self.log.debug('Queue %s not enabled.' %apfqname)
             
 
-    def start(self):
-        '''
-        starts all APFQueue objects from here
-        '''
-        self.log.debug('Starting')
-        for qobject in self.queues.values():
-            qobject.start()
-        self.log.debug('Leaving')
+    ### Is this method being used by anyone???
+    ### def start(self):
+    ###     '''
+    ###     starts all APFQueue objects from here
+    ###     '''
+    ###     self.log.debug('Starting')
+    ###     for qobject in self.queues.values():
+    ###         qobject.start()
+    ###     self.log.debug('Leaving')
 
 
     def _delqueues(self, apfqnames):
