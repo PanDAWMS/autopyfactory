@@ -254,6 +254,7 @@ class Condor(object):
         
         id = 'local'
         if conf.generic_get(section, 'wmstatusplugin') == 'Condor':
+            queryargs = None
             queryargs = conf.generic_get(section, 'wmstatus.condor.queryargs')
             if queryargs:
                 l = queryargs.split()  # convert the string into a list
