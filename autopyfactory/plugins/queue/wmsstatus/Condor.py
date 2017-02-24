@@ -223,7 +223,7 @@ class _condor(_thread, WMSStatusInterface):
             if not strout:
                 self.log.warning('output of _querycondor is an empty dictionary. Nothing to be done. Skip to next loop.') 
             else:
-                newjobinfo = map2info(aggdict, WMSStatusInfo(), self.jobstatus2info)
+                newjobinfo = map2info(strout, WMSStatusInfo(), self.jobstatus2info)
                 self.log.info("Replacing old info with newly generated info.")
                 self.currentjobinfo = newjobinfo
         except Exception, e:
