@@ -57,7 +57,7 @@ class _condor(_thread, WMSStatusInterface):
         self.remoteschedd = None
         self.remotecollector = None
         if self.queryargs:
-            l = queryargs.split()  # convert the string into a list
+            l = self.queryargs.split()  # convert the string into a list
             if '-name' in l:
                 self.remoteschedd = l[l.index('-name') + 1]
             if '-pool' in l:
