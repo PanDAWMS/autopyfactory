@@ -678,19 +678,38 @@ class Factory(object):
         self._cleanlogs()
         
         try:
-            while True:
+            shutdown = False
+            while not shutdown:
+
                 mainsleep = int(self.fcl.get('Factory', 'factory.sleep'))
                 time.sleep(mainsleep)
                 self.log.trace('Checking for interrupt.')
 
                 # check if queues are alive
-                if self.abort_no_queues:
-                    for q in self.apfqueuesmanager.queues.values():
-                        if q.isAlive():
-                            break
-                    else:
-                        self.shutdown()
+                queues_alive = False
+                for q in self.apfqueuesmanager.queues.values():
+                    if q.isAlive():
+                        queues_alive = True   
                         break
+    
+                if not queues_alive:
+                    # no queue is alive...
+                    # check if factory should shutdown
+                    self.log.info("no queue is alive")
+                    if self.abort_no_queues:
+                        self.log.info("shutting down the factory")
+                        self.shutdown()
+                        shutdown = True 
+
+                ###     # check if queues are alive
+                ###     if self.abort_no_queues:
+                ###         for q in self.apfqueuesmanager.queues.values():
+                ###             if q.isAlive():
+                ###                 break
+                ###         else:
+                ###             self.shutdown()
+                ###             break
+
             self.log.debug('Leaving')
                                 
         except (KeyboardInterrupt): 
