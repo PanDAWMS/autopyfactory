@@ -148,19 +148,28 @@ class _condor(_thread, WMSStatusInterface):
 
     def getSiteInfo(self, site=None, maxtime=0):
         self.log.debug('Starting with maxtime=%s' % maxtime)
+       
+        #
+        # FIXME: temporary solution 
+        #        only works is input site is not None, so a single item is expected to be returned 
+        #        as opposite to a dictionary
+        #
+        ###if self.currentsiteinfo is None:
+        ###    self.log.debug('Not initialized yet. Returning None.')
+        ###    return None
+        ###elif maxtime > 0 and (int(time.time()) - self.currentsiteinfo.lasttime) > maxtime:
+        ###    self.log.debug('Info too old. Leaving and returning None.')
+        ###    return None
+        ###else:
+        ###    if site:
+        ###        return self.currentsiteinfo[queue]                    
+        ###    else:
+        ###        self.log.debug('Leaving and returning info of %d entries.' % len(self.currentsiteinfo))
+        ###        return self.currentsiteinfo
         
-        if self.currentsiteinfo is None:
-            self.log.debug('Not initialized yet. Returning None.')
-            return None
-        elif maxtime > 0 and (int(time.time()) - self.currentsiteinfo.lasttime) > maxtime:
-            self.log.debug('Info too old. Leaving and returning None.')
-            return None
-        else:
-            if site:
-                return self.currentsiteinfo[queue]                    
-            else:
-                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentsiteinfo))
-                return self.currentsiteinfo
+        si = SiteInfo()
+        si.status = "ok"
+        return si
 
 
     def _update(self):
