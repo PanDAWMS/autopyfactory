@@ -404,7 +404,7 @@ Jose Caballero <jcaballero@bnl.gov>
 There was an exception raised which the factory was not expecting \
 and did not know how to handle. You may have discovered a new bug \
 or an unforseen error condition. \
-Please report this exception to Jose <jcaballero@bnl.gov>. \
+Please report this exception to Jose <jcaballero@bnl.gov> and John <jhover@bnl.gov>. \
 The factory will now re-raise this exception so that the python stack trace is printed, \
 which will allow it to be debugged - \
 please send output from this message onwards. \
