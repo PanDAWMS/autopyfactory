@@ -19,6 +19,8 @@ class CondorLocal(CondorBase):
 
         newqcl = qcl.clone().filterkeys('batchsubmit.condorlocal', 'batchsubmit.condorbase')           
         super(CondorLocal, self).__init__(apfqueue, newqcl, section) 
+
+        self.should_transfer_files = qcl.generic_get(self.apfqname, 'batchsubmit.condorlocal.should_transfer_files', default_value = "IF_NEEDED")
         
         self.x509userproxy = None
         plist = qcl.generic_get(self.apfqname, 'batchsubmit.condorlocal.proxy')
@@ -53,7 +55,7 @@ class CondorLocal(CondorBase):
         if self.x509userproxy:
             self.JSD.add("x509userproxy", "%s" % self.x509userproxy)
         self.JSD.add("universe", "vanilla")
-        self.JSD.add("should_transfer_files", "IF_NEEDED")
+        self.JSD.add("should_transfer_files", self.should_transfer_files)
         self.JSD.add('+TransferOutput', '""')
 
         super(CondorLocal, self)._addJSD()
