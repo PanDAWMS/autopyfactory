@@ -319,7 +319,7 @@ def querycondor(queryargs=None, queueskey="match_apf_queue"):
     log.trace('Starting.')
     queueskey = queueskey.lower()
     querycmd = "condor_q -xml "
-    querycmd += " -attributes %s,jobstatus,procid,clusterid" %queueskey
+    querycmd += " -attributes %s,jobstatus,procid,clusterid " %queueskey
     log.trace('_querycondor: using executable condor_q in PATH=%s' %utils.which('condor_q'))
 
     # adding extra query args from queues.conf
