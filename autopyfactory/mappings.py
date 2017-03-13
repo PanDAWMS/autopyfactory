@@ -58,7 +58,7 @@ def map2info(input, info_container, mappings):
 
     Input:
       Dictionary of APF queues consisting of dicts of job attributes and counts.
-      { 'UC_ITB' : { 'Jobstatus' : { '1': '17',
+      { 'UC_ITB' : { 'jobstatus' : { '1': '17',
                                    '2' : '24',
                                    '3' : '17',
                                  },
@@ -80,7 +80,7 @@ def map2info(input, info_container, mappings):
             valdict = attrdict['jobstatus']
             qi.fill(valdict, mappings)
 
-    except Exception, ex:
+    except Exception, e:
         log.error("Exception: %s" % str(e))
         log.error("Exception: %s" % traceback.format_exc())
                     
