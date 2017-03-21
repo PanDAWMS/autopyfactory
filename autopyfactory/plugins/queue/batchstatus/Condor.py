@@ -171,29 +171,25 @@ class _condor(_thread, BatchStatusInterface):
         self.log.trace('Starting.')
         self.log.debug('Starting.')
 
-        if not utils.checkDaemon('condor'):
-            self.log.error('condor daemon is not running. Doing nothing')
-        else:
-            try:
-        
-                #### BEGIN TEST ###
-                #strout = querycondorlib()
-                strout = querycondorlib(self.remotecollector, self.remoteschedd)
-                # FIXME: do we need the extra_attributes ???
-                # FIXME: do we need the queueskey ???
-                #### END TEST ###
+        try:
+            #### BEGIN TEST ###
+            #strout = querycondorlib()
+            strout = querycondorlib(self.remotecollector, self.remoteschedd)
+            # FIXME: do we need the extra_attributes ???
+            # FIXME: do we need the queueskey ???
+            #### END TEST ###
 
 
-                self.log.debug('output of querycondorlib : ' %strout)
-                if strout is None:
-                    self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.')
-                else:
-                    newinfo = map2info(strout, BatchStatusInfo(), self.jobstatus2info)
-                    self.log.info("Replacing old info with newly generated info.")
-                    self.currentinfo = newinfo
-            except Exception, e:
-                self.log.error("Exception: %s" % str(e))
-                self.log.trace("Exception: %s" % traceback.format_exc())
+            self.log.debug('output of querycondorlib : ' %strout)
+            if strout is None:
+                self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.')
+            else:
+                newinfo = map2info(strout, BatchStatusInfo(), self.jobstatus2info)
+                self.log.info("Replacing old info with newly generated info.")
+                self.currentinfo = newinfo
+        except Exception, e:
+            self.log.error("Exception: %s" % str(e))
+            self.log.trace("Exception: %s" % traceback.format_exc())
 
         self.log.trace('Leaving.')
 
