@@ -26,7 +26,7 @@ class SSH(object):
         self.privkeypath = os.path.expanduser(config.get(section, 'ssh.privatekeyfile' ))
         self.pubkeypath = os.path.expanduser(config.get(section, 'ssh.publickeyfile' ))
         self.privkeypasspath = config.get(section, 'ssh.privkeypassfile')
-        self.passwordfile = config.get(section, 'ssh.passwordfile')
+        #self.passwordfile = config.get(section, 'ssh.passwordfile')
         
         # Handle raw empty values
         if self.privkey.lower() == 'none':
@@ -43,8 +43,8 @@ class SSH(object):
             self.privkeypasspath = None
         if self.pubkeypath.lower() == 'none':
             self.pubkeypath = None
-        if self.passwordfile.lower() == 'none':
-            self.passwordfile = None
+        #if self.passwordfile.lower() == 'none':
+        #    self.passwordfile = None
               
         # Create files if needed
         # TODO
