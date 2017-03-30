@@ -1,5 +1,6 @@
 2.4.10
 
+* License changed to Apache 2.0
 * created a threads registry. All threads self-register. Used to know what to kill when shutting down the factory. 
 * removed proxymanager.py and all references to it
 * workaround the TRACE problems
