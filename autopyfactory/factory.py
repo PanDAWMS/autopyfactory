@@ -51,6 +51,9 @@ from autopyfactory.authmanager import AuthManager
 
 major, minor, release, st, num = sys.version_info
 
+# add TRACE level
+logging.TRACE = 5
+
 class FactoryCLI(object):
     """class to handle the command line invocation of APF. 
        parse the input options,
@@ -217,7 +220,6 @@ Jose Caballero <jcaballero@bnl.gov>
         """
 
         # implementation of TRACE level
-        logging.TRACE = 5
         if self.options.logLevel == logging.TRACE:
             def trace(self, msg, *args, **kwargs):
                 self._log(logging.TRACE, msg, args, **kwargs)
