@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 
 __author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
-__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2016 John Hover; 2010-2016 Jose Caballero"
+__copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2017 John Hover; 2010-2017 Jose Caballero"
 __credits__ = []
-__license__ = "GPL"
-__version__ = "2.4.10"
+__license__ = "Apache 2.0"
+__version__ = "2.4.11"
 __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
@@ -35,16 +35,6 @@ try:
     from email.mime.text import MIMEText
 except:
     from email.MIMEText import MIMEText
-
-# Add TRACE log level 
-logging.TRACE = 5
-### NOTE: the implementation of trace() has 
-###       moved into method __setuplogging()
-###logging.addLevelName(logging.TRACE, 'TRACE')
-###def trace(self, msg, *args, **kwargs):
-###    self.log(logging.TRACE, msg, *args, **kwargs)
-###    #self._log(logging.TRACE, msg, args, **kwargs)
-###logging.Logger.trace = trace
 
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
@@ -227,6 +217,7 @@ Jose Caballero <jcaballero@bnl.gov>
         """
 
         # implementation of TRACE level
+        logging.TRACE = 5
         if self.options.logLevel == logging.TRACE:
             def trace(self, msg, *args, **kwargs):
                 self._log(logging.TRACE, msg, args, **kwargs)
