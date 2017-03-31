@@ -21,6 +21,11 @@
 #  bosco_cluster -a griddev03.racf.bnl.gov     (adds as PBS)
 #  3) change ~/.bosco/clusterlist    <host>   entry=griddev03.racf.bnl.gov max_queued=-1 cluster_type=pbs  -> slurm
 #  4) bosco_cluster --test griddev03.racf.bnl.gov
+#
+#   Two-hop SSH command:
+#   ssh -A -t ssh01.sdcc.bnl.gov ssh -A -t icsubmit01.sdcc.bnl.gov 
+#
+#
 
 from autopyfactory import jsd
 from autopyfactory import bosco
