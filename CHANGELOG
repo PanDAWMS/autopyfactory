@@ -1,6 +1,5 @@
 * bug fixed in condorlib._aggregateinfolib(). The key from condor query was not a string but a ExprTree.
 
-
 2.4.11
 
 * License changed to Apache 2.0
