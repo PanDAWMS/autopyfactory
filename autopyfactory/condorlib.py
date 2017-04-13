@@ -160,7 +160,7 @@ def _aggregateinfolib(input, primary_key='match_apf_queue', analyzers=[]):
             # This job is not managed by APF. Ignore...
             continue
 
-        apfqname = job[primary_key]
+        apfqname = str(job[primary_key])
         if apfqname not in queues.keys():
             queues[apfqname] = {}
 
