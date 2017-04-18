@@ -95,7 +95,7 @@ class _boscocli(object):
         griddev03.racf.bnl.gov/slurm
             
         '''
-        cmd = 'bosco_cluster -l'
+        cmd = 'bosco_cluster -l '
         self.log.trace("cmd is %s" % cmd) 
         before = time.time()
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -167,7 +167,7 @@ class _boscocli(object):
                 
     def _start_agent(self, pubkeyfile, privkeyfile, passfile=None):
         self.log.trace('cmd is ssh-agent')
-        cmd = 'ssh-agent'
+        cmd = 'ssh-agent '
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out = None
         (out,err) = p.communicate()
@@ -188,7 +188,7 @@ class _boscocli(object):
         self.log.debug('SSH agent started, environment set....')
          
         #cmd = '/usr/bin/bosco_ssh_start --key %s --pass %s ' % (privkeyfile, passfile) 
-        cmd = '/usr/bin/bosco_ssh_start --key %s --nopass' % privkeyfile
+        cmd = 'bosco_ssh_start --key %s --nopass ' % privkeyfile
         self.log.trace('cmd is %s' % cmd)
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out = None
