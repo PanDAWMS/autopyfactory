@@ -525,8 +525,13 @@ class Agis(ConfigInterface):
             cp.readfp(open(self.defaultsfile))
         for q in self.allqueues:
             for cq in q.ce_queues:
-                qc = cq.getConfig()
-                cp.merge(qc)
+                # FIXME
+                # temporary solution
+                try:
+                    qc = cq.getAPFConfig()
+                    cp.merge(qc)
+                except Exception, e:
+                    self.log.error('Exception captured while processing AGIS data: %s' %e)
         return cp    
   
     def _filterobjs(self, objlist, reqdict=None, negdict=None):
@@ -597,7 +602,7 @@ class Agis(ConfigInterface):
         '''
         Returns all PQ objects in list.  
         '''
-        self.log.trace("handleJSON called for activity %s" % activity)
+        self.log.trace("handleJSON called for activities %s" % self.activities)
         queues = []
         for key in sorted(jsondoc):
             self.log.trace("key = %s" % key)
