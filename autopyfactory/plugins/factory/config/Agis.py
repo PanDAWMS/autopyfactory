@@ -92,7 +92,7 @@ class AgisFailureError(Exception):
 class AgisPandaQueue(object):
     
     def __init__(self, parent, d, key):
-        self.log = logging.getLogger("config")
+        self.log = logging.getLogger("main.agis")
         self.parent = parent
         self.panda_queue_name = key
         try:
