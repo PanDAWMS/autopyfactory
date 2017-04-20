@@ -407,11 +407,11 @@ class Agis(ConfigInterface):
         
         # For defaultsfile, None means no defaults included in config. Only explicit values returned. 
         try:         
-            defaultsfile = self.config.get('Factory', 'config.agis.defaultsfile')
+            defaultsfile = self.config.get('Factory', 'config.agis.defaultsfiles')
             if defaultsfile.strip().lower() == 'none':
                 self.defaultsfile = None
             else:
-                self.defaultsfile = [ default.strip() for default in self.config.get('Factory', 'config.agis.defaultsfile').split(',') ]
+                self.defaultsfile = [ default.strip() for default in self.config.get('Factory', 'config.agis.defaultsfiles').split(',') ]
         except NoOptionError, noe:
             pass
         
@@ -507,7 +507,7 @@ class Agis(ConfigInterface):
                 
         s = ""
         if self.defaultsfile is not None:
-            df = open(self.defaultsfile)
+            df = open(self.defaultsfile[0])
             for line in df.readlines():
                 s += line
             s += "\n"
@@ -817,7 +817,7 @@ if __name__ == '__main__':
         config.agis.vos = atlas
         config.agis.clouds = US
         config.agis.activities = analysis,production
-        config.agis.defaultsfile= /etc/autopyfactory/agisdefaults.conf
+        config.agis.defaultsfiles = /etc/autopyfactory/agisdefaults.conf
         '''
 
     # Override defaults with command line values, if given    
@@ -828,7 +828,7 @@ if __name__ == '__main__':
     if activity is not None:
         fconfig.set('Factory', 'config.agis.activities', activity)
     if defaultsfile is not None:
-        fconfig.set('Factory', 'config.agis.defaultsfile', defaultsfile)
+        fconfig.set('Factory', 'config.agis.defaultsfiles', defaultsfile)
     if jobsperpilot is not None:
         fconfig.set('Factory', 'config.agis.jobsperpilot', str(jobsperpilot))
     if numfactories is not None:
