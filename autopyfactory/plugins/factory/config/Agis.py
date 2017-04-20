@@ -830,9 +830,9 @@ if __name__ == '__main__':
     if defaultsfile is not None:
         fconfig.set('Factory', 'config.agis.defaultsfile', defaultsfile)
     if jobsperpilot is not None:
-        fconfig.set('Factory', 'config.agis.jobsperpilot', jobsperpilot)
+        fconfig.set('Factory', 'config.agis.jobsperpilot', str(jobsperpilot))
     if numfactories is not None:
-        fconfig.set('Factory', 'config.agis.numfactories', numfactories)
+        fconfig.set('Factory', 'config.agis.numfactories', str(numfactories))
  
     #parent class Mock
     class Factory:
