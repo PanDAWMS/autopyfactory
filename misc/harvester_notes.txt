@@ -1,0 +1,91 @@
+QUESTIONS FOR TADASHI
+
+-- X509 proxies, who generates/maintains, if Harvester, how passed (path to file). 
+-- can we just log to the Harvester logger? 
+-- submission one-by-one? can we assume all pilots, on each call, for a given PQ share 
+   all the same attributes. 
+-- batchIDs will not be unique, unless we pre-pend the harvester ID
+-- note hierarchy of IDs:
+    Harvester:WorkerID 
+       -> CondorG:batchID 
+         -> CondorCE:batchID 
+           -> localBatch[PBS|LSF|SGI|Condor]:batchID
+             -> Panda:JobID(s)
+-- computingSite == PandaQueue or Panda Resource
+-- What is queueName??
+
+
+>>> from pandaharvester.harvestercore.work_spec import WorkSpec
+>>> import pickle
+>>> wsf = open('examples/work_spec.pickle')
+>>> ws = pickle.load(wsf)
+>>> ws.convert_to_propagate()
+{
+'status': 'submitted', 
+'workerID': 5, 
+'nCore': 24, 
+'batchID': u'4562339', 
+'submitTime': 'datetime/2017-03-27 08:07:39.031078', 
+'computingSite': u'BNL_PROD_5'}
+>>> ws
+<pandaharvester.harvestercore.work_spec.WorkSpec object at 0xd42590>
+
+
+WorkSpec object:
+  States:
+    ST_submitted = 'submitted'
+    ST_running = 'running'
+    ST_finished = 'finished'
+    ST_failed = 'failed'
+    ST_ready = 'ready'
+    ST_cancelled = 'cancelled'
+
+    ST_LIST = [ST_submitted,
+               ST_running,
+               ST_finished,
+               ST_failed,
+               ST_ready,
+               ST_cancelled]
+
+    # type of mapping between job and worker
+    MT_NoJob = 'NoJob'
+    MT_OneToOne = 'OneToOne'
+    MT_MultiJobs = 'MultiJobs'
+    MT_MultiWorkers = 'MultiWorkers'
+
+    # events
+    EV_noEvents = 0
+    EV_useEvents = 1
+    EV_requestEvents = 2
+
+    # primary attributes
+   'status:text',   'submitted','ready','running','finished','failed','cancelled' 
+   'workerID:integer',  " harvester worker ID   
+   'nCore:integer',
+   'batchID:text',    # local condor-g batch ID
+   'submitTime:timestamp',
+   'computingSite:text',      
+   
+   # other attributes?
+    attributesWithTypes = 
+   'mapType:text',
+   'queueName:text',
+   'hasJob:integer',
+   'workParams:blob',
+   'workAttributes:blob',
+   'eventsRequestParams:blob',
+   'eventsRequest:integer',
+   'creationTime:timestamp',
+   'startTime:timestamp',
+   'endTime:timestamp',
+   'walltime:timestamp',
+   'accessPoint:text',
+   'modificationTime:timestamp',
+   'lastUpdate:timestamp',
+   'eventFeedTime:timestamp',
+   'lockedBy:text',
+   'postProcessed:integer',
+   'nodeID:text',
+   'minRamCount:integer',
+   'maxDiskCount:integer',
+   'maxWalltime:integer'                         
