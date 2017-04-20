@@ -407,9 +407,11 @@ class Agis(ConfigInterface):
         
         # For defaultsfile, None means no defaults included in config. Only explicit values returned. 
         try:         
-            self.defaultsfile = self.config.get('Factory', 'config.agis.defaultsfile')
-            if self.defaultsfile.strip().lower() == 'none':
+            defaultsfile = self.config.get('Factory', 'config.agis.defaultsfile')
+            if defaultsfile.strip().lower() == 'none':
                 self.defaultsfile = None
+            else:
+                self.defaultsfile = [ default.strip() for default in self.config.get('Factory', 'config.agis.defaultsfile').split(',') ]
         except NoOptionError, noe:
             pass
         
@@ -547,19 +549,33 @@ class Agis(ConfigInterface):
             q.ce_queues = self._filterobjs(q.ce_queues, CQFILTERREQMAP, CQFILTERNEGMAP )
             self.log.trace("After filtering. ce_queues has %d objects" % len(q.ce_queues))
 
-        # create the config
+
+        ## create the config
         cp = Config()
-        if self.defaultsfile is not None:
-            cp.readfp(open(self.defaultsfile))
+
+        for i in range(len(self.activities)):
+
+            vo = self.vos[i]
+            cloud = self.clouds[i]
+            activity = self.activities[i]
+            default = self.defaultsfile[i]
     
-        for q in self.allqueues:
-            for cq in q.ce_queues:
-                try:
-                    qc = cq.getAPFConfig()
-                    cp.merge(qc)
-                except Exception, e:
-                    self.log.error('Captured exception %s' %e) 
-        return cp    
+            tmpcp = Config()    
+            tmpcp.readfp(open(default))
+            for q in self.allqueues:
+                if q.vo_name == vo and\
+                   q.cloud == cloud and\
+                   q.type == activity:
+                    for cq in q.ce_queues:
+                        try:
+                            qc = cq.getAPFConfig()
+                            tmpcp.merge(qc)
+                        except Exception, e:
+                            self.log.error('Captured exception %s' %e) 
+            cp.merge(tmpcp)
+
+        return cp 
+
 
 
   
