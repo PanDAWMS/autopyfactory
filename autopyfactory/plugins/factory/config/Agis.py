@@ -532,7 +532,7 @@ class Agis(ConfigInterface):
                     qc = cq.getAPFConfig()
                     cp.merge(qc)
                 except Exception, e:
-                    self.log.error('Exception captured while processing AGIS data: %s' %e)
+                    self.log.warning('Exception captured while processing AGIS data: %s' %e)
         return cp    
   
     def _filterobjs(self, objlist, reqdict=None, negdict=None):
