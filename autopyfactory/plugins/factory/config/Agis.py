@@ -451,63 +451,67 @@ class Agis(ConfigInterface):
                 self.log.error('Failed to contact AGIS or parse problem: %s' %  traceback.format_exc() )
                 raise AgisFailureError("Unable to contact AGIS or parsing error.")                                                              
                 
+###    def getConfigString(self, volist=None, cloudlist=None, activitylist=None, defaultsfile=None):
+###        '''
+###        For embedded usage. Handles everything in config.
+###        Pulls out valid PQ/CEs for specified vo, cloud, activity
+###        Returns string APF config. 
+###        PQ filtering:
+###            VO
+###              'vo_name'       : ['atlas'],
+###            CLOUD  
+###              'cloud'
+###            ACTIVITY
+###               'type'      
+###        '''
+###        if self.allqueues is None:
+###            self._updateInfo()
+###
+###        td = datetime.datetime.now() - self.lastupdate
+###        #
+###        totalseconds = td.seconds + ( td.days * 24 * 3600)
+###        if totalseconds > self.sleep:
+###            self._updateInfo()
+###        
+###        # total_seconds() introduced in Python 2.7
+###        # Should be used when possible.
+###        # Change back when 2.6 not needed.  
+###        #if td.total_seconds()  > self.sleep:
+###        #    self._updateInfo()
+###        
+###        # Don't mess with the built-in default filters. 
+###        mypqfilter = copy.deepcopy(PQFILTERREQMAP)
+###        if self.vos is not None and len(self.vos) > 0:
+###            mypqfilter['vo_name'] = self.vos
+###        if self.clouds is not None and len(self.clouds ) > 0:
+###            mypqfilter['cloud'] = self.clouds         
+###        if self.activities is not None and len(self.activities) > 0:
+###            mypqfilter['type'] = self.activities
+###
+###        self.log.debug("Before filtering. allqueues has %d objects" % len(self.allqueues))
+###        self.allqueues = self._filterobjs(self.allqueues, mypqfilter, PQFILTERNEGMAP)
+###        self.log.debug("After filtering. allqueues has %d objects" % len(self.allqueues))
+###        
+###        for q in self.allqueues:
+###            self.log.debug("Before filtering. ce_queues has %d objects" % len(q.ce_queues))
+###            q.ce_queues = self._filterobjs(q.ce_queues, CQFILTERREQMAP, CQFILTERNEGMAP )
+###            self.log.debug("After filtering. ce_queues has %d objects" % len(q.ce_queues))
+###                
+###        s = ""
+###        if self.defaultsfile is not None:
+###            df = open(self.defaultsfile[0])
+###            for line in df.readlines():
+###                s += line
+###            s += "\n"
+###        for q in self.allqueues:
+###            for cq in q.ce_queues:
+###                s += "%s\n" % cq.getAPFConfigString()        
+###        return s
+
     def getConfigString(self, volist=None, cloudlist=None, activitylist=None, defaultsfile=None):
-        '''
-        For embedded usage. Handles everything in config.
-        Pulls out valid PQ/CEs for specified vo, cloud, activity
-        Returns string APF config. 
-        PQ filtering:
-            VO
-              'vo_name'       : ['atlas'],
-            CLOUD  
-              'cloud'
-            ACTIVITY
-               'type'      
-        '''
-        if self.allqueues is None:
-            self._updateInfo()
+        self.getConfig()
+        return self.strconfig
 
-        td = datetime.datetime.now() - self.lastupdate
-        #
-        totalseconds = td.seconds + ( td.days * 24 * 3600)
-        if totalseconds > self.sleep:
-            self._updateInfo()
-        
-        # total_seconds() introduced in Python 2.7
-        # Should be used when possible.
-        # Change back when 2.6 not needed.  
-        #if td.total_seconds()  > self.sleep:
-        #    self._updateInfo()
-        
-        # Don't mess with the built-in default filters. 
-        mypqfilter = copy.deepcopy(PQFILTERREQMAP)
-        if self.vos is not None and len(self.vos) > 0:
-            mypqfilter['vo_name'] = self.vos
-        if self.clouds is not None and len(self.clouds ) > 0:
-            mypqfilter['cloud'] = self.clouds         
-        if self.activities is not None and len(self.activities) > 0:
-            mypqfilter['type'] = self.activities
-
-        self.log.debug("Before filtering. allqueues has %d objects" % len(self.allqueues))
-        self.allqueues = self._filterobjs(self.allqueues, mypqfilter, PQFILTERNEGMAP)
-        self.log.debug("After filtering. allqueues has %d objects" % len(self.allqueues))
-        
-        for q in self.allqueues:
-            self.log.debug("Before filtering. ce_queues has %d objects" % len(q.ce_queues))
-            q.ce_queues = self._filterobjs(q.ce_queues, CQFILTERREQMAP, CQFILTERNEGMAP )
-            self.log.debug("After filtering. ce_queues has %d objects" % len(q.ce_queues))
-                
-        s = ""
-        if self.defaultsfile is not None:
-            df = open(self.defaultsfile[0])
-            for line in df.readlines():
-                s += line
-            s += "\n"
-        for q in self.allqueues:
-            for cq in q.ce_queues:
-                s += "%s\n" % cq.getAPFConfigString()        
-        return s
-    
     
     def getConfig(self):
         '''
@@ -544,6 +548,7 @@ class Agis(ConfigInterface):
 
         ## create the config
         cp = Config()
+        self.strconfig = '' 
 
         for i in range(len(self.activities)):
 
@@ -553,7 +558,17 @@ class Agis(ConfigInterface):
             default = self.defaultsfile[i]
     
             tmpcp = Config()    
-            tmpcp.readfp(open(default))
+            tmpfile = open(default)
+            tmpcp.readfp(tmpfile)
+            tmpfile.close()
+
+            # add content of DEFAULT file to string representation
+            tmpfile = open(default)  # we open again the file to get its content
+                                     # FIXME: find out how to read the file twice w/o reopening it
+            for line in tmpfile.readlines():
+                self.strconfig += line
+            
+
             for q in self.allqueues:
                 if q.vo_name == vo and\
                    q.cloud == cloud and\
@@ -562,6 +577,9 @@ class Agis(ConfigInterface):
                         try:
                             qc = cq.getAPFConfig()
                             tmpcp.merge(qc)
+                            # add content of Config object to the string representation
+                            self.strconfig += "\n"
+                            self.strconfig += qc.getContent()
                         except Exception, e:
                             self.log.error('Captured exception %s' %e) 
             cp.merge(tmpcp)
