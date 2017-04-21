@@ -12,7 +12,7 @@ class File(ConfigInterface):
 
     def __init__(self, factory, config, section):
 
-        self.log = logging.getLogger("main.configplugin")
+        self.log = logging.getLogger()
         self.factory = factory
         self.fcl = factory.fcl
         self.log.info('ConfigPlugin: Object initialized.')
@@ -27,7 +27,7 @@ class File(ConfigInterface):
             qcf = self.fcl.get('Factory', 'queueConf')    # the configuration files for queues are a list of URIs
             self.log.debug("queues.conf file(s) = %s" % qcf)
             qcl_files = ConfigManager().getConfig(sources=qcf)
-            self.log.trace("successfully read config file(s) %s" % qcf)
+            self.log.debug("successfully read config file(s) %s" % qcf)
         except:
             pass
         
@@ -52,14 +52,14 @@ class File(ConfigInterface):
         # 3. we merge both loader objects
         try:
             if qcf and qcd:
-                self.log.trace("both queues file(s) and dir")
+                self.log.debug("both queues file(s) and dir")
                 qcl = qcl_files
                 qcl.merge(qcl_dir)
             elif qcf and not qcd:
-                self.log.trace("queues file(s) only")
+                self.log.debug("queues file(s) only")
                 qcl = qcl_files
             elif not qcf and qcd:
-                self.log.trace("queues dir only")
+                self.log.debug("queues dir only")
                 qcl = qcl_dir
             else:
                 self.log.error('no files or directory with queues configuration specified')

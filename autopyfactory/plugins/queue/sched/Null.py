@@ -14,8 +14,8 @@ class Null(SchedInterface):
     '''       
     def __init__(self, apfqueue, config, section):
         try:
-            self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
-            self.log.trace("SchedPlugin: Object initialized.")
+            self.log = logging.getLogger()
+            self.log.debug("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex

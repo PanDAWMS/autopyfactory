@@ -43,9 +43,9 @@ class _condor(_thread, BatchStatusInterface):
         _thread.__init__(self)
         apfqueue.factory.threadsregistry.add("plugin", self)
         
-        ###self.log = logging.getLogger("main.batchstatusplugin[singleton: %s condor_q_id: %s]" %(apfqueue.apfqname, kw['condor_q_id']))
-        self.log = logging.getLogger("main.batchstatusplugin[singleton]")
-        self.log.trace('BatchStatusPlugin: Initializing object...')
+        ###self.log = logging.getLogger()
+        self.log = logging.getLogger()
+        self.log.debug('BatchStatusPlugin: Initializing object...')
 
         self.apfqueue = apfqueue
         self.apfqname = apfqueue.apfqname
@@ -109,9 +109,9 @@ class _condor(_thread, BatchStatusInterface):
         '''
         Main loop
         '''
-        self.log.trace('Starting')
+        self.log.debug('Starting')
         self._updatelib()
-        self.log.trace('Leaving')
+        self.log.debug('Leaving')
 
 
     def getInfo(self, queue=None):
@@ -123,22 +123,22 @@ class _condor(_thread, BatchStatusInterface):
         None is returned, as we understand that info is too old and 
         not reliable anymore.
         '''           
-        self.log.trace('Starting with self.maxage=%s' % self.maxage)
+        self.log.debug('Starting with self.maxage=%s' % self.maxage)
         
         if self.currentinfo is None:
-            self.log.trace('Not initialized yet. Returning None.')
+            self.log.debug('Not initialized yet. Returning None.')
             return None
         elif self.maxage > 0 and (int(time.time()) - self.currentinfo.lasttime) > self.maxage:
-            self.log.trace('Info too old. Leaving and returning None.')
+            self.log.debug('Info too old. Leaving and returning None.')
             return None
         else:
             if queue:
-                self.log.trace('Current info is %s' % self.currentinfo)                    
-                self.log.trace('Leaving and returning info of %d entries.' % len(self.currentinfo))
+                self.log.debug('Current info is %s' % self.currentinfo)                    
+                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentinfo))
                 return self.currentinfo[queue]
             else:
-                self.log.trace('Current info is %s' % self.currentinfo)
-                self.log.trace('No queue given, returning entire BatchStatusInfo object')
+                self.log.debug('Current info is %s' % self.currentinfo)
+                self.log.debug('No queue given, returning entire BatchStatusInfo object')
                 return self.currentinfo
 
 
@@ -168,7 +168,7 @@ class _condor(_thread, BatchStatusInterface):
 
         """
 
-        self.log.trace('Starting.')
+        self.log.debug('Starting.')
         self.log.debug('Starting.')
 
         try:
@@ -189,9 +189,9 @@ class _condor(_thread, BatchStatusInterface):
                 self.currentinfo = newinfo
         except Exception, e:
             self.log.error("Exception: %s" % str(e))
-            self.log.trace("Exception: %s" % traceback.format_exc())
+            self.log.debug("Exception: %s" % traceback.format_exc())
 
-        self.log.trace('Leaving.')
+        self.log.debug('Leaving.')
 
 
 # =============================================================================

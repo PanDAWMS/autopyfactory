@@ -59,8 +59,8 @@ class _panda(_thread, WMSStatusInterface):
 
         try:
             self.apfqueue = apfqueue
-            self.log = logging.getLogger("main.pandawmsstatusplugin[%s]" %apfqueue.apfqname)
-            self.log.trace("WMSStatusPlugin: Initializing object...")
+            self.log = logging.getLogger()
+            self.log.debug("WMSStatusPlugin: Initializing object...")
             self.maxage = self.apfqueue.fcl.generic_get('Factory', 'wmsstatus.panda.maxage', default_value=360)
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.panda.sleep')
             self._thread_loop_interval = self.sleeptime
@@ -85,9 +85,9 @@ class _panda(_thread, WMSStatusInterface):
         '''
         Main loop
         '''
-        self.log.trace('Starting.')
+        self.log.debug('Starting.')
         self._update()
-        self.log.trace('Leaving.')
+        self.log.debug('Leaving.')
 
 
     def getInfo(self, queue=None):
@@ -98,18 +98,18 @@ class _panda(_thread, WMSStatusInterface):
         None is returned, 
         
         '''
-        self.log.trace('get: Starting with inputs maxtime=%s' % self.maxage)
+        self.log.debug('get: Starting with inputs maxtime=%s' % self.maxage)
         if self.currentjobinfo is None:
-            self.log.trace('Info not initialized. Return None.')
+            self.log.debug('Info not initialized. Return None.')
             return None    
         elif self.maxage > 0 and (int(time.time()) - self.currentjobinfo.lasttime) > self.maxage:
-            self.log.trace('Info is too old. Maxage = %d. Returning None' % self.maxage)
+            self.log.debug('Info is too old. Maxage = %d. Returning None' % self.maxage)
             return None    
         else:
             if queue:
                 return self.currentjobinfo[queue]
             else:
-                self.log.trace('Leaving. Returning info with %d items' %len(self.currentjobinfo))
+                self.log.debug('Leaving. Returning info with %d items' %len(self.currentjobinfo))
                 return self.currentjobinfo
 
 
@@ -121,16 +121,16 @@ class _panda(_thread, WMSStatusInterface):
 
         '''
         if self.currentcloudinfo is None:
-            self.log.trace('Info not initialized. Return None.')
+            self.log.debug('Info not initialized. Return None.')
             return None    
         elif self.maxage > 0 and (int(time.time()) - self.currentcloudinfo.lasttime) > self.maxage:
-            self.log.trace('Info is too old. Maxage = %d. Returning None' % self.maxage)
+            self.log.debug('Info is too old. Maxage = %d. Returning None' % self.maxage)
             return None    
         else:
             if cloud:
                 return self.currentcloudinfo[cloud]
             else:
-                self.log.trace('getInfo: Leaving. Returning info with %d items' %len(self.currentcloudinfo))
+                self.log.debug('getInfo: Leaving. Returning info with %d items' %len(self.currentcloudinfo))
                 return self.currentcloudinfo
             
     def getSiteInfo(self, site=None):
@@ -140,16 +140,16 @@ class _panda(_thread, WMSStatusInterface):
         using method userinterface.Client.getSiteSpecs(siteType='all')
         '''
         if self.currentsiteinfo is None:
-            self.log.trace('Info not initialized. Return None.')
+            self.log.debug('Info not initialized. Return None.')
             return None    
         elif self.maxage > 0 and (int(time.time()) - self.currentsiteinfo.lasttime) > self.maxage:
-            self.log.trace('Info is too old. Maxage = %d. Returning None' % self.maxage)
+            self.log.debug('Info is too old. Maxage = %d. Returning None' % self.maxage)
             return None    
         else:
             if site:
                 return self.currentsiteinfo[site]
             else:
-                self.log.trace('getInfo: Leaving. Returning info with %d items' %len(self.currentsiteinfo))
+                self.log.debug('getInfo: Leaving. Returning info with %d items' %len(self.currentsiteinfo))
                 return self.currentsiteinfo
 
 
@@ -158,7 +158,7 @@ class _panda(_thread, WMSStatusInterface):
         Grab requested info with maxtime. 
         Returns info if OK, None otherwise. 
         '''
-        self.log.trace('Start. infotype = %s, maxtime = %d' % (infotype, maxtime))
+        self.log.debug('Start. infotype = %s, maxtime = %d' % (infotype, maxtime))
         out = None
         now = int(time.time())
         delta = now - self.currentinfo.lasttime
@@ -169,7 +169,7 @@ class _panda(_thread, WMSStatusInterface):
                 out = getattr(attrname)
             else:
                 self.log.info("_getMaxtimeinfo: Info too old. Delta is %d maxtime is %d" % (delta,maxtime))
-        self.log.trace('Leaving.')        
+        self.log.debug('Leaving.')        
         return out
 
     def _update(self):
@@ -179,7 +179,7 @@ class _panda(_thread, WMSStatusInterface):
                 - Sites configuration
                 - Jobs status per site
         '''
-        self.log.trace('Starting.')
+        self.log.debug('Starting.')
         
         try:
             newcloudinfo = self._updateclouds()
@@ -203,7 +203,7 @@ class _panda(_thread, WMSStatusInterface):
             self.log.error("Exception: %s" % str(e))
             self.log.error("Exception: %s" % traceback.format_exc()) 
 
-        self.log.trace('Leaving.')
+        self.log.debug('Leaving.')
 
 
     def _updateclouds(self):
@@ -296,7 +296,7 @@ class _panda(_thread, WMSStatusInterface):
         # get Clouds Specs
         clouds_err, all_clouds_config = Client.getCloudSpecs()
         delta = time.time() - before
-        self.log.trace('it took %s seconds to perform the query' %delta)
+        self.log.debug('it took %s seconds to perform the query' %delta)
         self.log.debug('%s seconds to perform query' %delta)
         out = None
         if clouds_err:
@@ -448,7 +448,7 @@ class _panda(_thread, WMSStatusInterface):
         sites_err, all_sites_config = Client.getSiteSpecs(siteType='all')
         delta = time.time() - before
 
-        self.log.trace('_updateSites: it took %s seconds to perform the query' %delta)
+        self.log.debug('_updateSites: it took %s seconds to perform the query' %delta)
         self.log.debug('_updateSites: %s seconds to perform query' %delta)
         out = None
         if sites_err:
@@ -540,7 +540,7 @@ class _panda(_thread, WMSStatusInterface):
                 return None 
                 
         self.jobsstatisticspersite2info = self.apfqueue.factory.mappingscl.section2dict('PANDAWMSSTATUS-JOBSSTATISTICSPERSITE2INFO')
-        self.log.trace('jobsstatisticspersite2info mappings are %s' %self.jobsstatisticspersite2info)
+        self.log.debug('jobsstatisticspersite2info mappings are %s' %self.jobsstatisticspersite2info)
         ###self.jobsstatisticspersite2info = {'pending'     : 'notready',
         ###                                   'defined'     : 'notready',
         ###                                   'assigned'    : 'notready',

@@ -4,7 +4,7 @@ __author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
 __copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2017 John Hover; 2010-2017 Jose Caballero"
 __credits__ = []
 __license__ = "Apache 2.0"
-__version__ = "2.4.12"
+__version__ = "2.4.13"
 __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
@@ -51,8 +51,6 @@ from autopyfactory.authmanager import AuthManager
 
 major, minor, release, st, num = sys.version_info
 
-# add TRACE level
-logging.TRACE = 5
 
 class FactoryCLI(object):
     """class to handle the command line invocation of APF. 
@@ -95,12 +93,6 @@ Jose Caballero <jcaballero@bnl.gov>
 ''', version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $" )
 
 
-        parser.add_option("--trace", 
-                          dest="logLevel", 
-                          default=logging.WARNING,
-                          action="store_const", 
-                          const=logging.TRACE, 
-                          help="Set logging level to TRACE [default WARNING], super verbose")
         parser.add_option("-d", "--debug", 
                           dest="logLevel", 
                           default=logging.WARNING,
@@ -172,12 +164,6 @@ Jose Caballero <jcaballero@bnl.gov>
         -- Logging syntax and semantics should be uniform throughout the program,  
            based on whatever organization scheme is appropriate.  
         
-        -- Have at least a single log message at TRACE at beginning and end of each function call.  
-           The entry message should mention input parameters,  
-           and the exit message should not any important result.  
-           TRACE output should be detailed enough that almost any logic error should become apparent.  
-           It is OK if TRACE messages are produced too fast to read interactively. 
-        
         -- Have sufficient DEBUG messages to show domain problem calculations input and output.
            DEBUG messages should never span more than one line. 
         
@@ -202,8 +188,6 @@ Jose Caballero <jcaballero@bnl.gov>
         -- We keep the original python levels meaning,  
            including WARNING as being the default level.  
         
-                TRACE      Detailed code execution information related to housekeeping, 
-                           parsing, objects, threads.
                 DEBUG      Detailed domain problem information related to scheduling, calculations,
                            program state.  
                 INFO       High level confirmation that things are working as expected.  
@@ -213,25 +197,7 @@ Jose Caballero <jcaballero@bnl.gov>
                 ERROR      Due to a more serious problem, the software has not been able to perform some function. 
                 CRITICAL   A serious error, indicating that the program itself may be unable to continue running. 
         
-        -- We add a new custom level -TRACE- to be more verbose than DEBUG.
-           
-           Info: http://docs.python.org/howto/logging.html#logging-advanced-tutorial  
-
         """
-
-        # implementation of TRACE level
-        if self.options.logLevel == logging.TRACE:
-            def trace(self, msg, *args, **kwargs):
-                self._log(logging.TRACE, msg, args, **kwargs)
-                # self._log() prints the right line numbers
-        else:
-            def trace(self, msg, *args, **kwargs):
-                self.log(logging.TRACE, msg, *args, **kwargs)
-                # if self._log() is used always, the TRACE messages are always printed
-                # even when not requested
-        logging.addLevelName(logging.TRACE, 'TRACE')
-        logging.Logger.trace = trace
-
 
         self.log = logging.getLogger()
         if self.options.logfile == "stdout":
@@ -249,9 +215,9 @@ Jose Caballero <jcaballero@bnl.gov>
             logStream = logging.FileHandler(filename=lf)    
 
         if major == 2 and minor == 4:
-            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d : %(message)s'
+            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(filename)s:%(lineno)d : %(message)s'
         else:
-            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
+            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
         formatter = logging.Formatter(FORMAT)
         formatter.converter = time.gmtime  # to convert timestamps to UTC
         logStream.setFormatter(formatter)
@@ -274,7 +240,7 @@ Jose Caballero <jcaballero@bnl.gov>
         envmsg = ''        
         for k in sorted(os.environ.keys()):
             envmsg += '\n%s=%s' %(k, os.environ[k])
-        self.log.trace('Environment : %s' %envmsg)
+        self.log.debug('Environment : %s' %envmsg)
 
 
     def __platforminfo(self):
@@ -412,7 +378,7 @@ class ThreadsRegistry(object):
 
     def __init__(self):
 
-        self.log = logging.getLogger('main.registry')
+        self.log = logging.getLogger()
 
         self.threads = {'queue' : [], 
                         'plugin' : [], 
@@ -468,7 +434,7 @@ class Factory(object):
         fcl is a FactoryConfigLoader object. 
         '''
         self.version = __version__
-        self.log = logging.getLogger('main.factory')
+        self.log = logging.getLogger()
         self.log.info('AutoPyFactory version %s' %self.version)
         self.fcl = fcl
 
@@ -505,7 +471,7 @@ class Factory(object):
         self._plugins()
 
         # Log some info...
-        self.log.trace('Factory shell PATH: %s' % os.getenv('PATH') )     
+        self.log.debug('Factory shell PATH: %s' % os.getenv('PATH') )     
         self.log.info("Factory: Object initialized.")
 
 
@@ -536,7 +502,7 @@ class Factory(object):
                 self.log.exception('Failed to create AuthConfigLoader')
                 sys.exit(0)
 
-            self.log.trace("Read config file %s, return value: %s" % (acf, got_config)) 
+            self.log.debug("Read config file %s, return value: %s" % (acf, got_config)) 
             self.authmanager = AuthManager(aconfig=acl, factory=self)
             self.authmanager.startHandlers()
             self.log.info('AuthManager initialized.')
@@ -556,7 +522,7 @@ class Factory(object):
             self.log.error('Failed to create MonitorConfigLoader')
             sys.exit(0)
 
-        self.log.trace("mcl is %s" % self.mcl)
+        self.log.debug("mcl is %s" % self.mcl)
        
 
     def _mappings(self):
@@ -572,7 +538,7 @@ class Factory(object):
             self.log.error('Failed to create ConfigLoader object for mappings')
             sys.exit(0)
         
-        self.log.trace("mappingscl is %s" % self.mappingscl)
+        self.log.debug("mappingscl is %s" % self.mappingscl)
 
     def _dumpqcl(self):
 
@@ -600,7 +566,7 @@ class Factory(object):
 
     def _initLogserver(self):
         # Set up LogServer
-        self.log.trace("Handling LogServer...")
+        self.log.debug("Handling LogServer...")
         ls = self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean')
         if ls:
             self.log.info("LogServer enabled. Initializing...")
@@ -610,22 +576,22 @@ class Factory(object):
             logurl = self.fcl.get('Factory','baseLogDirUrl')            
             logport = self._parseLogPort(logurl)
             if not os.path.exists(logpath):
-                self.log.trace("Creating log path: %s" % logpath)
+                self.log.debug("Creating log path: %s" % logpath)
                 os.makedirs(logpath)
             if not lsrobots:
                 rf = "%s/robots.txt" % logpath
-                self.log.trace("logserver.allowrobots is False, creating file: %s" % rf)
+                self.log.debug("logserver.allowrobots is False, creating file: %s" % rf)
                 try:
                     f = open(rf , 'w' )
                     f.write("User-agent: * \nDisallow: /")
                     f.close()
                 except IOError:
                     self.log.warn("Unable to create robots.txt file...")
-            self.log.trace("Creating LogServer object...")
+            self.log.debug("Creating LogServer object...")
             self.logserver = LogServer(self, port=logport, docroot=logpath, index=lsidx)
             self.log.info('LogServer initialized. Starting...')
             self.logserver.start()
-            self.log.trace('LogServer thread started.')
+            self.log.debug('LogServer thread started.')
         else:
             self.log.info('LogServer disabled. Not running.')
 
@@ -662,7 +628,7 @@ class Factory(object):
                    stops all queues when that happens.
         '''
 
-        self.log.trace("Starting.")
+        self.log.debug("Starting.")
         self.log.info("Starting all Queue threads...")
 
         # first call to reconfig() to load initial qcl configuration
@@ -676,7 +642,7 @@ class Factory(object):
 
                 mainsleep = int(self.fcl.get('Factory', 'factory.sleep'))
                 time.sleep(mainsleep)
-                self.log.trace('Checking for interrupt.')
+                self.log.debug('Checking for interrupt.')
 
                 # check if queues are alive
                 queues_alive = False
@@ -714,7 +680,7 @@ class Factory(object):
             self.shutdown()
             raise
             
-        self.log.trace("Leaving.")
+        self.log.debug("Leaving.")
 
 
     def reconfig(self):
@@ -728,7 +694,7 @@ class Factory(object):
         main loop code or from any method capturing specific signals.
         '''
 
-        self.log.trace("Starting")
+        self.log.debug("Starting")
 
         try:
             newqcl = Config()
@@ -745,7 +711,7 @@ class Factory(object):
         # dump the new qcl content
         self._dumpqcl()
 
-        self.log.trace("Leaving")
+        self.log.debug("Leaving")
 
 
     def _cleanlogs(self):
@@ -753,10 +719,10 @@ class Factory(object):
         starts the thread that will clean the condor logs files
         '''
 
-        self.log.trace('Starting')
+        self.log.debug('Starting')
         self.clean = CleanLogs(self)
         self.clean.start()
-        self.log.trace('Leaving')
+        self.log.debug('Leaving')
 
 
     def shutdown(self):

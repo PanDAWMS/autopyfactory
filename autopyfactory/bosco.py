@@ -27,7 +27,7 @@ class BoscoCluster(object):
 
 
     def __init__(self, entry, cluster_type='pbs', port=22, max_queued=-1,  ):
-        self.log = logging.getLogger('boscocluster')
+        self.log = logging.getLogger()
         self.entry = entry
         (self.user, self.host) = entry.split('@')
         self.port = port
@@ -50,7 +50,7 @@ class _boscocli(object):
     '''
 
     def __init__(self):
-        self.log = logging.getLogger("bosco")
+        self.log = logging.getLogger()
         self.log.debug("Initializing bosco module...")
         self.boscopubkeyfile = os.path.expanduser("~/.ssh/bosco_key.rsa.pub")
         self.boscoprivkeyfile = os.path.expanduser("~/.ssh/bosco_key.rsa")
@@ -96,33 +96,33 @@ class _boscocli(object):
             
         '''
         cmd = 'bosco_cluster -l '
-        self.log.trace("cmd is %s" % cmd) 
+        self.log.debug("cmd is %s" % cmd) 
         before = time.time()
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out = None
         (out, err) = p.communicate()
         delta = time.time() - before
-        self.log.trace('It took %s seconds to issue the command' %delta)
-        self.log.trace('%s seconds to issue command' %delta)
+        self.log.debug('It took %s seconds to issue the command' %delta)
+        self.log.debug('%s seconds to issue command' %delta)
         if p.returncode == 0 or p.returncode == 2:
-            self.log.trace('Leaving with OK return code.')
+            self.log.debug('Leaving with OK return code.')
         else:
             self.log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err )) 
         self.clusters = []
         lines = out.split("\n")
-        self.log.trace("got %d lines" % len(lines))
+        self.log.debug("got %d lines" % len(lines))
         for line in lines:
-            self.log.trace("line is %s" % line)
+            self.log.debug("line is %s" % line)
             if line.strip() == 'No clusters configured':
                 self.log.debug("No clusters configured.")
             elif len(line) < 2:
-                self.log.trace('empty line discarded')
+                self.log.debug('empty line discarded')
             else:
                 host, batch = line.split('/')
                 #  entry, cluster_type='pbs', port=22, max_queued=-1,
-                self.log.trace('got entry from bosco: %s %s Making object... ' % (host, batch))
+                self.log.debug('got entry from bosco: %s %s Making object... ' % (host, batch))
                 bentry = BoscoCluster(entry=host, cluster_type=batch)
-                self.log.trace('made bentry object, appending.')
+                self.log.debug('made bentry object, appending.')
                 self.clusters.append(bentry)
                 
         return self.clusters
@@ -130,32 +130,32 @@ class _boscocli(object):
     def _clusteradd(self, user,  host, port, batch, pubkeyfile, privkeyfile, passfile=None):
         self.log.info("Setting up cluster %s@%s/%s " % (user, host, batch))                 
         
-        self.log.trace("ensuring pubkeyfile") 
+        self.log.debug("ensuring pubkeyfile") 
         shutil.copy(pubkeyfile, self.boscopubkeyfile)
-        self.log.trace("ensuring privkeyfile") 
+        self.log.debug("ensuring privkeyfile") 
         shutil.copy(privkeyfile, self.boscoprivkeyfile)        
         if passfile:
-            self.log.trace("ensuring passfile")        
+            self.log.debug("ensuring passfile")        
             shutil.copy(passfile, self.boscopassfile )
         
         self._start_agent(pubkeyfile, privkeyfile, passfile)        
         
              
         cmd = 'bosco_cluster -a %s@%s %s ' % (user, host, batch)
-        self.log.trace("cmd is %s" % cmd) 
+        self.log.debug("cmd is %s" % cmd) 
         before = time.time()
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out = None
         (out, err) = p.communicate()        
         self.log.debug('bosco_cluster -a output was %s' % out)
         delta = time.time() - before
-        self.log.trace('It took %s seconds to issue the command' %delta)
-        self.log.trace('%s seconds to issue command' %delta)
+        self.log.debug('It took %s seconds to issue the command' %delta)
+        self.log.debug('%s seconds to issue command' %delta)
         
         # remove bosco files to ensure account separation...
         for fn in [self.boscopubkeyfile, self.boscoprivkeyfile, self.boscopassfile ]:
             try:
-                self.log.trace("removing %s" % fn) 
+                self.log.debug("removing %s" % fn) 
                 os.remove(fn)
             except OSError:
                 # file might not exist
@@ -166,37 +166,37 @@ class _boscocli(object):
             
                 
     def _start_agent(self, pubkeyfile, privkeyfile, passfile=None):
-        self.log.trace('cmd is ssh-agent')
+        self.log.debug('cmd is ssh-agent')
         cmd = 'ssh-agent '
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out = None
         (out,err) = p.communicate()
         lines = out.split('\n')
         for line in lines:
-            self.log.trace('line is %s' % line)
+            self.log.debug('line is %s' % line)
             exp = line.split(';')
             if '=' in line:
                 (k,v) = exp[0].split('=')
                 if k == 'SSH_AUTH_SOCK':
                     os.environ['SSH_AUTH_SOCK'] = v
-                    self.log.trace('setting SSH_AUTH_SOCK= %s' % v )
+                    self.log.debug('setting SSH_AUTH_SOCK= %s' % v )
                 elif k == 'SSH_AGENT_PID':
                     os.environ['SSH_AGENT_PID'] = v
-                    self.log.trace('setting SSH_AGENT_PID= %s' % v )
+                    self.log.debug('setting SSH_AGENT_PID= %s' % v )
                 else:
                     pass
         self.log.debug('SSH agent started, environment set....')
          
         #cmd = '/usr/bin/bosco_ssh_start --key %s --pass %s ' % (privkeyfile, passfile) 
         cmd = 'bosco_ssh_start --key %s --nopass ' % privkeyfile
-        self.log.trace('cmd is %s' % cmd)
+        self.log.debug('cmd is %s' % cmd)
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out = None
         (out,err) = p.communicate()
         self.log.debug('ssh_start completed.')
 
         cmd = 'ssh-add -l ' 
-        self.log.trace('cmd is %s' % cmd)
+        self.log.debug('cmd is %s' % cmd)
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out = None
         (out,err) = p.communicate()
@@ -224,10 +224,10 @@ class _boscocli(object):
         host = host.lower()
         batch = batch.lower()
         try:
-            self.log.trace("getting lock")
+            self.log.debug("getting lock")
             boscolock.acquire()
             clist = self._getBoscoClusters()
-            self.log.trace("got list of %d clusters" % len(clist))
+            self.log.debug("got list of %d clusters" % len(clist))
             found = False
             for c in clist:
                 if c.user == user and c.host == host and c.cluster_type == batch:
@@ -236,13 +236,13 @@ class _boscocli(object):
                 self.log.info("Setting up cluster %s/%s " % (host,batch))
                 self._clusteradd(user, host, port, batch, pubkeyfile, privkeyfile, passfile)
             else:
-                self.log.trace("Cluster %s@%s/%s already set up." % (user,host,batch))    
+                self.log.debug("Cluster %s@%s/%s already set up." % (user,host,batch))    
             
         except Exception, e:
             self.log.exception("Exception during bosco remote installation. ")
     
         finally:
-            self.log.trace("releasing lock")
+            self.log.debug("releasing lock")
             boscolock.release()
             
 
@@ -264,16 +264,7 @@ if __name__ == '__main__':
     # Set up logging. 
     debug = 0
     info = 0
-    trace = 1
     
-    # Add TRACE level
-    logging.TRACE = 5
-    logging.addLevelName(logging.TRACE, 'TRACE')
-    
-    def trace(self, msg, *args, **kwargs):
-        self.log(logging.TRACE, msg, *args, **kwargs)
-    
-    logging.Logger.trace = trace
     # Check python version 
     major, minor, release, st, num = sys.version_info
     
@@ -307,8 +298,6 @@ if __name__ == '__main__':
         log.setLevel(logging.DEBUG) # Override with command line switches
     if info:
         log.setLevel(logging.INFO) # Override with command line switches
-    if trace:
-        log.setLevel(logging.TRACE) 
     log.debug("Logging initialized.")      
     
     bcli = BoscoCLI()

@@ -63,7 +63,7 @@ class APFQueuesManager(object):
         Initializes a container of APFQueue objects
         '''
 
-        self.log = logging.getLogger('main.apfqueuesmanager')
+        self.log = logging.getLogger()
         self.queues = {}
         self.factory = factory
         self.log.debug('APFQueuesManager: Object initialized.')
@@ -238,7 +238,7 @@ class APFQueue(_thread):
         # recording moment the object was created
         self.inittime = datetime.datetime.now()
 
-        self.log = logging.getLogger('main.apfqueue[%s]' %apfqname)
+        self.log = logging.getLogger()
         self.log.debug('APFQueue: Initializing object...')
 
         # apfqname is the APF queue name, i.e. the section heading in queues.conf

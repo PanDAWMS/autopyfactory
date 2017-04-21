@@ -44,24 +44,24 @@ class CleanLogs(_thread):
 
         factory.threadsregistry.add("util", self)
 
-        self.log = logging.getLogger('main.cleanlogs')
-        self.log.trace('CleanLogs: Initializing object...')
+        self.log = logging.getLogger()
+        self.log.debug('CleanLogs: Initializing object...')
     
         self.factory = factory
         self.fcl = factory.fcl
         self.qcl = factory.qcl
         self.logDir = self.fcl.get('Factory', 'baseLogDir')
 
-        self.log.trace('CleanLogs: Object initialized.')
+        self.log.debug('CleanLogs: Object initialized.')
 
 
     def _run(self):
         '''
         Main loop
         '''
-        self.log.trace('Starting.')
+        self.log.debug('Starting.')
         self.__process()
-        self.log.trace('Leaving.')
+        self.log.debug('Leaving.')
 
 
     def __process(self):
@@ -69,7 +69,7 @@ class CleanLogs(_thread):
         loops over all directories to perform cleaning actions
         '''
 
-        self.log.trace("Starting.")
+        self.log.debug("Starting.")
 
         dirmgr = DirMgr(self.logDir)
         dirs = dirmgr.dirs
@@ -77,7 +77,7 @@ class CleanLogs(_thread):
             self.__processdir(dir)
         self.log.debug("Processed %d directories." % len(dirs))
             
-        self.log.trace("Leaving.")
+        self.log.debug("Leaving.")
 
 
     def __processdir(self, dir):
@@ -86,12 +86,12 @@ class CleanLogs(_thread):
         dir is a Dir object
         ''' 
 
-        self.log.trace("Starting with input %s." %dir.dir)
+        self.log.debug("Starting with input %s." %dir.dir)
 
         self.keepdays = KeepDays(self.fcl, self.factory.qcl)
         dir.rm(self.keepdays)
 
-        self.log.trace("Leaving.")
+        self.log.debug("Leaving.")
 
 
 
@@ -102,17 +102,17 @@ class KeepDays(object):
 
     def __init__(self, fcl, qcl):
 
-        self.log = logging.getLogger('main.keepdays')
+        self.log = logging.getLogger()
 
         self.fcl = fcl
         self.qcl = qcl
         self.__inspect()
         
-        self.log.trace('KeepDays: Object initialized.')
+        self.log.debug('KeepDays: Object initialized.')
 
     def __inspect(self):
 
-        self.log.trace('Starting.')
+        self.log.debug('Starting.')
 
         self.factory_keepdays = self.fcl.generic_get('Factory', 'cleanlogs.keepdays', 'getint')
         self.queues_keepdays = {}
@@ -120,7 +120,7 @@ class KeepDays(object):
             keepdays = self.qcl.generic_get(apfqname, 'cleanlogs.keepdays', 'getint')
             self.queues_keepdays[apfqname] = keepdays
 
-        self.log.trace('Leaving.')
+        self.log.debug('Leaving.')
 
     def get(self, apfqname):
         return self.queues_keepdays.get(apfqname, self.factory_keepdays) 
@@ -132,12 +132,12 @@ class DirMgr(object):
     '''
     def __init__(self, basedir):
 
-        self.log = logging.getLogger('main.DirMgr')
+        self.log = logging.getLogger()
 
         self.basedir = basedir
         self.dirs = self.getdirs() 
 
-        self.log.trace('DirMgr: Object initialized.')
+        self.log.debug('DirMgr: Object initialized.')
 
     def getdirs(self):
  
@@ -153,7 +153,7 @@ class DirMgr(object):
             if dir_obj:
                 dirs.append(dir_obj)
 
-        self.log.trace('Leaving return %s dirs' %len(dirs))
+        self.log.debug('Leaving return %s dirs' %len(dirs))
         return dirs
                 
            
@@ -174,7 +174,7 @@ class Dir(object):
         dir is like 2011-08-12
         '''
 
-        self.log = logging.getLogger('main.dir')
+        self.log = logging.getLogger()
 
         self.basedir = basedir
         self.dir = dir
@@ -182,7 +182,7 @@ class Dir(object):
         self.creation_t = self.creation_t() 
         self.delta_t = self.delta_t() 
 
-        self.log.trace('Dir: Object initialized for dir %s.' %self.dir)
+        self.log.debug('Dir: Object initialized for dir %s.' %self.dir)
 
     def empty(self):
         return os.listdir(self.path) == []
@@ -220,14 +220,14 @@ class Dir(object):
         it deletes itself.
         '''
 
-        self.log.trace('rm for dir %s: Starting.' %self.dir)
+        self.log.debug('rm for dir %s: Starting.' %self.dir)
 
         self.rm_subdirs(keepdays)
         if self.empty(): 
             self.log.info('Deleting directory: %s' %self.dir)
             os.rmdir(self.path)     
 
-        self.log.trace('rm for dir %s: Leaving.' %self.dir)
+        self.log.debug('rm for dir %s: Leaving.' %self.dir)
 
     def rm_subdirs(self, keepdays):
         '''
@@ -235,12 +235,12 @@ class Dir(object):
         keepdays is a KeepDays object
         '''
         
-        self.log.trace('Starting.')
+        self.log.debug('Starting.')
 
         for subdir in self.subdirs():
             subdir.rm(keepdays)
 
-        self.log.trace('Leaving.')
+        self.log.debug('Leaving.')
 
 
 class SubDir(object):
@@ -254,13 +254,13 @@ class SubDir(object):
         subdir is the APFQname
         '''
 
-        self.log = logging.getLogger('main.subdir')
+        self.log = logging.getLogger()
 
         self.parent = parent
         self.subdir = subdir
         self.path = os.path.join(parent.path, subdir)
 
-        self.log.trace('SubDir: Object initialized for subdir %s.'%self.subdir)
+        self.log.debug('SubDir: Object initialized for subdir %s.'%self.subdir)
 
     def rm(self, keepdays):
         ''' 
@@ -268,7 +268,7 @@ class SubDir(object):
         but only if the timing of the parent is older than
         what keepdays object has to say about it
         ''' 
-        self.log.trace('rm for subdir %s: Starting.' %self.subdir)
+        self.log.debug('rm for subdir %s: Starting.' %self.subdir)
 
         delta_days = self.parent.delta_t.days
         days = keepdays.get(self.subdir)
@@ -280,4 +280,4 @@ class SubDir(object):
                     self.log.info("Deleting subdirectory %s ..." % self.path)
                     shutil.rmtree(self.path)
 
-        self.log.trace('rm for subdir %s: Leaving.' %self.subdir)
+        self.log.debug('rm for subdir %s: Leaving.' %self.subdir)

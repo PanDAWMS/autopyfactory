@@ -35,7 +35,7 @@ class AuthManager(object):
     '''
     def __init__(self, aconfig, factory=None):
         
-        self.log = logging.getLogger('authmanager')
+        self.log = logging.getLogger()
         self.log.info("Creating new authmanager...")
         self.aconfig = aconfig
         self.factory = factory
@@ -50,7 +50,7 @@ class AuthManager(object):
             c = "\n[%s] \n" % sect
             for o in self.aconfig.options(sect):
                 c += "%s = %s \n" % (o, self.aconfig.get(sect, o))
-            self.log.trace(c)           
+            self.log.debug(c)           
             
             try:
                 pclass = self.aconfig.get(sect, 'plugin')
@@ -60,14 +60,14 @@ class AuthManager(object):
             pluginmanager = PluginManager()
         
             if pclass == 'X509':
-                self.log.trace("Creating X509 handler for %s" % sect )
+                self.log.debug("Creating X509 handler for %s" % sect )
                 ###x509h = pluginmanager.getplugin(self, 'authmanager', 'auth', self.aconfig, sect, 'plugin')
                 authpluginname = self.aconfig.get(sect, 'plugin') 
                 x509h = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'authmanager', 'auth'], authpluginname, self.aconfig, sect)
                 self.handlers.append(x509h)
             
             elif pclass == 'SSH':
-                self.log.trace("Creating SSH handler for %s" % sect )
+                self.log.debug("Creating SSH handler for %s" % sect )
                 ###sshh = pluginmanager.getplugin(self, 'authmanager', 'auth', self.aconfig, sect, 'plugin')
                 authpluginname = self.aconfig.get(sect, 'plugin') 
                 sshh = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'authmanager', 'auth'], authpluginname, self.aconfig, sect)
@@ -75,15 +75,15 @@ class AuthManager(object):
                             
             else:
                 self.log.warn("Unrecognized auth plugin %s" % pclass )
-        self.log.trace("Completed creation of %d auth handlers." % len(self.handlers))
+        self.log.debug("Completed creation of %d auth handlers." % len(self.handlers))
         
     def startHandlers(self):
         for ah in self.handlers:
             if isinstance(ah, threading.Thread) :
-                self.log.trace("Handler [%s] is a thread. Starting..." % ah.name)
+                self.log.debug("Handler [%s] is a thread. Starting..." % ah.name)
                 ah.start()
             else:
-                self.log.trace("Handler [%s] is not a thread. No action." % ah.name)
+                self.log.debug("Handler [%s] is not a thread. No action." % ah.name)
       
     def listNames(self):
         '''
@@ -104,18 +104,18 @@ class AuthManager(object):
             '''
             pp = None
             for profile in profilelist:
-                self.log.trace("Getting proxy path for profile %s" % profile)
+                self.log.debug("Getting proxy path for profile %s" % profile)
                 ph = None
                 for h in self.handlers:
-                    self.log.trace("Finding handler. Checking %s" % h.name)
+                    self.log.debug("Finding handler. Checking %s" % h.name)
                     if h.name == profile:
                         ph = h
                         break
                     
                 if ph:  
-                    self.log.trace("Found handler %s. Getting proxypath..." % ph.name)
+                    self.log.debug("Found handler %s. Getting proxypath..." % ph.name)
                     pp = ph.getProxyPath()
-                    self.log.trace("Proxypath is %s" % pp)
+                    self.log.debug("Proxypath is %s" % pp)
                     if pp:
                         break
             if not pp:
@@ -155,7 +155,7 @@ class AuthManager(object):
         '''
         handler = None
         for h in self.handlers:
-            self.log.trace("Finding handler. Checking %s" % h.name)
+            self.log.debug("Finding handler. Checking %s" % h.name)
             if h.name == profile:
                 self.log.debug("Found handler for %s" % h.name)
                 handler = h
@@ -166,15 +166,6 @@ class AuthManager(object):
 
 if __name__ == '__main__':
 
-    # Add TRACE level
-    logging.TRACE = 5
-    logging.addLevelName(logging.TRACE, 'TRACE')
-    
-    def trace(self, msg, *args, **kwargs):
-        self.log(logging.TRACE, msg, *args, **kwargs)
-    
-    logging.Logger.trace = trace
-   
     import getopt
     import sys
     import os
@@ -182,7 +173,6 @@ if __name__ == '__main__':
     
     debug = 0
     info = 0
-    trace = 0
     aconfig_file = None
     default_configfile = os.path.expanduser("~/etc/auth.conf")     
     usage = """Usage: authmanager.py [OPTIONS]  
@@ -190,7 +180,6 @@ if __name__ == '__main__':
         -h --help                   Print this message
         -d --debug                  Debug messages
         -v --verbose                Verbose information
-        -t --trace                  Trace level info
         -c --config                 Config file [~/etc/auth.conf]"""
     
     # Handle command line options
@@ -202,7 +191,6 @@ if __name__ == '__main__':
                                     "help", 
                                     "debug", 
                                     "verbose",
-                                    "trace",
                                     ])
     except getopt.GetoptError, error:
         print( str(error))
@@ -218,8 +206,6 @@ if __name__ == '__main__':
             debug = 1
         elif opt in ("-v", "--verbose"):
             info = 1
-        elif opt in ("-t", "--trace"):
-            trace = 1
             
     # Check python version 
     major, minor, release, st, num = sys.version_info
@@ -254,8 +240,6 @@ if __name__ == '__main__':
         log.setLevel(logging.DEBUG) # Override with command line switches
     if info:
         log.setLevel(logging.INFO) # Override with command line switches
-    if trace:
-        log.setLevel(logging.TRACE) 
     log.debug("Logging initialized.")      
     
     # Read in config file
@@ -265,7 +249,7 @@ if __name__ == '__main__':
     else:
         aconfig_file = os.path.expanduser(aconfig_file)
     got_config = aconfig.read(aconfig_file)
-    log.trace("Read config file %s, return value: %s" % (aconfig_file, got_config))
+    log.debug("Read config file %s, return value: %s" % (aconfig_file, got_config))
     
     am = AuthManager(aconfig)
     log.info("Authmanager created. Starting handlers...")
@@ -275,7 +259,7 @@ if __name__ == '__main__':
     try:
         while True:
             time.sleep(2)
-            #log.trace('Checking for interrupt.')
+            #log.debug('Checking for interrupt.')
     except (KeyboardInterrupt): 
         log.debug("Shutdown via Ctrl-C or -INT signal.")
         

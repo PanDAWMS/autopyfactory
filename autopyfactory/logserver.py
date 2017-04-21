@@ -87,7 +87,7 @@ class MySimpleHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     
             """
             
-            log = logging.getLogger('main.logserver')
+            log = logging.getLogger()
             log.debug("%s - - [%s] %s\n" %
                              (self.address_string(),
                               self.log_date_time_string(),
@@ -227,7 +227,7 @@ class LogServer(_thread):
         '''
         _thread.__init__(self)
         factory.threadsregistry.add("util", self)
-        self.log= logging.getLogger('main.logserver')
+        self.log= logging.getLogger()
         self.docroot = docroot
         self.port = int(port)
         self.index = index
@@ -252,9 +252,9 @@ class LogServer(_thread):
     def _init_socketserver(self):
         while not self.httpd:
             try:
-                self.log.trace("Attempting to bind to socket for HTTP server on port %s" % self.port)
+                self.log.debug("Attempting to bind to socket for HTTP server on port %s" % self.port)
                 self.httpd = SocketServer.TCPServer(("", self.port), self.handler)
-                self.log.trace("Initialized HTTP SocketServer port=%d, root=%s, index=%s" % (self.port, 
+                self.log.debug("Initialized HTTP SocketServer port=%d, root=%s, index=%s" % (self.port, 
                                                                                              self.docroot, 
                                                                                              self.index)) 
             except Exception, e:
@@ -267,7 +267,7 @@ class LogServer(_thread):
         self.log.info("Initializing HTTP server...")
         self._init_socketserver()
         os.chdir(self.docroot)
-        self.log.trace("Changing working dir to %s"%  self.docroot)
+        self.log.debug("Changing working dir to %s"%  self.docroot)
 
 
     def _run(self):

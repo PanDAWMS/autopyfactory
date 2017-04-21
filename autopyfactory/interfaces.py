@@ -204,7 +204,7 @@ class _thread(threading.Thread):
     
     def __init__(self):
         
-        self.log = logging.getLogger('_thread')
+        self.log = logging.getLogger()
 
         threading.Thread.__init__(self) # init the thread
         self.stopevent = threading.Event()

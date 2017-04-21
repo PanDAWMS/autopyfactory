@@ -18,7 +18,7 @@ class ExecSubmitPlugin(BatchSubmitInterface):
     
     def __init__(self, apfqueue, config, section):
         try:
-            self.log = logging.getLogger("main.batchsubmitplugin[%s]" %apfqueue.apfqname)
+            self.log = logging.getLogger()
             self.apfqname = apfqueue.apfqname
             self.factory = apfqueue.factory
             self.qcl = apfqueue.qcl

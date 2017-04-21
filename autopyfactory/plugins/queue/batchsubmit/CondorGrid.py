@@ -43,11 +43,11 @@ class CondorGrid(CondorBase):
         uses authmanager to find out the path to the X509 file
         '''
     
-        self.log.trace("Determining proxy, if necessary. Profile: %s" % self.proxylist)
+        self.log.debug("Determining proxy, if necessary. Profile: %s" % self.proxylist)
         if self.proxylist:
             self.x509userproxy = self.factory.authmanager.getProxyPath(self.proxylist)
         else:
-            self.log.trace("No proxy profile defined.")
+            self.log.debug("No proxy profile defined.")
 
 
     def _addJSD(self):
@@ -55,7 +55,7 @@ class CondorGrid(CondorBase):
         add things to the JSD object
         '''   
  
-        self.log.trace('CondorGrid.addJSD: Starting.')
+        self.log.debug('CondorGrid.addJSD: Starting.')
    
         self.JSD.add("universe", "grid")
         # -- proxy path --
@@ -67,5 +67,5 @@ class CondorGrid(CondorBase):
 
         super(CondorGrid, self)._addJSD()
     
-        self.log.trace('CondorGrid.addJSD: Leaving.')
+        self.log.debug('CondorGrid.addJSD: Leaving.')
     

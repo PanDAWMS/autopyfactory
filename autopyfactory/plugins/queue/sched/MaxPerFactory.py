@@ -14,11 +14,11 @@ class MaxPerFactory(SchedInterface):
 
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
+            self.log = logging.getLogger()
 
             self.max_pilots_per_factory = self.apfqueue.fcl.generic_get('Factory', 'maxperfactory.maximum', 'getint')
 
-            self.log.trace("SchedPlugin: Object initialized.")
+            self.log.debug("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
@@ -27,13 +27,13 @@ class MaxPerFactory(SchedInterface):
         """ 
         """
 
-        self.log.trace('Starting.')
+        self.log.debug('Starting.')
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo()
         self.total_pilots = 0 
         for batchqueue in self.batchinfo.keys():  
             self.total_pilots += self.batchinfo[batchqueue].running
             self.total_pilots += self.batchinfo[batchqueue].pending
-        self.log.trace('the total number of current pending+running pilots being handled by the factory is %s' %self.total_pilots)
+        self.log.debug('the total number of current pending+running pilots being handled by the factory is %s' %self.total_pilots)
 
         out = n
 

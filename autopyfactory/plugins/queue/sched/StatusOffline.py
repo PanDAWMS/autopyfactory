@@ -12,21 +12,21 @@ class StatusOffline(SchedInterface):
 
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger("main.schedplugin[%s]" % apfqueue.apfqname)
+            self.log = logging.getLogger()
 
             self.pilots_in_offline_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 
                                                                         'sched.statusoffline.pilots', 
                                                                         'getint', 
                                                                         default_value=0)
 
-            self.log.trace("SchedPlugin: Object initialized.")
+            self.log.debug("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
     def calcSubmitNum(self, n=0):
         
-        self.log.trace('Starting.')
+        self.log.debug('Starting.')
         self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(
                                 queue=self.apfqueue.wmsqueue)
         self.siteinfo = self.apfqueue.wmsstatus_plugin.getSiteInfo(
@@ -40,7 +40,7 @@ class StatusOffline(SchedInterface):
             msg = "StatusOffline:comment=no wms/site/batchinfo,in=%s,ret=0" %n
         else:
             sitestatus = self.siteinfo.status
-            self.log.trace('site status is %s' %sitestatus)
+            self.log.debug('site status is %s' %sitestatus)
 
             out = n
             msg = None

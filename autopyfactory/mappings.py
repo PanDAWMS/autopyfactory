@@ -12,7 +12,7 @@ from autopyfactory.apfexceptions import ConfigFailure, CondorVersionFailure
 from autopyfactory.info import JobInfo
 
 
-log = logging.getLogger('main.mappings')
+log = logging.getLogger()
 
 
 

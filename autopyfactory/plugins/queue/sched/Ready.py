@@ -12,15 +12,15 @@ class Ready(SchedInterface):
 
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger("main.schedplugin[%s]" % apfqueue.apfqname)
+            self.log = logging.getLogger()
             try:
                 self.offset = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.ready.offset', 'getint', default_value=0)
-                self.log.trace("SchedPlugin: offset = %d" % self.offset)
+                self.log.debug("SchedPlugin: offset = %d" % self.offset)
             except:
                 pass 
                 # Not mandatory
                 
-            self.log.trace("SchedPlugin: Object initialized.")
+            self.log.debug("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
@@ -31,7 +31,7 @@ class Ready(SchedInterface):
         It just returns nb of Activated Jobs - nb of Pending Pilots
         """
         out = n
-        self.log.trace('Starting.')
+        self.log.debug('Starting.')
         self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue = self.apfqueue.wmsqueue)
         self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname)
 
@@ -57,7 +57,7 @@ class Ready(SchedInterface):
         pending_pilots = self.queueinfo.pending
         running_pilots = self.queueinfo.running
 
-        self.log.trace("pending = %s running = %s offset = %s" % (pending_pilots, running_pilots, self.offset))
+        self.log.debug("pending = %s running = %s offset = %s" % (pending_pilots, running_pilots, self.offset))
         
         out = max(0, ( activated_jobs - self.offset)  - pending_pilots )
 

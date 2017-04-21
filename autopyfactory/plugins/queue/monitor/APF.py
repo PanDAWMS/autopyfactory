@@ -20,8 +20,8 @@ try:
     import json as json
 except ImportError, err:
     # Not critical (yet) - try simplejson
-    log = logging.getLogger('main.monitor')
-    log.trace('json package not installed. Trying to import simplejson as json')
+    log = logging.getLogger()
+    log.debug('json package not installed. Trying to import simplejson as json')
     import simplejson as json
 
 
@@ -87,10 +87,10 @@ class _apf(MonitorInterface):
 
         #monitor_id = config.generic_get(section, "monitorsection")
         monitor_id = section
-        self.log = logging.getLogger('main.monitor [singleton created by %s with id %s]' %(apfqueue.apfqname, monitor_id))
-        mainlevel = logging.getLogger('main').getEffectiveLevel()
+        self.log = logging.getLogger()
+        mainlevel = logging.getLogger()
         self.log.setLevel(mainlevel)
-        self.log.trace("Start...")
+        self.log.debug("Start...")
 
         self.qcl = apfqueue.factory.qcl
         self.fcl = apfqueue.factory.fcl
@@ -103,10 +103,10 @@ class _apf(MonitorInterface):
 
         self.monurl = self.mcl.generic_get(monitor_id, 'monitorURL')
 
-        self.log.trace('Instantiated monitor')
+        self.log.debug('Instantiated monitor')
         self.registerFactory()     
         self.registeredlabels = self._getLabels() # list of labels registered
-        self.log.trace('Done.')
+        self.log.debug('Done.')
 
 
     def registerFactory(self):
@@ -115,17 +115,17 @@ class _apf(MonitorInterface):
         If not, then register it. 
         '''
 
-        self.log.trace('Starting')
+        self.log.debug('Starting')
 
         #if self._isFactoryRegistered():
-        #    self.log.trace('factory is already registered')
+        #    self.log.debug('factory is already registered')
         #    out = None
         #else:
         #    self.log.info('factory is not registered yet. Registering.')
         #    out = self._registerFactory()
         out = self._registerFactory()
 
-        self.log.trace('Leaving')
+        self.log.debug('Leaving')
         return out
       
 
@@ -171,7 +171,7 @@ class _apf(MonitorInterface):
         out = self._call(http.GET, url)
         out = json.loads(out.read())
         factories = [ factory['name'] for factory in out ] 
-        self.log.trace('list of registered factories = %s' %factories)
+        self.log.debug('list of registered factories = %s' %factories)
         
         return self.fid in factories
 
@@ -181,7 +181,7 @@ class _apf(MonitorInterface):
         register the factory
         '''
 
-        self.log.trace('Starting')
+        self.log.debug('Starting')
 
         url = self.monurl + '/factories/' + self.fid
 
@@ -193,7 +193,7 @@ class _apf(MonitorInterface):
 
         out = self._call(http.PUT, url, data)
 
-        self.log.trace('Leaving')
+        self.log.debug('Leaving')
         return out
 
 
@@ -235,15 +235,15 @@ class _apf(MonitorInterface):
             ]
         '''
 
-        self.log.trace('Starting')
+        self.log.debug('Starting')
 
         url = self.monurl + '/labels?factory=' + self.fid
         out = self._call(http.GET, url)
         out = json.loads(out.read())
         labels = [ label['name'] for label in out ] 
-        self.log.trace('list of registered labels = %s' %labels)
+        self.log.debug('list of registered labels = %s' %labels)
         
-        self.log.trace('Leaving')
+        self.log.debug('Leaving')
         return labels
 
 
@@ -274,18 +274,18 @@ class _apf(MonitorInterface):
         #
         #####################################################
 
-        self.log.trace('Starting')
+        self.log.debug('Starting')
 
         label = apfqueue.apfqname
 
         if self._isLabelRegistered(label):
-            self.log.trace('label %s is already registered' %label)
+            self.log.debug('label %s is already registered' %label)
             out = None
         else:
             self.log.info('label %s is not registered yet. Registering.' %label)
             out = self._registerLabel(apfqueue)
 
-        self.log.trace('Leaving')
+        self.log.debug('Leaving')
         return out
 
 
@@ -300,7 +300,7 @@ class _apf(MonitorInterface):
         apfqueue object calling this method. 
         '''
 
-        self.log.trace('Starting')
+        self.log.debug('Starting')
 
         url = self.monurl + '/labels'
 
@@ -321,7 +321,7 @@ class _apf(MonitorInterface):
 
         self.registeredlabels.append(apfqueue.apfqname)
 
-        self.log.trace('Leaving')
+        self.log.debug('Leaving')
         return out
 
 
@@ -337,7 +337,7 @@ class _apf(MonitorInterface):
         It is a list of JobInfo objects
         '''
 
-        self.log.trace('Starting for apfqueue %s with info list %s' %(apfqueue.apfqname, 
+        self.log.debug('Starting for apfqueue %s with info list %s' %(apfqueue.apfqname, 
                                                                      jobinfolist))
 
         url = self.monurl + '/jobs'
@@ -363,12 +363,12 @@ class _apf(MonitorInterface):
 
                 data.append(job)
 
-                self.log.trace('updateJobs: adding data (%s, %s, %s)' %(ji.jobid, self.fid, apfqname))
+                self.log.debug('updateJobs: adding data (%s, %s, %s)' %(ji.jobid, self.fid, apfqname))
 
             data = json.dumps(data) 
             out = self._call(http.PUT, url, data=data)
 
-        self.log.trace('Leaving.')
+        self.log.debug('Leaving.')
         return out
 
 
@@ -378,7 +378,7 @@ class _apf(MonitorInterface):
 #        n is the number of new pilots being submitted
 #        '''
 #
-#        self.log.trace('Starting for label %s and number of pilots %s' %(label, n))
+#        self.log.debug('Starting for label %s and number of pilots %s' %(label, n))
 #
 #        url = "%s/labels/%s:%s" %(self.monurl, self.fid, label)
 #        msg = "Attempt to submit %s pilots" %n  
@@ -386,21 +386,21 @@ class _apf(MonitorInterface):
 #        data = urllib.urlencode(data)
 #        self._call(http.POST, url, data=data) 
 #
-#        self.log.trace('Leaving')
+#        self.log.debug('Leaving')
 
     def updateLabel(self, label, msg):
         '''
         update each label (==apfqname) in the monitor
         '''
 
-        self.log.trace('Starting for label %s and message %s' %(label, msg))
+        self.log.debug('Starting for label %s and message %s' %(label, msg))
 
         url = "%s/labels/%s:%s" %(self.monurl, self.fid, label)
         data = {'status': msg}
         data = urllib.urlencode(data)
         self._call(http.POST, url, data=data) 
 
-        self.log.trace('Leaving')
+        self.log.debug('Leaving')
 
 
     def _call(self, method, url, data=None):
@@ -409,7 +409,7 @@ class _apf(MonitorInterface):
         method is "PUT", "GET", "POST" or "DELETE"
         '''
 
-        self.log.trace('Starting. method=%s, url=%s, data=%s' %(method, url, data))
+        self.log.debug('Starting. method=%s, url=%s, data=%s' %(method, url, data))
 
         opener = urllib2.build_opener(NoExceptionHTTPHandler) 
         if data:
@@ -420,10 +420,10 @@ class _apf(MonitorInterface):
         try:
             out = opener.open(request)
         except Exception, e:
-            self.log.trace('HTTP call failed with error %s' %e)
+            self.log.debug('HTTP call failed with error %s' %e)
             out = None  # Is this OK?
 
-        self.log.trace('Leaving with output %s' %out)
+        self.log.debug('Leaving with output %s' %out)
         return out
 
 

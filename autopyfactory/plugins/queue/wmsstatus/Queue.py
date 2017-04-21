@@ -32,8 +32,8 @@ class Queue(threading.Thread, WMSStatusInterface):
 
         try:
             self.apfqueue = apfqueue
-            self.log = logging.getLogger("main.queuewmsstatusplugin")
-            self.log.trace("WMSStatusPlugin: Initializing object...")
+            self.log = logging.getLogger()
+            self.log.debug("WMSStatusPlugin: Initializing object...")
 
             self.maxage = self.apfqueue.fcl.generic_get('Factory', 'wmsstatus.queue.maxage', default_value=360)
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.queue.sleep')
@@ -62,7 +62,7 @@ class Queue(threading.Thread, WMSStatusInterface):
         None is returned, 
         '''
 
-        self.log.trace('get: Starting')
+        self.log.debug('get: Starting')
         return self.num
 
 
@@ -72,14 +72,14 @@ class Queue(threading.Thread, WMSStatusInterface):
         Main loop
         '''
     
-        self.log.trace('Starting.')
+        self.log.debug('Starting.')
         while not self.stopevent.isSet():
             try:
                 self._update()
             except Exception, e:
                 self.log.error("Main loop caught exception: %s " % str(e))
             time.sleep(self.sleeptime)
-        self.log.trace('Leaving.')
+        self.log.debug('Leaving.')
 
 
     def _update(self):

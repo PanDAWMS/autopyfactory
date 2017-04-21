@@ -118,11 +118,11 @@ class BaseQueueInfo(object):
                     else:
                         # a key in the dictionary is not in the mapping
                         # we ignore that case
-                        log = logging.getLogger('main.info')
+                        log = logging.getLogger()
                         log.warning('ignoring unkown key %s in the dictionary' %k)
                         continue
             except KeyError, e:
-                log = logging.getLogger('main.info')
+                log = logging.getLogger()
                 log.error("fill(): Exception: %s" % str(e))
                 log.error("Stack Trace: %s " % traceback.format_exc()) 
                 log.error("k: %s v: %s dictionary: %s mappings: %s" % (k,v, dictionary, mappings))
@@ -166,7 +166,7 @@ class BatchStatusInfo(BaseAPFInfo):
     '''
     
     def __init__(self):
-        self.log = logging.getLogger('main.info')
+        self.log = logging.getLogger()
         self.default = QueueInfo
 
     def __str__(self):
@@ -181,7 +181,7 @@ class WMSStatusInfo(BaseAPFInfo):
     
     '''
     def __init__(self):
-        self.log = logging.getLogger('main.info')
+        self.log = logging.getLogger()
         self.default = WMSQueueInfo
 
     def __str__(self):
@@ -195,7 +195,7 @@ class CloudStatusInfo(BaseAPFInfo):
     Contains objects indexed by APF/WMS queue name.  
     '''
 def __init__(self):
-        self.log = logging.getLogger('main.info')
+        self.log = logging.getLogger()
 
 
 
@@ -204,7 +204,7 @@ class CloudInfo(BaseQueueInfo):
     Attribute-based class containing WMS info about (WMS) clouds. 
     '''
 def __init__(self):
-        self.log = logging.getLogger('main.info')
+        self.log = logging.getLogger()
 
 
 
@@ -229,7 +229,7 @@ class WMSQueueInfo(BaseQueueInfo):
     '''
 
     def __init__(self):
-        self.log = logging.getLogger('main.info')
+        self.log = logging.getLogger()
 
     def __getattr__(self, name):
         '''
@@ -278,7 +278,7 @@ class SiteStatusInfo(BaseAPFInfo):
     Contains objects indexed by APF/WMS queue name.  
     '''    
 def __init__(self):
-        self.log = logging.getLogger('main.info')    
+        self.log = logging.getLogger()
 
 class SiteInfo(BaseQueueInfo):
     '''
@@ -286,7 +286,7 @@ class SiteInfo(BaseQueueInfo):
     One per site. 
     '''
 def __init__(self):
-        self.log = logging.getLogger('main.info')
+        self.log = logging.getLogger()
 
 
 class QueueInfo(BaseQueueInfo):
@@ -297,7 +297,7 @@ class QueueInfo(BaseQueueInfo):
     
     '''
     def __init__(self):
-        self.log = logging.getLogger('main.info')
+        self.log = logging.getLogger()
     
     def __str__(self):
         s = "QueueInfo: pending=%d, running=%d, suspended=%d" % (self.pending, 

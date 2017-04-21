@@ -31,7 +31,7 @@ class X509(_thread):
     def __init__(self, manager, config, section):
         _thread.__init__(self) 
         manager.factory.threadsregistry.add("plugin", self)
-        self.log = logging.getLogger('main.x509handler')
+        self.log = logging.getLogger()
         self.name = section
         self.log.debug("[%s] Starting X509Handler init." % self.name)
         self.manager = manager
@@ -161,7 +161,7 @@ class X509(_thread):
         Uses existing baseproxy if configured. 
         
         '''
-        self.log.trace("[%s] Generating new proxy..." % self.name)
+        self.log.debug("[%s] Generating new proxy..." % self.name)
         cmd = 'voms-proxy-init '
         #cmd += ' -dont-verify-ac '
         cmd += ' -ignorewarn '
@@ -212,7 +212,7 @@ class X509(_thread):
             gid = grp.getgrnam(self.group).gr_gid            
             try:
                 os.chown(self.proxyfile, uid, gid)
-                self.log.trace("Successfully set ownership for %s to %s:%s" % (self.proxyfile,
+                self.log.debug("Successfully set ownership for %s to %s:%s" % (self.proxyfile,
                                                                                self.owner, 
                                                                                self.group) )
             except Exception, e:
@@ -220,7 +220,7 @@ class X509(_thread):
                                                                                 self.group, 
                                                                                 self.proxyfile))
         else:
-            self.log.trace("No owner requested or proxy file doesn't exist. Doing nothing.")
+            self.log.debug("No owner requested or proxy file doesn't exist. Doing nothing.")
 
     def _retrieveMyProxyCredential(self):
         '''
@@ -243,7 +243,7 @@ class X509(_thread):
               -s myproxy.cern.ch
                    
         '''
-        self.log.trace("[%s] Begin..." % self.name)
+        self.log.debug("[%s] Begin..." % self.name)
                       
         cmd = 'myproxy-get-delegation'       
         cmd += ' --voms %s ' % self.vorole
@@ -277,7 +277,7 @@ class X509(_thread):
         else:
             raise Exception("Strange error using command myproxy_get_delegation. Return code = %d" % p.returncode)
         self._setProxyOwner()
-        self.log.trace("[%s] End." % self.name)
+        self.log.debug("[%s] End." % self.name)
 
 
     def _checkVOMSTimeLeft(self):
@@ -285,14 +285,14 @@ class X509(_thread):
         Checks status of current proxy.         
         Returns VOMS timeleft in seconds (0 for expired or non-existent proxy)
         '''
-        self.log.trace("[%s] Begin..." % self.name)
+        self.log.debug("[%s] Begin..." % self.name)
         r = 0
         if os.path.exists(self.proxyfile):
             cmd = 'voms-proxy-info -dont-verify-ac -actimeleft '
             cmd += ' -file %s ' % self.proxyfile
             
             # Run command
-            self.log.trace("[%s] Running Command: %s" % (self.name, cmd))
+            self.log.debug("[%s] Running Command: %s" % (self.name, cmd))
             p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
             stdout, stderr = p.communicate()
             if p.returncode == 0:
@@ -317,7 +317,7 @@ class X509(_thread):
         # FIXME: this method is almost 100% identical to _checkVOMSTimeLeft()
         #        figure out how to eliminate so much duplicate code
 
-        self.log.trace("[%s] Begin..." % self.name)
+        self.log.debug("[%s] Begin..." % self.name)
         r = 0
         if os.path.exists(self.proxyfile):
             cmd = 'voms-proxy-info -dont-verify-ac -timeleft '
@@ -367,7 +367,7 @@ class X509(_thread):
             out = out.split('\n')
             for fqan in out:
                 if fqan.startswith(vorole):
-                    self.log.trace('vorole %s found in proxy list of FQANs' %vorole)
+                    self.log.debug('vorole %s found in proxy list of FQANs' %vorole)
                     return 0
             else:
                 self.log.error('vorole %s not found in proxy' %vorole)
@@ -428,7 +428,7 @@ class X509(_thread):
             self.manager.factory.sendAdminEmail(email_subject, err_msg)
             return 1
 
-        self.log.trace('proxy %s validated' %self.proxyfile)
+        self.log.debug('proxy %s validated' %self.proxyfile)
         return 0
 
 
@@ -447,7 +447,7 @@ class X509(_thread):
         if self.flavor == 'voms':
             if self.renew:
                 tl = self._checkVOMSTimeLeft()
-                self.log.trace("[%s] Time left is %d" % (self.name, tl))
+                self.log.debug("[%s] Time left is %d" % (self.name, tl))
                 if tl < self.minlife:
                     self.log.debug("[%s] Need proxy. Generating..." % self.name)
                     rc = self._generateProxy()
@@ -456,20 +456,20 @@ class X509(_thread):
                     else:
                         self.log.critical("[%s] Proxy not generated successfully" % self.name)    
                 else:
-                    self.log.trace("[%s] VOMS Time left %d seconds." % (self.name, self._checkVOMSTimeLeft() ))
+                    self.log.debug("[%s] VOMS Time left %d seconds." % (self.name, self._checkVOMSTimeLeft() ))
                     self.log.info("[%s] Proxy OK (VOMS Timeleft %ds)." % ( self.name, self._checkVOMSTimeLeft()))
             else:
                 self.log.debug("Proxy checking and renewal disabled in config.")
         elif self.flavor == 'myproxy':
             tl = self._checkVOMSTimeLeft()
-            self.log.trace("[%s] Time left is %d" % (self.name, tl))
+            self.log.debug("[%s] Time left is %d" % (self.name, tl))
             if tl < self.minlife:
                 self.log.info("[%s] Need proxy. Retrieving..." % self.name)
                 self._retrieveMyProxyCredential()
                 self.log.info("[%s] Credential retrieved and proxy renewed successfully. VOMS Timeleft = %d" % (self.name, 
                                                                                                            self._checkVOMSTimeLeft()))    
             else:
-                self.log.trace("[%s] VOMS Time left %d seconds." % (self.name, self._checkVOMSTimeLeft() ))
+                self.log.debug("[%s] VOMS Time left %d seconds." % (self.name, self._checkVOMSTimeLeft() ))
                 self.log.info("[%s] Proxy OK (VOMS Timeleft %ds)." % ( self.name, self._checkVOMSTimeLeft()))
 
         # transfer
@@ -534,15 +534,6 @@ if __name__ == '__main__':
         elif opt in ("-v", "--verbose"):
             info = 1
 
-    # Set up logging. 
-    # Add TRACE level
-    logging.TRACE = 5
-    logging.addLevelName(logging.TRACE, 'TRACE')
-    
-    def trace(self, msg, *args, **kwargs):
-        self.log(logging.TRACE, msg, *args, **kwargs)
-    
-    logging.Logger.trace = trace
     # Check python version 
     major, minor, release, st, num = sys.version_info
     
@@ -585,7 +576,7 @@ if __name__ == '__main__':
     else:
         pconfig_file = os.path.expanduser(pconfig_file)
     got_config = pconfig.read(pconfig_file)
-    log.trace("Read config file %s, return value: %s" % (pconfig_file, got_config))
+    log.debug("Read config file %s, return value: %s" % (pconfig_file, got_config))
     
     pm = ProxyManager(pconfig)
     pm.start()
@@ -593,7 +584,7 @@ if __name__ == '__main__':
     try:
         while True:
             time.sleep(2)
-            log.trace('Checking for interrupt.')
+            log.debug('Checking for interrupt.')
     except (KeyboardInterrupt): 
         log.debug("Shutdown via Ctrl-C or -INT signal.")
         pm.stopevent.set()

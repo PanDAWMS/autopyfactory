@@ -42,8 +42,8 @@ class __condor(_thread, BatchHistoryInterface):
         _thread.__init__(self)
         apfqueue.factory.threadsregistry.add("plugin", self)
         
-        self.log = logging.getLogger("main.batchhistoryplugin[singleton: %s]" %apfqueue.apfqname)
-        self.log.trace('Initializing object...')
+        self.log = logging.getLogger()
+        self.log.debug('Initializing object...')
 
         self.apfqueue = apfqueue
         self.apfqname = apfqueue.apfqname
@@ -84,10 +84,10 @@ class __condor(_thread, BatchHistoryInterface):
         '''
         Main loop
         '''
-        self.log.trace('Starting')
+        self.log.debug('Starting')
         self._update()
         #self._updatelib()
-        self.log.trace('Leaving')
+        self.log.debug('Leaving')
 
 
     def getInfo(self, queue=None):
@@ -99,22 +99,22 @@ class __condor(_thread, BatchHistoryInterface):
         None is returned, as we understand that info is too old and 
         not reliable anymore.
         '''           
-        self.log.trace('Starting with self.maxage=%s' % self.maxage)
+        self.log.debug('Starting with self.maxage=%s' % self.maxage)
         
         if self.currentinfo is None:
-            self.log.trace('Not initialized yet. Returning None.')
+            self.log.debug('Not initialized yet. Returning None.')
             return None
         elif self.maxage > 0 and (int(time.time()) - self.currentinfo.lasttime) > self.maxage:
-            self.log.trace('Info too old. Leaving and returning None.')
+            self.log.debug('Info too old. Leaving and returning None.')
             return None
         else:
             if queue:
-                self.log.trace('Current info is %s' % self.currentinfo)                    
-                self.log.trace('Leaving and returning info of %d entries.' % len(self.currentinfo))
+                self.log.debug('Current info is %s' % self.currentinfo)                    
+                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentinfo))
                 return self.currentinfo[queue]
             else:
-                self.log.trace('Current info is %s' % self.currentinfo)
-                self.log.trace('No queue given, returning entire BatchStatusInfo object')
+                self.log.debug('Current info is %s' % self.currentinfo)
+                self.log.debug('No queue given, returning entire BatchStatusInfo object')
                 return self.currentinfo
 
 
@@ -161,7 +161,7 @@ class __condor(_thread, BatchHistoryInterface):
                 128     STAGE_OUT 
         '''
 
-        self.log.trace('Starting.')
+        self.log.debug('Starting.')
 
         ###if not utils.checkDaemon('condor'):
         ###    self.log.error('condor daemon is not running. Doing nothing')
@@ -172,16 +172,16 @@ class __condor(_thread, BatchHistoryInterface):
         ###            self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
         ###        else:
         ###            outlist = parseoutput(strout)
-        ###            self.log.trace("Got outlist.")
+        ###            self.log.debug("Got outlist.")
         ###            aggdict = aggregateinfo(outlist)
-        ###            self.log.trace("Got aggredated info.")
+        ###            self.log.debug("Got aggredated info.")
         ###            newinfo = self._map2info(aggdict)
-        ###            self.log.trace("Got new batchstatusinfo object: %s" % newinfo)
+        ###            self.log.debug("Got new batchstatusinfo object: %s" % newinfo)
         ###            self.log.info("Replacing old info with newly generated info.")
         ###            self.currentinfo = newinfo
         ###    except Exception, e:
         ###        self.log.error("Exception: %s" % str(e))
-        ###        self.log.trace("Exception: %s" % traceback.format_exc())
+        ###        self.log.debug("Exception: %s" % traceback.format_exc())
 
        
         if not utils.checkDaemon('condor'):
@@ -199,9 +199,9 @@ class __condor(_thread, BatchHistoryInterface):
 
             except Exception, e:
                 self.log.error("Exception: %s" % str(e))
-                self.log.trace("Exception: %s" % traceback.format_exc())
+                self.log.debug("Exception: %s" % traceback.format_exc())
 
-        self.log.trace('Leaving.')
+        self.log.debug('Leaving.')
 
 
 

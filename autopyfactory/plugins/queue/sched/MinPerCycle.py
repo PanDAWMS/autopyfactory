@@ -12,16 +12,16 @@ class MinPerCycle(SchedInterface):
 
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
+            self.log = logging.getLogger()
             self.min_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.minpercycle.minimum', 'getint')
-            self.log.trace("SchedPlugin: Object initialized.")
+            self.log.debug("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
     def calcSubmitNum(self, n=0):
 
-        self.log.trace('Starting with n=%s' %n)
+        self.log.debug('Starting with n=%s' %n)
 
         out = n
         msg = "MinPerCycle:comment=Not set"

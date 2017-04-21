@@ -24,11 +24,11 @@ class KeepNRunning(SchedInterface):
 
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger("main.schedplugin[%s]" % apfqueue.apfqname)
+            self.log = logging.getLogger()
             self.keep_running = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.keepnrunning.keep_running')
             if self.keep_running:
                 self.keep_running = int(self.keep_running)
-            self.log.trace("SchedPlugin: Object initialized.")
+            self.log.debug("SchedPlugin: Object initialized.")
         except Exception, ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
@@ -37,7 +37,7 @@ class KeepNRunning(SchedInterface):
         """ 
         It just returns nb of Activated Jobs - nb of Pending Pilots
         """
-        self.log.trace('Starting.')
+        self.log.debug('Starting.')
 
         self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname)
        
@@ -47,7 +47,7 @@ class KeepNRunning(SchedInterface):
             msg = "KeepNRunning:comment=Invalid queueinfo"
         else:
             (out, msg) = self._calc(n)
-            self.log.trace("Returning %d" % out)
+            self.log.debug("Returning %d" % out)
         return (out, msg)
 
     def _calc(self, input):

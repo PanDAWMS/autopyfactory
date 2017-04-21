@@ -39,7 +39,7 @@ class _condor(_thread, WMSStatusInterface):
         _thread.__init__(self) 
         apfqueue.factory.threadsregistry.add("plugin", self)
         
-        self.log = logging.getLogger("main.wmsstatusplugin[singleton created by %s]" %apfqueue.apfqname)
+        self.log = logging.getLogger()
         self.log.debug('Initializing object...')
 
         self.apfqueue = apfqueue   

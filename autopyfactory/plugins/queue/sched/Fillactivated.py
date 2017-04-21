@@ -12,7 +12,7 @@ class Fillactivated(SchedInterface):
 
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger("main.schedplugin[%s]" %apfqueue.apfqname)
+            self.log = logging.getLogger()
 
             # A default value is required. 
             self.default = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.fillactivated.default', 'getint', default_value=0)    

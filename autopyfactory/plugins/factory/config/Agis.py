@@ -14,27 +14,19 @@ Design goals/features:
 
 -- to use it as a script from command line:
 
-    -t trace
     -C cloud
     -V VO
     -D defaults
     -o output file
     
-    $ python /usr/lib/python2.6/site-packages/autopyfactory/plugins/factory/config/Agis.py -t --activity analysis -C US -V ATLAS -D /etc/autopyfactory/agisdefaults-analysis.conf -o /etc/autopyfactory/us-analysis-agis.conf
+    $ python /usr/lib/python2.6/site-packages/autopyfactory/plugins/factory/config/Agis.py --activity analysis -C US -V ATLAS -D /etc/autopyfactory/agisdefaults-analysis.conf -o /etc/autopyfactory/us-analysis-agis.conf
     
-    $ python /usr/lib/python2.6/site-packages/autopyfactory/plugins/factory/config/Agis.py -t --activity production -C US -V ATLAS -D /etc/autopyfactory/agisdefaults-production.conf -o /etc/autopyfactory/us-production-agis.conf
+    $ python /usr/lib/python2.6/site-packages/autopyfactory/plugins/factory/config/Agis.py --activity production -C US -V ATLAS -D /etc/autopyfactory/agisdefaults-production.conf -o /etc/autopyfactory/us-production-agis.conf
 
 '''
 from __future__ import print_function
 
 import logging
-
-# Set up trace logging for command line script usage. 
-logging.TRACE = 5
-logging.addLevelName(logging.TRACE, 'TRACE') 
-def trace(self, msg, *args, **kwargs):
-    self.log(logging.TRACE, msg, *args, **kwargs)
-logging.Logger.trace = trace
 
 import copy
 import datetime
@@ -92,7 +84,7 @@ class AgisFailureError(Exception):
 class AgisPandaQueue(object):
     
     def __init__(self, parent, d, key):
-        self.log = logging.getLogger("main.agis")
+        self.log = logging.getLogger()
         self.parent = parent
         self.panda_queue_name = key
         try:
@@ -140,17 +132,17 @@ class AgisPandaQueue(object):
         '''
           Makes CEqueue objects, key is PQ name 
         '''
-        self.log.trace("Handling cequeues for PQ %s" % self.panda_queue_name)
+        self.log.debug("Handling cequeues for PQ %s" % self.panda_queue_name)
         cequeues = []
         for cedict in celist:
-            self.log.trace("Handling cedict %s" % cedict)
+            self.log.debug("Handling cedict %s" % cedict)
             try:
                 cqo = AgisCEQueue( self, cedict)
                 cequeues.append( cqo)
             except Exception, e:
                 self.log.error('Failed to create AgisCEQueue for PQ %s and CE %s' % (self.panda_queue_name, cedict))
                 self.log.error("Exception: %s" % traceback.format_exc())
-        self.log.trace("Made list of %d CEQ objects" % len(cequeues))
+        self.log.debug("Made list of %d CEQ objects" % len(cequeues))
         return cequeues    
     
     
@@ -159,7 +151,7 @@ class AgisCEQueue(object):
     Represents a single CE queue within a Panda queue description.  
     '''
     def __init__(self, parent, cedict ):
-        self.log = logging.getLogger("main.agis")
+        self.log = logging.getLogger()
         self.parent = parent
         self.panda_queue_name = parent.panda_queue_name 
         self.ce_name = cedict['ce_name']                         # AGLT2-CE-gate04.aglt2.org
@@ -381,7 +373,7 @@ class Agis(ConfigInterface):
         Top-level object fo contacting, parsing, and providing APF configs from AGIS
         '''
 
-        self.log = logging.getLogger("main.agis")
+        self.log = logging.getLogger()
         self.allqueues = None
         self.lastupdate = None
         self.config = config
@@ -442,7 +434,7 @@ class Agis(ConfigInterface):
         except NoOptionError, noe:
             pass
         
-        self.log.trace('ConfigPlugin: Object initialized. %s' % self)
+        self.log.debug('ConfigPlugin: Object initialized. %s' % self)
 
     def _updateInfo(self):
         '''
@@ -450,7 +442,7 @@ class Agis(ConfigInterface):
         '''
         try:
             d = self._downloadJSON()
-            self.log.trace("Calling _handleJSON")
+            self.log.debug("Calling _handleJSON")
             queues = self._handleJSON(d)
             self.log.debug("AGIS provided list of %d total queues." % len(queues))
             self.allqueues = queues
@@ -496,14 +488,14 @@ class Agis(ConfigInterface):
         if self.activities is not None and len(self.activities) > 0:
             mypqfilter['type'] = self.activities
 
-        self.log.trace("Before filtering. allqueues has %d objects" % len(self.allqueues))
+        self.log.debug("Before filtering. allqueues has %d objects" % len(self.allqueues))
         self.allqueues = self._filterobjs(self.allqueues, mypqfilter, PQFILTERNEGMAP)
-        self.log.trace("After filtering. allqueues has %d objects" % len(self.allqueues))
+        self.log.debug("After filtering. allqueues has %d objects" % len(self.allqueues))
         
         for q in self.allqueues:
-            self.log.trace("Before filtering. ce_queues has %d objects" % len(q.ce_queues))
+            self.log.debug("Before filtering. ce_queues has %d objects" % len(q.ce_queues))
             q.ce_queues = self._filterobjs(q.ce_queues, CQFILTERREQMAP, CQFILTERNEGMAP )
-            self.log.trace("After filtering. ce_queues has %d objects" % len(q.ce_queues))
+            self.log.debug("After filtering. ce_queues has %d objects" % len(q.ce_queues))
                 
         s = ""
         if self.defaultsfile is not None:
@@ -540,14 +532,14 @@ class Agis(ConfigInterface):
         if self.activities is not None and len(self.activities) > 0:
             mypqfilter['type'] = self.activities
 
-        self.log.trace("Before filtering. allqueues has %d objects" % len(self.allqueues))
+        self.log.debug("Before filtering. allqueues has %d objects" % len(self.allqueues))
         self.allqueues = self._filterobjs(self.allqueues, mypqfilter, PQFILTERNEGMAP)
-        self.log.trace("After filtering. allqueues has %d objects" % len(self.allqueues))
+        self.log.debug("After filtering. allqueues has %d objects" % len(self.allqueues))
     
         for q in self.allqueues:
-            self.log.trace("Before filtering. ce_queues has %d objects" % len(q.ce_queues))
+            self.log.debug("Before filtering. ce_queues has %d objects" % len(q.ce_queues))
             q.ce_queues = self._filterobjs(q.ce_queues, CQFILTERREQMAP, CQFILTERNEGMAP )
-            self.log.trace("After filtering. ce_queues has %d objects" % len(q.ce_queues))
+            self.log.debug("After filtering. ce_queues has %d objects" % len(q.ce_queues))
 
 
         ## create the config
@@ -589,28 +581,28 @@ class Agis(ConfigInterface):
         for ob in objlist:
             keep = True
             for attrstr in reqdict.keys():
-                self.log.trace("Checking object %s attribute %s for values in %s" % (type(ob), 
+                self.log.debug("Checking object %s attribute %s for values in %s" % (type(ob), 
                                                                     attrstr, 
                                                                     reqdict[attrstr]))
                 value = getattr(ob, attrstr)
-                self.log.trace("%s: Checking value %s for match..." % (ob, value))
+                self.log.debug("%s: Checking value %s for match..." % (ob, value))
                 if getattr(ob, attrstr) not in reqdict[attrstr]:
-                    self.log.trace("%s: %s does not contain any entries from %s. Setting to remove." % (ob, 
+                    self.log.debug("%s: %s does not contain any entries from %s. Setting to remove." % (ob, 
                                                                                attrstr, 
                                                                                reqdict[attrstr]))
                     keep = False
                 else:
-                    self.log.trace("%s: %s did contain a value from %s. Retaining..."  % (ob, 
+                    self.log.debug("%s: %s did contain a value from %s. Retaining..."  % (ob, 
                                                                                attrstr, 
                                                                                reqdict[attrstr]))                                    
             if keep:
                 kept += 1
                 newobjlist.append(ob)
             else:
-                self.log.trace("Remove obj %s" % ob)
+                self.log.debug("Remove obj %s" % ob)
                 #newobjlist.remove(ob)
                 filtered += 1
-        self.log.trace("Keeping %d objects, filtered %d objects for required attribute values." % (kept, filtered))
+        self.log.debug("Keeping %d objects, filtered %d objects for required attribute values." % (kept, filtered))
         
         newlist2 = []
         kept = 0
@@ -625,19 +617,19 @@ class Agis(ConfigInterface):
                 kept += 1
                 newlist2.append(ob)
             else:
-                self.log.trace("Remove obj %s" % ob)
+                self.log.debug("Remove obj %s" % ob)
                 filtered += 1
-        self.log.trace("Keeping %d objects, filtered %d objects for prohibited attribute values." % (kept, filtered))
+        self.log.debug("Keeping %d objects, filtered %d objects for prohibited attribute values." % (kept, filtered))
         return newlist2
 
     
     def _downloadJSON(self):
         url = '%s' % self.baseurl
-        self.log.trace('Contacting %s' % url)
+        self.log.debug('Contacting %s' % url)
         handle = urlopen(url)
         d = json.load(handle, 'utf-8')
         handle.close()
-        self.log.trace('Done.')
+        self.log.debug('Done.')
         of = open('/tmp/agis-json.txt', 'w')
         json.dump(d,of, indent=2, sort_keys=True)
         of.close()
@@ -647,10 +639,10 @@ class Agis(ConfigInterface):
         '''
         Returns all PQ objects in list.  
         '''
-        self.log.trace("handleJSON called for activities %s" % self.activities)
+        self.log.debug("handleJSON called for activities %s" % self.activities)
         queues = []
         for key in sorted(jsondoc):
-            self.log.trace("key = %s" % key)
+            self.log.debug("key = %s" % key)
             try:
                 qo = AgisPandaQueue(self, jsondoc, key)
                 queues.append(qo)
@@ -658,7 +650,7 @@ class Agis(ConfigInterface):
                 self.log.error('Failed to create AgisPandaQueue %s Exception: %s' % (key,
                                                                                      traceback.format_exc()
                                                                                      ) )
-        self.log.trace("Made list of %d PQ objects" % len(queues))
+        self.log.debug("Made list of %d PQ objects" % len(queues))
         return queues
     
     def __str__(self):
@@ -683,7 +675,6 @@ if __name__ == '__main__':
     
     debug = 0
     info = 0
-    trace = 0
     vo = None
     cloud = None
     activity = None
@@ -699,7 +690,6 @@ if __name__ == '__main__':
         -h --help                   Print this message
         -d --debug                  Debug messages
         -v --verbose                Verbose information
-        -t --trace                  Trace level info
         -c --config                 Config file [/etc/autopyfactory/autopyfactory.conf]
         -o --outfile                Output file ['/tmp/agis-apf-config.conf']
         -j --jobsperpilot           Scale factor. [1.5]
@@ -719,7 +709,6 @@ if __name__ == '__main__':
                                    ["help", 
                                     "debug", 
                                     "verbose",
-                                    "trace",
                                     "config=",
                                     "outfile=",
                                     "jobsperpilot=",
@@ -741,8 +730,6 @@ if __name__ == '__main__':
             debug = 1
         elif opt in ("-v", "--verbose"):
             info = 1
-        elif opt in ("-t", "--trace"):
-            trace = 1
         elif opt in ("-c", "--config"):
             fconfig_file = arg
         elif opt in ("-o", "--outfile"):
@@ -794,15 +781,13 @@ if __name__ == '__main__':
         log.setLevel(logging.DEBUG) # Override with command line switches
     if info:
         log.setLevel(logging.INFO) # Override with command line switches
-    if trace:
-        log.setLevel(logging.TRACE) 
     log.debug("Logging initialized.")      
     
     fconfig=Config()
     if fconfig_file is not None:
         fconfig_file = os.path.expanduser(fconfig_file)
         got_config = fconfig.read(fconfig_file)
-        log.trace("Read config file %s, return value: %s" % (fconfig_file, got_config))  
+        log.debug("Read config file %s, return value: %s" % (fconfig_file, got_config))  
     else:
         # Create valid config...
         fconfig.add_section('Factory')

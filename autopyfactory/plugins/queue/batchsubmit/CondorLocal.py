@@ -47,7 +47,7 @@ class CondorLocal(CondorBase):
         add things to the JSD object
         '''
 
-        self.log.trace('CondorLocal.addJSD: Starting.')
+        self.log.debug('CondorLocal.addJSD: Starting.')
         
         # -- proxy path --
         if self.x509userproxy:
@@ -58,5 +58,5 @@ class CondorLocal(CondorBase):
 
         super(CondorLocal, self)._addJSD()
 
-        self.log.trace('CondorLocal.addJSD: Leaving.')
+        self.log.debug('CondorLocal.addJSD: Leaving.')
     

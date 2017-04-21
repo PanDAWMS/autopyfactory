@@ -71,7 +71,7 @@ class PluginManager(object):
         '''
         Top-level object to provide plugins. 
         '''
-        self.log = logging.getLogger('pluginsmanager')
+        self.log = logging.getLogger()
         self.log.addHandler(NullHandler())
         self.log.debug('PluginManager initialized.')
 

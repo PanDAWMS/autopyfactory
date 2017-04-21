@@ -27,7 +27,7 @@ class CondorBase(BatchSubmitInterface):
     def __init__(self, apfqueue, config, section):
 
         
-        self.log = logging.getLogger("main.batchsubmitplugin[%s]" % apfqueue.apfqname)
+        self.log = logging.getLogger()
 
         qcl = config
         self.apfqueue = apfqueue
@@ -43,9 +43,9 @@ class CondorBase(BatchSubmitInterface):
 
             self.factoryid = self.fcl.generic_get('Factory', 'factoryId')
             self.monitorsection = qcl.generic_get(self.apfqname, 'monitorsection')
-            self.log.trace("monitorsection is %s" % self.monitorsection)            
+            self.log.debug("monitorsection is %s" % self.monitorsection)            
             self.monitorurl = self.mcl.generic_get(self.monitorsection, 'monitorURL')
-            self.log.trace("monitorURL is %s" % self.monitorurl)
+            self.log.debug("monitorURL is %s" % self.monitorurl)
             
             self.factoryuser = self.fcl.generic_get('Factory', 'factoryUser')
             self.submitargs = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.submitargs')
@@ -96,18 +96,18 @@ class CondorBase(BatchSubmitInterface):
                     # FIXME:
                     # factory, wmsqueue and submitargs should not be necessary
                     st, output = mynewsubmit(n, jsdfile, self.factory, self.wmsqueue, self.submitargs)
-                    self.log.trace('Got output (%s, %s).' %(st, output)) 
+                    self.log.debug('Got output (%s, %s).' %(st, output)) 
                     joblist = condor.parsecondorsubmit(output)
                 else:
                     self.log.debug('jsdfile has no value. Doing nothing')
             elif n < 0:
                 # For certain plugins, this means to retire or terminate nodes...
-                self.log.trace('Preparing to retire %s jobs' % abs(n))
+                self.log.debug('Preparing to retire %s jobs' % abs(n))
                 self.retire(abs(n))
             else:
                 self.log.debug("Asked to submit 0. Doing nothing...")
             
-            self.log.trace('Done. Returning joblist %s.' %joblist)
+            self.log.debug('Done. Returning joblist %s.' %joblist)
                 
         except Exception, e:
             self.log.error('Exception during submit processing. Exception: %s' % e)
@@ -120,7 +120,7 @@ class CondorBase(BatchSubmitInterface):
         '''
          Do nothing by default. 
         '''
-        self.log.trace('Default retire() do nothing.')
+        self.log.debug('Default retire() do nothing.')
 
 
     def cleanup(self):
@@ -145,7 +145,7 @@ class CondorBase(BatchSubmitInterface):
  
     def _addJSD(self):
 
-        self.log.trace('addJSD: Starting.')
+        self.log.debug('addJSD: Starting.')
 
         self.JSD.add("Dir", "%s/" % self.logDir)
         self.JSD.add("notify_user", "%s" % self.factoryadminemail)
@@ -185,7 +185,7 @@ class CondorBase(BatchSubmitInterface):
         self.JSD.add("notification", "Error")
         self.JSD.add("transfer_executable", "True")
         
-        self.log.trace('addJSD: Leaving.')
+        self.log.debug('addJSD: Leaving.')
    
     def __parse_condor_attribute(self, s):
         '''
@@ -239,7 +239,7 @@ class CondorBase(BatchSubmitInterface):
         ''' 
         adding custom attributes from the queues.conf file
         ''' 
-        self.log.trace('Starting.')
+        self.log.debug('Starting.')
 
         if self.condor_attributes:
             for attr in self.__parse_condor_attribute(self.condor_attributes):
@@ -255,25 +255,25 @@ class CondorBase(BatchSubmitInterface):
         for item in self.extra_condor_attributes:
             self.JSD.add(item[0], item[1])
 
-        self.log.trace('Leaving.')
+        self.log.debug('Leaving.')
 
 
     def _finishJSD(self, n):
         '''
         add the number of pilots (n)
         '''
-        self.log.trace('finishJSD: Starting.')
-        self.log.trace('finishJSD: adding queue line with %d jobs' %n)
+        self.log.debug('finishJSD: Starting.')
+        self.log.debug('finishJSD: adding queue line with %d jobs' %n)
         self.JSD.add("queue %d" %n)
-        self.log.trace('finishJSD: Leaving.')
+        self.log.debug('finishJSD: Leaving.')
 
     def _writeJSD(self):
         '''
         Dumps the whole content of the JSDFile object into a disk file
         '''
     
-        self.log.trace('writeJSD: Starting.')
-        self.log.trace('writeJSD: the submit file content is\n %s ' %self.JSD)
+        self.log.debug('writeJSD: Starting.')
+        self.log.debug('writeJSD: the submit file content is\n %s ' %self.JSD)
         out = self.JSD.write(self.logDir, 'submit.jdl')
-        self.log.trace('writeJSD: Leaving.')
+        self.log.debug('writeJSD: Leaving.')
         return out
