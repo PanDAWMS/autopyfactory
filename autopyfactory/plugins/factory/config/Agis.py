@@ -560,14 +560,10 @@ class Agis(ConfigInterface):
             tmpcp = Config()    
             tmpfile = open(default)
             tmpcp.readfp(tmpfile)
-            tmpfile.close()
 
-            # add content of DEFAULT file to string representation
-            tmpfile = open(default)  # we open again the file to get its content
-                                     # FIXME: find out how to read the file twice w/o reopening it
+            tmpfile.seek(0) # to read the file over again
             for line in tmpfile.readlines():
                 self.strconfig += line
-            
 
             for q in self.allqueues:
                 if q.vo_name == vo and\
