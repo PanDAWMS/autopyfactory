@@ -583,6 +583,19 @@ class Agis(ConfigInterface):
         return cp 
 
 
+    def getConfigWMSQueue(self, wmsqueue):
+        '''
+        get the config sections only for a given wmsqueue
+        '''
+
+        conf = self.getConfig()
+        out = Config()
+        for section_name in conf.sections():
+            section = conf.getSection(section_name)
+            if section.get(section_name, 'wmsqueue') == wmsqueue:
+                out.merge(section)
+        return out 
+
 
   
     def _filterobjs(self, objlist, reqdict=None, negdict=None):
