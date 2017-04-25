@@ -290,7 +290,7 @@ class AgisCEQueue(object):
         
         '''
         self.cp = Config()
-        sect = '%s-%s' % ( self.panda_queue_name, self.ce_host )
+        sect = '%s-%s' % ( self.parent.panda_resource, self.ce_host )
         sect = str(sect)
         self.cp.add_section(sect)      
         # Unconditional config
