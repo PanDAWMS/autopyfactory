@@ -6,7 +6,6 @@
 
 #  OPTIONS:
 # 
-#  --trace              Set logging level to TRACE [default WARNING], super verbose level
 #  --debug              Set logging level to DEBUG [default WARNING]
 #  --info               Set logging level to INFO [default WARNING]
 #  --quiet              Set logging level to WARNING [default WARNING]
