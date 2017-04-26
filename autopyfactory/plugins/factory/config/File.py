@@ -5,19 +5,33 @@ import os
 
 from autopyfactory.apfexceptions import ConfigFailure
 from autopyfactory.configloader import Config, ConfigManager
-from autopyfactory.interfaces import ConfigInterface
+from autopyfactory.interfaces import ConfigInterface, _thread
 
 
-class File(ConfigInterface):
+class File(_thread, ConfigInterface):
 
     def __init__(self, factory, config, section):
 
+        _thread.__init__(self)
+        self._thread_loop_interval = self.config.generic_get('Factory', 'config.file.timesleep', 'getint', default_value=1800)
+        factory.threadsregistry.add('plugin', self)
+        self.reconfig = self.config.generic_get('Factory', 'config.file.reconfig', 'getboolean', default_value=True)
+    
         self.log = logging.getLogger()
         self.factory = factory
         self.fcl = factory.fcl
+        self.qcl = None
         self.log.info('ConfigPlugin: Object initialized.')
 
-    def getConfig(self):
+
+    def _run(self):
+        self.log.debug('Starting')
+        if not self.qcl or self.reconfig:
+            self._updateInfo()
+        self.log.debug('Leaving')
+
+
+    def _updateInfo(self):
 
         qcl = None
 
@@ -69,4 +83,10 @@ class File(ConfigInterface):
             raise ConfigFailure('Failed to create queues ConfigLoader: %s' %err)
 
         self.log.info('queues ConfigLoader object created')
-        return qcl
+
+        self.qcl = qcl
+
+
+    def getConfig(self):
+        return self.qcl
+        

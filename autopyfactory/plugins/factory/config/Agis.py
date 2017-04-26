@@ -47,7 +47,7 @@ sys.path.insert(0, prepath)
 
 from autopyfactory.apfexceptions import ConfigFailure
 from autopyfactory.configloader import Config, ConfigManager
-from autopyfactory.interfaces import ConfigInterface
+from autopyfactory.interfaces import ConfigInterface, _thread
 
 # REQ maps list *required* attribute and values. Object is removed if absent. 
 # NEG maps list *prohibited* attribute and values. Object is removed if present. 
@@ -362,7 +362,7 @@ class AgisCEQueue(object):
         s += "maxtime=%s " % self.parent.maxtime
         return s
 
-class Agis(ConfigInterface):
+class Agis(_thread, ConfigInterface):
     """
     creates the configuration files with 
     information retrieved from AGIS
@@ -372,6 +372,11 @@ class Agis(ConfigInterface):
         '''
         Top-level object fo contacting, parsing, and providing APF configs from AGIS
         '''
+
+        _thread.__init__(self)
+        self._thread_loop_interval = self.config.generic_get('Factory', 'config.agis.timesleep', 'getint', default_value=1800) 
+        factory.threadsregistry.add('plugin', self)
+        self.reconfig = self.config.generic_get('Factory', 'config.agis.reconfig', 'getboolean', default_value=True)
 
         self.log = logging.getLogger()
         self.allqueues = None
@@ -435,6 +440,14 @@ class Agis(ConfigInterface):
             pass
         
         self.log.debug('ConfigPlugin: Object initialized. %s' % self)
+
+
+    def _run(self):
+        self.log.debug('Starting')
+        if not self.allqueues or self.reconfig:
+            self._updateInfo()
+        self.log.debug('Leaving')
+
 
     def _updateInfo(self):
         '''
@@ -559,14 +572,18 @@ class Agis(ConfigInterface):
         Required for autopyfactory Config plugin interface. 
         Returns ConfigParser representing config
         '''
-        if self.allqueues is None:
-            self._updateInfo()
+        ###if self.allqueues is None:
+        ###    self._updateInfo()
+        ###
+        ###td = datetime.datetime.now() - self.lastupdate
+        ####
+        ###totalseconds = td.seconds + ( td.days * 24 * 3600)
+        ###if totalseconds > self.sleep:
+        ###    self._updateInfo()
 
-        td = datetime.datetime.now() - self.lastupdate
-        #
-        totalseconds = td.seconds + ( td.days * 24 * 3600)
-        if totalseconds > self.sleep:
-            self._updateInfo()
+        if not self.allqueues:
+            self.log.debug('No available configuration. Returning None.')
+            return None
 
         self._filter()
 

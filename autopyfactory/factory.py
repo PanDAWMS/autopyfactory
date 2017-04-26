@@ -700,6 +700,9 @@ class Factory(object):
         try:
             newqcl = Config()
             for config_plugin in self.config_plugins:
+                while config_plugin.getConfig() == None:
+                    self.log.debug('There is not yet available configuration from config plugin %s. Waiting...' %config_plugin.__class__.__name__)
+                    time.sleep(1)
                 tmpqcl = config_plugin.getConfig()
                 newqcl.merge(tmpqcl)
 
