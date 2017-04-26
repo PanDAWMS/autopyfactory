@@ -14,7 +14,8 @@ class File(_thread, ConfigInterface):
 
         _thread.__init__(self)
         self._thread_loop_interval = self.config.generic_get('Factory', 'config.file.timesleep', 'getint', default_value=1800)
-        factory.threadsregistry.add('plugin', self)
+        self.factory = factory
+        self.factory.threadsregistry.add('plugin', self)
         self.reconfig = self.config.generic_get('Factory', 'config.file.reconfig', 'getboolean', default_value=True)
     
         self.log = logging.getLogger()
