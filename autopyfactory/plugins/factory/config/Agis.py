@@ -526,25 +526,8 @@ class Agis(ConfigInterface):
         totalseconds = td.seconds + ( td.days * 24 * 3600)
         if totalseconds > self.sleep:
             self._updateInfo()
-    
-        # Don't mess with the built-in default filters. 
-        mypqfilter = copy.deepcopy(PQFILTERREQMAP)
-        if self.vos is not None and len(self.vos) > 0:
-            mypqfilter['vo_name'] = self.vos
-        if self.clouds is not None and len(self.clouds ) > 0:
-            mypqfilter['cloud'] = self.clouds    
-        if self.activities is not None and len(self.activities) > 0:
-            mypqfilter['type'] = self.activities
 
-        self.log.debug("Before filtering. allqueues has %d objects" % len(self.allqueues))
-        self.allqueues = self._filterobjs(self.allqueues, mypqfilter, PQFILTERNEGMAP)
-        self.log.debug("After filtering. allqueues has %d objects" % len(self.allqueues))
-    
-        for q in self.allqueues:
-            self.log.debug("Before filtering. ce_queues has %d objects" % len(q.ce_queues))
-            q.ce_queues = self._filterobjs(q.ce_queues, CQFILTERREQMAP, CQFILTERNEGMAP )
-            self.log.debug("After filtering. ce_queues has %d objects" % len(q.ce_queues))
-
+        self._filter()
 
         ## create the config
         cp = Config()
@@ -581,6 +564,29 @@ class Agis(ConfigInterface):
             cp.merge(tmpcp)
 
         return cp 
+
+
+    def _filter(self):
+    
+        # Don't mess with the built-in default filters. 
+        mypqfilter = copy.deepcopy(PQFILTERREQMAP)
+        if self.vos is not None and len(self.vos) > 0:
+            mypqfilter['vo_name'] = self.vos
+        if self.clouds is not None and len(self.clouds ) > 0:
+            mypqfilter['cloud'] = self.clouds    
+        if self.activities is not None and len(self.activities) > 0:
+            mypqfilter['type'] = self.activities
+
+        self.log.debug("Before filtering. allqueues has %d objects" % len(self.allqueues))
+        self.allqueues = self._filterobjs(self.allqueues, mypqfilter, PQFILTERNEGMAP)
+        self.log.debug("After filtering. allqueues has %d objects" % len(self.allqueues))
+    
+        for q in self.allqueues:
+            self.log.debug("Before filtering. ce_queues has %d objects" % len(q.ce_queues))
+            q.ce_queues = self._filterobjs(q.ce_queues, CQFILTERREQMAP, CQFILTERNEGMAP )
+            self.log.debug("After filtering. ce_queues has %d objects" % len(q.ce_queues))
+
+    
 
 
     def getConfigWMSQueue(self, wmsqueue):
