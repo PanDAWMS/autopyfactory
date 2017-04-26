@@ -567,6 +567,10 @@ class Agis(ConfigInterface):
 
 
     def _filter(self):
+        '''
+        creates a list with all panda queues
+        belonging to the selected VOs, CLOUDs, and TYPEs
+        '''
     
         # Don't mess with the built-in default filters. 
         mypqfilter = copy.deepcopy(PQFILTERREQMAP)
