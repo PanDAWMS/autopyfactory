@@ -508,6 +508,47 @@ class Agis(ConfigInterface):
 ###                s += "%s\n" % cq.getAPFConfigString()        
 ###        return s
 
+
+# =======================================================
+# candidate code for a new getConfigString() method
+# to remove the functionality from getConfig()
+# =======================================================
+#
+#    def getConfigString(self, volist=None, cloudlist=None, activitylist=None, defaultsfile=None):
+#
+#        if self.allqueues is None:
+#            self._updateInfo()
+#
+#        self._filter()
+#
+#        self.strconfig = '' 
+#
+#        for i in range(len(self.activities)):
+#            vo = self.vos[i]
+#            cloud = self.clouds[i]
+#            activity = self.activities[i]
+#            default = self.defaultsfile[i]
+#    
+#            tmpfile = open(default)
+#            for line in tmpfile.readlines():
+#                self.strconfig += line
+#
+#            for q in self.allqueues:
+#                if q.vo_name == vo and\
+#                   q.cloud == cloud and\
+#                   q.type == activity:
+#                    for cq in q.ce_queues:
+#                        try:
+#                            qc = cq.getAPFConfig()
+#                            self.strconfig += "\n"
+#                            self.strconfig += qc.getContent()
+#                        except Exception, e:
+#                            self.log.error('Captured exception %s' %e) 
+#
+#        return self.strconfig
+#
+
+
     def getConfigString(self, volist=None, cloudlist=None, activitylist=None, defaultsfile=None):
         self.getConfig()
         return self.strconfig
