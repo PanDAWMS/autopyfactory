@@ -386,6 +386,7 @@ class ThreadsRegistry(object):
                        }
 
     def add(self, threadtype, thread):
+        self.log.debug('adding a thread of type %s: %s' %(threadtype, thread.__class__.__name__))
         self.threads[threadtype].append(thread)
 
     def join(self):
