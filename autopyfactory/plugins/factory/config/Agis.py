@@ -47,7 +47,7 @@ sys.path.insert(0, prepath)
 
 from autopyfactory.apfexceptions import ConfigFailure
 from autopyfactory.configloader import Config, ConfigManager
-from autopyfactory.interfaces import ConfigInterface, _thread
+from autopyfactory.interfaces import ConfigInterface
 
 # REQ maps list *required* attribute and values. Object is removed if absent. 
 # NEG maps list *prohibited* attribute and values. Object is removed if present. 
@@ -362,7 +362,7 @@ class AgisCEQueue(object):
         s += "maxtime=%s " % self.parent.maxtime
         return s
 
-class Agis(_thread, ConfigInterface):
+class Agis(ConfigInterface):
     """
     creates the configuration files with 
     information retrieved from AGIS
@@ -373,10 +373,7 @@ class Agis(_thread, ConfigInterface):
         Top-level object fo contacting, parsing, and providing APF configs from AGIS
         '''
 
-        _thread.__init__(self)
-        self._thread_loop_interval = self.config.generic_get('Factory', 'config.agis.timesleep', 'getint', default_value=1800) 
         self.factory = factory
-        self.factory.threadsregistry.add('plugin', self)
         self.reconfig = self.config.generic_get('Factory', 'config.agis.reconfig', 'getboolean', default_value=True)
 
         self.log = logging.getLogger()
@@ -443,13 +440,6 @@ class Agis(_thread, ConfigInterface):
         self.log.debug('ConfigPlugin: Object initialized. %s' % self)
 
 
-    def _run(self):
-        self.log.debug('Starting')
-        if not self.allqueues or self.reconfig:
-            self._updateInfo()
-        self.log.debug('Leaving')
-
-
     def _updateInfo(self):
         '''
         Contact AGIS and update full queue info.
@@ -465,62 +455,6 @@ class Agis(_thread, ConfigInterface):
                 self.log.error('Failed to contact AGIS or parse problem: %s' %  traceback.format_exc() )
                 raise AgisFailureError("Unable to contact AGIS or parsing error.")                                                              
                 
-###    def getConfigString(self, volist=None, cloudlist=None, activitylist=None, defaultsfile=None):
-###        '''
-###        For embedded usage. Handles everything in config.
-###        Pulls out valid PQ/CEs for specified vo, cloud, activity
-###        Returns string APF config. 
-###        PQ filtering:
-###            VO
-###              'vo_name'       : ['atlas'],
-###            CLOUD  
-###              'cloud'
-###            ACTIVITY
-###               'type'      
-###        '''
-###        if self.allqueues is None:
-###            self._updateInfo()
-###
-###        td = datetime.datetime.now() - self.lastupdate
-###        #
-###        totalseconds = td.seconds + ( td.days * 24 * 3600)
-###        if totalseconds > self.sleep:
-###            self._updateInfo()
-###        
-###        # total_seconds() introduced in Python 2.7
-###        # Should be used when possible.
-###        # Change back when 2.6 not needed.  
-###        #if td.total_seconds()  > self.sleep:
-###        #    self._updateInfo()
-###        
-###        # Don't mess with the built-in default filters. 
-###        mypqfilter = copy.deepcopy(PQFILTERREQMAP)
-###        if self.vos is not None and len(self.vos) > 0:
-###            mypqfilter['vo_name'] = self.vos
-###        if self.clouds is not None and len(self.clouds ) > 0:
-###            mypqfilter['cloud'] = self.clouds         
-###        if self.activities is not None and len(self.activities) > 0:
-###            mypqfilter['type'] = self.activities
-###
-###        self.log.debug("Before filtering. allqueues has %d objects" % len(self.allqueues))
-###        self.allqueues = self._filterobjs(self.allqueues, mypqfilter, PQFILTERNEGMAP)
-###        self.log.debug("After filtering. allqueues has %d objects" % len(self.allqueues))
-###        
-###        for q in self.allqueues:
-###            self.log.debug("Before filtering. ce_queues has %d objects" % len(q.ce_queues))
-###            q.ce_queues = self._filterobjs(q.ce_queues, CQFILTERREQMAP, CQFILTERNEGMAP )
-###            self.log.debug("After filtering. ce_queues has %d objects" % len(q.ce_queues))
-###                
-###        s = ""
-###        if self.defaultsfile is not None:
-###            df = open(self.defaultsfile[0])
-###            for line in df.readlines():
-###                s += line
-###            s += "\n"
-###        for q in self.allqueues:
-###            for cq in q.ce_queues:
-###                s += "%s\n" % cq.getAPFConfigString()        
-###        return s
 
 
 # =======================================================

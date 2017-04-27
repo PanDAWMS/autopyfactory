@@ -5,17 +5,14 @@ import os
 
 from autopyfactory.apfexceptions import ConfigFailure
 from autopyfactory.configloader import Config, ConfigManager
-from autopyfactory.interfaces import ConfigInterface, _thread
+from autopyfactory.interfaces import ConfigInterface
 
 
-class File(_thread, ConfigInterface):
+class File(ConfigInterface):
 
     def __init__(self, factory, config, section):
 
-        _thread.__init__(self)
-        self._thread_loop_interval = self.config.generic_get('Factory', 'config.file.timesleep', 'getint', default_value=1800)
         self.factory = factory
-        self.factory.threadsregistry.add('plugin', self)
         self.reconfig = self.config.generic_get('Factory', 'config.file.reconfig', 'getboolean', default_value=True)
     
         self.log = logging.getLogger()
@@ -23,13 +20,6 @@ class File(_thread, ConfigInterface):
         self.fcl = factory.fcl
         self.qcl = None
         self.log.info('ConfigPlugin: Object initialized.')
-
-
-    def _run(self):
-        self.log.debug('Starting')
-        if not self.qcl or self.reconfig:
-            self._updateInfo()
-        self.log.debug('Leaving')
 
 
     def _updateInfo(self):
