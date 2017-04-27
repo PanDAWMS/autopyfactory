@@ -365,12 +365,11 @@ class APFQueue(_thread):
                 self.monitor_plugins.append(monitor_plugin)
 
 
-    def _callscheds(self):
+    def _callscheds(self, nsub=0):
         '''
         calls the sched plugins 
         and calculates the number of pilot to submit
         '''
-        nsub = 0
         fullmsg = ""
         self.log.debug("APFQueue [%s] run(): Calling sched plugins..." % self.apfqname)
         for sched_plugin in self.scheduler_plugins:
