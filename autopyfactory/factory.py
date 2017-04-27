@@ -661,15 +661,6 @@ class Factory(object):
                         self.shutdown()
                         shutdown = True 
 
-                ###     # check if queues are alive
-                ###     if self.abort_no_queues:
-                ###         for q in self.apfqueuesmanager.queues.values():
-                ###             if q.isAlive():
-                ###                 break
-                ###         else:
-                ###             self.shutdown()
-                ###             break
-
             self.log.debug('Leaving')
                                 
         except (KeyboardInterrupt): 
