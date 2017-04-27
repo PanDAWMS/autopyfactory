@@ -349,7 +349,7 @@ Jose Caballero <jcaballero@bnl.gov>
             
         except KeyboardInterrupt:
             self.log.info('Caught keyboard interrupt - exitting')
-            f.join()
+            f.shutdown()
             sys.exit(0)
         except FactoryConfigurationFailure, errMsg:
             self.log.error('Factory configuration failure: %s', errMsg)
