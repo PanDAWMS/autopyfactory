@@ -642,8 +642,9 @@ class Factory(object):
         self.log.info("Starting all Queue threads...")
 
         # first call to reconfig() to load initial qcl configuration
-        self.reconfig()
-
+        ###self.reconfig()
+        
+        self.apfqueuesmanager.start() # starts the thread
         self._cleanlogs()
         
         try:
@@ -688,38 +689,38 @@ class Factory(object):
         self.log.debug("Leaving.")
 
 
-    def reconfig(self):
-        '''
-        Method to update the status of the APFQueuesManager object.
-        This method will be used every time the 
-        status of the queues changes: 
-                - at the very beginning
-                - when the config files change
-        That means this method will be invoked by the regular factory
-        main loop code or from any method capturing specific signals.
-        '''
-
-        self.log.debug("Starting")
-
-        try:
-            newqcl = Config()
-            for config_plugin in self.config_plugins:
-                while config_plugin.getConfig() == None:
-                    self.log.debug('There is not yet available configuration from config plugin %s. Waiting...' %config_plugin.__class__.__name__)
-                    time.sleep(1)
-                tmpqcl = config_plugin.getConfig()
-                newqcl.merge(tmpqcl)
-
-        except Exception, e:
-            self.log.critical('Failed getting the Factory plugins. Aborting')
-            raise
-
-        self.apfqueuesmanager.update(newqcl) 
-
-        # dump the new qcl content
-        self._dumpqcl()
-
-        self.log.debug("Leaving")
+    ### def reconfig(self):
+    ###     '''
+    ###     Method to update the status of the APFQueuesManager object.
+    ###     This method will be used every time the 
+    ###     status of the queues changes: 
+    ###             - at the very beginning
+    ###             - when the config files change
+    ###     That means this method will be invoked by the regular factory
+    ###     main loop code or from any method capturing specific signals.
+    ###     '''
+    ###
+    ###     self.log.debug("Starting")
+    ###
+    ###     try:
+    ###         newqcl = Config()
+    ###         for config_plugin in self.config_plugins:
+    ###             while config_plugin.getConfig() == None:
+    ###                 self.log.debug('There is not yet available configuration from config plugin %s. Waiting...' %config_plugin.__class__.__name__)
+    ###                 time.sleep(1)
+    ###             tmpqcl = config_plugin.getConfig()
+    ###             newqcl.merge(tmpqcl)
+    ###
+    ###     except Exception, e:
+    ###         self.log.critical('Failed getting the Factory plugins. Aborting')
+    ###         raise
+    ###
+    ###     self.apfqueuesmanager.update(newqcl) 
+    ###
+    ###     # dump the new qcl content
+    ###     self._dumpqcl()
+    ###
+    ###     self.log.debug("Leaving")
 
 
     def _cleanlogs(self):
