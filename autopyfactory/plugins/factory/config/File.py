@@ -79,5 +79,6 @@ class File(ConfigInterface):
 
 
     def getConfig(self):
+        self._updateInfo()
         return self.qcl
         

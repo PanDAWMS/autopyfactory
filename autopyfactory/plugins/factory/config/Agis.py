@@ -516,9 +516,9 @@ class Agis(ConfigInterface):
         ###if totalseconds > self.sleep:
         ###    self._updateInfo()
 
-        if not self.allqueues:
-            self.log.debug('No available configuration. Returning None.')
-            return None
+        #if not self.allqueues:
+        #    self.log.debug('No available configuration. Returning None.')
+        #    return None
 
         self._filter()
 
