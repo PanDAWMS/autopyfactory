@@ -109,20 +109,19 @@ class APFQueuesManager(_thread):
         self._delqueues(qcldiff['MODIFIED'])
         self._addqueues(qcldiff['MODIFIED'])
 
-        ###self._start() #starts all threads
+        self.startAPFQueues() #starts all threads
         
 
-    ### def _start(self):
-    ###     '''
-    ###     starts all APFQueue threads.
-    ###     We do it here, instead of one by one at the same time the object is created (old style),
-    ###     so can control which APFQueue threads are started and which ones are not
-    ###     in a more clear way
-    ###     '''
-    ###
-    ###     for q in self.queues.values():
-    ###         if not q.isAlive():
-    ###             q.start()
+    def startAPFQueues(self):
+        '''
+        starts all APFQueue threads.
+        We do it here, instead of one by one at the same time the object is created (old style),
+        so we can control which APFQueue threads are started and which ones are not
+        in a more clear way
+        '''
+        for q in self.queues.values():
+            if not q.isAlive():
+                q.start()
 
     ### Is this method being used by anyone???
     ### def join(self):
