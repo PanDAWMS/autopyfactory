@@ -382,6 +382,7 @@ class ThreadsRegistry(object):
 
         self.threads = {'queue' : [], 
                         'plugin' : [], 
+                        'core' : [], 
                         'util' : []
                        }
 
@@ -402,6 +403,11 @@ class ThreadsRegistry(object):
 
         self.log.debug('stopping util threads [%s]' %len(self.threads['util']))
         for thread in self.threads['util']: 
+            thread.join(5)
+
+        self.log.debug('stopping core components threads [%s]' %len(self.threads['core']))
+        for thread in self.threads['core']: 
+            self.log.debug('stopping another core component thread')
             thread.join(5)
 
 
