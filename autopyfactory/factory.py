@@ -439,7 +439,8 @@ class Factory(object):
         self.log.info('AutoPyFactory version %s' %self.version)
         self.fcl = fcl
 
-        self.shutdown = False # to decide if the main loop needs to stop or not
+        # to decide if the main loop needs to stop or not
+        self.shutdown = False
 
         # threads registry
         self.threadsregistry = ThreadsRegistry()
