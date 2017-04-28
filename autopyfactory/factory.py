@@ -349,7 +349,7 @@ Jose Caballero <jcaballero@bnl.gov>
             
         except KeyboardInterrupt:
             self.log.info('Caught keyboard interrupt - exitting')
-            f.shutdown()
+            f.stop()
             sys.exit(0)
         except FactoryConfigurationFailure, errMsg:
             self.log.error('Factory configuration failure: %s', errMsg)
@@ -438,6 +438,8 @@ class Factory(object):
         self.log = logging.getLogger()
         self.log.info('AutoPyFactory version %s' %self.version)
         self.fcl = fcl
+
+        self.shutdown = False # to decide if the main loop needs to stop or not
 
         # threads registry
         self.threadsregistry = ThreadsRegistry()
@@ -638,8 +640,7 @@ class Factory(object):
         self._cleanlogs()
         
         try:
-            shutdown = False
-            while not shutdown:
+            while not self.shutdown:
 
                 mainsleep = int(self.fcl.get('Factory', 'factory.sleep'))
                 time.sleep(mainsleep)
@@ -658,19 +659,24 @@ class Factory(object):
                     self.log.info("no queue is alive")
                     if self.abort_no_queues:
                         self.log.info("shutting down the factory")
-                        self.shutdown()
-                        shutdown = True 
+                        self.stop()
+                        self.shutdown = True 
 
             self.log.debug('Leaving')
                                 
-        except (KeyboardInterrupt): 
-            # FIXME
-            # this probably is not needed anymore,
-            # if a KeyboardInterrupt is captured by class FactoryCLI,
-            # it would perform a clean join( )
-            logging.info("Shutdown via Ctrl-C or -INT signal.")
-            self.shutdown()
-            raise
+        #except (KeyboardInterrupt): 
+        #    # FIXME
+        #    # this probably is not needed anymore,
+        #    # if a KeyboardInterrupt is captured by class FactoryCLI,
+        #    # it would perform a clean join( )
+        #    logging.info("Shutdown via Ctrl-C or -INT signal.")
+        #    self.shutdown()
+        #    raise
+        except Exception, ex:
+            self.log.warning("Exception raised during Factory main loop run: %s." %ex)
+            self.stop()
+            raise ex
+
             
         self.log.debug("Leaving.")
 
@@ -720,11 +726,12 @@ class Factory(object):
         self.log.debug('Leaving')
 
 
-    def shutdown(self):
+    def stop(self):
         '''
         Method to cleanly shut down all factory activity, joining threads, etc. 
         '''
         logging.debug(" Shutting down all Queue threads...")
+        self.shutdown = True
         self.threadsregistry.join() 
         self.log.debug('Leaving')
 
