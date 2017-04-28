@@ -47,7 +47,7 @@ from autopyfactory.pluginmanager import PluginManager
 from autopyfactory.interfaces import _thread
 
 
-class APFQueuesManager(object):
+class APFQueuesManager(_thread):
     '''
     -----------------------------------------------------------------------
     Container with the list of APFQueue objects.
@@ -63,6 +63,10 @@ class APFQueuesManager(object):
         Initializes a container of APFQueue objects
         '''
 
+        _thread.__init__(self)
+        factory.threadsregistry.add("core", self)
+        self._thread_loop_interval = factory.fcl.generic_get('Factory','config.interval', 'getint', default_value=3600)
+
         self.log = logging.getLogger()
         self.queues = {}
         self.factory = factory
@@ -71,6 +75,18 @@ class APFQueuesManager(object):
 # ----------------------------------------------------------------------
 #            Public Interface
 # ---------------------------------------------------------------------- 
+
+    def getConfig(self):
+        """
+        get updated configuration from the Factory Config plugins
+        """
+        newqcl = Config()
+        for config_plugin in self.factory.config_plugins:
+            tmpqcl = config_plugin.getConfig()
+            newqcl.merge(tmpqcl)
+        return newqcl
+            
+
     def update(self, newqcl):
         '''
         Compares the new list of queues with the current one
@@ -92,22 +108,21 @@ class APFQueuesManager(object):
         self._addqueues(qcldiff['ADDED'])
         self._delqueues(qcldiff['MODIFIED'])
         self._addqueues(qcldiff['MODIFIED'])
-        self._refresh()  # right now it does not do anything...
 
-        self._start() #starts all threads
+        ###self._start() #starts all threads
         
 
-    def _start(self):
-        '''
-        starts all APFQueue threads.
-        We do it here, instead of one by one at the same time the object is created (old style),
-        so can control which APFQueue threads are started and which ones are not
-        in a more clear way
-        '''
-
-        for q in self.queues.values():
-            if not q.isAlive():
-                q.start()
+    ### def _start(self):
+    ###     '''
+    ###     starts all APFQueue threads.
+    ###     We do it here, instead of one by one at the same time the object is created (old style),
+    ###     so can control which APFQueue threads are started and which ones are not
+    ###     in a more clear way
+    ###     '''
+    ###
+    ###     for q in self.queues.values():
+    ###         if not q.isAlive():
+    ###             q.start()
 
     ### Is this method being used by anyone???
     ### def join(self):
@@ -121,10 +136,19 @@ class APFQueuesManager(object):
     ###         count += 1
     ###     self.log.debug('%d queues joined' %count)
 
-    
+
+
     # ----------------------------------------------------------------------
     #  private methods
     # ----------------------------------------------------------------------
+
+    def _run(self):
+        self.log.debug('Starting')
+        newqcl = self.getConfig()
+        self.update(newqcl)
+        self.log.debug('Leaving')
+
+
 
     def _addqueues(self, apfqnames):
         '''
@@ -179,27 +203,6 @@ class APFQueuesManager(object):
             self.queues.pop(apfqname)
             count += 1
         self.log.debug('%d queues joined and removed' %count)
-
-
-    #def _del(self, apfqname):
-    #    '''
-    #    Deletes a single queue object from the list and stops it.
-    #    '''
-    #    qobject = self._get(apfqname)
-    #    qname.join()
-    #    self.queues.pop(apfqname)
-
-    
-    def _refresh(self):
-        '''
-        Calls method refresh() for all APFQueue objects
-        '''
-        count = 0
-        for q in self.queues.values():
-            q.refresh()
-            count += 1
-        self.log.debug('%d queues refreshed' %count)
-
 
 
     # ----------------------------------------------------------------------
@@ -449,14 +452,6 @@ class APFQueue(_thread):
 
 
     # End of run-related methods
-
-    def refresh(self):
-        '''
-        Method to reload, when requested, the config file
-        '''
-        pass 
-        # TO BE IMPLEMENTED
-                      
 
                  
 
