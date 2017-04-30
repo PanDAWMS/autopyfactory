@@ -1,12 +1,12 @@
 #
 # 
-'''
+"""
    Simple classes for serving up logs via HTTP
    
    @note log_message overridden in order to log to standard logs rather than stderr.
    @note extensions_map expanded to handle Condor logfile extensions so user sees them as text rather
       than being offered a download. 
-'''
+"""
 
 import logging
 import mimetypes
@@ -222,9 +222,9 @@ class MyNoListingHTTPRequestHandler(MySimpleHTTPRequestHandler):
 class LogServer(_thread):
     
     def __init__(self, factory, port=25880, docroot="/home/autopyfactory/factory/logs", index = True):
-        '''
+        """
         docroot is the path to the base directory of the files to be served. 
-        '''
+        """
         _thread.__init__(self)
         factory.threadsregistry.add("util", self)
         self.log= logging.getLogger()

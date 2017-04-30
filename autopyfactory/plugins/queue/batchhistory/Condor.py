@@ -28,7 +28,7 @@ import autopyfactory.utils as utils
 
 
 class __condor(_thread, BatchHistoryInterface):
-    '''
+    """
     -----------------------------------------------------------------------
     This class is expected to have separate instances for each PandaQueue object. 
     The first time it is instantiated, 
@@ -36,7 +36,7 @@ class __condor(_thread, BatchHistoryInterface):
     Public Interface:
             the interfaces inherited from Thread and from BatchStatusInterface
     -----------------------------------------------------------------------
-    '''
+    """
     def __init__(self, apfqueue, config, section):
 
         _thread.__init__(self)
@@ -81,9 +81,9 @@ class __condor(_thread, BatchHistoryInterface):
 
 
     def _run(self):
-        '''
+        """
         Main loop
-        '''
+        """
         self.log.debug('Starting')
         self._update()
         #self._updatelib()
@@ -91,14 +91,14 @@ class __condor(_thread, BatchHistoryInterface):
 
 
     def getInfo(self, queue=None):
-        '''
+        """
         Returns a  object populated by the analysis 
         over the output of a condor_q command
 
         If the info recorded is older than that maxage,
         None is returned, as we understand that info is too old and 
         not reliable anymore.
-        '''           
+        """           
         self.log.debug('Starting with self.maxage=%s' % self.maxage)
         
         if self.currentinfo is None:
@@ -119,7 +119,7 @@ class __condor(_thread, BatchHistoryInterface):
 
 
     def _update(self):
-        '''        
+        """        
         Query Condor for job status, validate ?, and populate  object.
         Condor-G query template example:
         
@@ -159,7 +159,7 @@ class __condor(_thread, BatchHistoryInterface):
                 32      UNSUBMITTED 
                 64      STAGE_IN 
                 128     STAGE_OUT 
-        '''
+        """
 
         self.log.debug('Starting.')
 

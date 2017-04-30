@@ -53,9 +53,9 @@ class Fillactivated(SchedInterface):
         return (out, msg)
 
     def _calc_online(self, n):
-        '''
+        """
         algorithm when wmssite is in online mode
-        '''
+        """
         
         # initial default values. 
         activated_jobs = 0

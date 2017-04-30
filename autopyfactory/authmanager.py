@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-'''
+"""
     A credential management component for AutoPyFactory 
 
-'''
+"""
 import logging
 import math
 import os
@@ -27,12 +27,12 @@ from autopyfactory.apfexceptions import InvalidAuthFailure
 
 
 class AuthManager(object):
-    '''
+    """
         Manager to maintain multiple credential Handlers, one for each target account.
         For some handlers, if they need to perform periodic checks, they will be run
         as threads. Others, which only hold information, will just be objects.  
     
-    '''
+    """
     def __init__(self, aconfig, factory=None):
         
         self.log = logging.getLogger()
@@ -86,9 +86,9 @@ class AuthManager(object):
                 self.log.debug("Handler [%s] is not a thread. No action." % ah.name)
       
     def listNames(self):
-        '''
+        """
             Returns list of valid names of Handlers in this Manager. 
-        '''
+        """
         names = []
         for h in self.handlers:
             names.append(h.name)
@@ -98,10 +98,10 @@ class AuthManager(object):
 #    API for X509Handler 
 #
     def getProxyPath(self, profilelist):
-            '''
+            """
             Check all the handlers for matching profile name(s).
             profiles argument is a list 
-            '''
+            """
             pp = None
             for profile in profilelist:
                 self.log.debug("Getting proxy path for profile %s" % profile)
@@ -131,16 +131,16 @@ class AuthManager(object):
 #
 
     def getSSHKeyPair(self, profile):
-        '''
+        """
          Returns tuple (public, private, pass) key/phrase string from profile. 
-        '''
+        """
         pass
         
         
     def getSSHKeyPairPaths(self, profile):
-        '''
+        """
         Returns tuple (public, private, pass) key/passfile paths to files from profile. 
-        '''
+        """
         h = self._getHandler(profile)
         pub = h.getSSHPubKeyFilePath()
         priv = h.getSSHPrivKeyFilePath()
@@ -150,9 +150,9 @@ class AuthManager(object):
 
 
     def _getHandler(self, profile):
-        '''
+        """
         
-        '''
+        """
         handler = None
         for h in self.handlers:
             self.log.debug("Finding handler. Checking %s" % h.name)

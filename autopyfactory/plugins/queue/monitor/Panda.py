@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-'''
+"""
 
 NOTES
 
@@ -62,7 +62,7 @@ Job update command:
    errinfo=+'
 
 
-'''
+"""
 
 from autopyfactory.interfaces import MonitorInterface
 

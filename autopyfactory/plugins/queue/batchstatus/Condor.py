@@ -29,7 +29,7 @@ import autopyfactory.utils as utils
 
 
 class _condor(_thread, BatchStatusInterface):
-    '''
+    """
     -----------------------------------------------------------------------
     This class is expected to have separate instances for each PandaQueue object. 
     The first time it is instantiated, 
@@ -37,7 +37,7 @@ class _condor(_thread, BatchStatusInterface):
     Public Interface:
             the interfaces inherited from Thread and from BatchStatusInterface
     -----------------------------------------------------------------------
-    '''
+    """
     def __init__(self, apfqueue, config, section):
 
         _thread.__init__(self)
@@ -106,23 +106,23 @@ class _condor(_thread, BatchStatusInterface):
 
 
     def _run(self):
-        '''
+        """
         Main loop
-        '''
+        """
         self.log.debug('Starting')
         self._updatelib()
         self.log.debug('Leaving')
 
 
     def getInfo(self, queue=None):
-        '''
+        """
         Returns a  object populated by the analysis 
         over the output of a condor_q command
 
         If the info recorded is older than that maxage,
         None is returned, as we understand that info is too old and 
         not reliable anymore.
-        '''           
+        """           
         self.log.debug('Starting with self.maxage=%s' % self.maxage)
         
         if self.currentinfo is None:

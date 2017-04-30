@@ -10,9 +10,9 @@ from autopyfactory import jsd
 
 class CondorNordugrid(CondorCE):
     id = 'condornordugrid'
-    '''
+    """
     This class is expected to have separate instances for each PandaQueue object. 
-    '''
+    """
    
     def __init__(self, apfqueue, config, section):
 
@@ -32,12 +32,12 @@ class CondorNordugrid(CondorCE):
                  
 
     def _nordugridrsl(self, qcl):
-        '''
+        """
         tries to build nordugrid_rsl line.
             -- nordugridrsl.XYZ
             -- nordugridrsl.nordugridrsl
             -- nordugridrsl.nordugridrsladd
-        '''
+        """
         self.log.debug('Starting.')
         out = ""
         optlist = []
@@ -104,9 +104,9 @@ class CondorNordugrid(CondorCE):
 
 
     def _addJSD(self):
-        '''
+        """
         add things to the JSD object
-        '''
+        """
         self.log.debug('CondorNordugrid.addJSD: Starting.')
    
         self.JSD.add('grid_resource', 'nordugrid %s' %self.gridresource)

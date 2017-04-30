@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-'''
+"""
 classes and methods to map structures of info
 from one type to another
-'''
+"""
 import logging
 import time
 from Queue import Queue
@@ -17,7 +17,7 @@ log = logging.getLogger()
 
 
 def map2info(input, info_container, mappings):
-    '''
+    """
     This takes aggregated info by queue, with condor/condor-g specific status totals, and maps them 
     to the backend-agnostic APF *StatusInfo object.
     
@@ -68,7 +68,7 @@ def map2info(input, info_container, mappings):
         A *StatusInfo object (a BatchStatusInfo(), or WMSStatusInfo())
         which maps attribute counts to generic APF
         queue attribute counts. 
-    '''
+    """
 
     log.debug('Starting.')
 

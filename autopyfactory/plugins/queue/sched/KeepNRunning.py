@@ -6,7 +6,7 @@ from autopyfactory.interfaces import SchedInterface
 
 
 class KeepNRunning(SchedInterface):
-    '''
+    """
     This plugin strives to keep a certain number of jobs/pilots/VMs running, regardless 
     of ready/activated or input.
     
@@ -17,7 +17,7 @@ class KeepNRunning(SchedInterface):
     
     May output a negative number, if keep_running is less than current running. 
       
-    '''
+    """
     id = 'keepnrunning'
     
     def __init__(self, apfqueue, config, section):
@@ -51,9 +51,9 @@ class KeepNRunning(SchedInterface):
         return (out, msg)
 
     def _calc(self, input):
-        '''
+        """
         algorithm 
-        '''
+        """
         
         # initial default values. 
         pending_pilots = 0

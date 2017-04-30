@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 #
 # $Id: exceptions.py 7652 2011-04-01 23:34:11Z jhover $
-'''Exception classes for pyfactory'''
+"""Exception classes for pyfactory'''
 
 
 class ThreadRegistryInvalidKind(Exception):
@@ -66,19 +66,19 @@ class MissingDependencyFailure(Exception):
         return self.value
 
 class MissingPluginException(Exception):
-    '''
+    """
     Exception to be raised when a plugin is being imported
     but the RPM with that plugin has not been deployed.
-    '''
+    """
     def __init__(self, value):
         self.value = value
     def __str__(self):
         return self.value
     
 class InvalidAuthFailure(Exception):
-    '''
+    """
     Exception to signal when an auth profile is missing or invalid. 
-    '''
+    """
     def __init__(self, value):
         self.value = value
     def __str__(self):

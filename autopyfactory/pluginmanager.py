@@ -1,4 +1,4 @@
-'''
+"""
   APF Module to handle plugins dispatch, config.
   Not named 'plugins' because there is a lib directory with that name.  
 
@@ -33,7 +33,7 @@
 Plugins initialized with ConfigParser object and a section name as arguments. The 
 assumption is that the classes themselves know how to look up the info they need. 
 It is also assumed that Singleton/non-Singleton decision is made during class initialization.
-'''
+"""
 
 import logging
 import logging.handlers
@@ -63,28 +63,28 @@ class NullHandler(logging.Handler):
 
 
 class PluginManager(object):
-    '''
+    """
     Entry point for plugins creation, initialization, starting, and configuration. 
-    '''
+    """
     
     def __init__(self):
-        '''
+        """
         Top-level object to provide plugins. 
-        '''
+        """
         self.log = logging.getLogger()
         self.log.addHandler(NullHandler())
         self.log.debug('PluginManager initialized.')
 
 
     def getpluginlist(self, parent, paths, namelist, config, section):
-        '''
+        """
         Provides a list of initialized plugin objects. 
         parent: reference to the calling object
         paths: list of subdirectories from where to import the plugin(s)
         namelist: list of plugins to be imported
         config: config parser object to feed to the plugin
         section: the section name in the config object that is relevant for this plugin
-        '''
+        """
         plist = []
         for name in namelist:
             po = self._getplugin(parent, paths, name, config, section)
@@ -94,14 +94,14 @@ class PluginManager(object):
 
 
     def getplugin(self, parent, paths, name, config, section):
-        '''
+        """
         Provides a single initialized plugin object. 
         parent: reference to the calling object
         paths: list of subdirectories from where to import the plugin(s)
         name: name of the single plugin to be imported
         config: config parser object to feed to the plugin
         section: the section name in the config object that is relevant for this plugin
-        '''
+        """
         p = self._getplugin(parent, paths, name, config, section)
         self.log.info('returning a plugin = %s' %p)
         return p
@@ -124,12 +124,12 @@ class PluginManager(object):
     
         
     def _getpluginclass(self, paths, name):
-        '''
+        """
         returns a plugin class. 
         The __init__() methods have not been called yet.
         paths: list of subdirectories from where to import the plugin(s)
         name: name of the single plugin to be imported
-        '''
+        """
         self.log.debug('Starting')
         ppath = '.'.join(paths)
         ppath = ppath + '.' + name

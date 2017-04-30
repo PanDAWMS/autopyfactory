@@ -9,9 +9,9 @@ from autopyfactory import jsd
 
 class CondorOSGCE(CondorCE):
     id = 'condorosgce'
-    '''
+    """
     This class is expected to have separate instances for each PandaQueue object. 
-    '''
+    """
    
     def __init__(self, apfqueue, config, section):
 
@@ -28,9 +28,9 @@ class CondorOSGCE(CondorCE):
         self.log.info('CondorOSGCE: Object initialized.')
 
     def _addJSD(self):
-        '''
+        """
         add things to the JSD object
-        '''
+        """
 
         self.log.debug('CondorOSGCE.addJSD: Starting.')
 

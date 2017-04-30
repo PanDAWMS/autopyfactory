@@ -58,13 +58,13 @@ class CondorEC2(CondorGrid):
             self.log.debug("Exception: %s" % traceback.format_exc())
 
     def submit(self, num):
-        '''
+        """
         Override base submit to determine if we need to *unretire* any nodes. 
         
         retiring_pilots = self.batchinfo[self.apfqueue.apfqname].retiring
         self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
         
-        '''
+        """
         if num < 1:
             self.log.debug("Number to submit is zero or negative, calling parent...")
             super(CondorEC2, self).submit(num)
@@ -85,9 +85,9 @@ class CondorEC2(CondorGrid):
                 self.unretire(num)
                
     def _addJSD(self):
-        '''
+        """
         add things to the JSD object
-        '''
+        """
 
         self.log.debug('CondorEC2.addJSD: Starting.')
         super(CondorEC2, self)._addJSD()
@@ -115,10 +115,10 @@ class CondorEC2(CondorGrid):
 
        
     def unretire(self, n ):
-        '''
+        """
         trigger unretirement of n nodes. 
         
-        '''
+        """
         if n > 0:
             self.log.debug("Beginning to unretire %d VM jobs..." % n)
             jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqueue.apfqname)
@@ -143,7 +143,7 @@ class CondorEC2(CondorGrid):
             self.log.debug("No jobs to unretire...")
 
     def retire(self, n, order='oldest'):
-        '''
+        """
         trigger retirement of this many nodes, by looking at this parent APF queue's 
         CondorCloudBatchStatus plugin. 
         
@@ -159,7 +159,7 @@ class CondorEC2(CondorGrid):
         showed a startd as idle, doesn't mean it is still idle during this queue cycle. 
        
         But we should preferentially retire nodes that are Idle over ones that we know are busy.         
-        '''
+        """
         self.log.debug("Beginning to retire %d VM jobs..." % n)
         jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqueue.apfqname)
         if jobinfo:
@@ -190,9 +190,9 @@ class CondorEC2(CondorGrid):
 
     
     def _retirenode(self, jobinfo):
-        '''
+        """
         Do whatever is needed to tell the node to retire...
-        '''
+        """
         self.log.debug("Retiring node %s (%s)" % (jobinfo.executeinfo.hostname, 
                                                  jobinfo.ec2instancename))
         exeinfo = jobinfo.executeinfo
@@ -246,9 +246,9 @@ class CondorEC2(CondorGrid):
                                                                                                           jobinfo.ec2instancename))
                 
     def _unretirenode(self, jobinfo):
-        '''
+        """
         Do whatever is needed to tell the node to un-retire...
-        '''
+        """
         self.log.debug("Unretiring node %s (%s)" % (jobinfo.executeinfo.hostname, 
                                                  jobinfo.ec2instancename))
         exeinfo = jobinfo.executeinfo
@@ -292,18 +292,18 @@ class CondorEC2(CondorGrid):
                 self.log.warning("Unable to unretire node %s (%s) because it has an empty machine name." % (jobinfo.executeinfo.hostname,
                                                                                                           jobinfo.ec2instancename))
     def cleanup(self):
-        '''
+        """
         
-        '''
+        """
         self.log.debug("Cleanup called in EC2. Retiring...")
         self._killretired()
 
         
     def _killretired(self):
-        '''
+        """
         scan through jobinfo for this queue with job
         
-        '''
+        """
         self.log.debug("Killretired process triggered. Searching...")
         jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqueue.apfqname)
         self.log.debug("Finding and killing VM jobs in 'retired' state.")

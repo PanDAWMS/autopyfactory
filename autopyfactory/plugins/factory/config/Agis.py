@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-'''
+"""
 
 Design goals/features:
 -- Download and parse JSON once, allow subsequent filtering for specific APF config requests to CE
@@ -23,7 +23,7 @@ Design goals/features:
     
     $ python /usr/lib/python2.6/site-packages/autopyfactory/plugins/factory/config/Agis.py --activity production -C US -V ATLAS -D /etc/autopyfactory/agisdefaults-production.conf -o /etc/autopyfactory/us-production-agis.conf
 
-'''
+"""
 from __future__ import print_function
 
 import logging
@@ -129,9 +129,9 @@ class AgisPandaQueue(object):
         return s
 
     def _make_cequeues(self, celist):
-        '''
+        """
           Makes CEqueue objects, key is PQ name 
-        '''
+        """
         self.log.debug("Handling cequeues for PQ %s" % self.panda_queue_name)
         cequeues = []
         for cedict in celist:
@@ -147,9 +147,9 @@ class AgisPandaQueue(object):
     
     
 class AgisCEQueue(object):
-    '''
+    """
     Represents a single CE queue within a Panda queue description.  
-    '''
+    """
     def __init__(self, parent, cedict ):
         self.log = logging.getLogger()
         self.parent = parent
@@ -274,21 +274,21 @@ class AgisCEQueue(object):
             self.rsladd += '(cputime = %d)' % (self.maxtime * self.parent.corecount)    
             
     def getAPFConfigString(self):
-        '''
+        """
         Returns string of valid APF configuration for this queue-ce entry.
         Calculates scale factor based on how many other CEs serve this PQ
           
-        '''
+        """
         cp = self.getAPFConfig()
         sio = StringIO()
         s = cp.write(sio)
         return sio.getvalue()
     
     def getAPFConfig(self):
-        '''
+        """
         Returns ConfigParser object representing config
         
-        '''
+        """
         self.cp = Config()
         sect = '%s-%s' % ( self.parent.panda_resource, self.ce_host )
         sect = str(sect)
@@ -369,9 +369,9 @@ class Agis(ConfigInterface):
     """
 
     def __init__(self, factory, config, section):
-        '''
+        """
         Top-level object fo contacting, parsing, and providing APF configs from AGIS
-        '''
+        """
 
         self.factory = factory
         self.reconfig = self.config.generic_get('Factory', 'config.agis.reconfig', 'getboolean', default_value=True)
@@ -441,9 +441,9 @@ class Agis(ConfigInterface):
 
 
     def _updateInfo(self):
-        '''
+        """
         Contact AGIS and update full queue info.
-        '''
+        """
         try:
             d = self._downloadJSON()
             self.log.debug("Calling _handleJSON")
@@ -503,10 +503,10 @@ class Agis(ConfigInterface):
 
     
     def getConfig(self):
-        '''
+        """
         Required for autopyfactory Config plugin interface. 
         Returns ConfigParser representing config
-        '''
+        """
         ###if self.allqueues is None:
         ###    self._updateInfo()
         ###
@@ -560,10 +560,10 @@ class Agis(ConfigInterface):
 
 
     def _filter(self):
-        '''
+        """
         creates a list with all panda queues
         belonging to the selected VOs, CLOUDs, and TYPEs
-        '''
+        """
     
         # Don't mess with the built-in default filters. 
         mypqfilter = copy.deepcopy(PQFILTERREQMAP)
@@ -587,9 +587,9 @@ class Agis(ConfigInterface):
 
 
     def getConfigWMSQueue(self, wmsqueue):
-        '''
+        """
         get the config sections only for a given wmsqueue
-        '''
+        """
 
         conf = self.getConfig()
         out = Config()
@@ -602,9 +602,9 @@ class Agis(ConfigInterface):
 
   
     def _filterobjs(self, objlist, reqdict=None, negdict=None):
-        '''
+        """
         Generic filtering method. 
-        '''
+        """
         newobjlist = []
         kept = 0
         filtered = 0
@@ -666,9 +666,9 @@ class Agis(ConfigInterface):
         return d
 
     def _handleJSON(self, jsondoc):
-        '''
+        """
         Returns all PQ objects in list.  
-        '''
+        """
         self.log.debug("handleJSON called for activities %s" % self.activities)
         queues = []
         for key in sorted(jsondoc):
@@ -828,12 +828,12 @@ if __name__ == '__main__':
         fconfig.set('Factory', 'config.agis.jobsperpilot', '1.5' )
         fconfig.set('Factory', 'config.agis.numfactories', '4')
         
-        '''
+        """
         config.agis.vos = atlas
         config.agis.clouds = US
         config.agis.activities = analysis,production
         config.agis.defaultsfiles = /etc/autopyfactory/agisdefaults.conf
-        '''
+        """
 
     # Override defaults with command line values, if given    
     if vo is not None:

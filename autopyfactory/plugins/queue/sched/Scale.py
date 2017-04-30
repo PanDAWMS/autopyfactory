@@ -9,10 +9,10 @@ import logging
 class Scale(SchedInterface):
     id = 'scale'
     
-    '''   
+    """   
     applies an scale factor to the previous value of nsub.
     Returns the input as it is in case there is no scale factor defined.
-    '''   
+    """   
  
     def __init__(self, apfqueue, config, section):
 

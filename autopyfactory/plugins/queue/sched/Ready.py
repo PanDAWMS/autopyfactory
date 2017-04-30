@@ -44,9 +44,9 @@ class Ready(SchedInterface):
         return (out, msg)
 
     def _calc(self, input):
-        '''
+        """
         algorithm 
-        '''
+        """
         
         # initial default values. 
         activated_jobs = 0

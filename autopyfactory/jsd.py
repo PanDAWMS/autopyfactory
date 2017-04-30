@@ -49,9 +49,9 @@ class JSDFile(object):
 
 
     def write(self, path, filename):
-        '''
+        """
         Dumps the whole content of the JSDFile object into a disk file
-        '''
+        """
 
         self.log.debug('writeJSD: Starting.')
 

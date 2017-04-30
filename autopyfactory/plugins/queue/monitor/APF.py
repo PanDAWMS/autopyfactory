@@ -2,9 +2,9 @@
 # $Id: monitor.py 7686 2011-04-08 21:15:43Z jhover $
 #
 
-'''
+"""
         PUT HERE SOME DOC 
-'''
+"""
 
 import commands
 import logging
@@ -33,14 +33,14 @@ except ImportError, err:
 
 
 class NoExceptionHTTPHandler(urllib2.BaseHandler):
-    '''
+    """
     A substitute/supplement to urllib2.HTTPErrorProcessor
     that doesn't raise exceptions on status codes 201,204,206
     For example, when a registration operation (via HTTP PUT command)
     is successful, a code 201 CREATED is returned. 
     urllib2 interprets that as an ERROR, and raises an exception. 
     To avoid it we override the behavior of http_err_<RC> methods.
-    '''
+    """
 
     def http_error_201(self, request, response, code, msg, hdrs):
         return response
@@ -51,10 +51,10 @@ class NoExceptionHTTPHandler(urllib2.BaseHandler):
 
 
 class RequestWithMethod(urllib2.Request):
-    '''
+    """
     To be used insted of urllib2.Request
     This class gets the HTTP method (i.e. 'PUT') during the initlization
-    '''
+    """
 
     def __init__(self, method, *args, **kwargs):
         self._method = method
@@ -110,10 +110,10 @@ class _apf(MonitorInterface):
 
 
     def registerFactory(self):
-        '''
+        """
         First check if the factory is already registered. 
         If not, then register it. 
-        '''
+        """
 
         self.log.debug('Starting')
 
@@ -130,7 +130,7 @@ class _apf(MonitorInterface):
       
 
     def _isFactoryRegistered(self):
-        '''
+        """
         queries for the list of factories.
         URL looks like http://py-front.lancs.ac.uk/api/factories
         Output of query looks like (as JSON string):
@@ -165,7 +165,7 @@ class _apf(MonitorInterface):
             "version": "0.0.1"
           }, 
           ]
-        '''
+        """
 
         url = self.monurl + '/factories'
         out = self._call(http.GET, url)
@@ -177,9 +177,9 @@ class _apf(MonitorInterface):
 
 
     def _registerFactory(self):
-        '''
+        """
         register the factory
-        '''
+        """
 
         self.log.debug('Starting')
 
@@ -198,7 +198,7 @@ class _apf(MonitorInterface):
 
 
     def _getLabels(self):
-        '''
+        """
         queries for the list of labels registered for this factory.
         URL looks like
             http://py-front.lancs.ac.uk/api/labels?factory=bnl-gridui99-factory
@@ -233,7 +233,7 @@ class _apf(MonitorInterface):
                 "resource": ""
               }
             ]
-        '''
+        """
 
         self.log.debug('Starting')
 
@@ -248,7 +248,7 @@ class _apf(MonitorInterface):
 
 
     def registerLabel(self, apfqueue):
-        '''
+        """
         First check if the label is already registered. 
         If not, then register it. 
 
@@ -257,7 +257,7 @@ class _apf(MonitorInterface):
         We pass apfqueue as input because this class is a singleton,
         so the apfqueue object passed by __init__() may not be the same 
         apfqueue object calling this method. 
-        '''
+        """
 
         #####################################################
         #
@@ -294,11 +294,11 @@ class _apf(MonitorInterface):
 
 
     def _registerLabel(self, apfqueue):
-        '''
+        """
         We pass apfqueue as input because this class is a singleton,
         so the apfqueue object passed by __init__() may not be the same 
         apfqueue object calling this method. 
-        '''
+        """
 
         self.log.debug('Starting')
 
@@ -326,7 +326,7 @@ class _apf(MonitorInterface):
 
 
     def registerJobs(self, apfqueue, jobinfolist):
-        '''
+        """
         Take a list of JobInfo objects and translate to APFMonitor messages.
 
         We pass apfqueue as one of the inputs because this class is a singleton,
@@ -335,7 +335,7 @@ class _apf(MonitorInterface):
 
         jobinfolist is the output of submit() method.
         It is a list of JobInfo objects
-        '''
+        """
 
         self.log.debug('Starting for apfqueue %s with info list %s' %(apfqueue.apfqname, 
                                                                      jobinfolist))
@@ -373,10 +373,10 @@ class _apf(MonitorInterface):
 
 
 #    def updateLabel(self, label, n):
-#        '''
+#        """
 #        update each label (==apfqname) in the monitor
 #        n is the number of new pilots being submitted
-#        '''
+#        """
 #
 #        self.log.debug('Starting for label %s and number of pilots %s' %(label, n))
 #
@@ -389,9 +389,9 @@ class _apf(MonitorInterface):
 #        self.log.debug('Leaving')
 
     def updateLabel(self, label, msg):
-        '''
+        """
         update each label (==apfqname) in the monitor
-        '''
+        """
 
         self.log.debug('Starting for label %s and message %s' %(label, msg))
 
@@ -404,10 +404,10 @@ class _apf(MonitorInterface):
 
 
     def _call(self, method, url, data=None):
-        '''
+        """
         make the HTTP call
         method is "PUT", "GET", "POST" or "DELETE"
-        '''
+        """
 
         self.log.debug('Starting. method=%s, url=%s, data=%s' %(method, url, data))
 

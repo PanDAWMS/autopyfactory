@@ -37,7 +37,7 @@ import autopyfactory.external.panda.Client as Client
 
 
 class _panda(_thread, WMSStatusInterface):
-    '''
+    """
     -----------------------------------------------------------------------
     PanDA-flavored version of WMSStatus class.
     It queries the PanDA server to check the status
@@ -46,7 +46,7 @@ class _panda(_thread, WMSStatusInterface):
     Public Interface:
             the interfaces inherited from Thread and from WMSStatusInterface
     -----------------------------------------------------------------------
-    '''
+    """
 
     def __init__(self, apfqueue, config, section):
         # NOTE:
@@ -82,22 +82,22 @@ class _panda(_thread, WMSStatusInterface):
 
 
     def _run(self):                
-        '''
+        """
         Main loop
-        '''
+        """
         self.log.debug('Starting.')
         self._update()
         self.log.debug('Leaving.')
 
 
     def getInfo(self, queue=None):
-        '''
+        """
         Returns current WMSStatusInfo object
     
         If the info recorded is older than that maxage,
         None is returned, 
         
-        '''
+        """
         self.log.debug('get: Starting with inputs maxtime=%s' % self.maxage)
         if self.currentjobinfo is None:
             self.log.debug('Info not initialized. Return None.')
@@ -114,12 +114,12 @@ class _panda(_thread, WMSStatusInterface):
 
 
     def getCloudInfo(self, cloud=None):
-        '''
+        """
         selects the entry corresponding to cloud
         from the info retrieved from the PanDA server (as a dict)
         using method userinterface.Client.getCloudSpecs()
 
-        '''
+        """
         if self.currentcloudinfo is None:
             self.log.debug('Info not initialized. Return None.')
             return None    
@@ -134,11 +134,11 @@ class _panda(_thread, WMSStatusInterface):
                 return self.currentcloudinfo
             
     def getSiteInfo(self, site=None):
-        '''
+        """
         selects the entry corresponding to sites
         from the info retrieved from the PanDA server (as a dict)
         using method userinterface.Client.getSiteSpecs(siteType='all')
-        '''
+        """
         if self.currentsiteinfo is None:
             self.log.debug('Info not initialized. Return None.')
             return None    
@@ -154,10 +154,10 @@ class _panda(_thread, WMSStatusInterface):
 
 
     def _getmaxtimeinfo(self, infotype, maxtime):
-        '''
+        """
         Grab requested info with maxtime. 
         Returns info if OK, None otherwise. 
-        '''
+        """
         self.log.debug('Start. infotype = %s, maxtime = %d' % (infotype, maxtime))
         out = None
         now = int(time.time())
@@ -173,12 +173,12 @@ class _panda(_thread, WMSStatusInterface):
         return out
 
     def _update(self):
-        '''
+        """
         Queries the PanDA server for updated information about
                 - Clouds configuration
                 - Sites configuration
                 - Jobs status per site
-        '''
+        """
         self.log.debug('Starting.')
         
         try:
@@ -207,7 +207,7 @@ class _panda(_thread, WMSStatusInterface):
 
 
     def _updateclouds(self):
-        '''
+        """
         
         Client.getCloudSpecs() ->
         
@@ -290,7 +290,7 @@ class _panda(_thread, WMSStatusInterface):
                       'weight': 2}
             }            
 
-        '''
+        """
 
         before = time.time()
         # get Clouds Specs
@@ -313,7 +313,7 @@ class _panda(_thread, WMSStatusInterface):
                         
 
     def _updatesites(self):
-        '''
+        """
         Client.getSiteSpecs(siteType='all')   ->
         
         {
@@ -442,7 +442,7 @@ class _panda(_thread, WMSStatusInterface):
                     "transferringlimit": null
                 }
                 
-            '''
+            """
         before = time.time()
         # get Sites Specs from Client.py
         sites_err, all_sites_config = Client.getSiteSpecs(siteType='all')
@@ -465,7 +465,7 @@ class _panda(_thread, WMSStatusInterface):
 
                         
     def _updatejobs(self):
-        '''
+        """
         Client.getJobStatisticsPerSite(
                     countryGroup='',
                     workingGroup='', 
@@ -515,7 +515,7 @@ class _panda(_thread, WMSStatusInterface):
                              }
           }
 
-        '''
+        """
         
         
         before = time.time()

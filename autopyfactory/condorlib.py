@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-'''
+"""
    Condor-related common utilities and library for AutoPyFactory.
    Focussed on properly processing output of condor_q -xml and condor_status -xml and converting
    to native Python data structures. 
 
-'''
+"""
 import commands
 import datetime
 import logging
@@ -68,7 +68,7 @@ def filtercondorhistorylib(history, constraints=[]):
 
 
 def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[], queueskey='match_apf_queue'):
-    ''' 
+    """ 
     queries condor to get a list of ClassAds objects
     We query for a few specific ClassAd attributes
     (faster than getting everything)
@@ -79,7 +79,7 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
     options to CLI condor_q
     
     extra_attributes are classads needed other than 'jobstatus'
-    '''
+    """
 
     log = logging.getLogger()
     log.debug("Starting with values remotecollector=%s, remoteschedd=%s, extra_attributes=%s, queueskey=%s" %(remotecollector, remoteschedd, extra_attributes, queueskey))
@@ -123,7 +123,7 @@ def _querycondorlib(attributes, remotecollector=None, remoteschedd=None):
 #############################################################################
 
 def querystatuslib():
-    ''' 
+    """ 
     Equivalent to condor_status
     We query for a few specific ClassAd attributes 
     (faster than getting everything)
@@ -132,7 +132,7 @@ def querystatuslib():
       [ Name = "slot1@mysite.net"; Activity = "Idle"; MyType = "Machine"; TargetType = "Job"; State = "Unclaimed"; CurrentTime = time() ], 
       [ Name = "slot2@mysite.net"; Activity = "Idle"; MyType = "Machine"; TargetType = "Job"; State = "Unclaimed"; CurrentTime = time() ]
      ]
-    '''
+    """
     # We only want to try to import if we are actually using the call...
     # Later on we will need to handle Condor version >7.9.4 and <7.9.4
     #

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-'''
+"""
     An X.509 proxy management component for AutoPyFactory 
 
-'''
+"""
 import logging
 import math
 import os
@@ -24,10 +24,10 @@ from autopyfactory.interfaces import _thread
 
         
 class X509(_thread):
-    '''
+    """
     Checks, creates, and renews a VOMS proxy. 
     or retrieves suitable credential from MyProxy 
-    '''
+    """
     def __init__(self, manager, config, section):
         _thread.__init__(self) 
         manager.factory.threadsregistry.add("plugin", self)
@@ -104,7 +104,7 @@ class X509(_thread):
                 self.renew = False
         
         if self.flavor == 'myproxy':
-            ''' Mandatory values:
+            """ Mandatory values:
                 .vorole                atlas:/atlas/usatlas
                 .myproxy_hostname      myproxy.cern.ch
                 .myproxy_username
@@ -118,7 +118,7 @@ class X509(_thread):
                  .baseproxy
                  .retriever_list
                  
-                 '''
+                 """
             self.renew = True
             self.retriever_list = None
             self.myproxy_passphrase = None 
@@ -147,20 +147,20 @@ class X509(_thread):
 
 
     def _run(self):
-        '''
+        """
         Main thread loop. 
-        '''
+        """
         self.log.debug("[%s] Running X509Handler..." % self.name)
         self.handleProxy()
         self.log.debug("Leaving")
 
 
     def _generateProxy(self):
-        '''
+        """
         Unconditionally generates new VOMS proxy using current configuration settings for this Handler. 
         Uses existing baseproxy if configured. 
         
-        '''
+        """
         self.log.debug("[%s] Generating new proxy..." % self.name)
         cmd = 'voms-proxy-init '
         #cmd += ' -dont-verify-ac '
@@ -203,10 +203,10 @@ class X509(_thread):
         return rc
 
     def _setProxyOwner(self):
-        '''
+        """
         If owner is set, try to switch ownership of the file to the provided user and group. 
         NOTE: this only makes sense when authmanger is run standalone by root
-        '''
+        """
         if self.owner and os.access(self.proxyfile, os.F_OK):
             uid = pwd.getpwnam(self.owner).pw_uid
             gid = grp.getgrnam(self.group).gr_gid            
@@ -223,7 +223,7 @@ class X509(_thread):
             self.log.debug("No owner requested or proxy file doesn't exist. Doing nothing.")
 
     def _retrieveMyProxyCredential(self):
-        '''
+        """
         Try to retrieve valid credential from MyProxy server as configured for this handler. 
 
         Placed in MyProxy for certificate-based retrieval via:        
@@ -242,7 +242,7 @@ class X509(_thread):
               --keyfile ~/.globus/cern/userkey.pem 
               -s myproxy.cern.ch
                    
-        '''
+        """
         self.log.debug("[%s] Begin..." % self.name)
                       
         cmd = 'myproxy-get-delegation'       
@@ -281,10 +281,10 @@ class X509(_thread):
 
 
     def _checkVOMSTimeLeft(self):
-        '''
+        """
         Checks status of current proxy.         
         Returns VOMS timeleft in seconds (0 for expired or non-existent proxy)
-        '''
+        """
         self.log.debug("[%s] Begin..." % self.name)
         r = 0
         if os.path.exists(self.proxyfile):
@@ -310,10 +310,10 @@ class X509(_thread):
 
 
     def _checkProxyTimeLeft(self):
-        '''
+        """
         Checks status of current proxy.         
         Returns proxy timeleft in seconds (0 for expired or non-existent proxy)
-        '''
+        """
         # FIXME: this method is almost 100% identical to _checkVOMSTimeLeft()
         #        figure out how to eliminate so much duplicate code
 
@@ -342,9 +342,9 @@ class X509(_thread):
 
 
     def _validateVOMS(self):
-        '''
+        """
         returns the VOMS attributes of the proxy
-        '''
+        """
 
         cmd = 'voms-proxy-info -fqan -file %s' %self.proxyfile
         # output is a list of strings like:
@@ -379,10 +379,10 @@ class X509(_thread):
 
 
     def _validateProxy(self):
-        '''
+        """
         verify the proxy generated
         is valid, has the right expiration time, VOMS attributes, etc.
-        '''
+        """
         if self.manager is not None:
             email_subject = "AutoPyFactory on %s: problem with X509 proxy" % self.manager.factory.factoryid
         else:
@@ -433,17 +433,17 @@ class X509(_thread):
 
 
     def _transferproxy(self):
-        '''
+        """
         transfer proxy to a remote host, if needed
-        '''
+        """
         # TO BE IMPLEMENTED
         pass
 
 
     def handleProxy(self):
-        '''
+        """
         Create proxy if timeleft is less than minimum...
-        '''
+        """
         if self.flavor == 'voms':
             if self.renew:
                 tl = self._checkVOMSTimeLeft()
@@ -477,16 +477,16 @@ class X509(_thread):
             
         
     def getProxyPath(self):
-        '''
+        """
         Returns file path to current, valid proxy for this Handler, e.g. /tmp/prodProxy123
-        '''
+        """
         return self.proxyfile
 
 
     def _isValid(self):
-        '''
+        """
         Returns tuple (True|False , timeLeft in seconds)
-        '''
+        """
 
 
  

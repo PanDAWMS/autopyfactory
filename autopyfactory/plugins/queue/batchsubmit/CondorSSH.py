@@ -33,9 +33,9 @@ from CondorBase import CondorBase
 
 class CondorSSH(CondorBase):
     id = 'condorssh'
-    '''
+    """
     This class is expected to have separate instances for each PandaQueue object. 
-    '''
+    """
        
     def __init__(self, apfqueue, config, section):
         
@@ -78,9 +78,9 @@ class CondorSSH(CondorBase):
         
 
     def _getSSHAuthTokens(self):
-        '''
+        """
         uses authmanager to find out the paths to SSH auth info
-        '''    
+        """    
         self.log.debug("Retrieving SSH auth token info. Profile: %s" % self.authprofile)
         (self.pubkeyfile, self.privkeyfile, self.passfile) = self.factory.authmanager.getSSHKeyPairPaths(self.authprofile)
         self.log.debug("Got paths: pubkey %s privkey %s passfile %s" % (self.pubkeyfile, 
@@ -88,17 +88,17 @@ class CondorSSH(CondorBase):
                                                                         self.passfile))
 
     def submit(self, num):
-        '''
+        """
         Override base submit. 
         
-        '''
+        """
         self.log.debug("Entering bosco submit.")    
         joblist = super(CondorSSH, self).submit(num)
        
         self.log.debug("Exiting bosco submit.")
 
     def _addJSD(self):
-        '''
+        """
         add things to the JSD object
         executable = probescript.sh
         arguments = -s 15
@@ -113,7 +113,7 @@ class CondorSSH(CondorBase):
         
         grid_resource = batch pbs me@pbs.foo.edu --rgahp-key /home/me/privkey --rgahp-pass /home/me/mypassphrase      
         
-        '''
+        """
         
         self.log.debug('CondorBosco.addJSD: Starting.')
         self.JSD.add("universe", "grid")

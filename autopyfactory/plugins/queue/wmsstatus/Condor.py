@@ -24,7 +24,7 @@ from autopyfactory.mappings import map2info
 
 
 class _condor(_thread, WMSStatusInterface):
-    '''
+    """
     -----------------------------------------------------------------------
     This class is expected to have separate instances for each object. 
     The first time it is instantiated, 
@@ -32,7 +32,7 @@ class _condor(_thread, WMSStatusInterface):
     Public Interface:
             the interfaces inherited from Thread and from BatchStatusInterface
     -----------------------------------------------------------------------
-    '''
+    """
 
     def __init__(self, apfqueue, config, section):
         #try:
@@ -96,16 +96,16 @@ class _condor(_thread, WMSStatusInterface):
 
 
     def _run(self):
-        '''
+        """
         Main loop
-        '''
+        """
         self.log.debug('Starting')
         self._update()
         self.log.debug('Leaving')
 
 
     def getInfo(self, queue=None, maxtime=0):
-        '''
+        """
         Returns a BatchStatusInfo object populated by the analysis 
         over the output of a condor_q command
 
@@ -113,7 +113,7 @@ class _condor(_thread, WMSStatusInterface):
         In that case, if the info recorded is older than that maxtime,
         None is returned, as we understand that info is too old and 
         not reliable anymore.
-        '''           
+        """           
         self.log.debug('Starting with maxtime=%s' % maxtime)
         
         if self.currentjobinfo is None:
@@ -173,7 +173,7 @@ class _condor(_thread, WMSStatusInterface):
 
 
     def _update(self):
-        '''        
+        """        
         Query Condor for job status, validate ?, and populate BatchStatusInfo object.
         Condor-G query template example:
         
@@ -213,7 +213,7 @@ class _condor(_thread, WMSStatusInterface):
                 32      UNSUBMITTED 
                 64      STAGE_IN 
                 128     STAGE_OUT 
-        '''
+        """
 
         self.log.debug('Starting.')
         

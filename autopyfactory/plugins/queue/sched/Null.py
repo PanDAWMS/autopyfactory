@@ -6,12 +6,12 @@ import logging
 
 
 class Null(SchedInterface):
-    '''       
+    """       
     Null plugin, returning always 0. 
     The purpose is to have a plugin doing nothing when 
     other features of APF have to be tested, but there is no
     interest on submitting any actual pilot at all. 
-    '''       
+    """       
     def __init__(self, apfqueue, config, section):
         try:
             self.log = logging.getLogger()

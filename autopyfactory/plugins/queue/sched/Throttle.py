@@ -48,9 +48,9 @@ class Throttle(SchedInterface):
 
 
     def _calc(self, input):
-        '''
+        """
         algorithm 
-        '''
+        """
 
         # to convert the current date into seconds since Epoch
         now_sec_epoch = datetime.datetime.now().strftime('%s')

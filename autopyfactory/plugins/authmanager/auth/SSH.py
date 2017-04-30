@@ -1,18 +1,18 @@
-'''
+"""
  An APF auth plugin to provide SSH key info. 
 
-'''
+"""
 import logging
 import os
 
 
 # Does not need to be a thread because it doesn't need to perform asynch actions.
 class SSH(object):
-    '''
+    """
         Container for SSH account info.
         Works with provided filepaths. 
         Eventually should work with config-only provided tokens, with files created.  
-    '''    
+    """    
     def __init__(self, manager, config, section):
         self.log = logging.getLogger()
         self.name = section
@@ -50,9 +50,9 @@ class SSH(object):
         # TODO
         
     def _validate(self):
-        '''
+        """
         Confirm credentials exist and are valid. 
-        '''
+        """
         return True
 
 

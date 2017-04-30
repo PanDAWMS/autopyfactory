@@ -25,8 +25,8 @@ import autopyfactory.utils as utils
 
 
 class Queue(threading.Thread, WMSStatusInterface):
-    '''
-    '''
+    """
+    """
 
     def __init__(self, apfqueue, config, section):
 
@@ -55,12 +55,12 @@ class Queue(threading.Thread, WMSStatusInterface):
 
 
     def getInfo(self, queue=None):
-        '''
+        """
         Returns current WMSStatusInfo object
     
         If the info recorded is older than that maxage,
         None is returned, 
-        '''
+        """
 
         self.log.debug('get: Starting')
         return self.num
@@ -68,9 +68,9 @@ class Queue(threading.Thread, WMSStatusInterface):
 
 
     def run(self):
-        '''
+        """
         Main loop
-        '''
+        """
     
         self.log.debug('Starting.')
         while not self.stopevent.isSet():

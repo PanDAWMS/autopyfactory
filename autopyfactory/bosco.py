@@ -44,10 +44,10 @@ class BoscoCluster(object):
     
 
 class _boscocli(object):
-    '''
+    """
     Encapsulates all bosco_cluster command functionality. 
     
-    '''
+    """
 
     def __init__(self):
         self.log = logging.getLogger()
@@ -69,9 +69,9 @@ class _boscocli(object):
             os.makedirs(self.boscodir)
 
     def _checkbosco(self):
-        '''
+        """
         Confirm BOSCO is installed. 
-        '''
+        """
         self.log.debug("Checking to see if local bosco_cluster is on path...")
         isinstalled = False
         exetouse = None
@@ -90,11 +90,11 @@ class _boscocli(object):
    
    
     def _getBoscoClusters(self):
-        '''
+        """
         [jhover@grid05 ~]$ bosco_cluster -l
         griddev03.racf.bnl.gov/slurm
             
-        '''
+        """
         cmd = 'bosco_cluster -l '
         self.log.debug("cmd is %s" % cmd) 
         before = time.time()
@@ -209,9 +209,9 @@ class _boscocli(object):
              
     
     def _checktarget(self, user, host, port, batch, pubkeyfile, privkeyfile, passfile=None ):
-        '''
+        """
         Ensure bosco_cluster has been run.         
-        '''
+        """
         #Ensure paths
         pubkeyfile = os.path.expanduser(pubkeyfile)
         privkeyfile = os.path.expanduser(privkeyfile)

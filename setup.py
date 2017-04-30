@@ -101,7 +101,7 @@ setup(
     name="autopyfactory",
     version=release_version,
     description='autopyfactory package',
-    long_description='''This package contains autopyfactory''',
+    long_description="""This package contains autopyfactory""",
     license='GPL',
     author='Panda Team',
     author_email='hn-atlas-panda-pathena@cern.ch',

@@ -1,7 +1,7 @@
 #! /usr/bin/env python
-'''
+"""
     Configuration object loader and storage component for AutoPyFactory.
-'''
+"""
 
 import copy
 import logging
@@ -15,7 +15,7 @@ from autopyfactory.apfexceptions import ConfigFailure, ConfigFailureMandatoryAtt
 
 
 class Config(SafeConfigParser, object):
-    '''
+    """
     -----------------------------------------------------------------------
     Class to handle config files. 
     -----------------------------------------------------------------------
@@ -23,7 +23,7 @@ class Config(SafeConfigParser, object):
             The interface inherited from SafeConfigParser.
             merge(config, override=False)
     -----------------------------------------------------------------------
-    '''
+    """
     def __init__(self):
 
         self.log = logging.getLogger()
@@ -31,7 +31,7 @@ class Config(SafeConfigParser, object):
         super(Config, self).__init__()
 
     def merge(self, config, override=False, includemissing=True):
-        '''
+        """
         merge the current Config object 
         with the content of another Config object.
 
@@ -53,13 +53,13 @@ class Config(SafeConfigParser, object):
 
         includemissing determines if attributes in the new config parser 
         object that do not exist in the current one should be added or not.
-        '''
+        """
         self.__cloneallsections(config, override, includemissing)
     
     def __cloneallsections(self, config, override, includemissing):
-        '''
+        """
         clone all sections in config
-        '''
+        """
 
         sections = config.sections()
         for section in sections:
@@ -71,20 +71,20 @@ class Config(SafeConfigParser, object):
                 self.__mergesection(section, config, override, includemissing)
     
     def __clonesection(self, section, config):
-        ''' 
+        """ 
         create a new section, and copy its content
-        ''' 
+        """ 
         self.add_section(section)
         for opt in config.options(section):
             value = config.get(section, opt, raw=True)
             self.set(section, opt, value)
     
     def __mergesection(self, section, config, override, includemissing):
-        '''
+        """
         merge the content of a current Config object section
         with the content of the same section 
         from a different Config object
-        '''
+        """
         
         # determine the value of override.
         if override is not None:
@@ -115,9 +115,9 @@ class Config(SafeConfigParser, object):
                     self.set(section, opt, value)
 
     def section2dict(self, section):
-        '''
+        """
         converts a given section into a dictionary
-        '''
+        """
         d = {}
         for opt in self.options(section):
             value = self.get(section, opt)
@@ -125,9 +125,9 @@ class Config(SafeConfigParser, object):
         return d
     
     def clone(self):
-        '''
+        """
         makes an exact copy of the object
-        '''
+        """
         #return copy.deepcopy(self)
         # NOTE: we cannot do deepcopy because self contains 
         #       an attribute self.log = logger 
@@ -139,7 +139,7 @@ class Config(SafeConfigParser, object):
 
     
     def filterkeys(self, pattern, newpattern):
-        '''
+        """
         it changes, for all sections, part of the name of the keys.
         For example, with inputs like 'condorgt2' and 'condorgram'
         it changes variables like 
@@ -149,7 +149,7 @@ class Config(SafeConfigParser, object):
 
         NOTE: we need to be careful to avoid replacing things by mistake
         So it is better to pass the longer possible patterns.
-        '''
+        """
 
         for section in self.sections():
             for key in self.options(section):
@@ -164,10 +164,10 @@ class Config(SafeConfigParser, object):
         return self
     
     def fixpathvalues(self):
-        '''
+        """
         looks for values that are likely pathnames beginning with "~". 
         converts them to the full path using expanduser()
-        '''
+        """
         for section in self.sections():
             for key in self.options(section):
                 try:
@@ -179,7 +179,7 @@ class Config(SafeConfigParser, object):
 
         
     def generic_get(self, section, option, get_function='get', default_value = None):      
-        '''
+        """
         generic get() method for Config objects.
         Inputs options are:
 
@@ -190,7 +190,7 @@ class Config(SafeConfigParser, object):
 
         example of usage:
                 x = generic_get("Sec1", "x", get_function='getint', default_value=0  )
-        '''
+        """
         self.log.debug('called for section %s option %s get_function %s default_value %s' % ( section,
                                                                                               option,
                                                                                               get_function,
@@ -209,10 +209,10 @@ class Config(SafeConfigParser, object):
 
 
     def getSection(self, section):
-        '''
+        """
         creates and returns a new Config object, 
         with the content of a single section
-        '''
+        """
 
         conf = Config()
         if self.has_section(section):
@@ -222,9 +222,9 @@ class Config(SafeConfigParser, object):
         return conf
 
     def getContent(self, raw=True, excludelist=[]):
-        '''
+        """
         returns the content of the config object in a single string
-        '''
+        """
         str = ''
         sections = self.sections()
         sections.sort()
@@ -234,9 +234,9 @@ class Config(SafeConfigParser, object):
         return str
 
     def _getsectioncontent(self, section, raw, excludelist):
-        '''
+        """
         returns the content of a given sections in a single string
-        '''
+        """
         str = '[%s]\n' %section
         itemlist = self.items(section, raw=raw)
         itemlist.sort()
@@ -248,11 +248,11 @@ class Config(SafeConfigParser, object):
 
 
     def isequal(self, config):
-        '''
+        """
         this method checks if two config loader objects are equivalents:
             -- same set of sections
             -- each section have the same variables and values 
-        '''
+        """
 
         sections1 = self.sections()
         sections2 = config.sections()
@@ -274,9 +274,9 @@ class Config(SafeConfigParser, object):
 
 
     def sectionisequal(self, config, section):
-        '''
+        """
         this method checks if a given section is equal in two configloader objects
-        '''
+        """
 
         # probably it can be done simply by 
         #   return ( self.items(section) == config.items(section) )
@@ -306,7 +306,7 @@ class Config(SafeConfigParser, object):
 
 
     def compare(self, config):
-        '''
+        """
         this method compares the current configloader object with a new one.
         It returns an structure saying 
             -- the list of SECTIONS that are equal,
@@ -320,7 +320,7 @@ class Config(SafeConfigParser, object):
                    'REMOVED': ['SEC1', ..., 'SECn'],
                    'ADDED': ['SEC1', ..., 'SECn'],
                   }
-        '''
+        """
 
         out = {'EQUAL': [],
                'MODIFIED': [],
@@ -364,10 +364,10 @@ class Config(SafeConfigParser, object):
 
 
     def addsection(self, section, items):
-        '''
+        """
         method to add an entire section to a config object
         items is a dictionary with the list of key/values pairs
-        '''
+        """
 
         if section in self.sections():
             self.log.warning('section already exists. Doing nothing.')
@@ -383,7 +383,7 @@ class Config(SafeConfigParser, object):
 
 
 class ConfigManager(object):
-    '''
+    """
     -----------------------------------------------------------------------
     Class to create config files with info from different sources.
     -----------------------------------------------------------------------
@@ -391,7 +391,7 @@ class ConfigManager(object):
             getConfig(source)
             getFromSchedConfig(site)
     -----------------------------------------------------------------------
-    '''
+    """
 
     def __init__(self):
         self.log = logging.getLogger()
@@ -406,7 +406,7 @@ class ConfigManager(object):
         
 
     def getConfig(self, sources=None, configdir=None):
-        '''
+        """
         creates a Config object and returns it.
 
         -- sources is an split by comma string, 
@@ -418,7 +418,7 @@ class ConfigManager(object):
            set of configuration files, 
            all of them to be processed 
 
-        '''
+        """
         self.log.debug("Beginning with sources=%s and configdir=%s" % (sources,configdir))
         try:
             config = Config()
@@ -453,9 +453,9 @@ class ConfigManager(object):
 
 
     def __getConfig(self, src):
-        '''
+        """
         returns a new ConfigParser object 
-        '''
+        """
        
         data = self.__getContent(src) 
         if data:
@@ -466,9 +466,9 @@ class ConfigManager(object):
             return None
 
     def __getContent(self, src):
-        '''
+        """
         returns the content to feed a new ConfigParser object
-        '''
+        """
 
         sourcetype = self.__getsourcetype(src)
         if sourcetype == 'file':
@@ -477,9 +477,9 @@ class ConfigManager(object):
             return self.__dataFromURI(src)
 
     def __getsourcetype(self, src):
-        '''
+        """
         determines if the source is a file on disk on an URI
-        '''
+        """
         sourcetype = 'file'  # default
         uritokens = ['file://', 'http://']
         for token in uritokens:
@@ -489,9 +489,9 @@ class ConfigManager(object):
         return sourcetype
 
     def __dataFromFile(self, path):
-        '''
+        """
         gets the content of an config object from  a file
-        '''
+        """
         try:
             f = open(path)
             return f
@@ -500,9 +500,9 @@ class ConfigManager(object):
     
     
     def __dataFromURI(self, uri):
-        ''' 
+        """ 
         gets the content of an config object from an URI.
-        ''' 
+        """ 
         opener = urllib2.build_opener()
         urllib2.install_opener(opener)
         try:

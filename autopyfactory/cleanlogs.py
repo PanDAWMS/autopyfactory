@@ -17,7 +17,7 @@ import time
 from autopyfactory.interfaces import _thread
 
 class CleanLogs(_thread):
-    '''
+    """
     -----------------------------------------------------------------------
     Class to handle the log files removal.
     There are several possibilities to decide which files 
@@ -32,12 +32,12 @@ class CleanLogs(_thread):
     Public Interface:
         the interface inherited from Thread `
     -----------------------------------------------------------------------
-    '''
+    """
     def __init__(self, factory):
-        '''
+        """
         factory is a reference to the Factory object that created
         the CleanLogs instance
-        '''
+        """
 
         _thread.__init__(self)
         self._thread_loop_interval = 60 * 60  # sleep 1 hour between loops
@@ -56,18 +56,18 @@ class CleanLogs(_thread):
 
 
     def _run(self):
-        '''
+        """
         Main loop
-        '''
+        """
         self.log.debug('Starting.')
         self.__process()
         self.log.debug('Leaving.')
 
 
     def __process(self):
-        '''
+        """
         loops over all directories to perform cleaning actions
-        '''
+        """
 
         self.log.debug("Starting.")
 
@@ -81,10 +81,10 @@ class CleanLogs(_thread):
 
 
     def __processdir(self, dir):
-        ''' 
+        """ 
         processes each directory.
         dir is a Dir object
-        ''' 
+        """ 
 
         self.log.debug("Starting with input %s." %dir.dir)
 
@@ -127,9 +127,9 @@ class KeepDays(object):
   
 
 class DirMgr(object):
-    '''
+    """
     class to create a list of Dir objects
-    '''
+    """
     def __init__(self, basedir):
 
         self.log = logging.getLogger()
@@ -158,10 +158,10 @@ class DirMgr(object):
                 
            
 class Dir(object):
-    '''
+    """
     class to manage each parent directory.
     The parent directory looks like <logDir>/2011-08-12/ 
-    '''
+    """
 
     def __new__(cls, basedir, dir):
         dirRe = re.compile(r"(\d{4})-(\d{2})-(\d{2})?$")
@@ -169,10 +169,10 @@ class Dir(object):
             return super(Dir, cls).__new__(cls) 
 
     def __init__(self, basedir, dir):
-        '''
+        """
         basedir is <logDir>
         dir is like 2011-08-12
-        '''
+        """
 
         self.log = logging.getLogger()
 
@@ -188,10 +188,10 @@ class Dir(object):
         return os.listdir(self.path) == []
 
     def creation_t(self):
-        '''
+        """
         returns a datetime object with the creation time.
         Creation time is calculated from the self.dir itself.
-        '''
+        """
         fields = self.dir.split('-')
         creation_t = datetime.date(int(fields[0]),
                                    int(fields[1]),
@@ -204,21 +204,21 @@ class Dir(object):
         return current_t - self.creation_t 
 
     def subdirs(self):
-        ''' 
+        """ 
         returns the list of subdirs 
-        ''' 
+        """ 
         subdirs = []
         for subdir in os.listdir(self.path):
             subdirs.append(SubDir(self, subdir))
         return subdirs 
 
     def rm(self, keepdays):
-        '''
+        """
         tries to delete the entire subtree.
         First orders each subdir to delete itself.
         After that, if Dir is empty, 
         it deletes itself.
-        '''
+        """
 
         self.log.debug('rm for dir %s: Starting.' %self.dir)
 
@@ -230,10 +230,10 @@ class Dir(object):
         self.log.debug('rm for dir %s: Leaving.' %self.dir)
 
     def rm_subdirs(self, keepdays):
-        '''
+        """
         tries to remove as many subdirs as possible
         keepdays is a KeepDays object
-        '''
+        """
         
         self.log.debug('Starting.')
 
@@ -244,15 +244,15 @@ class Dir(object):
 
 
 class SubDir(object):
-    '''
+    """
     class to handle each subdirectory.
     Subdirs look like <logDir>/2011-08-11/ANALY_BNL/
-    '''
+    """
     def __init__(self, parent, subdir):
-        '''
+        """
         parent is a Dir object
         subdir is the APFQname
-        '''
+        """
 
         self.log = logging.getLogger()
 
@@ -263,11 +263,11 @@ class SubDir(object):
         self.log.debug('SubDir: Object initialized for subdir %s.'%self.subdir)
 
     def rm(self, keepdays):
-        ''' 
+        """ 
         tries to delete a subdirectory,
         but only if the timing of the parent is older than
         what keepdays object has to say about it
-        ''' 
+        """ 
         self.log.debug('rm for subdir %s: Starting.' %self.subdir)
 
         delta_days = self.parent.delta_t.days

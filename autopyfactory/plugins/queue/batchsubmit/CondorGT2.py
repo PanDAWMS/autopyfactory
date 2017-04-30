@@ -9,9 +9,9 @@ from autopyfactory import jsd
 
 class CondorGT2(CondorGRAM):
     id = 'condorgt2'
-    '''
+    """
     This class is expected to have separate instances for each PandaQueue object. 
-    '''
+    """
    
     def __init__(self, apfqueue, config, section):
         qcl = config
@@ -25,9 +25,9 @@ class CondorGT2(CondorGRAM):
         self.log.info('CondorGT2: Object initialized.')
 
     def _addJSD(self):
-        '''
+        """
         add things to the JSD object
-        '''
+        """
         self.log.debug('CondorGT2.addJSD: Starting.')
         self.JSD.add('grid_resource', 'gt2 %s' % self.gridresource) 
         super(CondorGT2, self)._addJSD()

@@ -39,9 +39,9 @@ class CondorGrid(CondorBase):
 
 
     def _getX509Proxy(self):
-        '''
+        """
         uses authmanager to find out the path to the X509 file
-        '''
+        """
     
         self.log.debug("Determining proxy, if necessary. Profile: %s" % self.proxylist)
         if self.proxylist:
@@ -51,9 +51,9 @@ class CondorGrid(CondorBase):
 
 
     def _addJSD(self):
-        '''   
+        """   
         add things to the JSD object
-        '''   
+        """   
  
         self.log.debug('CondorGrid.addJSD: Starting.')
    

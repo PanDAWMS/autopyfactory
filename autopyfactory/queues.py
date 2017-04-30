@@ -9,9 +9,9 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
-'''
+"""
     Main module for autopyfactory. 
-'''
+"""
 
 import datetime
 import logging
@@ -48,7 +48,7 @@ from autopyfactory.interfaces import _thread
 
 
 class APFQueuesManager(_thread):
-    '''
+    """
     -----------------------------------------------------------------------
     Container with the list of APFQueue objects.
     -----------------------------------------------------------------------
@@ -57,11 +57,11 @@ class APFQueuesManager(_thread):
             update(newqueues)
             join()
     -----------------------------------------------------------------------
-    '''
+    """
     def __init__(self, factory):
-        '''
+        """
         Initializes a container of APFQueue objects
-        '''
+        """
 
         _thread.__init__(self)
         factory.threadsregistry.add("core", self)
@@ -88,11 +88,11 @@ class APFQueuesManager(_thread):
             
 
     def update(self, newqcl):
-        '''
+        """
         Compares the new list of queues with the current one
                 1. creates and starts new queues if needed
                 2. stops and deletes old queues if needed
-        '''
+        """
 
         qcldiff = self.factory.qcl.compare(newqcl)
         #qcldiff is a dictionary like this
@@ -113,22 +113,22 @@ class APFQueuesManager(_thread):
         
 
     def startAPFQueues(self):
-        '''
+        """
         starts all APFQueue threads.
         We do it here, instead of one by one at the same time the object is created (old style),
         so we can control which APFQueue threads are started and which ones are not
         in a more clear way
-        '''
+        """
         for q in self.queues.values():
             if not q.isAlive():
                 q.start()
 
     ### Is this method being used by anyone???
     ### def join(self):
-    ###     '''
+    ###     """
     ###     Joins all APFQueue objects
     ###     QUESTION: should the queues also be removed from self.queues ?
-    ###     '''
+    ###     """
     ###     count = 0
     ###     for q in self.queues.values():
     ###         q.join()
@@ -150,9 +150,9 @@ class APFQueuesManager(_thread):
 
 
     def _addqueues(self, apfqnames):
-        '''
+        """
         Creates new APFQueue objects
-        '''
+        """
         count = 0
         for apfqname in apfqnames:
             self._add(apfqname)
@@ -160,9 +160,9 @@ class APFQueuesManager(_thread):
         self.log.debug('%d queues in the configuration.' %count)
 
     def _add(self, apfqname):
-        '''
+        """
         Creates a single new APFQueue object and starts it
-        '''
+        """
         queueenabled = self.factory.qcl.generic_get(apfqname, 'enabled', 'getboolean')
         globalenabled = self.factory.fcl.generic_get('Factory', 'enablequeues', 'getboolean', default_value=True)
         enabled = queueenabled and globalenabled
@@ -181,9 +181,9 @@ class APFQueuesManager(_thread):
 
     ### Is this method being used by anyone???
     ### def start(self):
-    ###     '''
+    ###     """
     ###     starts all APFQueue objects from here
-    ###     '''
+    ###     """
     ###     self.log.debug('Starting')
     ###     for qobject in self.queues.values():
     ###         qobject.start()
@@ -191,9 +191,9 @@ class APFQueuesManager(_thread):
 
 
     def _delqueues(self, apfqnames):
-        '''
+        """
         Deletes APFQueue objects
-        '''
+        """
 
         count = 0
         for apfqname in apfqnames:
@@ -209,30 +209,30 @@ class APFQueuesManager(_thread):
     # ----------------------------------------------------------------------
 
     def _diff_lists(self, l1, l2):
-        '''
+        """
         Ancillary method to calculate diff between two lists
-        '''
+        """
         d1 = [i for i in l1 if not i in l2]
         d2 = [i for i in l2 if not i in l1]
         return d1, d2
  
 
 class APFQueue(_thread):
-    '''
+    """
     -----------------------------------------------------------------------
     Encapsulates all the functionality related to servicing each queue (i.e. siteid, i.e. site).
     -----------------------------------------------------------------------
     Public Interface:
             The class is inherited from Thread, so it has the same public interface.
     -----------------------------------------------------------------------
-    '''
+    """
     
     def __init__(self, apfqname, factory):
-        '''
+        """
         apfqname is the name of the section in the queueconfig, 
         i.e. the queue name, 
         factory is the Factory object who created the queue 
-        '''
+        """
 
         _thread.__init__(self)
         factory.threadsregistry.add("queue", self)
@@ -285,10 +285,10 @@ class APFQueue(_thread):
 
 
     def _run(self):
-        '''
+        """
         Method called by thread.start()
         Main functional loop of this APFQueue. 
-        '''        
+        """        
         self._wait_for_info_services()
         self._callscheds()
         self._submitpilots()
@@ -298,10 +298,10 @@ class APFQueue(_thread):
 
 
     def _wait_for_info_services(self):
-        '''
+        """
         wait for the info plugins to have valid content
         before doing actions
-        '''
+        """
         self.log.debug('starting')
         timeout = 1800 # 30 minutes
         start = int(time.time())
@@ -321,9 +321,9 @@ class APFQueue(_thread):
 
 
     def _plugins(self):
-        '''
+        """
         get all the plugins needed by APFQueues
-        '''
+        """
         
         pluginmanager = PluginManager()
 
@@ -368,10 +368,10 @@ class APFQueue(_thread):
 
 
     def _callscheds(self, nsub=0):
-        '''
+        """
         calls the sched plugins 
         and calculates the number of pilot to submit
-        '''
+        """
         fullmsg = ""
         self.log.debug("APFQueue [%s] run(): Calling sched plugins..." % self.apfqname)
         for sched_plugin in self.scheduler_plugins:
@@ -387,10 +387,10 @@ class APFQueue(_thread):
         self.fullmsg = fullmsg
 
     def _submitpilots(self):
-        '''
+        """
         submit using this number
         call for cleanup
-        '''
+        """
         self.log.debug("Starting")
         msg = 'Attempt to submit %s pilots for queue %s' %(self.nsub, self.apfqname)
         jobinfolist = self.batchsubmit_plugin.submit(self.nsub)
@@ -412,9 +412,9 @@ class APFQueue(_thread):
 
 
     def _exitloop(self):
-        '''
+        """
         Exit loop if desired number of cycles is reached...  
-        '''
+        """
         self.log.debug("__exitloop. Checking to see how many cycles to run.")
         if self.cycles and self.cyclesrun >= self.cycles:
                 self.log.debug('_ stopping the thread because high cyclesrun')
@@ -422,9 +422,9 @@ class APFQueue(_thread):
         self.log.debug("__exitloop. Incrementing cycles...")
 
     def _logtime(self):
-        '''
+        """
         report the time passed since the object was created
-        '''
+        """
 
         self.log.debug("__reporttime: Starting")
 
@@ -443,10 +443,10 @@ class APFQueue(_thread):
 
 
     def wmsstatus(self):
-        '''
+        """
         method to make this APFQueue to 
         be a valid WMS Status plugin for another APFQueue
-        '''
+        """
         return 0 # for now...
 
 

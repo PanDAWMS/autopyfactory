@@ -69,11 +69,11 @@ class CondorBase(BatchSubmitInterface):
 
 
     def submit(self, n):
-        '''
+        """
         n is the number of pilots to be submitted 
         Returns processed list of JobInfo objects. 
         
-        '''
+        """
         self.log.debug('Preparing to submit %s jobs' %n)
         joblist = None
 
@@ -117,24 +117,24 @@ class CondorBase(BatchSubmitInterface):
         
 
     def retire(self, num):
-        '''
+        """
          Do nothing by default. 
-        '''
+        """
         self.log.debug('Default retire() do nothing.')
 
 
     def cleanup(self):
-        '''
-        '''
+        """
+        """
         self.log.info("Cleanup called. Noop.")
   
     
     def _calculateDateDir(self):
-        '''
+        """
         a new directory is created for each day. 
         Sets logDir and logUrl
         Here we calculate it.
-        '''
+        """
         now = time.gmtime() # gmtime() is like localtime() but in UTC
         timePath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2])
         logPath = timePath + self.apfqname.translate(string.maketrans('/:','__'))
@@ -188,7 +188,7 @@ class CondorBase(BatchSubmitInterface):
         self.log.debug('addJSD: Leaving.')
    
     def __parse_condor_attribute(self, s):
-        '''
+        """
         auxiliar method to help splitting the string
         using the comma as splitting character.
         The trick here is what to do when the comma is preceded 
@@ -198,7 +198,7 @@ class CondorBase(BatchSubmitInterface):
         can be escaped with a \.
         And the \ can be escaped with another \ in case the user
         wants the \ to be literal. 
-        '''
+        """
         p = re.compile(r"(\\)+,")  # regex matching for 1 or more \ followed by a ,
                                    # the backslash appears twice, but it means a single \
         m = re.finditer(p, s)      # searching for all ocurrencies 
@@ -236,9 +236,9 @@ class CondorBase(BatchSubmitInterface):
  
 
     def _custom_attrs(self):
-        ''' 
+        """ 
         adding custom attributes from the queues.conf file
-        ''' 
+        """ 
         self.log.debug('Starting.')
 
         if self.condor_attributes:
@@ -259,18 +259,18 @@ class CondorBase(BatchSubmitInterface):
 
 
     def _finishJSD(self, n):
-        '''
+        """
         add the number of pilots (n)
-        '''
+        """
         self.log.debug('finishJSD: Starting.')
         self.log.debug('finishJSD: adding queue line with %d jobs' %n)
         self.JSD.add("queue %d" %n)
         self.log.debug('finishJSD: Leaving.')
 
     def _writeJSD(self):
-        '''
+        """
         Dumps the whole content of the JSDFile object into a disk file
-        '''
+        """
     
         self.log.debug('writeJSD: Starting.')
         self.log.debug('writeJSD: the submit file content is\n %s ' %self.JSD)

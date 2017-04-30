@@ -9,9 +9,9 @@ from autopyfactory import jsd
 
 class CondorLocal(CondorBase):
     id = 'condorlocal'
-    '''
+    """
     This class is expected to have separate instances for each PandaQueue object. 
-    '''
+    """
     
     def __init__(self, apfqueue, config, section):
 
@@ -32,9 +32,9 @@ class CondorLocal(CondorBase):
         self.log.info('CondorLocal: Object initialized.')
 
     def _getX509Proxy(self):
-        '''
+        """
         
-        '''
+        """
         self.log.debug("Determining proxy, if necessary. Profile: %s" % self.proxylist)
         if self.proxylist:
             self.x509userproxy = self.factory.authmanager.getProxyPath(self.proxylist)
@@ -43,9 +43,9 @@ class CondorLocal(CondorBase):
             self.log.debug("No proxy profile defined.")       
        
     def _addJSD(self):
-        '''
+        """
         add things to the JSD object
-        '''
+        """
 
         self.log.debug('CondorLocal.addJSD: Starting.')
         

@@ -17,7 +17,7 @@ from autopyfactory.logserver import LogServer
 
 major, minor, release, st, num = sys.version_info
 
-'''
+"""
 General info scheme:
 
     BatchStatusPlugin
@@ -43,26 +43,26 @@ Inheritance:
     BatchStatusInfo       BatchQueueInfo
     WMSStatusInfo         WMSQueueInfo
   
-'''
+"""
     
 
 
 class BaseAPFInfo(dict):
-    '''
+    """
     Base for top-level Info classes with second-level Info objects indexed 
     by APF/WMS queue names.
         
-    '''
+    """
     
     def __init__(self):
         dict.__init__(self)
     
     def __getitem__(self, k):
-        '''
+        """
         Just ensure that if info for a queue is requested return None rather
         than trigger a KeyError exception. 
     
-        '''
+        """
         if k in self.keys():
             return dict.__getitem__(self, k)
         else:
@@ -72,15 +72,15 @@ class BaseAPFInfo(dict):
   
 
 class BaseQueueInfo(object):
-    '''
+    """
     Base for aggregate (attribute-oriented) Info classes which are used per APF/WMS queue.
     Public Interface:
     
             fill(dictionary, mappings=None, reset=True)                
-    '''
+    """
 
     def fill(self, dictionary, mappings=None, reset=True):
-        '''
+        """
         method to fill object attributes with values from a dictionary.
 
         Each key of the dictionary is supposed 
@@ -108,7 +108,7 @@ class BaseQueueInfo(object):
 
         If reset is True, new values override whatever the attributes had.
         If reset is False, the new values are added to the previous value.
-        '''
+        """
         usedk = []
         for k,v in dictionary.iteritems():
             try:
@@ -150,9 +150,9 @@ class BaseQueueInfo(object):
             self.__dict__[k] = v
 
     def __getattr__(self, name):
-        '''
+        """
         Return 0 for non-existent attributes, otherwise behave normally.         
-        '''
+        """
         try:
             return int(self.__getattribute__(name))
         except AttributeError:
@@ -160,10 +160,10 @@ class BaseQueueInfo(object):
 
 
 class BatchStatusInfo(BaseAPFInfo):
-    '''
+    """
     Information returned by BatchStatusPlugin getInfo() calls. 
     Contains objects indexed by APF/WMS queue name. 
-    '''
+    """
     
     def __init__(self):
         self.log = logging.getLogger()
@@ -175,11 +175,11 @@ class BatchStatusInfo(BaseAPFInfo):
 
 
 class WMSStatusInfo(BaseAPFInfo):
-    '''
+    """
     Information returned by WMSStatusPlugin getInfo() calls. 
     Contains objects indexed by APF/WMS queue name.    
     
-    '''
+    """
     def __init__(self):
         self.log = logging.getLogger()
         self.default = WMSQueueInfo
@@ -190,26 +190,26 @@ class WMSStatusInfo(BaseAPFInfo):
 
 
 class CloudStatusInfo(BaseAPFInfo):
-    '''
+    """
     Information returned by WMSStatusPlugin getCloudInfo() calls. 
     Contains objects indexed by APF/WMS queue name.  
-    '''
+    """
 def __init__(self):
         self.log = logging.getLogger()
 
 
 
 class CloudInfo(BaseQueueInfo):
-    '''
+    """
     Attribute-based class containing WMS info about (WMS) clouds. 
-    '''
+    """
 def __init__(self):
         self.log = logging.getLogger()
 
 
 
 class WMSQueueInfo(BaseQueueInfo):
-    '''
+    """
     -----------------------------------------------------------------------
     Empty anonymous placeholder for attribute-based WMS job information.
     One per WMS queue (for example, one per siteid in PanDA)
@@ -226,15 +226,15 @@ class WMSQueueInfo(BaseQueueInfo):
           a valid list of attributes for statuses with labels (PanDA ProdSourceLabel)
 
     -----------------------------------------------------------------------
-    '''
+    """
 
     def __init__(self):
         self.log = logging.getLogger()
 
     def __getattr__(self, name):
-        '''
+        """
         Return 0 for non-existent attributes, otherwise behave normally.         
-        '''
+        """
         try:
             return self.__getattribute__(name)
         except AttributeError:
@@ -253,14 +253,14 @@ class WMSQueueInfo(BaseQueueInfo):
 
 
 class JobInfo(object):
-    '''
+    """
     Abstract representation of job in APF. 
     At a minimum we need
         jobid          Typically Condor cluster.proc ID, but could be VM instanceid
         state          APF job state: submitted, pending, running, done, failed, held
         inittime       datetime.datetime object
         
-    '''
+    """
     
     def __init__(self, jobid, state, inittime):
         self.jobid = jobid
@@ -273,29 +273,29 @@ class JobInfo(object):
 
 
 class SiteStatusInfo(BaseAPFInfo):
-    '''
+    """
     Information returned by WMSStatusPlugin getSiteInfo() calls. 
     Contains objects indexed by APF/WMS queue name.  
-    '''    
+    """    
 def __init__(self):
         self.log = logging.getLogger()
 
 class SiteInfo(BaseQueueInfo):
-    '''
+    """
     Placeholder for attribute-based site information.
     One per site. 
-    '''
+    """
 def __init__(self):
         self.log = logging.getLogger()
 
 
 class QueueInfo(BaseQueueInfo):
-    '''
+    """
     Empty anonymous placeholder for aggregated queue information for a single APF queue.  
 
     Returns 0 as value for any un-initialized attribute. 
     
-    '''
+    """
     def __init__(self):
         self.log = logging.getLogger()
     

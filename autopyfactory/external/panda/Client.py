@@ -1,9 +1,9 @@
-'''
+"""
 panda client methods
 Extracted from panda package: 
 
     pandaserver/userinterface/Client.py
-'''
+"""
 
 import os
 import re
@@ -221,10 +221,10 @@ class _Curl:
         return ret
             
 
-'''
+"""
 public methods
 
-'''
+"""
 
 # use web cache
 def useWebCache():

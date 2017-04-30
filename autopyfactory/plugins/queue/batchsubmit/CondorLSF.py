@@ -19,9 +19,9 @@ class CondorLSF(CondorGrid):
         self.log.info('CondorLSF: Object initialized.')
 
     def _addJSD(self):
-        '''
+        """
         add things to the JSD object
-        '''
+        """
 
         self.log.debug('CondorLSF.addJSD: Starting.')
 

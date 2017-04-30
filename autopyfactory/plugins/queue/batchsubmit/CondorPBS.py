@@ -19,9 +19,9 @@ class CondorPBS(CondorGrid):
         self.log.info('CondorPBS: Object initialized.')
 
     def _addJSD(self):
-        '''
+        """
         add things to the JSD object
-        '''
+        """
 
         self.log.debug('CondorPBS.addJSD: Starting.')
 

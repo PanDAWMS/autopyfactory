@@ -24,13 +24,13 @@ class CondorGRAM(CondorCE):
         self.log.info('CondorGRAM: Object initialized.')
   
     def _globusrsl(self, apfqueue, qcl):
-        '''
+        """
         tries to build globusrsl line.
         Entries have been renamed by the subplugins (e.g. CondorGT2), with new patterns:
             -- batchsubmit.condorgram.gram.XYZ
             -- batchsubmit.condorgram.gram.globusrsl
             -- batchsubmit.condorgram.gram.globusrsladd
-        '''
+        """
         self.log.debug('Starting.')  # with new architecture there is no logger yet   
         globus = "" 
         optlist = []
@@ -59,9 +59,9 @@ class CondorGRAM(CondorCE):
         return globus
          
     def _addJSD(self):
-        '''
+        """
         add things to the JSD object 
-        '''
+        """
     
         self.log.debug('CondorGRAM.addJSD: Starting.')
    

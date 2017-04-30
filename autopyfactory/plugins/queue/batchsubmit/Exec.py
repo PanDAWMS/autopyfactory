@@ -11,10 +11,10 @@ from autopyfactory.interfaces import BatchSubmitInterface
 
 
 class ExecSubmitPlugin(BatchSubmitInterface):
-    '''
+    """
     This Submit Plugin simply executes a provided local executable. 
     This class is expected to have separate instances for each APFQueue object. 
-    '''
+    """
     
     def __init__(self, apfqueue, config, section):
         try:
@@ -40,12 +40,12 @@ class ExecSubmitPlugin(BatchSubmitInterface):
             raise ex
    
     def submitPilots(self, wmsqueue, nbpilots, fcl, qcl):
-        '''
+        """
         queue is the queue
         nsub is the number of pilots to be submitted 
         fcl is the FactoryConfigLoader object
         qcl is the QueueConfigLoader object
-        '''
+        """
 
         self.log.debug('Starting with inputs wmsqueue=%s nbpilots=%s fcl=%s qcl=%s' %(wmsqueue, nbpilots, fcl, qcl)) 
 
@@ -73,10 +73,10 @@ class ExecSubmitPlugin(BatchSubmitInterface):
         pass
     
     def __prepareExecutable(self):
-        '''
+        """
         tries to create destination directory and 
         copies the executable file inside
-        '''
+        """
 
         self.log.debug('Starting.')
 
@@ -94,9 +94,9 @@ class ExecSubmitPlugin(BatchSubmitInterface):
     
     
     def __run(self):
-        '''
+        """
         run jobs locally  
-        '''
+        """
 
         self.log.debug('Starting.')
 

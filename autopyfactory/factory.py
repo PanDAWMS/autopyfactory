@@ -9,9 +9,9 @@ __maintainer__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov,jhover@bnl.gov"
 __status__ = "Production"
 
-'''
+"""
     Main module for autopyfactory. 
-'''
+"""
 
 import datetime
 import logging
@@ -73,15 +73,15 @@ class FactoryCLI(object):
 
 
     def __presetups(self):
-        '''
+        """
         we put here some preliminary steps that 
         for one reason or another 
         must be done before anything else
-        '''
+        """
 
     
     def __parseopts(self):
-        parser = OptionParser(usage='''%prog [OPTIONS]
+        parser = OptionParser(usage="""%prog [OPTIONS]
 autopyfactory is an ATLAS pilot factory.
 
 This program is licenced under the GPL, as set out in LICENSE file.
@@ -91,7 +91,7 @@ Graeme A Stewart <g.stewart@physics.gla.ac.uk>
 Peter Love <p.love@lancaster.ac.uk>
 John Hover <jhover@bnl.gov>
 Jose Caballero <jcaballero@bnl.gov>
-''', version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $" )
+""", version="%prog $Id: factory.py 7680 2011-04-07 23:58:06Z jhover $" )
 
 
         parser.add_option("-d", "--debug", 
@@ -245,9 +245,9 @@ Jose Caballero <jcaballero@bnl.gov>
 
 
     def __platforminfo(self):
-        '''
+        """
         display basic info about the platform, for debugging purposes 
-        '''
+        """
         self.log.info('platform: uname = %s %s %s %s %s %s' %platform.uname())
         self.log.info('platform: platform = %s' %platform.platform())
         self.log.info('platform: python version = %s' %platform.python_version())
@@ -293,7 +293,7 @@ Jose Caballero <jcaballero@bnl.gov>
                 sys.exit(1)
 
     def _changehome(self):
-        '''
+        """
         at some point, proxyManager will make use of method
               os.path.expanduser()
         to find out the absolute path of the usercert and userkey files
@@ -302,21 +302,21 @@ Jose Caballero <jcaballero@bnl.gov>
         as it is stored in os.environ, and that value still is /root/
         Ergo, if we want the path to be expanded to a different user, i.e. autopyfactory,
         we need to change by hand the value of $HOME in the environment
-        '''
+        """
         runAs_home = pwd.getpwnam(self.options.runAs).pw_dir 
         os.environ['HOME'] = runAs_home
         self.log.debug('Setting up environment variable HOME to %s' %runAs_home)
 
 
     def _changewd(self):
-        '''
+        """
         changing working directory to the HOME directory of the new user,
         typically "autopyfactory". 
         When APF starts as a daemon, working directory may be "/".
         If APF was called from the command line as root, working directory is "/root".
         It is better is current working directory is just the HOME of the running user,
         so it is easier to debug in case of failures.
-        '''
+        """
         runAs_home = pwd.getpwnam(self.options.runAs).pw_dir
         os.chdir(runAs_home)
         self.log.debug('Switching working directory to %s' %runAs_home)
@@ -360,7 +360,7 @@ Jose Caballero <jcaballero@bnl.gov>
             sys.exit(1)
         except:
             # TODO - make this a logger.exception() call
-            self.log.error('''Unexpected exception! \
+            self.log.error("""Unexpected exception! \
 There was an exception raised which the factory was not expecting \
 and did not know how to handle. You may have discovered a new bug \
 or an unforseen error condition. \
@@ -368,7 +368,7 @@ Please report this exception to Jose <jcaballero@bnl.gov> and John <jhover@bnl.g
 The factory will now re-raise this exception so that the python stack trace is printed, \
 which will allow it to be debugged - \
 please send output from this message onwards. \
-Exploding in 5...4...3...2...1... Have a nice day!''')
+Exploding in 5...4...3...2...1... Have a nice day!""")
             # The following line prints the exception to the logging module
             self.log.error(traceback.format_exc(None))
             print(traceback.format_exc(None))
@@ -432,7 +432,7 @@ class ThreadsRegistry(object):
                 
 
 class Factory(object):
-    '''
+    """
     -----------------------------------------------------------------------
     Class implementing the main loop. 
     The class has two main goals:
@@ -454,12 +454,12 @@ class Factory(object):
             mainLoop()
             update()
     -----------------------------------------------------------------------
-    '''
+    """
 
     def __init__(self, fcl):
-        '''
+        """
         fcl is a FactoryConfigLoader object. 
-        '''
+        """
         self.version = __version__
         self.log = logging.getLogger()
         self.log.info('AutoPyFactory version %s' %self.version)
@@ -627,7 +627,7 @@ class Factory(object):
 
 
     def _parseLogPort(self, logurl):
-        '''
+        """
         logUrl is like:  http[s]://hostname[:port]
         if port exists, return port
         if port is omitted, 
@@ -635,7 +635,7 @@ class Factory(object):
            if https, return 443
            
         Return value must be an int. 
-        '''
+        """
         urlparts = logurl.split(':')
         urltype = urlparts[0]
         port = 80
@@ -650,13 +650,13 @@ class Factory(object):
         
         
     def run(self):
-        '''
+        """
         Main functional loop of overall Factory. 
         Actions:
                 1. Creates all queues and starts them.
                 2. Wait for a termination signal, and
                    stops all queues when that happens.
-        '''
+        """
 
         self.log.debug("Starting.")
         self.log.info("Starting all Queue threads...")
@@ -710,7 +710,7 @@ class Factory(object):
 
 
     ### def reconfig(self):
-    ###     '''
+    ###     """
     ###     Method to update the status of the APFQueuesManager object.
     ###     This method will be used every time the 
     ###     status of the queues changes: 
@@ -718,7 +718,7 @@ class Factory(object):
     ###             - when the config files change
     ###     That means this method will be invoked by the regular factory
     ###     main loop code or from any method capturing specific signals.
-    ###     '''
+    ###     """
     ###
     ###     self.log.debug("Starting")
     ###
@@ -744,9 +744,9 @@ class Factory(object):
 
 
     def _cleanlogs(self):
-        '''
+        """
         starts the thread that will clean the condor logs files
-        '''
+        """
 
         self.log.debug('Starting')
         self.clean = CleanLogs(self)
@@ -755,9 +755,9 @@ class Factory(object):
 
 
     def stop(self):
-        '''
+        """
         Method to cleanly shut down all factory activity, joining threads, etc. 
-        '''
+        """
         logging.debug(" Shutting down all Queue threads...")
         self.shutdown = True
         self.threadsregistry.join() 
@@ -765,11 +765,11 @@ class Factory(object):
 
                             
     def sendAdminEmail(self, subject, messagestring):
-        '''
+        """
         Sends email with given subject and message to the factory admin. 
         Can be throttled by setting a minimum time between identical messages.
         
-        '''
+        """
         self.log.debug("Email requested. Checking for repeat time...")
         key = "%s:%s" % (subject, messagestring)
         minseconds = self.minemailrepeat

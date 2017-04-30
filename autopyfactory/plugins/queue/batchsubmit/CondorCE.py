@@ -20,9 +20,9 @@ class CondorCE(CondorGrid):
    
 
     def _addJSD(self):
-        '''   
+        """   
         add things to the JSD object
-        '''   
+        """   
  
         self.log.debug('CondorCE.addJSD: Starting.')
    
