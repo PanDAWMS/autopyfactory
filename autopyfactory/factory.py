@@ -39,6 +39,7 @@ except:
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
 from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailure
+from autopyfactory.apfexceptions import ThreadRegistryInvalidKind
 from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.logserver import LogServer
@@ -380,36 +381,55 @@ class ThreadsRegistry(object):
 
         self.log = logging.getLogger()
 
-        self.threads = {'queue' : [], 
-                        'plugin' : [], 
-                        'core' : [], 
-                        'util' : []
-                       }
+        # the kinds of threads allowed
+        # to be registered,
+        # sorted in the order they will be join()'ed
+        self.kinds = ['plugin','queue','util','core']:
 
-    def add(self, threadtype, thread):
-        self.log.debug('adding a thread of type %s: %s' %(threadtype, thread.__class__.__name__))
-        self.threads[threadtype].append(thread)
+        # initialization of the registry
+        self.threads = {}
+        for kind in self.kinds:
+            self.threads[kind] = []
+            
+    def add(self, kind, thread):
+        """
+        adds a new thread to the registry.
+
+        Inputs:
+        -------
+        - kind: the type of thread
+                It must be one of the keys in the self.threads dictionary.
+        - thread: the object to be added to the registry
+        """
+        self.log.debug('adding a thread of type %s: %s' %(kind, thread.__class__.__name__))
+        if kind not in self.kinds:
+            raise ThreadRegistryInvalidKind(kind, thread)
+        self.threads[kind].append(thread)
 
     def join(self):
-        self.log.debug('stopping plugin threads [%s]' %len(self.threads['plugin']))
-        for thread in self.threads['plugin']: 
-            self.log.debug('stopping another plugin thread')
-            thread.join(5)
+        """ 
+        stops all threads registered, in the right order.
+        """
+        for kind in self.kinds:
+            def _join(kind)
 
-        self.log.debug('stopping queue threads [%s]' %len(self.threads['queue']))
-        for thread in self.threads['queue']: 
-            self.log.debug('stopping another queue thread')
-            thread.join(5)
+    def _join(self, kind):
+        """
+        stops all threads registered of a given kind
 
-        self.log.debug('stopping util threads [%s]' %len(self.threads['util']))
-        for thread in self.threads['util']: 
+        Inputs:
+        -------
+        - kind: the type of threads to join(). 
+                It must be one of the keys in the self.threads dictionary.
+        """
+        threads = self.threads[kind]
+        msg = 'stopping %s %s thread(s)' %(len(threads), kind)
+        self.log.debug(msg)
+        for thread in threads:
+            msg = 'stopping another %s thread' %kind
+            self.log.debug(msg)
             thread.join(5)
-
-        self.log.debug('stopping core components threads [%s]' %len(self.threads['core']))
-        for thread in self.threads['core']: 
-            self.log.debug('stopping another core component thread')
-            thread.join(5)
-
+                
 
 class Factory(object):
     '''

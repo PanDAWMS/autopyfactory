@@ -4,6 +4,12 @@
 '''Exception classes for pyfactory'''
 
 
+class ThreadRegistryInvalidKind(Exception):
+    def __init__(self, kind, thread):
+        msg = "Attempt to register a thread {thread} of invalid kind {kind}" 
+        self.value = msg.format(thread=thread.__class__.__name__, kind=kind)
+    def __str__(self):
+        return repr(self.value)
 
 class FactoryConfigurationFailure(Exception):
     def __init__(self, value):
