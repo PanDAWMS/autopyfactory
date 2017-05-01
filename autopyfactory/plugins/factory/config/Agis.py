@@ -373,13 +373,13 @@ class Agis(ConfigInterface):
         Top-level object fo contacting, parsing, and providing APF configs from AGIS
         """
 
-        self.factory = factory
-        self.reconfig = self.config.generic_get('Factory', 'config.agis.reconfig', 'getboolean', default_value=True)
-
         self.log = logging.getLogger()
+        self.factory = factory
+        self.config = config
+
+        self.reconfig = self.config.generic_get('Factory', 'config.agis.reconfig', 'getboolean', default_value=True)
         self.allqueues = None
         self.lastupdate = None
-        self.config = config
         self.baseurl = self.config.get('Factory', 'config.agis.baseurl')
         self.sleep = self.config.get('Factory', 'config.agis.sleep')
         self.jobsperpilot = 1.0
