@@ -507,6 +507,7 @@ class Agis(ConfigInterface):
         Required for autopyfactory Config plugin interface. 
         Returns ConfigParser representing config
         """
+
         ###if self.allqueues is None:
         ###    self._updateInfo()
         ###
@@ -520,6 +521,10 @@ class Agis(ConfigInterface):
         #    self.log.debug('No available configuration. Returning None.')
         #    return None
 
+
+        self.log.debug('Starting')
+
+        self._updateInfo()
         self._filter()
 
         ## create the config
