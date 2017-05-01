@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 #
 # $Id: exceptions.py 7652 2011-04-01 23:34:11Z jhover $
-"""Exception classes for pyfactory'''
+"""Exception classes for pyfactory"""
 
 
 class ThreadRegistryInvalidKind(Exception):
