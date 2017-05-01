@@ -384,7 +384,7 @@ class ThreadsRegistry(object):
         # the kinds of threads allowed
         # to be registered,
         # sorted in the order they will be join()'ed
-        self.kinds = ['plugin','queue','util','core']:
+        self.kinds = ['plugin','queue','util','core']
 
         # initialization of the registry
         self.threads = {}
