@@ -508,6 +508,12 @@ class Agis(ConfigInterface):
         Required for autopyfactory Config plugin interface. 
         Returns ConfigParser representing config
         """
+        # FIXME
+        # this method does 2 things instead of just one:
+        #   -- creates the config object
+        #   -- creates the string representing it
+        # that breaks the Single Reponsability Rule.
+
 
         ###if self.allqueues is None:
         ###    self._updateInfo()
