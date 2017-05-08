@@ -378,6 +378,7 @@ class Agis(ConfigInterface):
         self.config = config
 
         self.reconfig = self.config.generic_get('Factory', 'config.agis.reconfig', 'getboolean', default_value=True)
+        # FIXME, is reconfig still needed???
         self.allqueues = None
         self.lastupdate = None
         self.baseurl = self.config.get('Factory', 'config.agis.baseurl')
