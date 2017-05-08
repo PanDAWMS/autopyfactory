@@ -31,7 +31,7 @@ from autopyfactory.mappings import map2info
 
 import autopyfactory.utils as utils
 
-mincondorversion(8,1,1)
+#mincondorversion(8,1,1)
 
 class __condorec2(_thread, BatchStatusInterface):
     """
