@@ -407,7 +407,12 @@ class Agis(ConfigInterface):
             if defaultsfiles.strip().lower() == 'none':
                 self.defaultsfiles = None
             else:
-                self.defaultsfiles = [ default.strip() for default in self.config.get('Factory', 'config.agis.defaultsfiles').split(',') ]
+                self.defaultsfiles = []
+                for default in self.config.get('Factory', 'config.agis.defaultsfiles').split(','):
+                    default = default.strip()
+                    if default == "None":
+                        default = None
+                self.defaultsfiles.append(default)
         except NoOptionError, noe:
             pass
         
@@ -547,7 +552,7 @@ class Agis(ConfigInterface):
             activity = self.activities[i]
             default = self.defaultsfiles[i]
             
-            if default is not "None": 
+            if default is not None: 
                 tmpfile = open(default)
                 tmpcp.readfp(tmpfile)
                 tmpfile.seek(0) # to read the file over again
