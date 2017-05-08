@@ -139,6 +139,7 @@ class PluginManager(object):
             plugin_module = __import__(ppath, globals(), locals(), name)
         except Exception, ex:
             self.log.error(ex)
+            raise ex
     
         plugin_class = getattr(plugin_module, name)
         self.log.debug("Retrieved plugin with class name %s" % name)
