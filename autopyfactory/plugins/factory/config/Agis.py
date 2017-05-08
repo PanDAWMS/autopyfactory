@@ -390,7 +390,7 @@ class Agis(ConfigInterface):
         self.vos = None
         self.clouds = None
         self.activities = None
-        self.defaultsfile = None
+        self.defaultsfiles = None
         try:
             self.jobsperpilot = self.config.getfloat('Factory', 'config.agis.jobsperpilot')
         except NoOptionError, noe:
@@ -401,13 +401,13 @@ class Agis(ConfigInterface):
         except NoOptionError, noe:
             pass
         
-        # For defaultsfile, None means no defaults included in config. Only explicit values returned. 
+        # For defaultsfiles, None means no defaults included in config. Only explicit values returned. 
         try:         
-            defaultsfile = self.config.get('Factory', 'config.agis.defaultsfiles')
-            if defaultsfile.strip().lower() == 'none':
-                self.defaultsfile = None
+            defaultsfiles = self.config.get('Factory', 'config.agis.defaultsfiles')
+            if defaultsfiles.strip().lower() == 'none':
+                self.defaultsfiles = None
             else:
-                self.defaultsfile = [ default.strip() for default in self.config.get('Factory', 'config.agis.defaultsfiles').split(',') ]
+                self.defaultsfiles = [ default.strip() for default in self.config.get('Factory', 'config.agis.defaultsfiles').split(',') ]
         except NoOptionError, noe:
             pass
         
@@ -463,7 +463,7 @@ class Agis(ConfigInterface):
 # to remove the functionality from getConfig()
 # =======================================================
 #
-#    def getConfigString(self, volist=None, cloudlist=None, activitylist=None, defaultsfile=None):
+#    def getConfigString(self, volist=None, cloudlist=None, activitylist=None, defaultsfiles=None):
 #
 #        if self.allqueues is None:
 #            self._updateInfo()
@@ -476,7 +476,7 @@ class Agis(ConfigInterface):
 #            vo = self.vos[i]
 #            cloud = self.clouds[i]
 #            activity = self.activities[i]
-#            default = self.defaultsfile[i]
+#            default = self.defaultsfiles[i]
 #    
 #            tmpfile = open(default)
 #            for line in tmpfile.readlines():
@@ -498,7 +498,7 @@ class Agis(ConfigInterface):
 #
 
 
-    def getConfigString(self, volist=None, cloudlist=None, activitylist=None, defaultsfile=None):
+    def getConfigString(self, volist=None, cloudlist=None, activitylist=None, defaultsfiles=None):
         self.getConfig()
         return self.strconfig
 
@@ -540,18 +540,19 @@ class Agis(ConfigInterface):
 
         for i in range(len(self.activities)):
 
+            tmpcp = Config()    
+
             vo = self.vos[i]
             cloud = self.clouds[i]
             activity = self.activities[i]
-            default = self.defaultsfile[i]
-    
-            tmpcp = Config()    
-            tmpfile = open(default)
-            tmpcp.readfp(tmpfile)
-
-            tmpfile.seek(0) # to read the file over again
-            for line in tmpfile.readlines():
-                self.strconfig += line
+            default = self.defaultsfiles[i]
+            
+            if default is not "None": 
+                tmpfile = open(default)
+                tmpcp.readfp(tmpfile)
+                tmpfile.seek(0) # to read the file over again
+                for line in tmpfile.readlines():
+                    self.strconfig += line
 
             for q in self.allqueues:
                 if q.vo_name == vo and\
@@ -700,7 +701,7 @@ class Agis(ConfigInterface):
         s+= 'vos=%s ' % self.vos
         s+= 'clouds=%s' % self.clouds
         s+= 'activities=%s ' % self.activities
-        s+= 'defaultsfile=%s ' % self.defaultsfile
+        s+= 'defaultsfiles=%s ' % self.defaultsfiles
         s += 'numfactories=%s ' % self.numfactories
         s += 'jobsperpilot=%s ' % self.jobsperpilot
         return s
@@ -725,7 +726,7 @@ if __name__ == '__main__':
     outfile = '/tmp/agis-apf-config.conf'
     fconfig_file = None
     default_configfile = os.path.expanduser("/etc/autopyfactory/autopyfactory.conf")
-    defaultsfile = None
+    defaultsfiles = None
          
     usage = """Usage: Agis.py [OPTIONS]  
     OPTIONS: 
@@ -781,7 +782,7 @@ if __name__ == '__main__':
         elif opt in ('-n', '--numfactories'):
             numfactories = arg
         elif opt in ("-D", "--defaults"):
-            defaultsfile = arg        
+            defaultsfiles = arg        
         elif opt in ("-C", "--cloud"):
             cloud = arg.lower() 
         elif opt in ("-V", "--vo"):
@@ -854,8 +855,8 @@ if __name__ == '__main__':
         fconfig.set('Factory', 'config.agis.clouds', cloud)
     if activity is not None:
         fconfig.set('Factory', 'config.agis.activities', activity)
-    if defaultsfile is not None:
-        fconfig.set('Factory', 'config.agis.defaultsfiles', defaultsfile)
+    if defaultsfiles is not None:
+        fconfig.set('Factory', 'config.agis.defaultsfiles', defaultsfiles)
     if jobsperpilot is not None:
         fconfig.set('Factory', 'config.agis.jobsperpilot', str(jobsperpilot))
     if numfactories is not None:
