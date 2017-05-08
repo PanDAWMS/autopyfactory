@@ -13,7 +13,8 @@ class File(ConfigInterface):
     def __init__(self, factory, config, section):
 
         self.factory = factory
-        self.reconfig = self.config.generic_get('Factory', 'config.file.reconfig', 'getboolean', default_value=True)
+        self.fcl = config
+        self.reconfig = self.fcl.generic_get('Factory', 'config.file.reconfig', 'getboolean', default_value=True)
     
         self.log = logging.getLogger()
         self.factory = factory
