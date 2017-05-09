@@ -343,7 +343,10 @@ class X509(_thread):
 
     def _validateVOMS(self):
         """
-        returns the VOMS attributes of the proxy
+        Confirms that the voms proxy has valid VOMS info. 
+        
+        @return int: 0 if OK, 1 otherwise. 
+        
         """
 
         cmd = 'voms-proxy-info -fqan -file %s' %self.proxyfile
@@ -358,24 +361,28 @@ class X509(_thread):
         # so we need to get the second part
         if ':' in self.vorole:
             vorole = self.vorole.split(':')[1]
+            self.log.debug("Validating VOMS group/role %s" % vorole)
         else:
-            vorole = self.vorole
+            vorole = "/%s" % self.vorole
+            self.log.debug("Validating VOMS w/o group/role %s" % vorole)
 
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
         out, err = p.communicate()
+        retval = 1
         if p.returncode == 0:
             out = out.split('\n')
             for fqan in out:
                 if fqan.startswith(vorole):
-                    self.log.debug('vorole %s found in proxy list of FQANs' %vorole)
-                    return 0
-            else:
-                self.log.error('vorole %s not found in proxy' %vorole)
-                return 1
+                    self.log.debug('VOMS group/role %s found in proxy list of FQANs' %vorole)
+                    retval = 0
+            if retval == 1:
+                self.log.error('VOMS group/role %s not found in proxy' %vorole)
 
         elif p.returncode == 1:
             self.log.error('command %s failed' %cmd)
-            return 1
+            retval = 1
+        return retval
+
 
 
     def _validateProxy(self):
