@@ -365,6 +365,8 @@ class APFQueue(_thread):
         if wmsstatuspluginname is not None:
             self.wmsstatus_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'wmsstatus'], wmsstatuspluginname, self.qcl, self.apfqname)  # a single WMSStatus plugin
             self.wmsstatus_plugin.start() # start the thread
+        else:
+            self.wmsstatus_plugin = None
 
         batchsubmitpluginname = self.qcl.get(self.apfqname, 'batchsubmitplugin')
         self.batchsubmit_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'batchsubmit'], batchsubmitpluginname, self.qcl, self.apfqname)   # a single BatchSubmit plugin
