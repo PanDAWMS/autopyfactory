@@ -91,10 +91,10 @@ class CondorEC2(CondorBase):
 
         self.log.debug('CondorEC2.addJSD: Starting.')
         super(CondorEC2, self)._addJSD()
-
+        
+        self.JSD.add("universe", "grid")
         self.JSD.add('grid_resource', 'ec2 %s' % self.gridresource) 
 
-        # -- proxy path --
         self.JSD.add("ec2_access_key_id", "%s" % self.access_key_id) 
         self.JSD.add("ec2_secret_access_key", "%s" % self.secret_access_key) 
 
