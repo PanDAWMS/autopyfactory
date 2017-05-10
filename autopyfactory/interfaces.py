@@ -264,7 +264,8 @@ class _thread(threading.Thread):
                     self._run()
                     self._thread_last_action = int( time.time() )
             except Exception, ex:
-                self.log.warning("an exception has been captured during thread main loop: %s" %ex)
+                self.log.warning("an exception has been captured during thread main loop: %s" % ex)
+                self.log.error(traceback.format_exc(None))
                 if self._propagate_exception():
                     raise ex
                 if self._abort_on_exception():
