@@ -15,7 +15,7 @@ import traceback
 #mincondorversion(8,1,1)
 
 
-class CondorEC2(CondorGrid):
+class CondorEC2(CondorBase):
     id = 'condorec2'
     
     def __init__(self, apfqueue, config, section):
