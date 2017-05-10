@@ -93,7 +93,7 @@ class APFQueuesManager(_thread):
                 1. creates and starts new queues if needed
                 2. stops and deletes old queues if needed
         """
-
+        self.log.debug("Performing queue update...")
         qcldiff = self.factory.qcl.compare(newqcl)
         #qcldiff is a dictionary like this
         #    {'REMOVED': [ <list of removed queues> ],
@@ -109,6 +109,7 @@ class APFQueuesManager(_thread):
         self._delqueues(qcldiff['MODIFIED'])
         self._addqueues(qcldiff['MODIFIED'])
 
+        self.log.debug("Starting all queues.")
         self.startAPFQueues() #starts all threads
         
 
@@ -119,9 +120,14 @@ class APFQueuesManager(_thread):
         so we can control which APFQueue threads are started and which ones are not
         in a more clear way
         """
+        self.log.debug("%d queues exist. Starting all queue threads, if not running." % len(self.queues))
         for q in self.queues.values():
+            self.log.debug("Checking queue %s" % q.apfqueuename)
             if not q.isAlive():
+                self.log.debug("Starting queue %s." % q.apfqueuename)
                 q.start()
+            else:
+                self.log.debug("Queue %s already running." % q.apfqueuename)
 
     ### Is this method being used by anyone???
     ### def join(self):
@@ -146,8 +152,6 @@ class APFQueuesManager(_thread):
         newqcl = self.getConfig()
         self.update(newqcl)
         self.log.debug('Leaving')
-
-
 
     def _addqueues(self, apfqnames):
         """
