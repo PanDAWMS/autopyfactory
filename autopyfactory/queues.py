@@ -309,15 +309,26 @@ class APFQueue(_thread):
         self.log.debug('starting')
         timeout = 1800 # 30 minutes
         start = int(time.time())
+        
+        # Only worry about plugins that have been defined...
+        pluginstowait = []
+        if self.wmsstatus_plugin is not None:
+            pluginstowait.append(self.wmsstatus_plugin)
+        if self.batchstatus_plugin is not None:
+            pluginstowait.append(self.batchstatus_plugin)
+                
         loop = True
         while loop:
+            self.log.debug("Checking for info plugin valid content...")
             now = int(time.time())
             if (now - start) > timeout:
                 loop = False
             else:
-                wms = self.wmsstatus_plugin.getInfo()
-                batch = self.batchstatus_plugin.getInfo() 
-                if wms is not None and batch is not None:
+                infolist = []
+                for p in pluginstowait:
+                    info = p.getInfo()
+                    infostatus.append(info)
+                if None not in infolist:
                     loop = False
                 else:
                     time.sleep(10)
