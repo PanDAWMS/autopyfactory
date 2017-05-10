@@ -70,7 +70,7 @@ class CondorEC2(CondorGrid):
             super(CondorEC2, self).submit(num)
         else:
             self.log.debug("Checking for jobs in 'retiring' state...")
-            batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, maxtime = self.apfqueue.batchstatusmaxtime)
+            batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname, maxtime = 360)
             numretiring = batchinfo.retiring
             self.log.debug("%d jobs in 'retiring' state." % numretiring)
             numleft = num - numretiring
