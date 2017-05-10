@@ -305,26 +305,28 @@ class CondorEC2(CondorBase):
         
         """
         self.log.debug("Killretired process triggered. Searching...")
-        jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqueue.apfqname)
-        self.log.debug("Finding and killing VM jobs in 'retired' state.")
+        try:
+            jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqueue.apfqname)
+            self.log.debug("Finding and killing VM jobs in 'retired' state.")
         
-        killlist = []
-        if jobinfo:        
-            for j in jobinfo:
-                self.log.debug("jobinfo is %s " % j)
-                if j.executeinfo:
-                    st = j.executeinfo.getStatus()
-                    self.log.debug("exe status for %s is %s" % (j.ec2instancename, st)  )
-                    if st == 'retired':
-                        killlist.append( "%s.%s" % (j.clusterid, j.procid))
-                else:
-                    self.log.warning("There seems to be a VM job without even exeinfo. ec2id: %s" % j.ec2instancename)
-            self.log.debug("killlist length is %s" % len(killlist))
-        if killlist:
-            self.log.debug("About to kill list of %s ids. First one is %s" % (len(killlist), killlist[0] ))
-            killids(killlist)
-        else:
-            self.log.debug("No VM jobs to kill for apfqueue %s" % self.apfqueue.apfqname )
-
+            killlist = []
+            if jobinfo:        
+                for j in jobinfo:
+                    self.log.debug("jobinfo is %s " % j)
+                    if j.executeinfo:
+                        st = j.executeinfo.getStatus()
+                        self.log.debug("exe status for %s is %s" % (j.ec2instancename, st)  )
+                        if st == 'retired':
+                            killlist.append( "%s.%s" % (j.clusterid, j.procid))
+                    else:
+                        self.log.warning("There seems to be a VM job without even exeinfo. ec2id: %s" % j.ec2instancename)
+                self.log.debug("killlist length is %s" % len(killlist))
+            if killlist:
+                self.log.debug("About to kill list of %s ids. First one is %s" % (len(killlist), killlist[0] ))
+                killids(killlist)
+            else:
+                self.log.debug("No VM jobs to kill for apfqueue %s" % self.apfqueue.apfqname )
+        except NotImplementedError:
+            self.log.debug("Aparently using batchstatus plugin without job info. Skipping.")
         
             
