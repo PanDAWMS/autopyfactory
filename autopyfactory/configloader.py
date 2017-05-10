@@ -204,6 +204,11 @@ class Config(SafeConfigParser, object):
             value = get_f(section, option)
             if value == "None" or value == "none":
                 value = None
+            elif value == "False" or value == "false":
+                value = False
+            elif value == "True" or value == "true":
+                value = True
+            
             self.log.debug('option %s in section %s has value %s' %(option, section, value))
             return value
 

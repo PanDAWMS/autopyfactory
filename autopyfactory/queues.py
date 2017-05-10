@@ -346,7 +346,7 @@ class APFQueue(_thread):
         schedpluginnameslist = [i.strip() for i in schedpluginnames.split(',')]
         self.scheduler_plugins = pluginmanager.getpluginlist(self, ['autopyfactory', 'plugins', 'queue', 'sched'], schedpluginnameslist, self.qcl, self.apfqname)     # a list of 1 or more plugins
 
-        wmsstatuspluginname = self.qcl.get(self.apfqname, 'wmsstatusplugin')
+        wmsstatuspluginname = self.qcl.generic_get(self.apfqname, 'wmsstatusplugin')
         if wmsstatuspluginname is not None:
             self.wmsstatus_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'wmsstatus'], wmsstatuspluginname, self.qcl, self.apfqname)  # a single WMSStatus plugin
             self.wmsstatus_plugin.start() # start the thread
@@ -361,11 +361,12 @@ class APFQueue(_thread):
         self.monitor_plugins = []
         if self.qcl.has_option(self.apfqname, 'monitorsection'):
             monitorsections = self.qcl.generic_get(self.apfqname, 'monitorsection')
-            monitorsectionslist = [i.strip() for i in monitorsections.split(',')]
-            for monitorsection in monitorsectionslist:
-                monitorpluginname = self.mcl.get(monitorsection, 'monitorplugin')
-                monitor_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'monitor'], monitorpluginname, self.mcl, monitorsection)        # a list of 1 or more plugins
-                self.monitor_plugins.append(monitor_plugin)
+            if monitorsections is not None:
+                monitorsectionslist = [i.strip() for i in monitorsections.split(',')]
+                for monitorsection in monitorsectionslist:
+                    monitorpluginname = self.mcl.get(monitorsection, 'monitorplugin')
+                    monitor_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'monitor'], monitorpluginname, self.mcl, monitorsection)        # a list of 1 or more plugins
+                    self.monitor_plugins.append(monitor_plugin)
 
 
     def _callscheds(self, nsub=0):
