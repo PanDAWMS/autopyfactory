@@ -327,7 +327,7 @@ class APFQueue(_thread):
                 infolist = []
                 for p in pluginstowait:
                     info = p.getInfo()
-                    infostatus.append(info)
+                    infolist.append(info)
                 if None not in infolist:
                     loop = False
                 else:
