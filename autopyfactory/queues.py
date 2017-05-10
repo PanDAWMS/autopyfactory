@@ -122,12 +122,12 @@ class APFQueuesManager(_thread):
         """
         self.log.debug("%d queues exist. Starting all queue threads, if not running." % len(self.queues))
         for q in self.queues.values():
-            self.log.debug("Checking queue %s" % q.apfqueuename)
+            self.log.debug("Checking queue %s" % q.apfqname)
             if not q.isAlive():
-                self.log.debug("Starting queue %s." % q.apfqueuename)
+                self.log.debug("Starting queue %s." % q.apfqname)
                 q.start()
             else:
-                self.log.debug("Queue %s already running." % q.apfqueuename)
+                self.log.debug("Queue %s already running." % q.apfqname)
 
     ### Is this method being used by anyone???
     ### def join(self):
