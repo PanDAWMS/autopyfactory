@@ -3,7 +3,7 @@
 # AutoPyfactory batch plugin for Condor
 #
 
-from CondorGrid import CondorGrid
+from CondorBase import CondorBase
 from autopyfactory import jsd 
 from autopyfactory.condor import killids, mincondorversion
 import subprocess
