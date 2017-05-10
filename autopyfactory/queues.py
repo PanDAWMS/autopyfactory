@@ -347,8 +347,9 @@ class APFQueue(_thread):
         self.scheduler_plugins = pluginmanager.getpluginlist(self, ['autopyfactory', 'plugins', 'queue', 'sched'], schedpluginnameslist, self.qcl, self.apfqname)     # a list of 1 or more plugins
 
         wmsstatuspluginname = self.qcl.get(self.apfqname, 'wmsstatusplugin')
-        self.wmsstatus_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'wmsstatus'], wmsstatuspluginname, self.qcl, self.apfqname)  # a single WMSStatus plugin
-        self.wmsstatus_plugin.start() # start the thread
+        if wmsstatuspluginname is not None:
+            self.wmsstatus_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'wmsstatus'], wmsstatuspluginname, self.qcl, self.apfqname)  # a single WMSStatus plugin
+            self.wmsstatus_plugin.start() # start the thread
 
         batchsubmitpluginname = self.qcl.get(self.apfqname, 'batchsubmitplugin')
         self.batchsubmit_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'batchsubmit'], batchsubmitpluginname, self.qcl, self.apfqname)   # a single BatchSubmit plugin
