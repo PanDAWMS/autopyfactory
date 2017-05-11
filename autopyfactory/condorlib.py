@@ -72,9 +72,6 @@ def _aggregatehistoryinfolib(jobs, primary_key='match_apf_queue', analyzers=[]):
     return queues
 
 
-
-
-
 def filtercondorhistorylib(history, constraints=[]):
 
     # contraints example ['JobStatus == 4', 'RemoteWallClockTime < 120']

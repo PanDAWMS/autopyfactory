@@ -106,27 +106,53 @@ class BaseAnalyzer(object):
        raise NotImplementedError 
 
 
-class TimeInQueueAnalyzer(BaseAnalyzer):
+###class TimeInQueueAnalyzer(BaseAnalyzer):
+###
+###    def __init__(self, time1, time2):
+###        self.label = 'qdate'
+###        self.time1 = time1
+###        self.time2 = time2
+###        now = int( time.time() )
+###
+###    def getlabel(self):
+###        return self.label
+###
+###    def analyze(self, job):
+###        if 'qdate' not in job.keys():
+###            return None
+###        qdate = int(job['qdate'])
+###        rtime = now - qdate
+###        if rtime <= self.t1:
+###                return str(self.t1)
+###        if rtime <= self.t2:
+###                return str(self.t2)
+###        return str(self.t2)+"+"
 
-    def __init__(self, time1, time2):
-        self.label = 'qdate'
-        self.time1 = time1
-        self.time2 = time2
-        now = int( time.time() )
 
-    def getlabel(self):
-        return self.label
+class FinishedAnalyzer(BaseAnalyzer):
+    def __init__(self, interval, mintime):
+        '''
+        interval: time windows we study
+        mintime: the minimum time the job is expected to have been running
+        '''
+        self.label = 'enteredcurrentstatus'
+        self.interval = interval
+        self.mintime = mintime
+        self.now = int(time.time())
+        self.initinterval = self.now - interval
 
     def analyze(self, job):
-        if 'qdate' not in job.keys():
-            return None
-        qdate = int(job['qdate'])
-        rtime = now - qdate
-        if rtime <= self.t1:
-                return str(self.t1)
-        if rtime <= self.t2:
-                return str(self.t2)
-        return str(self.t2)+"+"
+        '''
+        returns True if job finished in the last "interval"
+        but was running longer than "mintime"
+        '''
+        
+        if job['enteredcurrentstatus'] > self.initinterval:
+            if job['remotewallclocktime'] > self.mintime:
+                return True
+            else:
+                return False
+        return None 
 
 
 class JobStatusAnalyzer(BaseAnalyzer):
