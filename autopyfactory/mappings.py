@@ -180,18 +180,18 @@ class JobStatusAnalyzer(BaseAnalyzer):
         return str(job['jobstatus'])
 
 
-class JobFilterAnalyzer(BaseAnalyzer):
-    def __init__(self):
-        self.label = 'time'
-
-    def getlabel(self):
-        return self.label
-
-    def analyze(self, job):
-        if job['jobstatus'] != 4:
-                return None
-        if int(job['RemoteWallClockTime']) < 120:
-                return "120"
-        else:
-                return None
+###class JobFilterAnalyzer(BaseAnalyzer):
+###    def __init__(self):
+###        self.label = 'time'
+###
+###    def getlabel(self):
+###        return self.label
+###
+###    def analyze(self, job):
+###        if job['jobstatus'] != 4:
+###                return None
+###        if int(job['RemoteWallClockTime']) < 120:
+###                return "120"
+###        else:
+###                return None
 
