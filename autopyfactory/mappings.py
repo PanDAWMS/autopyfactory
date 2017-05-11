@@ -146,13 +146,25 @@ class FinishedAnalyzer(BaseAnalyzer):
         returns True if job finished in the last "interval"
         but was running longer than "mintime"
         '''
-        
         if job['enteredcurrentstatus'] > self.initinterval:
             if job['remotewallclocktime'] > self.mintime:
                 return True
             else:
                 return False
         return None 
+
+
+class RunningAnalyzer(BaseAnalyzer):
+    def __init__(self, mintime):
+        self.mintime = mintime
+
+    def analyze(self, job):
+        '''
+        returns True if job has been running longer than "minimum"
+        '''
+        if job['jobstatus'] != 2:
+            return None 
+        return job['enteredcurrentstatus'] > self.mintime
 
 
 class JobStatusAnalyzer(BaseAnalyzer):
