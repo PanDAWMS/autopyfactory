@@ -53,23 +53,23 @@ def _condorhistorylib(constraints, attributes):
     return history
 
 
-def _aggregatehistoryinfolib(jobs, primary_key='match_apf_queue', analyzers=[]):
-
-    queues = {}
-
-    for job in jobs:
-        if not primary_key in job:
-            continue
-        
-        apfqname = str(job[primary_key])
-        if apfqname not in queues.keys():
-            queues[apfqname] = {'total':0, 'short':0}
-        else:
-            queues[apfqname]['total'] += 1
-            if job['remotewallclocktime'] < 6000:
-                queues[apfqname]['short'] += 1
-
-    return queues
+#def _aggregatehistoryinfolib(jobs, primary_key='match_apf_queue', analyzers=[]):
+#
+#    queues = {}
+#
+#    for job in jobs:
+#        if not primary_key in job:
+#            continue
+#        
+#        apfqname = str(job[primary_key])
+#        if apfqname not in queues.keys():
+#            queues[apfqname] = {'total':0, 'short':0}
+#        else:
+#            queues[apfqname]['total'] += 1
+#            if job['remotewallclocktime'] < 6000:
+#                queues[apfqname]['short'] += 1
+#
+#    return queues
 
 
 def filtercondorhistorylib(history, constraints=[]):
