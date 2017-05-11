@@ -210,6 +210,62 @@ def _matches_constraint_expr(ad, constraint_expression):
 
 
 
+def _aggregatehistoryinfolib(jobs, primary_key='match_apf_queue', queues=None, analyzers=[]):
+
+    if not queues:
+        queues = {}
+    else:
+        queues = queues
+
+    for job in jobs:
+        if not primary_key in job:
+            continue
+
+
+        apfqname = str(job[primary_key])
+        if apfqname not in queues.keys():
+            queues[apfqname] = {'total':0, 'short':0}
+
+        for analyzer in analyzers:
+            out = analyzer.analyze(job)
+            if out is not None:
+                queues[apfqname]['total'] += 1
+                if out is False:
+                    queues[apfqname]['short'] += 1
+
+
+    return queues
+
+
+# this is a temp solution to add running jobs to output of condor_history
+def _aggregatecondorqinfolib(jobs, primary_key='match_apf_queue', queues=None, analyzers=[]):
+
+    if not queues:
+        queues = {}
+    else:
+        queues = queues
+
+    for job in jobs:
+        if not primary_key in job:
+            continue
+
+
+        apfqname = str(job[primary_key])
+        if apfqname not in queues.keys():
+            queues[apfqname] = {'total':0}
+
+        for analyzer in analyzers:
+            out = analyzer.analyze(job)
+            if out is not None:
+                if out is True:
+                    queues[apfqname]['total'] += 1
+
+
+    return queues
+
+
+
+
 ##############################################################################
 
 def test1():
