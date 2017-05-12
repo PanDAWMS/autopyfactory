@@ -21,7 +21,8 @@ from autopyfactory.info import QueueInfo
 
 from autopyfactory.condor import checkCondor
 from autopyfactory.condor import parseoutput, aggregateinfo
-from autopyfactory.condor import condorhistorylib, filtercondorhistorylib
+from autopyfactory.condorlib import condorhistorylib, _aggregatehistoryinfolib
+from autopyfactory.mappings import FinishedAnalyzer
 
   
 import autopyfactory.utils as utils
@@ -120,83 +121,22 @@ class __condor(_thread, BatchHistoryInterface):
 
     def _update(self):
         """        
-        Query Condor for job status, validate ?, and populate  object.
-        Condor-G query template example:
-        
-        condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
-                 -format 'jobStatus=%d ' jobStatus 
-                 -format 'globusStatus=%d ' GlobusStatus 
-                 -format 'gkUrl=%s' MATCH_gatekeeper_url
-                 -format '-%s ' MATCH_queue 
-                 -format '%s\n' Environment
-
-        NOTE: using a single backslash in the final part of the 
-              condor_q command '\n' only works with the 
-              latest versions of condor. 
-              With older versions, there are two options:
-                      - using 4 backslashes '\\\\n'
-                      - using a raw string and two backslashes '\\n'
-
-        The JobStatus code indicates the current Condor status of the job.
-        
-                Value   Status                            
-                0       U - Unexpanded (the job has never run)    
-                1       I - Idle                                  
-                2       R - Running                               
-                3       X - Removed                              
-                4       C -Completed                            
-                5       H - Held                                 
-                6       > - Transferring Output
-
-        The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
-        
-                Value   Status
-                1       PENDING 
-                2       ACTIVE 
-                4       FAILED 
-                8       DONE 
-                16      SUSPENDED 
-                32      UNSUBMITTED 
-                64      STAGE_IN 
-                128     STAGE_OUT 
         """
 
         self.log.debug('Starting.')
-
-        ###if not utils.checkDaemon('condor'):
-        ###    self.log.error('condor daemon is not running. Doing nothing')
-        ###else:
-        ###    try:
-        ###        strout = querycondor(self.queryargs)
-        ###        if not strout:
-        ###            self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.') 
-        ###        else:
-        ###            outlist = parseoutput(strout)
-        ###            self.log.debug("Got outlist.")
-        ###            aggdict = aggregateinfo(outlist)
-        ###            self.log.debug("Got aggredated info.")
-        ###            newinfo = self._map2info(aggdict)
-        ###            self.log.debug("Got new batchstatusinfo object: %s" % newinfo)
-        ###            self.log.info("Replacing old info with newly generated info.")
-        ###            self.currentinfo = newinfo
-        ###    except Exception, e:
-        ###        self.log.error("Exception: %s" % str(e))
-        ###        self.log.debug("Exception: %s" % traceback.format_exc())
 
        
         if not utils.checkDaemon('condor'):
             self.log.error('condor daemon is not running. Doing nothing')
         else:
             try:
-                out = condorhistorylib()
+                jobs = condorhistorylib()
                 now = int( time.time() )                
                 # FIXME: this is just mock code !!!
                 old = now - 15*60
-                out = filtercondorhistorylib(out, ['JobStatus == 4', 'RemoteWallClockTime < 150', 'EnteredCurrentStatus > %s' %old])
+                ###out = filtercondorhistorylib(out, ['JobStatus == 4', 'RemoteWallClockTime < 150', 'EnteredCurrentStatus > %s' %old])
+                queues = _aggregatehistoryinfolib(jobs, 'match_apf_queue', None, [FinishedAnalyzer(self.interval, self.mintime)]
                    
-
-
-
             except Exception, e:
                 self.log.error("Exception: %s" % str(e))
                 self.log.debug("Exception: %s" % traceback.format_exc())
