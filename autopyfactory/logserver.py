@@ -87,7 +87,7 @@ class MySimpleHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     
             """
             
-            log = logging.getLogger()
+            log = logging.getLogger('autopyfactory')
             log.debug("%s - - [%s] %s\n" %
                              (self.address_string(),
                               self.log_date_time_string(),
@@ -227,7 +227,7 @@ class LogServer(_thread):
         """
         _thread.__init__(self)
         factory.threadsregistry.add("util", self)
-        self.log= logging.getLogger()
+        self.log= logging.getLogger('autopyfactory')
         self.docroot = docroot
         self.port = int(port)
         self.index = index

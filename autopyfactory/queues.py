@@ -67,7 +67,7 @@ class APFQueuesManager(_thread):
         factory.threadsregistry.add("core", self)
         self._thread_loop_interval = factory.fcl.generic_get('Factory','config.interval', 'getint', default_value=3600)
 
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
         self.queues = {}
         self.factory = factory
         self.log.debug('APFQueuesManager: Object initialized.')
@@ -244,7 +244,7 @@ class APFQueue(_thread):
         # recording moment the object was created
         self.inittime = datetime.datetime.now()
 
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory.queue.%s' %apfqname)
         self.log.debug('APFQueue: Initializing object...')
 
         # apfqname is the APF queue name, i.e. the section heading in queues.conf

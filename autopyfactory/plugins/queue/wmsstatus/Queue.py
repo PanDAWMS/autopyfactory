@@ -32,7 +32,7 @@ class Queue(threading.Thread, WMSStatusInterface):
 
         try:
             self.apfqueue = apfqueue
-            self.log = logging.getLogger()
+            self.log = logging.getLogger('autopyfactory.wmsstatus.%s' %apfqueue.apfqname)
             self.log.debug("WMSStatusPlugin: Initializing object...")
 
             self.maxage = self.apfqueue.fcl.generic_get('Factory', 'wmsstatus.queue.maxage', default_value=360)

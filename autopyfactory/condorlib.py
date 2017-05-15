@@ -102,7 +102,7 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
     extra_attributes are classads needed other than 'jobstatus'
     """
 
-    log = logging.getLogger()
+    log = logging.getLogger('autopyfactory')
     log.debug("Starting with values remotecollector=%s, remoteschedd=%s, extra_attributes=%s, queueskey=%s" %(remotecollector, remoteschedd, extra_attributes, queueskey))
 
     list_attrs = [queueskey, 'jobstatus']
@@ -122,7 +122,7 @@ def _querycondorlib(attributes, remotecollector=None, remoteschedd=None):
     # when remotecollector has a valid value, 
     # then remoteschedd must have a valid value too
 
-    log = logging.getLogger()
+    log = logging.getLogger('autopyfactory')
     log.debug("Starting with values attributes=%s, remotecollector=%s, remoteschedd=%s" %(attributes, remotecollector, remoteschedd))
     if remotecollector:
         # FIXME: to be tested

@@ -27,7 +27,7 @@ class CondorBase(BatchSubmitInterface):
     def __init__(self, apfqueue, config, section):
 
         
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory.batchsubmit.%s' %apfqueue.apfqname)
 
         qcl = config
         self.apfqueue = apfqueue

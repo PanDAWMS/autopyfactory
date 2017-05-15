@@ -12,7 +12,7 @@ class MinPending(SchedInterface):
 
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger()
+            self.log = logging.getLogger('autopyfactory.sched.%s' %apfqueue.apfqname)
 
             self.min_pilots_pending = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.minpending.minimum', 'getint')
 

@@ -12,7 +12,7 @@ class StatusTest(SchedInterface):
 
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger()
+            self.log = logging.getLogger('autopyfactory.sched.%s' %apfqueue.apfqname)
 
             self.pilots_in_test_mode = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.statustest.pilots', 'getint', default_value=0)
 

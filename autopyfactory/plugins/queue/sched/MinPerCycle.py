@@ -12,7 +12,7 @@ class MinPerCycle(SchedInterface):
 
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger()
+            self.log = logging.getLogger('autopyfactory.sched.%s' %apfqueue.apfqname)
             self.min_pilots_per_cycle = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.minpercycle.minimum', 'getint')
             self.log.debug("SchedPlugin: Object initialized.")
         except Exception, ex:

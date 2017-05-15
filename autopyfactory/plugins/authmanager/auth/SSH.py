@@ -14,7 +14,7 @@ class SSH(object):
         Eventually should work with config-only provided tokens, with files created.  
     """    
     def __init__(self, manager, config, section):
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory.auth')
         self.name = section
         self.manager = manager
         self.factory = manager.factory

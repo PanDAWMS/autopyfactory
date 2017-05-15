@@ -84,7 +84,7 @@ class AgisFailureError(Exception):
 class AgisPandaQueue(object):
     
     def __init__(self, parent, d, key):
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory.config')
         self.parent = parent
         self.panda_queue_name = key
         try:
@@ -151,7 +151,7 @@ class AgisCEQueue(object):
     Represents a single CE queue within a Panda queue description.  
     """
     def __init__(self, parent, cedict ):
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory.config')
         self.parent = parent
         self.panda_queue_name = parent.panda_queue_name 
         self.ce_name = cedict['ce_name']                         # AGLT2-CE-gate04.aglt2.org
@@ -373,7 +373,7 @@ class Agis(ConfigInterface):
         Top-level object fo contacting, parsing, and providing APF configs from AGIS
         """
 
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory.config')
         self.factory = factory
         self.config = config
 

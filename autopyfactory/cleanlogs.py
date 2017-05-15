@@ -44,7 +44,7 @@ class CleanLogs(_thread):
 
         factory.threadsregistry.add("util", self)
 
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
         self.log.debug('CleanLogs: Initializing object...')
     
         self.factory = factory
@@ -102,7 +102,7 @@ class KeepDays(object):
 
     def __init__(self, fcl, qcl):
 
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
 
         self.fcl = fcl
         self.qcl = qcl
@@ -132,7 +132,7 @@ class DirMgr(object):
     """
     def __init__(self, basedir):
 
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
 
         self.basedir = basedir
         self.dirs = self.getdirs() 
@@ -174,7 +174,7 @@ class Dir(object):
         dir is like 2011-08-12
         """
 
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
 
         self.basedir = basedir
         self.dir = dir
@@ -254,7 +254,7 @@ class SubDir(object):
         subdir is the APFQname
         """
 
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
 
         self.parent = parent
         self.subdir = subdir

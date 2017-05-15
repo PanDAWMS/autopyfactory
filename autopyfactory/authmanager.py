@@ -35,7 +35,7 @@ class AuthManager(object):
     """
     def __init__(self, aconfig, factory=None):
         
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
         self.log.info("Creating new authmanager...")
         self.aconfig = aconfig
         self.factory = factory
@@ -230,7 +230,7 @@ if __name__ == '__main__':
         elif minor == 7:
             formatstr = FORMAT26
     
-    log = logging.getLogger()
+    log = logging.getLogger('autopyfactory')
     hdlr = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter(FORMAT23)
     hdlr.setFormatter(formatter)

@@ -26,7 +26,7 @@ class JSDFile(object):
 
     def __init__(self):
 
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
         self.directive_lines = []
         self.directive_dict = {}
         self.log.debug('JSDFile: Object initialized.')

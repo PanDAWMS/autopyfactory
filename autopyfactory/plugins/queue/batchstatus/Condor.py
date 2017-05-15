@@ -43,8 +43,7 @@ class _condor(_thread, BatchStatusInterface):
         _thread.__init__(self)
         apfqueue.factory.threadsregistry.add("plugin", self)
         
-        ###self.log = logging.getLogger()
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory.batchstatus.%s' %apfqueue.apfqname)
         self.log.debug('BatchStatusPlugin: Initializing object...')
 
         self.apfqueue = apfqueue

@@ -12,7 +12,7 @@ class WeightedActivated(SchedInterface):
 
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger()
+            self.log = logging.getLogger('autopyfactory.sched.%s' %apfqueue.apfqname)
 
             # --- weights ---
             self.activated_w = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.weightedactivated.activated', 'getfloat', default_value=1.0)

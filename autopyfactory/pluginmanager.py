@@ -71,7 +71,7 @@ class PluginManager(object):
         """
         Top-level object to provide plugins. 
         """
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
         self.log.addHandler(NullHandler())
         self.log.debug('PluginManager initialized.')
 

@@ -11,7 +11,7 @@ class Fixed(SchedInterface):
     def __init__(self, apfqueue, config, section):
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger()
+            self.log = logging.getLogger('autopyfactory.sched.%s' %apfqueue.apfqname)
             self.pilotspercycle = None
 
             if self.apfqueue.qcl.has_option(self.apfqueue.apfqname, 'sched.fixed.pilotspercycle'):

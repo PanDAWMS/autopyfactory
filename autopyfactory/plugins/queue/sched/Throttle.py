@@ -15,7 +15,7 @@ class Throttle(SchedInterface):
         try:
             self.apfqueue = apfqueue                
             self.apfqname = self.apfqueue.apfqname
-            self.log = logging.getLogger()
+            self.log = logging.getLogger('autopyfactory.sched.%s' %apfqueue.apfqname)
             try:
                 # interval is the time windows we observe. Default, last hour
                 # maxtime is the maximum WallTime for a pilot to be declared "too short" 

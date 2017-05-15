@@ -200,7 +200,7 @@ Jose Caballero <jcaballero@bnl.gov>
         
         """
 
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
         if self.options.logfile == "stdout":
             logStream = logging.StreamHandler()
         elif self.options.logfile == 'syslog':
@@ -379,7 +379,7 @@ class ThreadsRegistry(object):
 
     def __init__(self):
 
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
 
         # the kinds of threads allowed
         # to be registered,
@@ -461,7 +461,7 @@ class Factory(object):
         fcl is a FactoryConfigLoader object. 
         """
         self.version = __version__
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
         self.log.info('AutoPyFactory version %s' %self.version)
         self.fcl = fcl
 

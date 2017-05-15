@@ -43,7 +43,7 @@ class __condor(_thread, BatchHistoryInterface):
         _thread.__init__(self)
         apfqueue.factory.threadsregistry.add("plugin", self)
         
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory.batchhistory.%s' %apfqueue.apfqname)
         self.log.debug('Initializing object...')
 
         self.apfqueue = apfqueue

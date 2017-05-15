@@ -27,7 +27,7 @@ class BoscoCluster(object):
 
 
     def __init__(self, entry, cluster_type='pbs', port=22, max_queued=-1,  ):
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
         self.entry = entry
         (self.user, self.host) = entry.split('@')
         self.port = port
@@ -50,7 +50,7 @@ class _boscocli(object):
     """
 
     def __init__(self):
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
         self.log.debug("Initializing bosco module...")
         self.boscopubkeyfile = os.path.expanduser("~/.ssh/bosco_key.rsa.pub")
         self.boscoprivkeyfile = os.path.expanduser("~/.ssh/bosco_key.rsa")
@@ -288,7 +288,7 @@ if __name__ == '__main__':
         elif minor == 7:
             formatstr = FORMAT26
     
-    log = logging.getLogger()
+    log = logging.getLogger('autopyfactory')
     hdlr = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter(FORMAT23)
     hdlr.setFormatter(formatter)

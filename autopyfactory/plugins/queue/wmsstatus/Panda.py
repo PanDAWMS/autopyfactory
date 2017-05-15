@@ -59,7 +59,7 @@ class _panda(_thread, WMSStatusInterface):
 
         try:
             self.apfqueue = apfqueue
-            self.log = logging.getLogger()
+            self.log = logging.getLogger('autopyfactory.wmsstatus.%s' %apfqueue.apfqname)
             self.log.debug("WMSStatusPlugin: Initializing object...")
             self.maxage = self.apfqueue.fcl.generic_get('Factory', 'wmsstatus.panda.maxage', default_value=360)
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.panda.sleep')

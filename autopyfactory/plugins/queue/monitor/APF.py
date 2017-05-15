@@ -20,7 +20,7 @@ try:
     import json as json
 except ImportError, err:
     # Not critical (yet) - try simplejson
-    log = logging.getLogger()
+    log = logging.getLogger('autopyfactory.monitor')
     log.debug('json package not installed. Trying to import simplejson as json')
     import simplejson as json
 
@@ -87,7 +87,7 @@ class _apf(MonitorInterface):
 
         #monitor_id = config.generic_get(section, "monitorsection")
         monitor_id = section
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory.monitor.%s' %apfqueue.apfqname)
         self.log.debug("Start...")
 
         self.qcl = apfqueue.factory.qcl

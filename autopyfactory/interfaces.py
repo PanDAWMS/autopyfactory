@@ -205,7 +205,7 @@ class _thread(threading.Thread):
     
     def __init__(self):
         
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
 
         threading.Thread.__init__(self) # init the thread
         self.stopevent = threading.Event()

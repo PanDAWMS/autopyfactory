@@ -12,7 +12,7 @@ class File(ConfigInterface):
 
     def __init__(self, factory, config, section):
 
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory.config')
         self.factory = factory
         self.fcl = config
         self.qcl = None

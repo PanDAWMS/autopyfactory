@@ -31,7 +31,7 @@ class X509(_thread):
     def __init__(self, manager, config, section):
         _thread.__init__(self) 
         manager.factory.threadsregistry.add("plugin", self)
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory.auth')
         self.name = section
         self.log.debug("[%s] Starting X509Handler init." % self.name)
         self.manager = manager
@@ -564,7 +564,7 @@ if __name__ == '__main__':
         elif minor == 7:
             formatstr = FORMAT26
     
-    log = logging.getLogger()
+    log = logging.getLogger('autopyfactory.auth')
     hdlr = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter(FORMAT23)
     hdlr.setFormatter(formatter)

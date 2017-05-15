@@ -12,7 +12,7 @@ class MaxPending(SchedInterface):
 
         try:
             self.apfqueue = apfqueue                
-            self.log = logging.getLogger()
+            self.log = logging.getLogger('autopyfactory.sched.%s' %apfqueue.apfqname)
 
             self.max_pilots_pending = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.maxpending.maximum', 'getint')
             self.allow_negative = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.maxpending.allow_negative', 'getboolean', True)

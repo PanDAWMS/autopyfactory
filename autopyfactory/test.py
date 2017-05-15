@@ -12,7 +12,7 @@ import time
 
 def setuplogging():
 
-        log = logging.getLogger()
+        log = logging.getLogger('autopyfactory')
         logStream = logging.StreamHandler(sys.stdout)
 
         major, minor, release, st, num = sys.version_info

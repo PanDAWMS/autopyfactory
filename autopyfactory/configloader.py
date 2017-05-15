@@ -26,7 +26,7 @@ class Config(SafeConfigParser, object):
     """
     def __init__(self):
 
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
         self.optionxform = str
         super(Config, self).__init__()
 
@@ -399,7 +399,7 @@ class ConfigManager(object):
     """
 
     def __init__(self):
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory')
 
         ###################################
         #  NEW CODE, UNDER DEVELOPMENT    #

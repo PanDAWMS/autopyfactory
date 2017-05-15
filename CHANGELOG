@@ -1,7 +1,7 @@
 * wmsstatus plugin now not mandatory
 * made APFQueuesManager a thread to reconfig periodically
 * remove trace logging level
-* remove all logger names
+* changed logger names, as a result of first removing them and then introducing new names back a while after
 * made Agis.py to work properly as a factory-level plugin. Now it accepts a list of values for vos/clouds/activities/defaultsfiles
 
 2.4.12

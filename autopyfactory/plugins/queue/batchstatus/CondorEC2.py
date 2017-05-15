@@ -47,8 +47,7 @@ class __condorec2(_thread, BatchStatusInterface):
         _thread.__init__(self) 
         apfqueue.factory.threadsregistry.add("plugin", self)
         
-        ###self.log = logging.getLogger()
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory.batchstatus.%s' %apfqueue.apfqname)
         self.log.debug('BatchStatusPlugin: Initializing object...')
 
         self.apfqueue = apfqueue
@@ -527,7 +526,7 @@ class CondorEC2JobInfo(object):
         ec2instancename -> ec2instanceid
         
         """
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory.batchstatus')
         self.jobattrs = []
         for k in dict.keys():
             self.__setattr__(k,dict[k])
@@ -584,7 +583,7 @@ class CondorSlotInfo(object):
                 Suspended
 
         """
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory.batchstatus')
         self.instanceid = instanceid
         self.machine = machine
         self.state = state
@@ -630,7 +629,7 @@ class CondorExecuteInfo(object):
                 Retiring 
                 Suspended                 
         """
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory.batchstatus')
         # EC2 instance id
         self.instanceid = instanceid
         # Condor Machine name, usually internal hostname
