@@ -412,7 +412,7 @@ class Agis(ConfigInterface):
                     default = default.strip()
                     if default == "None":
                         default = None
-                self.defaultsfiles.append(default)
+                    self.defaultsfiles.append(default)
         except NoOptionError, noe:
             pass
         
