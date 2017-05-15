@@ -216,9 +216,9 @@ Jose Caballero <jcaballero@bnl.gov>
             logStream = logging.FileHandler(filename=lf)    
 
         if major == 2 and minor == 4:
-            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(filename)s:%(lineno)d : %(message)s'
+            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d : %(message)s'
         else:
-            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
+            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
         formatter = logging.Formatter(FORMAT)
         formatter.converter = time.gmtime  # to convert timestamps to UTC
         logStream.setFormatter(formatter)
