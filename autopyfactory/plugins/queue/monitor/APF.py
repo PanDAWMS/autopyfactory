@@ -88,8 +88,6 @@ class _apf(MonitorInterface):
         #monitor_id = config.generic_get(section, "monitorsection")
         monitor_id = section
         self.log = logging.getLogger()
-        mainlevel = logging.getLogger()
-        self.log.setLevel(mainlevel)
         self.log.debug("Start...")
 
         self.qcl = apfqueue.factory.qcl
