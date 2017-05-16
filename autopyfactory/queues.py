@@ -295,7 +295,7 @@ class APFQueue(_thread):
         """        
         self._wait_for_info_services()
         self._callscheds()
-        self._submitpilots()
+        self._submit()
         self._monitor()
         self._exitloop()
         self._logtime() 
@@ -405,7 +405,7 @@ class APFQueue(_thread):
         self.nsub = nsub
         self.fullmsg = fullmsg
 
-    def _submitpilots(self):
+    def _submit(self):
         """
         submit using this number
         call for cleanup

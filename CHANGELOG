@@ -1,3 +1,6 @@
+
+2.4.13
+
 * wmsstatus plugin now not mandatory
 * made APFQueuesManager a thread to reconfig periodically
 * remove trace logging level
