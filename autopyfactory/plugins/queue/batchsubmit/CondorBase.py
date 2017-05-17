@@ -106,14 +106,67 @@ class CondorBase(BatchSubmitInterface):
                 self.retire(abs(n))
             else:
                 self.log.debug("Asked to submit 0. Doing nothing...")
-            
-            self.log.debug('Done. Returning joblist %s.' %joblist)
                 
         except Exception, e:
             self.log.error('Exception during submit processing. Exception: %s' % e)
             self.log.error("Exception: %s" % traceback.format_exc())
+
         # we return the joblist so it can be sent to the monitor
+        self.log.debug('Done. Returning joblist %s.' %joblist)
         return joblist
+
+    # FIXME
+    # for now, new submit method is just copy & paste from previous one
+    # at the end this should be done sharing code as much as possible
+    # and using the name of _finish***JSD() method as parameter somehow
+    def submitlist(self, listjobs):
+        """
+        listjobs is a list of dictionaries
+        Returns processed list of JobInfo objects. 
+        
+        """
+        n = len(listjobs)
+        self.log.debug('Preparing to submit %s jobs' %n)
+        joblist = None
+
+        #   This assumes job submission is local, but we want to support remote.
+        #if not utils.checkDaemon('condor'):
+        #    self.log.debug('condor daemon is not running. Doing nothing')
+        #    return joblist
+        
+        try:
+            if n > 0:
+                self._calculateDateDir()
+                self.JSD = jsd.JSDFile()
+                #self._getX509Proxy()
+                self._addJSD()
+                self._custom_attrs()
+                self._finishlistJSD(listjobs)
+                jsdfile = self._writeJSD()
+                if jsdfile:
+                    #st, output = self.__submit(n, jsdfile)
+                    # FIXME:
+                    # factory, wmsqueue and submitargs should not be necessary
+                    st, output = mynewsubmit(n, jsdfile, self.factory, self.wmsqueue, self.submitargs)
+                    self.log.debug('Got output (%s, %s).' %(st, output)) 
+                    joblist = condor.parsecondorsubmit(output)
+                else:
+                    self.log.debug('jsdfile has no value. Doing nothing')
+            ###elif n < 0:
+            ###    # For certain plugins, this means to retire or terminate nodes...
+            ###    self.log.debug('Preparing to retire %s jobs' % abs(n))
+            ###    self.retire(abs(n))
+            else:
+                self.log.debug("Asked to submit 0. Doing nothing...")
+                
+        except Exception, e:
+            self.log.error('Exception during submit processing. Exception: %s' % e)
+            self.log.error("Exception: %s" % traceback.format_exc())
+
+        # we return the joblist so it can be sent to the monitor
+        self.log.debug('Done. Returning joblist %s.' %joblist)
+        return joblist
+
         
 
     def retire(self, num):
