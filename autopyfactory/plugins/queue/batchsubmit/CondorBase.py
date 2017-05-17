@@ -118,7 +118,7 @@ class CondorBase(BatchSubmitInterface):
 
     def retire(self, num):
         """
-         Do nothing by default. 
+        Do nothing by default. 
         """
         self.log.debug('Default retire() do nothing.')
 
@@ -266,6 +266,26 @@ class CondorBase(BatchSubmitInterface):
         self.log.debug('finishJSD: adding queue line with %d jobs' %n)
         self.JSD.add("queue %d" %n)
         self.log.debug('finishJSD: Leaving.')
+
+
+    # FIXME: most probably temporary name
+    def _finishlistJSD(self, joblist):
+        """
+        add a list of 'queue' directives to the submit file
+        joblist is a list of dictionaries
+        the key,value pairs in those dictionaries are the 
+        classads to be added before each 'queue' directive
+        """
+        self.log.debug('finishJSD: Starting.')
+        self.log.debug('finishJSD: adding queue line with %d jobs' %n)
+        for job in joblist:
+            for k,v in job.iteritems():
+                self.JSD.add(k,v)
+                self.JSD.Add("queue 1")
+        self.log.debug('finishJSD: Leaving.')
+
+
+
 
     def _writeJSD(self):
         """
