@@ -87,16 +87,6 @@ class CondorSSH(CondorBase):
                                                                         self.privkeyfile, 
                                                                         self.passfile))
 
-    def submit(self, num):
-        """
-        Override base submit. 
-        
-        """
-        self.log.debug("Entering bosco submit.")    
-        joblist = super(CondorSSH, self).submit(num)
-       
-        self.log.debug("Exiting bosco submit.")
-
     def _addJSD(self):
         """
         add things to the JSD object
