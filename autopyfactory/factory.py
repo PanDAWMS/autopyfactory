@@ -411,9 +411,9 @@ class ThreadsRegistry(object):
         stops all threads registered, in the right order.
         """
         for kind in self.kinds:
-            self._join(kind)
+            self.join_kind(kind)
 
-    def _join(self, kind):
+    def join_kind(self, kind):
         """
         stops all threads registered of a given kind
 
