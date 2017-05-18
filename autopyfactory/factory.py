@@ -664,7 +664,8 @@ class Factory(object):
         # first call to reconfig() to load initial qcl configuration
         ###self.reconfig()
         
-        self.apfqueuesmanager.start() # starts the thread
+        if self.fcl.generic_get('Factory', 'reconfig', 'getboolean', default_value=True):
+            self.apfqueuesmanager.start() # starts the thread
         self._cleanlogs()
         
         try:

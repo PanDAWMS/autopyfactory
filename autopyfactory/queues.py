@@ -120,14 +120,21 @@ class APFQueuesManager(_thread):
         so we can control which APFQueue threads are started and which ones are not
         in a more clear way
         """
-        self.log.debug("%d queues exist. Starting all queue threads, if not running." % len(self.queues))
-        for q in self.queues.values():
-            self.log.debug("Checking queue %s" % q.apfqname)
-            if not q.isAlive():
-                self.log.debug("Starting queue %s." % q.apfqname)
-                q.start()
-            else:
-                self.log.debug("Queue %s already running." % q.apfqname)
+        cycles = self.factory.fcl.generic_get('Factory', 'cycles')
+        if cycles != None:
+            cycles = int(cycles)
+
+        if cycles == 0:
+            self.log.debug('Factory config variable cycles is 0. Not starting the APFQueue threads.')
+        else:
+            self.log.debug("%d queues exist. Starting all queue threads, if not running." % len(self.queues))
+            for q in self.queues.values():
+                self.log.debug("Checking queue %s" % q.apfqname)
+                if not q.isAlive():
+                    self.log.debug("Starting queue %s." % q.apfqname)
+                    q.start()
+                else:
+                    self.log.debug("Queue %s already running." % q.apfqname)
 
     ### Is this method being used by anyone???
     ### def join(self):
