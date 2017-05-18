@@ -115,6 +115,7 @@ class CondorBase(BatchSubmitInterface):
         self.log.debug('Done. Returning joblist %s.' %joblist)
         return joblist
 
+    ### BEGIN TEST ###
     # FIXME
     # for now, new submit method is just copy & paste from previous one
     # at the end this should be done sharing code as much as possible
@@ -166,6 +167,7 @@ class CondorBase(BatchSubmitInterface):
         # we return the joblist so it can be sent to the monitor
         self.log.debug('Done. Returning joblist %s.' %joblist)
         return joblist
+    ### END TEST ###
 
         
 
