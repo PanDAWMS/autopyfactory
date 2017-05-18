@@ -342,20 +342,6 @@ class APFQueue(_thread):
         
         pluginmanager = PluginManager()
 
-        ###self.scheduler_plugins = pluginmanager.getpluginlist(self, 'queue', 'sched', self.qcl, self.apfqname, 'schedplugin')     # a list of 1 or more plugins
-        ###self.wmsstatus_plugin = pluginmanager.getplugin(self, 'queue', 'wmsstatus', self.qcl, self.apfqname, 'wmsstatusplugin')  # a single WMSStatus plugin
-        ###self.wmsstatus_plugin.start() # start the thread
-        ###self.batchsubmit_plugin = pluginmanager.getplugin(self, 'queue', 'batchsubmit', self.qcl, self.apfqname, 'batchsubmitplugin')   # a single BatchSubmit plugin
-        ###self.batchstatus_plugin = pluginmanager.getplugin(self, 'queue', 'batchstatus', self.qcl, self.apfqname, 'batchstatusplugin')   # a single BatchStatus plugin
-        ###self.batchstatus_plugin.start() # start the thread
-        #### FIXME
-        #### this is to ad-hoc, think on a generic solution
-        ###if self.qcl.has_option(self.apfqname, 'monitorsection'):
-        ###    monitorsection = self.qcl.generic_get(self.apfqname, 'monitorsection')
-        ###    self.monitor_plugins = pluginmanager.getpluginlist(self, 'queue', 'monitor', self.mcl, monitorsection, 'monitorplugin')        # a list of 1 or more plugins
-        ###else:
-        ###    self.monitor_plugins = []
-            
 
         schedpluginnames = self.qcl.get(self.apfqname, 'schedplugin')
         schedpluginnameslist = [i.strip() for i in schedpluginnames.split(',')]
