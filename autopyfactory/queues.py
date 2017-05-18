@@ -87,7 +87,7 @@ class APFQueuesManager(_thread):
         return newqcl
             
 
-    def update(self, newqcl):
+    def reconfig(self, newqcl):
         """
         Compares the new list of queues with the current one
                 1. creates and starts new queues if needed
@@ -150,7 +150,7 @@ class APFQueuesManager(_thread):
     def _run(self):
         self.log.debug('Starting')
         newqcl = self.getConfig()
-        self.update(newqcl)
+        self.reconfig(newqcl)
         self.log.debug('Leaving')
 
     def _addqueues(self, apfqnames):
