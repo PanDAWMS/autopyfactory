@@ -74,17 +74,12 @@ home_data_files=[#('etc', libexec_files),
 # -----------------------------------------------------------
 
 def choose_data_files():
-    rpminstall = True
-    userinstall = False
+    rpminstall = False
+    userinstall = True
      
     if 'bdist_rpm' in sys.argv:
         rpminstall = True
-
-    elif 'install' in sys.argv:
-        for a in sys.argv:
-            if a.lower().startswith('--home'):
-                rpminstall = False
-                userinstall = True
+        userinstall = False
                 
     if rpminstall:
         return rpm_data_files
@@ -92,7 +87,7 @@ def choose_data_files():
         return home_data_files
     else:
         # Something probably went wrong, so punt
-        return rpm_data_files
+        return home_data_files
        
 # ===========================================================
 
