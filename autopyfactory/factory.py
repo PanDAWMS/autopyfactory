@@ -49,7 +49,7 @@ from autopyfactory.logserver import LogServer
 from autopyfactory.pluginmanager import PluginManager
 from autopyfactory.queues import APFQueuesManager
 from autopyfactory.authmanager import AuthManager
-from autopyfactory.threadsmanagement import ThreadsManager
+from autopyfactory.threadsmanagement import ThreadsRegistry
 
 major, minor, release, st, num = sys.version_info
 
