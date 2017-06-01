@@ -112,6 +112,23 @@ class APFQueuesManager(_thread):
         self.log.debug("Starting all queues.")
         self.startAPFQueues() #starts all threads
         
+        self._dumpqcl()
+
+
+    def _dumpqcl(self):
+        """
+        dump the content of queues.conf 
+        """
+        qclstr = self.factory.qcl.getContent(raw=False)
+        logpath = self.factory.fcl.get('Factory', 'baseLogDir')
+        if not os.path.isdir(logpath):
+            # the directory does not exist yet. Let's create it
+            os.makedirs(logpath)
+        qclfile = open('%s/queues.conf' %logpath, 'w')
+        print >> qclfile, qclstr
+        qclfile.close()
+
+
 
     def startAPFQueues(self):
         """
