@@ -35,6 +35,7 @@ import os
 import sys
 import traceback
 
+from ConfigParser import ConfigParser, SafeConfigParser
 from ConfigParser import NoOptionError
 from StringIO import StringIO
 from urllib import urlopen

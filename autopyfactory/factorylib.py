@@ -49,7 +49,7 @@ from autopyfactory.logserver import LogServer
 from autopyfactory.pluginmanager import PluginManager
 from autopyfactory.queues import APFQueuesManager
 from autopyfactory.authmanager import AuthManager
-from autopyfactory.threadsmanagement import ThreadsRegistry
+from autopyfactory.threadsmanagement import ThreadsManager
 
 major, minor, release, st, num = sys.version_info
 
@@ -514,6 +514,18 @@ class Factory(object):
             sys.exit(0)
         
         self.log.debug("mappingscl is %s" % self.mappingscl)
+
+    def _dumpqcl(self):
+
+        # dump the content of queues.conf 
+        qclstr = self.qcl.getContent(raw=False)
+        logpath = self.fcl.get('Factory', 'baseLogDir')
+        if not os.path.isdir(logpath):
+            # the directory does not exist yet. Let's create it
+            os.makedirs(logpath)
+        qclfile = open('%s/queues.conf' %logpath, 'w')
+        print >> qclfile, qclstr
+        qclfile.close()
 
 
     def _plugins(self):

@@ -87,7 +87,7 @@ class APFQueuesManager(_thread):
         return newqcl
             
 
-    def update(self, newqcl):
+    def reconfig(self, newqcl):
         """
         Compares the new list of queues with the current one
                 1. creates and starts new queues if needed
@@ -112,6 +112,23 @@ class APFQueuesManager(_thread):
         self.log.debug("Starting all queues.")
         self.startAPFQueues() #starts all threads
         
+        self._dumpqcl()
+
+
+    def _dumpqcl(self):
+        """
+        dump the content of queues.conf 
+        """
+        qclstr = self.factory.qcl.getContent(raw=False)
+        logpath = self.factory.fcl.get('Factory', 'baseLogDir')
+        if not os.path.isdir(logpath):
+            # the directory does not exist yet. Let's create it
+            os.makedirs(logpath)
+        qclfile = open('%s/queues.conf' %logpath, 'w')
+        print >> qclfile, qclstr
+        qclfile.close()
+
+
 
     def startAPFQueues(self):
         """
@@ -120,14 +137,21 @@ class APFQueuesManager(_thread):
         so we can control which APFQueue threads are started and which ones are not
         in a more clear way
         """
-        self.log.debug("%d queues exist. Starting all queue threads, if not running." % len(self.queues))
-        for q in self.queues.values():
-            self.log.debug("Checking queue %s" % q.apfqname)
-            if not q.isAlive():
-                self.log.debug("Starting queue %s." % q.apfqname)
-                q.start()
-            else:
-                self.log.debug("Queue %s already running." % q.apfqname)
+        cycles = self.factory.fcl.generic_get('Factory', 'cycles')
+        if cycles != None:
+            cycles = int(cycles)
+
+        if cycles == 0:
+            self.log.debug('Factory config variable cycles is 0. Not starting the APFQueue threads.')
+        else:
+            self.log.debug("%d queues exist. Starting all queue threads, if not running." % len(self.queues))
+            for q in self.queues.values():
+                self.log.debug("Checking queue %s" % q.apfqname)
+                if not q.isAlive():
+                    self.log.debug("Starting queue %s." % q.apfqname)
+                    q.start()
+                else:
+                    self.log.debug("Queue %s already running." % q.apfqname)
 
     ### Is this method being used by anyone???
     ### def join(self):
@@ -150,7 +174,7 @@ class APFQueuesManager(_thread):
     def _run(self):
         self.log.debug('Starting')
         newqcl = self.getConfig()
-        self.update(newqcl)
+        self.reconfig(newqcl)
         self.log.debug('Leaving')
 
     def _addqueues(self, apfqnames):
@@ -342,20 +366,6 @@ class APFQueue(_thread):
         
         pluginmanager = PluginManager()
 
-        ###self.scheduler_plugins = pluginmanager.getpluginlist(self, 'queue', 'sched', self.qcl, self.apfqname, 'schedplugin')     # a list of 1 or more plugins
-        ###self.wmsstatus_plugin = pluginmanager.getplugin(self, 'queue', 'wmsstatus', self.qcl, self.apfqname, 'wmsstatusplugin')  # a single WMSStatus plugin
-        ###self.wmsstatus_plugin.start() # start the thread
-        ###self.batchsubmit_plugin = pluginmanager.getplugin(self, 'queue', 'batchsubmit', self.qcl, self.apfqname, 'batchsubmitplugin')   # a single BatchSubmit plugin
-        ###self.batchstatus_plugin = pluginmanager.getplugin(self, 'queue', 'batchstatus', self.qcl, self.apfqname, 'batchstatusplugin')   # a single BatchStatus plugin
-        ###self.batchstatus_plugin.start() # start the thread
-        #### FIXME
-        #### this is to ad-hoc, think on a generic solution
-        ###if self.qcl.has_option(self.apfqname, 'monitorsection'):
-        ###    monitorsection = self.qcl.generic_get(self.apfqname, 'monitorsection')
-        ###    self.monitor_plugins = pluginmanager.getpluginlist(self, 'queue', 'monitor', self.mcl, monitorsection, 'monitorplugin')        # a list of 1 or more plugins
-        ###else:
-        ###    self.monitor_plugins = []
-            
 
         schedpluginnames = self.qcl.get(self.apfqname, 'schedplugin')
         schedpluginnameslist = [i.strip() for i in schedpluginnames.split(',')]
@@ -419,6 +429,26 @@ class APFQueue(_thread):
         self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
         #return jobinfolist
         self.jobinfolist = jobinfolist
+
+
+    ### BEGIN TEST ###
+    def _submitlist(self, listjobs):
+        """
+        submit using this number
+        call for cleanup
+        """
+        self.log.debug("Starting")
+        n = len(listjobs)
+        msg = 'Attempt to submit %s pilots for queue %s' %(n, self.apfqname)
+        jobinfolist = self.batchsubmit_plugin.submitlist(listjobs)
+        self.log.debug("Attempted submission of %d pilots and got jobinfolist %s" % (n, jobinfolist))
+        self.batchsubmit_plugin.cleanup()
+        self.cyclesrun += 1
+        self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
+        #return jobinfolist
+        self.jobinfolist = jobinfolist
+    ### END TEST ###
+
 
     def _monitor(self):
 

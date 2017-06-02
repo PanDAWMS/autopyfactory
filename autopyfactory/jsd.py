@@ -27,32 +27,23 @@ class JSDFile(object):
     def __init__(self):
 
         self.log = logging.getLogger('autopyfactory')
-        self.directive_lines = []
-        self.directive_dict = {}
+        self.lines = []
         self.log.debug('JSDFile: Object initialized.')
 
     def add(self, *k):
         """
         """
-
         self.log.debug('Starting.')
-
         if len(k) == 1:
-            line = k[0]
-            self.directive_lines.append(line)
+            self.lines.append(k[0])
         if len(k) == 2:
-            key = k[0]
-            value = k[1]
-            self.directive_dict[key] = value
-
+            self.lines.append('%s = %s' %(k[0], k[1]))
         self.log.debug('Leaving.')
-
 
     def write(self, path, filename):
         """
         Dumps the whole content of the JSDFile object into a disk file
         """
-
         self.log.debug('writeJSD: Starting.')
 
         if not os.access(path, os.F_OK):
@@ -71,37 +62,9 @@ class JSDFile(object):
     def _dump(self, jsdfilename):
 
         self.log.debug('Starting.')
-
         jsdfile = open(jsdfilename, 'w')
-
-        for key,value in self.directive_dict.iteritems(): 
-            print >> jsdfile, '%s = %s' %(key,value)
-        for line in self.directive_lines: 
+        for line in self.lines: 
             print >> jsdfile, line
-
         jsdfile.close()
-
         self.log.debug('Leaving.')
-
-
-# ==============================================================================
-
-if __name__ == '__main__':
-
-    jsd = JSDFile()
-
-    jsd.add('linea 1')
-    jsd.add('linea 2')
-
-    jsd.add('key1', 'value1')
-    jsd.add('key2', 'value2')
-
-    jsd.add('linea 3')
-    jsd.add('linea 4')
-
-    jsd.add('key3', 'value3')
-    jsd.add('key4', 'value4')
-    jsd.add('key4', 'VALUE4')
-
-    jsd.write('/tmp/kk/testjsd', 'out')
 
