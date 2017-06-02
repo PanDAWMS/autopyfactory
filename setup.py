@@ -65,9 +65,9 @@ rpm_data_files=[#('/etc/autopyfactory', libexec_files),
 
 
 home_data_files=[#('etc', libexec_files),
-                 ('etc', etc_files),
-                 ('etc', initd_files),
-                 ('etc', sysconfig_files),
+                 ('etc/autopyfactory', etc_files),
+                 ('etc/autopyfactory', initd_files),
+                 ('etc/autopyfactory', sysconfig_files),
                  ('doc/autopyfactory', docs_files),
                 ]
 
