@@ -371,7 +371,7 @@ class Agis(ConfigInterface):
 
     def __init__(self, factory, config, section):
         """
-        Top-level object fo contacting, parsing, and providing APF configs from AGIS
+        Top-level object for contacting, parsing, and providing APF configs from AGIS
         """
 
         self.log = logging.getLogger('autopyfactory.config')
@@ -410,7 +410,7 @@ class Agis(ConfigInterface):
             else:
                 self.defaultsfiles = []
                 for default in self.config.get('Factory', 'config.agis.defaultsfiles').split(','):
-                    default = default.strip()
+                    default = os.path.expanduser(default.strip())
                     if default == "None":
                         default = None
                     self.defaultsfiles.append(default)
@@ -422,6 +422,7 @@ class Agis(ConfigInterface):
             if vostr.strip().lower() == 'none':
                 self.vos = None
             else:
+                print("self.vos = %s" % [ vo.strip().lower() for vo in self.config.get('Factory', 'config.agis.vos').split(',') ])
                 self.vos = [ vo.strip().lower() for vo in self.config.get('Factory', 'config.agis.vos').split(',') ]    
         except NoOptionError, noe:
             pass
@@ -533,7 +534,6 @@ class Agis(ConfigInterface):
         #if not self.allqueues:
         #    self.log.debug('No available configuration. Returning None.')
         #    return None
-
 
         self.log.debug('Starting')
 
