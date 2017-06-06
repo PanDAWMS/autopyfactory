@@ -137,6 +137,30 @@ def _querycondorlib(attributes, remotecollector=None, remoteschedd=None):
     log.debug(out)
     return out
 
+def queryjobs(attributes, remotecollector=None, remoteschedd=None):
+    '''
+    Jobs-oriented condor binding query
+    :param List of str attributes: ClassAd attributes of interest. 
+    :param str remotecollector:    Contact string of remote collector
+    :param str remoteschedd:       Contact string of remote schedd
+    :return: List of Dicts:        List of dictionaries of key/value ClassAd pairs              
+    :rtype: List        
+    '''
+    log = logging.getLogger()
+    log.debug("Starting with values attributes=%s, remotecollector=%s, remoteschedd=%s" %(attributes, remotecollector, remoteschedd))
+    if remotecollector:
+        # FIXME: to be tested
+        log.debug("querying remote pool %s" %remotecollector)
+        collector = htcondor.Collector(remotecollector)
+        scheddAd = collector.locate(htcondor.DaemonTypes.Schedd, remoteschedd)
+        schedd = htcondor.Schedd(scheddAd) 
+    else:
+        schedd = htcondor.Schedd() # Defaults to the local schedd.
+
+    out = schedd.query('true', attributes)
+    log.debug(out)
+    return out
+
 
 
 #############################################################################
