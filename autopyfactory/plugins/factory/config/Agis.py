@@ -422,7 +422,7 @@ class Agis(ConfigInterface):
             if vostr.strip().lower() == 'none':
                 self.vos = None
             else:
-                print("self.vos = %s" % [ vo.strip().lower() for vo in self.config.get('Factory', 'config.agis.vos').split(',') ])
+                #print("self.vos = %s" % [ vo.strip().lower() for vo in self.config.get('Factory', 'config.agis.vos').split(',') ])
                 self.vos = [ vo.strip().lower() for vo in self.config.get('Factory', 'config.agis.vos').split(',') ]    
         except NoOptionError, noe:
             pass
