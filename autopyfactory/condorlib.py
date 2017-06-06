@@ -146,7 +146,18 @@ def queryjobs(attributes, remotecollector=None, remoteschedd=None):
     :return: List of Dicts:        List of dictionaries of key/value ClassAd pairs              
     :rtype: List        
     '''
-    log = logging.getLogger()
+    log = logging.getLogger('condorlib')
+    # Only do this if the calling code application has left the root logger without a handler. 
+    if len(log.handlers) < 1:
+        logStream = logging.StreamHandler()
+        FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
+        formatter = logging.Formatter(FORMAT)
+        formatter.converter = time.gmtime  # to convert timestamps to UTC
+        logStream.setFormatter(formatter)
+        log.addHandler(logStream)
+        log.setLevel(logging.DEBUG)
+
+    
     log.debug("Starting with values attributes=%s, remotecollector=%s, remoteschedd=%s" %(attributes, remotecollector, remoteschedd))
     if remotecollector:
         # FIXME: to be tested
