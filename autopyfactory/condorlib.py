@@ -148,7 +148,7 @@ def queryjobs(attributes, remotecollector=None, remoteschedd=None):
     '''
     log = logging.getLogger('condorlib')
     # Only do this if the calling code application has left the root logger without a handler. 
-    if len(log.handlers) < 1:
+    if len(log.parent.handlers) < 1:
         logStream = logging.StreamHandler()
         FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
         formatter = logging.Formatter(FORMAT)
