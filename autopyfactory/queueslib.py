@@ -688,6 +688,77 @@ class StaticAPFQueue(object):
 
 
                  
+class StaticAPFQueueJC(object):
+    
+    def __init__(self, config, apfqname):
+
+        self.log = logging.getLogger('%s' % apfqname)
+        if len(self.log.parent.handlers) < 1:
+            logStream = logging.StreamHandler()
+            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
+            formatter = logging.Formatter(FORMAT)
+            formatter.converter = time.gmtime  # to convert timestamps to UTC
+            logStream.setFormatter(formatter)
+            self.log.addHandler(logStream)
+            self.log.setLevel(logging.DEBUG)
+
+        self.log.debug('APFQueue: Initializing object...')
+        self.queuename = config.sections()[0]
+        self.qcl = config 
+        
+        self.log.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(apfqname).getContent())   
+
+        try:
+            self._plugins()
+        except Exception, ex:
+            self.log.exception('APFQueue: Exception getting plugins' )
+            raise ex
+        self.log.debug('APFQueue: Object initialized.')
+
+
+    def _plugins(self):
+        
+        pluginmanager = PluginManager()
+
+        schedpluginnames = self.qcl.get(self.apfqname, 'schedplugin')
+        schedpluginnameslist = [i.strip() for i in schedpluginnames.split(',')]
+        self.scheduler_plugins = pluginmanager.getpluginlist(self, ['autopyfactory', 'plugins', 'queue', 'sched'], schedpluginnameslist, self.qcl, self.apfqname)     # a list of 1 or more plugins
+
+        batchsubmitpluginname = self.qcl.get(self.apfqname, 'batchsubmitplugin')
+        self.batchsubmit_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'batchsubmit'], batchsubmitpluginname, self.qcl, self.apfqname)   # a single BatchSubmit plugin
+
+
+    def _callscheds(self, nsub=0):
+
+        fullmsg = ""
+        self.log.debug("APFQueue [%s] run(): Calling sched plugins..." % self.apfqname)
+        for sched_plugin in self.scheduler_plugins:
+            (nsub, msg) = sched_plugin.calcSubmitNum(nsub)
+            if msg:
+                if fullmsg:
+                    fullmsg = "%s;%s" % (fullmsg, msg)
+                else:
+                    fullmsg = msg
+        self.log.debug("APFQueue[%s]: All Sched plugins called. Result nsub=%s" % (self.apfqname, nsub))
+        #return nsub, fullmsg
+        self.nsub = nsub
+        self.fullmsg = fullmsg
+
+
+    def submitlist(self, listjobs):
+
+        self.log.debug("Starting")
+        n = len(listjobs)
+        msg = 'Attempt to submit %s pilots for queue %s' %(n, self.apfqname)
+        jobinfolist = self.batchsubmit_plugin.submitlist(listjobs)
+        self.log.debug("Attempted submission of %d pilots and got jobinfolist %s" % (n, jobinfolist))
+        self.batchsubmit_plugin.cleanup()
+        self.cyclesrun += 1
+        self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
+        self.jobinfolist = jobinfolist
+        return jobinfolist
+ 
+
 
 
 
