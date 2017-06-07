@@ -696,7 +696,7 @@ class StaticAPFQueueJC(object):
         self.qcl = config
         self.apfqname = config.sections()[0]
 
-        self.log = logging.getLogger('%s' % apfqname)
+        self.log = logging.getLogger('%s' % self.apfqname)
         if len(self.log.parent.handlers) < 1:
             logStream = logging.StreamHandler()
             FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
