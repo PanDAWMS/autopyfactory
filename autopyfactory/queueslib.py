@@ -694,7 +694,7 @@ class StaticAPFQueueJC(object):
 
         self.log = logging.getLogger('%s' % config.sections()[0])
         self.qcl = config
-        self.apfqname = apfqname
+        self.apfqname = config.sections()[0]
 
         self.log = logging.getLogger('%s' % apfqname)
         if len(self.log.parent.handlers) < 1:
