@@ -709,7 +709,7 @@ class StaticAPFQueueJC(object):
         # Mock objects
         self.log.debug("Creating config for factory mock.")
         fcl = Config()
-        fconf = self.qcl.get('factoryconf')
+        fconf = self.qcl.get(self.apfqname, 'factoryconf')
         okread = fcl.read(fconf)
         self.log.debug("Successfully read %s " % okread)
 
