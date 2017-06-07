@@ -719,30 +719,8 @@ class StaticAPFQueueJC(object):
     def _plugins(self):
         
         pluginmanager = PluginManager()
-
-        schedpluginnames = self.qcl.get(self.apfqname, 'schedplugin')
-        schedpluginnameslist = [i.strip() for i in schedpluginnames.split(',')]
-        self.scheduler_plugins = pluginmanager.getpluginlist(self, ['autopyfactory', 'plugins', 'queue', 'sched'], schedpluginnameslist, self.qcl, self.apfqname)     # a list of 1 or more plugins
-
         batchsubmitpluginname = self.qcl.get(self.apfqname, 'batchsubmitplugin')
         self.batchsubmit_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'batchsubmit'], batchsubmitpluginname, self.qcl, self.apfqname)   # a single BatchSubmit plugin
-
-
-    def _callscheds(self, nsub=0):
-
-        fullmsg = ""
-        self.log.debug("APFQueue [%s] run(): Calling sched plugins..." % self.apfqname)
-        for sched_plugin in self.scheduler_plugins:
-            (nsub, msg) = sched_plugin.calcSubmitNum(nsub)
-            if msg:
-                if fullmsg:
-                    fullmsg = "%s;%s" % (fullmsg, msg)
-                else:
-                    fullmsg = msg
-        self.log.debug("APFQueue[%s]: All Sched plugins called. Result nsub=%s" % (self.apfqname, nsub))
-        #return nsub, fullmsg
-        self.nsub = nsub
-        self.fullmsg = fullmsg
 
 
     def submitlist(self, listjobs):
