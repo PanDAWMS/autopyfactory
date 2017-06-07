@@ -617,8 +617,11 @@ class StaticAPFQueue(object):
         self.batchsubmit_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'batchsubmit'], batchsubmitpluginname, self.qcl, self.apfqname)   # a single BatchSubmit plugin
 
         batchstatuspluginname = self.qcl.get(self.apfqname, 'batchstatusplugin')
-        self.batchstatus_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'batchstatus'], batchstatuspluginname, self.qcl, self.apfqname)   # a single BatchStatus plugin
-        self.batchstatus_plugin.start() # start the thread
+        if batchstatuspluginname is not None:
+            self.batchstatus_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'batchstatus'], batchstatuspluginname, self.qcl, self.apfqname)   # a single BatchStatus plugin
+            self.batchstatus_plugin.start() # start the thread
+        else:
+            self.batchstatus_plugin = None
 
         self.monitor_plugins = []
         if self.qcl.has_option(self.apfqname, 'monitorsection'):
@@ -650,7 +653,7 @@ class StaticAPFQueue(object):
         self.nsub = nsub
         self.fullmsg = fullmsg
 
-    def _submit(self):
+    def submit(self):
         """
         submit using this number
         call for cleanup
@@ -662,14 +665,13 @@ class StaticAPFQueue(object):
         self.batchsubmit_plugin.cleanup()
         self.cyclesrun += 1
         self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
-        #return jobinfolist
         self.jobinfolist = jobinfolist
-
+        return jobinfolist
 
     ### BEGIN TEST ###
-    def _submitlist(self, listjobs):
+    def submitlist(self, listjobs):
         """
-        submit using this number
+        submit using this 
         call for cleanup
         """
         self.log.debug("Starting")
@@ -680,19 +682,9 @@ class StaticAPFQueue(object):
         self.batchsubmit_plugin.cleanup()
         self.cyclesrun += 1
         self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
-        #return jobinfolist
         self.jobinfolist = jobinfolist
         return jobinfolist
-
-    def _monitor(self):
-
-        for m in self.monitor_plugins:
-            self.log.debug('APFQueue[%s] run(): calling registerJobs for monitor plugin %s' % (self.apfqname, m))
-            m.registerJobs(self, self.jobinfolist)
-            if self.fullmsg:
-                self.log.debug('APFQueue[%s] run(): calling updateLabel for monitor plugin %s' % (self.apfqname, m))
-                m.updateLabel(self.apfqname, self.fullmsg)
-
+ 
 
 
                  
