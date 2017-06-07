@@ -27,7 +27,7 @@ class JSDFile(object):
     def __init__(self):
 
         self.log = logging.getLogger('jsdfile')
-        if len(log.parent.handlers) < 1:
+        if len(self.log.parent.handlers) < 1:
             logStream = logging.StreamHandler()
             FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
             formatter = logging.Formatter(FORMAT)
