@@ -331,7 +331,7 @@ class CondorBase(BatchSubmitInterface):
         classads to be added before each 'queue' directive
         """
         self.log.debug('finishJSD: Starting.')
-        self.log.debug('finishJSD: adding queue line with %d jobs' %n)
+        self.log.debug('finishJSD: adding queue line with 1 job')
         for job in joblist:
             for k,v in job.iteritems():
                 self.JSD.add(k,v)
