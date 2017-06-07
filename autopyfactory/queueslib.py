@@ -692,6 +692,9 @@ class StaticAPFQueueJC(object):
     
     def __init__(self, config, apfqname):
 
+        self.qcl = config
+        self.apfqname = apfqname
+
         self.log = logging.getLogger('%s' % apfqname)
         if len(self.log.parent.handlers) < 1:
             logStream = logging.StreamHandler()
@@ -701,6 +704,46 @@ class StaticAPFQueueJC(object):
             logStream.setFormatter(formatter)
             self.log.addHandler(logStream)
             self.log.setLevel(logging.DEBUG)
+
+
+        # Mock objects
+        fcl = Config()
+        fcl.add_section('Factory')
+
+        fcl.set('Factory', 'factoryAdminEmail' ,'jhover@bnl.gov')
+        fcl.set('Factory', 'factoryId' ,'BNL-gridui20-jhover')
+        fcl.set('Factory', 'factorySMTPServer' ,'relay00.usatlas.bnl.gov')
+        fcl.set('Factory', 'factoryUser' ,'autopyfactory')
+        fcl.set('Factory', 'enablequeues' ,'True')
+        fcl.set('Factory', 'queueConf' ,'file:///etc/autopyfactory/bu.conf, file:///etc/autopyfactory/usatlas-t1.conf, file:///etc/autopyfactory/usatlas-t2.conf, file:///etc/autopyfactory/atlas_osg_opp.conf')
+        fcl.set('Factory', 'proxyConf' ,'/etc/autopyfactory/proxy.conf')
+        fcl.set('Factory', 'proxymanager.enabled' ,'True')
+        fcl.set('Factory', 'proxymanager.sleep' ,'30')
+        fcl.set('Factory', 'monitorConf' ,'file:///etc/autopyfactory/monitor.conf')
+        fcl.set('Factory', 'mappingsConf' ,'/etc/autopyfactory/mappings.conf')
+        fcl.set('Factory', 'cycles' ,'None')
+        fcl.set('Factory', 'factory.sleep', '30')
+        fcl.set('Factory', 'wmsstatus.panda.sleep' ,'150')
+        fcl.set('Factory', 'batchstatus.condor.sleep' ,'150')
+        fcl.set('Factory', 'baseLogDir' ,'/home/autopyfactory/factory/logs')
+        fcl.set('Factory', 'baseLogDirUrl' ,'http://gridui20.usatlas.bnl.gov:25880')
+        fcl.set('Factory', 'baseLogHttpPort' ,'25880')
+        fcl.set('Factory', 'logserver.enabled' ,'True')
+        fcl.set('Factory', 'logserver.index' ,'True')
+        fcl.set('Factory', 'logserver.allowrobots' ,'False')
+        fcl.set('Factory', 'cleanlogs.keepdays' ,'14')
+
+        class FactoryMock(object):
+            def __init__(self):
+                self.fcl = fcl 
+                self.mcl = Config()
+                self.mcl.add_section('MockMonitor')
+                self.mcl.set('MockMonitor','monitorURL','')
+
+        self.factory = FactoryMock()
+
+
+
 
         self.log.debug('APFQueue: Initializing object...')
         self.queuename = config.sections()[0]
@@ -731,7 +774,6 @@ class StaticAPFQueueJC(object):
         jobinfolist = self.batchsubmit_plugin.submitlist(listjobs)
         self.log.debug("Attempted submission of %d pilots and got jobinfolist %s" % (n, jobinfolist))
         self.batchsubmit_plugin.cleanup()
-        self.cyclesrun += 1
         self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
         self.jobinfolist = jobinfolist
         return jobinfolist
