@@ -28,6 +28,14 @@ class CondorBase(BatchSubmitInterface):
 
         
         self.log = logging.getLogger('autopyfactory.batchsubmit.%s' %apfqueue.apfqname)
+        if len(self.log.parent.handlers) < 1:
+            logStream = logging.StreamHandler()
+            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
+            formatter = logging.Formatter(FORMAT)
+            formatter.converter = time.gmtime  # to convert timestamps to UTC
+            logStream.setFormatter(formatter)
+            log.addHandler(logStream)
+            log.setLevel(logging.DEBUG)
 
         qcl = config
         self.apfqueue = apfqueue
