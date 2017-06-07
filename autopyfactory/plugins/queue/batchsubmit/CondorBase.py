@@ -139,7 +139,6 @@ class CondorBase(BatchSubmitInterface):
             if n > 0:
                 self._calculateDateDir()
                 self.JSD = jsd.JSDFile()
-                #self._getX509Proxy()
                 self._addJSD()
                 self._custom_attrs()
                 self._finishlistJSD(listjobs)

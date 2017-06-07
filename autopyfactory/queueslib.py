@@ -519,7 +519,7 @@ class StaticAPFQueue(object):
         :return A valid StaticAPFQueue
                 
         '''
-        self.log = logging.getLogger('%s' % apfqname)
+        self.log = logging.getLogger('%s' % config.sections()[0])
         if len(log.parent.handlers) < 1:
             logStream = logging.StreamHandler()
             FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
@@ -690,9 +690,9 @@ class StaticAPFQueue(object):
                  
 class StaticAPFQueueJC(object):
     
-    def __init__(self, config, apfqname):
+    def __init__(self, config):
 
-        self.log = logging.getLogger('%s' % apfqname)
+        self.log = logging.getLogger('%s' % config.sections()[0])
         if len(self.log.parent.handlers) < 1:
             logStream = logging.StreamHandler()
             FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
@@ -703,6 +703,7 @@ class StaticAPFQueueJC(object):
             self.log.setLevel(logging.DEBUG)
 
         self.log.debug('APFQueue: Initializing object...')
+        self.apfqname = config.sections()[0]
         self.queuename = config.sections()[0]
         self.qcl = config 
         
