@@ -8,14 +8,14 @@ from autopyfactory.apfexceptions import ThreadRegistryInvalidKind
 
 class ThreadsRegistry(object):
 
-    def __init__(self):
+    def __init__(self, kinds=['plugin','queue','util','core']):
 
         self.log = logging.getLogger('autopyfactory')
 
         # the kinds of threads allowed
         # to be registered,
         # sorted in the order they will be join()'ed
-        self.kinds = ['plugin','queue','util','core']
+        self.kinds = kinds
 
         # initialization of the registry
         self.threads = {}
