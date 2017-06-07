@@ -18,6 +18,7 @@ class CondorGrid(CondorBase):
         
         # ---- proxy management ------
         self.x509userproxy = None
+        self.proxyfile = None
         self.proxylist = None
         try:
             plist = qcl.generic_get(self.apfqname, 'batchsubmit.condorgrid.proxy')
@@ -34,6 +35,13 @@ class CondorGrid(CondorBase):
             raise
         except:
             raise
+        
+        # Also allow a file to be explicitly set. 
+        try:
+            self.proxyfile = qcl.generic_get(self.apfqname, 'batchsubmit.condorgrid.proxyfile')
+        except Exception, e:
+            self.log.error("Caught exception: %s " % str(e)) 
+        
 
         self.log.debug('CondorGrid: Object initialized.')
 
@@ -46,6 +54,8 @@ class CondorGrid(CondorBase):
         self.log.debug("Determining proxy, if necessary. Profile: %s" % self.proxylist)
         if self.proxylist:
             self.x509userproxy = self.factory.authmanager.getProxyPath(self.proxylist)
+        elif self.proxyfile is not None:
+                self.x509userproxy = self.proxyfile
         else:
             self.log.debug("No proxy profile defined.")
 
