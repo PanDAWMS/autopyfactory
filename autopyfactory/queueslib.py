@@ -751,7 +751,7 @@ class StaticAPFQueueJC(object):
         self.queuename = config.sections()[0]
         self.qcl = config 
         
-        self.log.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(apfqname).getContent())   
+        self.log.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(self.apfqname).getContent())   
 
         try:
             self._plugins()
