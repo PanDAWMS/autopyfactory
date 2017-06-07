@@ -713,13 +713,14 @@ class StaticAPFQueueJC(object):
         okread = fcl.read(fconf)
         self.log.debug("Successfully read %s " % okread)
 
+        from sets import Set
         class FactoryMock(object):
             def __init__(self, fcl):
                 self.fcl = fcl 
                 self.mcl = Config()
                 self.mcl.add_section('MockMonitor')
                 self.mcl.set('MockMonitor','monitorURL','')
-                self.threadsregistry = []
+                self.threadsregistry = Set() 
 
         self.factory = FactoryMock(fcl)
 
