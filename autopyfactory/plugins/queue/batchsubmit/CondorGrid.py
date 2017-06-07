@@ -62,7 +62,7 @@ class CondorGrid(CondorBase):
         if self.x509userproxy:
             self.JSD.add("x509userproxy", "%s" % self.x509userproxy)
         else:
-            self.log.warning('no x509 proxy found. Aborting. Be sure one is set in defaults.')
+            self.log.warning('no x509 proxy found. Be sure one is set in defaults.')
             
 
         super(CondorGrid, self)._addJSD()
