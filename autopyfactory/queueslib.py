@@ -684,34 +684,32 @@ class StaticAPFQueue(object):
         self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
         self.jobinfolist = jobinfolist
         return jobinfolist
- 
-
 
                  
 class StaticAPFQueueJC(object):
     
     def __init__(self, config):
 
-        self.log = logging.getLogger('%s' % config.sections()[0])
+        #self.log = logging.getLogger('%s' % config.sections()[0])
         self.qcl = config
         self.apfqname = config.sections()[0]
 
-        if len(self.log.parent.handlers) < 1:
-            logStream = logging.StreamHandler()
-            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
-            formatter = logging.Formatter(FORMAT)
-            formatter.converter = time.gmtime  # to convert timestamps to UTC
-            logStream.setFormatter(formatter)
-            self.log.addHandler(logStream)
-            self.log.setLevel(logging.DEBUG)
+        #if len(self.log.parent.handlers) < 1:
+        #    logStream = logging.StreamHandler()
+        #    FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
+        #    formatter = logging.Formatter(FORMAT)
+        #    formatter.converter = time.gmtime  # to convert timestamps to UTC
+        #    logStream.setFormatter(formatter)
+        #    self.log.addHandler(logStream)
+        #    self.log.setLevel(logging.DEBUG)
 
 
         # Mock objects
-        self.log.debug("Creating config for factory mock.")
+        logging.debug("Creating config for factory mock.")
         fcl = Config()
         fconf = self.qcl.get(self.apfqname, 'factoryconf')
         okread = fcl.read(fconf)
-        self.log.debug("Successfully read %s " % okread)
+        logging.debug("Successfully read %s " % okread)
 
         from autopyfactory.threadsmanagement import ThreadsRegistry
         class FactoryMock(object):
@@ -724,14 +722,14 @@ class StaticAPFQueueJC(object):
 
         self.factory = FactoryMock(fcl)
 
-        self.log.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(self.apfqname).getContent())   
+        logging.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(self.apfqname).getContent())   
 
         try:
             self._plugins()
         except Exception, ex:
             self.log.exception('APFQueue: Exception getting plugins' )
             raise ex
-        self.log.debug('APFQueue: Object initialized.')
+        logging.debug('APFQueue: Object initialized.')
 
 
     def _plugins(self):
@@ -743,13 +741,13 @@ class StaticAPFQueueJC(object):
 
     def submitlist(self, listjobs):
 
-        self.log.debug("Starting")
+        logging.debug("Starting")
         n = len(listjobs)
         msg = 'Attempt to submit %s pilots for queue %s' %(n, self.apfqname)
         jobinfolist = self.batchsubmit_plugin.submitlist(listjobs)
-        self.log.debug("Attempted submission of %d pilots and got jobinfolist %s" % (n, jobinfolist))
+        logging.debug("Attempted submission of %d pilots and got jobinfolist %s" % (n, jobinfolist))
         self.batchsubmit_plugin.cleanup()
-        self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
+        logging.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
         self.jobinfolist = jobinfolist
         return jobinfolist
  
