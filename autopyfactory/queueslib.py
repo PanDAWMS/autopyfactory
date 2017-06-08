@@ -727,7 +727,7 @@ class StaticAPFQueueJC(object):
         try:
             self._plugins()
         except Exception, ex:
-            self.log.exception('APFQueue: Exception getting plugins' )
+            logging.error('APFQueue: Exception getting plugins' )
             raise ex
         logging.debug('APFQueue: Object initialized.')
 
