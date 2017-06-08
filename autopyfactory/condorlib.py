@@ -40,12 +40,16 @@ import copy
 #############################################################################
 
 
-def condorhistorylib(constraints=[]):
-    attributes = ['match_apf_queue', 'jobstatus', 'enteredcurrentstatus', 'remotewallclocktime']
-    return _condorhistorylib(constraints, attributes)
+def condorhistorylib(attributes=[], constraints=[]):
+    default_attributes = ['match_apf_queue', 'jobstatus', 'enteredcurrentstatus', 'remotewallclocktime']
+    for da in default_attributes:
+        if da not in attributes:
+            attributes.append(da)
+    logging.debug('history called with attributes: %s' % attributes)
+    return _condorhistorylib( attributes, constraints)
 
 
-def _condorhistorylib(constraints, attributes):
+def _condorhistorylib( attributes, constraints):
     schedd = htcondor.Schedd()
     condor_constraint_expr = " && ".join(constraints)
     history = schedd.history(condor_constraint_expr, attributes, 0)
