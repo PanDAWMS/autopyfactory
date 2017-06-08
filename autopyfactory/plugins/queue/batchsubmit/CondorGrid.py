@@ -20,6 +20,14 @@ class CondorGrid(CondorBase):
         self.x509userproxy = None
         self.proxyfile = None
         self.proxylist = None
+        
+        # Allow a file to be explicitly set. 
+        try:
+            self.proxyfile = qcl.generic_get(self.apfqname, 'batchsubmit.condorgrid.proxyfile')
+        
+        except Exception, e:
+            self.log.error("Caught exception: %s " % str(e)) 
+        
         try:
             plist = qcl.generic_get(self.apfqname, 'batchsubmit.condorgrid.proxy')
             # This is alist of proxy profile names specified in proxy.conf
@@ -27,21 +35,16 @@ class CondorGrid(CondorBase):
             if plist:
                 self.proxylist = [x.strip() for x in plist.split(',')]
             self._getX509Proxy()
+        
         except InvalidProxyFailure, ipf:
             self.log.error('Unable to get valid proxy file.')
             raise
         except Exception, e:
             self.log.error("Caught exception: %s " % str(e))
             raise
+        
         except:
             raise
-        
-        # Also allow a file to be explicitly set. 
-        try:
-            self.proxyfile = qcl.generic_get(self.apfqname, 'batchsubmit.condorgrid.proxyfile')
-        except Exception, e:
-            self.log.error("Caught exception: %s " % str(e)) 
-        
 
         self.log.debug('CondorGrid: Object initialized.')
 
@@ -54,8 +57,9 @@ class CondorGrid(CondorBase):
         self.log.debug("Determining proxy, if necessary. Profile: %s" % self.proxylist)
         if self.proxylist:
             self.x509userproxy = self.factory.authmanager.getProxyPath(self.proxylist)
-        elif self.proxyfile is not None:
-                self.x509userproxy = self.proxyfile
+        
+        elif self.proxyfile:
+            self.x509userproxy = self.proxyfile
         else:
             self.log.debug("No proxy profile defined.")
 
@@ -74,7 +78,6 @@ class CondorGrid(CondorBase):
         else:
             self.log.warning('no x509 proxy found. Be sure one is set in defaults.')
             
-
         super(CondorGrid, self)._addJSD()
     
         self.log.debug('CondorGrid.addJSD: Leaving.')
