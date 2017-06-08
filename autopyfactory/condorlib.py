@@ -38,10 +38,8 @@ import copy
 #############################################################################
 #              condor_history 
 #############################################################################
-
-
-def condorhistorylib(attributes=[], constraints=[]):
-    default_attributes = ['match_apf_queue', 'jobstatus', 'enteredcurrentstatus', 'remotewallclocktime']
+def condorhistorylib( attributes, constraints):
+    default_attributes=['match_apf_queue', 'jobstatus', 'enteredcurrentstatus', 'remotewallclocktime']
     for da in default_attributes:
         if da not in attributes:
             attributes.append(da)
@@ -150,22 +148,26 @@ def queryjobs(attributes, remotecollector=None, remoteschedd=None):
     :return: List of Dicts:        List of dictionaries of key/value ClassAd pairs              
     :rtype: List        
     '''
-    log = logging.getLogger('condorlib')
+    default_attributes = ['match_apf_queue', 'jobstatus', 'enteredcurrentstatus', 'remotewallclocktime']
+    for da in default_attributes:
+        if da not in attributes:
+            attributes.append(da)
+
     # Only do this if the calling code application has left the root logger without a handler. 
-    if len(log.parent.handlers) < 1:
-        logStream = logging.StreamHandler()
-        FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
-        formatter = logging.Formatter(FORMAT)
-        formatter.converter = time.gmtime  # to convert timestamps to UTC
-        logStream.setFormatter(formatter)
-        log.addHandler(logStream)
-        log.setLevel(logging.DEBUG)
+    #if len(log.parent.handlers) < 1:
+    #    logStream = logging.StreamHandler()
+    #    FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
+    #    formatter = logging.Formatter(FORMAT)
+    #    formatter.converter = time.gmtime  # to convert timestamps to UTC
+    #    logStream.setFormatter(formatter)
+    #    log.addHandler(logStream)
+    #    log.setLevel(logging.DEBUG)
 
     
-    log.debug("Starting with values attributes=%s, remotecollector=%s, remoteschedd=%s" %(attributes, remotecollector, remoteschedd))
+    logging.debug("Starting with values attributes=%s, remotecollector=%s, remoteschedd=%s" %(attributes, remotecollector, remoteschedd))
     if remotecollector:
         # FIXME: to be tested
-        log.debug("querying remote pool %s" %remotecollector)
+        logging.debug("querying remote pool %s" %remotecollector)
         collector = htcondor.Collector(remotecollector)
         scheddAd = collector.locate(htcondor.DaemonTypes.Schedd, remoteschedd)
         schedd = htcondor.Schedd(scheddAd) 
@@ -173,7 +175,7 @@ def queryjobs(attributes, remotecollector=None, remoteschedd=None):
         schedd = htcondor.Schedd() # Defaults to the local schedd.
 
     out = schedd.query('true', attributes)
-    log.debug(out)
+    logging.debug(out)
     return out
 
 
