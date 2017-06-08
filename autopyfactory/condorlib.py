@@ -49,8 +49,11 @@ def condorhistorylib( attributes, constraints):
 
 def _condorhistorylib( attributes, constraints):
     schedd = htcondor.Schedd()
-    condor_constraint_expr = " && ".join(constraints)
-    history = schedd.history(condor_constraint_expr, attributes, 0)
+    if len(constraints) > 1:
+        condor_constraint_expr = " && ".join(constraints)
+        history = schedd.history(condor_constraint_expr, attributes, 0)
+    else:
+        history = schedd.history( True , attributes, 0)
     history = list(history)
     return history
 
