@@ -65,7 +65,7 @@ class CondorBase(BatchSubmitInterface):
                                             for opt in qcl.options(self.apfqname) \
                                             if opt.startswith('batchsubmit.condorbase.condor_attributes.')]  # Note the . at the end of the pattern !!
 
-            self.baselogdir = self.fcl.generic_get('Factory', 'baseLogDir') 
+            self.baselogdir = os.path.expanduser(self.fcl.generic_get('Factory', 'baseLogDir')) 
             self.baselogdirurl = self.fcl.generic_get('Factory', 'baseLogDirUrl') 
 
            
