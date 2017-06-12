@@ -285,6 +285,7 @@ class AgisCEQueue(object):
         s = cp.write(sio)
         return sio.getvalue()
     
+    
     def getAPFConfig(self):
         """
         Returns ConfigParser object representing config
@@ -366,11 +367,11 @@ class AgisCEQueue(object):
         return s
 
 class Agis(ConfigInterface):
-    """
+    '''
     creates the configuration files with 
     information retrieved from AGIS
-    """
-
+    
+    '''
     def __init__(self, factory, config, section):
         """
         Top-level object for contacting, parsing, and providing APF configs from AGIS
@@ -382,10 +383,15 @@ class Agis(ConfigInterface):
 
         self.reconfig = self.config.generic_get('Factory', 'config.agis.reconfig', 'getboolean', default_value=True)
         # FIXME, is reconfig still needed???
-        self.allqueues = None
-        self.lastupdate = None
+        
+        self.currentconfig = None   # Contains Config from all queues in AGIS, with defaults if specified. 
+        self.currentinfo = None     # Contains latest info downloaded from AS  
+        self.lastinfoupdate = datetime.datetime(1999, 1, 1) # Datetime object of last info download and Config creation. 
+        self.lastconfigupdate = datetime.datetime(1999, 1, 1) # Datetime object of last info download and Config creation.  
+        self.stringconfig = None    # Contains String representation of current AGIS configs. 
+        
         self.baseurl = self.config.get('Factory', 'config.agis.baseurl')
-        self.sleep = self.config.get('Factory', 'config.agis.sleep')
+        self.sleep = int(self.config.get('Factory', 'config.agis.sleep'))
         self.jobsperpilot = 1.0
         self.numfactories = 1.0
         
@@ -446,138 +452,95 @@ class Agis(ConfigInterface):
                 self.activities = [ ac.strip().lower() for ac in self.config.get('Factory', 'config.agis.activities').split(',') ]
         except NoOptionError, noe:
             pass
-        
-        self.log.debug('ConfigPlugin: Object initialized. %s' % self)
+        self.log.info('ConfigPlugin: Object initialized. %s' % self)
 
 
     def _updateInfo(self):
         """
         Contact AGIS and update full queue info.
         """
-        try:
-            d = self._downloadJSON()
-            self.log.debug("Calling _handleJSON")
-            queues = self._handleJSON(d)
-            self.log.debug("AGIS provided list of %d total queues." % len(queues))
-            self.allqueues = queues
-            self.lastupdate =  datetime.datetime.now()
-        except Exception, e:
-                self.log.error('Failed to contact AGIS or parse problem: %s' %  traceback.format_exc() )
-                raise AgisFailureError("Unable to contact AGIS or parsing error.")                                                              
-                
+        
+        td = datetime.datetime.now() - self.lastinfoupdate
+        self.log.debug("Time delta is %s" %  td)
+        totalseconds = td.seconds + ( td.days * 24 * 3600)
+        self.log.debug("Totalseconds is %s seconds; sleep is %s seconds" % ( totalseconds, self.sleep))
+        if int(totalseconds) > int(self.sleep):
+            try:
+                d = self._downloadJSON()
+                self.log.debug("Calling _handleJSON")
+                queues = self._handleJSON(d)
+                self.log.debug("AGIS provided list of %d total queues." % len(queues))
+                self.currentinfo = queues
+                self.lastupdate =  datetime.datetime.now()
+            except Exception, e:
+                    self.log.error('Failed to contact AGIS or parse problem: %s' %  traceback.format_exc() )
+                    raise AgisFailureError("Unable to contact AGIS or parsing error.")                                                              
+        else:
+            self.log.debug("AGIS information up to date.")        
 
-
-# =======================================================
-# candidate code for a new getConfigString() method
-# to remove the functionality from getConfig()
-# =======================================================
 #
-#    def getConfigString(self, volist=None, cloudlist=None, activitylist=None, defaultsfiles=None):
-#
-#        if self.allqueues is None:
-#            self._updateInfo()
-#
-#        self._filter()
-#
-#        self.strconfig = '' 
-#
-#        for i in range(len(self.activities)):
-#            vo = self.vos[i]
-#            cloud = self.clouds[i]
-#            activity = self.activities[i]
-#            default = self.defaultsfiles[i]
-#    
-#            tmpfile = open(default)
-#            for line in tmpfile.readlines():
-#                self.strconfig += line
-#
-#            for q in self.allqueues:
-#                if q.vo_name == vo and\
-#                   q.cloud == cloud and\
-#                   q.type == activity:
-#                    for cq in q.ce_queues:
-#                        try:
-#                            qc = cq.getAPFConfig()
-#                            self.strconfig += "\n"
-#                            self.strconfig += qc.getContent()
-#                        except Exception, e:
-#                            self.log.error('Captured exception %s' %e) 
-#
-#        return self.strconfig
-#
-
 
     def getConfigString(self, volist=None, cloudlist=None, activitylist=None, defaultsfiles=None):
-        self.getConfig()
-        return self.strconfig
+        self._updateInfo()
+        self._createConfig()
+        return self.stringconfig
 
-    
+
     def getConfig(self):
-        """
+        '''
         Required for autopyfactory Config plugin interface. 
         Returns ConfigParser representing config
-        """
-        # FIXME
-        # this method does 2 things instead of just one:
-        #   -- creates the config object
-        #   -- creates the string representing it
-        # that breaks the Single Reponsability Rule.
-
-
-        ###if self.allqueues is None:
-        ###    self._updateInfo()
-        ###
-        ###td = datetime.datetime.now() - self.lastupdate
-        ####
-        ###totalseconds = td.seconds + ( td.days * 24 * 3600)
-        ###if totalseconds > self.sleep:
-        ###    self._updateInfo()
-
-        #if not self.allqueues:
-        #    self.log.debug('No available configuration. Returning None.')
-        #    return None
-
-        self.log.debug('Starting')
-
+        '''
         self._updateInfo()
-        self._filter()
-
-        ## create the config
-        cp = Config()
-        self.strconfig = '' 
-
-        for i in range(len(self.activities)):
-
-            tmpcp = Config()    
-
-            vo = self.vos[i]
-            cloud = self.clouds[i]
-            activity = self.activities[i]
-            default = self.defaultsfiles[i]
+        self._createConfig()
+        return self.currentconfig
             
-            if default is not None: 
-                tmpfile = open(default)
-                tmpcp.readfp(tmpfile)
-                tmpfile.seek(0) # to read the file over again
-                for line in tmpfile.readlines():
-                    self.strconfig += line
-
-            for q in self.allqueues:
-                if q.vo_name == vo and\
-                   q.cloud == cloud and\
-                   q.type == activity:
-                    for cq in q.ce_queues:
-                        try:
-                            qc = cq.getAPFConfig()
-                            tmpcp.merge(qc)
-                            # add content of Config object to the string representation
-                            self.strconfig += "\n"
-                            self.strconfig += qc.getContent()
-                        except Exception, e:
-                            self.log.error('Captured exception %s' %e) 
-            cp.merge(tmpcp)
-
-        return cp 
+    
+    def _createConfig(self):
+        '''
+        Creates and sets self.currentconfig and self.stringconfig as configured by files. 
+        
+        '''
+        td = datetime.datetime.now() - self.lastconfigupdate
+        totalseconds = td.seconds + ( td.days * 24 * 3600)
+        if totalseconds > self.sleep:
+            self.log.debug("Configs older than %s seconds. Re-creating..." % self.sleep)
+            self._filter()
+            cp = Config()
+            sc = ''   # New string config. 
+    
+            for i in range(len(self.activities)):
+                tmpcp = Config()    
+                vo = self.vos[i]
+                cloud = self.clouds[i]
+                activity = self.activities[i]
+                default = self.defaultsfiles[i]
+                
+                if default is not None: 
+                    tmpfile = open(default)
+                    tmpcp.readfp(tmpfile)
+                    tmpfile.seek(0) # to read the file over again
+                    for line in tmpfile.readlines():
+                        sc += line
+    
+                for q in self.currentinfo:
+                    if q.vo_name == vo and\
+                       q.cloud == cloud and\
+                       q.type == activity:
+                        for cq in q.ce_queues:
+                            try:
+                                qc = cq.getAPFConfig()
+                                tmpcp.merge(qc)
+                                # add content of Config object to the string representation
+                                sc += "\n"
+                                sc += qc.getContent()
+                            except Exception, e:
+                                self.log.error('Captured exception %s' %e) 
+                cp.merge(tmpcp)
+            self.currentconfig = cp
+            self.stringconfig = sc
+        else:
+            self.log.debug("Configs up to date.")
 
 
     def _filter(self):
@@ -595,18 +558,16 @@ class Agis(ConfigInterface):
         if self.activities is not None and len(self.activities) > 0:
             mypqfilter['type'] = self.activities
 
-        self.log.debug("Before filtering. allqueues has %d objects" % len(self.allqueues))
-        self.allqueues = self._filterobjs(self.allqueues, mypqfilter, PQFILTERNEGMAP)
-        self.log.debug("After filtering. allqueues has %d objects" % len(self.allqueues))
+        self.log.debug("Before filtering. allqueues has %d objects" % len(self.currentinfo))
+        self.currentinfo = self._filterobjs(self.currentinfo, mypqfilter, PQFILTERNEGMAP)
+        self.log.debug("After filtering. allqueues has %d objects" % len(self.currentinfo))
     
-        for q in self.allqueues:
+        for q in self.currentinfo:
             self.log.debug("Before filtering. ce_queues has %d objects" % len(q.ce_queues))
             q.ce_queues = self._filterobjs(q.ce_queues, CQFILTERREQMAP, CQFILTERNEGMAP )
             self.log.debug("After filtering. ce_queues has %d objects" % len(q.ce_queues))
 
-    
-
-
+  
     def getConfigWMSQueue(self, wmsqueue):
         """
         get the config sections only for a given wmsqueue
@@ -621,7 +582,6 @@ class Agis(ConfigInterface):
         return out 
 
 
-  
     def _filterobjs(self, objlist, reqdict=None, negdict=None):
         """
         Generic filtering method. 
@@ -686,6 +646,7 @@ class Agis(ConfigInterface):
         of.close()
         return d
 
+
     def _handleJSON(self, jsondoc):
         """
         Returns all PQ objects in list.  
@@ -703,6 +664,7 @@ class Agis(ConfigInterface):
                                                                                      ) )
         self.log.debug("Made list of %d PQ objects" % len(queues))
         return queues
+
     
     def __str__(self):
         s = 'Agis top-level object: '
@@ -714,9 +676,7 @@ class Agis(ConfigInterface):
         s += 'jobsperpilot=%s ' % self.jobsperpilot
         return s
         
-# -------------------------------------------------------------------
-#   For stand-alone usage
-# -------------------------------------------------------------------
+
 if __name__ == '__main__':
     import logging
     import getopt
@@ -880,13 +840,14 @@ if __name__ == '__main__':
     try:
         configstr = acp.getConfigString()
         if configstr is not None:    
-            log.debug("Got config string for writing to outfile %s" % outfile)
+            log.info("Got config string for writing to outfile %s" % outfile)
             outfile = os.path.expanduser(outfile)
             f = open(outfile, 'w')
             f.write(configstr)
             f.close()
             sys.exit(0)
         else:
+            log.warning("configstring is None")
             sys.exit(1)
     except Exception, e:
         log.error("Got exception during APF config generation: %s" % traceback.format_exc() )
