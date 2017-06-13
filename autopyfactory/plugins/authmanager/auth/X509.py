@@ -29,8 +29,12 @@ class X509(_thread):
     or retrieves suitable credential from MyProxy 
     """
     def __init__(self, manager, config, section):
-        _thread.__init__(self) 
-        manager.factory.threadsregistry.add("plugin", self)
+        _thread.__init__(self)
+        try: 
+            manager.factory.threadsregistry.add("plugin", self)
+        except AttributeError:
+            # Will happen if run standalone. Ignore...
+            pass
         self.log = logging.getLogger('autopyfactory.auth')
         self.name = section
         self.log.debug("[%s] Starting X509Handler init." % self.name)
