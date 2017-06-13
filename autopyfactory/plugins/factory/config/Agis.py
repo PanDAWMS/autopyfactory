@@ -133,17 +133,17 @@ class AgisPandaQueue(object):
         """
           Makes CEqueue objects, key is PQ name 
         """
-        self.log.debug("Handling cequeues for PQ %s" % self.panda_queue_name)
+        #self.log.debug("Handling cequeues for PQ %s" % self.panda_queue_name)
         cequeues = []
         for cedict in celist:
-            self.log.debug("Handling cedict %s" % cedict)
+            #self.log.debug("Handling cedict %s" % cedict)
             try:
                 cqo = AgisCEQueue( self, cedict)
                 cequeues.append( cqo)
             except Exception, e:
                 self.log.error('Failed to create AgisCEQueue for PQ %s and CE %s' % (self.panda_queue_name, cedict))
                 self.log.error("Exception: %s" % traceback.format_exc())
-        self.log.debug("Made list of %d CEQ objects" % len(cequeues))
+        #self.log.debug("Made list of %d CEQ objects" % len(cequeues))
         return cequeues    
     
     
