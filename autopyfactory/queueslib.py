@@ -723,7 +723,6 @@ class StaticAPFQueueJC(object):
                 self.authmanager = am
             
         self.factory = FactoryMock(fcl, authman)
-
         logging.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(self.apfqname).getContent())   
 
         try:
