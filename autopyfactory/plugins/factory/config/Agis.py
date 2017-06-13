@@ -592,25 +592,26 @@ class Agis(ConfigInterface):
         for ob in objlist:
             keep = True
             for attrstr in reqdict.keys():
-                self.log.debug("Checking object %s attribute %s for values in %s" % (type(ob), 
-                                                                    attrstr, 
-                                                                    reqdict[attrstr]))
+                #self.log.debug("Checking object %s attribute %s for values in %s" % (type(ob), 
+                #                                                    attrstr, 
+                #                                                    reqdict[attrstr]))
                 value = getattr(ob, attrstr)
-                self.log.debug("%s: Checking value %s for match..." % (ob, value))
+                #self.log.debug("%s: Checking value %s for match..." % (ob, value))
                 if getattr(ob, attrstr) not in reqdict[attrstr]:
                     self.log.debug("%s: %s does not contain any entries from %s. Setting to remove." % (ob, 
                                                                                attrstr, 
                                                                                reqdict[attrstr]))
                     keep = False
                 else:
-                    self.log.debug("%s: %s did contain a value from %s. Retaining..."  % (ob, 
-                                                                               attrstr, 
-                                                                               reqdict[attrstr]))                                    
+                    pass
+                    #self.log.debug("%s: %s did contain a value from %s. Retaining..."  % (ob, 
+                    #                                                           attrstr, 
+                    #                                                           reqdict[attrstr]))                                    
             if keep:
                 kept += 1
                 newobjlist.append(ob)
             else:
-                self.log.debug("Remove obj %s" % ob)
+                #self.log.debug("Remove obj %s" % ob)
                 #newobjlist.remove(ob)
                 filtered += 1
         self.log.debug("Keeping %d objects, filtered %d objects for required attribute values." % (kept, filtered))
@@ -654,7 +655,7 @@ class Agis(ConfigInterface):
         self.log.debug("handleJSON called for activities %s" % self.activities)
         queues = []
         for key in sorted(jsondoc):
-            self.log.debug("key = %s" % key)
+            #self.log.debug("key = %s" % key)
             try:
                 qo = AgisPandaQueue(self, jsondoc, key)
                 queues.append(qo)
