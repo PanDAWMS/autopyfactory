@@ -688,7 +688,7 @@ class StaticAPFQueue(object):
                  
 class StaticAPFQueueJC(object):
     
-    def __init__(self, config):
+    def __init__(self, config, authman=None):
 
         #self.log = logging.getLogger('%s' % config.sections()[0])
         self.qcl = config
@@ -713,16 +713,16 @@ class StaticAPFQueueJC(object):
 
         from autopyfactory.threadsmanagement import ThreadsRegistry
         class FactoryMock(object):
-            def __init__(self, fcl):
+            
+            def __init__(self, fcl, am):
                 self.fcl = fcl 
                 self.mcl = Config()
                 self.mcl.add_section('MockMonitor')
                 self.mcl.set('MockMonitor','monitorURL','')
                 self.threadsregistry = ThreadsRegistry()
-                self.authmanager = None
-                
-
-        self.factory = FactoryMock(fcl)
+                self.authmanager = am
+            
+        self.factory = FactoryMock(fcl, authman)
 
         logging.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(self.apfqname).getContent())   
 
