@@ -719,6 +719,8 @@ class StaticAPFQueueJC(object):
                 self.mcl.add_section('MockMonitor')
                 self.mcl.set('MockMonitor','monitorURL','')
                 self.threadsregistry = ThreadsRegistry()
+                self.authmanager = None
+                
 
         self.factory = FactoryMock(fcl)
 
