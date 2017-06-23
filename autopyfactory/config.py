@@ -1,26 +1,7 @@
 #! /usr/bin/env python
 
-import datetime
 import logging
 import logging.handlers
-import threading
-import time
-import traceback
-import os
-import platform
-import pwd
-import smtplib
-import socket
-import sys
-
-from pprint import pprint
-from optparse import OptionParser
-from ConfigParser import ConfigParser
-
-try:
-    from email.mime.text import MIMEText
-except:
-    from email.MIMEText import MIMEText
 
 
 # FIXME: many of these import are not needed. They are legacy...
@@ -34,16 +15,29 @@ from autopyfactory.interfaces import _thread
 
 
 class Reconfig(_thread):
+# FIXME !! Horrible name for a class !!
 
     def __init__(self, factory):
 
         _thread.__init__(self)
-        factory.threadsregistry.add("core", self)
-        self._thread_loop_interval = factory.fcl.generic_get('Factory','config.interval', 'getint', default_value=3600)
         self.factory = factory
 
-    def _run(self):
 
+    def setconfig(self):
+        if self.factory.fcl.generic_get('Factory', 'reconfig', 'getboolean', default_value=True):
+            self._startthread()
+        else:
+            # at least set configuration once
+            self._run()
+
+
+    def _startthread(self):
+        self.factory.threadsregistry.add("core", self)
+        self._thread_loop_interval = self.factory.fcl.generic_get('Factory','config.interval', 'getint', default_value=3600)
+        self.start()
+
+
+    def _run(self):
         newqcl = self.getConfig()
         self.factory.apfqueuesmanager.reconfig(newqcl)
 

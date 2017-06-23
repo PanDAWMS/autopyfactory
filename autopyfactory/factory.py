@@ -597,13 +597,13 @@ class Factory(object):
         # first call to reconfig() to load initial qcl configuration
         ###self.reconfig()
         
-        if self.fcl.generic_get('Factory', 'reconfig', 'getboolean', default_value=True):
-            ### BEGIN TEST ###
+        ### BEGIN TEST ###
+        #if self.fcl.generic_get('Factory', 'reconfig', 'getboolean', default_value=True):
             #self.apfqueuesmanager.start() # starts the thread
-            from autopyfactory.config import Reconfig
-            reconfig = Reconfig(self)
-            reconfig.start()
-            ### END TEST ###
+        from autopyfactory.config import Reconfig
+        reconfig = Reconfig(self)
+        reconfig.setconfig()
+        ### END TEST ###
         self._cleanlogs()
         
         try:
