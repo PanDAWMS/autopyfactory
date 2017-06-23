@@ -34,8 +34,8 @@ class JSDFile(object):
             formatter = logging.Formatter(FORMAT)
             formatter.converter = time.gmtime  # to convert timestamps to UTC
             logStream.setFormatter(formatter)
-            log.addHandler(logStream)
-            log.setLevel(logging.DEBUG)
+            self.log.addHandler(logStream)
+            self.log.setLevel(logging.DEBUG)
         self.lines = []
         self.log.debug('JSDFile: Object initialized.')
 
