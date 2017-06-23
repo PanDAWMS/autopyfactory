@@ -598,7 +598,12 @@ class Factory(object):
         ###self.reconfig()
         
         if self.fcl.generic_get('Factory', 'reconfig', 'getboolean', default_value=True):
-            self.apfqueuesmanager.start() # starts the thread
+            ### BEGIN TEST ###
+            #self.apfqueuesmanager.start() # starts the thread
+            from autopyfactory.config import Reconfig
+            reconfig = Reconfig(self)
+            reconfig.start()
+            ### END TEST ###
         self._cleanlogs()
         
         try:
