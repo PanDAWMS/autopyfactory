@@ -14,7 +14,7 @@ from autopyfactory.pluginmanager import PluginManager
 from autopyfactory.interfaces import _thread
 
 
-class Reconfig(_thread):
+class CconfigHandler(_thread):
 # FIXME !! Horrible name for a class !!
 
     def __init__(self, factory):

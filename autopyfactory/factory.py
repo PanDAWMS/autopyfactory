@@ -600,9 +600,9 @@ class Factory(object):
         ### BEGIN TEST ###
         #if self.fcl.generic_get('Factory', 'reconfig', 'getboolean', default_value=True):
             #self.apfqueuesmanager.start() # starts the thread
-        from autopyfactory.config import Reconfig
-        reconfig = Reconfig(self)
-        reconfig.setconfig()
+        from autopyfactory.config import ConfigHandler
+        confighandler = ConfigHandler(self)
+        confighandler.setconfig()
         ### END TEST ###
         self._cleanlogs()
         
