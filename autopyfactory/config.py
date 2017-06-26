@@ -25,6 +25,8 @@ class CconfigHandler(_thread):
 
 
     def setconfig(self):
+        # FIXME
+        # ??? is this the right logic ???
         if self.thread_reconfig or self.auth_reconfig:
             self._startthread()
         else:
