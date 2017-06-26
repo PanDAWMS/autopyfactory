@@ -16,9 +16,6 @@ class File(ConfigInterface):
         self.factory = factory
         self.fcl = config
         self.qcl = None
-        self.reconfig = self.fcl.generic_get('Factory', 'config.file.reconfig', 'getboolean', default_value=True)
-        # FIXME, is reconfig still needed???
-    
         self.log.info('ConfigPlugin: Object initialized.')
 
 

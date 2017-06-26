@@ -20,14 +20,14 @@ class CconfigHandler(_thread):
 
         _thread.__init__(self)
         self.factory = factory
-        self.thread_reconfig = factory.fcl.generic_get('Factory', 'thread_reconfig', 'getboolean', default_value=True):
-        self.auth_reconfig = factory.fcl.generic_get('Factory', 'auth_reconfig', 'getboolean', default_value=True):
+        self.reconfig = factory.fcl.generic_get('Factory', 'reconfig', 'getboolean', default_value=True)
+        self.log = logging.getLogger('autopyfactory.confighandler')
 
 
     def setconfig(self):
-        # FIXME
-        # ??? is this the right logic ???
-        if self.thread_reconfig or self.auth_reconfig:
+        # NOTE:
+        # for now, we reconfig both or none
+        if self.reconfig:
             self._startthread()
         else:
             # at least set configuration once
@@ -36,15 +36,22 @@ class CconfigHandler(_thread):
 
     def _startthread(self):
         self.factory.threadsregistry.add("core", self)
-        self._thread_loop_interval = self.factory.fcl.generic_get('Factory','config.interval', 'getint', default_value=3600)
+        self._thread_loop_interval = self.factory.fcl.generic_get('Factory','reconfig.interval', 'getint', default_value=3600)
         self.start()
 
 
     def _run(self):
         # order matters here: 
         # first reconfig AuthManager, then APFQueuesManager
-        self._run_auth()
-        self._run_thread()
+        try:
+            self._run_auth()
+        except:
+            self.log.error('seting configuration for AuthManager failed. Will not proceed with threads configuration.')
+            return
+        try:
+            self._run_queues()
+        except:
+            self.log.error('seting configuration for queues failed.')
 
 
     # NOTE
@@ -56,7 +63,7 @@ class CconfigHandler(_thread):
         self.factory.authmanager.reconfig(newconfig)
 
 
-    def _run_thread(self):
+    def _run_queues(self):
         newconfig = self.getQueuesConfig()
         self.factory.apfqueuesmanager.reconfig(newconfig)
 
