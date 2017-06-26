@@ -15,16 +15,17 @@ from autopyfactory.interfaces import _thread
 
 
 class CconfigHandler(_thread):
-# FIXME !! Horrible name for a class !!
 
     def __init__(self, factory):
 
         _thread.__init__(self)
         self.factory = factory
+        self.thread_reconfig = factory.fcl.generic_get('Factory', 'thread_reconfig', 'getboolean', default_value=True):
+        self.auth_reconfig = factory.fcl.generic_get('Factory', 'auth_reconfig', 'getboolean', default_value=True):
 
 
     def setconfig(self):
-        if self.factory.fcl.generic_get('Factory', 'reconfig', 'getboolean', default_value=True):
+        if self.thread_reconfig or self.auth_reconfig:
             self._startthread()
         else:
             # at least set configuration once
@@ -38,19 +39,43 @@ class CconfigHandler(_thread):
 
 
     def _run(self):
-        newqcl = self.getConfig()
-        self.factory.apfqueuesmanager.reconfig(newqcl)
+        # order matters here: 
+        # first reconfig AuthManager, then APFQueuesManager
+        self._run_auth()
+        self._run_thread()
 
 
-    def getConfig(self):
+    # NOTE
+    # code is duplicated for methods _run_XYZ() and getXYZConfig()
+    # but for now is OK
+
+    def _run_auth(self):
+        newconfig = self.getAuthConfig()
+        self.factory.authmanager.reconfig(newconfig)
+
+
+    def _run_thread(self):
+        newconfig = self.getQueuesConfig()
+        self.factory.apfqueuesmanager.reconfig(newconfig)
+
+
+    def getAuthConfig(self):
         """
-        get updated configuration from the Factory Config plugins
+        get updated configuration from the Factory Config/Auth plugins
         """
+        newconfig = Config()
+        for config_plugin in self.factory.auth_config_plugins:
+            tmpconfig = config_plugin.getConfig()
+            newconfig.merge(tmpconfig)
+        return newconfig
 
-        newqcl = Config()
-        for config_plugin in self.factory.config_plugins:
-            tmpqcl = config_plugin.getConfig()
-            newqcl.merge(tmpqcl)
-        return newqcl
 
-
+    def getQueuesConfig(self):
+        """
+        get updated configuration from the Factory Config/Queues plugins
+        """
+        newconfig = Config()
+        for config_plugin in self.factory.queues_config_plugins:
+            tmpconfig = config_plugin.getConfig()
+            newconfig.merge(tmpconfig)
+        return newconfig
