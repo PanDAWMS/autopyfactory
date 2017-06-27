@@ -519,11 +519,11 @@ class Factory(object):
     def _plugins(self):
         self.pluginmgr = PluginManager()
 
-        queuesconfigpluginnames =  self.fcl.get('Factory', 'queuesconfigplugin')
+        queuesconfigpluginnames =  self.fcl.generic_get('Factory', 'config.queues.plugin', default_value='File')
         queuesconfigpluginnameslist = [i.strip() for i in queuesconfigpluginnames.split(',')]
         self.queues_config_plugins = self.pluginmgr.getpluginlist(self, ['autopyfactory', 'plugins', 'factory', 'config', 'queues'], queuesconfigpluginnameslist,  self.fcl, 'Factory')
 
-        authconfigpluginnames =  self.fcl.get('Factory', 'authconfigplugin')
+        authconfigpluginnames =  self.fcl.generic_get('Factory', 'config.auth.plugin', default_value='File')
         authconfigpluginnameslist = [i.strip() for i in authconfigpluginnames.split(',')]
         self.auth_config_plugins = self.pluginmgr.getpluginlist(self, ['autopyfactory', 'plugins', 'factory', 'config', 'auth'], authconfigpluginnameslist,  self.fcl, 'Factory')
 
