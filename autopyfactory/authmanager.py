@@ -45,7 +45,6 @@ class AuthManager(object):
         else:
             self.sleep = 5
 
-        self.log.debug("Completed creation of %d auth handlers." % len(self.handlers))
 
 
     def reconfig(self, aconfig):
@@ -71,16 +70,16 @@ class AuthManager(object):
                 authpluginname = aconfig.get(sect, 'plugin') 
                 x509h = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'authmanager', 'auth'], authpluginname, aconfig, sect)
                 self.handlers.append(x509h)
-            
             elif pclass == 'SSH':
                 self.log.debug("Creating SSH handler for %s" % sect )
                 ###sshh = pluginmanager.getplugin(self, 'authmanager', 'auth', aconfig, sect, 'plugin')
                 authpluginname = aconfig.get(sect, 'plugin') 
                 sshh = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'authmanager', 'auth'], authpluginname, aconfig, sect)
                 self.handlers.append(sshh)
-                            
             else:
                 self.log.warn("Unrecognized auth plugin %s" % pclass )
+
+        self.log.debug("Completed creation of %d auth handlers." % len(self.handlers))
 
         
     def startHandlers(self):
