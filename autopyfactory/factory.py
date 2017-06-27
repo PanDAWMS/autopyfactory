@@ -40,15 +40,13 @@ except:
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
 from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailure
 from autopyfactory.apfexceptions import ThreadRegistryInvalidKind
+from autopyfactory.authmanager import AuthManager
 from autopyfactory.cleanlogs import CleanLogs
+from autopyfactory.config import ConfigHandler
 from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.logserver import LogServer
-#from autopyfactory.pluginsmanagement import QueuePluginDispatcher
-#from autopyfactory.pluginsmanagement import FactoryPluginDispatcher
-###from autopyfactory.plugin import PluginManager
 from autopyfactory.pluginmanager import PluginManager
 from autopyfactory.queues import APFQueuesManager
-from autopyfactory.authmanager import AuthManager
 from autopyfactory.threadsmanagement import ThreadsRegistry
 
 major, minor, release, st, num = sys.version_info
@@ -601,7 +599,6 @@ class Factory(object):
         ### BEGIN TEST ###
         #if self.fcl.generic_get('Factory', 'reconfig', 'getboolean', default_value=True):
             #self.apfqueuesmanager.start() # starts the thread
-        from autopyfactory.config import ConfigHandler
         confighandler = ConfigHandler(self)
         confighandler.setconfig()
         ### END TEST ###
