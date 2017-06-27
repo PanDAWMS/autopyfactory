@@ -20,7 +20,7 @@ class CconfigHandler(_thread):
 
         _thread.__init__(self)
         self.factory = factory
-        self.reconfig = factory.fcl.generic_get('Factory', 'reconfig', 'getboolean', default_value=True)
+        self.reconfig = factory.fcl.generic_get('Factory', 'config.reconfig', 'getboolean', default_value=False)
         self.log = logging.getLogger('autopyfactory.confighandler')
 
 
@@ -36,7 +36,7 @@ class CconfigHandler(_thread):
 
     def _startthread(self):
         self.factory.threadsregistry.add("core", self)
-        self._thread_loop_interval = self.factory.fcl.generic_get('Factory','reconfig.interval', 'getint', default_value=3600)
+        self._thread_loop_interval = self.factory.fcl.generic_get('Factory','config.reconfig.interval', 'getint', default_value=3600)
         self.start()
 
 
