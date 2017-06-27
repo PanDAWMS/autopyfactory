@@ -387,8 +387,8 @@ class Agis(ConfigInterface):
         self.lastconfigupdate = datetime.datetime(1999, 1, 1) # Datetime object of last info download and Config creation.  
         self.stringconfig = None    # Contains String representation of current AGIS configs. 
         
-        self.baseurl = self.config.get('Factory', 'queuesconfig.agis.baseurl')
-        self.sleep = int(self.config.get('Factory', 'queuesconfig.agis.sleep'))
+        self.baseurl = self.config.get('Factory', 'config.queues.agis.baseurl')
+        self.sleep = int(self.config.get('Factory', 'config.queues.agis.sleep'))
         self.jobsperpilot = 1.0
         self.numfactories = 1.0
         
@@ -398,23 +398,23 @@ class Agis(ConfigInterface):
         self.activities = None
         self.defaultsfiles = None
         try:
-            self.jobsperpilot = self.config.getfloat('Factory', 'queuesconfig.agis.jobsperpilot')
+            self.jobsperpilot = self.config.getfloat('Factory', 'config.queues.agis.jobsperpilot')
         except NoOptionError, noe:
             pass
         
         try:
-            self.numfactories = self.config.getfloat('Factory', 'queuesconfig.agis.numfactories')
+            self.numfactories = self.config.getfloat('Factory', 'config.queues.agis.numfactories')
         except NoOptionError, noe:
             pass
         
         # For defaultsfiles, None means no defaults included in config. Only explicit values returned. 
         try:         
-            defaultsfiles = self.config.get('Factory', 'queuesconfig.agis.defaultsfiles')
+            defaultsfiles = self.config.get('Factory', 'config.queues.agis.defaultsfiles')
             if defaultsfiles.strip().lower() == 'none':
                 self.defaultsfiles = None
             else:
                 self.defaultsfiles = []
-                for default in self.config.get('Factory', 'queuesconfig.agis.defaultsfiles').split(','):
+                for default in self.config.get('Factory', 'config.queues.agis.defaultsfiles').split(','):
                     default = os.path.expanduser(default.strip())
                     if default == "None":
                         default = None
@@ -423,30 +423,30 @@ class Agis(ConfigInterface):
             pass
         
         try:
-            vostr = self.config.get('Factory', 'queuesconfig.agis.vos')
+            vostr = self.config.get('Factory', 'config.queues.agis.vos')
             if vostr.strip().lower() == 'none':
                 self.vos = None
             else:
-                #print("self.vos = %s" % [ vo.strip().lower() for vo in self.config.get('Factory', 'queuesconfig.agis.vos').split(',') ])
-                self.vos = [ vo.strip().lower() for vo in self.config.get('Factory', 'queuesconfig.agis.vos').split(',') ]    
+                #print("self.vos = %s" % [ vo.strip().lower() for vo in self.config.get('Factory', 'config.queues.agis.vos').split(',') ])
+                self.vos = [ vo.strip().lower() for vo in self.config.get('Factory', 'config.queues.agis.vos').split(',') ]    
         except NoOptionError, noe:
             pass
         
         try:
-            cldstr = self.config.get('Factory', 'queuesconfig.agis.clouds')
+            cldstr = self.config.get('Factory', 'config.queues.agis.clouds')
             if cldstr.strip().lower() == 'none':
                 self.clouds = None
             else:
-                self.clouds = [ cl.strip().lower() for cl in self.config.get('Factory', 'queuesconfig.agis.clouds').split(',') ]
+                self.clouds = [ cl.strip().lower() for cl in self.config.get('Factory', 'config.queues.agis.clouds').split(',') ]
         except NoOptionError, noe:
             pass
         
         try:
-            actstr = self.config.get('Factory', 'queuesconfig.agis.activities')
+            actstr = self.config.get('Factory', 'config.queues.agis.activities')
             if actstr.strip().lower() == 'none':
                 self.activities = None
             else:
-                self.activities = [ ac.strip().lower() for ac in self.config.get('Factory', 'queuesconfig.agis.activities').split(',') ]
+                self.activities = [ ac.strip().lower() for ac in self.config.get('Factory', 'config.queues.agis.activities').split(',') ]
         except NoOptionError, noe:
             pass
         self.log.info('ConfigPlugin: Object initialized. %s' % self)
@@ -802,31 +802,31 @@ if __name__ == '__main__':
         fconfig.add_section('Factory')
 
         # Set unconditional defaults
-        fconfig.set('Factory', 'queuesconfig.agis.baseurl', 'http://atlas-agis-api.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'   )
-        fconfig.set('Factory', 'queuesconfig.agis.sleep', '3600'  )
-        fconfig.set('Factory', 'queuesconfig.agis.jobsperpilot', '1.5' )
-        fconfig.set('Factory', 'queuesconfig.agis.numfactories', '4')
+        fconfig.set('Factory', 'config.queues.agis.baseurl', 'http://atlas-agis-api.cern.ch/request/pandaqueue/query/list/?json&preset=schedconf.all'   )
+        fconfig.set('Factory', 'config.queues.agis.sleep', '3600'  )
+        fconfig.set('Factory', 'config.queues.agis.jobsperpilot', '1.5' )
+        fconfig.set('Factory', 'config.queues.agis.numfactories', '4')
         
         """
-        queuesconfig.agis.vos = atlas
-        queuesconfig.agis.clouds = US
-        queuesconfig.agis.activities = analysis,production
-        queuesconfig.agis.defaultsfiles = /etc/autopyfactory/agisdefaults.conf
+        config.queues.agis.vos = atlas
+        config.queues.agis.clouds = US
+        config.queues.agis.activities = analysis,production
+        config.queues.agis.defaultsfiles = /etc/autopyfactory/agisdefaults.conf
         """
 
     # Override defaults with command line values, if given    
     if vo is not None:
-        fconfig.set('Factory', 'queuesconfig.agis.vos', vo)
+        fconfig.set('Factory', 'config.queues.agis.vos', vo)
     if cloud is not None:
-        fconfig.set('Factory', 'queuesconfig.agis.clouds', cloud)
+        fconfig.set('Factory', 'config.queues.agis.clouds', cloud)
     if activity is not None:
-        fconfig.set('Factory', 'queuesconfig.agis.activities', activity)
+        fconfig.set('Factory', 'config.queues.agis.activities', activity)
     if defaultsfiles is not None:
-        fconfig.set('Factory', 'queuesconfig.agis.defaultsfiles', defaultsfiles)
+        fconfig.set('Factory', 'config.queues.agis.defaultsfiles', defaultsfiles)
     if jobsperpilot is not None:
-        fconfig.set('Factory', 'queuesconfig.agis.jobsperpilot', str(jobsperpilot))
+        fconfig.set('Factory', 'config.queues.agis.jobsperpilot', str(jobsperpilot))
     if numfactories is not None:
-        fconfig.set('Factory', 'queuesconfig.agis.numfactories', str(numfactories))
+        fconfig.set('Factory', 'config.queues.agis.numfactories', str(numfactories))
  
     #parent class Mock
     class Factory:
