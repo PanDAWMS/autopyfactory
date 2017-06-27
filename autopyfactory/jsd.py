@@ -27,7 +27,7 @@ class JSDFile(object):
 
     def __init__(self):
 
-        self.log = logging.getLogger('autoopyfactory.jsdfile')
+        self.log = logging.getLogger('autopyfactory.jsdfile')
         if len(self.log.parent.handlers) < 1:
             logStream = logging.StreamHandler()
             FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
