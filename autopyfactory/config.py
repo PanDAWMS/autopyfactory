@@ -14,7 +14,7 @@ from autopyfactory.pluginmanager import PluginManager
 from autopyfactory.interfaces import _thread
 
 
-class CconfigHandler(_thread):
+class ConfigHandler(_thread):
 
     def __init__(self, factory):
 

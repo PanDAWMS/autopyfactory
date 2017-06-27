@@ -79,6 +79,7 @@ class AuthManager(object):
             else:
                 self.log.warn("Unrecognized auth plugin %s" % pclass )
 
+        self.startHandlers()
         self.log.debug("Completed creation of %d auth handlers." % len(self.handlers))
 
         
@@ -257,6 +258,7 @@ if __name__ == '__main__':
     log.debug("Read config file %s, return value: %s" % (aconfig_file, got_config))
     
     am = AuthManager(aconfig)
+    am.reconfig(aconfig)
     log.info("Authmanager created. Starting handlers...")
     am.startHandlers()
     #am.start()
