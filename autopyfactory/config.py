@@ -61,11 +61,14 @@ class ConfigHandler(_thread):
     def _run_auth(self):
         newconfig = self.getAuthConfig()
         self.factory.authmanager.reconfig(newconfig)
+        self.factory.authmanager.startHandlers()
+        self.log.debug("Completed creation of %d auth handlers." % len(self.factory.authmanager.handlers))
 
 
     def _run_queues(self):
         newconfig = self.getQueuesConfig()
         self.factory.apfqueuesmanager.reconfig(newconfig)
+        self.factory.apfqueuesmanager.startAPFQueues() #starts all threads
 
 
     def getAuthConfig(self):

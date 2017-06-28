@@ -109,9 +109,6 @@ class APFQueuesManager(_thread):
         self._delqueues(qcldiff['MODIFIED'])
         self._addqueues(qcldiff['MODIFIED'])
 
-        self.log.debug("Starting all queues.")
-        self.startAPFQueues() #starts all threads
-        
         self._dumpqcl()
 
 
