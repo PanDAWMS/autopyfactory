@@ -94,20 +94,27 @@ class APFQueuesManager(_thread):
                 2. stops and deletes old queues if needed
         """
         self.log.debug("Performing queue update...")
-        qcldiff = self.factory.qcl.compare(newqcl)
-        #qcldiff is a dictionary like this
-        #    {'REMOVED': [ <list of removed queues> ],
-        #     'ADDED':   [ <list of new queues> ],
-        #     'EQUAL':   [ <list of queues that did not change> ],
-        #     'MODIFIED':[ <list of queues that changed> ] 
-        #    }
+        ###qcldiff = self.factory.qcl.compare(newqcl)
+        ####qcldiff is a dictionary like this
+        ####    {'REMOVED': [ <list of removed queues> ],
+        ####     'ADDED':   [ <list of new queues> ],
+        ####     'EQUAL':   [ <list of queues that did not change> ],
+        ####     'MODIFIED':[ <list of queues that changed> ] 
+        ####    }
+        ####
+        ###self.factory.qcl = newqcl
+        ####
+        ###self._delqueues(qcldiff['REMOVED'])
+        ###self._addqueues(qcldiff['ADDED'])
+        ###self._delqueues(qcldiff['MODIFIED'])
+        ###self._addqueues(qcldiff['MODIFIED'])
 
+        qcldiff = APFQueuesConfigsDiff(self.factory.qcl, newqcl)
         self.factory.qcl = newqcl
-
-        self._delqueues(qcldiff['REMOVED'])
-        self._addqueues(qcldiff['ADDED'])
-        self._delqueues(qcldiff['MODIFIED'])
-        self._addqueues(qcldiff['MODIFIED'])
+        self._delqueues(qcldiff.gonequeues())
+        self._addqueues(qcldiff.newqueues())
+        self._delqueues(qcldiff.modifiedqueues())
+        self._addqueues(qcldiff.modifiedqueues())
 
         self._dumpqcl()
 
@@ -499,6 +506,30 @@ class APFQueue(_thread):
     # End of run-related methods
 
                  
+class APFQueuesConfigsDiff(object):
+    """
+    little class to manage the differences between 2 queues config loaders
+    """
 
+    def __init__(self, oldqcl, newqcl):
+        """
+        oldqcl = old queues config loader
+        newqcl = new queues config loader
+        """
 
+        self.diff = oldqcl.compare(newqcl)
+        #self.diff is a dictionary like this
+        #    {'REMOVED': [ <list of removed queues> ],
+        #     'ADDED':   [ <list of new queues> ],
+        #     'EQUAL':   [ <list of queues that did not change> ],
+        #     'MODIFIED':[ <list of queues that changed> ] 
+        #    }
 
+    def gonequeues(self):
+        return self.diff['REMOVED']
+
+    def newqueues(self):
+        return self.diff['ADDED']
+
+    def modifiedqueues(self):
+        return self.diff['MODIFIED']
