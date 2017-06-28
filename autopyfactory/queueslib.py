@@ -711,18 +711,22 @@ class StaticAPFQueueJC(object):
         okread = fcl.read(fconf)
         logging.debug("Successfully read %s " % okread)
 
-        from autopyfactory.threadsmanagement import ThreadsRegistry
-        class FactoryMock(object):
-            
-            def __init__(self, fcl, am):
-                self.fcl = fcl 
-                self.mcl = Config()
-                self.mcl.add_section('MockMonitor')
-                self.mcl.set('MockMonitor','monitorURL','')
-                self.threadsregistry = ThreadsRegistry()
-                self.authmanager = am
-            
-        self.factory = FactoryMock(fcl, authman)
+        ####from autopyfactory.threadsmanagement import ThreadsRegistry
+        ####class FactoryMock(object):
+        ####    
+        ####    def __init__(self, fcl, am):
+        ####        self.fcl = fcl 
+        ####        self.mcl = Config()
+        ####        self.mcl.add_section('MockMonitor')
+        ####        self.mcl.set('MockMonitor','monitorURL','')
+        ####        self.threadsregistry = ThreadsRegistry()
+        ####        self.authmanager = am
+        ####    
+        ####self.factory = FactoryMock(fcl, authman)
+        from autopyfactory.factory import Factory
+        self.factory = Factory.getFactoryMock(fcl, authman)
+
+
         logging.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(self.apfqname).getContent())   
 
         try:

@@ -399,6 +399,29 @@ class Factory(object):
     -----------------------------------------------------------------------
     """
 
+    @staticmethod
+    def getFactoryMock(fcl, am):
+        """
+        creates and returns a Mock class for Factory
+        A Factory Mock only needs the factory config loader (fcl)
+        the authmanager (am), the ThreadsRegistry, and a faked monitor config loader (mcl)
+        """
+
+        from autopyfactory.threadsmanagement import ThreadsRegistry
+
+        class FactoryMock(object):
+            def __init__(self, fcl, am):
+                self.fcl = fcl
+                self.mcl = Config()
+                self.mcl.add_section('MockMonitor')
+                self.mcl.set('MockMonitor','monitorURL','')
+                self.threadsregistry = ThreadsRegistry()
+                self.authmanager = am
+
+        return FactoryMock(fcl, am)
+
+
+
     def __init__(self, fcl):
         """
         fcl is a FactoryConfigLoader object. 
