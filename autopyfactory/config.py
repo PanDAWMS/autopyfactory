@@ -19,9 +19,13 @@ class ConfigHandler(_thread):
     def __init__(self, factory):
 
         _thread.__init__(self)
+        self.log = logging.getLogger('autopyfactory.confighandler')
+
         self.factory = factory
         self.reconfig = factory.fcl.generic_get('Factory', 'config.reconfig', 'getboolean', default_value=False)
-        self.log = logging.getLogger('autopyfactory.confighandler')
+        self.interval = None
+        if self.reconfig:
+            self.interval = factory.fcl.generic_get('Factory','config.reconfig.interval', 'getint', default_value=3600) 
 
 
     def setconfig(self):
@@ -36,7 +40,7 @@ class ConfigHandler(_thread):
 
     def _startthread(self):
         self.factory.threadsregistry.add("core", self)
-        self._thread_loop_interval = self.factory.fcl.generic_get('Factory','config.reconfig.interval', 'getint', default_value=3600)
+        self._thread_loop_interval = self.interval
         self.start()
 
 
