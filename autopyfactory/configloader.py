@@ -584,3 +584,30 @@ class ConfigManager(object):
         return config
 
  
+
+class ConfigsDiff(object):
+    """
+    Little class to manage the differences between 2 config loaders.
+    This class can be overriden to implement specific features, 
+    depending on the context and meaning of the Config objects content. 
+    """
+
+    def __init__(self, first, second):
+        """
+        first and second are 2 Config() objects
+        """
+        self.diff = first.compare(second)
+
+    def added(self):
+        return self.diff['ADDED']
+
+    def removed(self):
+        return self.diff['REMOVED']
+
+    def modified(self):
+        return self.diff['MODIFIED']
+
+    def unmodified(self):
+        return self.diff['EQUAL']
+
+

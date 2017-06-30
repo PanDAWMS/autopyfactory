@@ -39,7 +39,7 @@ except:
 # FIXME: many of these import are not needed. They are legacy...
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
 from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailure
-from autopyfactory.configloader import Config, ConfigManager
+from autopyfactory.configloader import Config, ConfigManager, ConfigsDiff
 from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
 ###from autopyfactory.pluginsmanagement import QueuePluginDispatcher
@@ -505,31 +505,18 @@ class APFQueue(_thread):
 
     # End of run-related methods
 
-                 
-class APFQueuesConfigsDiff(object):
+
+class APFQueuesConfigsDiff(ConfigsDiff):
     """
     little class to manage the differences between 2 queues config loaders
     """
 
-    def __init__(self, oldqcl, newqcl):
-        """
-        oldqcl = old queues config loader
-        newqcl = new queues config loader
-        """
-
-        self.diff = oldqcl.compare(newqcl)
-        #self.diff is a dictionary like this
-        #    {'REMOVED': [ <list of removed queues> ],
-        #     'ADDED':   [ <list of new queues> ],
-        #     'EQUAL':   [ <list of queues that did not change> ],
-        #     'MODIFIED':[ <list of queues that changed> ] 
-        #    }
-
     def gonequeues(self):
-        return self.diff['REMOVED']
+        return self.removed()
 
     def newqueues(self):
-        return self.diff['ADDED']
+        return self.added()
 
     def modifiedqueues(self):
-        return self.diff['MODIFIED']
+        return self.modified()
+
