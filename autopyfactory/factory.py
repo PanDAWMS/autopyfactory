@@ -488,7 +488,7 @@ class Factory(object):
 
             acf = self.fcl.get('Factory','authConf')
             self.log.debug("auth.conf file(s) = %s" % acf)
-            acl = ConfigParser()
+            acl = Config()
 
             try:
             
