@@ -19,7 +19,7 @@ except ImportError:
 class VC3(ConfigInterface):
     def __init__(self, factory, config, section):
 
-        self.log = logging.getLogger("main.configplugin")
+        self.log = logging.getLogger("autopyfactory.configplugin")
         self.factory = factory
         self.fcl = factory.fcl
         self.log.info('ConfigPlugin: Object initialized.')

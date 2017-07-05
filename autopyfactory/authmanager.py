@@ -39,21 +39,26 @@ class AuthManager(object):
         self.log.info("Creating new authmanager...")
         self.aconfig = aconfig
         self.factory = factory
-        self.handlers = []
 
         if factory:
             self.sleep = int(self.factory.fcl.get('Factory', 'authmanager.sleep'))
         else:
             self.sleep = 5
-        
-        for sect in self.aconfig.sections():
+
+
+
+    def reconfig(self, aconfig):
+
+        self.handlers = []
+
+        for sect in aconfig.sections():
             c = "\n[%s] \n" % sect
-            for o in self.aconfig.options(sect):
-                c += "%s = %s \n" % (o, self.aconfig.get(sect, o))
+            for o in aconfig.options(sect):
+                c += "%s = %s \n" % (o, aconfig.get(sect, o))
             self.log.debug(c)           
             
             try:
-                pclass = self.aconfig.get(sect, 'plugin')
+                pclass = aconfig.get(sect, 'plugin')
             except Exception, e:
                 self.log.warn("No plugin attribute for section %s" % sect)
         
@@ -61,21 +66,19 @@ class AuthManager(object):
         
             if pclass == 'X509':
                 self.log.debug("Creating X509 handler for %s" % sect )
-                ###x509h = pluginmanager.getplugin(self, 'authmanager', 'auth', self.aconfig, sect, 'plugin')
-                authpluginname = self.aconfig.get(sect, 'plugin') 
-                x509h = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'authmanager', 'auth'], authpluginname, self.aconfig, sect)
+                ###x509h = pluginmanager.getplugin(self, 'authmanager', 'auth', aconfig, sect, 'plugin')
+                authpluginname = aconfig.get(sect, 'plugin') 
+                x509h = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'authmanager', 'auth'], authpluginname, aconfig, sect)
                 self.handlers.append(x509h)
-            
             elif pclass == 'SSH':
                 self.log.debug("Creating SSH handler for %s" % sect )
-                ###sshh = pluginmanager.getplugin(self, 'authmanager', 'auth', self.aconfig, sect, 'plugin')
-                authpluginname = self.aconfig.get(sect, 'plugin') 
-                sshh = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'authmanager', 'auth'], authpluginname, self.aconfig, sect)
+                ###sshh = pluginmanager.getplugin(self, 'authmanager', 'auth', aconfig, sect, 'plugin')
+                authpluginname = aconfig.get(sect, 'plugin') 
+                sshh = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'authmanager', 'auth'], authpluginname, aconfig, sect)
                 self.handlers.append(sshh)
-                            
             else:
                 self.log.warn("Unrecognized auth plugin %s" % pclass )
-        self.log.debug("Completed creation of %d auth handlers." % len(self.handlers))
+
         
     def startHandlers(self):
         for ah in self.handlers:
@@ -252,6 +255,7 @@ if __name__ == '__main__':
     log.debug("Read config file %s, return value: %s" % (aconfig_file, got_config))
     
     am = AuthManager(aconfig)
+    am.reconfig(aconfig)
     log.info("Authmanager created. Starting handlers...")
     am.startHandlers()
     #am.start()

@@ -40,15 +40,13 @@ except:
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
 from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailure
 from autopyfactory.apfexceptions import ThreadRegistryInvalidKind
+from autopyfactory.authmanager import AuthManager
 from autopyfactory.cleanlogs import CleanLogs
+from autopyfactory.config import ConfigHandler
 from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.logserver import LogServer
-#from autopyfactory.pluginsmanagement import QueuePluginDispatcher
-#from autopyfactory.pluginsmanagement import FactoryPluginDispatcher
-###from autopyfactory.plugin import PluginManager
 from autopyfactory.pluginmanager import PluginManager
 from autopyfactory.queues import APFQueuesManager
-from autopyfactory.authmanager import AuthManager
 from autopyfactory.threadsmanagement import ThreadsRegistry
 
 major, minor, release, st, num = sys.version_info
@@ -401,6 +399,29 @@ class Factory(object):
     -----------------------------------------------------------------------
     """
 
+    @staticmethod
+    def getFactoryMock(fcl, am):
+        """
+        creates and returns a Mock class for Factory
+        A Factory Mock only needs the factory config loader (fcl)
+        the authmanager (am), the ThreadsRegistry, and a faked monitor config loader (mcl)
+        """
+
+        from autopyfactory.threadsmanagement import ThreadsRegistry
+
+        class FactoryMock(object):
+            def __init__(self, fcl, am):
+                self.fcl = fcl
+                self.mcl = Config()
+                self.mcl.add_section('MockMonitor')
+                self.mcl.set('MockMonitor','monitorURL','')
+                self.threadsregistry = ThreadsRegistry()
+                self.authmanager = am
+
+        return FactoryMock(fcl, am)
+
+
+
     def __init__(self, fcl):
         """
         fcl is a FactoryConfigLoader object. 
@@ -467,7 +488,7 @@ class Factory(object):
 
             acf = self.fcl.get('Factory','authConf')
             self.log.debug("auth.conf file(s) = %s" % acf)
-            acl = ConfigParser()
+            acl = Config()
 
             try:
             
@@ -479,7 +500,7 @@ class Factory(object):
 
             self.log.debug("Read config file %s, return value: %s" % (acf, got_config)) 
             self.authmanager = AuthManager(aconfig=acl, factory=self)
-            self.authmanager.startHandlers()
+            #self.authmanager.startHandlers()
             self.log.info('AuthManager initialized.')
         else:
             self.log.info("AuthManager disabled.")
@@ -519,12 +540,13 @@ class Factory(object):
     def _plugins(self):
         self.pluginmgr = PluginManager()
 
-        # configuration plugins
-        ###self.config_plugins = self.pluginmgr.getpluginlist(self, 'factory', 'config', self.fcl, 'Factory', 'configplugin')
+        queuesconfigpluginnames =  self.fcl.generic_get('Factory', 'config.queues.plugin', default_value='File')
+        queuesconfigpluginnameslist = [i.strip() for i in queuesconfigpluginnames.split(',')]
+        self.queues_config_plugins = self.pluginmgr.getpluginlist(self, ['autopyfactory', 'plugins', 'factory', 'config', 'queues'], queuesconfigpluginnameslist,  self.fcl, 'Factory')
 
-        configpluginnames =  self.fcl.get('Factory', 'configplugin')
-        configpluginnameslist = [i.strip() for i in configpluginnames.split(',')]
-        self.config_plugins = self.pluginmgr.getpluginlist(self, ['autopyfactory', 'plugins', 'factory', 'config'], configpluginnameslist,  self.fcl, 'Factory')
+        authconfigpluginnames =  self.fcl.generic_get('Factory', 'config.auth.plugin', default_value='File')
+        authconfigpluginnameslist = [i.strip() for i in authconfigpluginnames.split(',')]
+        self.auth_config_plugins = self.pluginmgr.getpluginlist(self, ['autopyfactory', 'plugins', 'factory', 'config', 'auth'], authconfigpluginnameslist,  self.fcl, 'Factory')
 
 
     def _initLogserver(self):
@@ -597,8 +619,12 @@ class Factory(object):
         # first call to reconfig() to load initial qcl configuration
         ###self.reconfig()
         
-        if self.fcl.generic_get('Factory', 'reconfig', 'getboolean', default_value=True):
-            self.apfqueuesmanager.start() # starts the thread
+        ### BEGIN TEST ###
+        #if self.fcl.generic_get('Factory', 'reconfig', 'getboolean', default_value=True):
+            #self.apfqueuesmanager.start() # starts the thread
+        confighandler = ConfigHandler(self)
+        confighandler.setconfig()
+        ### END TEST ###
         self._cleanlogs()
         
         try:
@@ -641,40 +667,6 @@ class Factory(object):
 
             
         self.log.debug("Leaving.")
-
-
-    ### def reconfig(self):
-    ###     """
-    ###     Method to update the status of the APFQueuesManager object.
-    ###     This method will be used every time the 
-    ###     status of the queues changes: 
-    ###             - at the very beginning
-    ###             - when the config files change
-    ###     That means this method will be invoked by the regular factory
-    ###     main loop code or from any method capturing specific signals.
-    ###     """
-    ###
-    ###     self.log.debug("Starting")
-    ###
-    ###     try:
-    ###         newqcl = Config()
-    ###         for config_plugin in self.config_plugins:
-    ###             while config_plugin.getConfig() == None:
-    ###                 self.log.debug('There is not yet available configuration from config plugin %s. Waiting...' %config_plugin.__class__.__name__)
-    ###                 time.sleep(1)
-    ###             tmpqcl = config_plugin.getConfig()
-    ###             newqcl.merge(tmpqcl)
-    ###
-    ###     except Exception, e:
-    ###         self.log.critical('Failed getting the Factory plugins. Aborting')
-    ###         raise
-    ###
-    ###     self.apfqueuesmanager.update(newqcl) 
-    ###
-    ###     # dump the new qcl content
-    ###     self._dumpqcl()
-    ###
-    ###     self.log.debug("Leaving")
 
 
     def _cleanlogs(self):

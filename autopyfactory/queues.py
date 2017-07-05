@@ -39,7 +39,7 @@ except:
 # FIXME: many of these import are not needed. They are legacy...
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
 from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailure
-from autopyfactory.configloader import Config, ConfigManager
+from autopyfactory.configloader import Config, ConfigManager, ConfigsDiff
 from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
 ###from autopyfactory.pluginsmanagement import QueuePluginDispatcher
@@ -94,24 +94,28 @@ class APFQueuesManager(_thread):
                 2. stops and deletes old queues if needed
         """
         self.log.debug("Performing queue update...")
-        qcldiff = self.factory.qcl.compare(newqcl)
-        #qcldiff is a dictionary like this
-        #    {'REMOVED': [ <list of removed queues> ],
-        #     'ADDED':   [ <list of new queues> ],
-        #     'EQUAL':   [ <list of queues that did not change> ],
-        #     'MODIFIED':[ <list of queues that changed> ] 
-        #    }
+        ###qcldiff = self.factory.qcl.compare(newqcl)
+        ####qcldiff is a dictionary like this
+        ####    {'REMOVED': [ <list of removed queues> ],
+        ####     'ADDED':   [ <list of new queues> ],
+        ####     'EQUAL':   [ <list of queues that did not change> ],
+        ####     'MODIFIED':[ <list of queues that changed> ] 
+        ####    }
+        ####
+        ###self.factory.qcl = newqcl
+        ####
+        ###self._delqueues(qcldiff['REMOVED'])
+        ###self._addqueues(qcldiff['ADDED'])
+        ###self._delqueues(qcldiff['MODIFIED'])
+        ###self._addqueues(qcldiff['MODIFIED'])
 
+        qcldiff = APFQueuesConfigsDiff(self.factory.qcl, newqcl)
         self.factory.qcl = newqcl
+        self._delqueues(qcldiff.gonequeues())
+        self._addqueues(qcldiff.newqueues())
+        self._delqueues(qcldiff.modifiedqueues())
+        self._addqueues(qcldiff.modifiedqueues())
 
-        self._delqueues(qcldiff['REMOVED'])
-        self._addqueues(qcldiff['ADDED'])
-        self._delqueues(qcldiff['MODIFIED'])
-        self._addqueues(qcldiff['MODIFIED'])
-
-        self.log.debug("Starting all queues.")
-        self.startAPFQueues() #starts all threads
-        
         self._dumpqcl()
 
 
@@ -501,7 +505,18 @@ class APFQueue(_thread):
 
     # End of run-related methods
 
-                 
 
+class APFQueuesConfigsDiff(ConfigsDiff):
+    """
+    little class to manage the differences between 2 queues config loaders
+    """
 
+    def gonequeues(self):
+        return self.removed()
+
+    def newqueues(self):
+        return self.added()
+
+    def modifiedqueues(self):
+        return self.modified()
 
