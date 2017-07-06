@@ -69,25 +69,9 @@ home_data_files=[#('etc', libexec_files),
                  ('doc/autopyfactory', docs_files),
                 ]
 
-# -----------------------------------------------------------
 
-def choose_data_files():
-    rpminstall = False
-    userinstall = True
-     
-    if 'bdist_rpm' in sys.argv:
-        rpminstall = True
-        userinstall = False
-                
-    if rpminstall:
-        return rpm_data_files
-    elif userinstall:
-        return home_data_files
-    else:
-        # Something probably went wrong, so punt
-        return home_data_files
-       
-# ===========================================================
+
+
 
 # setup for distutils
 setup(
@@ -122,5 +106,5 @@ setup(
                'bin/proxymanager'
               ],
     
-    #data_files = choose_data_files()
-)
+    data_files = rpm_data_files
+    )
