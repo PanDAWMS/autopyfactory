@@ -22,7 +22,7 @@ class CondorEC2(CondorBase):
 
         qcl = config
         
-        newqcl = qcl.clone().filterkeys('batchsubmit.condorec2', 'batchsubmit.condorgrid')
+        newqcl = qcl.clone().filterkeys('batchsubmit.condorec2', 'batchsubmit.condorbase')
         super(CondorEC2, self).__init__(apfqueue, newqcl, section)
        
         try:
