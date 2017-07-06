@@ -91,6 +91,8 @@ setup(
               'autopyfactory.plugins.authmanager.auth',
               'autopyfactory.plugins.factory',
               'autopyfactory.plugins.factory.config',
+              'autopyfactory.plugins.factory.config.auth',
+              'autopyfactory.plugins.factory.config.queues',
               'autopyfactory.plugins.queue',
               'autopyfactory.plugins.queue.batchstatus',
               'autopyfactory.plugins.queue.batchsubmit',
