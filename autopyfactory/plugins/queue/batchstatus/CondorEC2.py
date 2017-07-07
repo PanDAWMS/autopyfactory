@@ -27,7 +27,7 @@ from autopyfactory.mappings import map2info
 
 import autopyfactory.utils as utils
 
-class __condorec2(_thread, BatchStatusInterface):
+class _condorec2(_thread, BatchStatusInterface):
     """
     BatchStatusPlugin intended to handle CloudInstances, i.e. a combination of a 
     submitted VM job AND startd information gathered from 'condor_status -master' output. 
@@ -493,7 +493,7 @@ class CondorEC2(object):
         # ---------------------------------------------------------------------
 
         if not id in CondorEC2.instances.keys():
-            CondorEC2.instances[id] = __condorec2(*k, **kw)
+            CondorEC2.instances[id] = _condorec2(*k, **kw)
         return CondorEC2.instances[id]
 
 
