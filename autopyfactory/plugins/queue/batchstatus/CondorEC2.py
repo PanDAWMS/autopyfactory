@@ -3,16 +3,15 @@
 # AutoPyfactory batch status plugin for Condor
 # Dedicated to handling VM job submissions and VM pool startds. 
    
-
 import commands
 import subprocess
 import logging
 import os
+import sys
 import time
 import threading
 import traceback
 import xml.dom.minidom
-import sys
 
 from datetime import datetime
 from pprint import pprint
@@ -22,17 +21,11 @@ from autopyfactory.info import BatchStatusInfo
 from autopyfactory.info import QueueInfo
 
 from autopyfactory.condor import checkCondor, querycondorxml, statuscondor, statuscondormaster
-from autopyfactory.condor import parseoutput
-from autopyfactory.condor import aggregateinfo
-from autopyfactory.condor import mincondorversion
+from autopyfactory.condor import parseoutput, aggregateinfo
 from autopyfactory.condorlib import querycondorlib
-
 from autopyfactory.mappings import map2info
 
-
 import autopyfactory.utils as utils
-
-#mincondorversion(8,1,1)
 
 class __condorec2(_thread, BatchStatusInterface):
     """
@@ -53,15 +46,11 @@ class __condorec2(_thread, BatchStatusInterface):
 
         self.apfqueue = apfqueue
         self.apfqname = apfqueue.apfqname
-        self.sleeptime = 30
-        self.queryargs = ""
-        self.condoruser = "apf"
-        self.factoryid = "apf-mock-test"
         
         try:
             self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
             self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
-            self.maxage = apfqueue.fcl.generic_get('Factory', 'batchstatus.condor.maxtime', default_value=360)
+            self.maxage = apfqueue.fcl.generic_get('Factory', 'batchstatus.condor.maxage', default_value=360)
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
             self._thread_loop_interval = self.sleeptime
             self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs') 
@@ -99,11 +88,12 @@ class __condorec2(_thread, BatchStatusInterface):
         Main loop
         """
         self.log.debug('Starting')
-        self._update()
+        #self._update()
+        self._updatelib()
         self.log.debug('Leaving')
 
 
-    def getInfo(self, queue=None, maxtime=0):
+    def getInfo(self, queue=None):
         """
         Returns a BatchStatusInfo object populated by the analysis 
         over the output of a condor_q command
@@ -118,20 +108,19 @@ class __condorec2(_thread, BatchStatusInterface):
         if self.currentinfo is None:
             self.log.debug('Not initialized yet. Returning None.')
             return None
-        elif maxtime > 0 and (int(time.time()) - self.currentinfo.lasttime) > maxtime:
+        elif self.maxage > 0 and (int(time.time()) - self.currentinfo.lasttime) > self.maxage:
             self.log.debug('Info too old. Leaving and returning None.')
             return None
         else:
             if queue:
-                try:
-                    cq = self.currentinfo[queue]
-                except:
-                    self.log.warn('Problem getting info for queue: %s from valid currentinfo.' % queue)
-                self.log.debug('Returning valid batchinfo for queue: %s' % queue)
-                return cq
-            else:                    
+                self.log.debug('Current info is %s' % self.currentinfo)                    
                 self.log.debug('Leaving and returning info of %d entries.' % len(self.currentinfo))
+                return self.currentinfo[queue]
+            else:
+                self.log.debug('Current info is %s' % self.currentinfo)
+                self.log.debug('No queue given, returning entire BatchStatusInfo object')
                 return self.currentinfo
+
 
     def getJobInfo(self, queue=None, maxtime=0):
         """
@@ -147,7 +136,7 @@ class __condorec2(_thread, BatchStatusInterface):
         if self.currentjobs is None:
             self.log.debug('getInfo: Not initialized yet. Returning None.')
             return None
-        elif maxtime > 0 and (int(time.time()) - self.currentjobs.lasttime) > maxtime:
+        elif self.maxage > 0 and (int(time.time()) - self.currentjobs.lasttime) > self.maxage:
             self.log.debug('getInfo: Info too old. Leaving and returning None.')
             return None
         else:
