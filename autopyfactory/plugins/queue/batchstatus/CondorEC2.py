@@ -134,9 +134,6 @@ class _condorec2(_thread, BatchStatusInterface):
         if self.currentjobs is None:
             self.log.debug('getInfo: Not initialized yet. Returning None.')
             return None
-        elif self.maxage > 0 and (int(time.time()) - self.currentjobs.lasttime) > self.maxage:
-            self.log.debug('getInfo: Info too old. Leaving and returning None.')
-            return None
         else:
             if queue:
                 try:
