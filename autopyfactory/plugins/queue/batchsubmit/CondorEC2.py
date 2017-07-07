@@ -132,6 +132,7 @@ class CondorEC2(CondorBase):
                     jobinfo.sort(key = lambda x: x.enteredcurrentstatus)
                 elif order == 'newest':
                     jobinfo.sort(key = lambda x: x.enteredcurrentstatus, reverse=True)
+                killist = []
                 for i in range(0, n):
                     j = jobinfo.pop()
                     killlist.append( "%s.%s" % (j.clusterid, j.procid))
