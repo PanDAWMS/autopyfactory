@@ -492,9 +492,9 @@ class CondorEC2(object):
                     id = '%s:%s' %(name, pool)
         # ---------------------------------------------------------------------
 
-        if not id in Condor.instances.keys():
-            Condor.instances[id] = __condorec2(*k, **kw)
-        return Condor.instances[id]
+        if not id in CondorEC2.instances.keys():
+            CondorEC2.instances[id] = __condorec2(*k, **kw)
+        return CondorEC2.instances[id]
 
 
 
