@@ -98,12 +98,11 @@ class _condorec2(_thread, BatchStatusInterface):
         Returns a BatchStatusInfo object populated by the analysis 
         over the output of a condor_q command
 
-        Optionally, a maxtime parameter can be passed.
-        In that case, if the info recorded is older than that maxtime,
+        If the info recorded is older than that maxage,
         None is returned, as we understand that info is too old and 
         not reliable anymore.
         """           
-        self.log.debug('Starting with maxtime=%s' % maxtime)
+        self.log.debug('Starting with maxage=%s' % self.maxage)
         
         if self.currentinfo is None:
             self.log.debug('Not initialized yet. Returning None.')
@@ -122,16 +121,15 @@ class _condorec2(_thread, BatchStatusInterface):
                 return self.currentinfo
 
 
-    def getJobInfo(self, queue=None, maxtime=0):
+    def getJobInfo(self, queue=None):
         """
         Returns a list of CondorEC2JobInfo objects which include startd information. 
 
-        Optionally, a maxtime parameter can be passed.
-        In that case, if the info recorded is older than that maxtime,
+        If the info recorded is older than that maxage,
         None is returned, as we understand that info is too old and 
         not reliable anymore.
         """           
-        self.log.debug('getInfo: Starting with maxtime=%s' % maxtime)
+        self.log.debug('getInfo: Starting with maxage=%s' % self.maxage)
         
         if self.currentjobs is None:
             self.log.debug('getInfo: Not initialized yet. Returning None.')
