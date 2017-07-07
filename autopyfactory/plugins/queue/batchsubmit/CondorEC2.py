@@ -158,10 +158,15 @@ class CondorEC2(CondorBase):
         avoid race conditions/slight information mismatches due to time. E.g. just because the last condor_status 
         showed a startd as idle, doesn't mean it is still idle during this queue cycle. 
        
-        But we should preferentially retire nodes that are Idle over ones that we know are busy.         
+        But we should preferentially retire nodes that are Idle over ones that we know are busy.
+        
+        If we don't have information about startds, then unconditionally kill N VM jobs for this queue. 
+                         
         """
         self.log.debug("Beginning to retire %d VM jobs..." % n)
+        self.log.debug("Getting jobinfo for [%s]" % (self.apfqueue.apfqname))
         jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqueue.apfqname)
+        self.log.debug("Jobinfo is %s" % jobinfo)
         if jobinfo:
             numtoretire = n
             numretired = 0           
@@ -327,6 +332,6 @@ class CondorEC2(CondorBase):
             else:
                 self.log.debug("No VM jobs to kill for apfqueue %s" % self.apfqueue.apfqname )
         except NotImplementedError:
-            self.log.debug("Aparently using batchstatus plugin without job info. Skipping.")
+            self.log.debug("Apparently using batchstatus plugin without job info. Skipping.")
         
             
