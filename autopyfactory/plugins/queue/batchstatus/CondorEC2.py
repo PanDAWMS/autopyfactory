@@ -88,8 +88,8 @@ class _condorec2(_thread, BatchStatusInterface):
         Main loop
         """
         self.log.debug('Starting')
-        #self._update()
-        self._updatelib()
+        self._update()
+        #self._updatelib()
         self.log.debug('Leaving')
 
 
