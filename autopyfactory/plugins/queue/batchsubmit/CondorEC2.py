@@ -129,9 +129,9 @@ class CondorEC2(CondorBase):
             else:
                 self.log.debug("Non-peaceful. Kill VM jobs...")
                 if order == 'oldest':
-                    jobinfo.sort(key = lambda x: x.enteredcurrentstatus)
-                elif order == 'newest':
                     jobinfo.sort(key = lambda x: x.enteredcurrentstatus, reverse=True)
+                elif order == 'newest':
+                    jobinfo.sort(key = lambda x: x.enteredcurrentstatus)
                 killist = []
                 for i in range(0, n):
                     j = jobinfo.pop()
