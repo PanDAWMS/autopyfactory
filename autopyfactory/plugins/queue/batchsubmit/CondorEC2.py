@@ -57,32 +57,6 @@ class CondorEC2(CondorBase):
             self.log.error("Problem getting object configuration variables.")
             self.log.debug("Exception: %s" % traceback.format_exc())
 
-    def submit(self, num):
-        """
-        Override base submit to determine if we need to *unretire* any nodes. 
-        
-        retiring_pilots = self.batchinfo[self.apfqueue.apfqname].retiring
-        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(maxtime = self.apfqueue.batchstatusmaxtime)
-        
-        """
-        if num < 1:
-            self.log.debug("Number to submit is zero or negative, calling parent...")
-            super(CondorEC2, self).submit(num)
-        else:
-            self.log.debug("Checking for jobs in 'retiring' state...")
-            batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname)
-            numretiring = batchinfo.retiring
-            self.log.debug("%d jobs in 'retiring' state." % numretiring)
-            numleft = num - numretiring
-            if numleft > 0:
-                self.log.debug("More to submit (%d) than retiring (%d). Unretiring all and submitting %d" % (num, 
-                                                                                                             numretiring,
-                                                                                                             numleft) )
-                self.unretire(numretiring)
-                super(CondorEC2, self).submit(numleft)
-            else:
-                self.log.debug("Fewer to submit than retiring. Unretiring %d" % num)
-                self.unretire(num)
                
     def _addJSD(self):
         """
@@ -113,34 +87,6 @@ class CondorEC2(CondorBase):
 
         self.log.debug('CondorEC2.addJSD: Leaving.')
 
-       
-    def unretire(self, n ):
-        """
-        trigger unretirement of n nodes. 
-        
-        """
-        if n > 0:
-            self.log.debug("Beginning to unretire %d VM jobs..." % n)
-            jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqueue.apfqname)
-            if jobinfo:
-                numtounretire = n
-                numunretired = 0
-                for job in jobinfo:
-                    if job.executeinfo is not None:
-                        self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)
-                        stat = job.executeinfo.getStatus()
-                        if stat  == 'retiring':
-                            self._unretirenode(job)
-                            numtounretire = numtounretire - 1
-                            numunretired += 1
-                            self.log.debug("numtounretire = %d" % numtounretire)
-                    if numtounretire <= 0:
-                        break
-                self.log.debug("Unretired %d VM jobs" % numunretired)
-            else:
-                self.log.debug("Some info unavailable. Do nothing.")    
-        else:
-            self.log.debug("No jobs to unretire...")
 
     def retire(self, n, order='oldest'):
         """
@@ -168,27 +114,42 @@ class CondorEC2(CondorBase):
         jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqueue.apfqname)
         self.log.debug("Jobinfo is %s" % jobinfo)
         if jobinfo:
-            numtoretire = n
-            numretired = 0           
-            idlelist = []
-            busylist = []            
-            for job in jobinfo:
-                if job.executeinfo is not None:
-                    self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)              
-                    stat = job.executeinfo.getStatus()
-                    if stat == 'busy':
-                        busylist.append(job)
-                    elif stat == 'idle':
-                        idlelist.append(job)
-            sortedlist = idlelist + busylist
-            for job in sortedlist:
-                self._retirenode(job)
-                numtoretire = numtoretire - 1
-                numretired += 1
-                self.log.debug("numtoretire = %d" % numtoretire)
-                if numtoretire <= 0:
-                    break
-            self.log.debug("Retired %d VM jobs" % numretired)
+            if self.peaceful:
+                numtoretire = n
+                numretired = 0           
+                idlelist = []
+                busylist = []            
+                for job in jobinfo:
+                    if job.executeinfo is not None:
+                        self.log.debug("Handling instanceid =  %s" % job.executeinfo.instanceid)              
+                        stat = job.executeinfo.getStatus()
+                        if stat == 'busy':
+                            busylist.append(job)
+                        elif stat == 'idle':
+                            idlelist.append(job)
+                sortedlist = idlelist + busylist
+
+                for job in sortedlist:
+                    self._retirenode(job)
+                    numtoretire = numtoretire - 1
+                    numretired += 1
+                    self.log.debug("numtoretire = %d" % numtoretire)
+                    if numtoretire <= 0:
+                        break
+                self.log.debug("Retired %d VM jobs" % numretired)
+            
+            else:
+                self.log.debug("Non-peaceful. Kill VM jobs...")
+                if order == 'oldest':
+                    jobinfo.sort(key = lambda x: x.enteredcurrentstatus)
+                elif order == 'newest':
+                    jobinfo.sort(key = lambda x: x.enteredcurrentstatus, reverse=True)
+                for i in range(0, n):
+                    j = jobinfo.pop()
+                    killlist.append( "%s.%s" % (j.clusterid, j.procid))
+                self.log.debug("About to kill list of %s ids. First one is %s" % (len(killlist), killlist[0] ))
+                killids(killlist)
+                self.log.debug("killids returned.")
         else:
             self.log.debug("Some info unavailable. Do nothing.")
 
@@ -250,52 +211,6 @@ class CondorEC2(CondorBase):
                 self.log.warning("Unable to retire node %s (%s) because it has an empty machine name." % (jobinfo.executeinfo.hostname,
                                                                                                           jobinfo.ec2instancename))
                 
-    def _unretirenode(self, jobinfo):
-        """
-        Do whatever is needed to tell the node to un-retire...
-        """
-        self.log.debug("Unretiring node %s (%s)" % (jobinfo.executeinfo.hostname, 
-                                                 jobinfo.ec2instancename))
-        exeinfo = jobinfo.executeinfo
-        publicip = exeinfo.hostname
-        machine = exeinfo.machine
-        condorid = "%s.%s" % (jobinfo.clusterid, jobinfo.procid)
-        
-        if self.usessh:
-            self.log.debug("Trying to use SSH to retire node %s" % publicip)
-            cmd='ssh root@%s "condor_on -startd"' % publicip
-            self.log.debug("unretire cmd is %s" % cmd) 
-            before = time.time()
-            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-            out = None
-            (out, err) = p.communicate()
-            delta = time.time() - before
-            self.log.debug('It took %s seconds to issue the command' %delta)
-            self.log.debug('%s seconds to issue command' %delta)
-            if p.returncode == 0:
-                self.log.debug('Leaving with OK return code.')
-            else:
-                self.log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))          
-            # invoke ssh to retire node
-        else:
-            if machine.strip() != "":
-                self.log.debug("Trying local unretirement of node %s" % publicip)
-                cmd='condor_on -startd -name %s ' % machine  
-                self.log.debug("unretire cmd is %s" % cmd) 
-                before = time.time()
-                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                out = None
-                (out, err) = p.communicate()
-                delta = time.time() - before
-                self.log.debug('It took %s seconds to issue the command' %delta)
-                self.log.debug('%s seconds to issue command' %delta)
-                if p.returncode == 0:
-                    self.log.debug('Leaving with OK return code.')
-                else:
-                    self.log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))          
-            else:
-                self.log.warning("Unable to unretire node %s (%s) because it has an empty machine name." % (jobinfo.executeinfo.hostname,
-                                                                                                          jobinfo.ec2instancename))
     def cleanup(self):
         """
         
