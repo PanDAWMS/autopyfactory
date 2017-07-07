@@ -23,8 +23,9 @@ from autopyfactory.info import QueueInfo
 
 from autopyfactory.condor import checkCondor, querycondorxml, statuscondor, statuscondormaster
 from autopyfactory.condor import parseoutput
-from autopyfactory.condor import listnodesfromxml, aggregateinfo, killids
+from autopyfactory.condor import aggregateinfo
 from autopyfactory.condor import mincondorversion
+from autopyfactory.condorlib import querycondorlib
 
 from autopyfactory.mappings import map2info
 
