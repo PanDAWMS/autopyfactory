@@ -47,7 +47,7 @@ from autopyfactory.pluginmanager import PluginManager
 from autopyfactory.interfaces import _thread
 
 
-class APFQueuesManager(_thread):
+class APFQueuesManager(object):
     """
     -----------------------------------------------------------------------
     Container with the list of APFQueue objects.
@@ -62,10 +62,6 @@ class APFQueuesManager(_thread):
         """
         Initializes a container of APFQueue objects
         """
-
-        _thread.__init__(self)
-        factory.threadsregistry.add("core", self)
-        self._thread_loop_interval = factory.fcl.generic_get('Factory','config.interval', 'getint', default_value=3600)
 
         self.log = logging.getLogger('autopyfactory')
         self.queues = {}
@@ -157,29 +153,10 @@ class APFQueuesManager(_thread):
                 else:
                     self.log.debug("Queue %s already running." % q.apfqname)
 
-    ### Is this method being used by anyone???
-    ### def join(self):
-    ###     """
-    ###     Joins all APFQueue objects
-    ###     QUESTION: should the queues also be removed from self.queues ?
-    ###     """
-    ###     count = 0
-    ###     for q in self.queues.values():
-    ###         q.join()
-    ###         count += 1
-    ###     self.log.debug('%d queues joined' %count)
-
-
 
     # ----------------------------------------------------------------------
     #  private methods
     # ----------------------------------------------------------------------
-
-    def _run(self):
-        self.log.debug('Starting')
-        newqcl = self.getConfig()
-        self.reconfig(newqcl)
-        self.log.debug('Leaving')
 
     def _addqueues(self, apfqnames):
         """
@@ -190,6 +167,7 @@ class APFQueuesManager(_thread):
             self._add(apfqname)
             count += 1
         self.log.debug('%d queues in the configuration.' %count)
+
 
     def _add(self, apfqname):
         """
@@ -210,17 +188,6 @@ class APFQueuesManager(_thread):
         else:
             self.log.debug('Queue %s not enabled.' %apfqname)
             
-
-    ### Is this method being used by anyone???
-    ### def start(self):
-    ###     """
-    ###     starts all APFQueue objects from here
-    ###     """
-    ###     self.log.debug('Starting')
-    ###     for qobject in self.queues.values():
-    ###         qobject.start()
-    ###     self.log.debug('Leaving')
-
 
     def _delqueues(self, apfqnames):
         """
