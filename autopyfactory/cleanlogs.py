@@ -88,7 +88,7 @@ class CleanLogs(_thread):
 
         self.log.debug("Starting with input %s." %dir.dir)
 
-        self.keepdays = KeepDays(self.fcl, self.factory.qcl)
+        self.keepdays = KeepDays(self.fcl, self.qcl)
         dir.rm(self.keepdays)
 
         self.log.debug("Leaving.")
@@ -116,10 +116,10 @@ class KeepDays(object):
 
         self.factory_keepdays = self.fcl.generic_get('Factory', 'cleanlogs.keepdays', 'getint')
         self.queues_keepdays = {}
-        for apfqname in self.qcl.sections():
-            keepdays = self.qcl.generic_get(apfqname, 'cleanlogs.keepdays', 'getint')
-            self.queues_keepdays[apfqname] = keepdays
-
+        if self.qcl is not None:
+            for apfqname in self.qcl.sections():
+                keepdays = self.qcl.generic_get(apfqname, 'cleanlogs.keepdays', 'getint')
+                self.queues_keepdays[apfqname] = keepdays
         self.log.debug('Leaving.')
 
     def get(self, apfqname):
