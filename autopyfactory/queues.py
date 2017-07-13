@@ -63,8 +63,6 @@ class APFQueuesManager(object):
         Initializes a container of APFQueue objects
         """
 
-        factory.threadsregistry.add("core", self)
-
         self.log = logging.getLogger('autopyfactory')
         self.queues = {}
         self.factory = factory
