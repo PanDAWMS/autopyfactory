@@ -221,15 +221,15 @@ class MyNoListingHTTPRequestHandler(MySimpleHTTPRequestHandler):
 
 class LogServer(_thread):
     
-    def __init__(self, fcl, port=25880, docroot="/home/autopyfactory/factory/logs", index = True):
+    def __init__(self, fcl):
         """
         docroot is the path to the base directory of the files to be served. 
         """
         _thread.__init__(self)
         try:
             factory.threadsregistry.add("util", self)
-        except:
-            self.log.warning("Not adding to threadsregistry. Wrong context or other issue.")
+        except Exception, e:
+            self.log.warning("Not adding to threadsregistry. Wrong context or other issue. %s" % e)
         self.log= logging.getLogger('autopyfactory')
         self.fcl = fcl
         self.index = self.fcl.generic_get('Factory','logserver.index', 'getboolean')
