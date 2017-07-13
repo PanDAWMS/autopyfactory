@@ -310,7 +310,7 @@ class LogServer(_thread):
         self.log.info("Initializing HTTP server...")
         self._init_socketserver()
         os.chdir(self.logpath)
-        self.log.debug("Changing working dir to %s"%  self.self.logpath)
+        self.log.debug("Changing working dir to %s"%  self.logpath)
 
 
     def _run(self):
