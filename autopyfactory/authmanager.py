@@ -53,7 +53,7 @@ class AuthManager(object):
         self._add(hdiff.added())
 
 
-    def _add(self, newconfig):
+    def _add(self, newsections):
         pass 
         # FIXME: to be implemented
 
