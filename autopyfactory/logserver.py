@@ -119,8 +119,8 @@ class MySimpleHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         # normalize path and verify it is underneath doocroot
         # to prevent some URL like <docroot>/../../../etc/password
         path = os.path.normpath(path)
-        if not path.startswith(self.docroot):
-            path = self.docroot
+        if not path.startswith(self.logpath):
+            path = self.logpath
 
         try:
             list = os.listdir(path)
@@ -139,8 +139,8 @@ class MySimpleHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
         # --------------------------------------------------------------------
         # When needed, add a link to parent directory, similar to the Apache one 
-        if path != self.docroot:
-            parent = path.replace(self.docroot,'', 1)
+        if path != self.logpath:
+            parent = path.replace(self.logpath,'', 1)
             parent = '/'.join( parent.split('/')[:-1]  )
             if parent == "":
                 parent = "/"
@@ -298,7 +298,7 @@ class LogServer(_thread):
                 self.log.debug("Attempting to bind to socket for HTTP server on port %s" % self.port)
                 self.httpd = SocketServer.TCPServer(("", self.port), self.handler)
                 self.log.debug("Initialized HTTP SocketServer port=%d, root=%s, index=%s" % (self.port, 
-                                                                                             self.docroot, 
+                                                                                             self.logpath, 
                                                                                              self.index)) 
             except Exception, e:
                 self.log.warning("Socket server exception: %s" % str(e))
@@ -309,8 +309,8 @@ class LogServer(_thread):
     def _prerun(self):
         self.log.info("Initializing HTTP server...")
         self._init_socketserver()
-        os.chdir(self.docroot)
-        self.log.debug("Changing working dir to %s"%  self.docroot)
+        os.chdir(self.logpath)
+        self.log.debug("Changing working dir to %s"%  self.self.logpath)
 
 
     def _run(self):
