@@ -233,7 +233,7 @@ class LogServer(_thread):
         self.log= logging.getLogger('autopyfactory')
         self.fcl = fcl
         self.index = self.fcl.generic_get('Factory','logserver.index', 'getboolean')
-        self.lsrobots = self.fcl.generic_get('Factory','logserver.allowrobots', 'getboolean')
+        self.allowrobots = self.fcl.generic_get('Factory','logserver.allowrobots', 'getboolean')
         self.logpath = self.fcl.get('Factory', 'baseLogDir')
         self.logurl = self.fcl.get('Factory','baseLogDirUrl')            
         self.port = self._parseLogPort(self.logurl)
@@ -241,7 +241,7 @@ class LogServer(_thread):
         if not os.path.exists(self.logpath):
             self.log.debug("Creating log path: %s" % self.logpath)
             os.makedirs(self.logpath)
-        if not self.lsrobots:
+        if not self.allowrobots:
             rf = "%s/robots.txt" % self.logpath
             self.log.debug("logserver.allowrobots is False, creating file: %s" % rf)
             try:
@@ -250,7 +250,7 @@ class LogServer(_thread):
                 f.close()
             except IOError:
                 self.log.warn("Unable to create robots.txt file...")
-        self.index = index
+
         if self.index:
             self.handler = MySimpleHTTPRequestHandler
         else:
