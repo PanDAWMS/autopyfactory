@@ -33,25 +33,25 @@ class CleanLogs(_thread):
         the interface inherited from Thread `
     -----------------------------------------------------------------------
     """
-    def __init__(self, factory):
+    def __init__(self, fcl, qcl=None ):
         """
         factory is a reference to the Factory object that created
         the CleanLogs instance
         """
 
         _thread.__init__(self)
-        self._thread_loop_interval = 60 * 60  # sleep 1 hour between loops
-
-        factory.threadsregistry.add("util", self)
-
+        self._thread_loop_interval = 60 * 60  # sleep 1 hour between loops        
+        try:
+            factory.threadsregistry.add("util", self)
+        except:
+            self.log.warning("Not adding to threadsregistry. Wrong context or other issue.")
+        
         self.log = logging.getLogger('autopyfactory')
         self.log.debug('CleanLogs: Initializing object...')
-    
-        self.factory = factory
-        self.fcl = factory.fcl
-        self.qcl = factory.qcl
-        self.logDir = self.fcl.get('Factory', 'baseLogDir')
 
+        self.fcl = fcl
+        self.qcl = qcl
+        self.logDir = self.fcl.get('Factory', 'baseLogDir')
         self.log.debug('CleanLogs: Object initialized.')
 
 

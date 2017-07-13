@@ -221,17 +221,37 @@ class MyNoListingHTTPRequestHandler(MySimpleHTTPRequestHandler):
 
 class LogServer(_thread):
     
-    def __init__(self, factory, port=25880, docroot="/home/autopyfactory/factory/logs", index = True):
+    def __init__(self, fcl, port=25880, docroot="/home/autopyfactory/factory/logs", index = True):
         """
         docroot is the path to the base directory of the files to be served. 
         """
         _thread.__init__(self)
-        factory.threadsregistry.add("util", self)
+        try:
+            factory.threadsregistry.add("util", self)
+        except:
+            self.log.warning("Not adding to threadsregistry. Wrong context or other issue.")
         self.log= logging.getLogger('autopyfactory')
-        self.docroot = docroot
-        self.port = int(port)
+        self.fcl = fcl
+        self.index = self.fcl.generic_get('Factory','logserver.index', 'getboolean')
+        self.lsrobots = self.fcl.generic_get('Factory','logserver.allowrobots', 'getboolean')
+        self.logpath = self.fcl.get('Factory', 'baseLogDir')
+        self.logurl = self.fcl.get('Factory','baseLogDirUrl')            
+        self.port = self._parseLogPort(self.logurl)
+        
+        if not os.path.exists(self.logpath):
+            self.log.debug("Creating log path: %s" % self.logpath)
+            os.makedirs(self.logpath)
+        if not self.lsrobots:
+            rf = "%s/robots.txt" % self.logpath
+            self.log.debug("logserver.allowrobots is False, creating file: %s" % rf)
+            try:
+                f = open(rf , 'w' )
+                f.write("User-agent: * \nDisallow: /")
+                f.close()
+            except IOError:
+                self.log.warn("Unable to create robots.txt file...")
         self.index = index
-        if index:
+        if self.index:
             self.handler = MySimpleHTTPRequestHandler
         else:
             self.handler = MyNoListingHTTPRequestHandler
@@ -240,13 +260,36 @@ class LogServer(_thread):
         # the HTTP requests. 
         # They are used to create a web page as similar as possible 
         # as Apache would do
-        self.handler.port = port
-        self.handler.docroot = docroot
+        self.handler.port = self.port
+        self.handler.docroot = self.logpath
 
         self.httpd = None
         self.log.debug("Initialized Logserver: port=%d, root=%s, index=%s" %(self.port,
                                                                              self.docroot,
                                                                              self.index))
+                                                                            
+    
+    def _parseLogPort(self, logurl):
+        """
+        logUrl is like:  http[s]://hostname[:port]
+        if port exists, return port
+        if port is omitted, 
+           if http, return 80
+           if https, return 443
+           
+        Return value must be an int. 
+        """
+        urlparts = logurl.split(':')
+        urltype = urlparts[0]
+        port = 80
+        if len(urlparts) == 3:
+            port = int(urlparts[2])
+        elif len(urlparts) == 2:
+            if urltype == "http":
+                port = 80
+            elif urltype == "https":
+                port = 443
+        return int(port)
         
     
     def _init_socketserver(self):

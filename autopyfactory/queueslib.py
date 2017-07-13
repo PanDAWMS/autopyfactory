@@ -686,7 +686,11 @@ class StaticAPFQueue(object):
         return jobinfolist
 
                  
-class StaticAPFQueueJC(object):
+class SubmitAPFQueue(object):
+    '''
+    Simple submit-only, non-threaded APF Queue. 
+    
+    '''
     
     def __init__(self, config, authman=None):
 
@@ -725,7 +729,6 @@ class StaticAPFQueueJC(object):
         ####self.factory = FactoryMock(fcl, authman)
         from autopyfactory.factory import Factory
         self.factory = Factory.getFactoryMock(fcl, authman)
-
 
         logging.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(self.apfqname).getContent())   
 
