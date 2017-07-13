@@ -265,7 +265,7 @@ class LogServer(_thread):
 
         self.httpd = None
         self.log.debug("Initialized Logserver: port=%d, root=%s, index=%s" %(self.port,
-                                                                             self.docroot,
+                                                                             self.logpath,
                                                                              self.index))
                                                                             
     
