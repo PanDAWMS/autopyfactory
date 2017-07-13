@@ -632,7 +632,7 @@ class Factory(object):
         starts the thread that will clean the condor logs files
         """
         self.log.debug('Starting')
-        self.clean = CleanLogs(self, fcl=self.fcl)
+        self.clean = CleanLogs(self.fcl, self.qcl)
         self.clean.start()
         self.log.debug('Leaving')
 
