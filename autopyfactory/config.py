@@ -61,21 +61,17 @@ class ConfigHandler(_thread):
             self.log.error('seting configuration for queues failed.')
 
 
-    # NOTE
-    # code is duplicated for methods _run_XYZ() and getXYZConfig()
-    # but for now is OK
-
     def _run_auth(self):
         self.acl = self.getAuthConfig()
         self.factory.authmanager.reconfig(self.acl)
-        self.factory.authmanager.startHandlers()
+        self.factory.authmanager.activate()
         self.log.debug("Completed creation of %d auth handlers." % len(self.factory.authmanager.handlers))
 
 
     def _run_queues(self):
         self.qcl = self.getQueuesConfig()
         self.factory.apfqueuesmanager.reconfig(self.qcl)
-        self.factory.apfqueuesmanager.startAPFQueues() #starts all threads
+        self.factory.apfqueuesmanager.activate() #starts all threads
 
 
     def getAuthConfig(self):

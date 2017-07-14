@@ -130,7 +130,7 @@ class APFQueuesManager(object):
 
 
 
-    def startAPFQueues(self):
+    def activate(self):
         """
         starts all APFQueue threads.
         We do it here, instead of one by one at the same time the object is created (old style),

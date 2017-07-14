@@ -76,7 +76,10 @@ class AuthManager(object):
                 self.log.warn("Unrecognized auth plugin %s" % pclass )
     
         
-    def startHandlers(self):
+    def activate(self):
+        """ 
+        start all Handlers, if needed
+        """ 
 
         for ah in self.handlers:
             if isinstance(ah, threading.Thread) :
