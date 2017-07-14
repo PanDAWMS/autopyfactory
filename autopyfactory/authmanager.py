@@ -24,6 +24,7 @@ import autopyfactory
 ###from autopyfactory.plugins.auth.SSH import SSH
 from autopyfactory.pluginmanager import PluginManager
 from autopyfactory.apfexceptions import InvalidAuthFailure
+from autopyfactory.configloader import Config, ConfigsDiff
 
 
 class AuthManager(object):
@@ -33,13 +34,13 @@ class AuthManager(object):
         as threads. Others, which only hold information, will just be objects.  
     
     """
-    def __init__(self, aconfig, factory=None):
+    def __init__(self, factory=None):
         
         self.log = logging.getLogger('autopyfactory')
         self.log.info("Creating new authmanager...")
-        self.aconfig = aconfig
+        self.aconfig = Config() 
+        self.handlers = []
         self.factory = factory
-
         if factory:
             self.sleep = int(self.factory.fcl.get('Factory', 'authmanager.sleep'))
         else:

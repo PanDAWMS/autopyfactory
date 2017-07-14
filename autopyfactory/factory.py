@@ -486,21 +486,22 @@ class Factory(object):
             except Exception, e:
                 self.log.exception('authmanager cannot be imported')
 
-            acf = self.fcl.get('Factory','authConf')
-            self.log.debug("auth.conf file(s) = %s" % acf)
-            acl = Config()
+            ###acf = self.fcl.get('Factory','authConf')
+            ###self.log.debug("auth.conf file(s) = %s" % acf)
+            ###acl = Config()
+            ###
+            ###try:
+            ###
+            ###    got_config = acl.read(acf)
+            ###
+            ###except Exception, e:
+            ###    self.log.exception('Failed to create AuthConfigLoader')
+            ###    sys.exit(0)
+            ###
+            ###self.log.debug("Read config file %s, return value: %s" % (acf, got_config)) 
+            ###self.authmanager = AuthManager(aconfig=acl, factory=self)
 
-            try:
-            
-                got_config = acl.read(acf)
-
-            except Exception, e:
-                self.log.exception('Failed to create AuthConfigLoader')
-                sys.exit(0)
-
-            self.log.debug("Read config file %s, return value: %s" % (acf, got_config)) 
-            self.authmanager = AuthManager(aconfig=acl, factory=self)
-            #self.authmanager.startHandlers()
+            self.authmanager = AuthManager(factory=self)
             self.log.info('AuthManager initialized.')
         else:
             self.log.info("AuthManager disabled.")
