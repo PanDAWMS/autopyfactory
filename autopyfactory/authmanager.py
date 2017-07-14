@@ -51,19 +51,12 @@ class AuthManager(object):
 
         hdiff = ConfigsDiff(self.aconfig, newconfig)
         self.aconfig = newconfig
-        self._add(hdiff.added())
+        self._addhandlers(hdiff.added())
 
 
-    def _add(self, newsections):
-        pass 
-        # FIXME: to be implemented
+    def _addhandlers(self, newsections):
 
-
-    def _createHandlers(self):
-
-        self.handlers = []
-
-        for sect in self.aconfig.sections():
+        for sect in self.newsections:
             try:
                 pclass = self.aconfig.get(sect, 'plugin')
             except Exception, e:
@@ -84,9 +77,6 @@ class AuthManager(object):
     
         
     def startHandlers(self):
-        # FIXME
-        # temporary solution
-        self._createHandlers()
 
         for ah in self.handlers:
             if isinstance(ah, threading.Thread) :
