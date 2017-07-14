@@ -27,6 +27,9 @@ class ConfigHandler(_thread):
         if self.reconfig:
             self.interval = factory.fcl.generic_get('Factory','config.reconfig.interval', 'getint', default_value=3600) 
 
+        self.qcl = Config()
+        self.acl = Config()
+
 
     def setconfig(self):
         # NOTE:
@@ -63,15 +66,15 @@ class ConfigHandler(_thread):
     # but for now is OK
 
     def _run_auth(self):
-        newconfig = self.getAuthConfig()
-        self.factory.authmanager.reconfig(newconfig)
+        self.acl = self.getAuthConfig()
+        self.factory.authmanager.reconfig(self.acl)
         self.factory.authmanager.startHandlers()
         self.log.debug("Completed creation of %d auth handlers." % len(self.factory.authmanager.handlers))
 
 
     def _run_queues(self):
-        newconfig = self.getQueuesConfig()
-        self.factory.apfqueuesmanager.reconfig(newconfig)
+        self.qcl = self.getQueuesConfig()
+        self.factory.apfqueuesmanager.reconfig(self.qcl)
         self.factory.apfqueuesmanager.startAPFQueues() #starts all threads
 
 
