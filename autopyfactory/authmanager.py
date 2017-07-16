@@ -56,7 +56,7 @@ class AuthManager(object):
 
     def _addhandlers(self, newsections):
 
-        for sect in self.newsections:
+        for sect in newsections:
             try:
                 pclass = self.aconfig.get(sect, 'plugin')
             except Exception, e:
