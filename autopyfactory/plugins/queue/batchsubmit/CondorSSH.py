@@ -30,6 +30,7 @@
 #    IdentityFile ~/.ssh/id_midway
 #
 
+import os
 import shutil
 
 from autopyfactory import jsd
@@ -66,6 +67,9 @@ class CondorSSH(CondorBase):
             
             # Back up user's SSH items
             self._backupSSHDefaults()
+            
+            # Unconditionally create ~/.ssh/config
+            self._createSSHConfig()
             
             #Handle bosco
             self.boscocli = bosco.BoscoCLI()
@@ -105,6 +109,22 @@ class CondorSSH(CondorBase):
                     except Exception, e:
                         self.log.warning("Unable to back up %s" % dp)
 
+    def _createSSHConfig(self):
+        '''
+        
+        '''
+        SSHCONFIG='''Host *
+StrictHostKeyChecking no
+UserKnownHostsFile=/dev/null
+'''
+        self.log.debug("Creating standard ssh config for APF submission.")
+        fh = open(os.path.expanduser('~/.ssh/config'), 'w')
+        try:
+            fh.write(SSHCONFIG)
+        except Exception, e:
+            self.log.error('Problem writing to ~/.ssh/config')
+        finally:
+            fh.close()
 
     def _getSSHAuthTokens(self):
         """
