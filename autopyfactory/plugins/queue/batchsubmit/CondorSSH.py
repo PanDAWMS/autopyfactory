@@ -30,6 +30,7 @@
 #    IdentityFile ~/.ssh/id_midway
 #
 
+import shutil
 
 from autopyfactory import jsd
 from autopyfactory import bosco
@@ -63,6 +64,9 @@ class CondorSSH(CondorBase):
             self.passfile = None
             self._getSSHAuthTokens()
             
+            # Back up user's SSH items
+            self._backupSSHDefaults()
+            
             #Handle bosco
             self.boscocli = bosco.BoscoCLI()
             self.boscocli._checkbosco()
@@ -80,6 +84,27 @@ class CondorSSH(CondorBase):
             self.log.error("Caught exception: %s " % str(e))
             raise
         
+    def _backupSSHDefaults(self):
+        '''
+        If they exist, copies to make a backup of: 
+           ~/.ssh/id_rsa.pub
+           ~/.ssh/id_rsa
+           ~/.ssh/config
+        '''
+        SSHDEFAULTS = ['~/.ssh/id_rsa.pub',
+                       '~/.ssh/id_rsa',
+                       '~/.ssh/config'
+                       ]
+        for sshdefault in SSHDEFAULTS:
+            dp = os.path.expanduser(sshdefault)
+            if os.path.exists(dp):
+                if not os.path.exists("%s.apfbackup" % dp):
+                    self.log.debug("Backing up SSH file %s" % dp)
+                    try:
+                        shutil.copy(dp,"%s.apfbackup" % dp )
+                    except Exception, e:
+                        self.log.warning("Unable to back up %s" % dp)
+
 
     def _getSSHAuthTokens(self):
         """
