@@ -25,7 +25,11 @@
 #   Two-hop SSH command:
 #   ssh -A -t ssh01.sdcc.bnl.gov ssh -A -t icsubmit01.sdcc.bnl.gov 
 #
+#   Host midway-login1.rcc.uchicago.edu
+#    User lincolnb
+#    IdentityFile ~/.ssh/id_midway
 #
+
 
 from autopyfactory import jsd
 from autopyfactory import bosco

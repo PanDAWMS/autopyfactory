@@ -22,6 +22,7 @@ sys.path.insert(0, prepath)
 
 # module level threadlock
 boscolock = threading.Lock()
+boscoaddlock = threading.Lock()
 
 class BoscoCluster(object):
 
@@ -127,11 +128,19 @@ class _boscocli(object):
                 
         return self.clusters
 
-    def _clusteradd(self, user,  host, port, batch, pubkeyfile, privkeyfile, passfile=None):
+    def _clusteradd(self, 
+                    user,  
+                    host, 
+                    port, 
+                    batch, 
+                    pubkeyfile, 
+                    privkeyfile, 
+                    passfile=None):
         self.log.info("Setting up cluster %s@%s/%s " % (user, host, batch))                 
         
         self.log.debug("ensuring pubkeyfile") 
         shutil.copy(pubkeyfile, self.boscopubkeyfile)
+        shutil.copy(pubkeyfile, )
         self.log.debug("ensuring privkeyfile") 
         shutil.copy(privkeyfile, self.boscoprivkeyfile)        
         if passfile:
@@ -140,29 +149,36 @@ class _boscocli(object):
         
         self._start_agent(pubkeyfile, privkeyfile, passfile)        
         
-             
-        cmd = 'bosco_cluster -a %s@%s %s ' % (user, host, batch)
-        self.log.debug("cmd is %s" % cmd) 
-        before = time.time()
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        out = None
-        (out, err) = p.communicate()        
-        self.log.debug('bosco_cluster -a output was %s' % out)
-        delta = time.time() - before
-        self.log.debug('It took %s seconds to issue the command' %delta)
-        self.log.debug('%s seconds to issue command' %delta)
-        
-        # remove bosco files to ensure account separation...
-        for fn in [self.boscopubkeyfile, self.boscoprivkeyfile, self.boscopassfile ]:
-            try:
-                self.log.debug("removing %s" % fn) 
-                os.remove(fn)
-            except OSError:
-                # file might not exist
-                pass
-            except TypeError:
-                # passfile might be None
-                pass
+        self.log.debug("getting add lock")
+        boscoaddlock.acquire()     
+        try:
+            cmd = 'bosco_cluster -a %s@%s %s ' % (user, host, batch)
+            self.log.debug("cmd is %s" % cmd) 
+            before = time.time()
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            out = None
+            (out, err) = p.communicate()        
+            self.log.debug('bosco_cluster -a output was %s' % out)
+            delta = time.time() - before
+            self.log.debug('It took %s seconds to issue the command' %delta)
+            self.log.debug('%s seconds to issue command' %delta)
+            
+            # remove bosco files to ensure account separation...
+            for fn in [self.boscopubkeyfile, self.boscoprivkeyfile, self.boscopassfile ]:
+                try:
+                    self.log.debug("removing %s" % fn) 
+                    os.remove(fn)
+                except OSError:
+                    # file might not exist
+                    pass
+                except TypeError:
+                    # passfile might be None
+                    pass
+        except Exception, e:
+            self.log.exception("Exception during bosco_cluster -a installation. ")
+        finally:
+            self.log.debug("releasing add lock")
+            boscoaddlock.release()
             
                 
     def _start_agent(self, pubkeyfile, privkeyfile, passfile=None):
