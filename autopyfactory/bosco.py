@@ -140,9 +140,10 @@ class _boscocli(object):
         
         self.log.debug("ensuring pubkeyfile") 
         shutil.copy(pubkeyfile, self.boscopubkeyfile)
-        shutil.copy(pubkeyfile, )
+        shutil.copy(pubkeyfile, os.path.expanduser("~/.ssh/id_rsa.pub") )
         self.log.debug("ensuring privkeyfile") 
         shutil.copy(privkeyfile, self.boscoprivkeyfile)        
+        shutil.copy(privkeyfile, os.path.expanduser("~/.ssh/id_rsa")) 
         if passfile:
             self.log.debug("ensuring passfile")        
             shutil.copy(passfile, self.boscopassfile )
