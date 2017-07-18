@@ -11,7 +11,7 @@ from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.interfaces import ConfigInterface
 
 try:
-     from vc3 import infoclient
+     from vc3 import client
 except ImportError:
     pass
 
@@ -23,7 +23,16 @@ class VC3(ConfigInterface):
         self.factory = factory
         self.fcl = factory.fcl
         self.log.info('ConfigPlugin: Object initialized.')
+
+        self.__fake()
     
+
+    def __fake(self):
+        config = None # I don't see in the VC3 code config being used 
+        clientapi = client.VC3ClientAPI(config)
+        users = clientapi.listUsers()
+        self.log.debug('users from InfoService = %s' %users)
+
     def getConfig(self):
         cp = ConfigParser.ConfigParser()
         self.log.debug("Generating config object...")
