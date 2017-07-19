@@ -74,8 +74,8 @@ home_data_files=[#('etc', libexec_files),
 # -----------------------------------------------------------
 
 def choose_data_files():
-    rpminstall = False
-    userinstall = True
+    rpminstall = True
+    userinstall = False 
      
     if 'bdist_rpm' in sys.argv:
         rpminstall = True
