@@ -114,8 +114,8 @@ class CondorSSH(CondorBase):
         
         '''
         SSHCONFIG='''Host *
-StrictHostKeyChecking no
-UserKnownHostsFile=/dev/null
+    StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
 '''
         self.log.debug("Creating standard ssh config for APF submission.")
         fh = open(os.path.expanduser('~/.ssh/config'), 'w')
