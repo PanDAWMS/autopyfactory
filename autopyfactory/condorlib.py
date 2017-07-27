@@ -39,7 +39,7 @@ import copy
 #              condor_history 
 #############################################################################
 def condorhistorylib( attributes, constraints=[]):
-    default_attributes=['match_apf_queue', 'jobstatus', 'enteredcurrentstatus', 'remotewallclocktime']
+    default_attributes=['match_apf_queue', 'jobstatus', 'enteredcurrentstatus', 'remotewallclocktime','qdate']
     for da in default_attributes:
         if da not in attributes:
             attributes.append(da)

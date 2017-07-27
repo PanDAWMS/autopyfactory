@@ -199,9 +199,9 @@ class CondorBase(BatchSubmitInterface):
                 self.log.debug("Non-peaceful. Kill VM jobs...")
                 killlist = []
                 if self.killorder == 'oldest':
-                    jobinfo.sort(key = lambda x: x.enteredcurrentstatus, reverse=True)
+                    jobinfo.sort(key = lambda x: x.qdate, reverse=True)
                 elif self.killorder == 'newest':
-                    jobinfo.sort(key = lambda x: x.enteredcurrentstatus)
+                    jobinfo.sort(key = lambda x: x.qdate)
 
                 for i in range(0, n):
                     j = jobinfo.pop()
