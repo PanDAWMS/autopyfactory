@@ -14,12 +14,11 @@ import traceback
 
 
 from autopyfactory import condor 
-from autopyfactory.condor  import mynewsubmit
+from autopyfactory.condor  import mynewsubmit, killids
 from autopyfactory import jsd
 from autopyfactory.interfaces import BatchSubmitInterface
 from autopyfactory.info import JobInfo
 import autopyfactory.utils as utils
-
 
 
 class CondorBase(BatchSubmitInterface):
@@ -60,6 +59,8 @@ class CondorBase(BatchSubmitInterface):
             self.environ = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.environ')
             #self.batchqueue = qcl.generic_get(self.apfqname, 'batchqueue')
             self.arguments = qcl.generic_get(self.apfqname, 'executable.arguments')
+            self.peaceful = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.peaceful', get_function = 'getboolean', default_value=True)
+            self.killorder = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.killorder', default_value="newest"  )
             self.condor_attributes = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.condor_attributes')
             self.extra_condor_attributes = [(opt.replace('batchsubmit.condorbase.condor_attributes.',''),qcl.generic_get(self.apfqname, opt)) \
                                             for opt in qcl.options(self.apfqname) \
@@ -110,7 +111,7 @@ class CondorBase(BatchSubmitInterface):
                     self.log.debug('jsdfile has no value. Doing nothing')
             elif n < 0:
                 # For certain plugins, this means to retire or terminate nodes...
-                self.log.debug('Preparing to retire %s jobs' % abs(n))
+                self.log.debug('Preparing to retire/kill %s jobs' % abs(n))
                 self.retire(abs(n))
             else:
                 self.log.debug("Asked to submit 0. Doing nothing...")
@@ -176,13 +177,42 @@ class CondorBase(BatchSubmitInterface):
         return joblist
     ### END TEST ###
 
-        
 
-    def retire(self, num):
+    def retireOld(self, num):
         """
-        Do nothing by default. 
+        Do nothing by default.
+        Old version of retire() replaced by one that kills jobs.
+        
         """
         self.log.debug('Default retire() do nothing.')
+
+    def retire(self, num):
+        '''
+        Remove jobs directly. 
+        '''
+        self.log.debug("Beginning to kill %d jobs..." % num)
+        self.log.debug("Getting jobinfo for [%s]" % (self.apfqname))
+        jobinfo = self.apfqueue.batchstatus_plugin.getJobInfo(queue=self.apfqname)
+        self.log.debug("Jobinfo is %s" % jobinfo)
+        if jobinfo is not None:
+            if not self.peaceful:
+                self.log.debug("Non-peaceful. Kill VM jobs...")
+                killlist = []
+                if self.killorder == 'oldest':
+                    jobinfo.sort(key = lambda x: x.enteredcurrentstatus, reverse=True)
+                elif self.killorder == 'newest':
+                    jobinfo.sort(key = lambda x: x.enteredcurrentstatus)
+
+                for i in range(0, n):
+                    j = jobinfo.pop()
+                    killlist.append( "%s.%s" % (j.clusterid, j.procid))
+                self.log.debug("About to kill list of %s ids. First one is %s" % (len(killlist), killlist[0] ))
+                killids(killlist)
+                self.log.debug("killids() returned OK.")
+            else:
+                self.log.info("Peaceful is True. No job killing. Doing nothing.")
+        else:
+            self.log.debug("Jobinfo is None. Do nothing.")
 
 
     def cleanup(self):
