@@ -35,3 +35,12 @@ class Dummy(MonitorInterface):
         self.log.debug("updateJobs() called.")
         return None
    
+    def registerJobs(self, apfqueue, jobinfolist ):
+        """
+        Update information about job/jobs. 
+        Should support either single job object or list of job objects.  
+         
+        """
+        self.log.debug("updateJobs() called.")
+        return None   
+   
