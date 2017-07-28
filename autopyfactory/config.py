@@ -2,7 +2,7 @@
 
 import logging
 import logging.handlers
-
+import traceback
 
 # FIXME: many of these import are not needed. They are legacy...
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
@@ -57,13 +57,15 @@ class ConfigHandler(_thread):
         # first reconfig AuthManager, then APFQueuesManager
         try:
             self._run_auth()
-        except:
-            self.log.error('seting configuration for AuthManager failed. Will not proceed with threads configuration.')
+        except Exception, e:
+            self.log.error("Exception: %s   %s " % ( str(e), traceback.format_exc()))
+            self.log.error('setting configuration for AuthManager failed. Will not proceed with threads configuration.')
             return
         try:
             self._run_queues()
-        except:
-            self.log.error('seting configuration for queues failed.')
+        except Exception, e:
+            self.log.error("Exception: %s   %s " % ( str(e), traceback.format_exc()))
+            self.log.error('setting configuration for queues failed.')
         self.log.debug('leaving')
 
 
