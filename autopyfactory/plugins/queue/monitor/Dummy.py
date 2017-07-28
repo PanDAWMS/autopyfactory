@@ -41,6 +41,20 @@ class Dummy(MonitorInterface):
         Should support either single job object or list of job objects.  
          
         """
-        self.log.debug("updateJobs() called.")
+        self.log.debug("registerJobs() called.")
         return None   
+    
+    def updateLabel(self, label, msg):
+        """
+        Update label. 
+        Should support either single job object or list of job objects.  
+         
+        """
+        self.log.debug("updateLabel() called.")
+        return None       
+        
+        
+        
+        
+    
    
