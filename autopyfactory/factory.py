@@ -549,6 +549,16 @@ class Factory(object):
         authconfigpluginnameslist = [i.strip() for i in authconfigpluginnames.split(',')]
         self.auth_config_plugins = self.pluginmgr.getpluginlist(self, ['autopyfactory', 'plugins', 'factory', 'config', 'auth'], authconfigpluginnameslist,  self.fcl, 'Factory')
 
+        self.monitor_plugins = []
+        if self.fcl.has_option('Factory', 'monitor.section'):
+            monitorsections = self.fcl.generic_get('Factory', 'monitor.section')
+            if monitorsections is not None:
+                monitorsectionslist = [i.strip() for i in monitorsections.split(',')]
+                for monitorsection in monitorsectionslist:
+                    monitorpluginname = self.mcl.get(monitorsection, 'monitorplugin')
+                    monitor_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'factory', 'monitor'], monitorpluginname, self.mcl, monitorsection)        # a list of 1 or more plugins
+                    self.monitor_plugins.append(monitor_plugin)
+
 
     def _initLogserver(self):
         # Set up LogServer
