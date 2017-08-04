@@ -556,7 +556,7 @@ class Factory(object):
                 monitorsectionslist = [i.strip() for i in monitorsections.split(',')]
                 for monitorsection in monitorsectionslist:
                     monitorpluginname = self.mcl.get(monitorsection, 'monitorplugin')
-                    monitor_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'factory', 'monitor'], monitorpluginname, self.mcl, monitorsection)        # a list of 1 or more plugins
+                    monitor_plugin = pluginmgr.getplugin(self, ['autopyfactory', 'plugins', 'factory', 'monitor'], monitorpluginname, self.mcl, monitorsection)        # a list of 1 or more plugins
                     self.monitor_plugins.append(monitor_plugin)
 
 
