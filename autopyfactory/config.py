@@ -97,7 +97,7 @@ class ConfigHandler(_thread):
         for config_plugin in self.factory.auth_config_plugins:
             tmpconfig = config_plugin.getConfig()
             newconfig.merge(tmpconfig)
-        self.log.debug('leaving with newconf = %s' %newconfig)
+        self.log.debug('leaving with newconf = %s with %s sections.' % ( newconfig, len(newconfig.sections())))
         return newconfig
 
 
@@ -110,5 +110,5 @@ class ConfigHandler(_thread):
         for config_plugin in self.factory.queues_config_plugins:
             tmpconfig = config_plugin.getConfig()
             newconfig.merge(tmpconfig)
-        self.log.debug('leaving with newconf = %s' %newconfig)
+        self.log.debug('leaving with newconf = %s with %s sections.' % ( newconfig, len(newconfig.sections())))
         return newconfig
