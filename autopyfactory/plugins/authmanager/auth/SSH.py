@@ -18,7 +18,7 @@ class SSH(object):
         self.name = section
         self.manager = manager
         self.factory = manager.factory
-        #self.basedir = os.path.expanduser(config.get(section, 'authbasedir'))
+        self.basedir = os.path.expanduser(config.get(section, 'authbasedir'))
         self.sshtype = config.get(section, 'ssh.type' )
         self.privkey = config.get(section, 'ssh.privatekey' )
         self.pubkey = config.get(section, 'ssh.publickey' )
