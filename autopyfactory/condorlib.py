@@ -122,7 +122,9 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
 
 
 def _querycondorlib(attributes, remotecollector=None, remoteschedd=None):
-
+    '''
+    Returns a list of ClassAd objects. 
+    '''
     # NOTE:
     # when remotecollector has a valid value, 
     # then remoteschedd must have a valid value too

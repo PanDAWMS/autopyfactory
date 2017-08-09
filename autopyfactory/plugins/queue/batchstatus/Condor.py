@@ -2,7 +2,6 @@
 #
 # AutoPyfactory batch status plugin for Condor
 #
-
 import commands
 import subprocess
 import logging
@@ -18,20 +17,63 @@ from pprint import pprint
 from autopyfactory.interfaces import BatchStatusInterface, _thread
 from autopyfactory.info import BatchStatusInfo
 from autopyfactory.info import QueueInfo
-
 from autopyfactory.condor import checkCondor, querycondor, querycondorxml
 from autopyfactory.condor import parseoutput, aggregateinfo
 from autopyfactory.condorlib import querycondorlib
 from autopyfactory.mappings import map2info
-
-  
 import autopyfactory.utils as utils
+
+
+class CondorJobInfo(object):
+    """
+    This object represents a Condor job.     
+        
+    """
+    jobattrs = ['match_apf_queue',
+                'clusterid',
+                'procid',
+                'qdate' 
+                'ec2instancename',
+                'ec2instancetype',
+                'enteredcurrentstatus',
+                'jobstatus',
+                'ec2remotevirtualmachinename',
+                'ec2securitygroups',
+                'ec2spotprice',
+                'gridjobstatus',
+                 ]  
+
+
+    def __init__(self, dict):
+        """
+        Creates CondorJobInfo object from arbitrary dictionary of attributes. 
+        
+        """
+        self.log = logging.getLogger('autopyfactory.batchstatus')
+        self.jobattrs = []
+        for k in dict.keys():
+            self.__setattr__(k,dict[k])
+            self.jobattrs.append(k)
+        self.jobattrs.sort()
+        #self.log.debug("Made CondorJobInfo object with %d attributes" % len(self.jobattrs))    
+        
+    def __str__(self):
+        s = "CondorJobInfo: %s.%s " % (self.clusterid, 
+                                      self.procid)
+        for k in CondorJobInfo.jobattrs:
+            if k in attrstoprint:
+                s += " %s=%s " % ( k, self.__getattribute__(k))
+        return s
+    
+    def __repr__(self):
+        s = str(self)
+        return s
 
 
 class _condor(_thread, BatchStatusInterface):
     """
     -----------------------------------------------------------------------
-    This class is expected to have separate instances for each PandaQueue object. 
+    This class is expected to have separate instances for each object. 
     The first time it is instantiated, 
     -----------------------------------------------------------------------
     Public Interface:
@@ -39,10 +81,8 @@ class _condor(_thread, BatchStatusInterface):
     -----------------------------------------------------------------------
     """
     def __init__(self, apfqueue, config, section):
-
         _thread.__init__(self)
-        apfqueue.factory.threadsregistry.add("plugin", self)
-        
+        apfqueue.factory.threadsregistry.add("plugin", self)      
         self.log = logging.getLogger('autopyfactory.batchstatus.%s' %apfqueue.apfqname)
         self.log.debug('BatchStatusPlugin: Initializing object...')
 
@@ -56,7 +96,6 @@ class _condor(_thread, BatchStatusInterface):
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
             self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs') 
 
-
             ### BEGIN TEST ###
             self.remoteschedd = None
             self.remotecollector = None
@@ -66,9 +105,7 @@ class _condor(_thread, BatchStatusInterface):
                     self.remoteschedd = l[l.index('-name') + 1]
                 if '-pool' in l:
                     self.remotecollector = l[l.index('-pool') + 1]
-            ### END TEST ###
-
-            
+            ### END TEST ###            
         except AttributeError:
             self.condoruser = 'apf'
             self.facoryid = 'test-local'
@@ -76,9 +113,8 @@ class _condor(_thread, BatchStatusInterface):
             self.log.warning("Got AttributeError during init. We should be running stand-alone for testing.")
 
         self._thread_loop_interval = self.sleeptime
-       
-
-        self.currentinfo = None              
+        self.currentinfo = None
+        self.jobinfo = None              
 
         # ================================================================
         #                     M A P P I N G S 
@@ -95,7 +131,6 @@ class _condor(_thread, BatchStatusInterface):
         ###                       '4': 'done',
         ###                       '5': 'suspended',
         ###                       '6': 'running'}
-
 
         # variable to record when was last time info was updated
         # the info is recorded as seconds since epoch
@@ -141,6 +176,34 @@ class _condor(_thread, BatchStatusInterface):
                 return self.currentinfo
 
 
+    def getJobInfo(self, queue=None):
+        """
+        Returns a  object populated by the analysis 
+        over the output of a condor_q command
+
+        If the info recorded is older than that maxage,
+        None is returned, as we understand that info is too old and 
+        not reliable anymore.
+        """           
+        self.log.debug('Starting with self.maxage=%s' % self.maxage)
+        
+        if self.jobinfo is None:
+            self.log.debug('Not initialized yet. Returning None.')
+            return None
+        elif self.maxage > 0 and (int(time.time()) - self.jobinfo.lasttime) > self.maxage:
+            self.log.debug('Info too old. Leaving and returning None.')
+            return None
+        else:
+            if queue:
+                self.log.debug('Current info is %s' % self.jobinfo)                    
+                self.log.debug('Leaving and returning info of %d entries.' % len(self.jobinfo))
+                return self.jobinfo[queue]
+            else:
+                self.log.debug('Current info is %s' % self.jobinfo)
+                self.log.debug('No queue given, returning entire BatchStatusInfo object')
+                return self.jobinfo
+
+
 
 
 
@@ -166,14 +229,14 @@ class _condor(_thread, BatchStatusInterface):
                 6       > - Transferring Output
 
         """
-
-        self.log.debug('Starting.')
         self.log.debug('Starting.')
 
         try:
             #### BEGIN TEST ###
             #strout = querycondorlib()
-            strout = querycondorlib(self.remotecollector, self.remoteschedd)
+            strout = querycondorlib(self.remotecollector, 
+                                    self.remoteschedd, 
+                                    )
             # FIXME: do we need the extra_attributes ???
             # FIXME: do we need the queueskey ???
             #### END TEST ###
