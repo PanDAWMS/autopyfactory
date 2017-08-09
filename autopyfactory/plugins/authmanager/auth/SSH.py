@@ -2,6 +2,7 @@
  An APF auth plugin to provide SSH key info. 
 
 """
+import base64
 import logging
 import os
 
@@ -11,7 +12,11 @@ class SSH(object):
     """
         Container for SSH account info.
         Works with provided filepaths. 
-        Eventually should work with config-only provided tokens, with files created.  
+        Work with config-only provided base64-encoded tokens, with files created.  
+        Files written to 
+            <authbasedir>/<name>/<ssh.type>
+            <authbasedir>/<name>/<ssh.type>.pub
+        
     """    
     def __init__(self, manager, config, section):
         self.log = logging.getLogger('autopyfactory.auth')
@@ -47,8 +52,53 @@ class SSH(object):
         #    self.passwordfile = None
               
         # Create files if needed
-        # TODO
+        if self.privkey is not None:
+            fdir = "%s/%s" % (self.basedir, self.name)
+            fpath = "%s/%s" % (fdir, self.sshtype)
+            try:
+                self._ensuredir(fdir)
+                self._decodewrite(fpath, self.privkey)
+                self.privkeypath = fpath
+                self.log.debug("Wrote decoded private key to %s and set config OK." % self.privkeypath)
+            except Exception, e:
+                self.log.error("Exception: %s" % str(e))
+                self.log.debug("Exception: %s" % traceback.format_exc())
         
+        if self.pubkey is not None:
+            fdir = "%s/%s" % (self.basedir, self.name)
+            fpath = "%s/%s.pub" % (fdir, self.sshtype)
+            try:
+                self._ensuredir(fdir)
+                self._decodewrite(fpath, self.pubkey)
+                self.pubkeypath = fpath
+                self.log.debug("Wrote decoded public key to %s and set config OK." % self.pubkeypath)
+            except Exception, e:
+                self.log.error("Exception: %s" % str(e))
+                self.log.debug("Exception: %s" % traceback.format_exc())
+                
+        self.log.debug("SSH Handler for profile %s initialized." % self.name)
+
+        
+    def _ensuredir(self, dirpath):
+        self.log.debug("Ensuring directory %s" % dirpath)
+        if not os.path.exists(dirpath):
+            os.makedirs(dirpath)
+    
+    def _decodewrite(self, filepath, b64string ):
+        self.log.debug("Writing key to %s" % filepath)
+        decoded = SSH.decode(b64string)
+        try:
+            fh = open(filepath, 'w')
+            fh.write(decoded)
+            fh.close()
+        except Exception, e:
+            self.log.error("Exception: %s" % str(e))
+            self.log.debug("Exception: %s" % traceback.format_exc())
+            raise
+        finally:
+            fh.close()
+            
+            
     def _validate(self):
         """
         Confirm credentials exist and are valid. 
@@ -73,5 +123,15 @@ class SSH(object):
     def getSSHPassFilePath(self):
         self.log.debug('[%s] Retrieving passpath: %s' % (self.name, self.privkeypasspath))
         return self.privkeypasspath
+##############################################
+#        External Utility class methods. 
+##############################################
+
+    @classmethod
+    def encode(self, string):
+        return base64.b64encode(string)
     
+    @classmethod
+    def decode(self, string):
+        return base64.b64decode(string)    
         
