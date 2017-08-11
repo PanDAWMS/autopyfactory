@@ -498,6 +498,7 @@ class ConfigManager(object):
         gets the content of an config object from  a file
         """
         try:
+            path = os.path.expanduser(path)
             f = open(path)
             return f
         except:

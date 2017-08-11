@@ -37,6 +37,8 @@ etc_files = ['etc/autopyfactory.conf',
              'etc/mappings.conf',
              'etc/agisdefaults.conf',
              'etc/auth.conf',
+             'etc/autopyfactory-dev.conf',
+             'etc/queues-dev.conf',
              ]
 
 sysconfig_files = [
