@@ -6,6 +6,7 @@
 import copy
 import logging
 import os
+import traceback
 import urllib2
 
 from urllib import urlopen
@@ -453,7 +454,8 @@ class ConfigManager(object):
             config.fixpathvalues()
             self.log.debug("Finished creating config object.")
             return config
-        except:
+        except Exception, e:
+            self.log.error("Exception: %s   %s " % ( str(e), traceback.format_exc()))
             raise ConfigFailure('creating config object from source %s failed' %sources)
 
 
@@ -477,6 +479,8 @@ class ConfigManager(object):
 
         sourcetype = self.__getsourcetype(src)
         if sourcetype == 'file':
+            if src.startswith("file://"):
+                src = src[7:]
             return self.__dataFromFile(src)
         if sourcetype == 'uri':
             return self.__dataFromURI(src)
@@ -485,12 +489,13 @@ class ConfigManager(object):
         """
         determines if the source is a file on disk on an URI
         """
-        sourcetype = 'file'  # default
-        uritokens = ['file://', 'http://']
-        for token in uritokens:
-            if src.startswith(token):
-                sourcetype = 'uri'
-                break
+        self.log.debug("Determining source type for %s" % src)
+        sourcetype = 'file'
+        if src.startswith('file://'):
+            sourcetype = 'file'
+        elif src.startswith('uri://'):
+            sourcetype = 'uri'
+        self.log.debug("Source type is %s" % sourcetype)
         return sourcetype
 
     def __dataFromFile(self, path):
@@ -499,6 +504,7 @@ class ConfigManager(object):
         """
         try:
             path = os.path.expanduser(path)
+            self.log.debug("Opening config file at %s" % path)
             f = open(path)
             return f
         except:
@@ -514,7 +520,8 @@ class ConfigManager(object):
         try:
             uridata = urllib2.urlopen(uri)
             return uridata
-        except:
+        except Exception, e:
+            self.log.error("Exception: %s   %s " % ( str(e), traceback.format_exc()))
             raise FactoryConfigurationFailure("Problem with URI source %s" % uri)
 
 

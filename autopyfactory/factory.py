@@ -139,9 +139,9 @@ Jose Caballero <jcaballero@bnl.gov>
                           metavar="FILE1[,FILE2,FILE3]", 
                           help="Load configuration from FILEs (comma separated list)")
         parser.add_option("--log", dest="logfile", 
-                          default="syslog", 
                           metavar="LOGFILE", 
-                          action="store", 
+                          action="store",
+                          default="stdout", 
                           help="Send logging output to LOGFILE or SYSLOG or stdout [default <syslog>]")
         parser.add_option("--runas", dest="runAs", 
                           #
@@ -200,12 +200,14 @@ Jose Caballero <jcaballero@bnl.gov>
         """
 
         self.log = logging.getLogger('autopyfactory')
-        if self.options.logfile == "stdout":
-            logStream = logging.StreamHandler()
-        elif self.options.logfile == 'syslog':
+
+        self.options.logfile = os.path.expanduser(self.options.logfile)
+        if self.options.logfile == 'syslog':
             logStream = logging.handlers.SysLogHandler('/dev/log')
+        elif self.options.logfile == 'stdout':
+            logStream = logging.StreamHandler()
         else:
-            lf = self.options.logfile
+            lf = os.path.expanduser(self.options.logfile)
             logdir = os.path.dirname(lf)
             if not os.path.exists(logdir):
                 os.makedirs(logdir)

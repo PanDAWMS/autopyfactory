@@ -2,6 +2,7 @@
 
 import logging
 import os
+import traceback
 
 from autopyfactory.apfexceptions import ConfigFailure
 from autopyfactory.configloader import Config, ConfigManager
@@ -18,7 +19,6 @@ class File(ConfigInterface):
         self.qcl = None
         self.log.info('ConfigPlugin: Object initialized.')
 
-
     def _updateInfo(self):
 
         qcl = None
@@ -30,8 +30,10 @@ class File(ConfigInterface):
             self.log.debug("queues.conf file(s) = %s" % qcf)
             qcl_files = ConfigManager().getConfig(sources=qcf)
             self.log.debug("successfully read config file(s) %s" % qcf)
-        except:
-            pass
+        except Exception, e:
+            self.log.error("Exception: %s" % str(e))
+            self.log.error(traceback.format_exc(None))
+
         
         # 2. we try to read the directory in queueDirConf and create a config loader
         qcd = None
@@ -48,8 +50,10 @@ class File(ConfigInterface):
                 else:
                     self.log.debug("queues.conf directory = %s" % qcd)
                     qcl_dir = ConfigManager().getConfig(configdir=qcd)
-        except:
-            pass
+
+        except Exception, e:
+            self.log.error("Exception: %s" % str(e))
+            self.log.error(traceback.format_exc(None))
         
         # 3. we merge both loader objects
         try:
