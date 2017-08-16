@@ -19,10 +19,11 @@ fullpathlist = realpath(__file__).split(sep)
 prepath = sep.join(fullpathlist[:-2])
 sys.path.insert(0, prepath)
 
+from pluginmanager import PluginManager
+
 import autopyfactory
 ###from autopyfactory.plugins.auth.X509 import X509
 ###from autopyfactory.plugins.auth.SSH import SSH
-from autopyfactory.pluginmanager import PluginManager
 from autopyfactory.apfexceptions import InvalidAuthFailure
 from autopyfactory.configloader import Config, ConfigsDiff
 
@@ -65,12 +66,12 @@ class AuthManager(object):
             if pclass == 'X509':
                 self.log.debug("Creating X509 handler for %s" % sect )
                 authpluginname = self.aconfig.get(sect, 'plugin')
-                x509h = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'authmanager', 'auth'], authpluginname, self.aconfig, sect)
+                x509h = pluginmanager.getplugin(['autopyfactory', 'plugins', 'authmanager', 'auth'], authpluginname, self, self.aconfig, sect)
                 self.handlers.append(x509h)
             elif pclass == 'SSH':
                 self.log.debug("Creating SSH handler for %s" % sect )
                 authpluginname = self.aconfig.get(sect, 'plugin')
-                sshh = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'authmanager', 'auth'], authpluginname, self.aconfig, sect)
+                sshh = pluginmanager.getplugin(['autopyfactory', 'plugins', 'authmanager', 'auth'], authpluginname, self, self.aconfig, sect)
                 self.handlers.append(sshh)
             else:
                 self.log.warn("Unrecognized auth plugin %s" % pclass )

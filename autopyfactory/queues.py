@@ -35,6 +35,7 @@ try:
 except:
     from email.MIMEText import MIMEText
 
+from pluginmanager import PluginManager
 
 # FIXME: many of these import are not needed. They are legacy...
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
@@ -43,7 +44,6 @@ from autopyfactory.configloader import Config, ConfigManager, ConfigsDiff
 from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
 ###from autopyfactory.pluginsmanagement import QueuePluginDispatcher
-from autopyfactory.pluginmanager import PluginManager
 from autopyfactory.interfaces import _thread
 
 
@@ -340,20 +340,20 @@ class APFQueue(_thread):
 
         schedpluginnames = self.qcl.get(self.apfqname, 'schedplugin')
         schedpluginnameslist = [i.strip() for i in schedpluginnames.split(',')]
-        self.scheduler_plugins = pluginmanager.getpluginlist(self, ['autopyfactory', 'plugins', 'queue', 'sched'], schedpluginnameslist, self.qcl, self.apfqname)     # a list of 1 or more plugins
+        self.scheduler_plugins = pluginmanager.getpluginlist(['autopyfactory', 'plugins', 'queue', 'sched'], schedpluginnameslist, self, self.qcl, self.apfqname)     # a list of 1 or more plugins
 
         wmsstatuspluginname = self.qcl.generic_get(self.apfqname, 'wmsstatusplugin')
         if wmsstatuspluginname is not None:
-            self.wmsstatus_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'wmsstatus'], wmsstatuspluginname, self.qcl, self.apfqname)  # a single WMSStatus plugin
+            self.wmsstatus_plugin = pluginmanager.getplugin(['autopyfactory', 'plugins', 'queue', 'wmsstatus'], wmsstatuspluginname, self, self.qcl, self.apfqname)  # a single WMSStatus plugin
             self.wmsstatus_plugin.start() # start the thread
         else:
             self.wmsstatus_plugin = None
 
         batchsubmitpluginname = self.qcl.get(self.apfqname, 'batchsubmitplugin')
-        self.batchsubmit_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'batchsubmit'], batchsubmitpluginname, self.qcl, self.apfqname)   # a single BatchSubmit plugin
+        self.batchsubmit_plugin = pluginmanager.getplugin(['autopyfactory', 'plugins', 'queue', 'batchsubmit'], batchsubmitpluginname, self, self.qcl, self.apfqname)   # a single BatchSubmit plugin
 
         batchstatuspluginname = self.qcl.get(self.apfqname, 'batchstatusplugin')
-        self.batchstatus_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'batchstatus'], batchstatuspluginname, self.qcl, self.apfqname)   # a single BatchStatus plugin
+        self.batchstatus_plugin = pluginmanager.getplugin(['autopyfactory', 'plugins', 'queue', 'batchstatus'], batchstatuspluginname, self, self.qcl, self.apfqname)   # a single BatchStatus plugin
         self.batchstatus_plugin.start() # start the thread
 
         self.monitor_plugins = []
@@ -363,7 +363,7 @@ class APFQueue(_thread):
                 monitorsectionslist = [i.strip() for i in monitorsections.split(',')]
                 for monitorsection in monitorsectionslist:
                     monitorpluginname = self.mcl.get(monitorsection, 'monitorplugin')
-                    monitor_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'queue', 'monitor'], monitorpluginname, self.mcl, monitorsection)        # a list of 1 or more plugins
+                    monitor_plugin = pluginmanager.getplugin(['autopyfactory', 'plugins', 'queue', 'monitor'], monitorpluginname, self, self.mcl, monitorsection)        # a list of 1 or more plugins
                     self.monitor_plugins.append(monitor_plugin)
 
 

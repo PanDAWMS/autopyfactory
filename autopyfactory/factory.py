@@ -36,6 +36,7 @@ try:
 except:
     from email.MIMEText import MIMEText
 
+from pluginmanager import PluginManager
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
 from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailure
@@ -45,7 +46,6 @@ from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.config import ConfigHandler
 from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.logserver import LogServer
-from autopyfactory.pluginmanager import PluginManager
 from autopyfactory.queues import APFQueuesManager
 from autopyfactory.threadsmanagement import ThreadsRegistry
 
@@ -545,21 +545,27 @@ class Factory(object):
 
         queuesconfigpluginnames =  self.fcl.generic_get('Factory', 'config.queues.plugin', default_value='File')
         queuesconfigpluginnameslist = [i.strip() for i in queuesconfigpluginnames.split(',')]
-        self.queues_config_plugins = self.pluginmgr.getpluginlist(self, ['autopyfactory', 'plugins', 'factory', 'config', 'queues'], queuesconfigpluginnameslist,  self.fcl, 'Factory')
+        self.queues_config_plugins = self.pluginmgr.getpluginlist(['autopyfactory', 'plugins', 'factory', 'config', 'queues'], queuesconfigpluginnameslist, self, self.fcl, 'Factory')
 
         authconfigpluginnames =  self.fcl.generic_get('Factory', 'config.auth.plugin', default_value='File')
         authconfigpluginnameslist = [i.strip() for i in authconfigpluginnames.split(',')]
-        self.auth_config_plugins = self.pluginmgr.getpluginlist(self, ['autopyfactory', 'plugins', 'factory', 'config', 'auth'], authconfigpluginnameslist,  self.fcl, 'Factory')
+        self.auth_config_plugins = self.pluginmgr.getpluginlist(['autopyfactory', 'plugins', 'factory', 'config', 'auth'], authconfigpluginnameslist, self, self.fcl, 'Factory')
 
-        self.monitor_plugins = []
-        if self.fcl.has_option('Factory', 'monitor.section'):
-            monitorsections = self.fcl.generic_get('Factory', 'monitor.section')
-            if monitorsections is not None:
-                monitorsectionslist = [i.strip() for i in monitorsections.split(',')]
-                for monitorsection in monitorsectionslist:
-                    monitorpluginname = self.mcl.get(monitorsection, 'monitorplugin')
-                    monitor_plugin = self.pluginmgr.getplugin(self, ['autopyfactory', 'plugins', 'factory', 'monitor'], monitorpluginname, self.mcl, monitorsection)        # a list of 1 or more plugins
-                    self.monitor_plugins.append(monitor_plugin)
+        ### BEGIN TEST ###
+        #self.monitor_plugins = []
+        #if self.fcl.has_option('Factory', 'monitor.section'):
+        #    monitorsections = self.fcl.generic_get('Factory', 'monitor.section')
+        #    if monitorsections is not None:
+        #        monitorsectionslist = [i.strip() for i in monitorsections.split(',')]
+        #        for monitorsection in monitorsectionslist:
+        #            monitorpluginname = self.mcl.get(monitorsection, 'monitorplugin')
+        #            monitor_plugin = self.pluginmgr.getplugin(self, ['autopyfactory', 'plugins', 'factory', 'monitor'], monitorpluginname, self.mcl, monitorsection)        # a list of 1 or more plugins
+        #            self.monitor_plugins.append(monitor_plugin)
+        ### BEGIN NEW ###
+        monitorpluginnames = self.fcl.generic_get('Factory', 'monitor', default_value=[])
+        monitorpluginnames_l = [i.strip() for i in monitorpluginnames]
+        self.monitor_plugins = self.pluginmgr.getpluginlist(['autopyfactory','plugins','factory','monitor'], monitorpluginnames_l, self, self.fcl, 'Factory')
+        ### END TEST ###
 
 
     def _initLogserver(self):
