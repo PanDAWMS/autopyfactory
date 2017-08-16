@@ -6,7 +6,7 @@
 
 from autopyfactory import factory
 
-release_version=factory.__version__
+release_version="2.4.14"
 
 import commands
 import os
