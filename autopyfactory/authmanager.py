@@ -19,7 +19,7 @@ fullpathlist = realpath(__file__).split(sep)
 prepath = sep.join(fullpathlist[:-2])
 sys.path.insert(0, prepath)
 
-from pluginmanager import PluginManager
+import pluginmanager
 
 import autopyfactory
 ###from autopyfactory.plugins.auth.X509 import X509
@@ -62,7 +62,6 @@ class AuthManager(object):
                 pclass = self.aconfig.get(sect, 'plugin')
             except Exception, e:
                 self.log.warn("No plugin attribute for section %s" % sect)
-            pluginmanager = PluginManager()
             if pclass == 'X509':
                 self.log.debug("Creating X509 handler for %s" % sect )
                 authpluginname = self.aconfig.get(sect, 'plugin')

@@ -36,6 +36,7 @@ try:
 except:
     from email.MIMEText import MIMEText
 
+import pluginmanager
 
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
 from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailure
@@ -45,8 +46,6 @@ from autopyfactory.configloader import Config, ConfigManager
 from autopyfactory.logserver import LogServer
 #from autopyfactory.pluginsmanagement import QueuePluginDispatcher
 #from autopyfactory.pluginsmanagement import FactoryPluginDispatcher
-###from autopyfactory.plugin import PluginManager
-from autopyfactory.pluginmanager import PluginManager
 from autopyfactory.queues import APFQueuesManager
 from autopyfactory.authmanager import AuthManager
 from autopyfactory.threadsmanagement import ThreadsManager
@@ -529,14 +528,12 @@ class Factory(object):
 
 
     def _plugins(self):
-        self.pluginmgr = PluginManager()
-
         # configuration plugins
         ###self.config_plugins = self.pluginmgr.getpluginlist(self, 'factory', 'config', self.fcl, 'Factory', 'configplugin')
 
         configpluginnames =  self.fcl.get('Factory', 'configplugin')
         configpluginnameslist = [i.strip() for i in configpluginnames.split(',')]
-        self.config_plugins = self.pluginmgr.getpluginlist(self, ['autopyfactory', 'plugins', 'factory', 'config'], configpluginnameslist,  self.fcl, 'Factory')
+        self.config_plugins = pluginmanager.getpluginlist(self, ['autopyfactory', 'plugins', 'factory', 'config'], configpluginnameslist,  self.fcl, 'Factory')
 
 
     def _initLogserver(self):

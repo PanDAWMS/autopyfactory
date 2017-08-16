@@ -36,7 +36,7 @@ try:
 except:
     from email.MIMEText import MIMEText
 
-from pluginmanager import PluginManager
+import pluginmanager
 
 # FIXME: many of these import are not needed. They are legacy...
 from autopyfactory.apfexceptions import FactoryConfigurationFailure, PandaStatusFailure, ConfigFailure
@@ -365,9 +365,6 @@ class APFQueue(_thread):
         get all the plugins needed by APFQueues
         """
         
-        pluginmanager = PluginManager()
-
-
         schedpluginnames = self.qcl.get(self.apfqname, 'schedplugin')
         schedpluginnameslist = [i.strip() for i in schedpluginnames.split(',')]
         self.scheduler_plugins = pluginmanager.getpluginlist(['autopyfactory', 'plugins', 'queue', 'sched'], schedpluginnameslist, self, self.qcl, self.apfqname)     # a list of 1 or more plugins
@@ -599,8 +596,6 @@ class StaticAPFQueue(object):
         get all the plugins needed by APFQueues
         """
         
-        pluginmanager = PluginManager()
-
 
         schedpluginnames = self.qcl.get(self.apfqname, 'schedplugin')
         schedpluginnameslist = [i.strip() for i in schedpluginnames.split(',')]
@@ -742,7 +737,6 @@ class SubmitAPFQueue(object):
 
     def _plugins(self):
         
-        pluginmanager = PluginManager()
         batchsubmitpluginname = self.qcl.get(self.apfqname, 'batchsubmitplugin')
         self.batchsubmit_plugin = pluginmanager.getplugin(['autopyfactory', 'plugins', 'queue', 'batchsubmit'], batchsubmitpluginname, self, self.qcl, self.apfqname)   # a single BatchSubmit plugin
 
