@@ -443,7 +443,7 @@ class Factory(object):
         self.apfqueuesmanager = APFQueuesManager(self)
 
         self._authmanager()
-        self._monitor()
+        self._queues_monitor_conf()
         self._mappings()
 
         # Handle Log Serving
@@ -508,7 +508,7 @@ class Factory(object):
         else:
             self.log.info("AuthManager disabled.")
 
-    def _monitor(self):
+    def _queues_monitor_conf(self):
 
         # Handle monitor configuration
         self.mcl = None
@@ -562,7 +562,7 @@ class Factory(object):
         #            self.monitor_plugins.append(monitor_plugin)
         ### BEGIN NEW ###
         monitorpluginnames = self.fcl.generic_get('Factory', 'monitor', default_value=[])
-        monitorpluginnames_l = [i.strip() for i in monitorpluginnames]
+        monitorpluginnames_l = [i.strip() for i in monitorpluginnames.split(',')]
         self.monitor_plugins = pluginmanager.getpluginlist(['autopyfactory','plugins','factory','monitor'], monitorpluginnames_l, self, self.fcl, 'Factory')
         ### END TEST ###
 
@@ -595,12 +595,13 @@ class Factory(object):
         # first call to reconfig() to load initial qcl configuration
         ###self.reconfig()
         
-        ### BEGIN TEST ###
-        #if self.fcl.generic_get('Factory', 'reconfig', 'getboolean', default_value=True):
-            #self.apfqueuesmanager.start() # starts the thread
         confighandler = ConfigHandler(self)
-        confighandler.setconfig()
-        ### END TEST ###
+        confighandler.setconfig()  # it calls the ConfigHandler._run() method, 
+                                   # either in an infinite loop on single shot
+                                   # it is in that _run() method where all 
+                                   # APFQueues threads and Auth Handlers threads
+                                   # are started
+        self._start_monitor()
         self._cleanlogs()
         
         try:
@@ -643,6 +644,14 @@ class Factory(object):
 
             
         self.log.debug("Leaving.")
+
+
+    def _start_monitor(self):
+        """
+        start all factory-level monitor plugins threads
+        """
+        for monitor in self.monitor_plugins:
+            monitor.start()
 
 
     def _cleanlogs(self):
