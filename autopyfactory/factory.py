@@ -199,7 +199,7 @@ Jose Caballero <jcaballero@bnl.gov>
         
         """
 
-        self.log = logging.getLogger('autopyfactory')
+        self.log = logging.getLogger()
 
         self.options.logfile = os.path.expanduser(self.options.logfile)
         if self.options.logfile == 'syslog':
