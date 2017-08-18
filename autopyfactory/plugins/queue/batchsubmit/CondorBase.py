@@ -26,15 +26,15 @@ class CondorBase(BatchSubmitInterface):
     def __init__(self, apfqueue, config, section):
 
         
-        self.log = logging.getLogger('autopyfactory.batchsubmit.%s' %apfqueue.apfqname)
-        #if len(self.log.parent.handlers) < 1:
-        #    logStream = logging.StreamHandler()
-        #    FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
-        #    formatter = logging.Formatter(FORMAT)
-        #    formatter.converter = time.gmtime  # to convert timestamps to UTC
-        #    logStream.setFormatter(formatter)
-        #    log.addHandler(logStream)
-        #    log.setLevel(logging.DEBUG)
+        self.log = logging.getLogger('autopyfactory.batchsubmit.%s' % apfqueue.apfqname)
+        if len(self.log.parent.handlers) < 1:
+            logStream = logging.StreamHandler()
+            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
+            formatter = logging.Formatter(FORMAT)
+            formatter.converter = time.gmtime  # to convert timestamps to UTC
+            logStream.setFormatter(formatter)
+            self.log.addHandler(logStream)
+            self.log.setLevel(logging.DEBUG)
 
         qcl = config
         self.apfqueue = apfqueue
