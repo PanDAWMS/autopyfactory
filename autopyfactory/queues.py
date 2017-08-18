@@ -43,7 +43,6 @@ from autopyfactory.apfexceptions import CondorVersionFailure, CondorStatusFailur
 from autopyfactory.configloader import Config, ConfigManager, ConfigsDiff
 from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
-###from autopyfactory.pluginsmanagement import QueuePluginDispatcher
 from autopyfactory.interfaces import _thread
 
 
