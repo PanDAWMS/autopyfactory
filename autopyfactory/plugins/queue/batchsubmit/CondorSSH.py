@@ -118,13 +118,15 @@ class CondorSSH(CondorBase):
     UserKnownHostsFile=/dev/null
 '''
         self.log.debug("Creating standard ssh config for APF submission.")
-        fh = open(os.path.expanduser('~/.ssh/config'), 'w')
+        f = os.path.expanduser('~/.ssh/config')
+        fh = open(f, 'w')
         try:
             fh.write(SSHCONFIG)
         except Exception, e:
             self.log.error('Problem writing to ~/.ssh/config')
         finally:
             fh.close()
+        os.chmod(f, 0600)
 
     def _getSSHAuthTokens(self):
         """
