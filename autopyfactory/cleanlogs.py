@@ -33,16 +33,16 @@ class CleanLogs(_thread):
         the interface inherited from Thread `
     -----------------------------------------------------------------------
     """
-    def __init__(self, fcl, qcl=None ):
+    def __init__(self, parent, fcl, qcl=None ):
         """
-        factory is a reference to the Factory object that created
+        parent is a reference to the Factory object that created
         the CleanLogs instance
         """
 
         _thread.__init__(self)
         self._thread_loop_interval = 60 * 60  # sleep 1 hour between loops        
         try:
-            factory.threadsregistry.add("util", self)
+            parent.threadsregistry.add("util", self)
         except:
             self.log.warning("Not adding to threadsregistry. Wrong context or other issue.")
         
