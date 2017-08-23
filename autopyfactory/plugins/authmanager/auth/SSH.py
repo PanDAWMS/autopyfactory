@@ -5,6 +5,7 @@
 import base64
 import logging
 import os
+import traceback
 
 
 # Does not need to be a thread because it doesn't need to perform asynch actions.
@@ -96,7 +97,7 @@ class SSH(object):
             self.log.error("Exception: %s" % str(e))
             self.log.debug("Exception: %s" % traceback.format_exc())
             raise
-        finally:
+        else:
             fh.close()
             
             
