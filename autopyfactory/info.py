@@ -286,7 +286,7 @@ class SiteInfo(BaseQueueInfo):
     Placeholder for attribute-based site information.
     One per site. 
     """
-def __init__(self):
+    def __init__(self):
         self.log = logging.getLogger('autopyfactory')
 
 
