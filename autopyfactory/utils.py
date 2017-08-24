@@ -110,6 +110,42 @@ def which(file):
                 return path + "/" + file
 
 
+class Container(object):
+    """
+    generic class that is built from a dictionary content
+    """
+
+    def __init__(self, d):
+
+        for k, v in d.items():
+            self.__dict__[k] = v
+
+    def __getattr__(self, name):
+        """
+        Return None for non-existent attributes, otherwise behave normally.         
+        """
+        try:
+            return int(self.__getattribute__(name))
+        except AttributeError:
+            return None
+
+
+def remap(d, mapping):
+    """
+    converts a dictionary into another dictionary
+    changing keys (and aggregating values) 
+    based on a mappings dictionary
+    """
+    out = {}
+    for k, v in d.items():
+        k = mapping[k]
+        if k not in out.keys():
+            out[k] = v
+        else:
+            out[k] += v
+    return out
+    
+# ================================================== 
 
 if __name__ == "__main__":
         
