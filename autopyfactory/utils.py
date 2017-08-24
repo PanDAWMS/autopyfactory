@@ -130,7 +130,7 @@ class Container(object):
             return None
 
 
-def remap(d, mapping, add_f='__add__'):
+def remap(d, mapping, add_f=lambda x,y: x+y):
     """
     converts a dictionary into another dictionary
     changing keys (and aggregating values) 
@@ -142,7 +142,7 @@ def remap(d, mapping, add_f='__add__'):
         if k not in out.keys():
             out[k] = v
         else:
-            out[k] = out[k].__getattribute__(add_f)(v) 
+            out[k] = add_f(out[k], v)
     return out
     
 # ================================================== 
