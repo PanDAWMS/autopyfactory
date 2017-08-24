@@ -194,7 +194,7 @@ class CloudStatusInfo(BaseAPFInfo):
     Information returned by WMSStatusPlugin getCloudInfo() calls. 
     Contains objects indexed by APF/WMS queue name.  
     """
-def __init__(self):
+    def __init__(self):
         self.log = logging.getLogger('autopyfactory')
 
 
@@ -203,7 +203,7 @@ class CloudInfo(BaseQueueInfo):
     """
     Attribute-based class containing WMS info about (WMS) clouds. 
     """
-def __init__(self):
+    def __init__(self):
         self.log = logging.getLogger('autopyfactory')
 
 
