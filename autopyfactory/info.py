@@ -277,8 +277,9 @@ class SiteStatusInfo(BaseAPFInfo):
     Information returned by WMSStatusPlugin getSiteInfo() calls. 
     Contains objects indexed by APF/WMS queue name.  
     """    
-def __init__(self):
+    def __init__(self):
         self.log = logging.getLogger('autopyfactory')
+
 
 class SiteInfo(BaseQueueInfo):
     """
