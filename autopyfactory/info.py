@@ -37,7 +37,7 @@ General info scheme:
              
 Inheritance:
 
-    BaseAPFInfo           BaseQueueInfo
+    BaseStatusInfo           BaseInfo
         |                       |
         V                       V
     BatchStatusInfo       BatchQueueInfo
@@ -47,7 +47,7 @@ Inheritance:
     
 
 
-class BaseAPFInfo(dict):
+class BaseStatusInfo(dict):
     """
     Base for top-level Info classes with second-level Info objects indexed 
     by APF/WMS queue names.
@@ -71,7 +71,7 @@ class BaseAPFInfo(dict):
             return default_cls()
   
 
-class BaseQueueInfo(object):
+class BaseInfo(object):
     """
     Base for aggregate (attribute-oriented) Info classes which are used per APF/WMS queue.
     Public Interface:
@@ -159,7 +159,7 @@ class BaseQueueInfo(object):
             return 0
 
 
-class BatchStatusInfo(BaseAPFInfo):
+class BatchStatusInfo(BaseStatusInfo):
     """
     Information returned by BatchStatusPlugin getInfo() calls. 
     Contains objects indexed by APF/WMS queue name. 
@@ -174,7 +174,7 @@ class BatchStatusInfo(BaseAPFInfo):
         return s
 
 
-class WMSStatusInfo(BaseAPFInfo):
+class WMSStatusInfo(BaseStatusInfo):
     """
     Information returned by WMSStatusPlugin getInfo() calls. 
     Contains objects indexed by APF/WMS queue name.    
@@ -189,7 +189,7 @@ class WMSStatusInfo(BaseAPFInfo):
         return s
 
 
-class CloudStatusInfo(BaseAPFInfo):
+class CloudStatusInfo(BaseStatusInfo):
     """
     Information returned by WMSStatusPlugin getCloudInfo() calls. 
     Contains objects indexed by APF/WMS queue name.  
@@ -199,7 +199,7 @@ class CloudStatusInfo(BaseAPFInfo):
 
 
 
-class CloudInfo(BaseQueueInfo):
+class CloudInfo(BaseInfo):
     """
     Attribute-based class containing WMS info about (WMS) clouds. 
     """
@@ -208,7 +208,7 @@ class CloudInfo(BaseQueueInfo):
 
 
 
-class WMSQueueInfo(BaseQueueInfo):
+class WMSQueueInfo(BaseInfo):
     """
     -----------------------------------------------------------------------
     Empty anonymous placeholder for attribute-based WMS job information.
@@ -272,7 +272,7 @@ class JobInfo(object):
         return s
 
 
-class SiteStatusInfo(BaseAPFInfo):
+class SiteStatusInfo(BaseStatusInfo):
     """
     Information returned by WMSStatusPlugin getSiteInfo() calls. 
     Contains objects indexed by APF/WMS queue name.  
@@ -281,7 +281,7 @@ class SiteStatusInfo(BaseAPFInfo):
         self.log = logging.getLogger('autopyfactory')
 
 
-class SiteInfo(BaseQueueInfo):
+class SiteInfo(BaseInfo):
     """
     Placeholder for attribute-based site information.
     One per site. 
@@ -290,7 +290,7 @@ class SiteInfo(BaseQueueInfo):
         self.log = logging.getLogger('autopyfactory')
 
 
-class QueueInfo(BaseQueueInfo):
+class QueueInfo(BaseInfo):
     """
     Empty anonymous placeholder for aggregated queue information for a single APF queue.  
 
