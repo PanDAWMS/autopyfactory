@@ -31,7 +31,7 @@ import copy
 
 
 #############################################################################
-#              APF API to query methods 
+#              APF interface to query methods 
 #############################################################################
 
 def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[], queueskey='match_apf_queue'):
@@ -53,7 +53,7 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
 
     list_attrs = [queueskey, 'jobstatus']
     list_attrs += extra_attributes
-    out = _querycondorlib(list_attrs, remotecollector, remoteschedd)
+    out = condor_q(list_attrs, remotecollector, remoteschedd)
     ###out = _aggregateinfolib(out, queueskey, 'jobstatus') 
     from mappings import JobStatusAnalyzer
     jobstatusanalyzer = JobStatusAnalyzer()
@@ -68,15 +68,17 @@ def condorhistorylib( attributes, constraints=[]):
         if da not in attributes:
             attributes.append(da)
     logging.debug('history called with attributes: %s' % attributes)
-    return _condorhistorylib( attributes, constraints)
+    return condor_history( attributes, constraints)
 
 
 #############################################################################
 #              condor python methods 
+#FIXME:
+#   if one day we want to make these methods a separately library
+#   then most probably they cannot have an 'autopyfactory' logger
 #############################################################################
 
-
-def _querycondorlib(attributes, remotecollector=None, remoteschedd=None):
+def condor_q(attributes, remotecollector=None, remoteschedd=None):
     '''
     Returns a list of ClassAd objects. 
     '''
@@ -99,7 +101,7 @@ def _querycondorlib(attributes, remotecollector=None, remoteschedd=None):
     log.debug(out)
     return out
 
-def _condorhistorylib( attributes, constraints):
+def condor_history( attributes, constraints):
     schedd = htcondor.Schedd()
     if len(constraints) > 1:
         condor_constraint_expr = " && ".join(constraints)
@@ -110,8 +112,7 @@ def _condorhistorylib( attributes, constraints):
     return history
 
 
-
-def querystatuslib():
+def condor_status():
     """ 
     Equivalent to condor_status
     We query for a few specific ClassAd attributes 
