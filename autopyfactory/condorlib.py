@@ -18,17 +18,12 @@ import time
 import traceback
 import xml.dom.minidom
 
-import autopyfactory.utils as utils
 from autopyfactory.apfexceptions import ConfigFailure, CondorVersionFailure
+from autopyfactory.info import JobInfo
+from autopyfactory import utils as utils
 
 from pprint import pprint
 from Queue import Queue
-
-from autopyfactory.info import JobInfo
-
-#############################################################################
-#               using HTCondor python bindings
-#############################################################################
 
 import htcondor
 import classad
@@ -36,62 +31,8 @@ import copy
 
 
 #############################################################################
-#              condor_history 
+#              APF API to query methods 
 #############################################################################
-def condorhistorylib( attributes, constraints=[]):
-    default_attributes=['match_apf_queue', 'jobstatus', 'enteredcurrentstatus', 'remotewallclocktime','qdate']
-    for da in default_attributes:
-        if da not in attributes:
-            attributes.append(da)
-    logging.debug('history called with attributes: %s' % attributes)
-    return _condorhistorylib( attributes, constraints)
-
-
-def _condorhistorylib( attributes, constraints):
-    schedd = htcondor.Schedd()
-    if len(constraints) > 1:
-        condor_constraint_expr = " && ".join(constraints)
-        history = schedd.history(condor_constraint_expr, attributes, 0)
-    else:
-        history = schedd.history( "true" , attributes, 0)
-    history = list(history)
-    return history
-
-
-#def _aggregatehistoryinfolib(jobs, primary_key='match_apf_queue', analyzers=[]):
-#
-#    queues = {}
-#
-#    for job in jobs:
-#        if not primary_key in job:
-#            continue
-#        
-#        apfqname = str(job[primary_key])
-#        if apfqname not in queues.keys():
-#            queues[apfqname] = {'total':0, 'short':0}
-#        else:
-#            queues[apfqname]['total'] += 1
-#            if job['remotewallclocktime'] < 6000:
-#                queues[apfqname]['short'] += 1
-#
-#    return queues
-
-
-def filtercondorhistorylib(history, constraints=[]):
-
-    # contraints example ['JobStatus == 4', 'RemoteWallClockTime < 120']
-
-    out = []
-    for job in history:
-        if _matches_constraints(job, constraints):
-            out.append(job)
-    return out
-
-
-#############################################################################
-#              condor_q
-#############################################################################
-
 
 def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[], queueskey='match_apf_queue'):
     """ 
@@ -121,6 +62,20 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
     return out 
 
 
+def condorhistorylib( attributes, constraints=[]):
+    default_attributes=['match_apf_queue', 'jobstatus', 'enteredcurrentstatus', 'remotewallclocktime','qdate']
+    for da in default_attributes:
+        if da not in attributes:
+            attributes.append(da)
+    logging.debug('history called with attributes: %s' % attributes)
+    return _condorhistorylib( attributes, constraints)
+
+
+#############################################################################
+#              condor python methods 
+#############################################################################
+
+
 def _querycondorlib(attributes, remotecollector=None, remoteschedd=None):
     '''
     Returns a list of ClassAd objects. 
@@ -144,50 +99,17 @@ def _querycondorlib(attributes, remotecollector=None, remoteschedd=None):
     log.debug(out)
     return out
 
-def queryjobs(attributes, remotecollector=None, remoteschedd=None):
-    '''
-    Jobs-oriented condor binding query
-    :param List of str attributes: ClassAd attributes of interest. 
-    :param str remotecollector:    Contact string of remote collector
-    :param str remoteschedd:       Contact string of remote schedd
-    :return: List of Dicts:        List of dictionaries of key/value ClassAd pairs              
-    :rtype: List        
-    '''
-    default_attributes = ['match_apf_queue', 'jobstatus', 'enteredcurrentstatus', 'remotewallclocktime']
-    for da in default_attributes:
-        if da not in attributes:
-            attributes.append(da)
-
-    # Only do this if the calling code application has left the root logger without a handler. 
-    #if len(log.parent.handlers) < 1:
-    #    logStream = logging.StreamHandler()
-    #    FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
-    #    formatter = logging.Formatter(FORMAT)
-    #    formatter.converter = time.gmtime  # to convert timestamps to UTC
-    #    logStream.setFormatter(formatter)
-    #    log.addHandler(logStream)
-    #    log.setLevel(logging.DEBUG)
-
-    
-    logging.debug("Starting with values attributes=%s, remotecollector=%s, remoteschedd=%s" %(attributes, remotecollector, remoteschedd))
-    if remotecollector:
-        # FIXME: to be tested
-        logging.debug("querying remote pool %s" %remotecollector)
-        collector = htcondor.Collector(remotecollector)
-        scheddAd = collector.locate(htcondor.DaemonTypes.Schedd, remoteschedd)
-        schedd = htcondor.Schedd(scheddAd) 
+def _condorhistorylib( attributes, constraints):
+    schedd = htcondor.Schedd()
+    if len(constraints) > 1:
+        condor_constraint_expr = " && ".join(constraints)
+        history = schedd.history(condor_constraint_expr, attributes, 0)
     else:
-        schedd = htcondor.Schedd() # Defaults to the local schedd.
-
-    out = schedd.query('true', attributes)
-    logging.debug(out)
-    return out
+        history = schedd.history( "true" , attributes, 0)
+    history = list(history)
+    return history
 
 
-
-#############################################################################
-#              condor_status
-#############################################################################
 
 def querystatuslib():
     """ 
@@ -244,18 +166,6 @@ def _aggregateinfolib(input, primary_key='match_apf_queue', analyzers=[]):
     return queues
 
 
-def _matches_constraints(ad, constraints):
-    constraint_expression = " && ".join( ["TARGET." + i for i in constraints])
-    return _matches_constraint_expr(ad, constraint_expression)
-
-
-def _matches_constraint_expr(ad, constraint_expression):
-    req_ad = classad.ClassAd()
-    req_ad['Requirements'] = classad.ExprTree(constraint_expression)
-    return ad.matches(req_ad)
-
-
-
 def _aggregatehistoryinfolib(jobs, primary_key='match_apf_queue', queues=None, analyzers=[]):
 
     if not queues:
@@ -266,7 +176,6 @@ def _aggregatehistoryinfolib(jobs, primary_key='match_apf_queue', queues=None, a
     for job in jobs:
         if not primary_key in job:
             continue
-
 
         apfqname = str(job[primary_key])
         if apfqname not in queues.keys():
@@ -279,8 +188,28 @@ def _aggregatehistoryinfolib(jobs, primary_key='match_apf_queue', queues=None, a
                 if out is False:
                     queues[apfqname]['short'] += 1
 
-
     return queues
+
+
+def filtercondorhistorylib(history, constraints=[]):
+
+    # contraints example ['JobStatus == 4', 'RemoteWallClockTime < 120']
+
+    out = []
+    for job in history:
+        if _matches_constraints(job, constraints):
+            out.append(job)
+    return out
+
+def _matches_constraints(ad, constraints):
+    constraint_expression = " && ".join( ["TARGET." + i for i in constraints])
+    return _matches_constraint_expr(ad, constraint_expression)
+
+
+def _matches_constraint_expr(ad, constraint_expression):
+    req_ad = classad.ClassAd()
+    req_ad['Requirements'] = classad.ExprTree(constraint_expression)
+    return ad.matches(req_ad)
 
 
 # this is a temp solution to add running jobs to output of condor_history
