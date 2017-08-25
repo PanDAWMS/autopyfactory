@@ -56,7 +56,7 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
     out = condor_q(list_attrs, remotecollector, remoteschedd)
     from mappings import JobStatusAnalyzer
     jobstatusanalyzer = JobStatusAnalyzer()
-    out = _aggregateinfolib(out, queueskey, jobstatusanalyzer) 
+    out = _aggregateinfolib(out, jobstatusanalyzer, queueskey) 
     log.debug(out)
     return out 
 
@@ -137,7 +137,7 @@ def condor_status():
 #############################################################################
 
 
-def _aggregateinfolib(input, primary_key='match_apf_queue', analyzer):
+def _aggregateinfolib(input, analyzer, primary_key='match_apf_queue'):
     # input is a list of job classads
     # analyzers is a list of mappings.BaseAnalyzer objects
     # output is a dict[primary_key] [secondary_key] [value] = # of jobs with that value
