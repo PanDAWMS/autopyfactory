@@ -561,9 +561,11 @@ class Factory(object):
         #            monitor_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'factory', 'monitor'], monitorpluginname, self.mcl, monitorsection)        # a list of 1 or more plugins
         #            self.monitor_plugins.append(monitor_plugin)
         ### BEGIN NEW ###
-        monitorpluginnames = self.fcl.generic_get('Factory', 'monitor', default_value=[])
-        monitorpluginnames_l = [i.strip() for i in monitorpluginnames.split(',')]
-        self.monitor_plugins = pluginmanager.getpluginlist(['autopyfactory','plugins','factory','monitor'], monitorpluginnames_l, self, self.fcl, 'Factory')
+	self.monitor_plugins = []
+        monitorpluginnames = self.fcl.generic_get('Factory', 'monitor', default_value=None)
+	if monitorpluginnames is not None:
+		monitorpluginnames_l = [i.strip() for i in monitorpluginnames.split(',')]
+		self.monitor_plugins = pluginmanager.getpluginlist(['autopyfactory','plugins','factory','monitor'], monitorpluginnames_l, self, self.fcl, 'Factory')
         ### END TEST ###
 
 
