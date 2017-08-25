@@ -115,9 +115,10 @@ class Container(object):
     generic class that is built from a dictionary content
     """
 
-    def __init__(self, d):
+    def __init__(self, input_d):
 
-        for k, v in d.items():
+        self.input_d = input_d
+        for k, v in self.input_d.items():
             self.__dict__[k] = v
 
     def __getattr__(self, name):
@@ -128,6 +129,12 @@ class Container(object):
             return int(self.__getattribute__(name))
         except AttributeError:
             return None
+
+    def __str__(self):
+        s = 'Info Container ='
+        for k, v in self.input_d.items():
+            s += ' %: %s' %(k, v)
+        return s
 
 
 def remap(d, mapping, add_f=lambda x,y: x+y):
