@@ -73,21 +73,20 @@ home_data_files=[#('etc', libexec_files),
 
 # -----------------------------------------------------------
 
-def choose_data_files():
-    rpminstall = True
-    userinstall = False 
-     
-    if 'bdist_rpm' in sys.argv:
-        rpminstall = True
-        userinstall = False
-                
-    if rpminstall:
-        return rpm_data_files
-    elif userinstall:
+def choose_data_file_locations():
+    local_install = False
+
+    if '--user' in sys.argv:
+        local_install = True
+    elif any([re.match('--home(=|\s)', arg) for arg in sys.argv]):
+        local_install = True
+    elif any([re.match('--prefix(=|\s)', arg) for arg in sys.argv]):
+        local_install = True
+
+    if local_install:
         return home_data_files
     else:
-        # Something probably went wrong, so punt
-        return home_data_files
+        return rpm_data_files
        
 # ===========================================================
 
@@ -127,5 +126,5 @@ setup(
                'bin/proxymanager'
               ],
     
-    data_files = choose_data_files()
+    data_files = choose_data_file_locations()
 )
