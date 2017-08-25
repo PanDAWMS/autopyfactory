@@ -54,10 +54,9 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
     list_attrs = [queueskey, 'jobstatus']
     list_attrs += extra_attributes
     out = condor_q(list_attrs, remotecollector, remoteschedd)
-    ###out = _aggregateinfolib(out, queueskey, 'jobstatus') 
     from mappings import JobStatusAnalyzer
     jobstatusanalyzer = JobStatusAnalyzer()
-    out = _aggregateinfolib(out, queueskey, [jobstatusanalyzer]) 
+    out = _aggregateinfolib(out, queueskey, jobstatusanalyzer) 
     log.debug(out)
     return out 
 
@@ -138,7 +137,7 @@ def condor_status():
 #############################################################################
 
 
-def _aggregateinfolib(input, primary_key='match_apf_queue', analyzers=[]):
+def _aggregateinfolib(input, primary_key='match_apf_queue', analyzer):
     # input is a list of job classads
     # analyzers is a list of mappings.BaseAnalyzer objects
     # output is a dict[primary_key] [secondary_key] [value] = # of jobs with that value
@@ -154,15 +153,14 @@ def _aggregateinfolib(input, primary_key='match_apf_queue', analyzers=[]):
         if apfqname not in queues.keys():
             queues[apfqname] = {}
 
-        for analyzer in analyzers:
-            label = analyzer.getlabel()
-            if label not in queues[apfqname].keys():
-                queues[apfqname][label] = {}
-            value = analyzer.analyze(job)
-            if value != None:
-                if value not in queues[apfqname][label].keys():
-                    queues[apfqname][label][value] = 0
-                queues[apfqname][label][value] += 1
+        label = analyzer.getlabel()
+        if label not in queues[apfqname].keys():
+            queues[apfqname][label] = {}
+        value = analyzer.analyze(job)
+        if value != None:
+            if value not in queues[apfqname][label].keys():
+                queues[apfqname][label][value] = 0
+            queues[apfqname][label][value] += 1
 
     return queues
 
