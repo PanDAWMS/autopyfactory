@@ -229,7 +229,7 @@ class CondorBase(BatchSubmitInterface):
         """
         now = time.gmtime() # gmtime() is like localtime() but in UTC
         timePath = "/%04d-%02d-%02d/" % (now[0], now[1], now[2])
-        logPath = timePath + self.apfqname.translate(string.maketrans('/:','__'))
+        logPath = timePath + re.sub('[/:]', '_', self.apfqname)
         self.logDir = self.baselogdir + logPath
         self.logUrl = self.baselogdirurl + logPath
 
