@@ -517,14 +517,14 @@ class StaticAPFQueue(object):
                 
         '''
         self.log = logging.getLogger('%s' % config.sections()[0])
-        if len(log.parent.handlers) < 1:
-            logStream = logging.StreamHandler()
-            FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
-            formatter = logging.Formatter(FORMAT)
-            formatter.converter = time.gmtime  # to convert timestamps to UTC
-            logStream.setFormatter(formatter)
-            log.addHandler(logStream)
-            log.setLevel(logging.DEBUG)
+        #if len(log.parent.handlers) < 1:
+        #    logStream = logging.StreamHandler()
+        #    FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
+        #    formatter = logging.Formatter(FORMAT)
+        #    formatter.converter = time.gmtime  # to convert timestamps to UTC
+        #    logStream.setFormatter(formatter)
+        #    log.addHandler(logStream)
+        #    log.setLevel(logging.DEBUG)
 
         self.log.debug('APFQueue: Initializing object...')
         self.queuename = config.sections()[0]
