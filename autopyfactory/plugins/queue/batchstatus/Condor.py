@@ -30,7 +30,7 @@ class CondorJobInfo(object):
     jobattrs = ['match_apf_queue',
                 'clusterid',
                 'procid',
-                'qdate' 
+                'qdate', 
                 'ec2instancename',
                 'ec2instancetype',
                 'enteredcurrentstatus',
