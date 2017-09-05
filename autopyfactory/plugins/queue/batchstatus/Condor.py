@@ -61,8 +61,7 @@ class CondorJobInfo(object):
         s = "CondorJobInfo: %s.%s " % (self.clusterid, 
                                       self.procid)
         for k in CondorJobInfo.jobattrs:
-            if k in attrstoprint:
-                s += " %s=%s " % ( k, self.__getattribute__(k))
+            s += " %s=%s " % ( k, self.__getattribute__(k))
         return s
     
     def __repr__(self):
@@ -239,10 +238,16 @@ class _condor(_thread, BatchStatusInterface):
         '''
         self.log.debug('Starting.')
         classadlist = condor_q(CondorJobInfo.jobattrs)
-        newjobinfo = []
-        for c in classadlist:
-            ji = CondorJobInfo(c)
-            newjobinfo.append(ji)
+        newjobinfo = {}
+
+        for ca in classadlist:
+            if 'match_apf_queue' in ca.keys(): 
+                ji = CondorJobInfo(ca)            
+                try:
+                    ql = newjobinfo[ji.match_apf_queue]
+                    ql.append(ji)
+                except KeyError:
+                    newjobinfo[ji.match_apf_queue] = [ ji]
         self.log.debug("Created jobinfo list of %s items" % len(newjobinfo))
         self.log.info("Replacing old info with newly generated info.")
         self.jobinfo = newjobinfo
