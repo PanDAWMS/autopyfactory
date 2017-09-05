@@ -17,8 +17,6 @@ from pprint import pprint
 from autopyfactory.interfaces import BatchStatusInterface, _thread
 from autopyfactory.info import BatchStatusInfo
 from autopyfactory.info import QueueInfo
-#from autopyfactory.condor import checkCondor, querycondor, querycondorxml
-#from autopyfactory.condor import parseoutput, aggregateinfo
 from autopyfactory.condorlib import querycondorlib, condor_q
 from autopyfactory.mappings import map2info
 import autopyfactory.utils as utils
@@ -134,7 +132,6 @@ class _condor(_thread, BatchStatusInterface):
         # variable to record when was last time info was updated
         # the info is recorded as seconds since epoch
         self.lasttime = 0
-        checkCondor()
         self.log.info('BatchStatusPlugin: Object initialized.')
 
 
