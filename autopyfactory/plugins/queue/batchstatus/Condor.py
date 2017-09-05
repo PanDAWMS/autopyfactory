@@ -17,9 +17,9 @@ from pprint import pprint
 from autopyfactory.interfaces import BatchStatusInterface, _thread
 from autopyfactory.info import BatchStatusInfo
 from autopyfactory.info import QueueInfo
-from autopyfactory.condor import checkCondor, querycondor, querycondorxml
-from autopyfactory.condor import parseoutput, aggregateinfo
-from autopyfactory.condorlib import querycondorlib
+#from autopyfactory.condor import checkCondor, querycondor, querycondorxml
+#from autopyfactory.condor import parseoutput, aggregateinfo
+from autopyfactory.condorlib import querycondorlib, condor_q
 from autopyfactory.mappings import map2info
 import autopyfactory.utils as utils
 
@@ -108,7 +108,7 @@ class _condor(_thread, BatchStatusInterface):
             ### END TEST ###            
         except AttributeError:
             self.condoruser = 'apf'
-            self.facoryid = 'test-local'
+            self.factoryid = 'test-local'
             self.sleeptime = 10
             self.log.warning("Got AttributeError during init. We should be running stand-alone for testing.")
 
@@ -190,9 +190,6 @@ class _condor(_thread, BatchStatusInterface):
         if self.jobinfo is None:
             self.log.debug('Not initialized yet. Returning None.')
             return None
-        elif self.maxage > 0 and (int(time.time()) - self.jobinfo.lasttime) > self.maxage:
-            self.log.debug('Info too old. Leaving and returning None.')
-            return None
         else:
             if queue:
                 self.log.debug('Current info is %s' % self.jobinfo)                    
@@ -203,45 +200,25 @@ class _condor(_thread, BatchStatusInterface):
                 self.log.debug('No queue given, returning entire BatchStatusInfo object')
                 return self.jobinfo
 
-
-
-
-
-
-    ###############################################################################
-    #   playing with the HTcondor python bindings
-    ###############################################################################
-
+    
     def _updatelib(self):
+        '''
+        
+        '''
+        self._updateinfo()
+        self._updatejobinfo()
+        
+        
+    def _updateinfo(self):
         """
         Query Condor for job status, and populate  object.
         It uses the condor python bindings.
-
-        The JobStatus code indicates the current Condor status of the job.
-        
-                Value   Status                            
-                0       U - Unexpanded (the job has never run)    
-                1       I - Idle                                  
-                2       R - Running                               
-                3       X - Removed                              
-                4       C -Completed                            
-                5       H - Held                                 
-                6       > - Transferring Output
-
         """
         self.log.debug('Starting.')
-
         try:
-            #### BEGIN TEST ###
-            #strout = querycondorlib()
             strout = querycondorlib(self.remotecollector, 
                                     self.remoteschedd, 
                                     )
-            # FIXME: do we need the extra_attributes ???
-            # FIXME: do we need the queueskey ???
-            #### END TEST ###
-
-
             self.log.debug('output of querycondorlib : ' %strout)
             if strout is None:
                 self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.')
@@ -252,14 +229,29 @@ class _condor(_thread, BatchStatusInterface):
         except Exception, e:
             self.log.error("Exception: %s" % str(e))
             self.log.debug("Exception: %s" % traceback.format_exc())
+        self.log.debug('Leaving.')
 
+
+    def _updatejobinfo(self):
+        '''
+        Query Condor for job list.
+        Return dictionary indexed by queuename, with value a List of CondorJobInfo objects. 
+        '''
+        self.log.debug('Starting.')
+        classadlist = condor_q(CondorJobInfo.jobattrs)
+        newjobinfo = []
+        for c in classadlist:
+            ji = CondorJobInfo(c)
+            newjobinfo.append(ji)
+        self.log.debug("Created jobinfo list of %s items" % len(newjobinfo))
+        self.log.info("Replacing old info with newly generated info.")
+        self.jobinfo = newjobinfo
         self.log.debug('Leaving.')
 
 
 # =============================================================================
 #       Singleton wrapper
 # =============================================================================
-
 class Condor(object):
    
     instances = {}
