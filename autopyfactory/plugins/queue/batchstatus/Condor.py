@@ -58,8 +58,10 @@ class CondorJobInfo(object):
     def __str__(self):
         s = "CondorJobInfo: %s.%s " % (self.clusterid, 
                                       self.procid)
-        for k in CondorJobInfo.jobattrs:
-            s += " %s=%s " % ( k, self.__getattribute__(k))
+        #for k in CondorJobInfo.jobattrs:
+        #    s += " %s=%s " % ( k, self.__getattribute__(k))
+        for k, v in self.__dict__.items():
+            s += " %s=%s " % ( k, v)
         return s
     
     def __repr__(self):
