@@ -1,5 +1,6 @@
 2.4.14
 
+* added function condor_rm to condorlib.py
 * some changes in the name of classes in condorlib.py, for clarity
 * allowing reconfig also for authmanager before than queues
 * extra level of subdirectories under plugins/factory/config/ to distinguish between queues reconfig and authmanager reconfig
