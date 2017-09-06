@@ -207,7 +207,11 @@ class CondorBase(BatchSubmitInterface):
                     j = jobinfo.pop()
                     killlist.append( "%s.%s" % (j.clusterid, j.procid))
                 self.log.debug("About to kill list of %s ids. First one is %s" % (len(killlist), killlist[0] ))
-                killids(killlist)
+                ### BEGIN TEST ###
+                #killids(killlist)
+                from autopyfactory.condorlib import condor_rm
+                condor_rm(killlist)
+                ### END TEST ###
                 self.log.debug("killids() returned OK.")
             else:
                 self.log.info("Peaceful is True. No job killing. Doing nothing.")
