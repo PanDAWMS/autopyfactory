@@ -100,7 +100,7 @@ def condor_q(attributes, remotecollector=None, remoteschedd=None):
     log.debug(out)
     return out
 
-def condor_rm(self, jobid_l, remotecollector=None, remoteschedd=None):
+def condor_rm(jobid_l, remotecollector=None, remoteschedd=None):
     """
     :param list jobid_l: list of strings "ClusterId.ProcId"
     :param string remotecollector: hostname of the collector
