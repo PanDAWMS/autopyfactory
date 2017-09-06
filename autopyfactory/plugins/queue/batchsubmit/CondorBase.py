@@ -203,7 +203,7 @@ class CondorBase(BatchSubmitInterface):
                 elif self.killorder == 'newest':
                     jobinfo.sort(key = lambda x: x.qdate)
 
-                for i in range(0, n):
+                for i in range(0, num):
                     j = jobinfo.pop()
                     killlist.append( "%s.%s" % (j.clusterid, j.procid))
                 self.log.debug("About to kill list of %s ids. First one is %s" % (len(killlist), killlist[0] ))
