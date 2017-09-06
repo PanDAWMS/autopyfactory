@@ -217,7 +217,7 @@ class _condor(_thread, BatchStatusInterface):
             strout = querycondorlib(self.remotecollector, 
                                     self.remoteschedd, 
                                     )
-            self.log.debug('output of querycondorlib : ' %strout)
+            self.log.debug('output of querycondorlib : %s' %strout)
             if strout is None:
                 self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.')
             else:
