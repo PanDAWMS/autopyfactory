@@ -85,7 +85,7 @@ def condor_q(attributes, remotecollector=None, remoteschedd=None):
     # when remotecollector has a valid value, 
     # then remoteschedd must have a valid value too
 
-    log = logging.getLogger('autopyfactory')
+    log = logging.getLogger('condor')
     log.debug("Starting with values attributes=%s, remotecollector=%s, remoteschedd=%s" %(attributes, remotecollector, remoteschedd))
     if remotecollector:
         # FIXME: to be tested
@@ -99,6 +99,26 @@ def condor_q(attributes, remotecollector=None, remoteschedd=None):
     out = schedd.query('true', attributes)
     log.debug(out)
     return out
+
+def condor_rm(self, jobid_l, remotecollector=None, remoteschedd=None):
+    """
+    :param list jobid_l: list of strings "ClusterId.ProcId"
+    :param string remotecollector: hostname of the collector
+    :param string remoteschedd: hostname of the schedd
+    """
+    log = logging.getLogger('condor')
+    log.debug('Starting with inputs jobid_l=%s remotecollector=%s remoteschedd=%s ' %(jobid_l, remotecollector, remoteschedd, ))
+    if remotecollector:
+        # FIXME: to be tested
+        log.debug("querying remote pool %s" %remotecollector)
+        collector = htcondor.Collector(remotecollector)
+        scheddAd = collector.locate(htcondor.DaemonTypes.Schedd, remoteschedd)
+        schedd = htcondor.Schedd(scheddAd) 
+    else:
+        schedd = htcondor.Schedd() # Defaults to the local schedd.
+    schedd.act(htcondor.JobAction.Remove, jobid_l)
+    log.debug('Leaving')
+
 
 def condor_history( attributes, constraints):
     schedd = htcondor.Schedd()
