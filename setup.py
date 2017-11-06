@@ -74,7 +74,7 @@ home_data_files=[#('etc', libexec_files),
 # -----------------------------------------------------------
 
 def choose_data_file_locations():
-    local_install = False
+    local_install = True
 
     if '--user' in sys.argv:
         local_install = True
