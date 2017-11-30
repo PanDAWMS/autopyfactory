@@ -250,6 +250,12 @@ class CondorBase(BatchSubmitInterface):
         # this token is very important, since it will be used by other plugins
         # to identify this pilot from others when running condor_q
         self.JSD.add('+MATCH_APF_QUEUE', '"%s"' % self.apfqname)
+        
+        # Adding to take over for MATCH_APF_QUEUE
+        self.JSD.add('+APF_QUEUE', '"%s"' % self.apfqname)
+        self.JSD.add('+APF_LOGURL=%s/$(Cluster).$(Process).log' % self.logUrl)
+        self.JSD.add('+APF_OUTURL=%s/$(Cluster).$(Process).out' % self.logUrl)
+        self.JSD.add('+APF_ERRURL=%s/$(Cluster).$(Process).err' % self.logUrl)
 
         ### Environment
         environment = '"PANDA_JSID=%s' % self.factoryid
