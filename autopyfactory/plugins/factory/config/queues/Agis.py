@@ -52,7 +52,7 @@ from autopyfactory.interfaces import ConfigInterface
 
 # REQ maps list *required* attribute and values. Object is removed if absent. 
 # NEG maps list *prohibited* attribute and values. Object is removed if present. 
-PQFILTERREQMAP = { 'pilot_manager' : ['apf'],
+PQFILTERREQMAP = { #'pilot_manager' : ['apf'],
                    'resource_type' : ['grid'],
                    'site_state' : ['active']
                    } 
@@ -120,6 +120,7 @@ class AgisPandaQueue(object):
         s += "vo_name=%s " % self.vo_name
         s += "cloud=%s " % self.cloud 
         s += "type=%s " % self.type
+        s += "pilotmanager=%s" % self.pilot_manager
         s += "maxtime=%s " % self.maxtime
         s += "memory=%s " % self.memory
         s += "maxmemory=%s " % self.maxmemory      
@@ -397,6 +398,7 @@ class Agis(ConfigInterface):
         self.clouds = None
         self.activities = None
         self.defaultsfiles = None
+        self.pilotmanager = None
         try:
             self.jobsperpilot = self.config.getfloat('Factory', 'config.queues.agis.jobsperpilot')
         except NoOptionError, noe:
@@ -449,6 +451,17 @@ class Agis(ConfigInterface):
                 self.activities = [ ac.strip().lower() for ac in self.config.get('Factory', 'config.queues.agis.activities').split(',') ]
         except NoOptionError, noe:
             pass
+
+        try:
+            pmstr = self.config.get('Factory', 'config.queues.agis.pilotmanager')
+            if actstr.strip().lower() == 'none':
+                self.pilotmanager = None
+            else:
+                self.pilotmanager = [ ac.strip().lower() for ac in self.config.get('Factory', 'config.queues.agis.pilotmanager').split(',') ]
+        except NoOptionError, noe:
+            pass
+        
+        
         self.log.info('ConfigPlugin: Object initialized. %s' % self)
 
 
@@ -512,6 +525,7 @@ class Agis(ConfigInterface):
                 cloud = self.clouds[i]
                 activity = self.activities[i]
                 default = self.defaultsfiles[i]
+                pilotmgr = self.pilotmanager[i]
                 
                 if default is not None: 
                     tmpfile = open(default)
@@ -523,7 +537,8 @@ class Agis(ConfigInterface):
                 for q in self.currentinfo:
                     if q.vo_name == vo and\
                        q.cloud == cloud and\
-                       q.type == activity:
+                       q.type == activity and\
+                       q.pilot_manager == pilotmgr :
                         for cq in q.ce_queues:
                             try:
                                 qc = cq.getAPFConfig()
