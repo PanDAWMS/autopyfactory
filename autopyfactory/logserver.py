@@ -234,7 +234,7 @@ class LogServer(_thread):
         self.fcl = fcl
         self.index = self.fcl.generic_get('Factory','logserver.index', 'getboolean')
         self.allowrobots = self.fcl.generic_get('Factory','logserver.allowrobots', 'getboolean')
-        self.logpath = self.fcl.get('Factory', 'baseLogDir')
+        self.logpath = os.path.expanduser(self.fcl.get('Factory', 'baseLogDir'))
         self.logurl = self.fcl.get('Factory','baseLogDirUrl')            
         self.port = self._parseLogPort(self.logurl)
         
