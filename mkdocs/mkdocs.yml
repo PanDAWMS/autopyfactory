@@ -1,0 +1,18 @@
+site_name: Documentation on AutoPyFactory 
+pages:
+    - AutoPyFactory: index.md
+    - Deployment: AutoPyFactoryDeployment.md
+    - Configuration: AutoPyFactoryConfiguration.md
+    - Reference Manual: AutoPyFactoryReferenceManual.md
+    - Workflow CREAM: AutoPyFactoryWorkflowCream.md
+    - Workflow EC2: AutoPyFactoryWorkflowEC2.md
+    - Workflow Glidein: AutoPyFactoryWorkflowGlidein.md
+    - Workflow NorduGrid: AutoPyFactoryWorkflowNorduGrid.md
+    - Workflow Panda: AutoPyFactoryWorkflowPanda.md
+    - How to write your own plugins: AutoPyFactoryWritePlugins.md
+    - Q&As: AutoPyFactoryQA.md
+theme: mkdocs 
+extra_css: [extra.css]
+
+
+
