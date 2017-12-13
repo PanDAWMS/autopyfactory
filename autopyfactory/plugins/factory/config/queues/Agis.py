@@ -139,7 +139,7 @@ class AgisPandaQueue(object):
         for cedict in celist:
             #self.log.debug("Handling cedict %s" % cedict)
             try:
-                cqo = AgisCEQueue( self, cedict)
+                cqo = AgisCEQueue(self, cedict)
                 cequeues.append( cqo)
             except Exception, e:
                 self.log.error('Failed to create AgisCEQueue for PQ %s and CE %s' % (self.panda_queue_name, cedict))
@@ -152,7 +152,7 @@ class AgisCEQueue(object):
     """
     Represents a single CE queue within a Panda queue description.  
     """
-    def __init__(self, parent, cedict ):
+    def __init__(self, parent, cedict):
         self.log = logging.getLogger('autopyfactory.config')
         self.parent = parent
         self.panda_queue_name = parent.panda_queue_name 
