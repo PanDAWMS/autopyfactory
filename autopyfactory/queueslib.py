@@ -502,7 +502,6 @@ class SubmitAPFQueue(object):
     Simple submit-only, non-threaded APF Queue. 
     
     '''
-    
     def __init__(self, config, authman=None):
 
         #self.log = logging.getLogger('%s' % config.sections()[0])
