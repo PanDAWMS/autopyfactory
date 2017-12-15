@@ -90,6 +90,12 @@ class AgisPandaQueue(object):
         self.panda_queue_name = key
         try:
             self.panda_resource = d[key]['panda_resource']              # AGLT2_LMEM     
+            self.capability = d[key]['capability']
+            self.catchall = d[key]['catchall']
+            if "unifiedpandaqueue" in self.catchall.lower():
+                self.unified = True
+            else:
+                self.unified = False
             self.cloud = d[key]['cloud'].lower()                        # us
             self.corecount = d[key]['corecount']
             if self.corecount is None:
@@ -118,18 +124,43 @@ class AgisPandaQueue(object):
         s = "AgisPandaQueue: "
         s += "panda_resource=%s " %  self.panda_resource
         s += "vo_name=%s " % self.vo_name
-        s += "cloud=%s " % self.cloud 
+        s += "capability=%s" % self.capability
+        s += "catchall=%s" % self.catchall
+        s += "cloud=%s " % self.cloud
+        s += "corecount=%s" % self.corecount 
         s += "type=%s " % self.type
         s += "pilotmanager=%s" % self.pilot_manager
         s += "maxtime=%s " % self.maxtime
         s += "memory=%s " % self.memory
-        s += "maxmemory=%s " % self.maxmemory      
+        s += "maxmemory=%s " % self.maxmemory 
         s += "maxrss=%s " % self.maxrss
         s += "maxswap=%s " % self.maxswap
+        s += "unified=%s "  % self.unified
         for ceq in self.ce_queues:
             s += " %s " % ceq
         return s
 
+    def pretty(self):
+        s = "AgisPandaQueue: \n"
+        s += "  panda_resource=%s \n" %  self.panda_resource
+        s += "  vo_name=%s \n" % self.vo_name
+        s += "  capability=%s \n" % self.capability
+        s += "  catchall=%s \n" % self.catchall
+        s += "  cloud=%s \n" % self.cloud
+        s += "  corecount=%s \n" % self.corecount 
+        s += "  type=%s \n" % self.type
+        s += "  pilotmanager=%s \n" % self.pilot_manager
+        s += "  maxtime=%s \n" % self.maxtime
+        s += "  memory=%s \n" % self.memory
+        s += "  maxmemory=%s \n" % self.maxmemory 
+        s += "  maxrss=%s \n" % self.maxrss
+        s += "  maxswap=%s \n" % self.maxswap
+        s += "  unified=%s \n"  % self.unified
+        for ceq in self.ce_queues:
+            s += "%s" % ceq.pretty()
+        s += "###########################################\n" 
+        return s
+        
     def _make_cequeues(self, celist):
         """
           Makes CEqueue objects, key is PQ name 
@@ -367,6 +398,18 @@ class AgisCEQueue(object):
         s += "maxtime=%s " % self.parent.maxtime
         return s
 
+
+    def pretty(self):
+        s = "    AgisCEQueue: \n"
+        s += "        PQ=%s  \n" %  self.panda_queue_name
+        s += "        wmsqueue=%s  \n" % self.parent.panda_resource
+        s += "        submitplugin=%s  \n" % self.submitplugin
+        s += "        host=%s  \n" % self.ce_host
+        s += "        endpoint=%s  \n" %self.ce_endpoint
+        s += "        gridresource=%s  \n" % self.gridresource
+        s += "        maxtime=%s  \n" % self.parent.maxtime
+        return s
+
 class Agis(ConfigInterface):
     '''
     creates the configuration files with 
@@ -387,6 +430,7 @@ class Agis(ConfigInterface):
         self.lastinfoupdate = datetime.datetime(1999, 1, 1) # Datetime object of last info download and Config creation. 
         self.lastconfigupdate = datetime.datetime(1999, 1, 1) # Datetime object of last info download and Config creation.  
         self.stringconfig = None    # Contains String representation of current AGIS configs. 
+        self.rawjson = None         # Contains JSON output from download in pretty format
         
         self.baseurl = self.config.get('Factory', 'config.queues.agis.baseurl')
         self.sleep = int(self.config.get('Factory', 'config.queues.agis.sleep'))
@@ -495,6 +539,10 @@ class Agis(ConfigInterface):
         self._createConfig()
         return self.stringconfig
 
+    def getRawInfo(self):
+        self._updateInfo()
+        return self.rawjson        
+                       
 
     def getConfig(self):
         '''
@@ -504,7 +552,21 @@ class Agis(ConfigInterface):
         self._updateInfo()
         self._createConfig()
         return self.currentconfig
-            
+
+    def getAgisInfo(self):
+        '''
+        Get the native object tree (PQs with CEQ children) for all AGIS info. 
+        '''
+        self._updateInfo()
+        return self.currentinfo
+
+    def getPandaQueue(self, queuename):
+        self._updateInfo()
+        for pq in self.currentinfo:
+            if pq.panda_resource == queuename:
+                return pq
+        return None
+
     
     def _createConfig(self):
         '''
@@ -655,8 +717,9 @@ class Agis(ConfigInterface):
         handle.close()
         self.log.debug('Done.')
         of = open('/tmp/agis-json.txt', 'w')
-        json.dump(d,of, indent=2, sort_keys=True)
+        json.dump(d, of, indent=2, sort_keys=True)
         of.close()
+        self.rawjson = json.dumps(d, indent=2, sort_keys=True)
         return d
 
 
@@ -708,6 +771,7 @@ if __name__ == '__main__':
     fconfig_file = None
     default_configfile = os.path.expanduser("/etc/autopyfactory/autopyfactory.conf")
     defaultsfiles = None
+    printinfo = 0
          
     usage = """Usage: Agis.py [OPTIONS]  
     OPTIONS: 
@@ -722,6 +786,7 @@ if __name__ == '__main__':
         -V --vo                     A single virtual organization [<all>]
         -C --cloud                  A single cloud [<all>]
         -A --activity               A single activity (PQ 'type') [<all>]
+        -P --printinfo              Print tree of native PQ/CEQ objects. 
         
         """
     
@@ -729,7 +794,7 @@ if __name__ == '__main__':
     argv = sys.argv[1:]
     try:
         opts, args = getopt.getopt(argv, 
-                                   "hdvtc:o:j:n:D:V:C:A:", 
+                                   "hdvtc:o:j:n:D:V:C:A:P", 
                                    ["help", 
                                     "debug", 
                                     "verbose",
@@ -741,6 +806,7 @@ if __name__ == '__main__':
                                     "vo=",
                                     "cloud=",
                                     "activity=",
+                                    "printinfo"
                                     ])
     except getopt.GetoptError, error:
         print( str(error))
@@ -770,6 +836,8 @@ if __name__ == '__main__':
             vo = arg.lower()
         elif opt in ("-A", "--activity"):
             activity = arg.lower()            
+        elif opt in ("-P", "--printinfo"):
+            printinfo = 1
    
     # Check python version 
     major, minor, release, st, num = sys.version_info
@@ -849,6 +917,14 @@ if __name__ == '__main__':
 
     acp = Agis(Factory(), fconfig, "mock_section_name")
     log.debug("Agis object created")
+
+    if printinfo:
+        out = ""
+        pqs = acp.getAgisInfo()
+        for pq in pqs:
+            out += "%s" % pq.pretty()
+        print(out)
+        sys.exit()
 
     try:
         configstr = acp.getConfigString()
