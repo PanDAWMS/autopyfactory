@@ -106,10 +106,10 @@ class APFQueuesManager(object):
 
         qcldiff = APFQueuesConfigsDiff(self.factory.qcl, newqcl)
         self.factory.qcl = newqcl
-        self._delqueues(qcldiff.gonequeues())
-        self._addqueues(qcldiff.newqueues())
-        self._delqueues(qcldiff.modifiedqueues())
-        self._addqueues(qcldiff.modifiedqueues())
+        self._del_queue_l(qcldiff.gonequeues())
+        self._add_queue_l(qcldiff.newqueues())
+        self._del_queue_l(qcldiff.modifiedqueues())
+        self._add_queue_l(qcldiff.modifiedqueues())
 
         self._dumpqcl()
 
@@ -157,21 +157,24 @@ class APFQueuesManager(object):
     #  private methods
     # ----------------------------------------------------------------------
 
-    def _addqueues(self, apfqnames):
+    def _add_queue_l(self, apfqnames):
         """
         Creates new APFQueue objects
         """
+        self.log.debug('adding queues list %s' apfqnames)
         count = 0
         for apfqname in apfqnames:
-            self._add(apfqname)
+            self._add_queue(apfqname)
             count += 1
         self.log.debug('%d queues in the configuration.' %count)
 
 
-    def _add(self, apfqname):
+    def _add_queue(self, apfqname):
         """
         Creates a single new APFQueue object and starts it
         """
+        self.log.debug('adding queue %s' apfqname)
+
         queueenabled = self.factory.qcl.generic_get(apfqname, 'enabled', 'getboolean')
         globalenabled = self.factory.fcl.generic_get('Factory', 'enablequeues', 'getboolean', default_value=True)
         enabled = queueenabled and globalenabled
@@ -188,14 +191,15 @@ class APFQueuesManager(object):
             self.log.debug('Queue %s not enabled.' %apfqname)
             
 
-    def _delqueues(self, apfqnames):
+    def _del_queue_l(self, apfqnames):
         """
         Deletes APFQueue objects
         """
-
+        self.log.debug('deleting queue list %s' apfqnames)
         count = 0
         for apfqname in apfqnames:
             q = self.queues[apfqname]
+            self.log.debug('joining thread for queue %s' apfqname)
             q.join()
             self.queues.pop(apfqname)
             count += 1
