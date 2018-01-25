@@ -161,7 +161,7 @@ class APFQueuesManager(object):
         """
         Creates new APFQueue objects
         """
-        self.log.debug('adding queues list %s' apfqnames)
+        self.log.debug('adding queues list %s' %apfqnames)
         count = 0
         for apfqname in apfqnames:
             self._add_queue(apfqname)
@@ -173,7 +173,7 @@ class APFQueuesManager(object):
         """
         Creates a single new APFQueue object and starts it
         """
-        self.log.debug('adding queue %s' apfqname)
+        self.log.debug('adding queue %s' %apfqname)
 
         queueenabled = self.factory.qcl.generic_get(apfqname, 'enabled', 'getboolean')
         globalenabled = self.factory.fcl.generic_get('Factory', 'enablequeues', 'getboolean', default_value=True)
@@ -195,11 +195,11 @@ class APFQueuesManager(object):
         """
         Deletes APFQueue objects
         """
-        self.log.debug('deleting queue list %s' apfqnames)
+        self.log.debug('deleting queue list %s' %apfqnames)
         count = 0
         for apfqname in apfqnames:
             q = self.queues[apfqname]
-            self.log.debug('joining thread for queue %s' apfqname)
+            self.log.debug('joining thread for queue %s' %apfqname)
             q.join()
             self.queues.pop(apfqname)
             count += 1
