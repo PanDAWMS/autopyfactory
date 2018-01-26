@@ -200,7 +200,10 @@ class APFQueuesManager(object):
         for apfqname in apfqnames:
             q = self.queues[apfqname]
             self.log.debug('joining thread for queue %s' %apfqname)
-            q.join()
+            try:
+                q.join()
+            except Exception, ex:
+                self.log.warning('attempt to join() thread for queue %s failed, queue is not active' %apfqname)
             self.queues.pop(apfqname)
             count += 1
         self.log.debug('%d queues joined and removed' %count)
