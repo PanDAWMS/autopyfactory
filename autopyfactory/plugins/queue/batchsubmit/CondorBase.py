@@ -206,6 +206,7 @@ class CondorBase(BatchSubmitInterface):
                 for i in range(0, num):
                     try:
                         j = jobinfo.pop()
+                        self.log.debug("Adding job %s.%s to killlist" % (j.clusterid, j.procid))
                         killlist.append( "%s.%s" % (j.clusterid, j.procid))
                     except IndexError:
                         self.log.warning("Tried to pop jobinfo from an empty list.")
@@ -213,6 +214,7 @@ class CondorBase(BatchSubmitInterface):
                 ### BEGIN TEST ###
                 #killids(killlist)
                 from autopyfactory.condorlib import condor_rm
+                self.log.debug("Killing list of %d jobs." % len(killlist) )
                 condor_rm(killlist)
                 ### END TEST ###
                 self.log.debug("killids() returned OK.")
