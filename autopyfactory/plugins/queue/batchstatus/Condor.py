@@ -114,6 +114,7 @@ class _condor(_thread, BatchStatusInterface):
         self._thread_loop_interval = self.sleeptime
         self.currentinfo = None
         self.jobinfo = None              
+        self.last_timestamp = 0
 
         # ================================================================
         #                     M A P P I N G S 
@@ -143,6 +144,11 @@ class _condor(_thread, BatchStatusInterface):
         """
         self.log.debug('Starting')
         self._updatelib()
+
+        ### BEGIN TEST TIMESTAMP ###
+        self.last_timestamp = time.time()
+        ### END TEST TIMESTAMP ###
+
         self.log.debug('Leaving')
 
 
