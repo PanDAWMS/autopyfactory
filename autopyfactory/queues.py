@@ -382,6 +382,7 @@ class APFQueue(_thread):
 
         ### BEGIN TEST TIMESTAMP ###
         if not self.batchstatus_plugin.last_timestamp > self.last_batchqueue_timestamp:
+            self.log.info("there is no fresh batch status data. Doing nothing.")
             self.fullmsg = ""
             self.nsub = 0
             return
