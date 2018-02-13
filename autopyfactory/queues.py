@@ -379,6 +379,8 @@ class APFQueue(_thread):
 
     ### BEGIN TEST TIMESTAMP ###
     def _new_status_info(self):
+        # FIXME
+        # the timestamp for WMS Status is missing !!
         if not self.batchstatus_plugin.last_timestamp > self.last_batchqueue_timestamp:
             self.log.info("there is no fresh batch status data. Doing nothing.")
             return False
