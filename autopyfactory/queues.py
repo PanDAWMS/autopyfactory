@@ -333,9 +333,12 @@ class APFQueue(_thread):
         Main functional loop of this APFQueue. 
         """        
         self._wait_for_info_services()
-        self._callscheds()
-        self._submit()
-        self._monitor()
+        ### BEGIN TEST TIMESTAMP ###
+        if self._new_status_info():
+            self._callscheds()
+            self._submit()
+            self._monitor()
+        ### END TEST TIMESTAMP ###
         self._exitloop()
         self._logtime() 
 
@@ -374,20 +377,21 @@ class APFQueue(_thread):
         self.log.debug('leaving')
 
 
+    ### BEGIN TEST TIMESTAMP ###
+    def _new_status_info(self):
+        if not self.batchstatus_plugin.last_timestamp > self.last_batchqueue_timestamp:
+            self.log.info("there is no fresh batch status data. Doing nothing.")
+            return False
+        else:
+            return True
+    ### END TEST TIMESTAMP ###
+
+
     def _callscheds(self, nsub=0):
         """
         calls the sched plugins 
         and calculates the number of pilot to submit
         """
-
-        ### BEGIN TEST TIMESTAMP ###
-        if not self.batchstatus_plugin.last_timestamp > self.last_batchqueue_timestamp:
-            self.log.info("there is no fresh batch status data. Doing nothing.")
-            self.fullmsg = ""
-            self.nsub = 0
-            return
-        ### END TEST TIMESTAMP ###
-
         fullmsg = ""
         self.log.debug("APFQueue [%s] run(): Calling sched plugins..." % self.apfqname)
         for sched_plugin in self.scheduler_plugins:
