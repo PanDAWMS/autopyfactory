@@ -20,6 +20,18 @@ prepath = sep.join(fullpathlist[:-2])
 import sys
 sys.path.insert(0, prepath)
 
+
+### BEGIN TEST TIMEOUT ###
+# there is no builtin exception TimeoutError
+# until pythn 3.3
+class Timeout(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+### END TEST TIMEOUT ###
+
+
 # module level threadlock
 boscolock = threading.Lock()
 boscoaddlock = threading.Lock()
@@ -157,6 +169,18 @@ class _boscocli(object):
             self.log.debug("cmd is %s" % cmd) 
             before = time.time()
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+
+            ### BEGIN TEST TIMEOUT ###
+            timeout = 100  # FIXME !!
+            startloop = time.time()
+            while p.poll() == None:
+                time.sleep(1)
+                if time.time() - startloop > timeout:
+                    p.terminate()
+                    raise Timeout('cmd = "%s" timed out after waiting for %s seconds' %(cmd, timeout))
+            ### END TEST TIMEOUT ###
+
+
             out = None
             (out, err) = p.communicate()        
             self.log.debug('bosco_cluster -a output was %s' % out)
@@ -175,6 +199,11 @@ class _boscocli(object):
                 except TypeError:
                     # passfile might be None
                     pass
+
+        ### BEGIN TEST TIMEOUT ###
+        except Timeout, ex:
+            self.log.error("Timeout Exception captured: %s" %ex)
+        ### END TEST TIMEOUT ###
         except Exception, e:
             self.log.exception("Exception during bosco_cluster -a installation. ")
         finally:
