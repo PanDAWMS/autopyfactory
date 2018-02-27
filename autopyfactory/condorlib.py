@@ -186,6 +186,15 @@ def _aggregateinfolib(input, analyzer, primary_key='match_apf_queue'):
 
 
 def _aggregatehistoryinfolib(jobs, primary_key='match_apf_queue', queues=None, analyzers=[]):
+    """
+    aggregates condor jobs according with a set of given rules.
+
+    :param jobs: list of classads
+    :param primary_key: classad used to distinguish between jobs, usually the APFQueue name
+    :param queues: initial list of queues to be completed with new jobs info
+    :param analyzers: list of Analyzer objects with rules to parse/aggregate the jobs
+    :returns: a dictionary, keys are the apfqnames, values are list of jobs parsed/aggregated by the analyzers
+    """
 
     if not queues:
         queues = {}
