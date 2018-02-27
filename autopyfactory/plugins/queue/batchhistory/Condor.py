@@ -54,6 +54,8 @@ class __condor(_thread, BatchHistoryInterface):
             self.factoryid = apfqueue.fcl.get('Factory', 'factoryId')
             self.maxage = apfqueue.fcl.generic_get('Factory', 'batchhistory.condor.maxage', default_value=360) 
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchhistory.condor.sleep')
+            self.interval = self.apfqueue.fcl.getint('Factory', 'batchhistory.condor.interval')
+            self.mintime = self.apfqueue.fcl.getint('Factory', 'batchhistory.condor.mintime')
             self._thread_loop_interval = self.sleeptime
             self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchhistory.condor.queryargs') 
 
