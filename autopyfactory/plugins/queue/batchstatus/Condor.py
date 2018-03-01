@@ -194,9 +194,6 @@ class _condor(_thread, BatchStatusInterface):
 
     
     def _updatelib(self):
-        '''
-        
-        '''
         self._updateinfo()
         self._updatejobinfo()
         
