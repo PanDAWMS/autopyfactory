@@ -169,17 +169,9 @@ class _boscocli(object):
             self.log.debug("cmd is %s" % cmd) 
             before = time.time()
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-
             ### BEGIN TEST TIMEOUT ###
-            timeout = 100  # FIXME !!
-            startloop = time.time()
-            while p.poll() == None:
-                time.sleep(1)
-                if time.time() - startloop > timeout:
-                    p.terminate()
-                    raise Timeout('cmd = "%s" timed out after waiting for %s seconds' %(cmd, timeout))
+            self._timeout(p, cmd, 100)
             ### END TEST TIMEOUT ###
-
 
             out = None
             (out, err) = p.communicate()        
@@ -210,7 +202,16 @@ class _boscocli(object):
             self.log.debug("releasing add lock")
             boscoaddlock.release()
             
-                
+
+    def _timeout(self, p, cmd, maximumtime):
+        startloop = time.time()
+        while p.poll() == None:
+            time.sleep(1)
+            if time.time() - startloop > maximumtime:
+                p.terminate()
+                raise Timeout('cmd = "%s" timed out after waiting for %s seconds' %(cmd, maximumtime))
+            
+
     def _start_agent(self, pubkeyfile, privkeyfile, passfile=None):
         self.log.debug('cmd is ssh-agent')
         cmd = 'ssh-agent '
