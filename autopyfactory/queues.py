@@ -277,11 +277,9 @@ class APFQueue(_thread):
 
         try:
             self._plugins()
-        
         except CondorVersionFailure, cvf:
             self.log.exception('APFQueue: No condor or bad version')
             raise cvf
-        
         except Exception, ex:
             self.log.exception('APFQueue: Exception getting plugins' )
             raise ex
