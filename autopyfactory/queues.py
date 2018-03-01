@@ -337,7 +337,7 @@ class APFQueue(_thread):
             self.wmsstatus_plugin.start() # start the thread
 
 
-    def _batchstatus_plugins(self):
+    def _batchstatus_plugin(self):
         """
         set one or None Batch Status plugins
         """
@@ -354,7 +354,7 @@ class APFQueue(_thread):
             self.batchstatus_plugin.start() # start the thread
 
 
-    def _batchsubmit_plugins(self):
+    def _batchsubmit_plugin(self):
         """
         set one Batch Submit plugin
         """
