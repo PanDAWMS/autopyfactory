@@ -400,8 +400,8 @@ class APFQueue(_thread):
         self._wait_for_info_services()
         ### BEGIN TEST TIMESTAMP ###
         if self._new_status_info():
-            self._callscheds()
-            self._submit()
+            nsub = self._callscheds()
+            self._submit(nsub)
             self._monitor()
         ### END TEST TIMESTAMP ###
         self._exitloop()
@@ -475,17 +475,18 @@ class APFQueue(_thread):
         ### BEGIN TEST TIMESTAMP ###
         self.last_batchqueue_timestamp = self.batchstatus_plugin.last_timestamp
         ### END TEST TIMESTAMP ###
+        return nsub
 
 
-    def _submit(self):
+    def _submit(self, nsub):
         """
         submit using this number
         call for cleanup
         """
         self.log.debug("Starting")
-        msg = 'Attempt to submit %s pilots for queue %s' %(self.nsub, self.apfqname)
-        jobinfolist = self.batchsubmit_plugin.submit(self.nsub)
-        self.log.debug("Attempted submission of %d pilots and got jobinfolist %s" % (self.nsub, jobinfolist))
+        msg = 'Attempt to submit %s pilots for queue %s' %(nsub, self.apfqname)
+        jobinfolist = self.batchsubmit_plugin.submit(nsub)
+        self.log.debug("Attempted submission of %d pilots and got jobinfolist %s" % (nsub, jobinfolist))
         self.batchsubmit_plugin.cleanup()
         self.cyclesrun += 1
         self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
