@@ -342,7 +342,7 @@ class APFQueue(_thread):
         set one or None Batch Status plugins
         """
         batchstatuspluginname = self.qcl.get(self.apfqname, 'batchstatusplugin')
-        if batchstatusplugin is None:
+        if batchstatuspluginname is None:
             self.batchstatus_plugin = None
         else:
             plugin_path = ['autopyfactory', 'plugins', 'queue', 'batchstatus']
