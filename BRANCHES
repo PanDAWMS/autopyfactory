@@ -43,3 +43,5 @@ config-plugins             code to deal with the new plugins to read queues conf
 plugin-dispatcher          new code for plugins management, more generic 
 
 2.4.3-1-ec2fixed           2.4.3 patched to fix some bugs found during the "100k core @ EC2" exercise. Same fixes also go into trunk/
+
+remotemanager              test branch to replace Bosco with VC3 Remote Manager
