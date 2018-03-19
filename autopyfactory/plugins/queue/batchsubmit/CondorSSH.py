@@ -34,7 +34,7 @@ import os
 import shutil
 
 from autopyfactory import jsd
-from autopyfactory import bosco
+from autopyfactory import remotemanager
 from CondorBase import CondorBase
 
 class CondorSSH(CondorBase):
