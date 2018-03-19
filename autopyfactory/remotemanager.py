@@ -48,12 +48,13 @@ class Manage(object):
             if entry in clusters:
                 self.log.debug("Cluster %s is already setup:" % entry)
             else:
+                self.log.debug("Didn't find cluster %s, installing..." % entry)
                 bosco.setup_bosco()
         except Exception, e:
             self.log.exception("Exception during bosco remote installation. ")
 
 if __name__ == '__main__':
-        # some simple tests
+    # some simple tests
 	host = "uct3-s1.mwt2.org"
 	port = 22
 	user = "lincolnb"
