@@ -1,6 +1,6 @@
 #!/bin/env python
 #
-# AutoPyfactory batch plugin for Condor
+# AutoPyfactory shim for VC3 remote manager
 #
 #
 # At init
@@ -72,9 +72,8 @@ class CondorSSH(CondorBase):
             self._createSSHConfig()
             
             #Handle bosco
-            self.boscocli = bosco.BoscoCLI()
-            self.boscocli._checkbosco()
-            self.boscocli._checktarget(self.user,
+            self.rgahp = remotemanager.Manage()
+            self.rgahp._checktarget(self.user,
                                        self.host, 
                                        self.port, 
                                        self.batch, 
