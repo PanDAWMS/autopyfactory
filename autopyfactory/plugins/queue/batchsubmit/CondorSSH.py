@@ -1,6 +1,6 @@
 #!/bin/env python
 #
-# AutoPyfactory shim for VC3 remote manager
+# AutoPyfactory batch plugin for Condor
 #
 #
 # At init
