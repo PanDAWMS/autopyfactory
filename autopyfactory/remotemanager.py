@@ -35,11 +35,13 @@ class Manage(object):
         except AttributeError:
             pass
 
+        installdir = "~/.condor"
+
         # set up paramiko and stuff
         ssh = SSHManager(host, port, user, privkeyfile)
         cluster = Cluster(ssh)
 	# fixme - move these into defaults
-        bosco = Bosco(cluster, ssh, batch, "1.2.10", "ftp://ftp.cs.wisc.edu/condor/bosco", None, "/tmp/bosco", "~/.condor", None, None, None, None)
+        bosco = Bosco(cluster, ssh, batch, "1.2.10", "ftp://ftp.cs.wisc.edu/condor/bosco", None, "/tmp/bosco", installdir, None, None, None, None)
         
         self.log.debug("Checking to see if remote gahp is installed and up to date...")
         try:
@@ -52,6 +54,10 @@ class Manage(object):
                 bosco.setup_bosco()
         except Exception, e:
             self.log.exception("Exception during bosco remote installation. ")
+
+        # add a return for the location of the glite installation
+        glite = installdir + "/bosco/glite"
+        return glite
 
 if __name__ == '__main__':
     # some simple tests
