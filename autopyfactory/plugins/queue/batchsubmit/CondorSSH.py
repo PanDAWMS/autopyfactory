@@ -34,7 +34,7 @@ import os
 import shutil
 
 from autopyfactory import jsd
-from autopyfactory import bosco
+from autopyfactory import remotemanager
 from CondorBase import CondorBase
 
 class CondorSSH(CondorBase):
@@ -72,9 +72,10 @@ class CondorSSH(CondorBase):
             self._createSSHConfig()
             
             #Handle bosco
-            self.boscocli = bosco.BoscoCLI()
-            self.boscocli._checkbosco()
-            self.boscocli._checktarget(self.user,
+            self.log.debug("calling remote manager with options %s , %s , %s , %s , %s , %s , %s" % (self.user, self.host, self.port, self.batch, self.pubkeyfile, self.privkeyfile, self.passfile))
+            self.rgahp = remotemanager.Manage()
+            # rgahp._checktarget returns the glite installation dir
+            self.glite = self.rgahp._checktarget(self.user,
                                        self.host, 
                                        self.port, 
                                        self.batch, 
@@ -158,12 +159,13 @@ class CondorSSH(CondorBase):
         
         self.log.debug('CondorBosco.addJSD: Starting.')
         self.JSD.add("universe", "grid")
-        self.JSD.add('grid_resource', 'batch %s %s@%s --rgahp-key %s ' % (self.batch, 
+        self.JSD.add('grid_resource', 'batch %s %s@%s --rgahp-key %s --rgahp-glite %s ' % (self.batch, 
                                                           self.user,
                                                           self.host, 
                                                           #self.port,
                                                           self.privkeyfile, 
-                                                          #self.passfile
+                                                          #self.passfile,
+                                                          self.glite
                                                           ) )
         self.JSD.add('+TransferOutput', '""')
         super(CondorSSH, self)._addJSD()
