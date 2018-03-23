@@ -72,6 +72,7 @@ class CondorSSH(CondorBase):
             self._createSSHConfig()
             
             #Handle bosco
+            self.log.debug("calling remote manager with options %s , %s , %s , %s , %s , %s , %s" % (self.user, self.host, self.port, self.batch, self.pubkeyfile, self.privkeyfile, self.passfile))
             self.rgahp = remotemanager.Manage()
             self.rgahp._checktarget(self.user,
                                        self.host, 
