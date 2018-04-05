@@ -103,6 +103,12 @@ class _condor(_thread, BatchStatusInterface):
                 if '-pool' in l:
                     self.remotecollector = l[l.index('-pool') + 1]
             ### END TEST ###            
+
+            ### BEGIN TEST ###
+            # new-info-classes
+            from autopyfactory.condorlib import HTCondor
+            self.htcondor = HTCondor(self.remotecollector, self.remoteschedd)
+            ### END TEST ###
         except AttributeError:
             self.condoruser = 'apf'
             self.factoryid = 'test-local'
@@ -221,6 +227,30 @@ class _condor(_thread, BatchStatusInterface):
 #            self.log.debug("Exception: %s" % traceback.format_exc())
 #        self.log.debug('Leaving.')
 
+    #def _updateinfo(self):
+    #    """
+    #    Query Condor for job status, and populate  object.
+    #    It uses the condor python bindings.
+    #    """
+    #    self.log.debug('Starting.')
+    #    try:
+    #        condor_q_strout = querycondorlib(self.remotecollector, 
+    #                                         self.remoteschedd, 
+    #                                        )
+    #        self.log.debug('output of querycondorlib : %s' %condor_q_strout)
+    #
+    #        condor_history_strout = queryhistorylib(self.remotecollector, 
+    #                                               self.remoteschedd, 
+    #                                               )
+    #        self.log.debug('output of querycondorlib : %s' %condor_history_strout)
+    #
+    #        rawdata = condor_q_strout + condor_history_strout
+    #        self.currentinfo = BatchStatusInfo(rawdata)
+    #    except Exception, e:
+    #        self.log.error("Exception: %s" % str(e))
+    #        self.log.debug("Exception: %s" % traceback.format_exc())
+    #    self.log.debug('Leaving.')
+
     def _updateinfo(self):
         """
         Query Condor for job status, and populate  object.
@@ -228,23 +258,28 @@ class _condor(_thread, BatchStatusInterface):
         """
         self.log.debug('Starting.')
         try:
-            condor_q_strout = querycondorlib(self.remotecollector, 
-                                             self.remoteschedd, 
-                                            )
-            self.log.debug('output of querycondorlib : %s' %strout)
+            condor_q_attribute_l = ['match_apf_queue', 
+                                    'jobstatus'
+                                   ]
+            condor_q_classad_l = self.htcondor.condor_q(condor_q_attribute_l)
+            self.log.debug('output of condor_q: %s' %condor_q_classad_l)
 
-            condor_history_strout = queryhistorylib(self.remotecollector, 
-                                                   self.remoteschedd, 
-                                                   )
-            self.log.debug('output of querycondorlib : %s' %strout)
+            condor_history_attribute_l = ['match_apf_queue', 
+                                          'jobstatus', 
+                                          'enteredcurrentstatus', 
+                                          'remotewallclocktimeqdate'
+                                         ]
+            condor_history_classad_l = self.htcondor.condor_history(condor_history_attribute_l)
+            self.log.debug('output of condor_history: %s' %condor_history_classad_l)
 
-            rawdata = condor_q_strout + condor_history_strout
+            rawdata = condor_q_classad_l + condor_history_classad_l
             self.currentinfo = BatchStatusInfo(rawdata)
 
         except Exception, e:
             self.log.error("Exception: %s" % str(e))
             self.log.debug("Exception: %s" % traceback.format_exc())
         self.log.debug('Leaving.')
+
     ### END TEST ###
 
 
