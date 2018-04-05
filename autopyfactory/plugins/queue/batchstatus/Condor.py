@@ -17,7 +17,7 @@ from pprint import pprint
 from autopyfactory.interfaces import BatchStatusInterface, _thread
 from autopyfactory.info import BatchStatusInfo
 from autopyfactory.info import QueueInfo
-from autopyfactory.condorlib import querycondorlib, condor_q
+from autopyfactory.condorlib import querycondorlib, queryhistorylib, condor_q
 from autopyfactory.mappings import map2info
 import autopyfactory.utils as utils
 
@@ -25,7 +25,6 @@ import autopyfactory.utils as utils
 class CondorJobInfo(object):
     """
     This object represents a Condor job.     
-        
     """
     jobattrs = ['match_apf_queue',
                 'clusterid',
@@ -42,15 +41,14 @@ class CondorJobInfo(object):
                  ]  
 
 
-    def __init__(self, dict):
+    def __init__(self, jobinfo_d):
         """
         Creates CondorJobInfo object from arbitrary dictionary of attributes. 
-        
         """
         self.log = logging.getLogger('autopyfactory.batchstatus')
         self.jobattrs = []
-        for k in dict.keys():
-            self.__setattr__(k,dict[k])
+        for k in jobinfo_d.keys():
+            self.__setattr__(k,jobinfo_d[k])
             self.jobattrs.append(k)
         self.jobattrs.sort()
         #self.log.debug("Made CondorJobInfo object with %d attributes" % len(self.jobattrs))    
@@ -197,7 +195,32 @@ class _condor(_thread, BatchStatusInterface):
         self._updateinfo()
         self._updatejobinfo()
         
-        
+
+    # new-info-classes    
+    ### BEGIN TEST ###
+
+#    def _updateinfo(self):
+#        """
+#        Query Condor for job status, and populate  object.
+#        It uses the condor python bindings.
+#        """
+#        self.log.debug('Starting.')
+#        try:
+#            strout = querycondorlib(self.remotecollector, 
+#                                    self.remoteschedd, 
+#                                    )
+#            self.log.debug('output of querycondorlib : %s' %strout)
+#            if strout is None:
+#                self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.')
+#            else:
+#                newinfo = map2info(strout, BatchStatusInfo(), self.jobstatus2info)
+#                self.log.info("Replacing old info with newly generated info.")
+#                self.currentinfo = newinfo
+#        except Exception, e:
+#            self.log.error("Exception: %s" % str(e))
+#            self.log.debug("Exception: %s" % traceback.format_exc())
+#        self.log.debug('Leaving.')
+
     def _updateinfo(self):
         """
         Query Condor for job status, and populate  object.
@@ -205,20 +228,24 @@ class _condor(_thread, BatchStatusInterface):
         """
         self.log.debug('Starting.')
         try:
-            strout = querycondorlib(self.remotecollector, 
-                                    self.remoteschedd, 
-                                    )
+            condor_q_strout = querycondorlib(self.remotecollector, 
+                                             self.remoteschedd, 
+                                            )
             self.log.debug('output of querycondorlib : %s' %strout)
-            if strout is None:
-                self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.')
-            else:
-                newinfo = map2info(strout, BatchStatusInfo(), self.jobstatus2info)
-                self.log.info("Replacing old info with newly generated info.")
-                self.currentinfo = newinfo
+
+            condor_history_strout = queryhistorylib(self.remotecollector, 
+                                                   self.remoteschedd, 
+                                                   )
+            self.log.debug('output of querycondorlib : %s' %strout)
+
+            rawdata = condor_q_strout + condor_history_strout
+            self.currentinfo = BatchStatusInfo(rawdata)
+
         except Exception, e:
             self.log.error("Exception: %s" % str(e))
             self.log.debug("Exception: %s" % traceback.format_exc())
         self.log.debug('Leaving.')
+    ### END TEST ###
 
 
     def _updatejobinfo(self):

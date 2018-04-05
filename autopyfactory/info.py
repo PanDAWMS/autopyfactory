@@ -57,6 +57,15 @@ class BaseStatusInfo(dict):
     def __init__(self):
         dict.__init__(self)
     
+        # new-info-classes
+        # when the Info object was created
+        self.timestamp = int(time.time())
+
+        # new-info-classes
+        # the data as it is produced directly by the queries
+        self.rawdata = None
+
+
     def __getitem__(self, k):
         """
         Just ensure that if info for a queue is requested return None rather

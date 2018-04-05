@@ -30,6 +30,104 @@ import classad
 import copy
 
 
+### BEGIN TEST ###
+class HTCondor(object):
+
+    def __init__(self, remotecollector=None, remoteschedd=None):
+        """
+        :param string remotecollector: hostname of the collector
+        :param string remoteschedd: hostname of the schedd
+        """
+        self.remotecollector = remotecollector
+        self.remoteschedd = remoteschedd
+        self.collector = self.getcollector()
+        self.schedd = self.getschedd()
+
+
+    def getcollector(self):
+        if self.remotecollector:
+            collector = htcondor.Collector(self.remotecollector)
+        else:
+            collector = htcondor.Collector()
+        return collector
+
+
+    def getschedd(self):
+        if self.remotecollector:
+            scheddAd = self.collector.locate(htcondor.DaemonTypes.Schedd, self.remoteschedd)
+            schedd = htcondor.Schedd(scheddAd) 
+        else:
+            schedd = htcondor.Schedd() # Defaults to the local schedd.
+        return schedd
+
+    # -------------------------------------------------------------------------
+
+    def condor_q(self, attributes):
+        '''
+        Returns a list of ClassAd objects. 
+        :param list attributes: list of classads strings to include in the query 
+        '''
+        # NOTE:
+        # when remotecollector has a valid value, 
+        # then remoteschedd must have a valid value too
+    
+        log = logging.getLogger('condor')
+        log.debug("Starting with values attributes=%s" %attributes)
+        out = self.schedd.query('true', attributes)
+        out = list(out)
+        log.debug(out)
+        return out
+    
+    def condor_rm(self, jobid_l):
+        """
+        :param list jobid_l: list of strings "ClusterId.ProcId"
+        """
+        log = logging.getLogger('condor')
+        log.debug('Starting with inputs jobid_l=%s' %jobid_l)
+        self.schedd.act(htcondor.JobAction.Remove, jobid_l)
+        log.debug('Leaving')
+    
+    
+    def condor_history(self, attributes, constraints=None):
+        """
+        :param list attributes: list of classads strings to include in the query 
+        :param list constraints: list of constraints strings in the history query
+        """
+        log = logging.getLogger('condor')
+        if constraints:
+            condor_constraint_expr = " && ".join(constraints)
+        else:
+            condor_constraint_expr = "true"
+        out = self.schedd.history(condor_constraint_expr, attributes, 0)
+        out = list(out)
+        log.debug(out)
+        return out
+    
+    
+    def condor_status(self):
+        """ 
+        Equivalent to condor_status
+        We query for a few specific ClassAd attributes 
+        (faster than getting everything)
+        Output of collector.query(htcondor.AdTypes.Startd) looks like
+         [
+          [ Name = "slot1@mysite.net"; Activity = "Idle"; MyType = "Machine"; TargetType = "Job"; State = "Unclaimed"; CurrentTime = time() ], 
+          [ Name = "slot2@mysite.net"; Activity = "Idle"; MyType = "Machine"; TargetType = "Job"; State = "Unclaimed"; CurrentTime = time() ]
+         ]
+        """
+        # We only want to try to import if we are actually using the call...
+        # Later on we will need to handle Condor version >7.9.4 and <7.9.4
+        #
+        list_attrs = ['Name', 'State', 'Activity']
+        outlist = self.collector.query(htcondor.AdTypes.Startd, 'true', list_attrs)
+        return outlist
+
+
+
+### END TEST ###
+
+
+
 #############################################################################
 #              APF interface to query methods 
 #############################################################################
@@ -54,20 +152,23 @@ def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[],
     list_attrs = [queueskey, 'jobstatus']
     list_attrs += extra_attributes
     out = condor_q(list_attrs, remotecollector, remoteschedd)
-    from mappings import JobStatusAnalyzer
-    jobstatusanalyzer = JobStatusAnalyzer()
-    out = _aggregateinfolib(out, jobstatusanalyzer, queueskey) 
-    log.debug(out)
+    # new-info-classes
+    ### BEGIN TEST ###
+    #from mappings import JobStatusAnalyzer
+    #jobstatusanalyzer = JobStatusAnalyzer()
+    #out = _aggregateinfolib(out, jobstatusanalyzer, queueskey) 
+    #log.debug(out)
+    ### END TEST ###
     return out 
 
 
-def condorhistorylib(attributes=[], constraints=[]):
+def condorhistorylib(remotecollector=None, remoteschedd=None, attributes=[], constraints=[]):
     default_attributes=['match_apf_queue', 'jobstatus', 'enteredcurrentstatus', 'remotewallclocktime','qdate']
     for da in default_attributes:
         if da not in attributes:
             attributes.append(da)
     logging.debug('history called with attributes: %s' % attributes)
-    return condor_history( attributes, constraints)
+    return condor_history( attributes, constraints, remotecollector, remoteschedd)
 
 
 #############################################################################
@@ -80,6 +181,9 @@ def condorhistorylib(attributes=[], constraints=[]):
 def condor_q(attributes, remotecollector=None, remoteschedd=None):
     '''
     Returns a list of ClassAd objects. 
+    :param list attributes: list of classads strings to include in the query 
+    :param string remotecollector: hostname of the collector
+    :param string remoteschedd: hostname of the schedd
     '''
     # NOTE:
     # when remotecollector has a valid value, 
@@ -97,6 +201,7 @@ def condor_q(attributes, remotecollector=None, remoteschedd=None):
         schedd = htcondor.Schedd() # Defaults to the local schedd.
 
     out = schedd.query('true', attributes)
+    out = list(out)
     log.debug(out)
     return out
 
@@ -120,15 +225,31 @@ def condor_rm(jobid_l, remotecollector=None, remoteschedd=None):
     log.debug('Leaving')
 
 
-def condor_history( attributes, constraints):
-    schedd = htcondor.Schedd()
+def condor_history(attributes, constraints, remotecollector=None, remoteschedd=None):
+    """
+    :param list attributes: list of classads strings to include in the query 
+    :param list constraints: list of constraints strings in the history query
+    :param string remotecollector: hostname of the collector
+    :param string remoteschedd: hostname of the schedd
+    """
+    log = logging.getLogger('condor')
+    if remotecollector:
+        # FIXME: to be tested
+        log.debug("querying remote pool %s" %remotecollector)
+        collector = htcondor.Collector(remotecollector)
+        scheddAd = collector.locate(htcondor.DaemonTypes.Schedd, remoteschedd)
+        schedd = htcondor.Schedd(scheddAd) 
+    else:
+        schedd = htcondor.Schedd() # Defaults to the local schedd.
+
     if len(constraints) > 1:
         condor_constraint_expr = " && ".join(constraints)
-        history = schedd.history(condor_constraint_expr, attributes, 0)
     else:
-        history = schedd.history( "true" , attributes, 0)
-    history = list(history)
-    return history
+        condor_constraint_expr = "true"
+    out = schedd.history(condor_constraint_expr, attributes, 0)
+    out = list(out)
+    log.debug(out)
+    return out
 
 
 def condor_status():
