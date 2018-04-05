@@ -65,7 +65,7 @@ class HTCondor(object):
     def condor_q(self, attribute_l):
         '''
         Returns a list of ClassAd objects. 
-        :param list attributes: list of classads strings to include in the query 
+        :param list attribute_l: list of classads strings to include in the query 
         '''
         # NOTE:
         # when remotecollector has a valid value, 
@@ -90,8 +90,8 @@ class HTCondor(object):
     
     def condor_history(self, attribute_l, constraint_l=None):
         """
-        :param list attributes: list of classads strings to include in the query 
-        :param list constraints: list of constraints strings in the history query
+        :param list attribute_l: list of classads strings to include in the query 
+        :param list constraint_l: list of constraints strings in the history query
         """
         log = logging.getLogger('condor')
         if constraint_l:
@@ -114,12 +114,20 @@ class HTCondor(object):
           [ Name = "slot1@mysite.net"; Activity = "Idle"; MyType = "Machine"; TargetType = "Job"; State = "Unclaimed"; CurrentTime = time() ], 
           [ Name = "slot2@mysite.net"; Activity = "Idle"; MyType = "Machine"; TargetType = "Job"; State = "Unclaimed"; CurrentTime = time() ]
          ]
+        :param list attribute_l: list of classads strings to include in the query 
         """
         # We only want to try to import if we are actually using the call...
         # Later on we will need to handle Condor version >7.9.4 and <7.9.4
         #
         outlist = self.collector.query(htcondor.AdTypes.Startd, 'true', attribute_l)
         return outlist
+
+    def condor_submit(self, jdl_str):
+        """
+        :param str jdl_str: single string with the content of the submit file
+        """
+        pass
+        # FIXME  To be implemented
 
 
 
