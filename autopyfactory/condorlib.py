@@ -62,7 +62,7 @@ class HTCondor(object):
 
     # -------------------------------------------------------------------------
 
-    def condor_q(self, attributes):
+    def condor_q(self, attribute_l):
         '''
         Returns a list of ClassAd objects. 
         :param list attributes: list of classads strings to include in the query 
@@ -72,8 +72,8 @@ class HTCondor(object):
         # then remoteschedd must have a valid value too
     
         log = logging.getLogger('condor')
-        log.debug("Starting with values attributes=%s" %attributes)
-        out = self.schedd.query('true', attributes)
+        log.debug("Starting with values attributes=%s" %attribute_l)
+        out = self.schedd.query('true', attribute_l)
         out = list(out)
         log.debug(out)
         return out
@@ -88,23 +88,23 @@ class HTCondor(object):
         log.debug('Leaving')
     
     
-    def condor_history(self, attributes, constraints=None):
+    def condor_history(self, attribute_l, constraint_l=None):
         """
         :param list attributes: list of classads strings to include in the query 
         :param list constraints: list of constraints strings in the history query
         """
         log = logging.getLogger('condor')
-        if constraints:
-            condor_constraint_expr = " && ".join(constraints)
+        if constraint_l:
+            constraint_str = " && ".join(constraints)
         else:
-            condor_constraint_expr = "true"
-        out = self.schedd.history(condor_constraint_expr, attributes, 0)
+            constraint_str = "true"
+        out = self.schedd.history(constraint_str, attribute_l, 0)
         out = list(out)
         log.debug(out)
         return out
     
     
-    def condor_status(self):
+    def condor_status(self, attribute_l):
         """ 
         Equivalent to condor_status
         We query for a few specific ClassAd attributes 
@@ -118,8 +118,7 @@ class HTCondor(object):
         # We only want to try to import if we are actually using the call...
         # Later on we will need to handle Condor version >7.9.4 and <7.9.4
         #
-        list_attrs = ['Name', 'State', 'Activity']
-        outlist = self.collector.query(htcondor.AdTypes.Startd, 'true', list_attrs)
+        outlist = self.collector.query(htcondor.AdTypes.Startd, 'true', attribute_l)
         return outlist
 
 
