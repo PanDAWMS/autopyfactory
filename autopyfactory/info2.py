@@ -48,6 +48,10 @@ class StatusInfo(object):
         new_info = StatusInfo(new_data, self.timestamp)
         return new_info
 
+        # FIXME
+        # how to aggregate twice?
+        # how to aggregate when self.data is already a dict of lists of dicts?
+
 
     def modify(self, analyzer):
         """
