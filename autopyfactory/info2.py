@@ -22,13 +22,16 @@ class StatusInfo(object):
     """
     """
 
-    def __init__(self, data):
+    def __init__(self, data, timestamp=None):
         """ 
         :param data: the initial set of data
         """ 
         self.log = logging.getLogger('autopyfactory')
-        self.timestamp = int(time.time())
         self.data = data 
+        if not timestamp:
+            self.timestamp = int(time.time())
+        else:
+            self.timestamp = timestamp
 
 
     def aggregate(self, analyzer):
@@ -42,8 +45,7 @@ class StatusInfo(object):
             if key not in new_data.keys():
                 new_data[key] = []
             new_data[key].append(value) 
-        new_info = StatusInfo(new_data)
-        new_info.timestamp = self.timestamp
+        new_info = StatusInfo(new_data, self.timestamp)
         return new_info
 
 
@@ -56,8 +58,7 @@ class StatusInfo(object):
         for item in self.data:
             new_item = analyzer.modify(item)
             new_data.append(new_item)
-        new_info = StatusInfo(new_data)
-        new_info.timestamp = self.timestamp
+        new_info = StatusInfo(new_data, self.timestamp)
         return new_info
 
 
@@ -70,7 +71,6 @@ class StatusInfo(object):
         for item in self.data:
             if analyzer.filter(item):
                 new_data.append(item)
-        new_info = StatusInfo(new_data)
-        new_info.timestamp = self.timestamp
+        new_info = StatusInfo(new_data, self.timestamp)
         return new_info
 
