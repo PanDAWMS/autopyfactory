@@ -35,40 +35,42 @@ class StatusInfo(object):
         """
         :param analyzer: an object implementing method aggregate()
         """
-        newdata = {} 
+        new_data = {} 
         # assuming for now that data is list of dicts
-        for i in self.data:
-            key, value = analyzer.aggregate(i)
-            if key not in newdata.keys():
-                newdata[key] = []
-            newdata[key].append(value) 
-
-        newinfo = StatusInfo(newdata)
-        return newinfo
+        for item in self.data:
+            key, value = analyzer.aggregate(item)
+            if key not in new_data.keys():
+                new_data[key] = []
+            new_data[key].append(value) 
+        new_info = StatusInfo(new_data)
+        new_info.timestamp = self.timestamp
+        return new_info
 
 
     def modify(self, analyzer):
         """
         :param analyzer: an object implementing method modify()
         """
-        newdata = []
+        new_data = []
         # assuming for now that data is list of dicts
-        for i in self.data:
-            new_i = analyzer.modify(i)
-            newdata.append(new_i)
-        newinfo = StatusInfo(newdata)
-        return newinfo
+        for item in self.data:
+            new_item = analyzer.modify(item)
+            new_data.append(new_item)
+        new_info = StatusInfo(new_data)
+        new_info.timestamp = self.timestamp
+        return new_info
 
 
     def filter(self, analyzer):
         """
         :param analyzer: an object implementing method filter()
         """
-        newdata = []
+        new_data = []
         # assuming for now that data is list of dicts
-        for i in self.data:
-            if analyzer.filter(i):
-                newdata.append(i)
-        newinfo = StatusInfo(newdata)
-        return newinfo
+        for item in self.data:
+            if analyzer.filter(item):
+                new_data.append(item)
+        new_info = StatusInfo(new_data)
+        new_info.timestamp = self.timestamp
+        return new_info
 
