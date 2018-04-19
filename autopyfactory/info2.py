@@ -12,12 +12,6 @@ import sys
 
 from pprint import pprint
 
-from autopyfactory.apfexceptions import FactoryConfigurationFailure, CondorStatusFailure, PandaStatusFailure
-from autopyfactory.logserver import LogServer
-
-major, minor, release, st, num = sys.version_info
-
-
 
 # FIXME : add Exceptions  !!!!!!
 
@@ -61,7 +55,7 @@ class StatusInfo(object):
                     tmp_new_data[key].append(item) 
             # 2
             new_data = {}
-            for k, v in tmp_new_data:
+            for k, v in tmp_new_data.items():
                 new_data[k] = StatusInfo(v, True, self.timestamp)
             # 3
             new_info = StatusInfo(new_data, False, self.timestamp)
@@ -69,7 +63,7 @@ class StatusInfo(object):
         else:
             new_data = {}
             for key, statusinfo in self.data.items():
-                new_data[key] = statusinfo.group(analyzer):
+                new_data[key] = statusinfo.group(analyzer)
             new_info = StatusInfo(new_data, False, self.timestamp)
             return new_info
 
@@ -118,11 +112,11 @@ class StatusInfo(object):
             return new_info
 
 
-    def get(self, *keys, analyzer=None):
+    def get(self, key_l, analyzer=None):
         """
         returns the item in the tree structure pointed by all keys
         if analyzer is passed, the item is being processed first
-        :param *keys: list of keys for each nested dictionary
+        :param key_l list: list of keys for each nested dictionary
         :param analyzer: a function that process the raw data, if needed.
         :rtype data:
         """
@@ -132,6 +126,6 @@ class StatusInfo(object):
             else:
                 return self.data
         else:
-            statusinfo = self.data[keys[0]]
-            return statusinfo.get(*keys[1:], analyzer)
+            statusinfo = self.data[key_[0]]
+            return statusinfo.get(key_l[1:], analyzer)
 
