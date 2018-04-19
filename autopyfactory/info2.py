@@ -17,6 +17,7 @@ from autopyfactory.logserver import LogServer
 
 major, minor, release, st, num = sys.version_info
 
+# FIXME : add Exceptions  !!!!!!
 
 class StatusInfo(object):
     """
@@ -38,6 +39,7 @@ class StatusInfo(object):
             self.timestamp = timestamp
 
 
+    # FIXME make it recursive
     def group(self, analyzer):
         """
         groups the items recorded in self.data into a dictionary
@@ -72,12 +74,20 @@ class StatusInfo(object):
         :param analyzer: an object implementing method modify()
         :rtype StatusInfo:
         """
-        new_data = []
-        for item in self.data:
-            new_item = analyzer.modify(item)
-            new_data.append(new_item)
-        new_info = StatusInfo(new_data, True, self.timestamp)
-        return new_info
+
+        if self.is_raw:
+            new_data = []
+            for item in self.data:
+                new_item = analyzer.modify(item)
+                new_data.append(new_item)
+            new_info = StatusInfo(new_data, True, self.timestamp)
+            return new_info
+        else:
+            new_data = {}
+            for key, statusinfo in self.data.items():
+                new_data[key] = statusinfo.modify(analyzer)
+            new_info = StatusInfo(new_data, False, self.timestamp)
+            return new_info
 
 
     def filter(self, analyzer):
@@ -87,12 +97,19 @@ class StatusInfo(object):
         :param analyzer: an object implementing method filter()
         :rtype StatusInfo:
         """
-        new_data = []
-        for item in self.data:
-            if analyzer.filter(item):
-                new_data.append(item)
-        new_info = StatusInfo(new_data, True, self.timestamp)
-        return new_info
+        if self.is_raw:
+            new_data = []
+            for item in self.data:
+                if analyzer.filter(item):
+                    new_data.append(item)
+            new_info = StatusInfo(new_data, True, self.timestamp)
+            return new_info
+        else:
+            new_data = {}
+            for key, statusinfo in self.data.items(): 
+                new_data[key] = statusinfo.filter(analyzer)
+            new_info = StatusInfo(new_data, False, self.timestamp)
+            return new_info
 
 
     def get(self, *keys, analyzer=None):
