@@ -17,6 +17,8 @@ from autopyfactory.logserver import LogServer
 
 major, minor, release, st, num = sys.version_info
 
+
+
 # FIXME : add Exceptions  !!!!!!
 
 class StatusInfo(object):
@@ -29,7 +31,6 @@ class StatusInfo(object):
         :param is_raw boolean: indicates if the object is primary or it is composed by other StatusInfo objects
         :param timestamp: the time when this object was created
         """ 
-
         self.log = logging.getLogger('autopyfactory')
         self.is_raw = is_raw
         self.data = data 
@@ -39,7 +40,6 @@ class StatusInfo(object):
             self.timestamp = timestamp
 
 
-    # FIXME make it recursive
     def group(self, analyzer):
         """
         groups the items recorded in self.data into a dictionary
@@ -50,21 +50,28 @@ class StatusInfo(object):
         :param analyzer: an object implementing method group()
         :rtype StatusInfo:
         """
-        # 1
-        tmp_new_data = {} 
-        for item in self.data:
-            key = analyzer.group(item)
-            if key:
-                if key not in tmp_new_data.keys():
-                    tmp_new_data[key] = []
-                tmp_new_data[key].append(item) 
-        # 2
-        new_data = {}
-        for k, v in tmp_new_data:
-            new_data[k] = StatusInfo(v, True, self.timestamp)
-        # 3
-        new_info = StatusInfo(new_data, False, self.timestamp)
-        return new_info
+        if self.is_raw:
+            # 1
+            tmp_new_data = {} 
+            for item in self.data:
+                key = analyzer.group(item)
+                if key:
+                    if key not in tmp_new_data.keys():
+                        tmp_new_data[key] = []
+                    tmp_new_data[key].append(item) 
+            # 2
+            new_data = {}
+            for k, v in tmp_new_data:
+                new_data[k] = StatusInfo(v, True, self.timestamp)
+            # 3
+            new_info = StatusInfo(new_data, False, self.timestamp)
+            return new_info
+        else:
+            new_data = {}
+            for key, statusinfo in self.data.items():
+                new_data[key] = statusinfo.group(analyzer):
+            new_info = StatusInfo(new_data, False, self.timestamp)
+            return new_info
 
 
     def modify(self, analyzer):
@@ -74,7 +81,6 @@ class StatusInfo(object):
         :param analyzer: an object implementing method modify()
         :rtype StatusInfo:
         """
-
         if self.is_raw:
             new_data = []
             for item in self.data:
