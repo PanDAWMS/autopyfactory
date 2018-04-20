@@ -68,24 +68,24 @@ class StatusInfo(object):
             return new_info
 
 
-    def modify(self, analyzer):
+    def map(self, analyzer):
         """
         modifies each item in self.data according to rules
         in analyzer
-        :param analyzer: an object implementing method modify()
+        :param analyzer: an object implementing method map()
         :rtype StatusInfo:
         """
         if self.is_raw:
             new_data = []
             for item in self.data:
-                new_item = analyzer.modify(item)
+                new_item = analyzer.map(item)
                 new_data.append(new_item)
             new_info = StatusInfo(new_data, True, self.timestamp)
             return new_info
         else:
             new_data = {}
             for key, statusinfo in self.data.items():
-                new_data[key] = statusinfo.modify(analyzer)
+                new_data[key] = statusinfo.map(analyzer)
             new_info = StatusInfo(new_data, False, self.timestamp)
             return new_info
 
