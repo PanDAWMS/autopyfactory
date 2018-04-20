@@ -112,20 +112,16 @@ class StatusInfo(object):
             return new_info
 
 
-    def get(self, key_l, analyzer=None):
+    def get(self, *key_l):
         """
         returns the item in the tree structure pointed by all keys
-        if analyzer is passed, the item is being processed first
         :param key_l list: list of keys for each nested dictionary
-        :param analyzer: a function that process the raw data, if needed.
         :rtype data:
         """
-        if self.is_raw:
-            if analyzer:
-                return analyzer.process(self.data)
-            else:
-                return self.data
+        if len(key_l) == 0:
+            return self.data
         else:
-            statusinfo = self.data[key_[0]]
-            return statusinfo.get(key_l[1:], analyzer)
+            data = self.data[key_l[0]]
+            return data.get(*key_l[1:])
+            
 
