@@ -12,8 +12,35 @@ import sys
 
 from pprint import pprint
 
+# =============================================================================
+# Exceptions
+# =============================================================================
 
-# FIXME : add Exceptions  !!!!!!
+
+class MethodGroupMissing(Exception):
+    def __init__(self ):
+        self.value = "Analyzer object does not have a method group()"
+    def __str__(self):
+        return repr(self.value)
+
+
+class MethodMapMissing(Exception):
+    def __init__(self ):
+        self.value = "Analyzer object does not have a method map()"
+    def __str__(self):
+        return repr(self.value)
+
+
+class MethodFilterMissing(Exception):
+    def __init__(self ):
+        self.value = "Analyzer object does not have a method filter()"
+    def __str__(self):
+        return repr(self.value)
+
+
+
+
+# =============================================================================
 
 class StatusInfo(object):
     """
