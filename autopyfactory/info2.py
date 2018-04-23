@@ -38,7 +38,11 @@ class MethodFilterMissing(Exception):
     def __str__(self):
         return repr(self.value)
 
-
+class MissingKey(Exception):
+    def __init__(self, key):
+        self.value = "Key %s is not in the data dictionary" %key
+    def __str__(self):
+        return repr(self.value)
 
 
 # =============================================================================
@@ -167,7 +171,10 @@ class StatusInfo(object):
         if len(key_l) == 0:
             return self.data
         else:
-            data = self.data[key_l[0]]
+            key = key_l[0]
+            if key not self.data.keys():
+                raise MissingKey(key)
+            data = self.data[key]
             return data.get(*key_l[1:])
             
 
@@ -178,5 +185,7 @@ class StatusInfo(object):
         :param key: the key in the higher level dictionary
         :rtype: the output can be either another Info object or a raw item
         """
+        if key not self.data.keys():
+            raise MissingKey(key)
         return self.data[key]
 
