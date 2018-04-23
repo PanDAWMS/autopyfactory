@@ -19,22 +19,22 @@ from pprint import pprint
 
 
 class MethodGroupMissing(Exception):
-    def __init__(self ):
-        self.value = "Analyzer object does not have a method group()"
+    def __init__(self, analyzer):
+        self.value = "Analyzer %s does not have a method group()" %analyzer.__class__.__name__
     def __str__(self):
         return repr(self.value)
 
 
 class MethodMapMissing(Exception):
-    def __init__(self ):
-        self.value = "Analyzer object does not have a method map()"
+    def __init__(self, analyzer):
+        self.value = "Analyzer %s does not have a method map()" %analyzer.__class__.__name__
     def __str__(self):
         return repr(self.value)
 
 
 class MethodFilterMissing(Exception):
-    def __init__(self ):
-        self.value = "Analyzer object does not have a method filter()"
+    def __init__(self, analyzer):
+        self.value = "Analyzer %s does not have a method filter()" %analyzer.__class__.__name__
     def __str__(self):
         return repr(self.value)
 
@@ -76,8 +76,8 @@ class StatusInfo(object):
         :rtype StatusInfo:
         """
         if not (hasattr(analyzer, "group") and \
-                inspect.ismethod(getattr(analyzer, "group")):
-            raise MethodGroupMissing()
+                inspect.ismethod(getattr(analyzer, "group"))):
+            raise MethodGroupMissing(analyzer)
 
         if self.is_raw:
             # 1
@@ -111,8 +111,8 @@ class StatusInfo(object):
         :rtype StatusInfo:
         """
         if not (hasattr(analyzer, "map") and \
-                inspect.ismethod(getattr(analyzer, "map")):
-            raise MethodMapMissing()
+                inspect.ismethod(getattr(analyzer, "map"))):
+            raise MethodMapMissing(analyzer)
 
         if self.is_raw:
             new_data = []
@@ -137,8 +137,8 @@ class StatusInfo(object):
         :rtype StatusInfo:
         """
         if not (hasattr(analyzer, "filter") and \
-                inspect.ismethod(getattr(analyzer, "filter")):
-            raise MethodFilterMissing()
+                inspect.ismethod(getattr(analyzer, "filter"))):
+            raise MethodFilterMissing(analyzer)
 
         if self.is_raw:
             new_data = []
