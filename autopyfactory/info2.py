@@ -33,6 +33,9 @@ class StatusInfo(object):
         else:
             self.timestamp = timestamp
 
+    # =========================================================================
+    # methods to manipulate the data
+    # =========================================================================
 
     def group(self, analyzer):
         """
@@ -111,6 +114,9 @@ class StatusInfo(object):
             new_info = StatusInfo(new_data, False, self.timestamp)
             return new_info
 
+    # =========================================================================
+    # retrieve the data
+    # =========================================================================
 
     def get(self, *key_l):
         """
@@ -124,4 +130,13 @@ class StatusInfo(object):
             data = self.data[key_l[0]]
             return data.get(*key_l[1:])
             
+
+    def __getitem__(self, key):
+        """
+        returns the part of the higher level dictionary 
+        corresponding to a given key
+        :param key: the key in the higher level dictionary
+        :rtype: the output can be either another Info object or a raw item
+        """
+        return self.data[key]
 
