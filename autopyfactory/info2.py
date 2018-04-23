@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import datetime
+import inspect
 import logging
 import logging.handlers
 import threading
@@ -74,6 +75,10 @@ class StatusInfo(object):
         :param analyzer: an object implementing method group()
         :rtype StatusInfo:
         """
+        if not (hasattr(analyzer, "group") and \
+                inspect.ismethod(getattr(analyzer, "group")):
+            raise MethodGroupMissing()
+
         if self.is_raw:
             # 1
             tmp_new_data = {} 
@@ -105,6 +110,10 @@ class StatusInfo(object):
         :param analyzer: an object implementing method map()
         :rtype StatusInfo:
         """
+        if not (hasattr(analyzer, "map") and \
+                inspect.ismethod(getattr(analyzer, "map")):
+            raise MethodMapMissing()
+
         if self.is_raw:
             new_data = []
             for item in self.data:
@@ -127,6 +136,10 @@ class StatusInfo(object):
         :param analyzer: an object implementing method filter()
         :rtype StatusInfo:
         """
+        if not (hasattr(analyzer, "filter") and \
+                inspect.ismethod(getattr(analyzer, "filter")):
+            raise MethodFilterMissing()
+
         if self.is_raw:
             new_data = []
             for item in self.data:
