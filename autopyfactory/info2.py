@@ -13,10 +13,10 @@ import sys
 
 from pprint import pprint
 
+
 # =============================================================================
 # Exceptions
 # =============================================================================
-
 
 class MethodGroupMissing(Exception):
     def __init__(self, analyzer):
@@ -38,13 +38,15 @@ class MethodFilterMissing(Exception):
     def __str__(self):
         return repr(self.value)
 
+
 class MissingKey(Exception):
     def __init__(self, key):
         self.value = "Key %s is not in the data dictionary" %key
     def __str__(self):
         return repr(self.value)
 
-
+# =============================================================================
+# Info class
 # =============================================================================
 
 class StatusInfo(object):
