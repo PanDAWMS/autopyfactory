@@ -46,6 +46,34 @@ class MissingKey(Exception):
         return repr(self.value)
 
 # =============================================================================
+# Analyzers
+# =============================================================================
+
+class GroupByKey(object):
+
+    def __init__(self, key):
+        self.key = key
+
+    def group(self, job):
+        return job[self.key]   # FIXME raise Excption if key in not in job classad
+
+
+class GroupByKeyRemap(object):
+
+    def __init__(self, key, mapping_d):
+        self.key = key
+        self.mapping_d = mapping_d
+
+    def group(self, job):
+        value = job[self.key]   # FIXME raise Excption if key in not in job classad
+        if value in self.mapping_d.keys():
+            return self.mapping_d[value]
+        else:
+            return None
+
+
+
+# =============================================================================
 # Info class
 # =============================================================================
 
