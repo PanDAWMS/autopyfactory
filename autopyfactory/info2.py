@@ -18,25 +18,33 @@ from pprint import pprint
 # Exceptions
 # =============================================================================
 
-class MethodGroupMissing(Exception):
-    def __init__(self, analyzer):
-        self.value = "Analyzer %s does not have a method group()" %analyzer.__class__.__name__
+class MethodMissing(Exception):
+    def __init__(self, analyzer, methodname):
+        basevalue = "Analyzer object {objectname} does not have a method {methodname}()"
+        self.value = basevalue.format(objectname=analyzer.__class__.__name__, 
+                                      methodname=methodname)
     def __str__(self):
         return repr(self.value)
+
+
+class MethodGroupMissing(MethodMissing):
+    def __init__(self, analyzer):
+        super(MethodGroupMissing, self).__init__(analyzer, "group")
 
 
 class MethodMapMissing(Exception):
     def __init__(self, analyzer):
-        self.value = "Analyzer %s does not have a method map()" %analyzer.__class__.__name__
-    def __str__(self):
-        return repr(self.value)
+        super(MethodGroupMissing, self).__init__(analyzer, "map")
 
 
 class MethodFilterMissing(Exception):
     def __init__(self, analyzer):
-        self.value = "Analyzer %s does not have a method filter()" %analyzer.__class__.__name__
-    def __str__(self):
-        return repr(self.value)
+        super(MethodGroupMissing, self).__init__(analyzer, "filter")
+
+
+class MethodReduceMissing(Exception):
+    def __init__(self, analyzer):
+        super(MethodGroupMissing, self).__init__(analyzer, "reduce")
 
 
 class MissingKey(Exception):
@@ -185,6 +193,29 @@ class StatusInfo(object):
             new_data = {}
             for key, statusinfo in self.data.items(): 
                 new_data[key] = statusinfo.filter(analyzer)
+            new_info = StatusInfo(new_data, False, self.timestamp)
+            return new_info
+
+
+    def reduce(self, analyzer):
+        """
+        process the entire self.data at the raw level
+        :param analyzer: an object implementing method reduce()
+        :rtype : value output of reduce()
+        """
+        if not (hasattr(analyzer, "reduce") and \
+                inspect.ismethod(getattr(analyzer, "reduce"))):
+            raise MethodReduceMissing(analyzer)
+
+        if self.is_raw:
+            new_data = None
+            new_data = analyzer.reduce(self.data)
+            new_info = StatusInfo(new_data, True, self.timestamp)
+            return new_info
+        else:
+            new_data = {}
+            for key, statusinfo in self.data.items(): 
+                new_data[key] = statusinfo.reduce(analyzer)
             new_info = StatusInfo(new_data, False, self.timestamp)
             return new_info
 
