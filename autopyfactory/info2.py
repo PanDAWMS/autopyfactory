@@ -53,6 +53,13 @@ class MissingKey(Exception):
     def __str__(self):
         return repr(self.value)
 
+
+class ObjectIsNotMutable(Exception):
+    def __init__(self, method):
+        self.value = "object is not mutable, method %s can not be invoked anymore" %method
+    def __str__(self):
+        return repr(self.value)
+
 # =============================================================================
 # Analyzers
 # =============================================================================
@@ -89,14 +96,16 @@ class StatusInfo(object):
     """
     """
 
-    def __init__(self, data, is_raw=True, timestamp=None):
+    def __init__(self, data, is_raw=True, is_mutable=True, timestamp=None):
         """ 
         :param data: the data to be recorded
         :param is_raw boolean: indicates if the object is primary or it is composed by other StatusInfo objects
+        :param is_mutable boolean: indicates if the data can still be processed or not
         :param timestamp: the time when this object was created
         """ 
         self.log = logging.getLogger('autopyfactory')
         self.is_raw = is_raw
+        self.is_mutable = is_mutable
         self.data = data 
         if not timestamp:
             self.timestamp = int(time.time())
@@ -117,6 +126,9 @@ class StatusInfo(object):
         :param analyzer: an object implementing method group()
         :rtype StatusInfo:
         """
+        if not self.is_mutable:
+            raise ObjectIsNotMutable('group')
+
         if not (hasattr(analyzer, "group") and \
                 inspect.ismethod(getattr(analyzer, "group"))):
             raise MethodGroupMissing(analyzer)
@@ -133,15 +145,15 @@ class StatusInfo(object):
             # 2
             new_data = {}
             for k, v in tmp_new_data.items():
-                new_data[k] = StatusInfo(v, True, self.timestamp)
+                new_data[k] = StatusInfo(v, timestamp=self.timestamp)
             # 3
-            new_info = StatusInfo(new_data, False, self.timestamp)
+            new_info = StatusInfo(new_data, is_raw=False, timestamp=self.timestamp)
             return new_info
         else:
             new_data = {}
             for key, statusinfo in self.data.items():
                 new_data[key] = statusinfo.group(analyzer)
-            new_info = StatusInfo(new_data, False, self.timestamp)
+            new_info = StatusInfo(new_data, is_raw=False, timestamp=self.timestamp)
             return new_info
 
 
@@ -152,6 +164,9 @@ class StatusInfo(object):
         :param analyzer: an object implementing method map()
         :rtype StatusInfo:
         """
+        if not self.is_mutable:
+            raise ObjectIsNotMutable('map')
+
         if not (hasattr(analyzer, "map") and \
                 inspect.ismethod(getattr(analyzer, "map"))):
             raise MethodMapMissing(analyzer)
@@ -161,13 +176,13 @@ class StatusInfo(object):
             for item in self.data:
                 new_item = analyzer.map(item)
                 new_data.append(new_item)
-            new_info = StatusInfo(new_data, True, self.timestamp)
+            new_info = StatusInfo(new_data, timestamp=self.timestamp)
             return new_info
         else:
             new_data = {}
             for key, statusinfo in self.data.items():
                 new_data[key] = statusinfo.map(analyzer)
-            new_info = StatusInfo(new_data, False, self.timestamp)
+            new_info = StatusInfo(new_data, is_raw=False, timestamp=self.timestamp)
             return new_info
 
 
@@ -178,6 +193,9 @@ class StatusInfo(object):
         :param analyzer: an object implementing method filter()
         :rtype StatusInfo:
         """
+        if not self.is_mutable:
+            raise ObjectIsNotMutable('filter')
+
         if not (hasattr(analyzer, "filter") and \
                 inspect.ismethod(getattr(analyzer, "filter"))):
             raise MethodFilterMissing(analyzer)
@@ -187,13 +205,13 @@ class StatusInfo(object):
             for item in self.data:
                 if analyzer.filter(item):
                     new_data.append(item)
-            new_info = StatusInfo(new_data, True, self.timestamp)
+            new_info = StatusInfo(new_data, timestamp=self.timestamp)
             return new_info
         else:
             new_data = {}
             for key, statusinfo in self.data.items(): 
                 new_data[key] = statusinfo.filter(analyzer)
-            new_info = StatusInfo(new_data, False, self.timestamp)
+            new_info = StatusInfo(new_data, is_raw=False, timestamp=self.timestamp)
             return new_info
 
 
@@ -203,6 +221,9 @@ class StatusInfo(object):
         :param analyzer: an object implementing method reduce()
         :rtype : value output of reduce()
         """
+        if not self.is_mutable:
+            raise ObjectIsNotMutable('reduce')
+
         if not (hasattr(analyzer, "reduce") and \
                 inspect.ismethod(getattr(analyzer, "reduce"))):
             raise MethodReduceMissing(analyzer)
@@ -210,13 +231,13 @@ class StatusInfo(object):
         if self.is_raw:
             new_data = None
             new_data = analyzer.reduce(self.data)
-            new_info = StatusInfo(new_data, True, self.timestamp)
+            new_info = StatusInfo(new_data, is_mutable=False, timestamp=self.timestamp)
             return new_info
         else:
             new_data = {}
             for key, statusinfo in self.data.items(): 
                 new_data[key] = statusinfo.reduce(analyzer)
-            new_info = StatusInfo(new_data, False, self.timestamp)
+            new_info = StatusInfo(new_data, is_raw=False, is_mutable=False, timestamp=self.timestamp)
             return new_info
 
     # =========================================================================
