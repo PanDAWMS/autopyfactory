@@ -247,6 +247,9 @@ class StatusInfo(object):
     def get(self, *key_l):
         """
         returns the item in the tree structure pointed by all keys
+        Main difference with __getitem__() is that get() returns the actual data
+        in case of reaching the deepest level, while __getitem__() returns the 
+        corresponding Info object
         :param key_l list: list of keys for each nested dictionary
         :rtype data:
         """
@@ -264,6 +267,9 @@ class StatusInfo(object):
         """
         returns the part of the higher level dictionary 
         corresponding to a given key
+        Main difference with get() is that it returns the actual data
+        in case of reaching the deepest level, while __getitem__() returns the 
+        corresponding Info object
         :param key: the key in the higher level dictionary
         :rtype: the output can be either another Info object or a raw item
         """
