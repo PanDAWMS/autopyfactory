@@ -9,6 +9,7 @@ import time
 import traceback
 import os
 import pwd
+import uuid
 import sys
 
 from pprint import pprint
@@ -64,28 +65,50 @@ class ObjectIsNotMutable(Exception):
 # Analyzers
 # =============================================================================
 
-class GroupByKey(object):
+class Analyzer(object):
+    pass
+
+class GroupByKey(Analyzer):
 
     def __init__(self, key):
         self.key = key
 
     def group(self, job):
-        return job[self.key]   # FIXME raise Excption if key in not in job classad
+        try:
+            return job[self.key]
+        except Exception, ex:
+            return None
 
 
-class GroupByKeyRemap(object):
+class GroupByKeyRemap(Analyzer):
 
     def __init__(self, key, mapping_d):
         self.key = key
         self.mapping_d = mapping_d
 
     def group(self, job):
-        value = job[self.key]   # FIXME raise Excption if key in not in job classad
+        try:
+            value = job[self.key]
+        except Exception, ex:
+            return None
+
         if value in self.mapping_d.keys():
             return self.mapping_d[value]
         else:
             return None
 
+
+class Algorithm(object):
+    """
+    container for multiple Analyzer objects
+    """
+    def __init__(self):
+        self.uuid = uuid.uudi4() # FIXME: this is temporary
+        # self.uuid is to be used as hash for caching
+        self.algorithm = []
+
+    def add(self, methodname, analyzer):
+        self.algorithm.append( (methodname, analyzer) )
 
 
 # =============================================================================
