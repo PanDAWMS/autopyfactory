@@ -19,33 +19,11 @@ from pprint import pprint
 # Exceptions
 # =============================================================================
 
-class MethodMissing(Exception):
+class IncorrectAnalyzer(Exception):
     def __init__(self, analyzer, methodname):
-        basevalue = "Analyzer object {objectname} does not have a method {methodname}()"
-        self.value = basevalue.format(objectname=analyzer.__class__.__name__, 
-                                      methodname=methodname)
+        self.value = "object %s does not have a method % methodname" %(analzyer, methodname))
     def __str__(self):
         return repr(self.value)
-
-
-class MethodGroupMissing(MethodMissing):
-    def __init__(self, analyzer):
-        super(MethodGroupMissing, self).__init__(analyzer, "group")
-
-
-class MethodMapMissing(Exception):
-    def __init__(self, analyzer):
-        super(MethodGroupMissing, self).__init__(analyzer, "map")
-
-
-class MethodFilterMissing(Exception):
-    def __init__(self, analyzer):
-        super(MethodGroupMissing, self).__init__(analyzer, "filter")
-
-
-class MethodReduceMissing(Exception):
-    def __init__(self, analyzer):
-        super(MethodGroupMissing, self).__init__(analyzer, "reduce")
 
 
 class MissingKey(Exception):
@@ -68,7 +46,28 @@ class ObjectIsNotMutable(Exception):
 class Analyzer(object):
     pass
 
-class GroupByKey(Analyzer):
+class AnalyzerGroup(Analyzer):
+    analyzertype = "group"
+    def group(self):
+        raise NotImplementedError
+
+class AnalyzerFilter(Analyzer):
+    analyzertype = "filter"
+    def filter(self):
+        raise NotImplementedError
+
+class AnalyzerMap(Analyzer):
+    analyzertype = "map"
+    def map(self):
+        raise NotImplementedError
+
+class AnalyzerReduce(Analyzer):
+    analyzertype = "reduce"
+    def reduce(self):
+        raise NotImplementedError
+
+
+class GroupByKey(AnalyzerGroup):
 
     def __init__(self, key):
         self.key = key
@@ -80,7 +79,7 @@ class GroupByKey(Analyzer):
             return None
 
 
-class GroupByKeyRemap(Analyzer):
+class GroupByKeyRemap(AnalyzerGroup):
 
     def __init__(self, key, mapping_d):
         self.key = key
@@ -107,8 +106,8 @@ class Algorithm(object):
         # self.uuid is to be used as hash for caching
         self.algorithm = []
 
-    def add(self, methodname, analyzer):
-        self.algorithm.append( (methodname, analyzer) )
+    def add(self, analyzer):
+        self.algorithm.append( analyzer )
 
 
 # =============================================================================
@@ -152,9 +151,8 @@ class StatusInfo(object):
         if not self.is_mutable:
             raise ObjectIsNotMutable('group')
 
-        if not (hasattr(analyzer, "group") and \
-                inspect.ismethod(getattr(analyzer, "group"))):
-            raise MethodGroupMissing(analyzer)
+        if not analyzer.analyzertype == 'group':
+            raise IncorrectAnalyzer(analyzer, 'group')
 
         if self.is_raw:
             # 1
@@ -190,9 +188,8 @@ class StatusInfo(object):
         if not self.is_mutable:
             raise ObjectIsNotMutable('map')
 
-        if not (hasattr(analyzer, "map") and \
-                inspect.ismethod(getattr(analyzer, "map"))):
-            raise MethodMapMissing(analyzer)
+        if not analyzer.analyzertype == 'map':
+            raise IncorrectAnalyzer(analyzer, 'map')
 
         if self.is_raw:
             new_data = []
@@ -219,9 +216,8 @@ class StatusInfo(object):
         if not self.is_mutable:
             raise ObjectIsNotMutable('filter')
 
-        if not (hasattr(analyzer, "filter") and \
-                inspect.ismethod(getattr(analyzer, "filter"))):
-            raise MethodFilterMissing(analyzer)
+        if not analyzer.analyzertype == 'filter':
+            raise IncorrectAnalyzer(analyzer, 'filter')
 
         if self.is_raw:
             new_data = []
@@ -247,9 +243,8 @@ class StatusInfo(object):
         if not self.is_mutable:
             raise ObjectIsNotMutable('reduce')
 
-        if not (hasattr(analyzer, "reduce") and \
-                inspect.ismethod(getattr(analyzer, "reduce"))):
-            raise MethodReduceMissing(analyzer)
+        if not analyzer.analyzertype == 'reduce':
+            raise IncorrectAnalyzer(analyzer, 'reduce')
 
         if self.is_raw:
             new_data = None
