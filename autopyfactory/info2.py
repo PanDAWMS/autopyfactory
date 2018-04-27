@@ -138,6 +138,23 @@ class StatusInfo(object):
     # methods to manipulate the data
     # =========================================================================
 
+    def analyze(self, analyzer):
+        """
+        generic method that picks the right one 
+        based on the type of analyzer
+        :param analyzer: an object implementing method group()
+        :rtype StatusInfo:
+        """
+        if analyzer.analyzertype == 'group':
+            return self.group(analyzer)
+        if analyzer.analyzertype == 'filter':
+            return self.filter(analyzer)
+        if analyzer.analyzertype == 'map':
+            return self.map(analyzer)
+        if analyzer.analyzertype == 'reduce':
+            return self.reduce(analyzer)
+
+
     def group(self, analyzer):
         """
         groups the items recorded in self.data into a dictionary
