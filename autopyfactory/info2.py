@@ -12,103 +12,6 @@ import pwd
 import uuid
 import sys
 
-from pprint import pprint
-
-
-# =============================================================================
-# Exceptions
-# =============================================================================
-
-class IncorrectAnalyzer(Exception):
-    def __init__(self, analyzer, methodname):
-        self.value = "object %s does not have a method % methodname" %(analzyer, methodname))
-    def __str__(self):
-        return repr(self.value)
-
-
-class MissingKey(Exception):
-    def __init__(self, key):
-        self.value = "Key %s is not in the data dictionary" %key
-    def __str__(self):
-        return repr(self.value)
-
-
-class ObjectIsNotMutable(Exception):
-    def __init__(self, method):
-        self.value = "object is not mutable, method %s can not be invoked anymore" %method
-    def __str__(self):
-        return repr(self.value)
-
-# =============================================================================
-# Analyzers
-# =============================================================================
-
-class Analyzer(object):
-    pass
-
-class AnalyzerGroup(Analyzer):
-    analyzertype = "group"
-    def group(self):
-        raise NotImplementedError
-
-class AnalyzerFilter(Analyzer):
-    analyzertype = "filter"
-    def filter(self):
-        raise NotImplementedError
-
-class AnalyzerMap(Analyzer):
-    analyzertype = "map"
-    def map(self):
-        raise NotImplementedError
-
-class AnalyzerReduce(Analyzer):
-    analyzertype = "reduce"
-    def reduce(self):
-        raise NotImplementedError
-
-
-class GroupByKey(AnalyzerGroup):
-
-    def __init__(self, key):
-        self.key = key
-
-    def group(self, job):
-        try:
-            return job[self.key]
-        except Exception, ex:
-            return None
-
-
-class GroupByKeyRemap(AnalyzerGroup):
-
-    def __init__(self, key, mapping_d):
-        self.key = key
-        self.mapping_d = mapping_d
-
-    def group(self, job):
-        try:
-            value = job[self.key]
-        except Exception, ex:
-            return None
-
-        if value in self.mapping_d.keys():
-            return self.mapping_d[value]
-        else:
-            return None
-
-
-class Algorithm(object):
-    """
-    container for multiple Analyzer objects
-    """
-    def __init__(self):
-        self.uuid = uuid.uudi4() # FIXME: this is temporary
-        # self.uuid is to be used as hash for caching
-        self.algorithm = []
-
-    def add(self, analyzer):
-        self.algorithm.append( analyzer )
-
 
 # =============================================================================
 # Info class
@@ -134,15 +37,15 @@ class StatusInfo(object):
         else:
             self.timestamp = timestamp
 
-    # =========================================================================
+    # -------------------------------------------------------------------------
     # methods to manipulate the data
-    # =========================================================================
+    # -------------------------------------------------------------------------
 
     def analyze(self, analyzer):
         """
         generic method that picks the right one 
         based on the type of analyzer
-        :param analyzer: an object implementing method group()
+        :param analyzer: an Analyzer object 
         :rtype StatusInfo:
         """
         if analyzer.analyzertype == 'group':
@@ -275,16 +178,15 @@ class StatusInfo(object):
             new_info = StatusInfo(new_data, is_raw=False, is_mutable=False, timestamp=self.timestamp)
             return new_info
 
-    # =========================================================================
-    # retrieve the data
-    # =========================================================================
+    # -------------------------------------------------------------------------
+    # method to get the data
+    # -------------------------------------------------------------------------
 
     def get(self, *key_l):
         """
-        returns the item in the tree structure pointed by all keys
-        Main difference with __getitem__() is that get() returns the actual data
-        in case of reaching the deepest level, while __getitem__() returns the 
-        corresponding Info object
+        returns the data hosted by the Info object in the tree structure pointed 
+        by all keys
+        The output is the data, either a dictionary or the original raw list 
         :param key_l list: list of keys for each nested dictionary
         :rtype data:
         """
@@ -300,15 +202,119 @@ class StatusInfo(object):
 
     def __getitem__(self, key):
         """
-        returns the part of the higher level dictionary 
-        corresponding to a given key
-        Main difference with get() is that it returns the actual data
-        in case of reaching the deepest level, while __getitem__() returns the 
-        corresponding Info object
+        returns the Info object pointed by the key
         :param key: the key in the higher level dictionary
-        :rtype: the output can be either another Info object or a raw item
+        :rtype StatusInfo: 
         """
+        if self.is_raw:
+            raise IsRawData(key)
         if key not self.data.keys():
             raise MissingKey(key)
         return self.data[key]
+
+
+# =============================================================================
+# Analyzers
+# =============================================================================
+
+class Analyzer(object):
+    pass
+
+class AnalyzerGroup(Analyzer):
+    analyzertype = "group"
+    def group(self):
+        raise NotImplementedError
+
+class AnalyzerFilter(Analyzer):
+    analyzertype = "filter"
+    def filter(self):
+        raise NotImplementedError
+
+class AnalyzerMap(Analyzer):
+    analyzertype = "map"
+    def map(self):
+        raise NotImplementedError
+
+class AnalyzerReduce(Analyzer):
+    analyzertype = "reduce"
+    def reduce(self):
+        raise NotImplementedError
+
+
+class Algorithm(object):
+    """
+    container for multiple Analyzer objects
+    """
+    def __init__(self):
+        self.uuid = uuid.uudi4() # FIXME: this is temporary
+        # self.uuid is to be used as hash for caching
+        self.algorithm = []
+
+    def add(self, analyzer):
+        self.algorithm.append( analyzer )
+
+
+# =============================================================================
+#  Some basic Analyzers
+# =============================================================================
+
+class GroupByKey(AnalyzerGroup):
+
+    def __init__(self, key):
+        self.key = key
+
+    def group(self, job):
+        try:
+            return job[self.key]
+        except Exception, ex:
+            return None
+
+
+class GroupByKeyRemap(AnalyzerGroup):
+
+    def __init__(self, key, mapping_d):
+        self.key = key
+        self.mapping_d = mapping_d
+
+    def group(self, job):
+        try:
+            value = job[self.key]
+        except Exception, ex:
+            return None
+
+        if value in self.mapping_d.keys():
+            return self.mapping_d[value]
+        else:
+            return None
+
+# =============================================================================
+# Exceptions
+# =============================================================================
+
+class IncorrectAnalyzer(Exception):
+    def __init__(self, analyzer, methodname):
+        self.value = "object %s does not have a method % methodname" %(analzyer, methodname))
+    def __str__(self):
+        return repr(self.value)
+
+
+class MissingKey(Exception):
+    def __init__(self, key):
+        self.value = "Key %s is not in the data dictionary" %key
+    def __str__(self):
+        return repr(self.value)
+
+
+class IsRawData(Exception):
+    def __init__(self, key):
+        self.value = "Info object is raw. It does not have key %s" %key
+    def __str__(self):
+        return repr(self.value)
+
+
+class ObjectIsNotMutable(Exception):
+    def __init__(self, method):
+        self.value = "object is not mutable, method %s can not be invoked anymore" %method
+    def __str__(self):
+        return repr(self.value)
 
