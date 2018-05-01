@@ -21,6 +21,11 @@ from autopyfactory.condorlib import querycondorlib, queryhistorylib, condor_q
 from autopyfactory.mappings import map2info
 import autopyfactory.utils as utils
 
+### BEGIN TEST ###
+from autopyfactory.condorlib import HTCondor
+from autopyfactory import info2
+### END TEST ###
+
 
 class CondorJobInfo(object):
     """
@@ -85,6 +90,10 @@ class _condor(_thread, BatchStatusInterface):
 
         self.apfqueue = apfqueue
         self.apfqname = apfqueue.apfqname
+
+        ### BEGIN TEST ###
+        self.cache = {}
+        ### END TEST ###
         
         try:
             self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
@@ -93,7 +102,6 @@ class _condor(_thread, BatchStatusInterface):
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
             self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs') 
 
-            ### BEGIN TEST ###
             self.remoteschedd = None
             self.remotecollector = None
             if self.queryargs:
@@ -102,13 +110,9 @@ class _condor(_thread, BatchStatusInterface):
                     self.remoteschedd = l[l.index('-name') + 1]
                 if '-pool' in l:
                     self.remotecollector = l[l.index('-pool') + 1]
-            ### END TEST ###            
 
-            ### BEGIN TEST ###
-            # new-info-classes
-            from autopyfactory.condorlib import HTCondor
             self.htcondor = HTCondor(self.remotecollector, self.remoteschedd)
-            ### END TEST ###
+
         except AttributeError:
             self.condoruser = 'apf'
             self.factoryid = 'test-local'
@@ -135,7 +139,7 @@ class _condor(_thread, BatchStatusInterface):
         Main loop
         """
         self.log.debug('Starting')
-        self._updatelib()
+        self._updateinfo()
 
         ### BEGIN TEST TIMESTAMP ###
         self.last_timestamp = time.time()
@@ -144,7 +148,7 @@ class _condor(_thread, BatchStatusInterface):
         self.log.debug('Leaving')
 
 
-    def getInfo(self, queue=None):
+    def getInfo(self, algorithm=None):
         """
         Returns a  object populated by the analysis 
         over the output of a condor_q command
@@ -158,99 +162,25 @@ class _condor(_thread, BatchStatusInterface):
         if self.currentinfo is None:
             self.log.debug('Not initialized yet. Returning None.')
             return None
-        elif self.maxage > 0 and (int(time.time()) - self.currentinfo.lasttime) > self.maxage:
+
+        if self.maxage > 0 and\
+           (int(time.time()) - self.currentinfo.timestamp) > self.maxage:
             self.log.debug('Info too old. Leaving and returning None.')
             return None
-        else:
-            if queue:
-                self.log.debug('Current info is %s' % self.currentinfo)                    
-                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentinfo))
-                return self.currentinfo[queue]
-            else:
-                self.log.debug('Current info is %s' % self.currentinfo)
-                self.log.debug('No queue given, returning entire BatchStatusInfo object')
-                return self.currentinfo
 
-
-    def getJobInfo(self, queue=None):
-        """
-        Returns a  object populated by the analysis 
-        over the output of a condor_q command
-
-        If the info recorded is older than that maxage,
-        None is returned, as we understand that info is too old and 
-        not reliable anymore.
-        """           
-        self.log.debug('Starting with self.maxage=%s' % self.maxage)
+        if not algorithm:
+            self.log.debug('Returning current info data as it is.')
+            return self.currentinfo
+          
+        if algorithm not in self.cache.keys():
+            self.log.debug('There is not processed data in the cache for algorithm. Calculating it.')
+            out = algorithm.analyze(self.currentinfo)
+            self.cache[algorithm] = out
+        self.log.debug('Returning processed data.')
+        return self.cache[algorithm]
         
-        if self.jobinfo is None:
-            self.log.debug('Not initialized yet. Returning None.')
-            return None
-        else:
-            if queue:
-                self.log.debug('Current info is %s' % self.jobinfo)                    
-                self.log.debug('Leaving and returning info of %d entries.' % len(self.jobinfo))
-                return self.jobinfo[queue]
-            else:
-                self.log.debug('Current info is %s' % self.jobinfo)
-                self.log.debug('No queue given, returning entire BatchStatusInfo object')
-                return self.jobinfo
 
     
-    def _updatelib(self):
-        self._updateinfo()
-        self._updatejobinfo()
-        
-
-    # new-info-classes    
-    ### BEGIN TEST ###
-
-#    def _updateinfo(self):
-#        """
-#        Query Condor for job status, and populate  object.
-#        It uses the condor python bindings.
-#        """
-#        self.log.debug('Starting.')
-#        try:
-#            strout = querycondorlib(self.remotecollector, 
-#                                    self.remoteschedd, 
-#                                    )
-#            self.log.debug('output of querycondorlib : %s' %strout)
-#            if strout is None:
-#                self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.')
-#            else:
-#                newinfo = map2info(strout, BatchStatusInfo(), self.jobstatus2info)
-#                self.log.info("Replacing old info with newly generated info.")
-#                self.currentinfo = newinfo
-#        except Exception, e:
-#            self.log.error("Exception: %s" % str(e))
-#            self.log.debug("Exception: %s" % traceback.format_exc())
-#        self.log.debug('Leaving.')
-
-    #def _updateinfo(self):
-    #    """
-    #    Query Condor for job status, and populate  object.
-    #    It uses the condor python bindings.
-    #    """
-    #    self.log.debug('Starting.')
-    #    try:
-    #        condor_q_strout = querycondorlib(self.remotecollector, 
-    #                                         self.remoteschedd, 
-    #                                        )
-    #        self.log.debug('output of querycondorlib : %s' %condor_q_strout)
-    #
-    #        condor_history_strout = queryhistorylib(self.remotecollector, 
-    #                                               self.remoteschedd, 
-    #                                               )
-    #        self.log.debug('output of querycondorlib : %s' %condor_history_strout)
-    #
-    #        rawdata = condor_q_strout + condor_history_strout
-    #        self.currentinfo = BatchStatusInfo(rawdata)
-    #    except Exception, e:
-    #        self.log.error("Exception: %s" % str(e))
-    #        self.log.debug("Exception: %s" % traceback.format_exc())
-    #    self.log.debug('Leaving.')
-
     def _updateinfo(self):
         """
         Query Condor for job status, and populate  object.
@@ -273,36 +203,14 @@ class _condor(_thread, BatchStatusInterface):
             self.log.debug('output of condor_history: %s' %condor_history_classad_l)
 
             rawdata = condor_q_classad_l + condor_history_classad_l
-            self.currentinfo = BatchStatusInfo(rawdata)
+
+            self.currentinfo = info2.StatusInfo(rawdata)
+
+            self.cache = {}
 
         except Exception, e:
             self.log.error("Exception: %s" % str(e))
             self.log.debug("Exception: %s" % traceback.format_exc())
-        self.log.debug('Leaving.')
-
-    ### END TEST ###
-
-
-    def _updatejobinfo(self):
-        '''
-        Query Condor for job list.
-        Return dictionary indexed by queuename, with value a List of CondorJobInfo objects. 
-        '''
-        self.log.debug('Starting.')
-        classadlist = condor_q(CondorJobInfo.jobattrs)
-        newjobinfo = {}
-
-        for ca in classadlist:
-            if 'match_apf_queue' in ca.keys(): 
-                ji = CondorJobInfo(ca)            
-                try:
-                    ql = newjobinfo[ji.match_apf_queue]
-                    ql.append(ji)
-                except KeyError:
-                    newjobinfo[ji.match_apf_queue] = [ ji]
-        self.log.debug("Created jobinfo list of %s items" % len(newjobinfo))
-        self.log.info("Replacing old info with newly generated info.")
-        self.jobinfo = newjobinfo
         self.log.debug('Leaving.')
 
 
