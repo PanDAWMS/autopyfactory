@@ -194,7 +194,7 @@ class StatusInfo(object):
             return self.data
         else:
             key = key_l[0]
-            if key not self.data.keys():
+            if key not in self.data.keys():
                 raise MissingKey(key)
             data = self.data[key]
             return data.get(*key_l[1:])
@@ -208,7 +208,7 @@ class StatusInfo(object):
         """
         if self.is_raw:
             raise IsRawData(key)
-        if key not self.data.keys():
+        if key not in self.data.keys():
             raise MissingKey(key)
         return self.data[key]
 
@@ -293,7 +293,7 @@ class GroupByKeyRemap(AnalyzerGroup):
 
 class IncorrectAnalyzer(Exception):
     def __init__(self, analyzer, methodname):
-        self.value = "object %s does not have a method % methodname" %(analzyer, methodname))
+        self.value = "object %s does not have a method % methodname" %(analzyer, methodname)
     def __str__(self):
         return repr(self.value)
 
