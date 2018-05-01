@@ -9,7 +9,6 @@ import time
 import traceback
 import os
 import pwd
-import uuid
 import sys
 
 
@@ -246,8 +245,6 @@ class Algorithm(object):
     container for multiple Analyzer objects
     """
     def __init__(self):
-        self.uuid = uuid.uudi4() # FIXME: this is temporary
-        # self.uuid is to be used as hash for caching
         self.analyzer_l= []
 
     def add(self, analyzer):
