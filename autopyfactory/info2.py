@@ -291,6 +291,17 @@ class GroupByKeyRemap(AnalyzerGroup):
         else:
             return None
 
+
+class Length(AnalyzerReduce):
+
+    def __init__(self):
+        pass
+
+    def reduce(self, data):
+        return len(data)
+
+
+
 # =============================================================================
 # Exceptions
 # =============================================================================
