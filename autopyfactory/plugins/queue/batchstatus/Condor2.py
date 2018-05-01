@@ -122,7 +122,6 @@ class _condor(_thread, BatchStatusInterface):
         self._thread_loop_interval = self.sleeptime
         self.currentinfo = None
         self.jobinfo = None              
-        self.last_timestamp = 0
 
         # mappings
         self.jobstatus2info = self.apfqueue.factory.mappingscl.section2dict('CONDORBATCHSTATUS-JOBSTATUS2INFO')
@@ -140,11 +139,6 @@ class _condor(_thread, BatchStatusInterface):
         """
         self.log.debug('Starting')
         self._updateinfo()
-
-        ### BEGIN TEST TIMESTAMP ###
-        self.last_timestamp = time.time()
-        ### END TEST TIMESTAMP ###
-
         self.log.debug('Leaving')
 
 
