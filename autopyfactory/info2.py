@@ -1,5 +1,12 @@
 #! /usr/bin/env python
 
+__author__ = "Jose Caballero"
+__email__ = "jcaballero@bnl.gov"
+
+"""
+Generic code to store and manipulate data
+"""
+
 import datetime
 import inspect
 import logging
