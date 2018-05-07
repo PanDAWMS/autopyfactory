@@ -22,6 +22,14 @@ from autopyfactory.mappings import map2info
 import autopyfactory.utils as utils
 
 
+
+### BEGIN TEST ###
+from autopyfactory.condorlib import HTCondor
+from autopyfactory import info2
+### END TEST ###
+
+
+
 class CondorJobInfo(object):
     """
     This object represents a Condor job.     
@@ -105,6 +113,11 @@ class _condor(_thread, BatchStatusInterface):
                 if '-pool' in l:
                     self.remotecollector = l[l.index('-pool') + 1]
             ### END TEST ###            
+
+            ### BEGIN TEST ###
+            self.htcondor = HTCondor(self.remotecollector, self.remoteschedd)
+            ### END TEST ###
+
         except AttributeError:
             self.condoruser = 'apf'
             self.factoryid = 'test-local'
@@ -196,7 +209,77 @@ class _condor(_thread, BatchStatusInterface):
     def _updatelib(self):
         self._updateinfo()
         self._updatejobinfo()
+        ### BEGIN TEST ###
+        self._updatenewinfo()
+        ### END TEST ###
         
+    ### BEGIN TEST ###
+    def getnewInfo(self, algorithm=None):
+        """
+        Returns a  object populated by the analysis 
+        over the output of a condor_q command
+
+        If the info recorded is older than that maxage,
+        None is returned, as we understand that info is too old and 
+        not reliable anymore.
+        """           
+        self.log.debug('Starting with self.maxage=%s' % self.maxage)
+        
+        if self.currentnewinfo is None:
+            self.log.debug('Not initialized yet. Returning None.')
+            return None
+
+        if self.maxage > 0 and\
+           (int(time.time()) - self.currentnewinfo.timestamp) > self.maxage:
+            self.log.debug('Info too old. Leaving and returning None.')
+            return None
+
+        if not algorithm:
+            self.log.debug('Returning current info data as it is.')
+            return self.currentnewinfo
+          
+        if algorithm not in self.cache.keys():
+            self.log.debug('There is not processed data in the cache for algorithm. Calculating it.')
+            out = algorithm.analyze(self.currentnewinfo)
+            self.cache[algorithm] = out
+        self.log.debug('Returning processed data.')
+        return self.cache[algorithm]
+        
+
+    
+    def _updatenewinfo(self):
+        """
+        Query Condor for job status, and populate  object.
+        It uses the condor python bindings.
+        """
+        self.log.debug('Starting.')
+        try:
+            condor_q_attribute_l = ['match_apf_queue', 
+                                    'jobstatus'
+                                   ]
+            condor_q_classad_l = self.htcondor.condor_q(condor_q_attribute_l)
+            self.log.debug('output of condor_q: %s' %condor_q_classad_l)
+
+            condor_history_attribute_l = ['match_apf_queue', 
+                                          'jobstatus', 
+                                          'enteredcurrentstatus', 
+                                          'remotewallclocktimeqdate'
+                                         ]
+            condor_history_classad_l = self.htcondor.condor_history(condor_history_attribute_l)
+            self.log.debug('output of condor_history: %s' %condor_history_classad_l)
+
+            rawdata = condor_q_classad_l + condor_history_classad_l
+
+            self.currentnewinfo = info2.StatusInfo(rawdata)
+
+            self.cache = {}
+
+        except Exception, e:
+            self.log.error("Exception: %s" % str(e))
+            self.log.debug("Exception: %s" % traceback.format_exc())
+        self.log.debug('Leaving.')
+    ### END TEST ###
+
         
     def _updateinfo(self):
         """
