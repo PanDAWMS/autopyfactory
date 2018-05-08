@@ -24,7 +24,7 @@ import autopyfactory.utils as utils
 
 
 ### BEGIN TEST ###
-from autopyfactory.condorlib import HTCondor
+from autopyfactory.condorlib import HTCondorPool
 from autopyfactory import info2
 ### END TEST ###
 
@@ -115,7 +115,7 @@ class _condor(_thread, BatchStatusInterface):
             ### END TEST ###            
 
             ### BEGIN TEST ###
-            self.htcondor = HTCondor(self.remotecollector, self.remoteschedd)
+            self.htcondor = HTCondorPool(self.remotecollector, self.remoteschedd)
             ### END TEST ###
 
         except AttributeError:
