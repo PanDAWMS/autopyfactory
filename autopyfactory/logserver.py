@@ -261,7 +261,8 @@ class LogServer(_thread):
         # They are used to create a web page as similar as possible 
         # as Apache would do
         self.handler.port = self.port
-        self.handler.docroot = self.logpath
+        #self.handler.docroot = self.logpath
+        self.handler.logpath = self.logpath
 
         self.httpd = None
         self.log.debug("Initialized Logserver: port=%d, root=%s, index=%s" %(self.port,
