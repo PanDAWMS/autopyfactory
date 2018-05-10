@@ -37,7 +37,7 @@ class StatusInfo(object):
         self.log = logging.getLogger('autopyfactory')
         self.is_raw = is_raw
         self.is_mutable = is_mutable
-        if is_raw and type(data) is not list:
+        if is_raw and is_mutable and type(data) is not list:
             raise IncorrectInputDataType()
         self.data = data 
         if not timestamp:
