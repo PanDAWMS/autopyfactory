@@ -305,7 +305,7 @@ class GroupByKeyRemap(AnalyzerGroup):
 
     def group(self, job):
         try:
-            value = job[self.key]
+            value = str(job[self.key])
         except Exception, ex:
             return None
 
