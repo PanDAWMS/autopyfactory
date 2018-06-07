@@ -239,6 +239,11 @@ class _condor(_thread, BatchStatusInterface):
             return self.currentnewinfo
           
         if algorithm not in self.cache.keys():
+            # FIXME !!
+            # this trick does not really work
+            # 2 instances of class Algorithm, 
+            # even though they host the same sequence of Analyzers, 
+            # they are different objects, and therefore 2 different keys
             self.log.debug('There is not processed data in the cache for algorithm. Calculating it.')
             out = algorithm.analyze(self.currentnewinfo)
             self.cache[algorithm] = out
