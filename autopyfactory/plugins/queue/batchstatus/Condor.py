@@ -133,6 +133,17 @@ class _condor(_thread, BatchStatusInterface):
         self.jobstatus2info = self.apfqueue.factory.mappingscl.section2dict('CONDORBATCHSTATUS-JOBSTATUS2INFO')
         self.log.info('jobstatus2info mappings are %s' %self.jobstatus2info)
 
+        # query attributes
+        self.condor_q_attribute_l = ['match_apf_queue', 
+                                     'jobstatus'
+                                    ]
+        self.condor_history_attribute_l = ['match_apf_queue', 
+                                          'jobstatus', 
+                                          'enteredcurrentstatus', 
+                                          'remotewallclocktimeqdate'
+                                          ]
+
+
         # variable to record when was last time info was updated
         # the info is recorded as seconds since epoch
         self.lasttime = 0
@@ -145,11 +156,6 @@ class _condor(_thread, BatchStatusInterface):
         """
         self.log.debug('Starting')
         self._updatelib()
-
-        ### BEGIN TEST TIMESTAMP ###
-        self.last_timestamp = time.time()
-        ### END TEST TIMESTAMP ###
-
         self.log.debug('Leaving')
 
 
@@ -207,11 +213,17 @@ class _condor(_thread, BatchStatusInterface):
 
     
     def _updatelib(self):
+        self.Lock.acquire()
         self._updateinfo()
         self._updatejobinfo()
         ### BEGIN TEST ###
         self._updatenewinfo()
         ### END TEST ###
+        ### BEGIN TEST TIMESTAMP ###
+        self.last_timestamp = time.time()
+        ### END TEST TIMESTAMP ###
+        self.Lock.release()
+
         
     ### BEGIN TEST ###
     def getnewInfo(self, algorithm=None):
@@ -239,6 +251,11 @@ class _condor(_thread, BatchStatusInterface):
             return self.currentnewinfo
           
         if algorithm not in self.cache.keys():
+            # FIXME !!
+            # this trick does not really work
+            # 2 instances of class Algorithm, 
+            # even though they host the same sequence of Analyzers, 
+            # they are different objects, and therefore 2 different keys
             self.log.debug('There is not processed data in the cache for algorithm. Calculating it.')
             out = algorithm.analyze(self.currentnewinfo)
             self.cache[algorithm] = out
@@ -254,18 +271,18 @@ class _condor(_thread, BatchStatusInterface):
         """
         self.log.debug('Starting.')
         try:
-            condor_q_attribute_l = ['match_apf_queue', 
-                                    'jobstatus'
-                                   ]
-            condor_q_classad_l = self.htcondor.condor_q(condor_q_attribute_l)
+            #condor_q_attribute_l = ['match_apf_queue', 
+            #                        'jobstatus'
+            #                       ]
+            condor_q_classad_l = self.htcondor.condor_q(self.condor_q_attribute_l)
             self.log.debug('output of condor_q: %s' %condor_q_classad_l)
 
-            condor_history_attribute_l = ['match_apf_queue', 
-                                          'jobstatus', 
-                                          'enteredcurrentstatus', 
-                                          'remotewallclocktimeqdate'
-                                         ]
-            condor_history_classad_l = self.htcondor.condor_history(condor_history_attribute_l)
+            #condor_history_attribute_l = ['match_apf_queue', 
+            #                              'jobstatus', 
+            #                              'enteredcurrentstatus', 
+            #                              'remotewallclocktimeqdate'
+            #                             ]
+            condor_history_classad_l = self.htcondor.condor_history(self.condor_history_attribute_l)
             self.log.debug('output of condor_history: %s' %condor_history_classad_l)
 
             rawdata = condor_q_classad_l + condor_history_classad_l
@@ -325,6 +342,20 @@ class _condor(_thread, BatchStatusInterface):
         self.log.info("Replacing old info with newly generated info.")
         self.jobinfo = newjobinfo
         self.log.debug('Leaving.')
+
+
+    def add_query_attributes(self, new_q_attr_l=None, new_history_attr_l=None):
+        """
+        adds new classads to be included in condor queries
+        :param list new_q_attr_l: list of classads for condor_q
+        :param list new_history_attr_l: list of classads for condor_history
+        """
+        if new_q_attr_l:
+            self.condor_q_attribute_l += new_q_attr_l
+        if new_history_attr_l:
+            self.condor_history_attribute_l += new_history_attr_l
+        self._updatelib()
+
 
 
 # =============================================================================
