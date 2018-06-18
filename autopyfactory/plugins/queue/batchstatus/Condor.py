@@ -213,6 +213,7 @@ class _condor(_thread, BatchStatusInterface):
 
     
     def _updatelib(self):
+        self.Lock.acquire()
         self._updateinfo()
         self._updatejobinfo()
         ### BEGIN TEST ###
@@ -221,6 +222,7 @@ class _condor(_thread, BatchStatusInterface):
         ### BEGIN TEST TIMESTAMP ###
         self.last_timestamp = time.time()
         ### END TEST TIMESTAMP ###
+        self.Lock.release()
 
         
     ### BEGIN TEST ###
@@ -340,6 +342,7 @@ class _condor(_thread, BatchStatusInterface):
         self.log.info("Replacing old info with newly generated info.")
         self.jobinfo = newjobinfo
         self.log.debug('Leaving.')
+
 
     def add_query_attributes(self, new_q_attr_l=None, new_history_attr_l=None):
         """

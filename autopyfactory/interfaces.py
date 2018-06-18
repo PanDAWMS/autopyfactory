@@ -207,6 +207,8 @@ class _thread(threading.Thread):
         
         self.log = logging.getLogger('autopyfactory')
 
+        self.Lock = threading.Lock()
+
         threading.Thread.__init__(self) # init the thread
         self.stopevent = threading.Event()
         # to avoid the thread to be started more than once
