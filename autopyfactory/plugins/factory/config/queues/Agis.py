@@ -325,7 +325,7 @@ class AgisCEQueue(object):
 
             self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+xcount', str(self.parent.corecount) )
             self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+voactivity', '"%s"' % self.parent.type )
-            if self.ce_queue_name != 'default':
+            if self.ce_queue_name not in ['default','']:
                 self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+remote_queue', '"%s"' % self.ce_queue_name)
             if self.ce_queue_maxwctime:
                 self.cp.set( sect, 'batchsubmit.condorosgce.condor_attributes.+maxWallTime', '%s' % self.ce_queue_maxwctime)
