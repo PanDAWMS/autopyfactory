@@ -547,10 +547,13 @@ class APFQueue(_thread):
         hours = seconds/3600
         minutes = (seconds%3600)/60
         total_seconds = days*86400 + seconds
-        average = total_seconds/self.cyclesrun
+        if self.cyclesrun:
+            average = total_seconds/self.cyclesrun
+        else:
+            average = 'None'
 
-        self.log.debug('__reporttime: up %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
-        self.log.info('Up %d days, %d:%d, %d cycles, ~%d s/cycle' %(days, hours, minutes, self.cyclesrun, average))
+        self.log.debug('__reporttime: up %d days, %d:%d, %d cycles, ~%s s/cycle' %(days, hours, minutes, self.cyclesrun, average))
+        self.log.info('Up %d days, %d:%d, %d cycles, ~%s s/cycle' %(days, hours, minutes, self.cyclesrun, average))
         self.log.debug("__reporttime: Leaving")
 
 
