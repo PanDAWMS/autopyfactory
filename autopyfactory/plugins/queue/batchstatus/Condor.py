@@ -350,11 +350,33 @@ class _condor(_thread, BatchStatusInterface):
         :param list new_q_attr_l: list of classads for condor_q
         :param list new_history_attr_l: list of classads for condor_history
         """
-        if new_q_attr_l:
-            self.condor_q_attribute_l += new_q_attr_l
-        if new_history_attr_l:
-            self.condor_history_attribute_l += new_history_attr_l
+        self.__add_q_attributes(self, new_q_attr_l):
+        self.__add_history_attributes(self, new_history_attr_l):
         self._updatelib()
+
+
+    def __add_q_attributes(self, new_q_attr_l):
+        """
+        adds new classads to be included in condor_q queries
+        :param list new_q_attr_l: list of classads for condor_q
+        """
+        if new_q_attr_l:
+            for attr in new_q_attr_l:
+                if attr not in self.condor_q_attribute_l:
+                    self.condor_q_attribute_l.append(attr)
+
+
+    def __add_history_attributes(self, new_history_attr_l):
+        """
+        adds new classads to be included in condor_history queries
+        :param list new_history_attr_l: list of classads for condor_history
+        """
+        if new_history_attr_l:
+            for attr in new_history_attr_l:
+                if attr not in self.condor_history_attribute_l:
+                    self.condor_history_attribute_l.append(attr)
+            
+
 
 
 
