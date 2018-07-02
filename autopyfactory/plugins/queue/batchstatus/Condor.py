@@ -220,7 +220,7 @@ class _condor(_thread, BatchStatusInterface):
         self._updatenewinfo()
         ### END TEST ###
         ### BEGIN TEST TIMESTAMP ###
-        #self.last_timestamp = time.time()
+        self.last_timestamp = time.time()
         ### END TEST TIMESTAMP ###
         self.Lock.release()
 
