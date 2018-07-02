@@ -274,20 +274,22 @@ class _condor(_thread, BatchStatusInterface):
             #condor_q_attribute_l = ['match_apf_queue', 
             #                        'jobstatus'
             #                       ]
-            condor_q_classad_l = self.htcondor.condor_q(self.condor_q_attribute_l)
-            self.log.debug('output of condor_q: %s' %condor_q_classad_l)
+            self.condor_q_classad_l = self.htcondor.condor_q(self.condor_q_attribute_l)
+            self.log.debug('output of condor_q: %s' %self.condor_q_classad_l)
 
             #condor_history_attribute_l = ['match_apf_queue', 
             #                              'jobstatus', 
             #                              'enteredcurrentstatus', 
             #                              'remotewallclocktimeqdate'
             #                             ]
-            condor_history_classad_l = self.htcondor.condor_history(self.condor_history_attribute_l)
-            self.log.debug('output of condor_history: %s' %condor_history_classad_l)
+            self.condor_history_classad_l = self.htcondor.condor_history(self.condor_history_attribute_l)
+            self.log.debug('output of condor_history: %s' %self.condor_history_classad_l)
 
-            rawdata = condor_q_classad_l + condor_history_classad_l
+            rawdata = self.condor_q_classad_l + self.condor_history_classad_l
 
-            self.currentnewinfo = info2.StatusInfo(rawdata)
+            #self.currentnewinfo = info2.StatusInfo(rawdata)
+            self.currentnewinfo = rawdata
+
 
             self.cache = {}
 
