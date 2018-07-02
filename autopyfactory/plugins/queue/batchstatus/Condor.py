@@ -352,8 +352,8 @@ class _condor(_thread, BatchStatusInterface):
         :param list new_q_attr_l: list of classads for condor_q
         :param list new_history_attr_l: list of classads for condor_history
         """
-        self.__add_q_attributes(self, new_q_attr_l)
-        self.__add_history_attributes(self, new_history_attr_l)
+        self.__add_q_attributes(new_q_attr_l)
+        self.__add_history_attributes(new_history_attr_l)
         if new_q_attr_l or new_history_attr_l:
             self._updatelib()
 
