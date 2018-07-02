@@ -242,7 +242,7 @@ class _condor(_thread, BatchStatusInterface):
             return None
 
         if self.maxage > 0 and\
-           (int(time.time()) - self.last_timestamp) > self.maxage:
+           (int(time.time()) - self.currentnewinfo.timestamp) > self.maxage:
             self.log.debug('Info too old. Leaving and returning None.')
             return None
 
@@ -287,9 +287,9 @@ class _condor(_thread, BatchStatusInterface):
 
             rawdata = self.condor_q_classad_l + self.condor_history_classad_l
 
-            #self.currentnewinfo = info2.StatusInfo(rawdata)
-            self.currentnewinfo = rawdata
-            self.last_timestamp = time.time()
+            self.currentnewinfo = info2.StatusInfo(rawdata)
+            #self.currentnewinfo = rawdata
+            #self.last_timestamp = time.time()
 
 
             self.cache = {}
