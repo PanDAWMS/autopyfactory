@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+  this is a bug on purpose
+
 __author__ = "Graeme Andrew Stewart, John Hover, Jose Caballero"
 __copyright__ = "2007,2008,2009,2010 Graeme Andrew Stewart; 2010-2017 John Hover; 2010-2017 Jose Caballero"
 __credits__ = []
