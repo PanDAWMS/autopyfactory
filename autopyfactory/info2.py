@@ -448,6 +448,28 @@ class TotalRunningTime(AnalyzerReduce):
             return running
 
 
+# FIXME: needs a better name for this class
+class TotalRunningTime2(AnalyzerReduce):
+
+    def __init__(self):
+        self.now = int(time.time())
+
+    def reduce(self, value, job):
+        if job['jobstatus'] == 2:
+            running = self.now - int(job['enteredcurrentstatus'])
+        elif job['jobstatus'] == 3 or \
+             job['jobstatus'] == 4:
+            running = int(job['remotewallclocktime'])
+        else:
+            running = 0
+
+        if value:
+            running += value
+        return running
+
+        
+
+
 # =============================================================================
 # Exceptions
 # =============================================================================
