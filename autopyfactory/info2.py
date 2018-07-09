@@ -4,7 +4,76 @@ __author__ = "Jose Caballero"
 __email__ = "jcaballero@bnl.gov"
 
 """
-Generic code to store and manipulate data
+Code to store and manipulate data.
+
+-------------------------------------------------------------------------------
+                            class StatusInfo
+-------------------------------------------------------------------------------
+
+The data stored by instances of class StatusInfo must be a list of items. 
+These items can be anything, including objects. 
+A typical example is data is a list of HTCondor ClassAds, where each 
+item in the data list represents an HTCondor job.
+
+Class StatusInfo has several methods to manipulate the data, 
+but in all cases the output of the method is a new instance StatusInfo.
+Methods never modify the current instance data.
+This allows to perform different manipulations from the same source object.
+
+There are two types of methods in class StatusInfo:
+
+    - methods whose returned StatusInfo instance accepts further processing.
+      Examples are methods indexby(), filter(), and map().
+
+    - methods whose returned StatusInfo instance can not be processed anymore.
+      An attempt to call any method on a StatusInfo instance of this type 
+      will raise an ObjectIsNotMutable Exception.
+      Examples are methods reduce(), and process().
+
+The method indexby() is somehow special. 
+It is being used to split the stored data into a dictionary, 
+according to whatever rule is provided. 
+The values of this dictionary are themselves new StatusInfo instances. 
+Therefore, the output of calling indexby() once is an StatusInfo object 
+with data:
+        
+    self.data = {
+                 key1: <StatusInfo>,
+                 key2: <StatusInfo>,
+                 ...
+                 keyN: <StatusInfo>
+                }
+
+Given the fact that an StatusInfo instance can therefore contain other
+StatusInfo instances, all methods are implemented to navigate the tree
+and apply themselves only at the deepest level.
+      
+
+-------------------------------------------------------------------------------
+                            Analyzers 
+-------------------------------------------------------------------------------
+
+
+The input to all methods is an object of type Analyzer. 
+Analyzers are classes that implement the rules or policies to be used 
+for each method call.  For example: 
+    - a call to method groupby() expect an object of type AnalyzerIndexBy
+    - a call to method map() expect an object of type AnalyzerMap
+    - a call to method reduce() expect an object of type AnalyzerReduce
+    - etc.
+
+Each Analyzer object must implement itself a method with the same name
+that the StatusInfo's method it is intended for. For exmple:
+
+    - class AnalyzerIndexBy must implement method indexby()
+    - class AnalyzerMap must implement method map()
+    - class AnalyzerReduce must implement method reduce()
+    - ...
+
+Passing an analyzer object that does not implement the right method will 
+raise an IncorrectAnalyzer Exception.
+
+A few basic Analyzers have been implemented, ready to use. 
 """
 
 import datetime
@@ -220,7 +289,7 @@ data={data}, is_raw={is_raw}, is_mutable={is_mutable}, timestamp={timestamp}'
 
 
     @validate_call
-    def reduce(self, analyzer, value=None):
+    def reduce(self, analyzer):
         """
         process the entire self.data at the raw level and accumulate values
         :param analyzer: an object implementing method reduce()
@@ -229,6 +298,7 @@ data={data}, is_raw={is_raw}, is_mutable={is_mutable}, timestamp={timestamp}'
         self.log.debug('Starting with analyzer %s' %analyzer)
         
         if self.is_raw:
+            value = analyzer.init_value
             for item in self.data:
                 value = analyzer.reduce(value, item) 
             new_info = StatusInfo(value, 
@@ -238,7 +308,7 @@ data={data}, is_raw={is_raw}, is_mutable={is_mutable}, timestamp={timestamp}'
         else:
             new_data = {}
             for key, statusinfo in self.data.items(): 
-                new_data[key] = statusinfo.reduce(analyzer, value)
+                new_data[key] = statusinfo.reduce(analyzer)
             new_info = StatusInfo(new_data, 
                                   is_raw=False, 
                                   is_mutable=False, 
@@ -331,25 +401,32 @@ data={data}, is_raw={is_raw}, is_mutable={is_mutable}, timestamp={timestamp}'
 class Analyzer(object):
     pass
 
-class AnalyzerGroup(Analyzer):
+
+class AnalyzerIndexBy(Analyzer):
     analyzertype = "indexby"
     def indexby(self):
         raise NotImplementedError
+
 
 class AnalyzerFilter(Analyzer):
     analyzertype = "filter"
     def filter(self):
         raise NotImplementedError
 
+
 class AnalyzerMap(Analyzer):
     analyzertype = "map"
     def map(self):
         raise NotImplementedError
 
+
 class AnalyzerReduce(Analyzer):
     analyzertype = "reduce"
+    def __init__(self, init_value=None):
+        self.init_value = init_value
     def reduce(self):
         raise NotImplementedError
+
 
 class AnalyzerProcess(Analyzer):
     analyzertype = "process"
@@ -379,7 +456,7 @@ class Algorithm(object):
 #  Some basic Analyzers
 # =============================================================================
 
-class GroupByKey(AnalyzerGroup):
+class GroupByKey(AnalyzerIndexBy):
 
     def __init__(self, key):
         self.key = key
@@ -391,7 +468,7 @@ class GroupByKey(AnalyzerGroup):
             return None
 
 
-class GroupByKeyRemap(AnalyzerGroup):
+class GroupByKeyRemap(AnalyzerIndexBy):
 
     def __init__(self, key, mapping_d):
         self.key = key
@@ -428,9 +505,6 @@ class AttributeValue(AnalyzerFilter):
 
 class Count(AnalyzerProcess):
 
-    def __init__(self):
-        pass
-
     def process(self, data):
         return len(data)
 
@@ -439,20 +513,21 @@ class TotalRunningTime(AnalyzerReduce):
 
     def __init__(self):
         self.now = int(time.time())
+        super(TotalRunningTime, self).__init__(0)
 
     def reduce(self, value, job):
         running = self.now - int(job['enteredcurrentstatus'])
         if value:
-            return value + running
-        else:
-            return running
+            running += value
+        return running
 
 
-# FIXME: needs a better name for this class
+# FIXME: need a better name for this class
 class TotalRunningTime2(AnalyzerReduce):
 
     def __init__(self):
         self.now = int(time.time())
+        super(TotalRunningTime2, self).__init__(0)
 
     def reduce(self, value, job):
         if job['jobstatus'] == 2:
@@ -467,7 +542,6 @@ class TotalRunningTime2(AnalyzerReduce):
             running += value
         return running
 
-        
 
 
 # =============================================================================
