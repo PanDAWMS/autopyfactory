@@ -316,6 +316,7 @@ class HTCondorPool(object):
         out = list(out)
         log.debug(out)
         return out
+
     
     def condor_rm(self, jobid_l):
         """
@@ -334,7 +335,7 @@ class HTCondorPool(object):
         """
         log = logging.getLogger('condor')
         if constraint_l:
-            constraint_str = " && ".join(constraints)
+            constraint_str = " && ".join(constraint_l)
         else:
             constraint_str = "true"
         out = self.schedd.history(constraint_str, attribute_l, 0)
