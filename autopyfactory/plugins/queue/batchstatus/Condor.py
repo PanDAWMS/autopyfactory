@@ -140,7 +140,8 @@ class _condor(_thread, BatchStatusInterface):
         self.condor_history_attribute_l = ['match_apf_queue', 
                                           'jobstatus', 
                                           'enteredcurrentstatus', 
-                                          'remotewallclocktimeqdate'
+                                          'remotewallclocktime',
+                                          'qdate'
                                           ]
 
 
