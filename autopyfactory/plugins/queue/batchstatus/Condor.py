@@ -47,6 +47,7 @@ class CondorJobInfo(object):
                 'ec2securitygroups',
                 'ec2spotprice',
                 'gridjobstatus',
+                'globaljobid',
                  ]  
 
 
