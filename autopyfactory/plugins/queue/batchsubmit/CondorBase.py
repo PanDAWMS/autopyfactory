@@ -68,6 +68,7 @@ class CondorBase(BatchSubmitInterface):
 
             self.baselogdir = os.path.expanduser(self.fcl.generic_get('Factory', 'baseLogDir')) 
             self.baselogdirurl = self.fcl.generic_get('Factory', 'baseLogDirUrl') 
+            self.factoryjobid = '$ENV(HOSTNAME)#$(Cluster).$(Process)'
 
            
             condor.checkCondor()
@@ -255,6 +256,9 @@ class CondorBase(BatchSubmitInterface):
         # this token is very important, since it will be used by other plugins
         # to identify this pilot from others when running condor_q
         self.JSD.add('+MATCH_APF_QUEUE', '"%s"' % self.apfqname)
+
+        # Semi-unique ID per pilot that bakes in the HTCondor cluster/proc
+        self.JSD.add('+FACTORY_JOBID' % self.factoryjobid)
         
         # Adding to take over for MATCH_APF_QUEUE
         self.JSD.add('+APF_QUEUE', '"%s"' % self.apfqname)
@@ -267,6 +271,7 @@ class CondorBase(BatchSubmitInterface):
         environment += ' GTAG=%s/$(Cluster).$(Process).out' % self.logUrl
         environment += ' APFCID=$(Cluster).$(Process)'
         environment += ' APFFID=%s' % self.factoryid
+        environment += ' FACTORY_JOBID=%s' % self.factoryjobid
         if self.monitorurl:
             environment += ' APFMON=%s' % self.monitorurl
         environment += ' FACTORYQUEUE=%s' % self.apfqname
