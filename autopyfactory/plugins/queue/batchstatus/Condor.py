@@ -160,7 +160,8 @@ class _condor(_thread, BatchStatusInterface):
         self.log.debug('Leaving')
 
 
-    def getInfo(self, queue=None):
+    #def getInfo(self, queue=None):
+    def getOldInfo(self, queue=None):
         """
         Returns a  object populated by the analysis 
         over the output of a condor_q command
@@ -227,7 +228,8 @@ class _condor(_thread, BatchStatusInterface):
 
         
     ### BEGIN TEST ###
-    def getnewInfo(self, algorithm=None):
+    #def getnewInfo(self, algorithm=None):
+    def getInfo(self, algorithm=None):
         """
         Returns a  object populated by the analysis 
         over the output of a condor_q command

@@ -25,7 +25,8 @@ class MaxToRun(SchedInterface):
         out = n
         msg = None
 
-        batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue=self.apfqueue.apfqname)
+        #batchinfo = self.apfqueue.batchstatus_plugin.getInfo(queue=self.apfqueue.apfqname)
+        batchinfo = self.apfqueue.batchstatus_plugin.getOldInfo(queue=self.apfqueue.apfqname)
         if batchinfo is None:
             out = 0
             msg = "MaxToRun:comment=No batchinfo,in=%s" % n
