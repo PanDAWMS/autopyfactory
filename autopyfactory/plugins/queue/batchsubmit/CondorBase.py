@@ -258,7 +258,7 @@ class CondorBase(BatchSubmitInterface):
         self.JSD.add('+MATCH_APF_QUEUE', '"%s"' % self.apfqname)
 
         # Semi-unique ID per pilot that bakes in the HTCondor cluster/proc
-        self.JSD.add('+FACTORY_JOBID' % self.factoryjobid)
+        self.JSD.add('+FACTORY_JOBID', '"%s"' % self.factoryjobid)
         
         # Adding to take over for MATCH_APF_QUEUE
         self.JSD.add('+APF_QUEUE', '"%s"' % self.apfqname)
