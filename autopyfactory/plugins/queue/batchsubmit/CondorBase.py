@@ -59,8 +59,8 @@ class CondorBase(BatchSubmitInterface):
             self.environ = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.environ')
             #self.batchqueue = qcl.generic_get(self.apfqname, 'batchqueue')
             self.arguments = qcl.generic_get(self.apfqname, 'executable.arguments')
-            self.peaceful = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.peaceful', get_function = 'getboolean', default_value=True)
-            self.killorder = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.killorder', default_value="newest"  )
+            self.peaceful = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.overlay.peaceful', get_function = 'getboolean', default_value=True)
+            self.killorder = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.overlay.killorder', default_value="newest"  )
             self.condor_attributes = qcl.generic_get(self.apfqname, 'batchsubmit.condorbase.condor_attributes')
             self.extra_condor_attributes = [(opt.replace('batchsubmit.condorbase.condor_attributes.',''),qcl.generic_get(self.apfqname, opt)) \
                                             for opt in qcl.options(self.apfqname) \

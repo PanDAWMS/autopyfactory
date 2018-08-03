@@ -49,22 +49,20 @@ class _condor(_thread, WMSStatusInterface):
         self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.condor.sleep')
         self._thread_loop_interval = self.sleeptime
         self.maxage = self.apfqueue.fcl.generic_get('Factory', 'wmsstatus.condor.maxage', default_value=360)
+        self.scheddhost = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.scheddhost', default_value='localhost')
+        self.scheddport = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.scheddport', default_value=9618 )
+        self.collectorhost = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.collectorhost', default_value='localhost') 
+        self.collectorport = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.collectorport', default_value=9618 )
+        self.password_file = self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.password_file')
         self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queryargs')
-        self.queueskey = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queueskey', default_value='MATCH_APF_QUEUE')
+        self.queueskey = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queueskey', default_value='ANY')
 
-
-        ### BEGIN TEST ###
-        self.remoteschedd = None
-        self.remotecollector = None
         if self.queryargs:
             l = self.queryargs.split()  # convert the string into a list
             if '-name' in l:
-                self.remoteschedd = l[l.index('-name') + 1]
+                self.scheddhost = l[l.index('-name') + 1]
             if '-pool' in l:
-                self.remotecollector = l[l.index('-pool') + 1]
-        ### END TEST ###
-
-
+                self.collectorhost = l[l.index('-pool') + 1]
 
         # FIXME
         # check if this works with a Singleton, or I need a different Singleton per value
@@ -224,8 +222,12 @@ class _condor(_thread, WMSStatusInterface):
         try:
 
             #### BEGIN TEST ####
+            ## XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX FIXME##
             #strout = querycondorlib(self.queryargs, self.queueskey)
-            strout = querycondorlib(remotecollector=self.remotecollector, remoteschedd=self.remoteschedd, queueskey=self.queueskey)
+            if self.queueskey.lower() != "any":
+                strout = querycondorlib(remotecollector=self.collectorhost, remoteschedd=self.scheddhost, queueskey=None)
+            else:
+                strout = querycondorlib(remotecollector=self.collectorhost, remoteschedd=self.scheddhost, queueskey=self.queueskey )
             # FIXME: the extra_attributes is missing !!
             #### END TEST ####
             
