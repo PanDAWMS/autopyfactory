@@ -45,7 +45,8 @@ class KeepNQueueLife(SchedInterface):
         algorithm.add(group_by_queue)
         algorithm.add(autopyfactory.info2.Length())
 
-        data = self.apfqueue.batchstatus_plugin.getnewInfo(algorithm)
+        #data = self.apfqueue.batchstatus_plugin.getnewInfo(algorithm)
+        data = self.apfqueue.batchstatus_plugin.getInfo(algorithm)
         if not data:
             self.log.warning("self.queueinfo is None!")
             out = 0

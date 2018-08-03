@@ -28,7 +28,9 @@ class StatusTest(SchedInterface):
                                 queue=self.apfqueue.wmsqueue)
         self.siteinfo = self.apfqueue.wmsstatus_plugin.getSiteInfo(
                                 site=self.apfqueue.wmsqueue)
-        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(
+        #self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo(
+        #                        queue=self.apfqueue.apfqname)
+        self.batchinfo = self.apfqueue.batchstatus_plugin.getOldInfo(
                                 queue=self.apfqueue.apfqname)
 
         if self.wmsqueueinfo is None or self.batchinfo is None or self.siteinfo is None:

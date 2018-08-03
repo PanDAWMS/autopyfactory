@@ -140,7 +140,8 @@ class _condor(_thread, BatchStatusInterface):
         self.condor_history_attribute_l = ['match_apf_queue', 
                                           'jobstatus', 
                                           'enteredcurrentstatus', 
-                                          'remotewallclocktimeqdate'
+                                          'remotewallclocktime',
+                                          'qdate'
                                           ]
 
 
@@ -159,7 +160,8 @@ class _condor(_thread, BatchStatusInterface):
         self.log.debug('Leaving')
 
 
-    def getInfo(self, queue=None):
+    #def getInfo(self, queue=None):
+    def getOldInfo(self, queue=None):
         """
         Returns a  object populated by the analysis 
         over the output of a condor_q command
@@ -226,7 +228,8 @@ class _condor(_thread, BatchStatusInterface):
 
         
     ### BEGIN TEST ###
-    def getnewInfo(self, algorithm=None):
+    #def getnewInfo(self, algorithm=None):
+    def getInfo(self, algorithm=None):
         """
         Returns a  object populated by the analysis 
         over the output of a condor_q command
@@ -274,20 +277,23 @@ class _condor(_thread, BatchStatusInterface):
             #condor_q_attribute_l = ['match_apf_queue', 
             #                        'jobstatus'
             #                       ]
-            condor_q_classad_l = self.htcondor.condor_q(self.condor_q_attribute_l)
-            self.log.debug('output of condor_q: %s' %condor_q_classad_l)
+            self.condor_q_classad_l = self.htcondor.condor_q(self.condor_q_attribute_l)
+            self.log.debug('output of condor_q: %s' %self.condor_q_classad_l)
 
             #condor_history_attribute_l = ['match_apf_queue', 
             #                              'jobstatus', 
             #                              'enteredcurrentstatus', 
             #                              'remotewallclocktimeqdate'
             #                             ]
-            condor_history_classad_l = self.htcondor.condor_history(self.condor_history_attribute_l)
-            self.log.debug('output of condor_history: %s' %condor_history_classad_l)
+            self.condor_history_classad_l = self.htcondor.condor_history(self.condor_history_attribute_l)
+            self.log.debug('output of condor_history: %s' %self.condor_history_classad_l)
 
-            rawdata = condor_q_classad_l + condor_history_classad_l
+            rawdata = self.condor_q_classad_l + self.condor_history_classad_l
 
             self.currentnewinfo = info2.StatusInfo(rawdata)
+            #self.currentnewinfo = rawdata
+            #self.last_timestamp = time.time()
+
 
             self.cache = {}
 
@@ -350,11 +356,34 @@ class _condor(_thread, BatchStatusInterface):
         :param list new_q_attr_l: list of classads for condor_q
         :param list new_history_attr_l: list of classads for condor_history
         """
+        self.__add_q_attributes(new_q_attr_l)
+        self.__add_history_attributes(new_history_attr_l)
+        if new_q_attr_l or new_history_attr_l:
+            self._updatelib()
+
+
+    def __add_q_attributes(self, new_q_attr_l):
+        """
+        adds new classads to be included in condor_q queries
+        :param list new_q_attr_l: list of classads for condor_q
+        """
         if new_q_attr_l:
-            self.condor_q_attribute_l += new_q_attr_l
+            for attr in new_q_attr_l:
+                if attr not in self.condor_q_attribute_l:
+                    self.condor_q_attribute_l.append(attr)
+
+
+    def __add_history_attributes(self, new_history_attr_l):
+        """
+        adds new classads to be included in condor_history queries
+        :param list new_history_attr_l: list of classads for condor_history
+        """
         if new_history_attr_l:
-            self.condor_history_attribute_l += new_history_attr_l
-        self._updatelib()
+            for attr in new_history_attr_l:
+                if attr not in self.condor_history_attribute_l:
+                    self.condor_history_attribute_l.append(attr)
+            
+
 
 
 
