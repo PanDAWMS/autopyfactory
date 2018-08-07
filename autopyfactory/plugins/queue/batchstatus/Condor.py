@@ -24,7 +24,7 @@ import autopyfactory.utils as utils
 
 
 ### BEGIN TEST ###
-from autopyfactory.htcondorlib import HTCondorPool, HTCondorSchedd
+from autopyfactory.htcondorlib import HTCondorCollector, HTCondorSchedd
 from autopyfactory import info2
 ### END TEST ###
 
@@ -116,7 +116,7 @@ class _condor(_thread, BatchStatusInterface):
 
             ### BEGIN TEST ###
             if self.remotecollector:
-                collector = HTCondorPool(self.remotecollector)
+                collector = HTCondorCollector(self.remotecollector)
                 self.schedd = collector.getSchedd(self.remoteschedd)
             else:
                 self.schedd = HTCondorSchedd()
