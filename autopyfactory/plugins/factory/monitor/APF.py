@@ -253,7 +253,7 @@ class _apf(MonitorInterface):
             self.log.debug('list of registered labels = %s' %labels)
         except Exception, e:
             self.log.error('Problem querying monitor.')
-            labels = ['unkown']
+            labels = ['unknown']
         
         self.log.debug('Leaving')
         return labels

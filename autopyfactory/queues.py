@@ -303,8 +303,10 @@ class APFQueue(_thread):
         self._wmsstatus_plugin()
         self._batchstatus_plugin()
         self._batchsubmit_plugin()
-        self._monitor_plugins()
-
+        try:
+            self._monitor_plugins()
+        except:
+            self.log.error("Unable to initialize monitor plugin.")
 
     def _sched_plugins(self):
         """
