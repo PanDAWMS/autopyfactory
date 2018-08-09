@@ -102,8 +102,15 @@ class _apf(MonitorInterface):
         self.monurl = self.mcl.generic_get(monitor_id, 'monitorURL')
 
         self.log.debug('Instantiated monitor')
-        self.registerFactory()     
-        self.registeredlabels = self._getLabels() # list of labels registered
+        try:
+            self.registerFactory()     
+        except:
+            self.log.error("Exception during monitor registration. Continuing...")
+        try:
+            self.registeredlabels = self._getLabels() # list of labels registered
+        except:
+            self.log.error("Exception during monitor label processing. Continuing...")
+        
         self.log.debug('Done.')
 
 
