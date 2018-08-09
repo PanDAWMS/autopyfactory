@@ -574,7 +574,7 @@ class Factory(object):
         self.log.debug("Handling LogServer...")
         if self.fcl.generic_get('Factory', 'logserver.enabled', 'getboolean'):
             self.log.info("LogServer enabled. Initializing...")
-            self.logserver = LogServer(self.fcl)
+            self.logserver = LogServer(self, self.fcl)
             self.log.info('LogServer initialized. Starting...')
             self.logserver.start()
             self.log.debug('LogServer thread started.')

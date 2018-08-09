@@ -221,13 +221,14 @@ class MyNoListingHTTPRequestHandler(MySimpleHTTPRequestHandler):
 
 class LogServer(_thread):
     
-    def __init__(self, fcl):
+    def __init__(self, parent, fcl):
         """
         docroot is the path to the base directory of the files to be served. 
         """
         _thread.__init__(self)
+        self.factory = parent
         try:
-            factory.threadsregistry.add("util", self)
+            self.factory.threadsregistry.add("util", self)
         except Exception, e:
             self.log.warning("Not adding to threadsregistry. Wrong context or other issue. %s" % e)
         self.log= logging.getLogger('autopyfactory')
