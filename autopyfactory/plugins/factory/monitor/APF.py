@@ -188,9 +188,11 @@ class _apf(MonitorInterface):
         data["email"] = self.email
         data["url"] =  self.baselogurl
         data = json.dumps(data)
-
-        out = self._call(http.PUT, url, data)
-
+        out = None
+        try:
+            out = self._call(http.PUT, url, data)
+        except Exception, e:
+            self.log.error('Unable to contact monitor')
         self.log.debug('Leaving')
         return out
 
@@ -236,10 +238,15 @@ class _apf(MonitorInterface):
         self.log.debug('Starting')
 
         url = self.monurl + '/labels?factory=' + self.fid
-        out = self._call(http.GET, url)
-        out = json.loads(out.read())
-        labels = [ label['name'] for label in out ] 
-        self.log.debug('list of registered labels = %s' %labels)
+        labels = []
+        try:
+            out = self._call(http.GET, url)
+            out = json.loads(out.read())
+            labels = [ label['name'] for label in out ] 
+            self.log.debug('list of registered labels = %s' %labels)
+        except Exception, e:
+            self.log.error('Problem querying monitor.')
+            labels = ['unkown']
         
         self.log.debug('Leaving')
         return labels
