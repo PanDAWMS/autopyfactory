@@ -29,6 +29,32 @@ from autopyfactory import info2
 ### END TEST ###
 
 
+### BEGIN TEST ###
+#
+# FIXME
+#
+#   this is a temporary solution
+#
+
+class Job(object):
+    def __init__(self, data_d):
+        self.data_d = data_d
+
+    def __getattr__(self, key):
+        try:
+            return int(self.data_d[key])
+        except Exception, ex:
+            return 0
+
+    def __str__(self):
+        s = "QueueInfo: pending=%d, running=%d, suspended=%d" % (self.pending,
+            self.running,
+            self.suspended)
+        return s
+
+
+### END TEST ###
+
 
 class CondorJobInfo(object):
     """
@@ -149,6 +175,8 @@ class _condor(_thread, BatchStatusInterface):
                                           ]
 
 
+        self.rawdata = None
+
         # variable to record when was last time info was updated
         # the info is recorded as seconds since epoch
         self.lasttime = 0
@@ -233,7 +261,14 @@ class _condor(_thread, BatchStatusInterface):
         
     ### BEGIN TEST ###
     #def getnewInfo(self, algorithm=None):
-    def getInfo(self, algorithm=None):
+    ###
+    ### FIXME
+    ###
+    ###    we do not care about algorithm for the time being
+    ###
+    ###def getInfo(self, algorithm=None):
+
+    def getInfo(self, queue=None):
         """
         Returns a  object populated by the analysis 
         over the output of a condor_q command
@@ -253,22 +288,40 @@ class _condor(_thread, BatchStatusInterface):
             self.log.debug('Info too old. Leaving and returning None.')
             return None
 
-        if not algorithm:
-            self.log.debug('Returning current info data as it is.')
-            return self.currentnewinfo
-          
-        if algorithm not in self.cache.keys():
-            # FIXME !!
-            # this trick does not really work
-            # 2 instances of class Algorithm, 
-            # even though they host the same sequence of Analyzers, 
-            # they are different objects, and therefore 2 different keys
-            self.log.debug('There is not processed data in the cache for algorithm. Calculating it.')
-            out = algorithm.analyze(self.currentnewinfo)
-            self.cache[algorithm] = out
-        self.log.debug('Returning processed data.')
-        return self.cache[algorithm]
+        if queue:
+            return self.processednewinfo[queue]
+        else:
+            return self.processednewinfo
+
+
+        ###
+        ### FIXME
+        ###
+        ###     we do not care about algorithms for the time being
+        ###
+        ###if not algorithm:
+        ###    self.log.debug('Returning current info data as it is.')
+        ###    return self.currentnewinfo
+        ###  
+        ###if algorithm not in self.cache.keys():
+        ###    # FIXME !!
+        ###    # this trick does not really work
+        ###    # 2 instances of class Algorithm, 
+        ###    # even though they host the same sequence of Analyzers, 
+        ###    # they are different objects, and therefore 2 different keys
+        ###    self.log.debug('There is not processed data in the cache for algorithm. Calculating it.')
+        ###    out = algorithm.analyze(self.currentnewinfo)
+        ###    self.cache[algorithm] = out
+        ###self.log.debug('Returning processed data.')
+        ###return self.cache[algorithm]
         
+
+    def getrawInfo(self):
+        """
+        returns the raw status info as results of the queries, 
+        without any further processing
+        """
+        return self.rawdata
 
     
     def _updatenewinfo(self):
@@ -278,27 +331,20 @@ class _condor(_thread, BatchStatusInterface):
         """
         self.log.debug('Starting.')
         try:
-            #condor_q_attribute_l = ['match_apf_queue', 
-            #                        'jobstatus'
-            #                       ]
             self.condor_q_classad_l = self.htcondor.condor_q(self.condor_q_attribute_l)
             self.log.debug('output of condor_q: %s' %self.condor_q_classad_l)
 
-            #condor_history_attribute_l = ['match_apf_queue', 
-            #                              'jobstatus', 
-            #                              'enteredcurrentstatus', 
-            #                              'remotewallclocktimeqdate'
-            #                             ]
             self.condor_history_classad_l = self.htcondor.condor_history(self.condor_history_attribute_l)
             self.log.debug('output of condor_history: %s' %self.condor_history_classad_l)
 
-            rawdata = self.condor_q_classad_l + self.condor_history_classad_l
+            self.rawdata = self.condor_q_classad_l + self.condor_history_classad_l
 
-            self.currentnewinfo = info2.StatusInfo(rawdata)
+            self.currentnewinfo = info2.StatusInfo(self.rawdata)
+            # --- process the status info 
+            self.processednewinfo = self.__process(self.currentnewinfo)
+
             #self.currentnewinfo = rawdata
             #self.last_timestamp = time.time()
-
-
             self.cache = {}
 
         except Exception, e:
@@ -306,6 +352,36 @@ class _condor(_thread, BatchStatusInterface):
             self.log.debug("Exception: %s" % traceback.format_exc())
         self.log.debug('Leaving.')
     ### END TEST ###
+
+    
+    ### BEGIN TEST ###
+    #
+    # FIXME
+    #
+    #   for the time being, all hardcoded in a single method
+    #
+    def __process(self, info):
+
+        from autopyfactory.info2 import IndexByKey, IndexByKeyRemap, Count
+
+        indexbyqueue = IndexByKey('match_apf_queue')
+        indexbystatus = IndexByKeyRemap ('jobstatus', self.jobstatus2info)
+        count = Count()
+
+        info = info.indexby(indexbyqueue)
+        info = info.indexby(indexbystatus)
+        info = info.process(count)
+
+        # convert info into a dictionary of objects Jobs
+        # this is just temporary
+        raw = info.getraw()
+        jobs_d = {}
+        for q, data in raw.items():
+            job = Job( raw[q] )
+            jobs_d[q] = job
+        return jobs_d
+    ### END TEST ###
+
 
         
     def _updateinfo(self):

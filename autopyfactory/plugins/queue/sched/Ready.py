@@ -33,8 +33,7 @@ class Ready(SchedInterface):
         out = n
         self.log.debug('Starting.')
         self.wmsqueueinfo = self.apfqueue.wmsstatus_plugin.getInfo(queue = self.apfqueue.wmsqueue)
-        #self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname)
-        self.queueinfo = self.apfqueue.batchstatus_plugin.getOldInfo(queue = self.apfqueue.apfqname)
+        self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname)
 
         if self.wmsqueueinfo is None or self.queueinfo is None:
             self.log.warning("Missing info. wmsinfo is %s batchinfo is %s. Return=0" % (self.wmsqueueinfo, self.queueinfo))

@@ -23,8 +23,7 @@ class MinPending(SchedInterface):
 
     def calcSubmitNum(self, n=0):
         self.log.debug('Starting with n=%s' %n)
-        #self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname)
-        self.queueinfo = self.apfqueue.batchstatus_plugin.getOldInfo(queue = self.apfqueue.apfqname)
+        self.queueinfo = self.apfqueue.batchstatus_plugin.getInfo(queue = self.apfqueue.apfqname)
         out = n
         msg = None
 

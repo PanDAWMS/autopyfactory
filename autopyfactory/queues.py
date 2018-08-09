@@ -433,12 +433,7 @@ class APFQueue(_thread):
             else:
                 infolist = []
                 for p in pluginstowait:
-                    ### FIXME : temporary solution while we use getOldInfo( ) 
-                    #info = p.getInfo()
-                    if isinstance(p, BatchStatusInterface):
-                        info = p.getOldInfo()
-                    else:
-                        info = p.getInfo()
+                    info = p.getInfo()
 
                     infolist.append(info)
                 if None not in infolist:

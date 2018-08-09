@@ -456,7 +456,7 @@ class Algorithm(object):
 #  Some basic Analyzers
 # =============================================================================
 
-class GroupByKey(AnalyzerIndexBy):
+class IndexByKey(AnalyzerIndexBy):
 
     def __init__(self, key):
         self.key = key
@@ -468,7 +468,7 @@ class GroupByKey(AnalyzerIndexBy):
             return None
 
 
-class GroupByKeyRemap(AnalyzerIndexBy):
+class IndexByKeyRemap(AnalyzerIndexBy):
 
     def __init__(self, key, mapping_d):
         self.key = key

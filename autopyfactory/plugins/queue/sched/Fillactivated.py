@@ -30,8 +30,7 @@ class Fillactivated(SchedInterface):
         self.log.debug('Starting.')
 
         self.wmsinfo = self.apfqueue.wmsstatus_plugin.getInfo()
-        #self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo()
-        self.batchinfo = self.apfqueue.batchstatus_plugin.getOldInfo()
+        self.batchinfo = self.apfqueue.batchstatus_plugin.getInfo()
 
         if self.wmsinfo is None:
             self.log.warning("wmsinfo is None!")
