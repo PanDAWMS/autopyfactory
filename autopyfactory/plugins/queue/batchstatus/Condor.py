@@ -331,10 +331,10 @@ class _condor(_thread, BatchStatusInterface):
         """
         self.log.debug('Starting.')
         try:
-            self.condor_q_classad_l = self.htcondor.condor_q(self.condor_q_attribute_l)
+            self.condor_q_classad_l = self.schedd.condor_q(self.condor_q_attribute_l)
             self.log.debug('output of condor_q: %s' %self.condor_q_classad_l)
 
-            self.condor_history_classad_l = self.htcondor.condor_history(self.condor_history_attribute_l)
+            self.condor_history_classad_l = self.schedd.condor_history(self.condor_history_attribute_l)
             self.log.debug('output of condor_history: %s' %self.condor_history_classad_l)
 
             self.rawdata = self.condor_q_classad_l + self.condor_history_classad_l
