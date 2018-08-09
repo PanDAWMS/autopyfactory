@@ -549,13 +549,14 @@ class Factory(object):
         authconfigpluginnames =  self.fcl.generic_get('Factory', 'config.auth.plugin', default_value='File')
         authconfigpluginnameslist = [i.strip() for i in authconfigpluginnames.split(',')]
         self.auth_config_plugins = pluginmanager.getpluginlist(['autopyfactory', 'plugins', 'factory', 'config', 'auth'], authconfigpluginnameslist, self, self.fcl, 'Factory')
+        
         self.monitor_plugins = []
         monitorpluginnames = self.fcl.generic_get('Factory', 'monitor', default_value=None)
         if monitorpluginnames is not None:
-	        monitorpluginnames_l = [i.strip() for i in monitorpluginnames.split(',')]
-        try:
-            self.monitor_plugins = pluginmanager.getpluginlist(['autopyfactory','plugins','factory','monitor'], monitorpluginnames_l, self, self.fcl, 'Factory')
-        except Exception, e:
+            monitorpluginnames_l = [i.strip() for i in monitorpluginnames.split(',')]
+            try:
+                self.monitor_plugins = pluginmanager.getpluginlist(['autopyfactory','plugins','factory','monitor'], monitorpluginnames_l, self, self.fcl, 'Factory')
+            except Exception, e:
                 self.log.warning(e)
 
 
