@@ -4,7 +4,7 @@
 #
 #
 
-release_version="2.4.14"
+release_version="2.4.15"
 
 import commands
 import os
