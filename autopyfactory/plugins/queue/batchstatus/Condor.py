@@ -156,6 +156,7 @@ class _condor(_thread, BatchStatusInterface):
 
         self._thread_loop_interval = self.sleeptime
         self.currentinfo = None
+        self.currentnewinfo = None
         self.jobinfo = None              
         self.last_timestamp = 0
 
