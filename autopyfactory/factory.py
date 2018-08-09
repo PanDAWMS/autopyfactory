@@ -541,7 +541,7 @@ class Factory(object):
 
 
     def _plugins(self):
-
+        
         queuesconfigpluginnames =  self.fcl.generic_get('Factory', 'config.queues.plugin', default_value='File')
         queuesconfigpluginnameslist = [i.strip() for i in queuesconfigpluginnames.split(',')]
         self.queues_config_plugins = pluginmanager.getpluginlist(['autopyfactory', 'plugins', 'factory', 'config', 'queues'], queuesconfigpluginnameslist, self, self.fcl, 'Factory')
@@ -549,24 +549,14 @@ class Factory(object):
         authconfigpluginnames =  self.fcl.generic_get('Factory', 'config.auth.plugin', default_value='File')
         authconfigpluginnameslist = [i.strip() for i in authconfigpluginnames.split(',')]
         self.auth_config_plugins = pluginmanager.getpluginlist(['autopyfactory', 'plugins', 'factory', 'config', 'auth'], authconfigpluginnameslist, self, self.fcl, 'Factory')
-
-        ### BEGIN TEST ###
-        #self.monitor_plugins = []
-        #if self.fcl.has_option('Factory', 'monitor.section'):
-        #    monitorsections = self.fcl.generic_get('Factory', 'monitor.section')
-        #    if monitorsections is not None:
-        #        monitorsectionslist = [i.strip() for i in monitorsections.split(',')]
-        #        for monitorsection in monitorsectionslist:
-        #            monitorpluginname = self.mcl.get(monitorsection, 'monitorplugin')
-        #            monitor_plugin = pluginmanager.getplugin(self, ['autopyfactory', 'plugins', 'factory', 'monitor'], monitorpluginname, self.mcl, monitorsection)        # a list of 1 or more plugins
-        #            self.monitor_plugins.append(monitor_plugin)
-        ### BEGIN NEW ###
-	self.monitor_plugins = []
+        self.monitor_plugins = []
         monitorpluginnames = self.fcl.generic_get('Factory', 'monitor', default_value=None)
-	if monitorpluginnames is not None:
-		monitorpluginnames_l = [i.strip() for i in monitorpluginnames.split(',')]
-		self.monitor_plugins = pluginmanager.getpluginlist(['autopyfactory','plugins','factory','monitor'], monitorpluginnames_l, self, self.fcl, 'Factory')
-        ### END TEST ###
+        if monitorpluginnames is not None:
+	        monitorpluginnames_l = [i.strip() for i in monitorpluginnames.split(',')]
+        try:
+            self.monitor_plugins = pluginmanager.getpluginlist(['autopyfactory','plugins','factory','monitor'], monitorpluginnames_l, self, self.fcl, 'Factory')
+        except Exception, e:
+                self.log.warning(e)
 
 
     def _initLogserver(self):
