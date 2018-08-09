@@ -588,3 +588,79 @@ class APFQueuesConfigsDiff(ConfigsDiff):
     def modifiedqueues(self):
         return self.modified()
 
+
+                 
+class APFSubmitQueue(object):
+    '''
+    Simple submit-only, non-threaded APF Queue. 
+    
+    '''
+    def __init__(self, config, authman=None):
+
+        #self.log = logging.getLogger('%s' % config.sections()[0])
+        self.qcl = config
+        self.apfqname = config.sections()[0]
+
+        #if len(self.log.parent.handlers) < 1:
+        #    logStream = logging.StreamHandler()
+        #    FORMAT='%(asctime)s (UTC) [ %(levelname)s ] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s'
+        #    formatter = logging.Formatter(FORMAT)
+        #    formatter.converter = time.gmtime  # to convert timestamps to UTC
+        #    logStream.setFormatter(formatter)
+        #    self.log.addHandler(logStream)
+        #    self.log.setLevel(logging.DEBUG)
+
+
+        # Mock objects
+        logging.debug("Creating config for factory mock.")
+        fcl = Config()
+        fconf = self.qcl.get(self.apfqname, 'factoryconf')
+        okread = fcl.read(fconf)
+        logging.debug("Successfully read %s " % okread)
+
+        ####from autopyfactory.threadsmanagement import ThreadsRegistry
+        ####class FactoryMock(object):
+        ####    
+        ####    def __init__(self, fcl, am):
+        ####        self.fcl = fcl 
+        ####        self.mcl = Config()
+        ####        self.mcl.add_section('MockMonitor')
+        ####        self.mcl.set('MockMonitor','monitorURL','')
+        ####        self.threadsregistry = ThreadsRegistry()
+        ####        self.authmanager = am
+        ####    
+        ####self.factory = FactoryMock(fcl, authman)
+        from autopyfactory.factory import Factory
+        self.factory = Factory.getFactoryMock(fcl, authman)
+
+        logging.debug('APFQueue init: initial configuration:\n%s' %self.qcl.getSection(self.apfqname).getContent())   
+
+        try:
+            self._plugins()
+        except Exception, ex:
+            logging.error('APFQueue: Exception getting plugins' )
+            raise ex
+        logging.debug('APFQueue: Object initialized.')
+
+
+    def _plugins(self):
+        
+        batchsubmitpluginname = self.qcl.get(self.apfqname, 'batchsubmitplugin')
+        self.batchsubmit_plugin = pluginmanager.getplugin(['autopyfactory', 'plugins', 'queue', 'batchsubmit'], batchsubmitpluginname, self, self.qcl, self.apfqname)   # a single BatchSubmit plugin
+
+
+    def submitlist(self, listjobs):
+
+        logging.debug("Starting")
+        n = len(listjobs)
+        msg = 'Attempt to submit %s pilots for queue %s' %(n, self.apfqname)
+        jobinfolist = self.batchsubmit_plugin.submitlist(listjobs)
+        logging.debug("Attempted submission of %d pilots and got jobinfolist %s" % (n, jobinfolist))
+        self.batchsubmit_plugin.cleanup()
+        logging.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
+        self.jobinfolist = jobinfolist
+        return jobinfolist
+
+
+
+
