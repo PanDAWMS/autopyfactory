@@ -414,7 +414,10 @@ class _condor(_thread, BatchStatusInterface):
         Return dictionary indexed by queuename, with value a List of CondorJobInfo objects. 
         '''
         self.log.debug('Starting.')
-        classadlist = condor_q(CondorJobInfo.jobattrs)
+        ### BEGIN TEST ###
+        #classadlist = condor_q(CondorJobInfo.jobattrs)
+        classadlist = self.schedd.condor_q(CondorJobInfo.jobattrs)
+        ### END  TEST ###
         newjobinfo = {}
 
         for ca in classadlist:
