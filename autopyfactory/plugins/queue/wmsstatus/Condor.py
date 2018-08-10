@@ -18,8 +18,8 @@ from autopyfactory.info import JobInfo
 from autopyfactory.info import WMSStatusInfo
 from autopyfactory.info import WMSQueueInfo
 
-#from autopyfactory.condor import checkCondor
-from autopyfactory.condorlib import querycondorlib
+###from autopyfactory.condor import checkCondor
+###from autopyfactory.condorlib import querycondorlib
 from autopyfactory.mappings import map2info
 
 import autopyfactory.htcondorlib
@@ -257,78 +257,78 @@ class _condor(_thread, WMSStatusInterface):
         return si
 
 
-    def _update(self):
-        """        
-        Query Condor for job status, validate ?, and populate BatchStatusInfo object.
-        Condor-G query template example:
-        
-        condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
-                 -format 'jobStatus=%d ' jobStatus 
-                 -format 'globusStatus=%d ' GlobusStatus 
-                 -format 'gkUrl=%s' MATCH_gatekeeper_url
-                 -format '-%s ' MATCH_queue 
-                 -format '%s\n' Environment
-
-        NOTE: using a single backslash in the final part of the 
-              condor_q command '\n' only works with the 
-              latest versions of condor. 
-              With older versions, there are two options:
-                      - using 4 backslashes '\\\\n'
-                      - using a raw string and two backslashes '\\n'
-
-        The JobStatus code indicates the current Condor status of the job.
-        
-                Value   Status                            
-                0       U - Unexpanded (the job has never run)    
-                1       I - Idle                                  
-                2       R - Running                               
-                3       X - Removed                              
-                4       C -Completed                            
-                5       H - Held                                 
-                6       > - Transferring Output
-
-        The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
-        
-                Value   Status
-                1       PENDING 
-                2       ACTIVE 
-                4       FAILED 
-                8       DONE 
-                16      SUSPENDED 
-                32      UNSUBMITTED 
-                64      STAGE_IN 
-                128     STAGE_OUT 
-        """
-
-        self.log.debug('Starting.')
-        
-        # These are not meaningful for Local Condor as WMS
-        self.currentcloudinfo = None
-        self.currentsiteinfo = None
-
-        try:
-
-            #### BEGIN TEST ####
-            ## XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX FIXME##
-            #strout = querycondorlib(self.queryargs, self.queueskey)
-            if self.queueskey.lower() != "any":
-                strout = querycondorlib(remotecollector=self.collectorhost, remoteschedd=self.scheddhost, queueskey=None)
-            else:
-                strout = querycondorlib(remotecollector=self.collectorhost, remoteschedd=self.scheddhost, queueskey=self.queueskey )
-            # FIXME: the extra_attributes is missing !!
-            #### END TEST ####
-            
-            if not strout:
-                self.log.warning('output of _querycondor is an empty dictionary. Nothing to be done. Skip to next loop.') 
-            else:
-                newjobinfo = map2info(strout, WMSStatusInfo(), self.jobstatus2info)
-                self.log.info("Replacing old info with newly generated info.")
-                self.currentjobinfo = newjobinfo
-        except Exception, e:
-            self.log.error("Exception: %s" % str(e))
-            self.log.debug("Exception: %s" % traceback.format_exc())            
-
-        self.log.debug('_ Leaving.')
+###    def _update(self):
+###        """        
+###        Query Condor for job status, validate ?, and populate BatchStatusInfo object.
+###        Condor-G query template example:
+###        
+###        condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
+###                 -format 'jobStatus=%d ' jobStatus 
+###                 -format 'globusStatus=%d ' GlobusStatus 
+###                 -format 'gkUrl=%s' MATCH_gatekeeper_url
+###                 -format '-%s ' MATCH_queue 
+###                 -format '%s\n' Environment
+###
+###        NOTE: using a single backslash in the final part of the 
+###              condor_q command '\n' only works with the 
+###              latest versions of condor. 
+###              With older versions, there are two options:
+###                      - using 4 backslashes '\\\\n'
+###                      - using a raw string and two backslashes '\\n'
+###
+###        The JobStatus code indicates the current Condor status of the job.
+###        
+###                Value   Status                            
+###                0       U - Unexpanded (the job has never run)    
+###                1       I - Idle                                  
+###                2       R - Running                               
+###                3       X - Removed                              
+###                4       C -Completed                            
+###                5       H - Held                                 
+###                6       > - Transferring Output
+###
+###        The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
+###        
+###                Value   Status
+###                1       PENDING 
+###                2       ACTIVE 
+###                4       FAILED 
+###                8       DONE 
+###                16      SUSPENDED 
+###                32      UNSUBMITTED 
+###                64      STAGE_IN 
+###                128     STAGE_OUT 
+###        """
+###
+###        self.log.debug('Starting.')
+###        
+###        # These are not meaningful for Local Condor as WMS
+###        self.currentcloudinfo = None
+###        self.currentsiteinfo = None
+###
+###        try:
+###
+###            #### BEGIN TEST ####
+###            ## XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX FIXME##
+###            #strout = querycondorlib(self.queryargs, self.queueskey)
+###            if self.queueskey.lower() != "any":
+###                strout = querycondorlib(remotecollector=self.collectorhost, remoteschedd=self.scheddhost, queueskey=None)
+###            else:
+###                strout = querycondorlib(remotecollector=self.collectorhost, remoteschedd=self.scheddhost, queueskey=self.queueskey )
+###            # FIXME: the extra_attributes is missing !!
+###            #### END TEST ####
+###            
+###            if not strout:
+###                self.log.warning('output of _querycondor is an empty dictionary. Nothing to be done. Skip to next loop.') 
+###            else:
+###                newjobinfo = map2info(strout, WMSStatusInfo(), self.jobstatus2info)
+###                self.log.info("Replacing old info with newly generated info.")
+###                self.currentjobinfo = newjobinfo
+###        except Exception, e:
+###            self.log.error("Exception: %s" % str(e))
+###            self.log.debug("Exception: %s" % traceback.format_exc())            
+###
+###        self.log.debug('_ Leaving.')
 
 
 
