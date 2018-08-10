@@ -18,9 +18,11 @@ from autopyfactory.info import JobInfo
 from autopyfactory.info import WMSStatusInfo
 from autopyfactory.info import WMSQueueInfo
 
-from autopyfactory.condor import checkCondor
+#from autopyfactory.condor import checkCondor
 from autopyfactory.condorlib import querycondorlib
 from autopyfactory.mappings import map2info
+
+import autopyfactory.htcondorlib
 
 
 class _condor(_thread, WMSStatusInterface):
@@ -89,7 +91,9 @@ class _condor(_thread, WMSStatusInterface):
         # variable to record when was last time info was updated
         # the info is recorded as seconds since epoch
         self.lasttime = 0
-        checkCondor()
+        #checkCondor()
+        self.log.debug('condor_version : %s' %htcondorlib.condor_version())
+        self.log.debug('condor_config file : %s' %htcondorlib.condor_config_files())
         self.log.info('WMSStatusPlugin: Object initialized.')
 
 
