@@ -23,6 +23,39 @@ from autopyfactory.condorlib import querycondorlib
 from autopyfactory.mappings import map2info
 
 import autopyfactory.htcondorlib
+import autopyfactory.info2
+
+
+### BEGIN TEST ###
+#
+# FIXME
+#
+#   this is a temporary solution
+#
+
+class Job(object):
+    def __init__(self, data_d):
+        self.data_d = data_d
+
+    def __getattr__(self, key):
+        try:
+            return int(self.data_d[key])
+        except Exception, ex:
+            return 0
+
+    def __str__(self):
+        s = "WMSQueueInfo: notready=%s, ready=%s, running=%s, done=%s, failed=%s, unknown=%s" %\
+            (self.notready,
+             self.ready,
+             self.running,
+             self.done,
+             self.failed,
+             self.unknown
+            )
+        return s
+
+
+
 
 
 class _condor(_thread, WMSStatusInterface):
@@ -59,12 +92,29 @@ class _condor(_thread, WMSStatusInterface):
         self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queryargs')
         self.queueskey = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queueskey', default_value='ANY')
 
-        if self.queryargs:
-            l = self.queryargs.split()  # convert the string into a list
-            if '-name' in l:
-                self.scheddhost = l[l.index('-name') + 1]
-            if '-pool' in l:
-                self.collectorhost = l[l.index('-pool') + 1]
+        #if self.queryargs:
+        #    l = self.queryargs.split()  # convert the string into a list
+        #    if '-name' in l:
+        #        self.scheddhost = l[l.index('-name') + 1]
+        #    if '-pool' in l:
+        #        self.collectorhost = l[l.index('-pool') + 1]
+    
+        if self.collectorhost != 'localhost':
+            _collector = htcondorlib.HTCondorCollector(self.collectorhost, self.collectorport)
+            self.schedd = _collector.getSchedd(self.scheddhost, self.scheddport)
+        else:
+            self.schedd = htcondorlib.Schedd()
+
+        self.condor_q_attribute_l = ['match_apf_queue', 
+                                     'jobstatus'
+                                    ]
+        self.condor_history_attribute_l = ['match_apf_queue', 
+                                           'jobstatus',
+                                           'enteredcurrentstatus',
+                                           'remotewallclocktime',
+                                           'qdate'
+                                          ]
+
 
         # FIXME
         # check if this works with a Singleton, or I need a different Singleton per value
@@ -72,6 +122,10 @@ class _condor(_thread, WMSStatusInterface):
         self.currentcloudinfo = None
         self.currentjobinfo = None
         self.currentsiteinfo = None
+       
+        self.rawdata = None
+        self.currentnewinfo = None
+        self.processednewinfo = None
               
 
         # ================================================================
@@ -102,8 +156,36 @@ class _condor(_thread, WMSStatusInterface):
         Main loop
         """
         self.log.debug('Starting')
-        self._update()
+###        self._update()
+        self._updatenewinfo()
         self.log.debug('Leaving')
+
+
+###    #def getInfo(self, queue=None, maxtime=0):
+###    def getOldInfo(self, queue=None, maxtime=0):
+###        """
+###        Returns a BatchStatusInfo object populated by the analysis 
+###        over the output of a condor_q command
+###
+###        Optionally, a maxtime parameter can be passed.
+###        In that case, if the info recorded is older than that maxtime,
+###        None is returned, as we understand that info is too old and 
+###        not reliable anymore.
+###        """           
+###        self.log.debug('Starting with maxtime=%s' % maxtime)
+###        
+###        if self.currentjobinfo is None:
+###            self.log.debug('Not initialized yet. Returning None.')
+###            return None
+###        elif maxtime > 0 and (int(time.time()) - self.currentjobinfo.lasttime) > maxtime:
+###            self.log.debug('Info too old. Leaving and returning None.')
+###            return None
+###        else:
+###            if queue:
+###                return self.currentjobinfo[queue]                    
+###            else:
+###                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentjobinfo))
+###                return self.currentjobinfo
 
 
     def getInfo(self, queue=None, maxtime=0):
@@ -118,18 +200,19 @@ class _condor(_thread, WMSStatusInterface):
         """           
         self.log.debug('Starting with maxtime=%s' % maxtime)
         
-        if self.currentjobinfo is None:
+        if self.currentnewinfo is None:
             self.log.debug('Not initialized yet. Returning None.')
             return None
-        elif maxtime > 0 and (int(time.time()) - self.currentjobinfo.lasttime) > maxtime:
+        elif maxtime > 0 and (int(time.time()) - self.currentnewinfo.lasttime) > maxtime:
             self.log.debug('Info too old. Leaving and returning None.')
             return None
         else:
-            if queue:
-                return self.currentjobinfo[queue]                    
-            else:
-                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentjobinfo))
-                return self.currentjobinfo
+                if queue:
+                    return self.processednewinfo[queue]
+                else:
+                    return self.processednewinfo
+
+
 
     def getCloudInfo(self, cloud=None, maxtime=0):
         self.log.debug('Starting with maxtime=%s' % maxtime)
@@ -246,6 +329,62 @@ class _condor(_thread, WMSStatusInterface):
             self.log.debug("Exception: %s" % traceback.format_exc())            
 
         self.log.debug('_ Leaving.')
+
+
+
+    def _updatenewinfo(self):
+        """
+        """
+        self.log.debug('Starting.')
+        try:
+            self.condor_q_classad_l = self.schedd.condor_q(self.condor_q_attribute_l)
+            self.log.debug('output of condor_q: %s' %self.condor_q_classad_l)
+        
+            self.condor_history_classad_l = self.schedd.condor_history(self.condor_history_attribute_l)
+            self.log.debug('output of condor_history: %s' %self.condor_history_classad_l)
+
+            self.rawdata = self.condor_q_classad_l + self.condor_history_classad_l
+
+            self.currentnewinfo = info2.StatusInfo(self.rawdata)
+
+            # --- process the status info 
+            self.processednewinfo = self.__process(self.currentnewinfo)
+
+        except Exception, ex:
+            self.log.error("Exception: %s" % str(ex))
+            self.log.debug("Exception: %s" % traceback.format_exc())
+
+        self.log.debug('Leaving.')
+
+    
+    ### BEGIN TEST ###
+    #
+    # FIXME
+    #
+    #   for the time being, all hardcoded in a single method
+    #
+    def __process(self, info):
+ 
+        from autopyfactory.info2 import IndexByKey, IndexByKeyRemap, Count
+ 
+        indexbyqueue = IndexByKey('match_apf_queue')
+        indexbystatus = IndexByKeyRemap ('jobstatus', self.jobstatus2info)
+        count = Count()
+ 
+        info = info.indexby(indexbyqueue)
+        info = info.indexby(indexbystatus)
+        info = info.process(count)
+ 
+        # convert info into a dictionary of objects Jobs
+        # this is just temporary
+        raw = info.getraw()
+        jobs_d = {}
+        for q, data in raw.items():
+            job = Job( raw[q] )
+            jobs_d[q] = job
+        return jobs_d
+    ### END TEST ###
+
 
 
 
