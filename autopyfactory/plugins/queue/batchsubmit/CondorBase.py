@@ -14,7 +14,7 @@ import traceback
 
 
 from autopyfactory import condor 
-from autopyfactory.condor  import mynewsubmit, killids
+from autopyfactory.condor  import mynewsubmit
 from autopyfactory import jsd
 from autopyfactory.interfaces import BatchSubmitInterface
 from autopyfactory.info import JobInfo
@@ -213,12 +213,11 @@ class CondorBase(BatchSubmitInterface):
                         self.log.warning("Tried to pop jobinfo from an empty list.")
                 self.log.debug("About to kill list of %s ids. First one is %s" % (len(killlist), killlist[0] ))
                 ### BEGIN TEST ###
-                #killids(killlist)
                 from autopyfactory.condorlib import condor_rm
                 self.log.debug("Killing list of %d jobs." % len(killlist) )
                 condor_rm(killlist)
                 ### END TEST ###
-                self.log.debug("killids() returned OK.")
+                self.log.debug("retiring worked OK.")
             else:
                 self.log.info("Peaceful is True. No job killing. Doing nothing.")
         else:
