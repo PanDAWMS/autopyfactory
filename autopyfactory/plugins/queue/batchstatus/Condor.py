@@ -17,7 +17,7 @@ from pprint import pprint
 from autopyfactory.interfaces import BatchStatusInterface, _thread
 from autopyfactory.info import BatchStatusInfo
 from autopyfactory.info import QueueInfo
-from autopyfactory.condorlib import querycondorlib, condor_q
+###from autopyfactory.condorlib import querycondorlib, condor_q
 from autopyfactory.mappings import map2info
 import autopyfactory.utils as utils
 
@@ -155,7 +155,7 @@ class _condor(_thread, BatchStatusInterface):
             self.log.warning("Got AttributeError during init. We should be running stand-alone for testing.")
 
         self._thread_loop_interval = self.sleeptime
-        self.currentinfo = None
+###        self.currentinfo = None
         self.currentnewinfo = None
         self.jobinfo = None              
         self.last_timestamp = 0
@@ -193,33 +193,32 @@ class _condor(_thread, BatchStatusInterface):
         self.log.debug('Leaving')
 
 
-    #def getInfo(self, queue=None):
-    def getOldInfo(self, queue=None):
-        """
-        Returns a  object populated by the analysis 
-        over the output of a condor_q command
-
-        If the info recorded is older than that maxage,
-        None is returned, as we understand that info is too old and 
-        not reliable anymore.
-        """           
-        self.log.debug('Starting with self.maxage=%s' % self.maxage)
-        
-        if self.currentinfo is None:
-            self.log.debug('Not initialized yet. Returning None.')
-            return None
-        elif self.maxage > 0 and (int(time.time()) - self.currentinfo.lasttime) > self.maxage:
-            self.log.debug('Info too old. Leaving and returning None.')
-            return None
-        else:
-            if queue:
-                self.log.debug('Current info is %s' % self.currentinfo)                    
-                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentinfo))
-                return self.currentinfo[queue]
-            else:
-                self.log.debug('Current info is %s' % self.currentinfo)
-                self.log.debug('No queue given, returning entire BatchStatusInfo object')
-                return self.currentinfo
+###    def getOldInfo(self, queue=None):
+###        """
+###        Returns a  object populated by the analysis 
+###        over the output of a condor_q command
+###
+###        If the info recorded is older than that maxage,
+###        None is returned, as we understand that info is too old and 
+###        not reliable anymore.
+###        """           
+###        self.log.debug('Starting with self.maxage=%s' % self.maxage)
+###        
+###        if self.currentinfo is None:
+###            self.log.debug('Not initialized yet. Returning None.')
+###            return None
+###        elif self.maxage > 0 and (int(time.time()) - self.currentinfo.lasttime) > self.maxage:
+###            self.log.debug('Info too old. Leaving and returning None.')
+###            return None
+###        else:
+###            if queue:
+###                self.log.debug('Current info is %s' % self.currentinfo)                    
+###                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentinfo))
+###                return self.currentinfo[queue]
+###            else:
+###                self.log.debug('Current info is %s' % self.currentinfo)
+###                self.log.debug('No queue given, returning entire BatchStatusInfo object')
+###                return self.currentinfo
 
 
     def getJobInfo(self, queue=None):
@@ -249,7 +248,7 @@ class _condor(_thread, BatchStatusInterface):
     
     def _updatelib(self):
         self.Lock.acquire()
-        self._updateinfo()
+###        self._updateinfo()
         self._updatejobinfo()
         ### BEGIN TEST ###
         self._updatenewinfo()
@@ -385,27 +384,27 @@ class _condor(_thread, BatchStatusInterface):
 
 
         
-    def _updateinfo(self):
-        """
-        Query Condor for job status, and populate  object.
-        It uses the condor python bindings.
-        """
-        self.log.debug('Starting.')
-        try:
-            strout = querycondorlib(self.remotecollector, 
-                                    self.remoteschedd, 
-                                    )
-            self.log.debug('output of querycondorlib : %s' %strout)
-            if strout is None:
-                self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.')
-            else:
-                newinfo = map2info(strout, BatchStatusInfo(), self.jobstatus2info)
-                self.log.info("Replacing old info with newly generated info.")
-                self.currentinfo = newinfo
-        except Exception, e:
-            self.log.error("Exception: %s" % str(e))
-            self.log.debug("Exception: %s" % traceback.format_exc())
-        self.log.debug('Leaving.')
+###    def _updateinfo(self):
+###        """
+###        Query Condor for job status, and populate  object.
+###        It uses the condor python bindings.
+###        """
+###        self.log.debug('Starting.')
+###        try:
+###            strout = querycondorlib(self.remotecollector, 
+###                                    self.remoteschedd, 
+###                                    )
+###            self.log.debug('output of querycondorlib : %s' %strout)
+###            if strout is None:
+###                self.log.warning('output of _querycondor is not valid. Not parsing it. Skip to next loop.')
+###            else:
+###                newinfo = map2info(strout, BatchStatusInfo(), self.jobstatus2info)
+###                self.log.info("Replacing old info with newly generated info.")
+###                self.currentinfo = newinfo
+###        except Exception, e:
+###            self.log.error("Exception: %s" % str(e))
+###            self.log.debug("Exception: %s" % traceback.format_exc())
+###        self.log.debug('Leaving.')
 
 
     def _updatejobinfo(self):
