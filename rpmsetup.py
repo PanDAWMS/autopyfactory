@@ -6,7 +6,6 @@
 
 release_version="2.4.15"
 
-import commands
 import os
 import re
 import sys

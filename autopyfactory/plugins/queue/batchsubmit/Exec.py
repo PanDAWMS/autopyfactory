@@ -1,10 +1,10 @@
 #!/bin/env python
 
-import commands
 import logging
 import os
-import string
 import shutil
+import string
+import subprocess
 import time
 
 from autopyfactory.interfaces import BatchSubmitInterface
@@ -107,7 +107,10 @@ class ExecSubmitPlugin(BatchSubmitInterface):
         cmd = 'cd %s; ./%s %s; cd -' %(self.logDir, executable, arguments )
         self.log.info('Attempt to submit command %s' %cmd)
 
-        (exitStatus, output) = commands.getstatusoutput(cmd)
+        subproc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        (output, err) = subproc.communicate()
+        exitStatus = subproc.returncode
+        
         if exitStatus != 0:
             self.log.error('local execution for %s failed (status %d): %s', self.wmsqueue, exitStatus, output)
         else:
