@@ -99,9 +99,12 @@ def checkDaemon(daemon, pattern='running'):
     """
     checks if a given daemon service is active
     """
-    import commands 
-    status = commands.getoutput('service %s status' %daemon)
-    return status.lower().find(pattern) > 0
+    cmd = 'service %s status' %daemon
+    subproc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    (out, err) = subproc.communicate()
+    st = subproc.returncode
+    return out.lower().find(pattern) > 0
+    
 
 
 def which(file):
