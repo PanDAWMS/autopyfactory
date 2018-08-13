@@ -13,35 +13,29 @@ import commands
 import logging
 import traceback
 
-#mincondorversion(8,1,1)
-
 
 class CondorEC2(CondorBase):
     id = 'condorec2'
     
     def __init__(self, apfqueue, config, section):
-
         qcl = config
-        
         newqcl = qcl.clone().filterkeys('batchsubmit.condorec2', 'batchsubmit.condorbase')
         super(CondorEC2, self).__init__(apfqueue, newqcl, section)
-      
         self.schedd = HTCondorSchedd()
-
         try:
             self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.gridresource') 
             self.ami_id = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.ami_id')
             self.instance_type  = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.instance_type')
+            self.security_groups = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.security_groups')
+            self.spot_price = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.spot_price')
+            if self.spot_price:                
+                self.spot_price = float(self.spot_price)
             self.user_data = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.user_data')
             self.user_data_file = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.user_data_file')
             self.access_key_id = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.access_key_id')
             self.secret_access_key = qcl.generic_get(self.apfqname,'batchsubmit.condorec2.secret_access_key')
-            self.spot_price = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.spot_price')
             self.usessh = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.usessh')
-            if self.spot_price:                
-                self.spot_price = float(self.spot_price)
             self.peaceful = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.peaceful')
-            self.security_groups = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.security_groups')
             self.log.debug("Successfully got all config values for EC2BatchSubmit plugin.")
             self.log.debug('CondorEC2: Object properly initialized.')
         except Exception, e:
