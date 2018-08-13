@@ -26,14 +26,17 @@ if major == 2:
 
 libexec_files = ['libexec/%s' %file for file in os.listdir('libexec') if os.path.isfile('libexec/%s' %file)]
 
-etc_files = ['etc/autopyfactory.conf',
+etc_files = ['etc/mappings.conf',
+             ]
+
+example_files = ['etc/autopyfactory.conf',
              'etc/queues.conf',
              'etc/proxy.conf',
              'etc/monitor.conf',
-             'etc/mappings.conf',
              'etc/agisdefaults.conf',
              'etc/auth.conf',
              ]
+
 
 sysconfig_files = [
              'etc/sysconfig/autopyfactory',
@@ -56,7 +59,7 @@ rpm_data_files=[#('/etc/autopyfactory', libexec_files),
                 ('/etc/sysconfig', sysconfig_files),
                 ('/etc/logrotate.d', logrotate_files),                                        
                 ('/etc/init.d', initd_files),
-                #('/usr/share/doc/autopyfactory', docs_files),                                        
+                ('/usr/share/doc/autopyfactory', example_files),                                        
                ]
 
 

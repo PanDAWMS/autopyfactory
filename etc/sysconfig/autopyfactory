@@ -22,7 +22,7 @@
 # CONFFILE=/etc/autopyfactory/autopyfactory.conf
 
 LOGFILE=/var/log/autopyfactory/autopyfactory.log
-OPTIONS="--debug --sleep=60 --runas=autopyfactory --log=/var/log/autopyfactory/autopyfactory.log"
+OPTIONS=" --sleep=60 --runas=autopyfactory --log=/var/log/autopyfactory/autopyfactory.log"
 CONSOLE_LOG=/var/log/autopyfactory/console.log
 
 #
