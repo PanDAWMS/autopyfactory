@@ -497,23 +497,23 @@ class APFQueue(_thread):
         self.jobinfolist = jobinfolist
 
 
-    ### BEGIN TEST ###
-    def _submitlist(self, listjobs):
-        """
-        submit using this number
-        call for cleanup
-        """
-        self.log.debug("Starting")
-        n = len(listjobs)
-        msg = 'Attempt to submit %s pilots for queue %s' %(n, self.apfqname)
-        jobinfolist = self.batchsubmit_plugin.submitlist(listjobs)
-        self.log.debug("Attempted submission of %d pilots and got jobinfolist %s" % (n, jobinfolist))
-        self.batchsubmit_plugin.cleanup()
-        self.cyclesrun += 1
-        self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
-        #return jobinfolist
-        self.jobinfolist = jobinfolist
-    ### END TEST ###
+###    ### BEGIN TEST ###
+###    def _submitlist(self, listjobs):
+###        """
+###        submit using this number
+###        call for cleanup
+###        """
+###        self.log.debug("Starting")
+###        n = len(listjobs)
+###        msg = 'Attempt to submit %s pilots for queue %s' %(n, self.apfqname)
+###        jobinfolist = self.batchsubmit_plugin.submitlist(listjobs)
+###        self.log.debug("Attempted submission of %d pilots and got jobinfolist %s" % (n, jobinfolist))
+###        self.batchsubmit_plugin.cleanup()
+###        self.cyclesrun += 1
+###        self.log.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
+###        #return jobinfolist
+###        self.jobinfolist = jobinfolist
+###    ### END TEST ###
 
 
     def _monitor(self):
@@ -646,17 +646,17 @@ class APFSubmitQueue(object):
         self.batchsubmit_plugin = pluginmanager.getplugin(['autopyfactory', 'plugins', 'queue', 'batchsubmit'], batchsubmitpluginname, self, self.qcl, self.apfqname)   # a single BatchSubmit plugin
 
 
-    def submitlist(self, listjobs):
-
-        logging.debug("Starting")
-        n = len(listjobs)
-        msg = 'Attempt to submit %s pilots for queue %s' %(n, self.apfqname)
-        jobinfolist = self.batchsubmit_plugin.submitlist(listjobs)
-        logging.debug("Attempted submission of %d pilots and got jobinfolist %s" % (n, jobinfolist))
-        self.batchsubmit_plugin.cleanup()
-        logging.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
-        self.jobinfolist = jobinfolist
-        return jobinfolist
+###    def submitlist(self, listjobs):
+###
+###        logging.debug("Starting")
+###        n = len(listjobs)
+###        msg = 'Attempt to submit %s pilots for queue %s' %(n, self.apfqname)
+###        jobinfolist = self.batchsubmit_plugin.submitlist(listjobs)
+###        logging.debug("Attempted submission of %d pilots and got jobinfolist %s" % (n, jobinfolist))
+###        self.batchsubmit_plugin.cleanup()
+###        logging.debug("APFQueue[%s]: Submitted jobs. Joblist is %s" % (self.apfqname, jobinfolist))
+###        self.jobinfolist = jobinfolist
+###        return jobinfolist
 
 
 

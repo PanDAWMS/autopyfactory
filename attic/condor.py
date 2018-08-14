@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-'''
+"""
    Condor-related common utilities and library for AutoPyFactory.
    Focussed on properly processing output of condor_q -xml and condor_status -xml and converting
    to native Python data structures. 
 
-'''
+"""
 import commands
 import datetime
 import logging
@@ -25,6 +25,7 @@ from pprint import pprint
 from Queue import Queue
 
 from autopyfactory.info import JobInfo
+from autopyfactory.interfaces import _thread
 
 
 # FIXME !!!
@@ -35,17 +36,17 @@ condorrequestsqueue = Queue()
 # FIXME
 # factory, submitargs and wmsqueue should not be needed
 def mynewsubmit(n, jsdfile, factory, wmsqueue, submitargs=None):
-    '''
+    """
     Submit pilots
-    '''
+    """
     
-    log = logging.getLogger('main.condor')
-    log.trace('Starting.')
+    log = logging.getLogger('autopyfactory')
+    log.debug('Starting.')
 
     log.info('Attempt to submit %d pilots for queue %s' %(n, wmsqueue))
 
     ###     cmd = 'condor_submit -verbose '
-    ###     self.log.trace('submitting using executable condor_submit from PATH=%s' %utils.which('condor_submit'))
+    ###     self.log.debug('submitting using executable condor_submit from PATH=%s' %utils.which('condor_submit'))
     ###     # NOTE: -verbose is needed. 
     ###     # The output generated with -verbose is parsed by the monitor code to determine the number of jobs submitted
     ###     if self.submitargs:
@@ -85,12 +86,12 @@ def mynewsubmit(n, jsdfile, factory, wmsqueue, submitargs=None):
     else:
         log.info('condor_submit command for %s succeeded', wmsqueue)
 
-    log.trace('Leaving with output (%s, %s).' %(st, out))
+    log.debug('Leaving with output (%s, %s).' %(st, out))
     return st, out
 
 
 def parsecondorsubmit(output):
-    ''' 
+    """ 
     Parses raw output from condor_submit -verbose and returns list of JobInfo objects. 
         
     condor_submit -verbose output:
@@ -183,9 +184,9 @@ x509UserProxyFQAN = "/DC=org/DC=doegrids/OU=People/CN=John R. Hover 47116,/atlas
 x509userproxysubject = "/DC=org/DC=doegrids/OU=People/CN=John R. Hover 47116"
 x509userproxy = "/tmp/prodProxy"
 x509UserProxyVOName = "atlas"
-    '''
+    """
 
-    log = logging.getLogger('main.condor') 
+    log = logging.getLogger('autopyfactory')
     now = datetime.datetime.utcnow()
     joblist = []
     lines = output.split('\n')
@@ -198,37 +199,20 @@ x509UserProxyVOName = "atlas"
             ji = JobInfo(procid, 'submitted', now)
             joblist.append(ji)
     if not len(joblist) > 0:
-        log.trace('joblist has length 0, returning None')
+        log.debug('joblist has length 0, returning None')
         joblist = None
 
-    log.trace('Leaving with joblist = %s' %joblist )
+    log.debug('Leaving with joblist = %s' %joblist )
     return joblist
 
 
-def classad2dict(outlist):
-    '''
-    convert each ClassAd object into a python dictionary.
-    In the process, every value is converted into an string
-    (needed because some numbers are retrieved originally as integers
-    but we want to compare them with strings)
-    '''
-    out = []
-
-    for job in outlist:
-        job_dict = {}
-        for k in job:
-            job_dict[k] = str( job[k] )
-        out.append( job_dict )
-    return out 
-
-
 def mincondorversion(major, minor, release):
-    '''
+    """
     Call which sets a minimum HTCondor version. If the existing version is too low, it throws an exception.
     
-    '''
+    """
 
-    log = logging.getLogger('main.condor')
+    log = logging.getLogger('autopyfactory')
     s,o = commands.getstatusoutput('condor_version')
     if s == 0:
         cvstr = o.split()[1]
@@ -250,76 +234,78 @@ def mincondorversion(major, minor, release):
 
 
 def checkCondor():
-    '''
+    """
     Perform sanity check on condor environment.
     Does condor_q exist?
     Is Condor running?
-    '''
+    """
     
     # print condor version
-    log = logging.getLogger('main.condor')
+    log = logging.getLogger('autopyfactory')
     (s,o) = commands.getstatusoutput('condor_version')
     if s == 0:
-        log.trace('Condor version is: \n%s' % o )       
+        log.debug('Condor version is: \n%s' % o )       
         CONDOR_CONFIG = os.environ.get('CONDOR_CONFIG', None)
         if CONDOR_CONFIG:
-            log.trace('Environment variable CONDOR_CONFIG set to %s' %CONDOR_CONFIG)
+            log.debug('Environment variable CONDOR_CONFIG set to %s' %CONDOR_CONFIG)
         else:
-            log.trace("Condor config is: \n%s" % commands.getoutput('condor_config_val -config'))
+            log.debug("Condor config is: \n%s" % commands.getoutput('condor_config_val -config'))
     else:
         log.error('checkCondor() has been called, but not Condor is available on system.')
         raise ConfigFailure("No Condor available on system.")
 
 
 def statuscondor(queryargs = None):
-    '''
+    """
     Return info about job startd slots. 
-    '''
-    log = logging.getLogger('main.condor')
+    """
+    log = logging.getLogger('autopyfactory')
     cmd = 'condor_status -xml '
     if queryargs:
         cmd += queryargs
-    log.trace('Querying cmd = %s' %cmd.replace('\n','\\n'))
+    log.debug('Querying cmd = %s' %cmd.replace('\n','\\n'))
     before = time.time()
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     out = None
     (out, err) = p.communicate()
     delta = time.time() - before
-    log.trace('%s seconds to perform the query' %delta)
+    log.debug('%s seconds to perform the query' %delta)
     if p.returncode == 0:
-        log.trace('Leaving with OK return code.')
+        log.debug('Leaving with OK return code.')
     else:
         log.warning('Leaving with bad return code. rc=%s err=%s out=%s' %(p.returncode, err, out ))
         out = None
     return out
 
+
 def statuscondormaster(queryargs = None):
-    '''
+    """
     Return info about masters. 
-    '''
-    log = logging.getLogger('main.condor')
+    """
+    log = logging.getLogger('autopyfactory')
     cmd = 'condor_status -master -xml '
     if queryargs:
         cmd += queryargs
     
-    log.trace('Querying cmd = %s' % cmd.replace('\n','\\n'))
-    #log.trace('Querying cmd = %s' % cmd)
+    log.debug('Querying cmd = %s' % cmd.replace('\n','\\n'))
+    #log.debug('Querying cmd = %s' % cmd)
     before = time.time()
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     out = None
     (out, err) = p.communicate()
     delta = time.time() - before
-    log.trace('It took %s seconds to perform the query' %delta)
+    log.debug('It took %s seconds to perform the query' %delta)
 
     if p.returncode == 0:
-        log.trace('Leaving with OK return code.')
+        log.debug('Leaving with OK return code.')
     else:
         log.warning('Leaving with bad return code. rc=%s err=%s out=%s' %(p.returncode, err, out ))
         out = None
     return out
 
+
 def querycondor(queryargs=None, queueskey="match_apf_queue"):
-    '''
+    """
     Query condor for specific job info and return xml representation string
     for further processing.
 
@@ -327,20 +313,20 @@ def querycondor(queryargs=None, queueskey="match_apf_queue"):
 
     queueskey is the classad being used to distinguish between types of jobs.
     By default it is MATCH_APF_QUEUE
-    '''
+    """
 
-    log = logging.getLogger('main.condor')
-    log.trace('Starting.')
+    log = logging.getLogger('autopyfactory')
+    log.debug('Starting.')
     queueskey = queueskey.lower()
     querycmd = "condor_q -xml "
-    querycmd += " -attributes %s,jobstatus,globusstatus,procid,clusterid" %queueskey
-    log.trace('_querycondor: using executable condor_q in PATH=%s' %utils.which('condor_q'))
+    querycmd += " -attributes %s,jobstatus,procid,clusterid " %queueskey
+    log.debug('_querycondor: using executable condor_q in PATH=%s' %utils.which('condor_q'))
 
     # adding extra query args from queues.conf
     if queryargs:
         querycmd += queryargs 
 
-    log.trace('Querying cmd = %s' %querycmd.replace('\n','\\n'))
+    log.debug('Querying cmd = %s' %querycmd.replace('\n','\\n'))
 
     before = time.time()          
     p = subprocess.Popen(querycmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)     
@@ -350,7 +336,7 @@ def querycondor(queryargs=None, queueskey="match_apf_queue"):
     log.debug('condor_q: %s seconds to perform the query' %delta)
 
     if p.returncode == 0:
-        log.trace('Leaving with OK return code.')
+        log.debug('Leaving with OK return code.')
     else:
         # lets try again. Sometimes RC!=0 does not mean the output was bad
         if out.startswith('<?xml version="1.0"?>'):
@@ -358,54 +344,54 @@ def querycondor(queryargs=None, queueskey="match_apf_queue"):
         else:
             log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
             out = None
-    log.trace('_querycondor: Out is %s' % out)
-    log.trace('_querycondor: Leaving.')
+    log.debug('_querycondor: Out is %s' % out)
+    log.debug('_querycondor: Leaving.')
     return out
     
 
 
 def querycondorxml(queryargs=None):
-    '''
+    """
     Return human readable info about startds. 
-    '''
-    log = logging.getLogger('main.condor')
+    """
+    log = logging.getLogger('autopyfactory')
     cmd = 'condor_q -xml '
 
     # adding extra query args from queues.conf
     if queryargs:
         querycmd += queryargs 
        
-    log.trace('Querying cmd = %s' %cmd.replace('\n','\\n'))
+    log.debug('Querying cmd = %s' %cmd.replace('\n','\\n'))
     before = time.time()
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     out = None
     (out, err) = p.communicate()
     delta = time.time() - before
-    log.trace('It took %s seconds to perform the query' %delta)
+    log.debug('It took %s seconds to perform the query' %delta)
     if p.returncode == 0:
-        log.trace('Leaving with OK return code.')
+        log.debug('Leaving with OK return code.')
     else:
         log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
         out = None
-    log.trace('Out is %s' % out)
-    log.trace('Leaving.')
+    log.debug('Out is %s' % out)
+    log.debug('Leaving.')
     return out
 
 
-def xml2nodelist(input):
-    log = logging.getLogger('main.condor')
+def _xml2nodelist(input):
+    log = logging.getLogger('autopyfactory')
     xmldoc = xml.dom.minidom.parseString(input).documentElement
     nodelist = []
-    for c in listnodesfromxml(xmldoc, 'c') :
-        node_dict = node2dict(c)
+    for c in _listnodesfromxml(xmldoc, 'c') :
+        node_dict = _node2dict(c)
         nodelist.append(node_dict)
-    log.trace('_parseoutput: Leaving and returning list of %d entries.' %len(nodelist))
+    log.debug('_parseoutput: Leaving and returning list of %d entries.' %len(nodelist))
     log.debug('Got list of %d entries.' %len(nodelist))
     return nodelist
 
 
 def parseoutput(output):
-    '''
+    """
     parses XML output of condor_q command with an arbitrary number of attribute -format arguments,
     and creates a Python List of Dictionaries of them. 
     
@@ -431,10 +417,10 @@ def parseoutput(output):
     
     If the query has no 'c' elements, returns empty list
     
-    '''
+    """
 
-    log = logging.getLogger('main.condor')
-    log.trace('Starting.')                
+    log = logging.getLogger('autopyfactory')
+    log.debug('Starting.')                
 
     # first convert the XML output into a list of XML docs
     outputs = _out2list(output)
@@ -442,20 +428,20 @@ def parseoutput(output):
     nodelist = []
     for output in outputs:
         xmldoc = xml.dom.minidom.parseString(output).documentElement
-        for c in listnodesfromxml(xmldoc, 'c') :
-            node_dict = node2dict(c)
+        for c in _listnodesfromxml(xmldoc, 'c') :
+            node_dict = _node2dict(c)
             nodelist.append(node_dict)            
     log.debug('Got list of %d entries.' %len(nodelist))       
     return nodelist
 
 
 def _out2list(xmldoc):
-    '''
+    """
     converts the xml output of condor_q into a list.
     This is in case the output is a multiple XML doc, 
     as it happens when condor_q -g 
     So each part of the output is one element of the list
-    '''
+    """
 
     # we assume the header of each part of the output starts
     # with string '<?xml version="1.0"?>'
@@ -475,12 +461,12 @@ def _out2list(xmldoc):
 
 
 
-def listnodesfromxml( xmldoc, tag):
+def _listnodesfromxml( xmldoc, tag):
     return xmldoc.getElementsByTagName(tag)
 
 
-def node2dict(node):
-    '''
+def _node2dict(node):
+    """
     parses a node in an xml doc, as it is generated by 
     xml.dom.minidom.parseString(xml).documentElement
     and returns a dictionary with the relevant info. 
@@ -491,13 +477,13 @@ def node2dict(node):
            }        
     
     
-    '''
-    log = logging.getLogger('main.condor')
+    """
+    log = logging.getLogger('autopyfactory')
     dic = {}
     for child in node.childNodes:
         if child.nodeType == child.ELEMENT_NODE:
             key = child.attributes['n'].value
-            #log.trace("child 'n' key is %s" % key)
+            #log.debug("child 'n' key is %s" % key)
             if len(child.childNodes[0].childNodes) > 0:
                 try:
                     value = child.childNodes[0].firstChild.data
@@ -508,7 +494,7 @@ def node2dict(node):
 
 
 def aggregateinfo(input, queueskey="match_apf_queue"):
-    '''
+    """
     This function takes a list of job status dicts, and aggregates them by queue,
     ignoring entries without MATCH_APF_QUEUE
     
@@ -544,9 +530,9 @@ def aggregateinfo(input, queueskey="match_apf_queue"):
                   
     If input is empty list, output is empty dictionary
                  
-    '''
-    log = logging.getLogger('main.condor')
-    log.trace('Starting with list of %d items.' % len(input))
+    """
+    log = logging.getLogger('autopyfactory')
+    log.debug('Starting with list of %d items.' % len(input))
     queues = {}
     for item in input:
         if not item.has_key(queueskey):
@@ -581,16 +567,16 @@ def aggregateinfo(input, queueskey="match_apf_queue"):
             except KeyError:
                 qdict[attrkey][attrval] = 1
                    
-    log.trace('Aggregate: output is %s ' % queues)  # this could be trace() instead of debug()
+    log.debug('Aggregate: output is %s ' % queues) 
     log.debug('Aggregate: Created dict with %d queues.' % len(queues))
     return queues
 
   
 
 def getJobInfo():
-    log = logging.getLogger('main.condor')
+    log = logging.getLogger('autopyfactory')
     xml = querycondorxml()
-    nl = xml2nodelist(xml)
+    nl = _xml2nodelist(xml)
     log.debug("Got node list of length %d" % len(nl))
     joblist = []
     qd = {}
@@ -628,9 +614,9 @@ def getJobInfo():
 
 
 def getStartdInfoByEC2Id():
-    log = logging.getLogger('main.condor')
+    log = logging.getLogger('autopyfactory')
     out = statuscondor()
-    nl = xml2nodelist(out)
+    nl = _xml2nodelist(out)
     infolist = {}
     for n in nl:
         #print(n)
@@ -641,7 +627,7 @@ def getStartdInfoByEC2Id():
             slots = n['totalslots']
             machine = n['machine']
             j = CondorStartdInfo(ec2iid, machine, state, act)
-            #log.trace("Created csdi: %s" % j)
+            #log.debug("Created csdi: %s" % j)
             j.slots = slots
             infolist[ec2iid] = j
         except Exception, e:
@@ -650,36 +636,36 @@ def getStartdInfoByEC2Id():
     
 
 def killids(idlist):
-    '''
+    """
     Remove all jobs by jobid in idlist.
     Idlist is assumed to be a list of complete ids (<clusterid>.<procid>)
      
-    '''
-    log = logging.getLogger('main.condor')
+    """
+    log = logging.getLogger('autopyfactory')
     idstring = ' '.join(idlist)
     cmd = 'condor_rm %s' % idstring
-    log.trace('Issuing remove cmd = %s' %cmd.replace('\n','\\n'))
+    log.debug('Issuing remove cmd = %s' %cmd.replace('\n','\\n'))
     before = time.time()
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     out = None
     (out, err) = p.communicate()
     delta = time.time() - before
-    log.trace('It took %s seconds to perform the command' %delta)
+    log.debug('It took %s seconds to perform the command' %delta)
     if p.returncode == 0:
-        log.trace('Leaving with OK return code.')
+        log.debug('Leaving with OK return code.')
     else:
         log.warning('Leaving with bad return code. rc=%s err=%s' %(p.returncode, err ))
         out = None
     
 
 class CondorRequest(object):
-    '''
+    """
     class to define any arbitrary condor task 
     (condor_submit, condor_on, condor_off...)
 
     The instances of this class can be piped into a Queue() object
     for serialization
-    '''
+    """
 
     def __init__(self):
 
@@ -692,67 +678,33 @@ class CondorRequest(object):
         self.postcmd = None
 
 
-# FIXME
-# if we really need a Singleton, reuse the one in interfaces.py
-class Singleton(type):
-    '''
-    -----------------------------------------------------------------------
-    Ancillary class to be used as metaclass to make other classes Singleton.
-    -----------------------------------------------------------------------
-    '''
-    
-    def __init__(cls, name, bases, dct):
-        cls.__instance = None 
-        type.__init__(cls, name, bases, dct)
-    def __call__(cls, *args, **kw): 
-        if cls.__instance is None:
-            cls.__instance = type.__call__(cls, *args,**kw)
-        return cls.__instance
 
 
-class ProcessCondorRequests(threading.Thread):
-    '''
+class _processcondorrequests(_thread):
+    """
     class to process objects
     of class CondorRequest()
-    '''
-
-    __metaclass__ = Singleton
+    """
 
     def __init__(self, factory):
 
-        self.started = False
-        threading.Thread.__init__(self)
-        self.stopevent = threading.Event()
+        _thread.__init__(self)
+        factory.threadsregistry.add("util", self)
         
         self.factory = factory
 
 
-    def start(self):
-        if not self.started:
-            threading.Thread.start(self)
-            self.started = True
-
-
-    def run(self):
-
-        while not self.stopevent.isSet():
-            time.sleep(5) # FIXME, find a proper number. Maybe a config variable???
-            ###if not self.factory.condorrequestsqueue.empty():
-            ###    req = self.factory.condorrequestsqueue.get() 
-            if not condorrequestsqueue.empty():
-                req = condorrequestsqueue.get() 
-                if req.cmd == 'condor_submit':       
-                    self.submit(req)    
-
-    def join(self):
-        self.stopevent.set()
-        threading.Thread.join(self)
+    def _run(self):
+        if not condorrequestsqueue.empty():
+            req = condorrequestsqueue.get() 
+            if req.cmd == 'condor_submit':       
+                self.submit(req)    
 
 
     def submit(self, req):
-        '''
+        """
         req is an object of class CondorRequest()
-        '''
+        """
     
         cmd = req.cmd
         if req.args:
@@ -767,6 +719,18 @@ class ProcessCondorRequests(threading.Thread):
         req.rc = rc
 
 
+# The Singleton implementation
+class ProcessCondorRequests(object):
+
+    instance = None
+    
+    def __new__(cls, *k, **kw):
+        if not ProcessCondorRequests.instance:
+            ProcessCondorRequests.instance = _processcondorrequests(*k, **kw)
+        return ProcessCondorRequests.instance
+
+
+
 
 #############################################################################
 #               using HTCondor python bindings
@@ -776,8 +740,29 @@ import htcondor
 import classad
 import copy
 
-def querycondorlib(remotecollector=None, remoteschedd=None, queueskey='match_apf_queue'):
-    ''' 
+
+def condorhistorylib():
+
+    schedd = htcondor.Schedd()
+    history = schedd.history('True', ['MATCH_APF_QUEUE', 'JobStatus', 'EnteredCurrentStatus', 'RemoteWallClockTime'], 0)
+    return history
+
+
+def filtercondorhistorylib(history, constraints=[]):
+
+    # contraints example ['JobStatus == 4', 'RemoteWallClockTime < 120']
+
+    out = []
+    for job in history:
+        if _matches_constraints(job, constraints):
+            out.append(job)
+    return out
+
+
+    
+
+def querycondorlib(remotecollector=None, remoteschedd=None, extra_attributes=[], queueskey='match_apf_queue'):
+    """ 
     queries condor to get a list of ClassAds objects
     We query for a few specific ClassAd attributes
     (faster than getting everything)
@@ -786,9 +771,11 @@ def querycondorlib(remotecollector=None, remoteschedd=None, queueskey='match_apf
     are passed when querying a remote HTCondor pool 
     They are the equivalent to -pool and -name input
     options to CLI condor_q
-    '''
+    
+    extra_attributes are classads needed other than 'jobstatus'
+    """
 
-    log = logging.getLogger('main.condor')
+    log = logging.getLogger('autopyfactory')
 
     if remotecollector:
         # FIXME: to be tested
@@ -799,43 +786,42 @@ def querycondorlib(remotecollector=None, remoteschedd=None, queueskey='match_apf
     else:
         schedd = htcondor.Schedd() # Defaults to the local schedd.
 
-    list_attrs = [queueskey, 'jobstatus', 'ec2instanceid']
+    list_attrs = [queueskey, 'jobstatus']
+    list_attrs += extra_attributes
     out = schedd.query('true', list_attrs)
-    out = aggregateinfolib(out) 
-    log.trace(out)
+    out = _aggregateinfolib(out, 'jobstatus', queueskey) 
+    log.debug(out)
     return out 
 
-def aggregateinfolib(input, queueskey='match_apf_queue'):
-    
-    log = logging.getLogger('main.condor')
 
-    emptydict = {'0' : 0,
-                 '1' : 0,
-                 '2' : 0,
-                 '3' : 0,
-                 '4' : 0,
-                 '5' : 0,
-                 '6' : 0}
+def _aggregateinfolib(input, key=None, queueskey='match_apf_queue'):
+    # input is a list of job classads
+    # key can be, for example: 'jobstatus'    
+    # output is a dict[apfqname] [key] [value] = # of jobs with that value
+
+    log = logging.getLogger('autopyfactory')
 
     queues = {}
     for job in input:
-       if not queueskey in job.keys():
-           # This job is not managed by APF. Ignore...
-           continue
-       apfqname = job[queueskey]
-       if apfqname not in queues.keys():
-           queues[apfqname] = copy.copy(emptydict)
+        if not queueskey in job.keys():
+            # This job is not managed by APF. Ignore...
+            continue
+        apfqname = job[queueskey]
+        if apfqname not in queues.keys():
+            queues[apfqname] = {}
+            queues[apfqname][key] = {}
 
-       jobstatus = str(job['jobstatus'])
-
-       queues[apfqname][jobstatus] += 1
+        value = str(job[key])
+        if value not in queues[apfqname][key].keys():
+            queues[apfqname][key][value] = 0
+        queues[apfqname][key][value] += 1
     
-    log.trace(queues)
+    log.debug(queues)
     return queues
 
 
 def querystatuslib():
-    ''' 
+    """ 
     Equivalent to condor_status
     We query for a few specific ClassAd attributes 
     (faster than getting everything)
@@ -845,7 +831,7 @@ def querystatuslib():
       [ Name = "slot1@mysite.net"; Activity = "Idle"; MyType = "Machine"; TargetType = "Job"; State = "Unclaimed"; CurrentTime = time() ], 
       [ Name = "slot2@mysite.net"; Activity = "Idle"; MyType = "Machine"; TargetType = "Job"; State = "Unclaimed"; CurrentTime = time() ]
      ]
-    '''
+    """
     # We only want to try to import if we are actually using the call...
     # Later on we will need to handle Condor version >7.9.4 and <7.9.4
     #
@@ -856,6 +842,16 @@ def querystatuslib():
     return outlist
 
 
+
+def _matches_constraints(ad, constraints):
+    constraint_expression = " && ".join( ["TARGET." + i for i in constraints])
+    return _matches_constraint_expr(ad, constraint_expression)
+
+
+def _matches_contraint_expr(ad, constraint_expression):
+    req_ad = classad.ClassAd()
+    req_ad['Requirements'] = classad.ExprTree(constraint_expression)
+    return ad.matches(req_ad)
 
 
 
