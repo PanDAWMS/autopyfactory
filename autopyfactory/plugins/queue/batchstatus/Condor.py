@@ -289,7 +289,11 @@ class _condor(_thread, BatchStatusInterface):
             return None
 
         if queue:
-            return self.processednewinfo[queue]
+            try:
+                return self.processednewinfo[queue]
+            except Exception, ex:
+                self.log.warning('there is no info available for queue %s' %queue)
+                return None
         else:
             return self.processednewinfo
 
@@ -379,6 +383,7 @@ class _condor(_thread, BatchStatusInterface):
         for q, data in raw.items():
             job = Job( raw[q] )
             jobs_d[q] = job
+        self.log.debug('returning processed information = %s' %jobs_d)    
         return jobs_d
     ### END TEST ###
 
