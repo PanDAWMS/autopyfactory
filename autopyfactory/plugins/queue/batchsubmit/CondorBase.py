@@ -143,8 +143,8 @@ class CondorBase(BatchSubmitInterface):
                     # FIXME 
                     # temporary solution
                     # I should get the content of the file from the JSD object itself
-                    jsd = open(jsdfile).read()
-                    clusterid = self.schedd.condor_submit(jsd, n)
+                    jsdcontent = open(jsdfile).read()
+                    clusterid = self.schedd.condor_submit(jsdcontent, n)
                     joblist = []
                     now = datetime.datetime.utcnow()
                     for i in range(n):
