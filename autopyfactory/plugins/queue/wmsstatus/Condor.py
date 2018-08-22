@@ -118,7 +118,7 @@ class _condor(_thread, WMSStatusInterface):
        
         self.rawdata = None
         self.currentnewinfo = None
-        self.processednewinfo = None
+        self.processednewinfo_d = None
               
 
         # ================================================================
@@ -196,14 +196,20 @@ class _condor(_thread, WMSStatusInterface):
         if self.currentnewinfo is None:
             self.log.debug('Not initialized yet. Returning None.')
             return None
+
         elif maxtime > 0 and (int(time.time()) - self.currentnewinfo.lasttime) > maxtime:
             self.log.debug('Info too old. Leaving and returning None.')
             return None
+
         else:
-                if queue:
-                    return self.processednewinfo[queue]
-                else:
-                    return self.processednewinfo
+            if queue:
+                try:
+                    return self.processednewinfo_d[queue]
+                except Exception, ex:
+                    self.log.warning('there is no info available for queue %s. Returning an empty info object' %queue)
+                    return Job({})
+            else:
+                return self.processednewinfo_d
 
 
 
@@ -338,7 +344,7 @@ class _condor(_thread, WMSStatusInterface):
             self.currentnewinfo = info2.StatusInfo(self.rawdata)
 
             # --- process the status info 
-            self.processednewinfo = self.__process(self.currentnewinfo)
+            self.processednewinfo_d = self.__process(self.currentnewinfo)
 
         except Exception, ex:
             self.log.error("Exception: %s" % str(ex))
@@ -375,6 +381,24 @@ class _condor(_thread, WMSStatusInterface):
         return jobs_d
     ### END TEST ###
 
+
+    def add_query_attributes(self, new_q_attr_l=None):
+        """
+        adds new classads to be included in the condor_q query
+        :param list new_q_attr_l: list of classads for the query
+        """
+        self.__add_q_attributes(new_q_attr_l)
+
+
+    def __add_q_attributes(self, new_q_attr_l):
+        """
+        adds new classads to be included in condor_q queries
+        :param list new_q_attr_l: list of classads for condor_q
+        """
+        if new_q_attr_l:
+            for attr in new_q_attr_l:
+                if attr not in self.condor_q_attribute_l:
+                    self.condor_q_attribute_l.append(attr)
 
 
 
