@@ -290,12 +290,12 @@ class _condor(_thread, BatchStatusInterface):
 
         if queue:
             try:
-                return self.processednewinfo[queue]
+                return self.processednewinfo_d[queue]
             except Exception, ex:
-                self.log.warning('there is no info available for queue %s' %queue)
-                return None
+                self.log.warning('there is no info available for queue %s. Returning an empty info object' %queue)
+                return Job({})
         else:
-            return self.processednewinfo
+            return self.processednewinfo_d
 
 
         ###
@@ -345,7 +345,7 @@ class _condor(_thread, BatchStatusInterface):
 
             self.currentnewinfo = info2.StatusInfo(self.rawdata)
             # --- process the status info 
-            self.processednewinfo = self.__process(self.currentnewinfo)
+            self.processednewinfo_d = self.__process(self.currentnewinfo)
 
             #self.currentnewinfo = rawdata
             #self.last_timestamp = time.time()
