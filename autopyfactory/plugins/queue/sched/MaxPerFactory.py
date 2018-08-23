@@ -19,7 +19,7 @@ class MaxPerFactory(SchedInterface):
             self.max_pilots_per_factory = self.apfqueue.fcl.generic_get('Factory', 'maxperfactory.maximum', 'getint')
 
             self.log.debug("SchedPlugin: Object initialized.")
-        except Exception, ex:
+        except Exception as ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 

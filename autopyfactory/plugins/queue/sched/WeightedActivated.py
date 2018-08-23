@@ -20,7 +20,7 @@ class WeightedActivated(SchedInterface):
             self.log.debug("SchedPlugin: weight values are activated_w=%s, pending_w=%s." %(self.activated_w, self.pending_w))
 
             self.log.debug("SchedPlugin: Object initialized.")
-        except Exception, ex:
+        except Exception as ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 
@@ -78,16 +78,11 @@ class WeightedActivated(SchedInterface):
         except KeyError:
             # This is OK--it just means no jobs. 
             pass
-        except KeyError:
-            # This is OK--it just means no jobs. 
-            pass
 
         # correct values based on weights
         activated_jobs_w = int(activated_jobs * self.activated_w)
         pending_pilots_w = int(pending_pilots * self.pending_w)
-
         out = max(0, activated_jobs_w - pending_pilots_w)
-
         msg = "WeightedActivated:in=%s,activated=%s,weightedactivated=%s,pending=%s,weightedpending=%s,ret=%s" %(n, activated_jobs, activated_jobs_w, pending_pilots, pending_pilots_w, out)
         self.log.info(msg)
         return (out, msg)

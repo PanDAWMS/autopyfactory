@@ -84,7 +84,7 @@ class CondorSSH(CondorBase):
             
             self.log.info('CondorSSH: Object initialized.')
             
-        except Exception, e:
+        except Exception as e:
             self.log.error("Caught exception: %s " % str(e))
             raise
         
@@ -106,7 +106,7 @@ class CondorSSH(CondorBase):
                     self.log.debug("Backing up SSH file %s" % dp)
                     try:
                         shutil.copy(dp,"%s.apfbackup" % dp )
-                    except Exception, e:
+                    except Exception:
                         self.log.warning("Unable to back up %s" % dp)
 
     def _createSSHConfig(self):
@@ -122,7 +122,7 @@ class CondorSSH(CondorBase):
         fh = open(f, 'w')
         try:
             fh.write(SSHCONFIG)
-        except Exception, e:
+        except Exception:
             self.log.error('Problem writing to ~/.ssh/config')
         finally:
             fh.close()

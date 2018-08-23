@@ -121,7 +121,7 @@ class BaseInfo(object):
                         log = logging.getLogger('autopyfactory')
                         log.warning('ignoring unkown key %s in the dictionary' %k)
                         continue
-            except KeyError, e:
+            except KeyError as e:
                 log = logging.getLogger('autopyfactory')
                 log.error("fill(): Exception: %s" % str(e))
                 log.error("Stack Trace: %s " % traceback.format_exc()) 

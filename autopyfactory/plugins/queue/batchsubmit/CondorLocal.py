@@ -6,7 +6,6 @@
 from CondorBase import CondorBase 
 from autopyfactory import jsd
 
-
 class CondorLocal(CondorBase):
     id = 'condorlocal'
     """
@@ -46,17 +45,12 @@ class CondorLocal(CondorBase):
         """
         add things to the JSD object
         """
-
         self.log.debug('CondorLocal.addJSD: Starting.')
-        
-        # -- proxy path --
         if self.x509userproxy:
             self.JSD.add("x509userproxy", "%s" % self.x509userproxy)
         self.JSD.add("universe", "vanilla")
         self.JSD.add("should_transfer_files", "IF_NEEDED")
         self.JSD.add('+TransferOutput', '""')
-
         super(CondorLocal, self)._addJSD()
-
         self.log.debug('CondorLocal.addJSD: Leaving.')
     

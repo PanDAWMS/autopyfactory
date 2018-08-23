@@ -83,7 +83,7 @@ class X509(_thread):
                 p = pwd.getpwnam(o)
                 self.group = grp.getgrgid(p[3])[0]
                 self.owner = o
-            except Exception, e:
+            except Exception:
                 self.log.error("Problem getting user and group info for 'owner' = %s" % o)
         
         
@@ -219,7 +219,7 @@ class X509(_thread):
                 self.log.debug("Successfully set ownership for %s to %s:%s" % (self.proxyfile,
                                                                                self.owner, 
                                                                                self.group) )
-            except Exception, e:
+            except Exception:
                 self.log.error("Something wrong trying to do chown %s:%s %s" % (self.owner, 
                                                                                 self.group, 
                                                                                 self.proxyfile))
@@ -530,7 +530,7 @@ if __name__ == '__main__':
                                     "debug", 
                                     "verbose",
                                     ])
-    except getopt.GetoptError, error:
+    except getopt.GetoptError as error:
         print( str(error))
         print( usage )                          
         sys.exit(1)
@@ -596,7 +596,7 @@ if __name__ == '__main__':
         while True:
             time.sleep(2)
             log.debug('Checking for interrupt.')
-    except (KeyboardInterrupt): 
+    except KeyboardInterrupt: 
         log.debug("Shutdown via Ctrl-C or -INT signal.")
         pm.stopevent.set()
     

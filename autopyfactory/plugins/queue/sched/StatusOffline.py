@@ -4,7 +4,6 @@
 from autopyfactory.interfaces import SchedInterface
 import logging
 
-
 class StatusOffline(SchedInterface):
     id = 'statusoffline'
     
@@ -20,7 +19,7 @@ class StatusOffline(SchedInterface):
                                                                         default_value=0)
 
             self.log.debug("SchedPlugin: Object initialized.")
-        except Exception, ex:
+        except Exception as ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 

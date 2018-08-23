@@ -56,13 +56,13 @@ class ConfigHandler(_thread):
         # first reconfig AuthManager, then APFQueuesManager
         try:
             self._run_auth()
-        except Exception, e:
+        except Exception as e:
             self.log.error("Exception: %s   %s " % ( str(e), traceback.format_exc()))
             self.log.error('setting configuration for AuthManager failed. Will not proceed with threads configuration.')
             return
         try:
             self._run_queues()
-        except Exception, e:
+        except Exception as e:
             self.log.error("Exception: %s   %s " % ( str(e), traceback.format_exc()))
             self.log.error('setting configuration for queues failed.')
         self.log.debug('leaving')

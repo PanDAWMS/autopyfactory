@@ -60,7 +60,7 @@ class AuthManager(object):
         for sect in newsections:
             try:
                 pclass = self.aconfig.get(sect, 'plugin')
-            except Exception, e:
+            except Exception as e:
                 self.log.warn("No plugin attribute for section %s" % sect)
             if pclass == 'X509':
                 self.log.debug("Creating X509 handler for %s" % sect )
@@ -196,7 +196,7 @@ if __name__ == '__main__':
                                     "debug", 
                                     "verbose",
                                     ])
-    except getopt.GetoptError, error:
+    except getopt.GetoptError as error:
         print( str(error))
         print( usage )                          
         sys.exit(1)
@@ -265,6 +265,6 @@ if __name__ == '__main__':
         while True:
             time.sleep(2)
             #log.debug('Checking for interrupt.')
-    except (KeyboardInterrupt): 
+    except KeyboardInterrupt: 
         log.debug("Shutdown via Ctrl-C or -INT signal.")
         

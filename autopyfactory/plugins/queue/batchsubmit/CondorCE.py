@@ -15,7 +15,6 @@ class CondorCE(CondorGrid):
         # we rename the queue config variables to pass a new config object to parent class
         newqcl = qcl.clone().filterkeys('batchsubmit.condorce', 'batchsubmit.condorgrid')
         super(CondorCE, self).__init__(apfqueue, newqcl, section) 
-
         self.log.info('CondorCE: Object initialized.')
    
 
@@ -23,13 +22,8 @@ class CondorCE(CondorGrid):
         """   
         add things to the JSD object
         """   
- 
         self.log.debug('CondorCE.addJSD: Starting.')
-   
-        # -- fixed stuffs -- 
         self.JSD.add('+Nonessential', 'True')
-
-        super(CondorCE, self)._addJSD() 
-    
+        super(CondorCE, self)._addJSD()     
         self.log.debug('CondorCE.addJSD: Leaving.')
     

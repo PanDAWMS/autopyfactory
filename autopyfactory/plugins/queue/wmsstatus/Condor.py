@@ -11,27 +11,15 @@ import traceback
 import xml.dom.minidom
 
 from autopyfactory.interfaces import WMSStatusInterface, _thread
-
 from autopyfactory.info import CloudInfo
 from autopyfactory.info import SiteInfo
 from autopyfactory.info import JobInfo
 from autopyfactory.info import WMSStatusInfo
 from autopyfactory.info import WMSQueueInfo
-
-###from autopyfactory.condor import checkCondor
-###from autopyfactory.condorlib import querycondorlib
 from autopyfactory.mappings import map2info
-
 import autopyfactory.htcondorlib
 import autopyfactory.info2
 
-
-### BEGIN TEST ###
-#
-# FIXME
-#
-#   this is a temporary solution
-#
 
 class Job(object):
     def __init__(self, data_d):
@@ -40,7 +28,7 @@ class Job(object):
     def __getattr__(self, key):
         try:
             return int(self.data_d[key])
-        except Exception, ex:
+        except Exception:
             return 0
 
     def __str__(self):
@@ -53,9 +41,6 @@ class Job(object):
              self.unknown
             )
         return s
-
-
-
 
 
 class _condor(_thread, WMSStatusInterface):
@@ -92,13 +77,6 @@ class _condor(_thread, WMSStatusInterface):
         self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queryargs')
         self.queueskey = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queueskey', default_value='ANY')
 
-        #if self.queryargs:
-        #    l = self.queryargs.split()  # convert the string into a list
-        #    if '-name' in l:
-        #        self.scheddhost = l[l.index('-name') + 1]
-        #    if '-pool' in l:
-        #        self.collectorhost = l[l.index('-pool') + 1]
-    
         if self.collectorhost != 'localhost':
             _collector = htcondorlib.HTCondorCollector(self.collectorhost, self.collectorport)
             self.schedd = _collector.getSchedd(self.scheddhost, self.scheddport)
@@ -115,7 +93,6 @@ class _condor(_thread, WMSStatusInterface):
         self.currentcloudinfo = None
         self.currentjobinfo = None
         self.currentsiteinfo = None
-       
         self.rawdata = None
         self.currentnewinfo = None
         self.processednewinfo_d = None
@@ -127,13 +104,6 @@ class _condor(_thread, WMSStatusInterface):
         
         self.jobstatus2info = self.apfqueue.factory.mappingscl.section2dict('CONDORWMSSTATUS-JOBSTATUS2INFO')
         self.log.info('jobstatus2info mappings are %s' %self.jobstatus2info)
-        ###self.jobstatus2info = {'0': 'ready',
-        ###                       '1': 'ready',
-        ###                       '2': 'running',
-        ###                       '3': 'done',
-        ###                       '4': 'done',
-        ###                       '5': 'failed',
-        ###                       '6': 'running'}
 
         # variable to record when was last time info was updated
         # the info is recorded as seconds since epoch
@@ -152,33 +122,6 @@ class _condor(_thread, WMSStatusInterface):
 ###        self._update()
         self._updatenewinfo()
         self.log.debug('Leaving')
-
-
-###    #def getInfo(self, queue=None, maxtime=0):
-###    def getOldInfo(self, queue=None, maxtime=0):
-###        """
-###        Returns a BatchStatusInfo object populated by the analysis 
-###        over the output of a condor_q command
-###
-###        Optionally, a maxtime parameter can be passed.
-###        In that case, if the info recorded is older than that maxtime,
-###        None is returned, as we understand that info is too old and 
-###        not reliable anymore.
-###        """           
-###        self.log.debug('Starting with maxtime=%s' % maxtime)
-###        
-###        if self.currentjobinfo is None:
-###            self.log.debug('Not initialized yet. Returning None.')
-###            return None
-###        elif maxtime > 0 and (int(time.time()) - self.currentjobinfo.lasttime) > maxtime:
-###            self.log.debug('Info too old. Leaving and returning None.')
-###            return None
-###        else:
-###            if queue:
-###                return self.currentjobinfo[queue]                    
-###            else:
-###                self.log.debug('Leaving and returning info of %d entries.' % len(self.currentjobinfo))
-###                return self.currentjobinfo
 
 
     def getInfo(self, queue=None, maxtime=0):
@@ -205,8 +148,8 @@ class _condor(_thread, WMSStatusInterface):
             if queue:
                 try:
                     return self.processednewinfo_d[queue]
-                except Exception, ex:
-                    self.log.warning('there is no info available for queue %s. Returning an empty info object' %queue)
+                except Exception:
+                    self.log.warning('there is no info available for queue %s. Returning an empty info object' % queue)
                     return Job({})
             else:
                 return self.processednewinfo_d
@@ -232,103 +175,9 @@ class _condor(_thread, WMSStatusInterface):
 
     def getSiteInfo(self, site=None, maxtime=0):
         self.log.debug('Starting with maxtime=%s' % maxtime)
-       
-        #
-        # FIXME: temporary solution 
-        #        only works is input site is not None, so a single item is expected to be returned 
-        #        as opposite to a dictionary
-        #
-        ###if self.currentsiteinfo is None:
-        ###    self.log.debug('Not initialized yet. Returning None.')
-        ###    return None
-        ###elif maxtime > 0 and (int(time.time()) - self.currentsiteinfo.lasttime) > maxtime:
-        ###    self.log.debug('Info too old. Leaving and returning None.')
-        ###    return None
-        ###else:
-        ###    if site:
-        ###        return self.currentsiteinfo[queue]                    
-        ###    else:
-        ###        self.log.debug('Leaving and returning info of %d entries.' % len(self.currentsiteinfo))
-        ###        return self.currentsiteinfo
-        
         si = SiteInfo()
         si.status = "ok"
         return si
-
-
-###    def _update(self):
-###        """        
-###        Query Condor for job status, validate ?, and populate BatchStatusInfo object.
-###        Condor-G query template example:
-###        
-###        condor_q -constr '(owner=="apf") && stringListMember("PANDA_JSID=BNL-gridui11-jhover",Environment, " ")'
-###                 -format 'jobStatus=%d ' jobStatus 
-###                 -format 'globusStatus=%d ' GlobusStatus 
-###                 -format 'gkUrl=%s' MATCH_gatekeeper_url
-###                 -format '-%s ' MATCH_queue 
-###                 -format '%s\n' Environment
-###
-###        NOTE: using a single backslash in the final part of the 
-###              condor_q command '\n' only works with the 
-###              latest versions of condor. 
-###              With older versions, there are two options:
-###                      - using 4 backslashes '\\\\n'
-###                      - using a raw string and two backslashes '\\n'
-###
-###        The JobStatus code indicates the current Condor status of the job.
-###        
-###                Value   Status                            
-###                0       U - Unexpanded (the job has never run)    
-###                1       I - Idle                                  
-###                2       R - Running                               
-###                3       X - Removed                              
-###                4       C -Completed                            
-###                5       H - Held                                 
-###                6       > - Transferring Output
-###
-###        The GlobusStatus code is defined by the Globus GRAM protocol. Here are their meanings:
-###        
-###                Value   Status
-###                1       PENDING 
-###                2       ACTIVE 
-###                4       FAILED 
-###                8       DONE 
-###                16      SUSPENDED 
-###                32      UNSUBMITTED 
-###                64      STAGE_IN 
-###                128     STAGE_OUT 
-###        """
-###
-###        self.log.debug('Starting.')
-###        
-###        # These are not meaningful for Local Condor as WMS
-###        self.currentcloudinfo = None
-###        self.currentsiteinfo = None
-###
-###        try:
-###
-###            #### BEGIN TEST ####
-###            ## XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX FIXME##
-###            #strout = querycondorlib(self.queryargs, self.queueskey)
-###            if self.queueskey.lower() != "any":
-###                strout = querycondorlib(remotecollector=self.collectorhost, remoteschedd=self.scheddhost, queueskey=None)
-###            else:
-###                strout = querycondorlib(remotecollector=self.collectorhost, remoteschedd=self.scheddhost, queueskey=self.queueskey )
-###            # FIXME: the extra_attributes is missing !!
-###            #### END TEST ####
-###            
-###            if not strout:
-###                self.log.warning('output of _querycondor is an empty dictionary. Nothing to be done. Skip to next loop.') 
-###            else:
-###                newjobinfo = map2info(strout, WMSStatusInfo(), self.jobstatus2info)
-###                self.log.info("Replacing old info with newly generated info.")
-###                self.currentjobinfo = newjobinfo
-###        except Exception, e:
-###            self.log.error("Exception: %s" % str(e))
-###            self.log.debug("Exception: %s" % traceback.format_exc())            
-###
-###        self.log.debug('_ Leaving.')
-
 
 
     def _updatenewinfo(self):
@@ -346,7 +195,7 @@ class _condor(_thread, WMSStatusInterface):
             # --- process the status info 
             self.processednewinfo_d = self.__process(self.currentnewinfo)
 
-        except Exception, ex:
+        except Exception as ex:
             self.log.error("Exception: %s" % str(ex))
             self.log.debug("Exception: %s" % traceback.format_exc())
 

@@ -110,7 +110,7 @@ class AgisPandaQueue(object):
             self.queues = d[key]['queues']                              # list of dictionaries
             self.ce_queues = self._make_cequeues(self.queues)
         
-        except Exception, e:
+        except Exception:
             self.log.error("Problem creating a PandaQueue %s Exception: %s" % (self.panda_queue_name, 
                                                                                traceback.format_exc()))
             raise AgisCEQueueCreationError("Problem creating a PandaQueue %s" % (self.panda_queue_name) )
@@ -142,7 +142,7 @@ class AgisPandaQueue(object):
             try:
                 cqo = AgisCEQueue(self, cedict)
                 cequeues.append( cqo)
-            except Exception, e:
+            except Exception:
                 self.log.error('Failed to create AgisCEQueue for PQ %s and CE %s' % (self.panda_queue_name, cedict))
                 self.log.error("Exception: %s" % traceback.format_exc())
         #self.log.debug("Made list of %d CEQ objects" % len(cequeues))
@@ -403,12 +403,12 @@ class Agis(ConfigInterface):
         self.pilotmanager = None
         try:
             self.jobsperpilot = self.config.getfloat('Factory', 'config.queues.agis.jobsperpilot')
-        except NoOptionError, noe:
+        except NoOptionError:
             pass
         
         try:
             self.numfactories = self.config.getfloat('Factory', 'config.queues.agis.numfactories')
-        except NoOptionError, noe:
+        except NoOptionError:
             pass
         
         # For defaultsfiles, None means no defaults included in config. Only explicit values returned. 
@@ -423,7 +423,7 @@ class Agis(ConfigInterface):
                     if default == "None":
                         default = None
                     self.defaultsfiles.append(default)
-        except NoOptionError, noe:
+        except NoOptionError:
             pass
         
         try:
@@ -433,7 +433,7 @@ class Agis(ConfigInterface):
             else:
                 #print("self.vos = %s" % [ vo.strip().lower() for vo in self.config.get('Factory', 'config.queues.agis.vos').split(',') ])
                 self.vos = [ vo.strip().lower() for vo in self.config.get('Factory', 'config.queues.agis.vos').split(',') ]    
-        except NoOptionError, noe:
+        except NoOptionError:
             pass
         
         try:
@@ -442,7 +442,7 @@ class Agis(ConfigInterface):
                 self.clouds = None
             else:
                 self.clouds = [ cl.strip().lower() for cl in self.config.get('Factory', 'config.queues.agis.clouds').split(',') ]
-        except NoOptionError, noe:
+        except NoOptionError:
             pass
         
         try:
@@ -451,7 +451,7 @@ class Agis(ConfigInterface):
                 self.activities = None
             else:
                 self.activities = [ ac.strip().lower() for ac in self.config.get('Factory', 'config.queues.agis.activities').split(',') ]
-        except NoOptionError, noe:
+        except NoOptionError:
             pass
 
         try:
@@ -460,7 +460,7 @@ class Agis(ConfigInterface):
                 self.pilotmanager = None
             else:
                 self.pilotmanager = [ ac.strip().lower() for ac in self.config.get('Factory', 'config.queues.agis.pilotmanager').split(',') ]
-        except NoOptionError, noe:
+        except NoOptionError:
             pass
         
         
@@ -484,7 +484,7 @@ class Agis(ConfigInterface):
                 self.log.debug("AGIS provided list of %d total queues." % len(queues))
                 self.currentinfo = queues
                 self.lastupdate =  datetime.datetime.now()
-            except Exception, e:
+            except Exception:
                     self.log.error('Failed to contact AGIS or parse problem: %s' %  traceback.format_exc() )
                     raise AgisFailureError("Unable to contact AGIS or parsing error.")                                                              
         else:
@@ -548,8 +548,8 @@ class Agis(ConfigInterface):
                                 # add content of Config object to the string representation
                                 sc += "\n"
                                 sc += qc.getContent()
-                            except Exception, e:
-                                self.log.error('Captured exception %s' %e) 
+                            except Exception as e:
+                                self.log.error('Captured exception %s' % e) 
                 cp.merge(tmpcp)
             self.currentconfig = cp
             self.stringconfig = sc
@@ -673,7 +673,7 @@ class Agis(ConfigInterface):
             try:
                 qo = AgisPandaQueue(self, jsondoc, key)
                 queues.append(qo)
-            except Exception, e:
+            except Exception:
                 self.log.error('Failed to create AgisPandaQueue %s Exception: %s' % (key,
                                                                                      traceback.format_exc()
                                                                                      ) )
@@ -744,7 +744,7 @@ if __name__ == '__main__':
                                     "cloud=",
                                     "activity=",
                                     ])
-    except getopt.GetoptError, error:
+    except getopt.GetoptError as error:
         print( str(error))
         print( usage )                          
         sys.exit(1)
@@ -864,5 +864,5 @@ if __name__ == '__main__':
         else:
             log.warning("configstring is None")
             sys.exit(1)
-    except Exception, e:
+    except Exception:
         log.error("Got exception during APF config generation: %s" % traceback.format_exc() )

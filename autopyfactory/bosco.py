@@ -193,10 +193,10 @@ class _boscocli(object):
                     pass
 
         ### BEGIN TEST TIMEOUT ###
-        except Timeout, ex:
+        except Timeout as ex:
             self.log.error("Timeout Exception captured: %s" %ex)
         ### END TEST TIMEOUT ###
-        except Exception, e:
+        except Exception as e:
             self.log.exception("Exception during bosco_cluster -a installation. ")
         finally:
             self.log.debug("releasing add lock")
@@ -285,7 +285,7 @@ class _boscocli(object):
             else:
                 self.log.debug("Cluster %s@%s/%s already set up." % (user,host,batch))    
             
-        except Exception, e:
+        except Exception as e:
             self.log.exception("Exception during bosco remote installation. ")
     
         finally:

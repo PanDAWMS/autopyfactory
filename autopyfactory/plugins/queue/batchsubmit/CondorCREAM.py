@@ -26,7 +26,7 @@ class CondorCREAM(CondorCE):
             self.creambatch = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.batch')
             self.queue = qcl.generic_get(self.apfqname, 'batchsubmit.condorcream.queue')
         
-        except Exception, e:
+        except Exception as e:
             self.log.error("Caught exception: %s " % str(e))
             raise
         

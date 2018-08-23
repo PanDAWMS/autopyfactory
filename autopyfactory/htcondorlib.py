@@ -163,7 +163,7 @@ class _HTCondorCollector(object):
         try:
             # should return an empty list if Collector exists
             collector.query(constraint="False") 
-        except Exception, ex: 
+        except Exception: 
             raise CollectorNotReachable()
 
 
@@ -260,7 +260,7 @@ class _HTCondorSchedd(object):
         try:
             # should return an "empty" iterator if Schedd exists
             schedd.xquery(limit = 0)
-        except Exception, ex:
+        except Exception:
             raise ScheddNotReachable()
 
     # --------------------------------------------------------------------------
@@ -350,7 +350,7 @@ class _HTCondorSchedd(object):
                 key = fields[0].strip()
                 value = '='.join(fields[1:]).strip()
                 submit_d[key] = value
-            except Exception, ex:
+            except Exception:
                 raise MalformedSubmitFile(line)
         self.log.debug('dictionary for submission = %s' %submit_d)
         if not bool(submit_d):

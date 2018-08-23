@@ -38,7 +38,7 @@ class CondorEC2(CondorBase):
             self.peaceful = qcl.generic_get(self.apfqname, 'batchsubmit.condorec2.peaceful')
             self.log.debug("Successfully got all config values for EC2BatchSubmit plugin.")
             self.log.debug('CondorEC2: Object properly initialized.')
-        except Exception, e:
+        except Exception:
             self.log.error("Problem getting object configuration variables.")
             self.log.debug("Exception: %s" % traceback.format_exc())
 

@@ -15,19 +15,15 @@ class CondorLSF(CondorGrid):
         qcl = config
         newqcl = qcl.clone().filterkeys('batchsubmit.condorlsf', 'batchsubmit.condorgrid')
         super(CondorLSF, self).__init__(apfqueue, newqcl, section)
-
         self.log.info('CondorLSF: Object initialized.')
 
     def _addJSD(self):
         """
         add things to the JSD object
         """
-
         self.log.debug('CondorLSF.addJSD: Starting.')
-
         self.JSD.add('grid_resource', 'lsf') 
         super(CondorLSF, self)._addJSD()
-
         self.log.debug('CondorLSF.addJSD: Leaving.')
 
 

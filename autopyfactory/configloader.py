@@ -175,7 +175,7 @@ class Config(SafeConfigParser, object):
                     value = self.get(section, key, raw=True)
                     if value.startswith('~'):
                         self.set(section,key,os.path.expanduser(value))
-                except InterpolationMissingOptionError, e:
+                except InterpolationMissingOptionError as e:
                     pass
 
         
@@ -454,7 +454,7 @@ class ConfigManager(object):
             config.fixpathvalues()
             self.log.debug("Finished creating config object.")
             return config
-        except Exception, e:
+        except Exception as e:
             self.log.error("Exception: %s   %s " % ( str(e), traceback.format_exc()))
             raise ConfigFailure('creating config object from source %s failed' %sources)
 
@@ -520,7 +520,7 @@ class ConfigManager(object):
         try:
             uridata = urllib2.urlopen(uri)
             return uridata
-        except Exception, e:
+        except Exception as e:
             self.log.error("Exception: %s   %s " % ( str(e), traceback.format_exc()))
             raise FactoryConfigurationFailure("Problem with URI source %s" % uri)
 

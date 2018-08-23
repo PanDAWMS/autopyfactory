@@ -62,7 +62,7 @@ class SSH(object):
                 self.privkeypath = fpath
                 os.chmod(fpath, 0600)
                 self.log.debug("Wrote decoded private key to %s and set config OK." % self.privkeypath)
-            except Exception, e:
+            except Exception as e:
                 self.log.error("Exception: %s" % str(e))
                 self.log.debug("Exception: %s" % traceback.format_exc())
         
@@ -74,7 +74,7 @@ class SSH(object):
                 self._decodewrite(fpath, self.pubkey)
                 self.pubkeypath = fpath
                 self.log.debug("Wrote decoded public key to %s and set config OK." % self.pubkeypath)
-            except Exception, e:
+            except Exception as e:
                 self.log.error("Exception: %s" % str(e))
                 self.log.debug("Exception: %s" % traceback.format_exc())
                 
@@ -93,7 +93,7 @@ class SSH(object):
             fh = open(filepath, 'w')
             fh.write(decoded)
             fh.close()
-        except Exception, e:
+        except Exception as e:
             self.log.error("Exception: %s" % str(e))
             self.log.debug("Exception: %s" % traceback.format_exc())
             raise
