@@ -27,7 +27,7 @@ class KeepNQueueLife(SchedInterface):
             self.log = logging.getLogger('autopyfactory.sched.%s' %apfqueue.apfqname)
             self.njobs = self.apfqueue.qcl.generic_get(self.apfqueue.apfqname, 'sched.keepnqueuelife.njobs', 'getint', default_value=None)
             self.log.debug("SchedPlugin: Object initialized.")
-        except Exception, ex:
+        except Exception as ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 

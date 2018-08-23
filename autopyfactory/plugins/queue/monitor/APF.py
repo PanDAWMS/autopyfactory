@@ -18,7 +18,7 @@ from autopyfactory.interfaces import MonitorInterface
 
 try:
     import json as json
-except ImportError, err:
+except ImportError as err:
     # Not critical (yet) - try simplejson
     log = logging.getLogger('autopyfactory.monitor')
     log.debug('json package not installed. Trying to import simplejson as json')
@@ -112,17 +112,8 @@ class _apf(MonitorInterface):
         First check if the factory is already registered. 
         If not, then register it. 
         """
-
         self.log.debug('Starting')
-
-        #if self._isFactoryRegistered():
-        #    self.log.debug('factory is already registered')
-        #    out = None
-        #else:
-        #    self.log.info('factory is not registered yet. Registering.')
-        #    out = self._registerFactory()
         out = self._registerFactory()
-
         self.log.debug('Leaving')
         return out
       
@@ -417,8 +408,8 @@ class _apf(MonitorInterface):
 
         try:
             out = opener.open(request)
-        except Exception, e:
-            self.log.debug('HTTP call failed with error %s' %e)
+        except Exception as e:
+            self.log.debug('HTTP call failed with error %s' % e)
             out = None  # Is this OK?
 
         self.log.debug('Leaving with output %s' %out)

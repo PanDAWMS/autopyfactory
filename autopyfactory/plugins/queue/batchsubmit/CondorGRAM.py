@@ -17,7 +17,7 @@ class CondorGRAM(CondorCE):
         
         try:
             self.globus = self._globusrsl(apfqueue, qcl) 
-        except Exception, e:
+        except Exception as e:
             self.log.error("Caught exception: %s " % str(e))
             raise
 
@@ -61,22 +61,11 @@ class CondorGRAM(CondorCE):
     def _addJSD(self):
         """
         add things to the JSD object 
-        """
-    
+        """    
         self.log.debug('CondorGRAM.addJSD: Starting.')
-   
-        # -- globusrsl -- 
         if self.globus:
             self.JSD.add('globusrsl', '%s' %self.globus)
-        ###globusrsl = "globusrsl=(jobtype=%s)" %self.jobtype
-        ###if self.queue:
-        ###     globusrsl += "(queue=%s)" % self.queue
-        ###self.JSD.add(globusrsl)
-
-        # -- fixed stuffs --
         self.JSD.add('copy_to_spool', 'True')
-
         super(CondorGRAM, self)._addJSD() 
-    
         self.log.debug('CondorGRAM.addJSD: Leaving.')
     

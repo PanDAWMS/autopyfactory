@@ -16,7 +16,7 @@ class Null(SchedInterface):
         try:
             self.log = logging.getLogger('autopyfactory.sched.%s' %apfqueue.apfqname)
             self.log.debug("SchedPlugin: Object initialized.")
-        except Exception, ex:
+        except Exception as ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 

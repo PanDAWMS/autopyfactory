@@ -28,8 +28,6 @@ except ImportError:
 
 from autopyfactory.interfaces import _thread
 
-
-
 class MySimpleHTTPRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
     def guess_type(self, path):
@@ -229,7 +227,7 @@ class LogServer(_thread):
         self.factory = parent
         try:
             self.factory.threadsregistry.add("util", self)
-        except Exception, e:
+        except Exception as e:
             self.log.warning("Not adding to threadsregistry. Wrong context or other issue. %s" % e)
         self.log= logging.getLogger('autopyfactory')
         self.fcl = fcl
@@ -302,7 +300,7 @@ class LogServer(_thread):
                 self.log.debug("Initialized HTTP SocketServer port=%d, root=%s, index=%s" % (self.port, 
                                                                                              self.logpath, 
                                                                                              self.index)) 
-            except Exception, e:
+            except Exception as e:
                 self.log.warning("Socket server exception: %s" % str(e))
                 self.log.warning("Attempt to initialize HTTP server failed. Will wait 60s and try again.")         
                 time.sleep(60)
@@ -322,16 +320,13 @@ class LogServer(_thread):
     def _join(self):
         self.httpd.shutdown()
 
-
 def loop(ls):
         try:
                 while True:
                         time.sleep(1)
-        except (KeyboardInterrupt):
+        except KeyboardInterrupt:
                 ls.join()
-
-
-                
+               
 
 # simple main for testing during development                
 if __name__ == "__main__":

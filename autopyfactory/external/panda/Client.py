@@ -12,7 +12,6 @@ import urllib
 import commands
 import cPickle as pickle
 
-
 # configuration
 try:
     baseURL = os.environ['PANDA_URL']

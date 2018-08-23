@@ -22,7 +22,6 @@ import logging
 import os
 import time
 
-
 class JSDFile(object):
 
     def __init__(self):
@@ -59,8 +58,9 @@ class JSDFile(object):
             try:
                 os.makedirs(path)
                 self.log.debug('writeJSD: Created directory %s', path)
-            except OSError, (errno, errMsg):
-                self.log.error('writeJSD: Failed to create directory %s (error %d): %s', path, errno, errMsg)
+            except OSError as err:
+                errno = err.errno
+                self.log.error('writeJSD: Failed to create directory %s (error %d): %s', path, errno, err)
                 return
         jsdfilename = os.path.join(path, filename)
         self._dump(jsdfilename)

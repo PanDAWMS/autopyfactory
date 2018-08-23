@@ -1,11 +1,4 @@
 #! /usr/bin/env python
-# Added to support running module as script from arbitrary location. 
-from os.path import dirname, realpath, sep, pardir
-fullpathlist = realpath(__file__).split(sep)
-prepath = sep.join(fullpathlist[:-4])
-import sys
-sys.path.insert(0, prepath)
-
 
 import logging
 import threading
@@ -21,19 +14,7 @@ from autopyfactory.info import SiteInfo
 from autopyfactory.info import CloudInfo
 import autopyfactory.utils as utils
 
-#libs = ("pandaclient.Client", "pandaserver.userinterface.Client", "userinterface.Client")
-#for lib in libs:
-#    try:
-#        Client = __import__(lib, globals(), locals(), ["Client"])
-#        break
-#    except:
-#        pass
-#else:
-#    raise Exception 
-
 import autopyfactory.external.panda.Client as Client
-
-
 
 class _panda(_thread, WMSStatusInterface):
     """
@@ -46,7 +27,6 @@ class _panda(_thread, WMSStatusInterface):
             the interfaces inherited from Thread and from WMSStatusInterface
     -----------------------------------------------------------------------
     """
-
     def __init__(self, apfqueue, config, section):
         # NOTE:
         # the **kw is not needed at this time,
@@ -73,7 +53,7 @@ class _panda(_thread, WMSStatusInterface):
             Client.useWebCache()
 
             self.log.info('WMSStatusPlugin: Object initialized.')
-        except Exception, ex:
+        except Exception as ex:
             self.log.error("WMSStatusPlugin object initialization failed. Raising exception")
             raise ex
         # Using the Squid Cache when contacting the PanDA server
@@ -81,9 +61,6 @@ class _panda(_thread, WMSStatusInterface):
 
 
     def _run(self):                
-        """
-        Main loop
-        """
         self.log.debug('Starting.')
         self._update()
         self.log.debug('Leaving.')
@@ -198,7 +175,7 @@ class _panda(_thread, WMSStatusInterface):
             self.currentcloudinfo = newcloudinfo
             self.currentsiteinfo = newsiteinfo
         
-        except Exception, e:
+        except Exception as e:
             self.log.error("Exception: %s" % str(e))
             self.log.error("Exception: %s" % traceback.format_exc()) 
 

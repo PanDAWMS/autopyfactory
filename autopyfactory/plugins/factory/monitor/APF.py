@@ -18,12 +18,11 @@ from autopyfactory.interfaces import MonitorInterface
 
 try:
     import json as json
-except ImportError, err:
+except ImportError as err:
     # Not critical (yet) - try simplejson
     log = logging.getLogger('autopyfactory.monitor')
     log.debug('json package not installed. Trying to import simplejson as json')
     import simplejson as json
-
 
 #  ==================================================
 #
@@ -198,7 +197,7 @@ class _apf(MonitorInterface):
         out = None
         try:
             out = self._call(http.PUT, url, data)
-        except Exception, e:
+        except Exception:
             self.log.error('Unable to contact monitor')
         self.log.debug('Leaving')
         return out
@@ -251,8 +250,8 @@ class _apf(MonitorInterface):
             out = json.loads(out.read())
             labels = [ label['name'] for label in out ] 
             self.log.debug('list of registered labels = %s' %labels)
-        except Exception, e:
-            self.log.error('Problem querying monitor.')
+        except Exception as e:
+            self.log.error('Problem querying monitor. %s' % e )
             labels = ['unknown']
         
         self.log.debug('Leaving')
@@ -431,8 +430,8 @@ class _apf(MonitorInterface):
 
         try:
             out = opener.open(request)
-        except Exception, e:
-            self.log.debug('HTTP call failed with error %s' %e)
+        except Exception as e:
+            self.log.debug('HTTP call failed with error %s' % e)
             out = None  # Is this OK?
 
         self.log.debug('Leaving with output %s' %out)

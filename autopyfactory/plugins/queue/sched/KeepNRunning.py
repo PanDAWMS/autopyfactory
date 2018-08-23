@@ -4,7 +4,6 @@ import logging
 
 from autopyfactory.interfaces import SchedInterface
 
-
 class KeepNRunning(SchedInterface):
     """
     This plugin strives to keep a certain number of jobs/pilots/VMs running, regardless 
@@ -29,7 +28,7 @@ class KeepNRunning(SchedInterface):
             if self.keep_running:
                 self.keep_running = int(self.keep_running)
             self.log.debug("SchedPlugin: Object initialized.")
-        except Exception, ex:
+        except Exception as ex:
             self.log.error("SchedPlugin object initialization failed. Raising exception")
             raise ex
 

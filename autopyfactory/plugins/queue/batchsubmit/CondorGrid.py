@@ -25,7 +25,7 @@ class CondorGrid(CondorBase):
         try:
             self.proxyfile = qcl.generic_get(self.apfqname, 'batchsubmit.condorgrid.proxyfile')
         
-        except Exception, e:
+        except Exception as e:
             self.log.error("Caught exception: %s " % str(e)) 
         
         try:
@@ -36,14 +36,11 @@ class CondorGrid(CondorBase):
                 self.proxylist = [x.strip() for x in plist.split(',')]
             self._getX509Proxy()
         
-        except InvalidProxyFailure, ipf:
+        except InvalidProxyFailure:
             self.log.error('Unable to get valid proxy file.')
             raise
-        except Exception, e:
+        except Exception as e:
             self.log.error("Caught exception: %s " % str(e))
-            raise
-        
-        except:
             raise
 
         self.log.debug('CondorGrid: Object initialized.')
@@ -57,7 +54,6 @@ class CondorGrid(CondorBase):
         self.log.debug("Determining proxy, if necessary. Profile: %s" % self.proxylist)
         if self.proxylist:
             self.x509userproxy = self.factory.authmanager.getProxyPath(self.proxylist)
-        
         elif self.proxyfile:
             self.x509userproxy = self.proxyfile
         else:
@@ -68,17 +64,13 @@ class CondorGrid(CondorBase):
         """   
         add things to the JSD object
         """   
- 
-        self.log.debug('CondorGrid.addJSD: Starting.')
-   
+        self.log.debug('CondorGrid.addJSD: Starting.') 
         self.JSD.add("universe", "grid")
         # -- proxy path --
         if self.x509userproxy:
             self.JSD.add("x509userproxy", "%s" % self.x509userproxy)
         else:
             self.log.warning('no x509 proxy found. Be sure one is set in defaults.')
-            
         super(CondorGrid, self)._addJSD()
-    
         self.log.debug('CondorGrid.addJSD: Leaving.')
     

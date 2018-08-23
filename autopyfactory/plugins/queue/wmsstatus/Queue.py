@@ -1,12 +1,3 @@
-#! /usr/bin/env python
-# Added to support running module as script from arbitrary location. 
-from os.path import dirname, realpath, sep, pardir
-fullpathlist = realpath(__file__).split(sep)
-prepath = sep.join(fullpathlist[:-4])
-import sys
-sys.path.insert(0, prepath)
-
-
 import logging
 import threading
 import time
@@ -20,7 +11,6 @@ from autopyfactory.interfaces import WMSStatusInterface
 ###from autopyfactory.info import SiteInfo
 ###from autopyfactory.info import CloudInfo
 import autopyfactory.utils as utils
-
 
 
 class Queue(threading.Thread, WMSStatusInterface):
@@ -48,7 +38,7 @@ class Queue(threading.Thread, WMSStatusInterface):
             self.stopevent = threading.Event()
 
             self.log.info('WMSStatusPlugin: Object initialized.')
-        except Exception, ex:
+        except Exception as ex:
             self.log.error("WMSStatusPlugin object initialization failed. Raising exception")
             raise ex
 
@@ -60,7 +50,6 @@ class Queue(threading.Thread, WMSStatusInterface):
         If the info recorded is older than that maxage,
         None is returned, 
         """
-
         self.log.debug('get: Starting')
         return self.num
 
@@ -70,17 +59,15 @@ class Queue(threading.Thread, WMSStatusInterface):
         """
         Main loop
         """
-    
         self.log.debug('Starting.')
         while not self.stopevent.isSet():
             try:
                 self._update()
-            except Exception, e:
+            except Exception as e:
                 self.log.error("Main loop caught exception: %s " % str(e))
             time.sleep(self.sleeptime)
         self.log.debug('Leaving.')
 
 
     def _update(self):
-
         self.num = self.wmsqueue.wmsstatus()

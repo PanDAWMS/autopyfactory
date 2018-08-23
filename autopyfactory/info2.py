@@ -464,7 +464,7 @@ class IndexByKey(AnalyzerIndexBy):
     def indexby(self, job):
         try:
             return job[self.key]
-        except Exception, ex:
+        except Exception:
             return None
 
 
@@ -477,7 +477,7 @@ class IndexByKeyRemap(AnalyzerIndexBy):
     def indexby(self, job):
         try:
             value = str(job[self.key])
-        except Exception, ex:
+        except Exception:
             return None
 
         if value in self.mapping_d.keys():

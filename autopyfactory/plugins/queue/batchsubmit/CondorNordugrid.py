@@ -24,7 +24,7 @@ class CondorNordugrid(CondorCE):
             self.nordugridrsl = self._nordugridrsl(qcl)
             self.nordugridrsladdenv = self._nordugridrsl_addenv(qcl)
             #self.nordugridrsl_env = self._nordugridrsl_env(qcl)
-        except Exception, e:
+        except Exception as e:
             self.log.error("Caught exception: %s " % str(e))
             raise
         

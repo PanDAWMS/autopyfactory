@@ -30,7 +30,7 @@ class File(ConfigInterface):
             self.log.debug("queues.conf file(s) = %s" % qcf)
             qcl_files = ConfigManager().getConfig(sources=qcf)
             self.log.debug("successfully read config file(s) %s" % qcf)
-        except Exception, e:
+        except Exception as e:
             self.log.error("Exception: %s" % str(e))
             self.log.error(traceback.format_exc(None))
 
@@ -51,7 +51,7 @@ class File(ConfigInterface):
                     self.log.debug("queues.conf directory = %s" % qcd)
                     qcl_dir = ConfigManager().getConfig(configdir=qcd)
 
-        except Exception, e:
+        except Exception as e:
             self.log.error("Exception: %s" % str(e))
             self.log.error(traceback.format_exc(None))
         
@@ -70,9 +70,9 @@ class File(ConfigInterface):
             else:
                 self.log.error('no files or directory with queues configuration specified')
                 raise ConfigFailure('no files or directory with queues configuration specified')
-        except Exception, err:
+        except Exception as err:
             self.log.error('Failed to create queues ConfigLoader object')
-            raise ConfigFailure('Failed to create queues ConfigLoader: %s' %err)
+            raise ConfigFailure('Failed to create queues ConfigLoader: %s' % err)
 
         self.log.info('queues ConfigLoader object created')
 

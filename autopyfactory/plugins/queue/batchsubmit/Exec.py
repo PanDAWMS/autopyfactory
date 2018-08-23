@@ -9,7 +9,6 @@ import time
 
 from autopyfactory.interfaces import BatchSubmitInterface
 
-
 class ExecSubmitPlugin(BatchSubmitInterface):
     """
     This Submit Plugin simply executes a provided local executable. 
@@ -35,7 +34,7 @@ class ExecSubmitPlugin(BatchSubmitInterface):
             self.arguments = self.qcl.generic_get(self.apfqname, 'executable.arguments')
 
             self.log.info(': Object initialized.')
-        except Exception, ex:
+        except Exception as ex:
             self.log.error(" object initialization failed. Raising exception")
             raise ex
    
@@ -85,8 +84,9 @@ class ExecSubmitPlugin(BatchSubmitInterface):
                 os.makedirs(self.logDir)
                 self.log.debug('__writeJSDFile: Created directory %s', self.logDir)
                 shutil.copy(self.executable, self.logDir) 
-            except OSError, (errno, errMsg):
-                self.log.error('__writeJSDFile: Failed to create directory %s (error %d): %s', self.logDir, errno, errMsg)
+            except OSError as err:
+                errno = err.errno
+                self.log.error('__writeJSDFile: Failed to create directory %s (error %d): %s', self.logDir, errno, err)
                 self.log.error('__writeJSDFile: Cannot submit pilots for %s', self.wmsqueue)
                 return
 

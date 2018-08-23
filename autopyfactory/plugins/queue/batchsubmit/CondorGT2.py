@@ -19,7 +19,7 @@ class CondorGT2(CondorGRAM):
         super(CondorGT2, self).__init__(apfqueue, newqcl, section) 
         try:
             self.gridresource = qcl.generic_get(self.apfqname, 'batchsubmit.condorgt2.gridresource') 
-        except Exception, e:
+        except Exception as e:
             self.log.error("Caught exception: %s " % str(e))
             raise
         self.log.info('CondorGT2: Object initialized.')

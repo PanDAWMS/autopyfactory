@@ -285,11 +285,11 @@ Jose Caballero <jcaballero@bnl.gov>
                 self._printenv()
 
             
-            except KeyError, e:
+            except KeyError as e:
                 self.log.error('No such user %s, unable run properly. Error: %s' % (self.options.runAs, e))
                 sys.exit(1)
                 
-            except OSError, e:
+            except OSError as e:
                 self.log.error('Could not set user or group id to %s:%s. Error: %s' % (runuid, rungid, e))
                 sys.exit(1)
 
@@ -329,7 +329,7 @@ Jose Caballero <jcaballero@bnl.gov>
         if self.options.confFiles != None:
             try:
                 self.fcl = ConfigManager().getConfig(self.options.confFiles)
-            except ConfigFailure, errMsg:
+            except ConfigFailure:
                 self.log.error('Failed to create FactoryConfigLoader')
                 sys.exit(1)
         
@@ -353,23 +353,15 @@ Jose Caballero <jcaballero@bnl.gov>
             self.log.info('Caught keyboard interrupt - exitting')
             f.stop()
             sys.exit(0)
-        except FactoryConfigurationFailure, errMsg:
-            self.log.error('Factory configuration failure: %s', errMsg)
+        except FactoryConfigurationFailure as e:
+            self.log.error('Factory configuration failure: %s', e)
             sys.exit(1)
-        except ImportError, errorMsg:
-            self.log.error('Failed to import necessary python module: %s' % errorMsg)
+        except ImportError as e:
+            self.log.error('Failed to import necessary python module: %s' % e)
             sys.exit(1)
         except:
             # TODO - make this a logger.exception() call
-            self.log.error("""Unexpected exception! \
-There was an exception raised which the factory was not expecting \
-and did not know how to handle. You may have discovered a new bug \
-or an unforseen error condition. \
-Please report this exception to Jose <jcaballero@bnl.gov> and John <jhover@bnl.gov>. \
-The factory will now re-raise this exception so that the python stack trace is printed, \
-which will allow it to be debugged - \
-please send output from this message onwards. \
-Exploding in 5...4...3...2...1... Have a nice day!""")
+            self.log.error("""Please report to Jose <jcaballero@bnl.gov> and John <jhover@bnl.gov>.""")
             # The following line prints the exception to the logging module
             self.log.error(traceback.format_exc(None))
             print(traceback.format_exc(None))
@@ -479,30 +471,14 @@ class Factory(object):
         try:
             useaman = self.fcl.getboolean('Factory', 'authmanager.enabled')
             self.log.debug("Authmanager enabled in config.")
-        except Exception, e:
+        except Exception:
             self.log.error('No authmanager var in config. Skipping. ')
         
         if useaman:      
             try:
                 from autopyfactory.authmanager import AuthManager
-            except Exception, e:
+            except Exception:
                 self.log.exception('authmanager cannot be imported')
-
-            ###acf = self.fcl.get('Factory','authConf')
-            ###self.log.debug("auth.conf file(s) = %s" % acf)
-            ###acl = Config()
-            ###
-            ###try:
-            ###
-            ###    got_config = acl.read(acf)
-            ###
-            ###except Exception, e:
-            ###    self.log.exception('Failed to create AuthConfigLoader')
-            ###    sys.exit(0)
-            ###
-            ###self.log.debug("Read config file %s, return value: %s" % (acf, got_config)) 
-            ###self.authmanager = AuthManager(aconfig=acl, factory=self)
-
             self.authmanager = AuthManager(factory=self)
             self.log.info('AuthManager initialized.')
         else:
@@ -517,7 +493,7 @@ class Factory(object):
         
         try:
             self.mcl = ConfigManager().getConfig(self.mcf)
-        except ConfigFailure, e:
+        except ConfigFailure:
             self.log.error('Failed to create MonitorConfigLoader')
             sys.exit(0)
 
@@ -533,7 +509,7 @@ class Factory(object):
 
         try:
             self.mappingscl = ConfigManager().getConfig(self.mappingscf)
-        except ConfigFailure, e:
+        except ConfigFailure:
             self.log.error('Failed to create ConfigLoader object for mappings')
             sys.exit(0)
         
@@ -556,7 +532,7 @@ class Factory(object):
             monitorpluginnames_l = [i.strip() for i in monitorpluginnames.split(',')]
             try:
                 self.monitor_plugins = pluginmanager.getpluginlist(['autopyfactory','plugins','factory','monitor'], monitorpluginnames_l, self, self.fcl, 'Factory')
-            except Exception, e:
+            except Exception as e:
                 self.log.warning(e)
 
 
@@ -622,20 +598,10 @@ class Factory(object):
 
             self.log.debug('Leaving')
                                 
-        #except (KeyboardInterrupt): 
-        #    # FIXME
-        #    # this probably is not needed anymore,
-        #    # if a KeyboardInterrupt is captured by class FactoryCLI,
-        #    # it would perform a clean join( )
-        #    logging.info("Shutdown via Ctrl-C or -INT signal.")
-        #    self.shutdown()
-        #    raise
         except Exception, ex:
             self.log.warning("Exception raised during Factory main loop run: %s." %ex)
             self.stop()
             raise ex
-
-            
         self.log.debug("Leaving.")
 
 

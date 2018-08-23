@@ -15,7 +15,6 @@ from autopyfactory.info import JobInfo
 log = logging.getLogger('autopyfactory')
 
 
-
 def map2info(input, info_container, mappings):
     """
     This takes aggregated info by queue, with condor/condor-g specific status totals, and maps them 
@@ -80,7 +79,7 @@ def map2info(input, info_container, mappings):
             valdict = attrdict['jobstatus']
             qi.fill(valdict, mappings)
 
-    except Exception, e:
+    except Exception as e:
         log.error("Exception: %s" % str(e))
         log.error("Exception: %s" % traceback.format_exc())
                     
