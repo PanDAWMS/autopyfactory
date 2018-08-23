@@ -15,8 +15,8 @@ import xml.dom.minidom
 from datetime import datetime
 from pprint import pprint
 from autopyfactory.interfaces import BatchStatusInterface, _thread
-from autopyfactory.info import BatchStatusInfo
-from autopyfactory.info import QueueInfo
+###from autopyfactory.info import BatchStatusInfo
+###from autopyfactory.info import QueueInfo
 ###from autopyfactory.condorlib import querycondorlib, condor_q
 from autopyfactory.mappings import map2info
 import autopyfactory.utils as utils

@@ -12,11 +12,11 @@ import xml.dom.minidom
 
 from autopyfactory.interfaces import WMSStatusInterface, _thread
 
-from autopyfactory.info import CloudInfo
+###from autopyfactory.info import CloudInfo
 from autopyfactory.info import SiteInfo
-from autopyfactory.info import JobInfo
-from autopyfactory.info import WMSStatusInfo
-from autopyfactory.info import WMSQueueInfo
+###from autopyfactory.info import JobInfo
+###from autopyfactory.info import WMSStatusInfo
+###from autopyfactory.info import WMSQueueInfo
 
 ###from autopyfactory.condor import checkCondor
 ###from autopyfactory.condorlib import querycondorlib
