@@ -36,21 +36,23 @@ from autopyfactory import info2
 #   this is a temporary solution
 #
 
-class Job(object):
-    def __init__(self, data_d):
-        self.data_d = data_d
+#class Job(object):
+#    def __init__(self, data_d):
+#        self.data_d = data_d
+#
+#    def __getattr__(self, key):
+#        try:
+#            return int(self.data_d[key])
+#        except Exception, ex:
+#            return 0
+#
+#    def __str__(self):
+#        s = "QueueInfo: pending=%d, running=%d, suspended=%d" % (self.pending,
+#            self.running,
+#            self.suspended)
+#        return s
 
-    def __getattr__(self, key):
-        try:
-            return int(self.data_d[key])
-        except Exception, ex:
-            return 0
-
-    def __str__(self):
-        s = "QueueInfo: pending=%d, running=%d, suspended=%d" % (self.pending,
-            self.running,
-            self.suspended)
-        return s
+from autopyfactory.info2 import DataItem as Job
 
 
 ### END TEST ###

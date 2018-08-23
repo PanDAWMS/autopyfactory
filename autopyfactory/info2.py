@@ -602,3 +602,81 @@ class AnalyzerFailure(Exception):
     def __str__(self):
         return repr(self.value)
 
+
+
+# =============================================================================
+#   class DataItem 
+# =============================================================================
+
+class DataItem(object):
+    """
+    class to store an arbitrary dictionary, 
+    and read them as they were attributes
+    """
+
+    def __init__(self, data_d, default=0, timestamp=None):
+        """
+        :param dict data_d: input data
+        :param default: default value to return when the attribute 
+                        is being tried to read
+                        is not a key in the dictionary
+        """
+        self.log = logging.getLogger('info')
+        self.log.addHandler(logging.NullHandler())
+
+        msg ='Initializing object with input options: \
+data_d={data_d}, default={default}, timestamp={timestamp}'
+        msg = msg.format(data_d=data_d,
+                         default=default,
+                         timestamp=timestamp)
+        self.log.debug(msg)
+
+        self._data_d = data_d
+        self._default = default
+        if not timestamp:
+            timestamp = int(time.time())
+            msg = 'Setting timestamp to %s' %timestamp
+            self.log.debug(msg)
+        self.timestamp = timestamp
+            
+
+    def __getattr__(self, attr):
+        """
+        read the values in the dictionary
+        as the keys of the dictionary were
+        attributes of the class.
+        For example, self.foo allows to read 
+        the content of self.data_d['foo'] 
+        """
+        return self._data_d.get(attr, self._default)
+
+
+    def __setitem__(self, attr, value):
+        """
+        to allow using [] as if this class were actually a dict.
+        :param attr: the key 
+        :param value: the value 
+        """
+        self._data_d[attr] = value
+
+
+    def __getitem__(self, attr):
+        """
+        to allow using [] as if this class were actually a dict.
+        :param attr: the key 
+        """
+        return self.__getattr__(attr)
+
+
+    def __str__(self):
+        str_l = []
+        for pair in self._data_d.items():
+            s = '%s: %s' %pair
+            str_l.append(s)
+        return ', '.join(str_l)
+
+
+    def __repr__(self):
+        s = str(self)
+        return s
+
