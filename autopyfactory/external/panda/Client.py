@@ -106,7 +106,7 @@ class _Curl:
         self.sslKey  = ''
         # verbose
         self.verbose = True
-        self.log = logging.getLogger()
+        self.log = logging.getLogger('autopyfactory.pandaclient')
 
 
     # GET method
