@@ -140,7 +140,7 @@ class _Curl:
         if self.verbose:
             print( com )
             print( subprocess.check_output('cat %s' % tmpName).strip() )
-        ret = commands.getstatusoutput(com)
+        ret = subprocess.check_output(com).strip()
         # remove temporary file
         os.remove(tmpName)
         if ret[0] != 0:
