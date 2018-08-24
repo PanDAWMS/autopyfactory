@@ -150,7 +150,7 @@ class _Curl:
         try:
             
             out = subprocess.check_output(com, shell=True)
-            self.log.debug("regular return output %s" % out)
+            #self.log.debug("regular return output %s" % out)
             ret = 0
         except subprocess.CalledProcessError as cpe:
             ret = cpe.returncode
