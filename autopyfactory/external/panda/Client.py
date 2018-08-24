@@ -106,6 +106,7 @@ class _Curl:
         self.sslKey  = ''
         # verbose
         self.verbose = True
+        self.log = logging.getLogger()
 
 
     # GET method
@@ -131,8 +132,10 @@ class _Curl:
             tmpName = os.environ['PANDA_TMP']
         except:
             tmpName = '/tmp'
-        tmpName += '/%s_%s' % (subprocess.check_output('whoami').strip(),subprocess.check_output('uuidgen').strip())
-        logging.debug("tmpName is %s" % tmpName)
+        whoami = subprocess.check_output('whoami').strip()
+        uuid = subprocess.check_output('uuidgen').strip()
+        tmpName += '/%s_%s' % (whoami, uuid)
+        self.log.debug("tmpName is %s" % tmpName)
         tmpFile = open(tmpName,'w')
         tmpFile.write(strData)
         tmpFile.close()
@@ -140,8 +143,8 @@ class _Curl:
         com += ' %s' % url
         # execute
         if self.verbose:
-            logging.debug( "com is %s " % com )
-            logging.debug( subprocess.check_output('cat %s' % tmpName).strip() )
+            self.log.debug( "com is %s " % com )
+            self.log.debug( subprocess.check_output('cat %s' % tmpName).strip() )
         try:
             
             ret = subprocess.check_output(com, shell=True)
@@ -149,7 +152,7 @@ class _Curl:
             
             ret = cpe.returncode
             out = cpe.output
-            logging.debug("ret is %s  out is %s " % (ret, out))
+            self.log.debug("ret is %s  out is %s " % (ret, out))
         finally:
             # remove temporary file
             os.remove(tmpName)
@@ -189,15 +192,15 @@ class _Curl:
         com += ' %s' % url
         # execute
         if self.verbose:
-            logging.debug( com )
-            logging.debug( subprocess.check_output('cat %s' % tmpName).strip() )
+            self.log.debug( com )
+            self.log.debug( subprocess.check_output('cat %s' % tmpName).strip() )
         ret = subprocess.getstatusoutput(com)
         # remove temporary file
         os.remove(tmpName)
         if ret[0] != 0:
             ret = (ret[0]%255,ret[1])
         if self.verbose:
-            logging.debug( ret )
+            self.log.debug( ret )
         return ret
 
 
@@ -219,12 +222,12 @@ class _Curl:
         com += ' %s' % url
         # execute
         if self.verbose:
-            logging.debug( com )
+            self.log.debug( com )
         ret = subprocess.getstatusoutput(com)
         if ret[0] != 0:
             ret = (ret[0]%255,ret[1])
         if self.verbose:
-            logging.debug( ret )
+            self.log.debug( ret )
         return ret
             
 
