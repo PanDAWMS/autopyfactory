@@ -256,7 +256,7 @@ class _condor(_thread, BatchStatusInterface):
                 return self.processednewinfo_d[queue]
             except Exception:
                 self.log.warning('there is no info available for queue %s. Returning an empty info object' %queue)
-                return Job({})
+                return Job()
         else:
             return self.processednewinfo_d
       

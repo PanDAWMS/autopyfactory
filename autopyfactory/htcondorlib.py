@@ -245,7 +245,7 @@ class _HTCondorSchedd(object):
         else:
             self.schedd = htcondor.Schedd()  
             self.address = None
-        # Lock object to serialize the submission calls
+        # Lock object to serialize the submission and query calls
         self.lock = threading.Lock()
         self.log.debug('HTCondorSchedd object initialized')
 
@@ -283,7 +283,9 @@ class _HTCondorSchedd(object):
         self.log.debug('list of constraints in the query = %s' %constraint_l)
 
         constraint_str = _build_constraint_str(constraint_l)
+        self.lock.acquire()
         out = self.schedd.query(constraint_str, attribute_l)
+        self.lock.release()
         self.log.debug('out = %s' %out)
         return out
 
@@ -308,7 +310,9 @@ class _HTCondorSchedd(object):
         self.log.debug('list of constraints in the query = %s' %constraint_l)
 
         constraint_str = _build_constraint_str(constraint_l)
+        self.lock.acquire()
         out = self.schedd.history(constraint_str, attribute_l, 0)
+        self.lock.release()
         out = list(out)
         self.log.debug('out = %s' %out)
         return out
