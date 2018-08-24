@@ -5,6 +5,7 @@ Extracted from panda package:
     pandaserver/userinterface/Client.py
 """
 
+import logging
 import os
 import re
 import sys
@@ -86,7 +87,7 @@ def _x509():
         return x509
     # no valid proxy certificate
     # FIXME
-    print("No valid grid proxy certificate found")
+    logging.debug("No valid grid proxy certificate found")
     return ''
 
 
@@ -131,7 +132,7 @@ class _Curl:
         except:
             tmpName = '/tmp'
         tmpName += '/%s_%s' % (subprocess.check_output('whoami').strip(),subprocess.check_output('uuidgen').strip())
-        print("tmpName is %s" % tmpName)
+        logging.debug("tmpName is %s" % tmpName)
         tmpFile = open(tmpName,'w')
         tmpFile.write(strData)
         tmpFile.close()
@@ -139,8 +140,8 @@ class _Curl:
         com += ' %s' % url
         # execute
         if self.verbose:
-            print( "com is %s " % com )
-            print( subprocess.check_output('cat %s' % tmpName).strip() )
+            logging.debug( "com is %s " % com )
+            logging.debug( subprocess.check_output('cat %s' % tmpName).strip() )
         try:
             
             ret = subprocess.check_output(com, shell=True)
@@ -148,7 +149,7 @@ class _Curl:
             
             ret = cpe.returncode
             out = cpe.output
-            print("ret is %s  out is %s " % (ret, out))
+            logging.debug("ret is %s  out is %s " % (ret, out))
         finally:
             # remove temporary file
             os.remove(tmpName)
@@ -188,15 +189,15 @@ class _Curl:
         com += ' %s' % url
         # execute
         if self.verbose:
-            print( com )
-            print( subprocess.check_output('cat %s' % tmpName).strip() )
+            logging.debug( com )
+            logging.debug( subprocess.check_output('cat %s' % tmpName).strip() )
         ret = subprocess.getstatusoutput(com)
         # remove temporary file
         os.remove(tmpName)
         if ret[0] != 0:
             ret = (ret[0]%255,ret[1])
         if self.verbose:
-            print( ret )
+            logging.debug( ret )
         return ret
 
 
@@ -218,12 +219,12 @@ class _Curl:
         com += ' %s' % url
         # execute
         if self.verbose:
-            print( com )
+            logging.debug( com )
         ret = subprocess.getstatusoutput(com)
         if ret[0] != 0:
             ret = (ret[0]%255,ret[1])
         if self.verbose:
-            print( ret )
+            logging.debug( ret )
         return ret
             
 
@@ -260,14 +261,14 @@ def submitJobs(jobs,srvID=None,toPending=False):
         data['toPending'] = True
     status,output = curl.post(url,data)
     if status!=0:
-        print( output )
+        logging.debug( output )
         return status,output
     try:
         return status,pickle.loads(output)
     except:
         type, value, traceBack = sys.exc_info()
         errStr =  "ERROR submitJobs : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
 
@@ -288,14 +289,14 @@ def runTaskAssignment(jobs):
     data = {'jobs':strJobs}
     status,output = curl.post(url,data)
     if status!=0:
-        print( output )
+        logging.debug( output )
         return status,output
     try:
         return status,pickle.loads(output)
     except:
         type, value, traceBack = sys.exc_info()
         errStr =  "ERROR runTaskAssignment : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
 
@@ -314,7 +315,7 @@ def getJobStatus(ids,srvID=None):
     except:
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR getJobStatus : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
 
@@ -333,7 +334,7 @@ def getPandaIDwithJobExeID(ids):
     except:
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR getPandaIDwithJobExeID : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
 
@@ -347,10 +348,10 @@ def getAssigningTask():
     try:
         return status,pickle.loads(output)
     except:
-        print( output )
+        logging.debug( output )
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR getAssigningTask : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
 
@@ -369,7 +370,7 @@ def seeCloudTask(ids):
     except:
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR seeCloudTask : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
 
@@ -391,7 +392,7 @@ def killJobs(ids,code=None,verbose=False,srvID=None,useMailAsID=False):
     except:
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR killJobs : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
 
@@ -414,7 +415,7 @@ def reassignJobs(ids,forPending=False):
     except:
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR reassignJobs : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
 
@@ -433,7 +434,7 @@ def queryPandaIDs(ids):
     except:
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR queryPandaIDs : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
 
@@ -452,7 +453,7 @@ def queryJobInfoPerCloud(cloud,schedulerID=None):
     except:
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR queryJobInfoPerCloud : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
     
@@ -473,10 +474,10 @@ def getJobStatistics(sourcetype=None):
             if status != 0:
                 return tmpRet
         except:
-            print( output )
+            logging.debug( output )
             type, value, traceBack = sys.exc_info()
             errStr = "ERROR getJobStatistics : %s %s" % (type,value)
-            print( errStr )
+            logging.debug( errStr )
             return EC_Failed,output+'\n'+errStr
         # gather
         for tmpCloud,tmpVal in tmpRet[1].iteritems():
@@ -508,10 +509,10 @@ def getJobStatisticsForBamboo():
             if status != 0:
                 return tmpRet
         except:
-            print( output )
+            logging.debug( output )
             type, value, traceBack = sys.exc_info()
             errStr = "ERROR getJobStatisticsForBamboo : %s %s" % (type,value)
-            print( errStr )
+            logging.debug( errStr )
             return EC_Failed,output+'\n'+errStr
         # gather
         for tmpCloud,tmpMap in tmpRet[1].iteritems():
@@ -544,10 +545,10 @@ def getHighestPrioJobStat(perPG=False):
     try:
         return status,pickle.loads(output)
     except:
-        print( output )
+        logging.debug( output )
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR getHighestPrioJobStat : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
  
 
@@ -561,10 +562,10 @@ def getJobsToBeUpdated(limit=5000,lockedby='',srvID=None):
     try:
         return status,pickle.loads(output)
     except:
-        print( output )
+        logging.debug( output )
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR getJobsToBeUpdated : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
 
@@ -586,7 +587,7 @@ def updateProdDBUpdateTimes(params,verbose=False,srvID=None):
     except:
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR updateProdDBUpdateTimes : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
 
@@ -600,10 +601,10 @@ def getPandaIDsSite(site,status,limit=500):
     try:
         return status,pickle.loads(output)
     except:
-        print( output )
+        logging.debug( output )
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR getPandaIDsSite : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
     
@@ -633,10 +634,10 @@ def getJobStatisticsPerSite(predefined=False,workingGroup='',countryGroup='',job
             if status != 0:
                 return tmpRet
         except:
-            print( output )
+            logging.debug( output )
             type, value, traceBack = sys.exc_info()
             errStr = "ERROR getJobStatisticsPerSite : %s %s" % (type,value)
-            print( errStr )
+            logging.debug( errStr )
             return EC_Failed,output+'\n'+errStr
         # gather
         for tmpSite,tmpVal in tmpRet[1].iteritems():
@@ -666,10 +667,10 @@ def getJobStatisticsWithLabel(site=''):
     try:
         return status,pickle.loads(output)
     except:
-        print( output )
+        logging.debug( output )
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR getJobStatisticsWithLabel : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
 
@@ -684,10 +685,10 @@ def getJobStatisticsPerUserSite():
     try:
         return status,pickle.loads(output)
     except:
-        print( output )
+        logging.debug( output )
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR getJobStatisticsPerUserSite : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
                 
 
@@ -705,7 +706,7 @@ def queryLastFilesInDataset(datasets):
         return status,pickle.loads(output)
     except:
         type, value, traceBack = sys.exc_info()
-        print( "ERROR queryLastFilesInDataset : %s %s" % (type,value))
+        logging.debug( "ERROR queryLastFilesInDataset : %s %s" % (type,value))
         return EC_Failed,None
                                                                 
 
@@ -774,7 +775,7 @@ def resubmitJobs(ids):
         return status,pickle.loads(output)
     except:
         type, value, traceBack = sys.exc_info()
-        print( "ERROR resubmitJobs : %s %s" % (type,value))
+        logging.debug( "ERROR resubmitJobs : %s %s" % (type,value))
         return EC_Failed,None
 
 
@@ -793,7 +794,7 @@ def getSiteSpecs(siteType=None):
     except:
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR getSiteSpecs : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
 
@@ -809,7 +810,7 @@ def getCloudSpecs():
     except:
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR getCloudSpecs : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
 
@@ -825,7 +826,7 @@ def getNumPilots():
     except:
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR getNumPilots : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
 
@@ -858,6 +859,6 @@ def getRW(priority=0):
     except:
         type, value, traceBack = sys.exc_info()
         errStr = "ERROR getRW : %s %s" % (type,value)
-        print( errStr )
+        logging.debug( errStr )
         return EC_Failed,output+'\n'+errStr
 
