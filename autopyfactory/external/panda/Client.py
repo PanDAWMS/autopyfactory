@@ -151,6 +151,7 @@ class _Curl:
             
             out = subprocess.check_output(com, shell=True)
             self.log.debug("regular return output %s" % out)
+            ret = 0
         except subprocess.CalledProcessError as cpe:
             ret = cpe.returncode
             out = cpe.output
@@ -160,7 +161,7 @@ class _Curl:
             os.remove(tmpName)
         if ret != 0:
             ret = (ret % 255 , out)
-        return ret
+        return (ret, out)
 
 
     # POST method
