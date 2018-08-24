@@ -130,7 +130,7 @@ class _Curl:
             tmpName = os.environ['PANDA_TMP']
         except:
             tmpName = '/tmp'
-        tmpName += '/%s_%s' % (subprocess.getoutput('whoami'),subprocess.getoutput('uuidgen'))
+        tmpName += '/%s_%s' % (subprocess.check_output('whoami').strip(),subprocess.check_output('uuidgen').strip())
         tmpFile = open(tmpName,'w')
         tmpFile.write(strData)
         tmpFile.close()
@@ -139,7 +139,7 @@ class _Curl:
         # execute
         if self.verbose:
             print( com )
-            print( subprocess.getoutput('cat %s' % tmpName) )
+            print( subprocess.check_output('cat %s' % tmpName).strip() )
         ret = commands.getstatusoutput(com)
         # remove temporary file
         os.remove(tmpName)
@@ -173,7 +173,7 @@ class _Curl:
             tmpName = os.environ['PANDA_TMP']
         except:
             tmpName = '/tmp'
-        tmpName += '/%s_%s' % (subprocess.getoutput('whoami'),subprocess.getoutput('uuidgen'))
+        tmpName += '/%s_%s' % (subprocess.check_output('whoami').strip(),subprocess.check_output('uuidgen').strip())
         tmpFile = open(tmpName,'w')
         tmpFile.write(strData)
         tmpFile.close()
@@ -182,7 +182,7 @@ class _Curl:
         # execute
         if self.verbose:
             print( com )
-            print( subprocess.getoutput('cat %s' % tmpName) )
+            print( subprocess.check_output('cat %s' % tmpName).strip() )
         ret = subprocess.getstatusoutput(com)
         # remove temporary file
         os.remove(tmpName)
@@ -237,7 +237,7 @@ def useWebCache():
 # submit jobs
 def submitJobs(jobs,srvID=None,toPending=False):
     # set hostname
-    hostname = subprocess.getoutput('hostname')
+    hostname = subprocess.check_output('hostname').strip()
     for job in jobs:
         job.creationHost = hostname
     # serialize
@@ -267,7 +267,7 @@ def submitJobs(jobs,srvID=None,toPending=False):
 # run task assignment
 def runTaskAssignment(jobs):
     # set hostname
-    hostname = subprocess.getoutput('hostname')
+    hostname = subprocess.check_output('hostname').strip()
     for job in jobs:
         job.creationHost = hostname
     # serialize
