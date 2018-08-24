@@ -15,8 +15,8 @@ import xml.dom.minidom
 from datetime import datetime
 from pprint import pprint
 from autopyfactory.interfaces import BatchStatusInterface, _thread
-from autopyfactory.info import BatchStatusInfo
-from autopyfactory.info import QueueInfo
+###from autopyfactory.info import BatchStatusInfo
+###from autopyfactory.info import QueueInfo
 ###from autopyfactory.condorlib import querycondorlib, condor_q
 from autopyfactory.mappings import map2info
 import autopyfactory.utils as utils
@@ -26,21 +26,31 @@ from autopyfactory.htcondorlib import HTCondorCollector, HTCondorSchedd
 from autopyfactory import info2
 ### END TEST ###
 
-class Job(object):
-    def __init__(self, data_d):
-        self.data_d = data_d
 
-    def __getattr__(self, key):
-        try:
-            return int(self.data_d[key])
-        except Exception:
-            return 0
+### BEGIN TEST ###
+#
+# FIXME
+#
+#   this is a temporary solution
+#
 
-    def __str__(self):
-        s = "QueueInfo: pending=%d, running=%d, suspended=%d" % (self.pending,
-            self.running,
-            self.suspended)
-        return s
+#class Job(object):
+#    def __init__(self, data_d):
+#        self.data_d = data_d
+#
+#    def __getattr__(self, key):
+#        try:
+#            return int(self.data_d[key])
+#        except Exception, ex:
+#            return 0
+#
+#    def __str__(self):
+#        s = "QueueInfo: pending=%d, running=%d, suspended=%d" % (self.pending,
+#            self.running,
+#            self.suspended)
+#        return s
+
+from autopyfactory.info2 import DataItem as Job
 
 
 ### END TEST ###
