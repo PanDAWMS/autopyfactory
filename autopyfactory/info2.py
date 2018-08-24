@@ -10,31 +10,34 @@ Code to store and manipulate data.
                             class StatusInfo
 -------------------------------------------------------------------------------
 
+This is the only class implemented that is meant to be public.
+
 The data stored by instances of class StatusInfo must be a list of items. 
 These items can be anything, including objects. 
 A typical example is data is a list of HTCondor ClassAds, where each 
 item in the data list represents an HTCondor job.
 
 Class StatusInfo has several methods to manipulate the data, 
-but in all cases the output of the method is a new instance StatusInfo.
+but in all cases the output of the method is a new instance of one of the 
+classes implemented: StatusInfo, _DictStatusInfo, etc.
 Methods never modify the current instance data.
 This allows to perform different manipulations from the same source object.
 
 There are two types of methods in class StatusInfo:
 
-    - methods whose returned StatusInfo instance accepts further processing.
+    - methods whose object output accepts further processing.
       Examples are methods indexby(), filter(), and map().
 
-    - methods whose returned StatusInfo instance can not be processed anymore.
-      An attempt to call any method on a StatusInfo instance of this type 
-      will raise an ObjectIsNotMutable Exception.
+    - methods whose object output can not be processed anymore.
+      An attempt to call any method on these instances
+      will raise an Exception.
       Examples are methods reduce(), and process().
 
 The method indexby() is somehow special. 
 It is being used to split the stored data into a dictionary, 
 according to whatever rule is provided. 
 The values of this dictionary are themselves new StatusInfo instances. 
-Therefore, the output of calling indexby() once is an StatusInfo object 
+Therefore, the output of calling indexby() once is an _DictStatusInfo object 
 with data:
         
     self.data = {
@@ -44,10 +47,55 @@ with data:
                  keyN: <StatusInfo>
                 }
 
-Given the fact that an StatusInfo instance can therefore contain other
-StatusInfo instances, all methods are implemented to navigate the tree
-and apply themselves only at the deepest level.
-      
+-------------------------------------------------------------------------------
+
+The UML source for the classes is as follows:
+
+        @startuml
+        
+        object <|-- _Base
+        
+        _Base <|-- _BaseDict 
+        _Base <|-- StatusInfo 
+        _Base <|-- _NonMutableStatusInfo 
+
+        _AnalysisInterface <|-- StatusInfo  
+        _AnalysisInterface <|-- _DictStatusInfo 
+
+        _BaseDict <|-- _DictStatusInfo 
+        _BaseDict <|-- _NonMutableDictStatusInfo 
+
+        _GetRawBase <|-- StatusInfo 
+        _GetRawBase <|-- _NonMutableStatusInfo 
+        
+        @enduml
+
+
+                                                            +--------+      
+                                                            | object |
+                                                            +--------+
+                                                               ^
+                                                               |
+ +--------------------+                                     +-------+
+ | _AnalysisInterface |    +------------------------------->| _Base |<-----------------+                  
+ +--------------------+    |                                +-------+                  |
+   ^                ^      |        +-------------+              ^              +-----------+              
+   |                |      |        | _GetRawBase |              |              | _BaseDict |       
+   |                |      |        +-------------+              |              +-----------+      
+   |                |      |          ^        ^                 |                ^      ^     
+   |                |      |          |        |                 |                |      |   
+   |                |      |          |        |                 |                |      |   
+   |                |      |          |        |                 |                |      |   
+   |                |      |          |        |                 |                |      |   
+   |             +------------+       |        |   +-----------------------+      |      |
+   |             | StatusInfo |-------+        +---| _NonMutableStatusInfo |      |      |
+   |             +------------+                    +-----------------------+      |      |
+   |                                    +-----------------+                       |  +---------------------------+
+   +------------------------------------| _DictStatusInfo |-----------------------+  | _NonMutableDictStatusInfo |
+                                        +-----------------+                          +---------------------------+
+
+
+
 
 -------------------------------------------------------------------------------
                             Analyzers 
@@ -56,24 +104,26 @@ and apply themselves only at the deepest level.
 
 The input to all methods is an object of type Analyzer. 
 Analyzers are classes that implement the rules or policies to be used 
-for each method call.  For example: 
-    - a call to method groupby() expect an object of type AnalyzerIndexBy
-    - a call to method map() expect an object of type AnalyzerMap
-    - a call to method reduce() expect an object of type AnalyzerReduce
+for each method call.  
+For example: 
+    - a call to method indexby() expects an object of type AnalyzerIndexBy
+    - a call to method map() expects an object of type AnalyzerMap
+    - a call to method reduce() expects an object of type AnalyzerReduce
     - etc.
 
-Each Analyzer object must implement itself a method with the same name
-that the StatusInfo's method it is intended for. For exmple:
+Each Analyzer object must have implemented a method 
+with the same name that the StatusInfo's method it is intended for. 
+For exmple:
 
-    - class AnalyzerIndexBy must implement method indexby()
-    - class AnalyzerMap must implement method map()
-    - class AnalyzerReduce must implement method reduce()
+    - classes AnalyzerIndexBy must implement method indexby()
+    - classes AnalyzerMap must implement method map()
+    - classes AnalyzerReduce must implement method reduce()
     - ...
 
 Passing an analyzer object that does not implement the right method will 
 raise an IncorrectAnalyzer Exception.
 
-A few basic Analyzers have been implemented, ready to use. 
+A few basic pre-made Analyzers have been implemented, ready to use. 
 """
 
 import datetime
@@ -91,19 +141,21 @@ import sys
 #  Decorators 
 #
 #   Note:
-#   the decorator must be implemented before the class StatusInfo,
-#   otherwise, it does not find it
+#   the decorator must be implemented before the classes using it 
+#   otherwise, they do not find it
 # =============================================================================
 
 def validate_call(method):
+    """
+    validates calls to the processing methods.
+    Checks: 
+        * if the StatusInfo object is mutable or not, 
+        * if a method is being called with the right type of Analyzer
+    Exceptions are raised with some criteria is not met.
+    """
     def wrapper(self, analyzer, *k, **kw):
         method_name = method.__name__
         analyzertype = analyzer.analyzertype
-        if not self.is_mutable:
-            msg = 'Attempting to manipulate data for an object that is not mutable.'
-            msg += 'Raising exception.'
-            self.log.error(msg)
-            raise ObjectIsNotMutable(name)
         if not analyzertype == method_name:
             msg = 'Analyzer object {obj} is not type {name}. Raising exception.'
             msg = msg.format(obj = analyzer,
@@ -115,44 +167,46 @@ def validate_call(method):
     return wrapper
 
 
+def catch_exception(method):
+    """
+    catches any exception during data processing
+    and raises an AnalyzerFailure exception
+    """
+    def wrapper(self, analyzer):
+        try:
+            out = method(self, analyzer)
+        except Exception as ex:
+            msg = 'Exception of type "%s" ' %ex.__class__.__name__
+            msg += 'with content "%s" ' %ex
+            msg += 'while calling "%s" ' %method.__name__
+            msg += 'with analyzer "%s"' %analyzer
+            raise AnalyzerFailure(msg)
+        else:
+            return out
+    return wrapper
+
+
+
 # =============================================================================
-# Info class
+# Base classes and interfaces
 # =============================================================================
 
-class StatusInfo(object):
-    # FIXME !! description is needed here !!!
-    """
-    """
+class _Base(object):
 
-    def __init__(self, data, is_raw=True, is_mutable=True, timestamp=None):
+    def __init__(self, data, timestamp=None):
         """ 
         :param data: the data to be recorded
-        :param is_raw boolean: indicates if the object is primary or it is composed by other StatusInfo objects
-        :param is_mutable boolean: indicates if the data can still be processed or not
         :param timestamp: the time when this object was created
         """ 
         self.log = logging.getLogger('info')
         self.log.addHandler(logging.NullHandler())
 
         msg ='Initializing object with input options: \
-data={data}, is_raw={is_raw}, is_mutable={is_mutable}, timestamp={timestamp}'
+data={data}, timestamp={timestamp}'
         msg = msg.format(data=data,
-                         is_raw=is_raw,
-                         is_mutable=is_mutable,
                          timestamp=timestamp)
         self.log.debug(msg)
 
-        self.is_raw = is_raw
-        self.is_mutable = is_mutable
-
-        if is_raw and is_mutable and type(data) is not list:
-            msg = 'Input data %s is not a list. Raising exception' %data
-            self.log.error(msg)
-            raise IncorrectInputDataType(list)
-        if not is_raw and type(data) is not dict:
-            msg = 'Input data %s is not a dict. Raising exception' %data
-            self.log.error(msg)
-            raise IncorrectInputDataType(dict)
         self.data = data 
 
         if not timestamp:
@@ -163,9 +217,94 @@ data={data}, is_raw={is_raw}, is_mutable={is_mutable}, timestamp={timestamp}'
 
         self.log.debug('Object initialized')
 
-    # -------------------------------------------------------------------------
-    # methods to manipulate the data
-    # -------------------------------------------------------------------------
+
+    def get(self, *key_l):
+        """
+        returns the data hosted by the Info object in the 
+        tree structure pointed by all keys
+        The output is the data, either a dictionary or the original raw list 
+        :param key_l list: list of keys for each nested dictionary
+        :rtype data:
+        """
+        if len(key_l) == 0:
+            return self.data
+        else:
+            key = key_l[0]
+            if key not in self.data.keys():
+                raise MissingKey(key)
+            data = self.data[key]
+            return data.get(*key_l[1:])
+
+
+class _BaseDict(_Base):
+    """
+    adds an extra check for the input data
+    """
+    def __init__(self, data, timestamp=None):
+        super(_BaseDict, self).__init__(data, timestamp)
+        if type(self.data) is not dict:
+            raise IncorrectInputDataType(dict)
+
+    def getraw(self):
+        out = {}
+        for key, value in self.data.items():
+            out[key] = value.getraw()
+        return out
+
+    def __getitem__(self, key):
+        """
+        returns the Info object pointed by the key
+        :param key: the key in the higher level dictionary
+        :rtype StatusInfo: 
+        """
+        if key not in self.data.keys():
+            raise MissingKey(key)
+        return self.data[key]
+
+# extra get methods
+
+class _GetRawBase:
+
+    def getraw(self):
+        return self.data
+
+
+# interfaces 
+
+class _AnalysisInterface:
+
+    def indexyby(self, analyzer):
+        raise NotImplementedError
+
+    def map(self, analyzer):
+        raise NotImplementedError
+
+    def filter(self, analyzer):
+        raise NotImplementedError
+
+    def reduce(self, analyzer):
+        raise NotImplementedError
+
+    def transform(self, analyzer):
+        raise NotImplementedError
+
+    def process(self, analyzer):
+        raise NotImplementedError
+
+
+# =============================================================================
+# Info class
+# =============================================================================
+
+class StatusInfo(_Base, _AnalysisInterface, _GetRawBase):
+
+    def __init__(self, data, timestamp=None):
+        super(StatusInfo, self).__init__(data, timestamp)
+        if type(self.data) is not list:
+            msg = 'Input data %s is not a dict. Raising exception' %data
+            self.log.error(msg)
+            raise IncorrectInputDataType(list)
+
 
     def analyze(self, analyzer):
         """
@@ -183,6 +322,8 @@ data={data}, is_raw={is_raw}, is_mutable={is_mutable}, timestamp={timestamp}'
             return self.map(analyzer)
         elif analyzer.analyzertype == 'reduce':
             return self.reduce(analyzer)
+        elif analyzer.analyzertype == 'transform':
+            return self.transform(analyzer)
         elif analyzer.analyzertype == 'process':
             return self.process(analyzer)
         else:
@@ -190,6 +331,19 @@ data={data}, is_raw={is_raw}, is_mutable={is_mutable}, timestamp={timestamp}'
             self.log.error(msg)
             raise NotAnAnalyzer()
 
+
+    def apply_algorithm(self, algorithm):
+        """
+        invoke all steps in an Algorithm object
+        and returns the final output
+        :param Algorithm algorithm: 
+        :rtype StatusInfo:
+        """
+        return algorithm.analyze(self)
+
+    # -------------------------------------------------------------------------
+    # methods to manipulate the data
+    # -------------------------------------------------------------------------
 
     @validate_call
     def indexby(self, analyzer):
@@ -199,199 +353,218 @@ data={data}, is_raw={is_raw}, is_mutable={is_mutable}, timestamp={timestamp}'
            1. make a dictinary grouping items according to rules in analyzer
            2. convert that dictionary into a dictionary of StatusInfo objects
            3. make a new StatusInfo with that dictionary
-        :param analyzer: an object implementing method indexby()
+        :param analyzer: an instance of AnalyzerIndexBy-type class 
+                         implementing method indexby()
         :rtype StatusInfo:
         """
         self.log.debug('Starting with analyzer %s' %analyzer)
 
-        if self.is_raw:
-            self.log.debug('Data is raw')
-            # 1
-            tmp_new_data = {} 
-            for item in self.data:
-                key = analyzer.indexby(item)
-                if key:
-                    if key not in tmp_new_data.keys():
-                        tmp_new_data[key] = []
-                    tmp_new_data[key].append(item) 
-            # 2
-            new_data = {}
-            for k, v in tmp_new_data.items():
-                new_data[k] = StatusInfo(v, timestamp=self.timestamp)
-            # 3
-            new_info = StatusInfo(new_data, 
-                                  is_raw=False, 
-                                  timestamp=self.timestamp)
-            return new_info
-        else:
-            self.log.debug('Data is not raw')
-            new_data = {}
-            for key, statusinfo in self.data.items():
-                new_data[key] = statusinfo.indexby(analyzer)
-            new_info = StatusInfo(new_data, 
-                                  is_raw=False, 
-                                  timestamp=self.timestamp)
-            return new_info
+        new_data = self.__indexby(analyzer)
+        new_info = _DictStatusInfo(new_data, timestamp=self.timestamp)
+        return new_info
 
+    @catch_exception
+    def __indexby(self, analyzer):
+        # 1
+        tmp_new_data = {} 
+        for item in self.data:
+            key = analyzer.indexby(item)
+            if key is not None:
+                if key not in tmp_new_data.keys():
+                    tmp_new_data[key] = []
+                tmp_new_data[key].append(item) 
+        # 2
+        new_data = {}
+        for k, v in tmp_new_data.items():
+            new_data[k] = StatusInfo(v, timestamp=self.timestamp)
+
+        return new_data
+
+
+    # -------------------------------------------------------------------------
 
     @validate_call
     def map(self, analyzer):
         """
         modifies each item in self.data according to rules
         in analyzer
-        :param analyzer: an object implementing method map()
+        :param analyzer: an instance of AnalyzerMap-type class 
+                         implementing method map()
         :rtype StatusInfo:
         """
         self.log.debug('Starting with analyzer %s' %analyzer)
+        new_data = self.__map(analyzer)
+        new_info = StatusInfo(new_data, timestamp=self.timestamp)
+        return new_info
 
-        if self.is_raw:
-            new_data = []
-            for item in self.data:
-                new_item = analyzer.map(item)
-                new_data.append(new_item)
-            new_info = StatusInfo(new_data, timestamp=self.timestamp)
-            return new_info
-        else:
-            new_data = {}
-            for key, statusinfo in self.data.items():
-                new_data[key] = statusinfo.map(analyzer)
-            new_info = StatusInfo(new_data, 
-                                  is_raw=False, 
-                                  timestamp=self.timestamp)
-            return new_info
-
+    @catch_exception
+    def __map(self, analyzer):
+        new_data = []
+        for item in self.data:
+            new_item = analyzer.map(item)
+            new_data.append(new_item)
+        return new_data
+    
+    # -------------------------------------------------------------------------
 
     @validate_call
     def filter(self, analyzer):
         """
         eliminates the items in self.data that do not pass
         the filter implemented in analyzer
-        :param analyzer: an object implementing method filter()
+        :param analyzer: an instance of AnalyzerFilter-type class 
+                         implementing method filter()
         :rtype StatusInfo:
         """
         self.log.debug('Starting with analyzer %s' %analyzer)
+        new_data = self.__filter(analyzer)
+        new_info = StatusInfo(new_data, timestamp=self.timestamp)
+        return new_info
 
-        if self.is_raw:
-            new_data = []
-            for item in self.data:
-                if analyzer.filter(item):
-                    new_data.append(item)
-            new_info = StatusInfo(new_data, timestamp=self.timestamp)
-            return new_info
-        else:
-            new_data = {}
-            for key, statusinfo in self.data.items(): 
-                new_data[key] = statusinfo.filter(analyzer)
-            new_info = StatusInfo(new_data, 
-                                  is_raw=False, 
-                                  timestamp=self.timestamp)
-            return new_info
+    @catch_exception
+    def __filter(self, analyzer):
+        new_data = []
+        for item in self.data:
+            if analyzer.filter(item):
+                new_data.append(item)
+        return new_data
 
+    # -------------------------------------------------------------------------
 
     @validate_call
     def reduce(self, analyzer):
         """
         process the entire self.data at the raw level and accumulate values
-        :param analyzer: an object implementing method reduce()
+        :param analyzer: an instance of AnalyzerReduce-type class 
+                         implementing method reduce()
         :rtype StatusInfo: 
         """
         self.log.debug('Starting with analyzer %s' %analyzer)
-        
-        if self.is_raw:
-            value = analyzer.init_value
-            for item in self.data:
-                value = analyzer.reduce(value, item) 
-            new_info = StatusInfo(value, 
-                                  is_mutable=False, 
-                                  timestamp=self.timestamp)
-            return new_info
-        else:
-            new_data = {}
-            for key, statusinfo in self.data.items(): 
-                new_data[key] = statusinfo.reduce(analyzer)
-            new_info = StatusInfo(new_data, 
-                                  is_raw=False, 
-                                  is_mutable=False, 
-                                  timestamp=self.timestamp)
-            return new_info
+        new_data = self.__reduce(analyzer)
+        new_info = _NonMutableStatusInfo(new_data, 
+                              timestamp=self.timestamp)
+        return new_info
 
+    @catch_exception
+    def __reduce(self, analyzer):
+        value = analyzer.init_value
+        for item in self.data:
+            value = analyzer.reduce(value, item) 
+        return value
+
+    # -------------------------------------------------------------------------
+
+    @validate_call
+    def transform(self, analyzer):
+        """
+        process the entire self.data at the raw level
+        :param analyzer: an instance of AnalyzerTransform-type class 
+                         implementing method transform()
+        :rtype StatusInfo: 
+        """
+        self.log.debug('Starting with analyzer %s' %analyzer)
+        new_data = self.__transform(analyzer)
+        new_info = StatusInfo(new_data, timestamp=self.timestamp)
+        return new_info
+        
+    @catch_exception
+    def __transform(self, analyzer):
+        new_data = analyzer.transform(self.data)
+        return new_data
+
+    # -------------------------------------------------------------------------
 
     @validate_call
     def process(self, analyzer):
         """
         process the entire self.data at the raw level
-        :param analyzer: an object implementing method process()
+        :param analyzer: an instance of AnalyzerProcess-type class 
+                         implementing method process()
         :rtype StatusInfo: 
         """
         self.log.debug('Starting with analyzer %s' %analyzer)
+        new_data = self.__process(analyzer)
+        new_info = _NonMutableStatusInfo(new_data, timestamp=self.timestamp)
+        return new_info
+        
+    @catch_exception
+    def __process(self, analyzer):
+        new_data = analyzer.process(self.data)
+        return new_data
 
-        if self.is_raw:
-            new_data = None
-            new_data = analyzer.process(self.data)
-            new_info = StatusInfo(new_data, 
-                                  is_mutable=False, 
-                                  timestamp=self.timestamp)
-            return new_info
-        else:
-            new_data = {}
-            for key, statusinfo in self.data.items(): 
-                new_data[key] = statusinfo.process(analyzer)
-            new_info = StatusInfo(new_data, 
-                                  is_raw=False, 
-                                  is_mutable=False, 
-                                  timestamp=self.timestamp)
-            return new_info
+# =============================================================================
 
+class _DictStatusInfo(_BaseDict, _AnalysisInterface):
 
     # -------------------------------------------------------------------------
-    # method to get the data
+    # methods to manipulate the data
     # -------------------------------------------------------------------------
 
-    def getraw(self):
-        """
-        returns the structure of all raw data components
-        :rtype composed data:
-        """
-        if self.is_raw:
-            return self.data
-        else:
-            out = {}
-            for key, value in self.data.items():
-                out[key] = value.getraw()
-            return out
+    @validate_call
+    def indexby(self, analyzer):
+        new_data = {}
+        for key, statusinfo in self.data.items():
+            self.log.debug('calling indexby() for content in key %s'%key)
+            new_data[key] = statusinfo.indexby(analyzer)
+        new_info = _DictStatusInfo(new_data, timestamp=self.timestamp)
+        return new_info
+    
+
+    @validate_call
+    def map(self, analyzer):
+        new_data = {}
+        for key, statusinfo in self.data.items():
+            self.log.debug('calling map() for content in key %s'%key)
+            new_data[key] = statusinfo.map(analyzer)
+        new_info = _DictStatusInfo(new_data, timestamp=self.timestamp)
+        return new_info
 
 
-    def get(self, *key_l):
-        """
-        returns the data hosted by the Info object in the tree structure pointed 
-        by all keys
-        The output is the data, either a dictionary or the original raw list 
-        :param key_l list: list of keys for each nested dictionary
-        :rtype data:
-        """
-        if len(key_l) == 0:
-            return self.data
-        else:
-            key = key_l[0]
-            if key not in self.data.keys():
-                raise MissingKey(key)
-            data = self.data[key]
-            return data.get(*key_l[1:])
-            
-
-    def __getitem__(self, key):
-        """
-        returns the Info object pointed by the key
-        :param key: the key in the higher level dictionary
-        :rtype StatusInfo: 
-        """
-        if self.is_raw:
-            raise IsRawData(key)
-        if key not in self.data.keys():
-            raise MissingKey(key)
-        return self.data[key]
+    @validate_call
+    def filter(self, analyzer):
+        new_data = {}
+        for key, statusinfo in self.data.items(): 
+            self.log.debug('calling filter() for content in key %s'%key)
+            new_data[key] = statusinfo.filter(analyzer)
+        new_info = _DictStatusInfo(new_data, timestamp=self.timestamp)
+        return new_info
 
 
+    @validate_call
+    def reduce(self, analyzer):
+        new_data = {}
+        for key, statusinfo in self.data.items(): 
+            self.log.debug('calling reduce() for content in key %s'%key)
+            new_data[key] = statusinfo.reduce(analyzer)
+        new_info = _NonMutableDictStatusInfo(new_data, timestamp=self.timestamp)
+        return new_info
+
+
+    @validate_call
+    def transform(self, analyzer):
+        new_data = {}
+        for key, statusinfo in self.data.items(): 
+            self.log.debug('calling transform() for content in key %s'%key)
+            new_data[key] = statusinfo.transform(analyzer)
+        new_info = _DictStatusInfo(new_data, timestamp=self.timestamp)
+        return new_info
+
+
+    @validate_call
+    def process(self, analyzer):
+        new_data = {}
+        for key, statusinfo in self.data.items(): 
+            self.log.debug('calling process() for content in key %s'%key)
+            new_data[key] = statusinfo.process(analyzer)
+        new_info = _NonMutableDictStatusInfo(new_data, timestamp=self.timestamp)
+        return new_info
+
+
+class _NonMutableStatusInfo(_Base, _GetRawBase):
+    pass
+
+class _NonMutableDictStatusInfo(_BaseDict):
+    pass
 
 
 # =============================================================================
@@ -451,9 +624,8 @@ class Algorithm(object):
         return tmp_out
 
 
-
 # =============================================================================
-#  Some basic Analyzers
+#  Some basic pre-made Analyzers
 # =============================================================================
 
 class IndexByKey(AnalyzerIndexBy):
@@ -509,11 +681,11 @@ class Count(AnalyzerProcess):
         return len(data)
 
 
-class TotalRunningTime(AnalyzerReduce):
+class TotalRunningTimeFromRunningJobs(AnalyzerReduce):
 
     def __init__(self):
         self.now = int(time.time())
-        super(TotalRunningTime, self).__init__(0)
+        super(TotalRunningTimeFromRunningJobs, self).__init__(0)
 
     def reduce(self, value, job):
         running = self.now - int(job['enteredcurrentstatus'])
@@ -522,12 +694,11 @@ class TotalRunningTime(AnalyzerReduce):
         return running
 
 
-# FIXME: need a better name for this class
-class TotalRunningTime2(AnalyzerReduce):
+class TotalRunningTimeFromRunningAndFinishedJobs(AnalyzerReduce):
 
     def __init__(self):
         self.now = int(time.time())
-        super(TotalRunningTime2, self).__init__(0)
+        super(TotalRunningTimeFromRunningAndFinishedJobs, self).__init__(0)
 
     def reduce(self, value, job):
         if job['jobstatus'] == 2:
@@ -542,6 +713,26 @@ class TotalRunningTime2(AnalyzerReduce):
             running += value
         return running
 
+
+class IdleTime(AnalyzerMap):
+
+    def __init__(self):
+        self.now = int(time.time())
+
+    def map(self, job):
+        return self.now - int(job['enteredcurrentstatus'])
+
+
+class ApplyFunction(AnalyzerProcess):
+
+    def __init__(self, func):
+        self.func = func
+
+    def process(self, data):
+        if data:
+            return self.func(data)
+        else:
+            return None
 
 
 # =============================================================================
@@ -579,20 +770,6 @@ class MissingKey(Exception):
         return repr(self.value)
 
 
-class IsRawData(Exception):
-    def __init__(self, key):
-        self.value = "Info object is raw. It does not have key %s" %key
-    def __str__(self):
-        return repr(self.value)
-
-
-class ObjectIsNotMutable(Exception):
-    def __init__(self, method):
-        self.value = "object is not mutable, method %s can not be invoked anymore" %method
-    def __str__(self):
-        return repr(self.value)
-
-
 class AnalyzerFailure(Exception):
     """
     generic Exception for any unclassified failure
@@ -601,7 +778,6 @@ class AnalyzerFailure(Exception):
         self.value = value
     def __str__(self):
         return repr(self.value)
-
 
 
 # =============================================================================
@@ -679,4 +855,5 @@ data_d={data_d}, default={default}, timestamp={timestamp}'
     def __repr__(self):
         s = str(self)
         return s
+
 

@@ -4,7 +4,7 @@
 #
 #
 
-release_version="2.4.15"
+release_version="2.4.16"
 
 import os
 import re
