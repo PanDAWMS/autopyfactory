@@ -148,7 +148,6 @@ class _Curl:
         out = ""
             
         try:
-            
             out = subprocess.check_output(com, shell=True)
             #self.log.debug("regular return output %s" % out)
             ret = 0
@@ -195,16 +194,24 @@ class _Curl:
         com += ' %s' % url
         # execute
         if self.verbose:
-            self.log.debug( com )
-            self.log.debug( subprocess.check_output('cat %s' % tmpName).strip() )
-        ret = subprocess.getstatusoutput(com)
-        # remove temporary file
-        os.remove(tmpName)
-        if ret[0] != 0:
-            ret = (ret[0]%255,ret[1])
-        if self.verbose:
-            self.log.debug( ret )
-        return ret
+            self.log.debug( "com is %s " % com )
+        ret = 0
+        out = ""
+            
+        try:
+            out = subprocess.check_output(com, shell=True)
+            #self.log.debug("regular return output %s" % out)
+            ret = 0
+        except subprocess.CalledProcessError as cpe:
+            ret = cpe.returncode
+            out = cpe.output
+            self.log.debug("ret is %s  out is %s " % (ret, out))
+        finally:
+            # remove temporary file
+            os.remove(tmpName)
+        if ret != 0:
+            ret = (ret % 255 , out)
+        return (ret, out)
 
 
     # PUT method
@@ -225,13 +232,24 @@ class _Curl:
         com += ' %s' % url
         # execute
         if self.verbose:
-            self.log.debug( com )
-        ret = subprocess.getstatusoutput(com)
-        if ret[0] != 0:
-            ret = (ret[0]%255,ret[1])
-        if self.verbose:
-            self.log.debug( ret )
-        return ret
+            self.log.debug( "com is %s " % com )
+        ret = 0
+        out = ""
+            
+        try:
+            out = subprocess.check_output(com, shell=True)
+            #self.log.debug("regular return output %s" % out)
+            ret = 0
+        except subprocess.CalledProcessError as cpe:
+            ret = cpe.returncode
+            out = cpe.output
+            self.log.debug("ret is %s  out is %s " % (ret, out))
+        finally:
+            # remove temporary file
+            os.remove(tmpName)
+        if ret != 0:
+            ret = (ret % 255 , out)
+        return (ret, out)
             
 
 """
