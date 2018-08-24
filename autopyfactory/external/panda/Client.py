@@ -86,7 +86,7 @@ def _x509():
         return x509
     # no valid proxy certificate
     # FIXME
-    print "No valid grid proxy certificate found"
+    print("No valid grid proxy certificate found")
     return ''
 
 

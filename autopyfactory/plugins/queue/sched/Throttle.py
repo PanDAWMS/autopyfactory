@@ -107,10 +107,10 @@ class Throttle(SchedInterface):
 
             return (out,msg)
 
-        except Exception, ex:        
+        except Exception as ex:        
             # it is possible it fails if condor_history does not work
             # for example, in a fresh installation where there is no history yet
-            self.log.warning('An exception was raised: %s' %ex)
+            self.log.warning('An exception was raised: %s' % ex)
             out = input
             msg = 'Throttle:in=%s,ret=%s' %(input, out)
             self.log.info('input=%s; Return=%s' %(input, out))

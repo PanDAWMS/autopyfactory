@@ -60,7 +60,7 @@ class SSH(object):
                 self._ensuredir(fdir)
                 self._decodewrite(fpath, self.privkey)
                 self.privkeypath = fpath
-                os.chmod(fpath, 0600)
+                os.chmod(fpath, 0o600)
                 self.log.debug("Wrote decoded private key to %s and set config OK." % self.privkeypath)
             except Exception as e:
                 self.log.error("Exception: %s" % str(e))

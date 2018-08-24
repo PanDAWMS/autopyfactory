@@ -126,7 +126,7 @@ class CondorSSH(CondorBase):
             self.log.error('Problem writing to ~/.ssh/config')
         finally:
             fh.close()
-        os.chmod(f, 0600)
+        os.chmod(f, 0o600)
 
     def _getSSHAuthTokens(self):
         """

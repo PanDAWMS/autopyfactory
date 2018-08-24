@@ -90,7 +90,7 @@ class TimedCommand(object):
 
         if self.status != 0:
             if self.failure_msg:
-                print self.failure_message
+                print( self.failure_message)
             if self.exception:
                 raise self.exception
 
@@ -164,19 +164,19 @@ if __name__ == "__main__":
         #cmd = CommandLine('ls -ltr /tmp/', exception=ExecutionFailedException)
         cmd = CommandLine('for i in a b c d e f g h; do echo $i; sleep 1; done', 2)
         #cmd = CommandLine('for i in a b c d e f g h; do echo $i; sleep 1; done')
-        print '=================='
-        print cmd.output
-        print '------------------'
-        print cmd.error
-        print '------------------'
-        print cmd.status
-        print '------------------'
-        print cmd.pid
-        print '------------------'
-        print cmd.time
-        print '=================='
+        print( '==================')
+        print( cmd.output )
+        print( '------------------')
+        print( cmd.error )
+        print( '------------------')
+        print( cmd.status )
+        print( '------------------')
+        print( cmd.pid )
+        print( '------------------')
+        print( cmd.time )
+        print( '==================')
     except TimeOutException:
-        print 'timeout'
+        print( 'timeout' )
     except ExecutionFailedException:
-        print 'failed'
+        print( 'failed' )
 
