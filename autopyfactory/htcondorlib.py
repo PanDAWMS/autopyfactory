@@ -245,13 +245,12 @@ class _HTCondorSchedd(object):
         else:
             self.schedd = htcondor.Schedd()  
             self.address = None
-
-	    # Lock object to serialize the submission calls
-	    self.lock = threading.Lock() 
+        # Lock object to serialize the submission calls
+        self.lock = threading.Lock()
         self.log.debug('HTCondorSchedd object initialized')
 
 
-    # FIXME: right now this is orphan code
+        # FIXME: right now this is orphan code
     def __validate_schedd(self, schedd):
         """
         checks if the schedd is reachable
