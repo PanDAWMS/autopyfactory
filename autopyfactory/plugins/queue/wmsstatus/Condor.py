@@ -25,26 +25,28 @@ import autopyfactory.htcondorlib
 import autopyfactory.info2
 
 
-class Job(object):
-    def __init__(self, data_d):
-        self.data_d = data_d
+###class Job(object):
+###    def __init__(self, data_d):
+###        self.data_d = data_d
+###
+###    def __getattr__(self, key):
+###        try:
+###            return int(self.data_d[key])
+###        except Exception:
+###            return 0
+###
+###    def __str__(self):
+###        s = "WMSQueueInfo: notready=%s, ready=%s, running=%s, done=%s, failed=%s, unknown=%s" %\
+###            (self.notready,
+###             self.ready,
+###             self.running,
+###             self.done,
+###             self.failed,
+###             self.unknown
+###            )
+###        return s
 
-    def __getattr__(self, key):
-        try:
-            return int(self.data_d[key])
-        except Exception:
-            return 0
-
-    def __str__(self):
-        s = "WMSQueueInfo: notready=%s, ready=%s, running=%s, done=%s, failed=%s, unknown=%s" %\
-            (self.notready,
-             self.ready,
-             self.running,
-             self.done,
-             self.failed,
-             self.unknown
-            )
-        return s
+from autopyfactory.info2 import DataItem as Job
 
 
 class _condor(_thread, WMSStatusInterface):
@@ -154,7 +156,7 @@ class _condor(_thread, WMSStatusInterface):
                     return self.processednewinfo_d[queue]
                 except Exception:
                     self.log.warning('there is no info available for queue %s. Returning an empty info object' % queue)
-                    return Job({})
+                    return Job()
             else:
                 return self.processednewinfo_d
 
