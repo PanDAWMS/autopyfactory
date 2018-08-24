@@ -104,7 +104,7 @@ class _Curl:
         self.sslCert = ''
         self.sslKey  = ''
         # verbose
-        self.verbose = False
+        self.verbose = True
 
 
     # GET method
@@ -131,6 +131,7 @@ class _Curl:
         except:
             tmpName = '/tmp'
         tmpName += '/%s_%s' % (subprocess.check_output('whoami').strip(),subprocess.check_output('uuidgen').strip())
+        print("tmpName is %s" % tmpName)
         tmpFile = open(tmpName,'w')
         tmpFile.write(strData)
         tmpFile.close()
@@ -138,13 +139,16 @@ class _Curl:
         com += ' %s' % url
         # execute
         if self.verbose:
-            print( com )
+            print( "com is %s " % com )
             print( subprocess.check_output('cat %s' % tmpName).strip() )
         try:
+            
             ret = subprocess.check_output(com, shell=True)
         except subprocess.CalledProcessError as cpe:
+            
             ret = cpe.returncode
             out = cpe.output
+            print("ret is %s  out is %s " % (ret, out))
         finally:
             # remove temporary file
             os.remove(tmpName)
