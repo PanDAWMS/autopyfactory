@@ -140,13 +140,16 @@ class _Curl:
         if self.verbose:
             print( com )
             print( subprocess.check_output('cat %s' % tmpName).strip() )
-        ret = subprocess.check_output(com).strip()
-        # remove temporary file
-        os.remove(tmpName)
-        if ret[0] != 0:
-            ret = (ret[0]%255,ret[1])
-        if self.verbose:
-            print( ret )
+        try:
+            ret = subprocess.check_output(com, shell=True)
+        except subprocess.CalledProcessError as cpe:
+            ret = cpe.returncode
+            out = cpe.output
+        finally:
+            # remove temporary file
+            os.remove(tmpName)
+        if ret != 0:
+            ret = (ret % 255,out)
         return ret
 
 
