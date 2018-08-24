@@ -245,7 +245,7 @@ class _HTCondorSchedd(object):
         else:
             self.schedd = htcondor.Schedd()  
             self.address = None
-        # Lock object to serialize the submission calls
+        # Lock object to serialize the submission and query calls
         self.lock = threading.Lock()
         self.log.debug('HTCondorSchedd object initialized')
 
