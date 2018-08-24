@@ -144,12 +144,14 @@ class _Curl:
         # execute
         if self.verbose:
             self.log.debug( "com is %s " % com )
+        ret = 0
+        out = ""
             
         try:
             
-            ret = subprocess.check_output(com, shell=True)
+            out = subprocess.check_output(com, shell=True)
+            self.log.debug("regular return output %s" % out)
         except subprocess.CalledProcessError as cpe:
-            
             ret = cpe.returncode
             out = cpe.output
             self.log.debug("ret is %s  out is %s " % (ret, out))
@@ -157,7 +159,7 @@ class _Curl:
             # remove temporary file
             os.remove(tmpName)
         if ret != 0:
-            ret = (ret % 255,out)
+            ret = (ret % 255 , out)
         return ret
 
 
