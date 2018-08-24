@@ -144,7 +144,7 @@ class _Curl:
         # execute
         if self.verbose:
             self.log.debug( "com is %s " % com )
-            self.log.debug( subprocess.check_output('cat %s' % tmpName).strip() )
+            
         try:
             
             ret = subprocess.check_output(com, shell=True)
