@@ -598,8 +598,8 @@ class Factory(object):
 
             self.log.debug('Leaving')
                                 
-        except Exception, ex:
-            self.log.warning("Exception raised during Factory main loop run: %s." %ex)
+        except Exception as ex:
+            self.log.warning("Exception raised during Factory main loop run: %s." % ex)
             self.stop()
             raise ex
         self.log.debug("Leaving.")
