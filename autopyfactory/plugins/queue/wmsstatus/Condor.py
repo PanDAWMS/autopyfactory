@@ -10,41 +10,11 @@ import threading
 import traceback
 import xml.dom.minidom
 
-from autopyfactory.interfaces import WMSStatusInterface, _thread
-
-###from autopyfactory.info import CloudInfo
 from autopyfactory.info import SiteInfo
-###from autopyfactory.info import JobInfo
-###from autopyfactory.info import WMSStatusInfo
-###from autopyfactory.info import WMSQueueInfo
-
-###from autopyfactory.condor import checkCondor
-###from autopyfactory.condorlib import querycondorlib
-from autopyfactory.mappings import map2info
+from autopyfactory.interfaces import WMSStatusInterface, _thread
 import autopyfactory.htcondorlib
 import autopyfactory.info2
 
-
-###class Job(object):
-###    def __init__(self, data_d):
-###        self.data_d = data_d
-###
-###    def __getattr__(self, key):
-###        try:
-###            return int(self.data_d[key])
-###        except Exception:
-###            return 0
-###
-###    def __str__(self):
-###        s = "WMSQueueInfo: notready=%s, ready=%s, running=%s, done=%s, failed=%s, unknown=%s" %\
-###            (self.notready,
-###             self.ready,
-###             self.running,
-###             self.done,
-###             self.failed,
-###             self.unknown
-###            )
-###        return s
 
 from autopyfactory.info2 import DataItem as Job
 
@@ -61,7 +31,6 @@ class _condor(_thread, WMSStatusInterface):
     """
 
     def __init__(self, apfqueue, config, section):
-        #try:
         _thread.__init__(self) 
         apfqueue.factory.threadsregistry.add("plugin", self)
         
@@ -70,8 +39,6 @@ class _condor(_thread, WMSStatusInterface):
 
         self.apfqueue = apfqueue   
         self.apfqname = apfqueue.apfqname
-        #self.condoruser = apfqueue.fcl.get('Factory', 'factoryUser')
-        #self.factoryid = apfqueue.fcl.get('Factory', 'factoryId') 
         self.sleeptime = self.apfqueue.fcl.getint('Factory', 'wmsstatus.condor.sleep')
         self._thread_loop_interval = self.sleeptime
         self.maxage = self.apfqueue.fcl.generic_get('Factory', 'wmsstatus.condor.maxage', default_value=360)
@@ -114,7 +81,6 @@ class _condor(_thread, WMSStatusInterface):
         # variable to record when was last time info was updated
         # the info is recorded as seconds since epoch
         self.lasttime = 0
-        #checkCondor()
         self.log.debug('condor_version : %s' %htcondorlib.condor_version())
         self.log.debug('condor_config file : %s' %htcondorlib.condor_config_files())
         self.log.info('WMSStatusPlugin: Object initialized.')
@@ -125,7 +91,6 @@ class _condor(_thread, WMSStatusInterface):
         Main loop
         """
         self.log.debug('Starting')
-###        self._update()
         self._updatenewinfo()
         self.log.debug('Leaving')
 

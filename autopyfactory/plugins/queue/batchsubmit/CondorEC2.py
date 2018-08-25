@@ -5,7 +5,6 @@
 
 from CondorBase import CondorBase
 from autopyfactory import jsd 
-###from autopyfactory.condor import killids, mincondorversion
 from autopyfactory.htcondorlib import HTCondorSchedd
 import subprocess
 import time
@@ -134,7 +133,6 @@ class CondorEC2(CondorBase):
                     j = jobinfo.pop()
                     killlist.append( "%s.%s" % (j.clusterid, j.procid))
                 self.log.debug("About to kill list of %s ids. First one is %s" % (len(killlist), killlist[0] ))
-###                killids(killlist)
                 self.schedd.condor_rm(killlist)
                 self.log.debug("killids returned.")
         else:
@@ -230,7 +228,6 @@ class CondorEC2(CondorBase):
                 self.log.debug("killlist length is %s" % len(killlist))
             if killlist:
                 self.log.debug("About to kill list of %s ids. First one is %s" % (len(killlist), killlist[0] ))
-###                killids(killlist)
                 self.schedd.condor_rm(killlist)
             else:
                 self.log.debug("No VM jobs to kill for apfqueue %s" % self.apfqueue.apfqname )

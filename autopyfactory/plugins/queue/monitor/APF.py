@@ -361,22 +361,6 @@ class _apf(MonitorInterface):
         return out
 
 
-#    def updateLabel(self, label, n):
-#        """
-#        update each label (==apfqname) in the monitor
-#        n is the number of new pilots being submitted
-#        """
-#
-#        self.log.debug('Starting for label %s and number of pilots %s' %(label, n))
-#
-#        url = "%s/labels/%s:%s" %(self.monurl, self.fid, label)
-#        msg = "Attempt to submit %s pilots" %n  
-#        data = {'status': msg}
-#        data = urllib.urlencode(data)
-#        self._call(http.POST, url, data=data) 
-#
-#        self.log.debug('Leaving')
-
     def updateLabel(self, label, msg):
         """
         update each label (==apfqname) in the monitor

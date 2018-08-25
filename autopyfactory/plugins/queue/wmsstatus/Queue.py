@@ -6,10 +6,6 @@ import traceback
 from urllib import urlopen
 
 from autopyfactory.interfaces import WMSStatusInterface
-###from autopyfactory.info import WMSStatusInfo
-###from autopyfactory.info import WMSQueueInfo
-###from autopyfactory.info import SiteInfo
-###from autopyfactory.info import CloudInfo
 import autopyfactory.utils as utils
 
 

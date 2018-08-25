@@ -14,46 +14,12 @@ import xml.dom.minidom
 
 from datetime import datetime
 from pprint import pprint
-from autopyfactory.interfaces import BatchStatusInterface, _thread
-###from autopyfactory.info import BatchStatusInfo
-###from autopyfactory.info import QueueInfo
-###from autopyfactory.condorlib import querycondorlib, condor_q
-from autopyfactory.mappings import map2info
-import autopyfactory.utils as utils
 
-### BEGIN TEST ###
-from autopyfactory.htcondorlib import HTCondorCollector, HTCondorSchedd
 from autopyfactory import info2
-### END TEST ###
-
-
-### BEGIN TEST ###
-#
-# FIXME
-#
-#   this is a temporary solution
-#
-
-#class Job(object):
-#    def __init__(self, data_d):
-#        self.data_d = data_d
-#
-#    def __getattr__(self, key):
-#        try:
-#            return int(self.data_d[key])
-#        except Exception, ex:
-#            return 0
-#
-#    def __str__(self):
-#        s = "QueueInfo: pending=%d, running=%d, suspended=%d" % (self.pending,
-#            self.running,
-#            self.suspended)
-#        return s
-
 from autopyfactory.info2 import DataItem as Job
-
-
-### END TEST ###
+from autopyfactory.htcondorlib import HTCondorCollector, HTCondorSchedd
+from autopyfactory.interfaces import BatchStatusInterface, _thread
+import autopyfactory.utils as utils
 
 
 class CondorJobInfo(object):
@@ -155,7 +121,6 @@ class _condor(_thread, BatchStatusInterface):
             self.log.warning("Got AttributeError during init. We should be running stand-alone for testing.")
 
         self._thread_loop_interval = self.sleeptime
-###        self.currentinfo = None
         self.currentnewinfo = None
         self.jobinfo = None              
         self.last_timestamp = 0
@@ -220,14 +185,9 @@ class _condor(_thread, BatchStatusInterface):
     
     def _updatelib(self):
         self.Lock.acquire()
-###        self._updateinfo()
         self._updatejobinfo()
-        ### BEGIN TEST ###
         self._updatenewinfo()
-        ### END TEST ###
-        ### BEGIN TEST TIMESTAMP ###
         self.last_timestamp = time.time()
-        ### END TEST TIMESTAMP ###
         self.Lock.release()
 
 
