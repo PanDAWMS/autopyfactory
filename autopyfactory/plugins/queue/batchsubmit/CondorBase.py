@@ -121,25 +121,14 @@ class CondorBase(BatchSubmitInterface):
             if n > 0:
                 self._calculateDateDir()
                 self.JSD = jsd.JSDFile()
-                #self._getX509Proxy()
                 self._addJSD()
                 self._custom_attrs()
                 self._finishJSD(n)
                 jsdfile = self._writeJSD()
                 if jsdfile:
-                    #st, output = self.__submit(n, jsdfile)
-                    # FIXME:
-                    # factory, wmsqueue and submitargs should not be necessary
-
-                    #st, output = mynewsubmit(n, jsdfile, self.factory, self.wmsqueue, self.submitargs)
-                    #self.log.debug('Got output (%s, %s).' %(st, output)) 
-                    #joblist = condor.parsecondorsubmit(output)
-
-                    # FIXME 
-                    # temporary solution
-                    # I should get the content of the file from the JSD object itself
-                    jsdcontent = open(jsdfile).read()
-                    clusterid = self.schedd.condor_submit(jsdcontent, n)
+                    jsd = htcondorlib.JobSubmissionDescription()
+                    jsd.loadf(jsdfile)
+                    clusterid = self.schedd.condor_submit(jsd, n)
                     joblist = []
                     now = datetime.datetime.utcnow()
                     for i in range(n):

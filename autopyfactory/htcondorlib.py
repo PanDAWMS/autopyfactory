@@ -140,6 +140,8 @@ class _HTCondorCollector(object):
         self.hostname = hostname
         self.port = port  
         self.collector = self.__getcollector()
+        # Lock object to serialize the submission and query calls
+        self.lock = threading.Lock() 
         self.log.debug('HTCondorCollector object initialized')
 
 
@@ -152,10 +154,10 @@ class _HTCondorCollector(object):
         else:
             collector = htcondor.Collector()
             self.log.debug('got local collector')
+        self.__validate_collector(collector)
         return collector
 
 
-    # FIXME: right now this is orphan code
     def __validate_collector(self, collector):
         """
         checks if the collector is reachable
@@ -176,8 +178,11 @@ class _HTCondorCollector(object):
         """
         address = _address(hostname, port)
         scheddAd = self.collector.locate(htcondor.DaemonTypes.Schedd, address) 
-        schedd = htcondor.Schedd(scheddAd)
-        #return HTCondorSchedd(schedd)
+        try:
+            schedd = htcondor.Schedd(scheddAd)
+        except Exception as ex:
+            self.log.critical('Unable to instantiate an Schedd object')
+            raise ScheddNotReachable()
         scheddwrap = HTCondorRemoteScheddWrapper(schedd, address)
         return HTCondorSchedd(scheddwrap)
 
@@ -200,7 +205,9 @@ class _HTCondorCollector(object):
         self.log.debug('list of attributes in the query = %s' %attribute_l)
         self.log.debug('list of constraints in the query = %s' %constraint_l)
         constraint_str = _build_constraint_str(constraint_l)
+        self.lock.acquire()
         out = self.collector.query(htcondor.AdTypes.Startd, constraint_str, attribute_l)
+        self.lock.release()
         self.log.debug('out = %s' %out)
         return out
 
@@ -243,23 +250,26 @@ class _HTCondorSchedd(object):
             self.schedd = scheddwrap.schedd
             self.address = scheddwrap.address
         else:
-            self.schedd = htcondor.Schedd()  
             self.address = None
+            try:
+                self.schedd = htcondor.Schedd()  
+            except Exception as ex:
+                self.log.critical('Unable to instantiate an Schedd object')
+                raise ScheddNotReachable()
         # Lock object to serialize the submission and query calls
-        self.lock = threading.Lock()
+        self.lock = threading.Lock() 
         self.log.debug('HTCondorSchedd object initialized')
 
 
-        # FIXME: right now this is orphan code
-    def __validate_schedd(self, schedd):
-        """
-        checks if the schedd is reachable
-        """
-        try:
-            # should return an "empty" iterator if Schedd exists
-            schedd.xquery(limit = 0)
-        except Exception:
-            raise ScheddNotReachable()
+#    def __validate_schedd(self, schedd):
+#        """
+#        checks if the schedd is reachable
+#        """
+#        try:
+#            # should return an "empty" iterator if Schedd exists
+#            schedd.xquery(limit = 0)
+#        except Exception:
+#            raise ScheddNotReachable()
 
     # --------------------------------------------------------------------------
 
@@ -283,9 +293,9 @@ class _HTCondorSchedd(object):
         self.log.debug('list of constraints in the query = %s' %constraint_l)
 
         constraint_str = _build_constraint_str(constraint_l)
-        self.lock.acquire()
+        self.lock.acquire() 
         out = self.schedd.query(constraint_str, attribute_l)
-        self.lock.release()
+        self.lock.release() 
         self.log.debug('out = %s' %out)
         return out
 
@@ -310,9 +320,9 @@ class _HTCondorSchedd(object):
         self.log.debug('list of constraints in the query = %s' %constraint_l)
 
         constraint_str = _build_constraint_str(constraint_l)
-        self.lock.acquire()
+        self.lock.acquire() 
         out = self.schedd.history(constraint_str, attribute_l, 0)
-        self.lock.release()
+        self.lock.release() 
         out = list(out)
         self.log.debug('out = %s' %out)
         return out
@@ -325,44 +335,34 @@ class _HTCondorSchedd(object):
         """
         self.log.debug('starting')
         self.log.debug('list of jobs to kill = %s' %jobid_l)
+        self.lock.acquire()
         self.schedd.act(htcondor.JobAction.Remove, jobid_l)
+        self.lock.release()
         self.log.debug('finished')
     
 
-    def condor_submit(self, jdl_str, n):
+    def condor_submit(self, jsd, n):
         """
         performs job submission from a string representation 
         of the submit file. The string containing the submit file should not
         contain the "queue" statement, as the number of jobs is being passed
         as a separate argument.
-        :param str jdl_str: single string with the content of the submit file
+        :param JobSubmissionDescription jsd: instance of JobSubmissionDescription 
         :param int n: number of jobs to submit
         """
         self.log.debug('starting')
-        submit_d = {}
-        for line in jdl_str.split('\n'):
-            if line.startswith('queue '):
-                # the "queue" statement should not be part of the 
-                # submit file string, but it is harmless 
-                continue 
-            if line.strip() == '':
-                continue
-            try:
-                fields = line.split('=')
-                key = fields[0].strip()
-                value = '='.join(fields[1:]).strip()
-                submit_d[key] = value
-            except Exception:
-                raise MalformedSubmitFile(line)
+
+        submit_d = jsd.items()
         self.log.debug('dictionary for submission = %s' %submit_d)
         if not bool(submit_d):
             raise EmptySubmitFile()
-        
+
         self.lock.acquire() 
         submit = htcondor.Submit(submit_d)
         with self.schedd.transaction() as txn:
             clusterid = submit.queue(txn, n)
         self.lock.release() 
+
         self.log.debug('finished submission for clusterid %s' %clusterid)
         return clusterid
 
@@ -386,6 +386,128 @@ class HTCondorSchedd(object):
 
         return HTCondorSchedd.instances[address]
 
+
+# =============================================================================
+
+class JobSubmissionDescription(object):
+    """
+    class to manage the content of the submission file,
+    or its equivalent in several formats
+    """
+
+    def __init__(self):
+        """
+        _jsd_d is a dictionary of submission file expressions
+        _n is the number of jobs to submit
+        """
+        self.log = logging.getLogger('jobsubmissiondescription')
+        self.log.addHandler(logging.NullHandler())
+        self._jsd_d = {}
+        self._n = 0
+
+
+    def loadf(self, path):
+        """
+        gets the submission content from a file
+        :param str path: path to the submission file
+        """
+        try:
+            with open(path) as f:
+                self.loads(f.read())
+        except MalformedSubmitFile as ex:
+            raise ex 
+        except EmptySubmitFile as ex:
+            raise ex 
+        except Exception as ex:
+            self.log.error('file %s cannot be read' %path)
+            raise ErrorReadingSubmitFile(path)
+
+
+    def loads(self, jsd_str):
+        """
+        gets the submission content from a string
+        :param str jsd_str: single string with the submission content
+        """
+        self.log.debug('starting')
+        for line in jsd_str.split('\n'):
+            if line.startswith('queue '):
+                # the "queue" statement should not be part of the
+                # submit file string, but it is harmless
+                continue
+            if line.strip() == '':
+                continue
+            try:
+                fields = line.split('=')
+                key = fields[0].strip()
+                value = '='.join(fields[1:]).strip()
+                self.add(key, value)
+            except Exception:
+                raise MalformedSubmitFile(line)
+        self.log.debug('dictionary for submission = %s' %self._jsd_d)
+        if not bool(self._jsd_d):
+            raise EmptySubmitFile()
+
+
+    def dumpf(self, path):
+        """
+        write the submission content into a file
+        :param str path: path to the file
+        """
+        str = self.dumps()
+        try:
+            with  open(path, "w") as f:
+                f.write(str)
+        except Exception as ex:
+            self.log.error('file %s cannot be written' %path)
+            raise ErrorWritingSubmitFile(path)
+
+
+    def dumps(self):
+        """
+        returns the submission content as a single string
+        :rtype str:
+        """
+        str = ""
+        for pair in self._jsd_d.items():
+            str += '%s = %s\n' %pair
+        str += 'queue %s\n' %self._n
+        return str
+
+
+    def add(self, key, value):
+        """
+        adds a new key,value pair submission expression
+        to the dictionary
+        :param str key: the submission expression key
+        :param str value: the submission expression value
+        """
+        self._jsd_d[key] = value
+
+
+    def setnjobs(self, n):
+        """
+        sets the number of jobs to submit
+        :param int n: the number of jobs to submit
+        """
+        if n<0:
+            raise NegativeSubmissionNumber(n)
+        self._n = n
+
+
+    def items(self):
+        """
+        returns the content as a dict of submission items
+        :rtype dict:
+        """
+        return self._jsd_d
+
+
+    def getnjobs(self):
+        """
+        returns the number of jobs to submit
+        :rtype int:
+        """
+        return self._n
 
 
 # =============================================================================
@@ -422,4 +544,20 @@ class IncorrectInputType(Exception):
     def __str__(self):
         return repr(self.value)
 
+class NegativeSubmissionNumber(Exception):
+    def __init__(self, value):
+        self.value = "Negative number of jobs to submit: %s" %value
+    def __str__(self):
+        return repr(self.value)
 
+class ErrorReadingSubmitFile(Exception):
+    def __init__(self, value):
+        self.value = "Unable to read the submit file %s" %value
+    def __str__(self):
+        return repr(self.value)
+
+class ErrorWritingSubmitFile(Exception):
+    def __init__(self, value):
+        self.value = "Unable to write the submit file %s" %value
+    def __str__(self):
+        return repr(self.value)
