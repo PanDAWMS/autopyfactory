@@ -126,9 +126,9 @@ class CondorBase(BatchSubmitInterface):
                 self._finishJSD(n)
                 jsdfile = self._writeJSD()
                 if jsdfile:
-                    jsd = htcondorlib.JobSubmissionDescription()
-                    jsd.loadf(jsdfile)
-                    clusterid = self.schedd.condor_submit(jsd, n)
+                    _jsd = htcondorlib.JobSubmissionDescription()
+                    _jsd.loadf(jsdfile)
+                    clusterid = self.schedd.condor_submit(_jsd, n)
                     joblist = []
                     now = datetime.datetime.utcnow()
                     for i in range(n):

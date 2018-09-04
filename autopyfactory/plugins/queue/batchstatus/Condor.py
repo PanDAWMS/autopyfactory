@@ -122,6 +122,7 @@ class _condor(_thread, BatchStatusInterface):
 
         self._thread_loop_interval = self.sleeptime
         self.currentnewinfo = None
+        self.processednewinfo_d = None
         self.jobinfo = None              
         self.last_timestamp = 0
 
@@ -202,7 +203,8 @@ class _condor(_thread, BatchStatusInterface):
         """           
         self.log.debug('Starting with self.maxage=%s' % self.maxage)
         
-        if self.currentnewinfo is None:
+        #if self.currentnewinfo is None:
+        if self.processednewinfo_d is None:
             self.log.debug('Not initialized yet. Returning None.')
             return None
 
