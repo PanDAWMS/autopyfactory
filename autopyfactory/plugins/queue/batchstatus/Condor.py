@@ -514,20 +514,22 @@ class MockQueue(object):
 
 def main():    
     debug = False
-    loglevel = logging.INFO
+    loglevel = logging.WARNING
         
     usage = '''Usage: Condor [OPTIONS]
     OPTIONS: 
         -h --help                    Print this message
         -d --debug                   Debug level
+        -v --verbose                 Info level
     '''
     # Handle command line options
     argv = sys.argv[1:]
     try:
         opts, args = getopt.getopt(argv, 
-                                   "hd", 
+                                   "hdv", 
                                    ["help",
                                     "debug",
+                                    "verbose"
                                     ])
     except getopt.GetoptError:
         logging.error( "Unknown option..." )
@@ -540,10 +542,18 @@ def main():
             sys.exit()
         elif opt in ("-d", "--debug"):
             debug = True
+        elif opt in ("-v", "--verbose"):
+            verbsoe = True
+
            
     if debug:
-        print("debug logging requested...")
+        #print("debug logging requested...")
         loglevel = logging.DEBUG
+
+    if debug:
+        #print("debug logging requested...")
+        loglevel = logging.INFO
+
     
     #print("setting up logging")    
     logging.basicConfig(stream=sys.stdout, 
@@ -560,11 +570,11 @@ def main():
     info = cbs.getInfo()
     jobinfo = cbs.getJobInfo()
     print(info)
-    print(jobinfo)
+    #print(jobinfo)
     
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    #logging.basicConfig(level=logging.DEBUG)
     main()
 
 
