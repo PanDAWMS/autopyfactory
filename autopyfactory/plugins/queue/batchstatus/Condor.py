@@ -3,6 +3,7 @@
 # AutoPyfactory batch status plugin for Condor
 #
 import commands
+import getopt
 import subprocess
 import logging
 import os
@@ -15,12 +16,27 @@ import xml.dom.minidom
 from datetime import datetime
 from pprint import pprint
 
+# Added to support running module as script from arbitrary location. 
+from os.path import dirname, realpath, sep, pardir
+fullpathlist = realpath(__file__).split(sep)
+#print("fullpathlist = %s " % fullpathlist)
+prepath = sep.join(fullpathlist[:-5])
+#print("\nprepath = %s" % prepath)
+sys.path.insert(0, prepath)
+#print ("\nsys.path = %s " % sys.path )
+
+
 from autopyfactory import info2
 from autopyfactory.info2 import DataItem as Job
 from autopyfactory.htcondorlib import HTCondorCollector, HTCondorSchedd
 from autopyfactory.interfaces import BatchStatusInterface, _thread
 import autopyfactory.utils as utils
 
+# used for testing/simulation   
+import StringIO
+from autopyfactory.factory import Factory
+from autopyfactory.configloader import Config
+from autopyfactory.threadsmanagement import ThreadsRegistry
 
 class CondorJobInfo(object):
     """
@@ -223,7 +239,7 @@ class _condor(_thread, BatchStatusInterface):
             return self.processednewinfo_d
       
 
-    def getrawInfo(self):
+    def getRawInfo(self):
         """
         returns the raw status info as results of the queries, 
         without any further processing
@@ -392,26 +408,173 @@ class Condor(object):
             Condor.instances[id] = _condor(*k, **kw)
         return Condor.instances[id]
 
+###################### Methods/Classes for simulation and testing ################################
+def getMockQueueConfig():
+    cp = Config()
+    cp.add_section('mock')
+    cp.set('mock','batchstatusplugin', 'Condor')
+    cp.set('mock','batchstatus.condor.queryargs', 'None')
+    return cp
 
+def getMockFactoryConfig():
+    cp = Config()
+    cp.add_section('Factory')
+    cp.set('Factory', 'batchstatus.condor.maxage', '60' )
+    cp.set('Factory', 'batchstatus.condor.sleep', '30' )
+    cp.set('Factory', 'factoryUser', 'autopyfactory' )
+    cp.set('Factory', 'factoryId', 'dummy-mock' )
 
-###############################################################################
+    return cp
 
-def test1():
-    from autopyfactory.test import MockAPFQueue
+def getMockMappingsConfig():
     
-    a = MockAPFQueue('BNL_CLOUD-ec2-spot')
-    bsp = CondorBatchStatusPlugin(a, condor_q_id='local')
-    bsp.start()
-    while True:
-        try:
-            time.sleep(15)
-        except KeyboardInterrupt:
-            bsp.stopevent.set()
-            sys.exit(0)    
+    mappingsconf = '''[NATIVECONDORBATCHSTATUS]
+0 = unexpanded
+1 = idle
+2 = running
+3 = removed
+4 = completed
+5 = held
+6 = submission_err
 
+ 
+[CONDORBATCHSTATUS-JOBSTATUS2INFO]
+0 = pending
+1 = pending
+2 = running
+3 = done
+4 = done
+5 = pending
+6 = running
+
+
+[CONDOREC2BATCHSTATUS-JOBSTATUS2INFO]
+0 = pending
+1 = pending
+2 = running
+3 = done
+4 = done
+5 = pending
+6 = running
+
+
+[PANDAWMSSTATUS-JOBSSTATISTICSPERSITE2INFO]
+pending      = notready
+defined      = notready
+assigned     = notready
+waiting      = notready
+throttled    = notready
+activated    = ready
+starting     = running
+sent         = running
+running      = running
+holding      = running
+transferring = running
+finished     = done
+failed       = failed
+cancelled    = failed
+
+
+[CONDORWMSSTATUS-JOBSTATUS2INFO]
+0 = ready
+1 = ready
+2 = running
+3 = done
+4 = done
+5 = failed
+6 = running'''
+    buf = StringIO.StringIO(mappingsconf)
+    cp = Config()
+    cp.readfp(buf)
+    return cp
+    
+
+
+class MockFactory(object):
+    def __init__(self):
+        self.threadsregistry = ThreadsRegistry()
+        self.mappingscl = getMockMappingsConfig()
+        self.fcl = getMockFactoryConfig()
+        
+# Factory.getFactoryMock(fcl, am)
+
+
+class MockQueue(object):
+    def __init__(self, apfqueuename = 'mock',
+                 factory = MockFactory() ,
+                 config = getMockQueueConfig(),
+            
+                 ):
+        self.factory = factory
+        self.fcl = self.factory.fcl
+        self.apfqname = apfqueuename
+        self.qcl = config
+        self.mwsqueue = 'mock'
+
+
+
+def main():    
+    debug = False
+    loglevel = logging.WARNING
+        
+    usage = '''Usage: Condor [OPTIONS]
+    OPTIONS: 
+        -h --help                    Print this message
+        -d --debug                   Debug level
+        -v --verbose                 Info level
+    '''
+    # Handle command line options
+    argv = sys.argv[1:]
+    try:
+        opts, args = getopt.getopt(argv, 
+                                   "hdv", 
+                                   ["help",
+                                    "debug",
+                                    "verbose"
+                                    ])
+    except getopt.GetoptError:
+        logging.error( "Unknown option..." )
+        print usage                          
+        sys.exit(1) 
+    # Handle command line arguments, overriding invocation           
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            print usage                     
+            sys.exit()
+        elif opt in ("-d", "--debug"):
+            debug = True
+        elif opt in ("-v", "--verbose"):
+            verbsoe = True
+
+           
+    if debug:
+        #print("debug logging requested...")
+        loglevel = logging.DEBUG
+
+    if debug:
+        #print("debug logging requested...")
+        loglevel = logging.INFO
+
+    
+    #print("setting up logging")    
+    logging.basicConfig(stream=sys.stdout, 
+                        format='%(asctime)s [ %(levelname)s ] %(filename)s:%(lineno)d %(funcName)s(): %(message)s' ,
+                        level=loglevel)
+   
+    mq = MockQueue()
+    cp = getMockQueueConfig()
+    #   (apfqueue, config, section    
+    cbs = Condor(mq,cp,'mock') 
+    cbs._updatejobinfo()
+    cbs._updatelib()
+    
+    info = cbs.getInfo()
+    jobinfo = cbs.getJobInfo()
+    print(info)
+    #print(jobinfo)
+    
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
-    test1()
+    main()
 
 
