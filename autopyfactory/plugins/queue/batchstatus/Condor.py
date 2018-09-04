@@ -511,7 +511,6 @@ class MockQueue(object):
 
 
 
-
 def main():    
     debug = False
     loglevel = logging.WARNING
@@ -574,7 +573,6 @@ def main():
     
 
 if __name__ == '__main__':
-    #logging.basicConfig(level=logging.DEBUG)
     main()
 
 
