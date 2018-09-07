@@ -358,13 +358,30 @@ class _HTCondorSchedd(object):
             raise EmptySubmitFile()
 
         self.lock.acquire() 
-        submit = htcondor.Submit(submit_d)
-        with self.schedd.transaction() as txn:
-            clusterid = submit.queue(txn, n)
+        #submit = htcondor.Submit(submit_d)
+        #with self.schedd.transaction() as txn:
+        #    clusterid = submit.queue(txn, n)
+        clusterid = self.__tmp_alternative(jsd)
         self.lock.release() 
 
         self.log.debug('finished submission for clusterid %s' %clusterid)
         return clusterid
+
+
+    def __tmp_alternative(self, jsd):
+        """
+        temporary solution to submit from subshell
+        """
+        cmd = 'condor_submit -verbose %s' %jsd.path
+        subproc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        (out, err) = subproc.communicate()
+        st = subproc.returncode
+
+        from line in out.split('\n'):
+            if line.strip().startswith('**'):
+                procid = line.split()[-1].split('.')[0]
+        return int(procid) 
+
 
 
 class HTCondorSchedd(object):
