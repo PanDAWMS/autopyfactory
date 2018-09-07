@@ -404,6 +404,7 @@ class JobSubmissionDescription(object):
         self.log.addHandler(logging.NullHandler())
         self._jsd_d = {}
         self._n = 0
+        self.path = None
 
 
     def loadf(self, path):
@@ -414,6 +415,7 @@ class JobSubmissionDescription(object):
         try:
             with open(path) as f:
                 self.loads(f.read())
+            self.path = path
         except MalformedSubmitFile as ex:
             raise ex 
         except EmptySubmitFile as ex:
@@ -457,6 +459,7 @@ class JobSubmissionDescription(object):
         try:
             with  open(path, "w") as f:
                 f.write(str)
+            self.path = path
         except Exception as ex:
             self.log.error('file %s cannot be written' %path)
             raise ErrorWritingSubmitFile(path)
