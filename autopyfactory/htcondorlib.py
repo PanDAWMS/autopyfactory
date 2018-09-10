@@ -377,7 +377,7 @@ class _HTCondorSchedd(object):
         (out, err) = subproc.communicate()
         st = subproc.returncode
 
-        from line in out.split('\n'):
+        for line in out.split('\n'):
             if line.strip().startswith('**'):
                 procid = line.split()[-1].split('.')[0]
         return int(procid) 
