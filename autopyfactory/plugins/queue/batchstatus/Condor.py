@@ -126,9 +126,9 @@ class _condor(_thread, BatchStatusInterface):
             ###        self.remotecollector = l[l.index('-pool') + 1]
             ### END TEST ###            
 
-            if self.collectorhost:
-                collector = HTCondorCollector(self.collectorhost, self.collectorport)
-                self.schedd = collector.getSchedd(self.scheddhost, self.scheddport)
+            if self.collectorhost != 'localhost':
+                _collector = HTCondorCollector(self.collectorhost, self.collectorport)
+                self.schedd = _collector.getSchedd(self.scheddhost, self.scheddport)
             else:
                 self.schedd = HTCondorSchedd()
 
