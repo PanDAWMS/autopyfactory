@@ -109,26 +109,28 @@ class _condor(_thread, BatchStatusInterface):
             self.factoryid = apfqueue.fcl.get('Factory', 'factoryId')
             self.maxage = apfqueue.fcl.generic_get('Factory', 'batchstatus.condor.maxage', default_value=360) 
             self.sleeptime = self.apfqueue.fcl.getint('Factory', 'batchstatus.condor.sleep')
-            self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs') 
+            ###self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.queryargs') 
+            self.scheddhost = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.scheddhost', default_value='localhost')
+            self.scheddport = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.scheddport', default_value=9618 )
+            self.collectorhost = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.collectorhost', default_value='localhost')
+            self.collectorport = self.apfqueue.qcl.generic_get(self.apfqname, 'batchstatus.condor.collectorport', default_value=9618 )
 
             ### BEGIN TEST ###
-            self.remoteschedd = None
-            self.remotecollector = None
-            if self.queryargs:
-                l = self.queryargs.split()  # convert the string into a list
-                if '-name' in l:
-                    self.remoteschedd = l[l.index('-name') + 1]
-                if '-pool' in l:
-                    self.remotecollector = l[l.index('-pool') + 1]
+            ###self.remoteschedd = None
+            ###self.remotecollector = None
+            ###if self.queryargs:
+            ###    l = self.queryargs.split()  # convert the string into a list
+            ###    if '-name' in l:
+            ###        self.remoteschedd = l[l.index('-name') + 1]
+            ###    if '-pool' in l:
+            ###        self.remotecollector = l[l.index('-pool') + 1]
             ### END TEST ###            
 
-            ### BEGIN TEST ###
-            if self.remotecollector:
-                collector = HTCondorCollector(self.remotecollector)
-                self.schedd = collector.getSchedd(self.remoteschedd)
+            if self.collectorhost:
+                collector = HTCondorCollector(self.collectorhost, self.collectorport)
+                self.schedd = collector.getSchedd(self.scheddhost, self.scheddport)
             else:
                 self.schedd = HTCondorSchedd()
-            ### END TEST ###
 
         except AttributeError:
             self.condoruser = 'apf'
@@ -384,29 +386,35 @@ class Condor(object):
         conf = k[1]
         section = k[2]
         
-        id = 'local'
-        if conf.generic_get(section, 'batchstatusplugin') == 'Condor':
-            queryargs = conf.generic_get(section, 'batchstatus.condor.queryargs')
-            if queryargs:
-                l = queryargs.split()  # convert the string into a list
-                                       # e.g.  ['-name', 'foo', '-pool', 'bar'....]
-                name = ''
-                pool = ''
-        
-                if '-name' in l:
-                    name = l[l.index('-name') + 1]
-                if '-pool' in l:
-                    pool = l[l.index('-pool') + 1]
-        
-                if name == '' and pool == '':
-                    id = 'local'
-                else:
-                    id = '%s:%s' %(name, pool)
-        # ---------------------------------------------------------------------
+        #id = 'local'
+        #if conf.generic_get(section, 'batchstatusplugin') == 'Condor':
+        #    queryargs = conf.generic_get(section, 'batchstatus.condor.queryargs')
+        #    if queryargs:
+        #        l = queryargs.split()  # convert the string into a list
+        #                               # e.g.  ['-name', 'foo', '-pool', 'bar'....]
+        #        name = ''
+        #        pool = ''
+        #
+        #        if '-name' in l:
+        #            name = l[l.index('-name') + 1]
+        #        if '-pool' in l:
+        #            pool = l[l.index('-pool') + 1]
+        #
+        #        if name == '' and pool == '':
+        #            id = 'local'
+        #        else:
+        #            id = '%s:%s' %(name, pool)
+
+        scheddhost = conf.generic_get(self.apfqname, 'batchstatus.condor.scheddhost', default_value='localhost')
+        scheddport = conf.generic_get(self.apfqname, 'batchstatus.condor.scheddport', default_value=9618 )
+        collectorhost = conf.generic_get(self.apfqname, 'batchstatus.condor.collectorhost', default_value='localhost')
+        collectorport = conf.generic_get(self.apfqname, 'batchstatus.condor.collectorport', default_value=9618 )
+        id = '%s:%s:%s:%s' %(scheddhost, scheddport, collectorhost, collectorport)
 
         if not id in Condor.instances.keys():
             Condor.instances[id] = _condor(*k, **kw)
         return Condor.instances[id]
+
 
 ###################### Methods/Classes for simulation and testing ################################
 def getMockQueueConfig():

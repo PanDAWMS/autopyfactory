@@ -47,7 +47,7 @@ class _condor(_thread, WMSStatusInterface):
         self.collectorhost = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.collectorhost', default_value='localhost') 
         self.collectorport = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.collectorport', default_value=9618 )
         self.password_file = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.password_file')
-        self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queryargs')
+        ###self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queryargs')
         self.queueskey = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queueskey', default_value='ANY')
 
         if self.collectorhost != 'localhost':
@@ -240,55 +240,31 @@ class Condor(object):
         conf = k[1]
         section = k[2]
         
-        id = 'local'
-        if conf.generic_get(section, 'wmsstatusplugin') == 'Condor':
-            queryargs = conf.generic_get(section, 'wmsstatus.condor.queryargs')
-            if queryargs:
-                l = queryargs.split()  # convert the string into a list
-                                       # e.g.  ['-name', 'foo', '-pool', 'bar'....]
-                name = ''
-                pool = ''
-        
-                if '-name' in l:
-                    name = l[l.index('-name') + 1]
-                if '-pool' in l:
-                    pool = l[l.index('-pool') + 1]
-        
-                if name == '' and pool == '':
-                    id = 'local'
-                else:
-                    id = '%s:%s' %(name, pool)
-        # ---------------------------------------------------------------------
+        #id = 'local'
+        #if conf.generic_get(section, 'wmsstatusplugin') == 'Condor':
+        #    queryargs = conf.generic_get(section, 'wmsstatus.condor.queryargs')
+        #    if queryargs:
+        #        l = queryargs.split()  # convert the string into a list
+        #                               # e.g.  ['-name', 'foo', '-pool', 'bar'....]
+        #        name = ''
+        #        pool = ''
+        #
+        #        if '-name' in l:
+        #            name = l[l.index('-name') + 1]
+        #        if '-pool' in l:
+        #            pool = l[l.index('-pool') + 1]
+        #
+        #        if name == '' and pool == '':
+        #            id = 'local'
+        #        else:
+        #            id = '%s:%s' %(name, pool)
+     
+        scheddhost = conf.generic_get(self.apfqname, 'wmsstatus.condor.scheddhost', default_value='localhost')
+        scheddport = conf.generic_get(self.apfqname, 'wmsstatus.condor.scheddport', default_value=9618 )
+        collectorhost = conf.generic_get(self.apfqname, 'wmsstatus.condor.collectorhost', default_value='localhost') 
+        collectorport = conf.generic_get(self.apfqname, 'wmsstatus.condor.collectorport', default_value=9618 )
+        id = '%s:%s:%s:%s' %(scheddhost, scheddport, collectorhost, collectorport)
 
         if not id in Condor.instances.keys():
             Condor.instances[id] = _condor(*k, **kw)
         return Condor.instances[id]
- 
-   
-
-
-
-def test():
-    list =  [ { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
-                'jobStatus' : '2' },
-              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
-                'jobStatus' : '1' },
-                           { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_1',
-                'jobStatus' : '1' },
-              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
-                'jobStatus' : '1' },
-              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
-                'jobStatus' : '2' },
-              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
-                'jobStatus' : '3' },
-              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
-                'jobStatus' : '3' },
-              { 'MATCH_APF_QUEUE' : 'BNL_ATLAS_2',
-                'jobStatus' : '3' }
-            ] 
-    
-if __name__=='__main__':
-    pass
-
-
-
