@@ -259,10 +259,10 @@ class Condor(object):
         #        else:
         #            id = '%s:%s' %(name, pool)
      
-        scheddhost = conf.generic_get(self.apfqname, 'wmsstatus.condor.scheddhost', default_value='localhost')
-        scheddport = conf.generic_get(self.apfqname, 'wmsstatus.condor.scheddport', default_value=9618 )
-        collectorhost = conf.generic_get(self.apfqname, 'wmsstatus.condor.collectorhost', default_value='localhost') 
-        collectorport = conf.generic_get(self.apfqname, 'wmsstatus.condor.collectorport', default_value=9618 )
+        scheddhost = conf.generic_get(section, 'wmsstatus.condor.scheddhost', default_value='localhost')
+        scheddport = conf.generic_get(section, 'wmsstatus.condor.scheddport', default_value=9618 )
+        collectorhost = conf.generic_get(section, 'wmsstatus.condor.collectorhost', default_value='localhost') 
+        collectorport = conf.generic_get(section, 'wmsstatus.condor.collectorport', default_value=9618 )
         id = '%s:%s:%s:%s' %(scheddhost, scheddport, collectorhost, collectorport)
 
         if not id in Condor.instances.keys():
