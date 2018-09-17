@@ -365,7 +365,7 @@ class _HTCondorSchedd(object):
             raise EmptySubmitFile()
 
         self.lock.acquire() 
-        self.__submit(jsd, n)
+        clusterid = self.__submit(jsd, n)
         self.lock.release() 
 
         self.log.debug('finished submission for clusterid %s' %clusterid)
