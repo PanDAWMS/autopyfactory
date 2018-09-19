@@ -44,8 +44,13 @@ sysconfig_files = [
 
 logrotate_files = ['etc/logrotate/autopyfactory',]
 
-initd_files = ['etc/autopyfactory',
+initd_files = [#'etc/autopyfactory',
                'etc/proxymanager']
+
+systemd_files = ['etc/autopyfactory',
+                 'etc/autopyfactory.service',
+                ]
+
 
 # NOTES: the docs are actually handled by setup.cfg. They are moved directory under /usr/share/doc/autopyfactory-<version>/
 docs_files = ['docs/%s' %file for file in os.listdir('docs') if os.path.isfile('docs/%s' %file)]
@@ -58,6 +63,7 @@ rpm_data_files=[#('/etc/autopyfactory', libexec_files),
                 ('/etc/sysconfig', sysconfig_files),
                 ('/etc/logrotate.d', logrotate_files),                                        
                 ('/etc/init.d', initd_files),
+                ('/etc/systemd/system', systemd_files),
                 ('/usr/share/doc/autopyfactory', example_files),                                        
                ]
 

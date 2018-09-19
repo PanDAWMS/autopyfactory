@@ -1,0 +1,11 @@
+[Unit]
+Description=APF
+
+[Service]
+RemainAfterExit=true
+ExecStart=/etc/systemd/system/autopyfactory start
+ExecStop=/etc/systemd/system/autopyfactory stop
+
+[Install]
+WantedBy=multi-user.target
+
