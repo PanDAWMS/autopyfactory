@@ -181,12 +181,14 @@ class _condor(_thread, WMSStatusInterface):
     #
     def __process(self, info):
  
-        from autopyfactory.info2 import IndexByKey, IndexByKeyRemap, Count
+        from autopyfactory.info2 import IndexByKey, IndexByKeyRemap, Count, CreateANY
  
         indexbyqueue = IndexByKey('match_apf_queue')
         indexbystatus = IndexByKeyRemap ('jobstatus', self.jobstatus2info)
         count = Count()
+        createany = CreateANY()
  
+        info = info.transform(createany)
         info = info.indexby(indexbyqueue)
         info = info.indexby(indexbystatus)
         info = info.process(count)

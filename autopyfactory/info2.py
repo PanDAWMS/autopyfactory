@@ -126,6 +126,7 @@ raise an IncorrectAnalyzer Exception.
 A few basic pre-made Analyzers have been implemented, ready to use. 
 """
 
+import copy
 import datetime
 import inspect
 import logging
@@ -601,6 +602,12 @@ class AnalyzerReduce(Analyzer):
         raise NotImplementedError
 
 
+class AnalyzerTransform(Analyzer):
+    analyzertype = "transform"
+    def transform(self):
+        raise NotImplementedError
+
+
 class AnalyzerProcess(Analyzer):
     analyzertype = "process"
     def process(self):
@@ -733,6 +740,21 @@ class ApplyFunction(AnalyzerProcess):
             return self.func(data)
         else:
             return None
+
+
+class CreateANY(AnalyzerTransform):
+    """
+    duplicates the list of jobs, 
+    adding a class MATCH_APF_QUEUE=ANY to the new ones
+    """
+    def transform(self, job_l):
+        new_job_l = []
+        for job in job_l:
+            new_job = copy.copy(job)
+            new_job['match_apf_queue'] = 'ANY'
+            new_job_l.append(job)
+            new_job_l.append(new_job)
+        return new_job_l
 
 
 # =============================================================================
