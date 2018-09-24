@@ -712,7 +712,10 @@ class TotalRunningTimeFromRunningAndFinishedJobs(AnalyzerReduce):
             running = self.now - int(job['enteredcurrentstatus'])
         elif job['jobstatus'] == 3 or \
              job['jobstatus'] == 4:
-            running = int(job['remotewallclocktime'])
+            try:
+                running = int(job['remotewallclocktime'])
+            except:
+                running = 0
         else:
             running = 0
 
