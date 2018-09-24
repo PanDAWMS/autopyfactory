@@ -715,6 +715,9 @@ class TotalRunningTimeFromRunningAndFinishedJobs(AnalyzerReduce):
             try:
                 running = int(job['remotewallclocktime'])
             except:
+                # unclear if a finished job that is still in condor_q
+                # but not yet in condor_history
+                # has classad remotewallclocktime
                 running = 0
         else:
             running = 0
