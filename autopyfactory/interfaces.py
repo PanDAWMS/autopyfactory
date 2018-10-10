@@ -51,8 +51,6 @@ class BatchStatusInterface(object):
 class BatchHistoryInterface(object):
     def getInfo(self, queue=None, maxtime=0):
         raise NotImplementedError
-    def getXYZ(self, queue=None, maxtime=0):
-        raise NotImplementedError
 
 
 
