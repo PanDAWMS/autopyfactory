@@ -153,14 +153,6 @@ class CondorBase(BatchSubmitInterface):
         return joblist
 
 
-    def retireOld(self, num):
-        """
-        Do nothing by default.
-        Old version of retire() replaced by one that kills jobs.
-        
-        """
-        self.log.debug('Default retire() do nothing.')
-
     def retire(self, num):
         '''
         Remove jobs directly. 
