@@ -274,7 +274,7 @@ class _GetRawBase:
 
 class _AnalysisInterface:
 
-    def indexyby(self, analyzer):
+    def indexby(self, analyzer):
         raise NotImplementedError
 
     def map(self, analyzer):
