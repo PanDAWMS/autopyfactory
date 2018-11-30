@@ -12,11 +12,25 @@ import xml.dom.minidom
 
 from autopyfactory.info import SiteInfo
 from autopyfactory.interfaces import WMSStatusInterface, _thread
-import autopyfactory.htcondorlib
-import autopyfactory.info2
+
+from libfactory.htcondorlib import HTCondorCollector, HTCondorSchedd, condor_version, condor_config_files
+from libfactory.info import StatusInfo, IndexByKey, IndexByKeyRemap, Count, AnalyzerTransform
+from libfactory.info import DataItem as Job
 
 
-from autopyfactory.info2 import DataItem as Job
+class CreateANY(AnalyzerTransform):
+    """
+    duplicates the list of jobs, 
+    adding a class MATCH_APF_QUEUE=ANY to the new ones
+    """
+    def transform(self, job_l):
+        new_job_l = []
+        for job in job_l:
+            new_job = copy.copy(job)
+            new_job['match_apf_queue'] = 'ANY'
+            new_job_l.append(job)
+            new_job_l.append(new_job)
+        return new_job_l
 
 
 class _condor(_thread, WMSStatusInterface):
@@ -51,10 +65,10 @@ class _condor(_thread, WMSStatusInterface):
         self.queueskey = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queueskey', default_value='ANY')
 
         if self.collectorhost != 'localhost':
-            _collector = htcondorlib.HTCondorCollector(self.collectorhost, self.collectorport)
+            _collector = HTCondorCollector(self.collectorhost, self.collectorport)
             self.schedd = _collector.getSchedd(self.scheddhost, self.scheddport)
         else:
-            self.schedd = htcondorlib.Schedd()
+            self.schedd = HTCondorSchedd()
 
         self.condor_q_attribute_l = ['match_apf_queue', 
                                      'jobstatus'
@@ -81,8 +95,8 @@ class _condor(_thread, WMSStatusInterface):
         # variable to record when was last time info was updated
         # the info is recorded as seconds since epoch
         self.lasttime = 0
-        self.log.debug('condor_version : %s' %htcondorlib.condor_version())
-        self.log.debug('condor_config file : %s' %htcondorlib.condor_config_files())
+        self.log.debug('condor_version : %s' %condor_version())
+        self.log.debug('condor_config file : %s' %condor_config_files())
         self.log.info('WMSStatusPlugin: Object initialized.')
 
 
@@ -161,7 +175,7 @@ class _condor(_thread, WMSStatusInterface):
         
             self.rawdata = self.condor_q_classad_l
 
-            self.currentnewinfo = info2.StatusInfo(self.rawdata)
+            self.currentnewinfo = StatusInfo(self.rawdata)
 
             # --- process the status info 
             self.processednewinfo_d = self.__process(self.currentnewinfo)
@@ -180,8 +194,6 @@ class _condor(_thread, WMSStatusInterface):
     #   for the time being, all hardcoded in a single method
     #
     def __process(self, info):
- 
-        from autopyfactory.info2 import IndexByKey, IndexByKeyRemap, Count, CreateANY
  
         indexbyqueue = IndexByKey('match_apf_queue')
         indexbystatus = IndexByKeyRemap ('jobstatus', self.jobstatus2info)

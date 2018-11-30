@@ -25,10 +25,9 @@ prepath = sep.join(fullpathlist[:-5])
 sys.path.insert(0, prepath)
 #print ("\nsys.path = %s " % sys.path )
 
-
-from autopyfactory import info2
-from autopyfactory.info2 import DataItem as Job
-from autopyfactory.htcondorlib import HTCondorCollector, HTCondorSchedd
+from libfactory.info import StatusInfo, IndexByKey, IndexByKeyRemap, Count
+from libfactory.info import DataItem as Job
+from libfactory.htcondorlib import HTCondorCollector, HTCondorSchedd
 from autopyfactory.interfaces import BatchStatusInterface, _thread
 import autopyfactory.utils as utils
 
@@ -264,7 +263,7 @@ class _condor(_thread, BatchStatusInterface):
 
             self.rawdata = self.condor_q_classad_l + self.condor_history_classad_l
 
-            self.currentnewinfo = info2.StatusInfo(self.rawdata)
+            self.currentnewinfo = StatusInfo(self.rawdata)
             # --- process the status info 
             self.processednewinfo_d = self.__process(self.currentnewinfo)
 
@@ -287,7 +286,6 @@ class _condor(_thread, BatchStatusInterface):
     #
     def __process(self, info):
 
-        from autopyfactory.info2 import IndexByKey, IndexByKeyRemap, Count
 
         indexbyqueue = IndexByKey('match_apf_queue')
         indexbystatus = IndexByKeyRemap ('jobstatus', self.jobstatus2info)

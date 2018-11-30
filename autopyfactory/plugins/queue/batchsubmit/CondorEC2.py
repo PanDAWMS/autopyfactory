@@ -5,7 +5,7 @@
 
 from CondorBase import CondorBase
 from autopyfactory import jsd 
-from autopyfactory.htcondorlib import HTCondorSchedd
+from libfactory.htcondorlib import HTCondorSchedd
 import subprocess
 import time
 import commands

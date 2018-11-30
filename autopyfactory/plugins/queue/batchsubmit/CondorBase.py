@@ -14,7 +14,7 @@ import traceback
 
 
 from autopyfactory import jsd
-from autopyfactory import htcondorlib
+from libfactory.htcondorlib import HTCondorSchedd, condor_version, condor_config_files, JobSubmissionDescription
 from autopyfactory.interfaces import BatchSubmitInterface
 import autopyfactory.utils as utils
 
@@ -55,7 +55,7 @@ class CondorBase(BatchSubmitInterface):
         #    self.log.addHandler(logStream)
         #    self.log.setLevel(logging.DEBUG)
 
-        self.schedd = htcondorlib.HTCondorSchedd()
+        self.schedd = HTCondorSchedd()
 
         qcl = config
         self.apfqueue = apfqueue
@@ -93,8 +93,8 @@ class CondorBase(BatchSubmitInterface):
 
            
             ###condor.checkCondor()
-            self.log.debug('condor version = %s' %htcondorlib.condor_version())
-            self.log.debug('condor config file = %s ' %htcondorlib.condor_config_files())
+            self.log.debug('condor version = %s' %condor_version())
+            self.log.debug('condor config file = %s ' %condor_config_files())
 
 
             self.log.info(': Object properly initialized.')
@@ -126,7 +126,7 @@ class CondorBase(BatchSubmitInterface):
                 self._finishJSD(n)
                 jsdfile = self._writeJSD()
                 if jsdfile:
-                    _jsd = htcondorlib.JobSubmissionDescription()
+                    _jsd = JobSubmissionDescription()
                     _jsd.loadf(jsdfile)
                     clusterid = self.schedd.condor_submit(_jsd, n)
                     joblist = []
