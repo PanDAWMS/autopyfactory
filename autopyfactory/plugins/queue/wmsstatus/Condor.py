@@ -62,8 +62,11 @@ class _condor(_thread, WMSStatusInterface):
         self.collectorport = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.collectorport', default_value=9618 )
         #self.password_file = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.password_file')
         ###self.queryargs = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queryargs')
-        self.queueskey = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queueskey', default_value='ANY')
-
+        try:
+            self.queueskey = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsstatus.condor.queueskey', default_value='ANY')
+        except ConfigParser.NoOptionError:
+            self.queueskey = self.apfqueue.qcl.generic_get(self.apfqname, 'wmsqueue', default_value='ANY')
+        
         if self.collectorhost != 'localhost':
             _collector = HTCondorCollector(self.collectorhost, self.collectorport)
             self.schedd = _collector.getSchedd(self.scheddhost, self.scheddport)
