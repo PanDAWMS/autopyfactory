@@ -73,6 +73,7 @@ home_data_files=[#('etc', libexec_files),
                  ('etc/autopyfactory', initd_files),
                  ('etc/autopyfactory', sysconfig_files),
                  ('doc/autopyfactory', docs_files),
+                 ('etc/systemd/system', systemd_files),
                 ]
 
 # -----------------------------------------------------------
