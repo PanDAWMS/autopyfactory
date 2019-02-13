@@ -44,6 +44,8 @@ from autopyfactory.cleanlogs import CleanLogs
 from autopyfactory.logserver import LogServer
 from autopyfactory.interfaces import _thread
 
+from libfactory.queue import LBQueue, OFQueue, SubmitQueue 
+
 
 class APFQueuesManager(object):
     """
